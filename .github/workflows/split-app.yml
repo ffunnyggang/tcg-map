@@ -1,0 +1,44 @@
+name: Split TCG MAP app files
+
+on:
+  push:
+    paths:
+      - '.github/workflows/split-app.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Split inline CSS and JS
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          src = p.read_text(encoding='utf-8')
+          if '<style>' not in src or '<script>' not in src:
+              raise SystemExit('index.html is already split or expected inline blocks were not found')
+          s1 = src.index('<style>')
+          s2 = src.index('</style>', s1)
+          css = src[s1 + len('<style>'):s2]
+          j1 = src.rindex('<script>')
+          j2 = src.rindex('</script>')
+          js = src[j1 + len('<script>'):j2]
+          html = src[:s1] + '<link rel="stylesheet" href="style.css">' + src[s2 + len('</style>'):j1] + '<script src="app.js"></script>' + src[j2 + len('</script>'):]
+          Path('style.css').write_text(css, encoding='utf-8')
+          Path('app.js').write_text(js, encoding='utf-8')
+          p.write_text(html, encoding='utf-8')
+          PY
+      - name: Commit split files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html style.css app.js
+          git commit -m "Split index into HTML CSS and JS" || exit 0
+          git push

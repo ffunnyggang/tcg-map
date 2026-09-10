@@ -3,785 +3,114 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TCG MAP — 카드샵 지도</title>
+<title>TCG MAP by 깽퐌커플</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   TCG MAP — 모바일 우선 · 모노크롬 잉크 + 골드 (카드 바인더 언어)
-   ============================================================ */
 :root{
-  --ink:      #1B1815;   /* 카드 본체 잉크 */
-  --ink-soft: #4A443C;
-  --muted:    #857C6F;
-  --faint:    #B6AE9F;
-  --paper:    #F6F3EC;
-  --card:     #FFFFFF;
-  --line:     #E9E3D7;
-  --line-strong: #D9D1BF;
-  --gold:     #B98A2F;
-  --gold-soft:#EBDCB8;
-  --gold-wash:#F7F1E2;
-  --header-h: 58px;
+  --bg:#f7f5f0; --surface:#fff; --text:#1b1b1b; --muted:#77736d; --ter:#a29d95;
+  --line:#e9e5de; --accent:#ae8753; --chip:#f1eee8; --header-h:56px; --filter-h:58px;
 }
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-html{-webkit-text-size-adjust:100%;}
-html,body{margin:0;padding:0;}
-body{
-  background:var(--paper);
-  color:var(--ink);
-  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
-  line-height:1.5;
-  overscroll-behavior-y:none;
-}
-:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
-
-.shell{max-width:920px; margin:0 auto;}
-
-/* ---------- Title Header (항상 고정) ---------- */
-.app-header{
-  position:sticky; top:0; z-index:70;
-  height:var(--header-h);
-  background:var(--ink);
-  box-shadow:0 1px 0 rgba(27,24,21,.9), 0 6px 18px -12px rgba(27,24,21,.55);
-}
-.app-header .shell{
-  height:100%; display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px;
-}
-.brand{display:flex; align-items:center; gap:10px;}
-.brand-mark{
-  width:12px; height:12px; background:var(--gold);
-  transform:rotate(45deg); border-radius:2px;
-  box-shadow:0 0 0 2px rgba(185,138,47,.25);
-}
-.brand-name{
-  font-family:'Space Grotesk','Pretendard Variable',sans-serif;
-  font-weight:700; font-size:19px; letter-spacing:.22em; color:#FFF;
-}
-.brand-sub{
-  font-size:11px; letter-spacing:.04em; color:#C9BA94; margin-top:1px;
-}
-
-/* ---------- Map (일반 콘텐츠 — 스크롤되며 사라짐) ---------- */
-.map-wrap{
-  height:290px;
-  position:relative; background:#EDE9DE;
-  border-bottom:1px solid var(--line-strong);
-}
-.map-wrap iframe{display:block; width:100%; height:100%; border:0; position:relative; z-index:1;}
-.map-placeholder{
-  position:absolute; inset:0;
-  background:radial-gradient(#D8CFBB 1.2px, transparent 1.2px) 0 0 / 24px 24px, var(--paper);
-  display:flex; align-items:center; justify-content:center;
-}
-.map-placeholder span{
-  font-size:12.5px; font-weight:600; letter-spacing:.02em; color:var(--muted);
-  background:var(--card); border:1px solid var(--line-strong); border-radius:999px;
-  padding:6px 14px; box-shadow:0 2px 8px -6px rgba(27,24,21,.4);
-}
-.map-note{
-  position:absolute; left:12px; bottom:10px; z-index:2;
-  font-size:11px; letter-spacing:.02em;
-  background:rgba(27,24,21,.82); color:#F0EADB;
-  padding:4px 10px; border-radius:999px;
-  pointer-events:none;
-}
-@media (min-width:1024px){
-  .map-wrap{height:380px;}
-}
-
-/* ---------- Filter Bar (지도가 지나간 뒤 헤더 아래 sticky) ---------- */
-.filter-bar{
-  position:sticky; top:var(--header-h); z-index:60;
-  background:var(--card);
-  border-bottom:1px solid var(--line);
-  box-shadow:0 4px 14px -14px rgba(27,24,21,.5);
-}
-.filter-track{
-  display:flex; gap:8px;
-  padding:11px 16px 12px;
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-.filter-track::-webkit-scrollbar{display:none;}
-.f-chip{
-  flex:0 0 auto;
-  display:inline-flex; align-items:center; gap:6px;
-  padding:8px 15px;
-  border-radius:999px;
-  border:1px solid var(--line-strong);
-  background:var(--card); color:var(--muted);
-  font-family:inherit; font-size:13.5px; font-weight:600; letter-spacing:.01em;
-  cursor:pointer; transition:background .12s,color .12s,border-color .12s;
-  touch-action:manipulation;
-}
-.f-chip .dot{width:5px; height:5px; border-radius:50%; background:var(--gold); opacity:0; transition:opacity .12s;}
-.f-chip.active{
-  background:var(--ink); border-color:var(--ink); color:#FFF;
-}
-.f-chip.active .dot{opacity:1;}
-@media (hover:hover){ .f-chip:hover{ border-color:var(--gold); color:var(--ink);} .f-chip.active:hover{color:#FFF;} }
-
-/* ---------- Shop List ---------- */
-.list{padding:14px 16px 40px;}
-.list-count{
-  display:flex; align-items:center; gap:7px;
-  margin:0 0 10px;
-  font-size:12px; font-weight:600; letter-spacing:.03em; color:var(--muted);
-}
-.list-count i{width:6px; height:6px; background:var(--gold); border-radius:50%;}
-.shop-card{
-  position:relative; display:block;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:17px 18px 15px;
-  margin-bottom:12px;
-  box-shadow:0 1px 2px rgba(27,24,21,.05);
-  text-decoration:none; color:inherit;
-  cursor:pointer;
-  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
-  touch-action:manipulation;
-}
-/* 트레이딩 카드 더블 프레임 시그니처 */
-.shop-card::before{
-  content:""; position:absolute; inset:4px;
-  border:1px solid var(--line-strong); border-radius:11px;
-  pointer-events:none;
-}
-.shop-card::after{
-  content:""; position:absolute; top:-1px; right:16px;
-  width:38px; height:3px; border-radius:0 0 3px 3px;
-  background:var(--gold);
-}
-@media (hover:hover){
-  .shop-card:hover{ transform:translateY(-2px); box-shadow:0 8px 22px -14px rgba(27,24,21,.35); border-color:var(--line-strong);}
-}
-.shop-card:active{ transform:scale(.994); }
-.shop-name-row{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
-.shop-name{font-size:17px; font-weight:800; letter-spacing:-.01em;}
-.shop-en{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:10.5px; font-weight:600; letter-spacing:.14em;
-  color:var(--muted); white-space:nowrap;
-}
-.shop-loc{
-  display:flex; align-items:center; gap:7px;
-  margin:7px 0 10px;
-  font-size:13px; font-weight:600; color:var(--ink-soft);
-}
-.shop-loc .loc-dot{width:5px; height:5px; background:var(--gold); transform:rotate(45deg); flex:0 0 auto;}
-.tags{display:flex; flex-wrap:wrap; gap:6px 6px;}
-.tag{
-  font-size:11.5px; font-weight:600; color:var(--ink-soft);
-  background:var(--gold-wash);
-  border:1px solid var(--gold-soft);
-  border-radius:7px;
-  padding:3px 9px;
-}
-
-/* ---------- Empty ---------- */
-.empty{
-  text-align:center; padding:72px 24px;
-  border:1px dashed var(--line-strong); border-radius:15px;
-  background:var(--card);
-}
-.empty .e-mark{
-  width:34px; height:34px; margin:0 auto 14px;
-  background:var(--gold-wash); border:1px solid var(--gold-soft); border-radius:10px;
-  transform:rotate(45deg); position:relative;
-}
-.empty .e-mark::after{content:""; position:absolute; inset:8px; background:var(--gold); border-radius:3px;}
-.empty h3{margin:0 0 6px; font-size:16px; font-weight:800;}
-.empty p{margin:0 0 18px; font-size:13px; color:var(--muted);}
-.empty button{
-  font-family:inherit; font-size:13px; font-weight:700;
-  color:#FFF; background:var(--ink);
-  border:0; border-radius:999px; padding:9px 20px; cursor:pointer;
-}
-
-/* ---------- Detail ---------- */
-.detail-top{
-  position:sticky; top:var(--header-h); z-index:60;
-  background:var(--card); border-bottom:1px solid var(--line);
-}
-.back-btn{
-  display:flex; align-items:center; gap:8px;
-  width:100%; padding:13px 16px;
-  font-family:inherit; font-size:13.5px; font-weight:700; color:var(--ink);
-  background:none; border:0; cursor:pointer; text-align:left;
-}
-.back-btn .arr{color:var(--gold); font-size:15px; line-height:1;}
-.back-btn .hint{margin-left:auto; font-size:11.5px; font-weight:500; color:var(--faint);}
-.detail-body{padding:22px 16px 48px;}
-.d-name{border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:6px;}
-.d-name h1{margin:0 0 4px; font-size:26px; font-weight:900; letter-spacing:-.02em;}
-.d-name .en{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:12px; font-weight:600; letter-spacing:.2em; color:var(--muted);
-}
-.d-intro{margin:14px 0 8px; font-size:14px; color:var(--ink-soft);}
-.d-section{margin-top:26px;}
-.d-label{
-  display:flex; align-items:center; gap:9px;
-  margin:0 0 12px;
-  font-size:13px; font-weight:800; letter-spacing:.02em; color:var(--ink);
-}
-.d-label::before{content:""; width:7px; height:7px; background:var(--gold); transform:rotate(45deg); flex:0 0 auto;}
-.dsec-dl{margin:0; border:1px solid var(--line); border-radius:13px; background:var(--card); overflow:hidden;}
-.dsec-dl > div{
-  display:grid; grid-template-columns:96px 1fr; gap:10px;
-  padding:12px 14px; font-size:13.5px;
-}
-.dsec-dl > div + div{border-top:1px solid var(--line);}
-.dsec-dl dt{font-weight:600; color:var(--muted);}
-.dsec-dl dd{margin:0; font-weight:500; color:var(--ink);}
-.dsec-dl dd.placeholder{color:var(--faint);}
-
-.mini-map{position:relative; border:1px solid var(--line); border-radius:13px; overflow:hidden; background:var(--gold-wash);}
-.mini-map iframe{display:block; width:100%; height:190px; border:0; position:relative; z-index:1;}
-.sns-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
-.sns-chip{
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:12.5px; font-weight:700; color:var(--ink-soft);
-  text-decoration:none;
-  border:1px solid var(--line-strong); background:var(--card);
-  border-radius:999px; padding:7px 13px;
-}
-.sns-chip .up{color:var(--gold);}
-.sns-chip .na{font-weight:500; color:var(--faint); font-size:11px;}
-@media (hover:hover){ .sns-chip:hover{border-color:var(--gold); color:var(--ink);} }
-
-.chips{display:flex; flex-wrap:wrap; gap:8px;}
-.tcg-chip{
-  font-size:13px; font-weight:700;
-  background:var(--card); color:var(--ink);
-  border:1px solid var(--line-strong); border-radius:9px;
-  padding:7px 14px;
-}
-.tcg-chip .en{font-family:'Space Grotesk',sans-serif; font-size:10.5px; letter-spacing:.1em; color:var(--muted); display:block;}
-
-.d-list{margin:0; padding:0; list-style:none; border:1px solid var(--line); border-radius:13px; background:var(--card); overflow:hidden;}
-.d-list li{
-  display:flex; gap:10px; align-items:baseline;
-  padding:12px 14px; font-size:14px; font-weight:500;
-}
-.d-list li + li{border-top:1px solid var(--line);}
-.d-list li::before{content:""; width:5px; height:5px; background:var(--gold); transform:rotate(45deg); flex:0 0 auto; align-self:center;}
-
-[hidden]{display:none !important;}
-.shop-name-row{margin-bottom:2px;}
-.shop-name-row + .tags{margin-top:9px;}
-.d-checked-note{margin-top:34px; padding-top:14px; border-top:1px dashed var(--line-strong); font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.02em;}
-
-@media (min-width:1024px){
-  .list{padding:20px 24px 60px;}
-  .shop-card{padding:20px 22px 18px;}
-  .detail-body{padding:30px 24px 64px;}
-  .mini-map iframe{height:220px;}
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{line-height:1.5}
+button,a{font:inherit}
+[hidden]{display:none!important}
+.shell{max-width:920px;margin:0 auto}
+.app-header{position:sticky;top:0;z-index:50;height:var(--header-h);background:rgba(247,245,240,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.app-header .shell{height:100%;display:flex;align-items:center;padding:0 16px}
+.brand{display:flex;align-items:baseline;gap:8px}
+.brand strong{font-size:20px;letter-spacing:-.02em}
+.brand span{font-size:11px;color:var(--muted)}
+.filter-bar{position:sticky;top:var(--header-h);z-index:45;background:rgba(247,245,240,.98);border-bottom:1px solid var(--line)}
+.filter-track{display:flex;gap:7px;overflow-x:auto;padding:11px 16px;scrollbar-width:none}.filter-track::-webkit-scrollbar{display:none}
+.f-chip{flex:0 0 auto;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:#5f5b56;font-size:12px;font-weight:600}.f-chip.active{background:#1b1b1b;color:white;border-color:#1b1b1b}
+.map-wrap{height:242px;background:#ece9e3}.map-wrap iframe{width:100%;height:100%;border:0;display:block}
+.list{padding:20px 16px 44px}.list-count{margin:0 0 12px;font-size:12px;color:var(--muted)}
+.shop-card{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;text-decoration:none;color:inherit}
+.shop-thumb{width:102px;height:102px;flex:0 0 102px;border-radius:12px;background:#eceae6;display:grid;place-items:center;color:#aaa49c;font-size:11px;overflow:hidden}.shop-thumb img{width:100%;height:100%;object-fit:cover}
+.shop-info{min-width:0;flex:1}.shop-head{display:flex;gap:8px;align-items:flex-start}.shop-name{font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.25}.chev{margin-left:auto;color:#aaa49c;font-size:18px;line-height:1}
+.meta{margin-top:6px;font-size:12px;color:var(--muted)}.hours{margin-top:3px;font-size:12px;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;max-height:49px;overflow:hidden}.tag{padding:4px 8px;border-radius:999px;background:var(--chip);font-size:11px;color:#5e5953;white-space:nowrap}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.detail-nav{position:sticky;top:0;z-index:60;height:54px;background:rgba(247,245,240,.96);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line)}
+.icon-btn{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--text)}
+.hero{height:250px;background:#eceae6;position:relative}.hero img{width:100%;height:100%;object-fit:cover}.hero-empty{height:100%;display:grid;place-items:center;color:#aaa49c;font-size:12px}.counter{position:absolute;right:14px;bottom:12px;background:rgba(27,27,27,.72);color:#fff;border-radius:999px;padding:4px 9px;font-size:11px}
+.detail{padding:22px 16px 52px}.d-name{font-size:24px;font-weight:800;letter-spacing:-.025em;margin:0}.d-en{margin-top:3px;font-size:11px;color:var(--ter);letter-spacing:.08em}.d-meta{margin-top:10px;font-size:13px;color:var(--muted)}.d-intro{margin:10px 0 0;font-size:13px;color:#56514c;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.d-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.d-tag{padding:6px 10px;background:var(--chip);border-radius:999px;font-size:11px}
+.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}.q-btn{text-decoration:none;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 6px;text-align:center;font-size:11px;font-weight:600}
+.section{margin-top:34px}.section h2{font-size:16px;margin:0 0 14px;letter-spacing:-.02em}.info{border-top:1px solid var(--line)}.info-row{display:grid;grid-template-columns:78px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.info-row dt{color:var(--muted)}.info-row dd{margin:0}
+.note{font-size:11px;color:var(--ter);margin:-6px 0 12px}.radar-card,.composition{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}.radar-card svg{display:block;width:100%;max-width:270px;margin:0 auto}.grid{fill:none;stroke:#e8e5df;stroke-width:1}.axis{stroke:#ebe8e2;stroke-width:1}.poly{fill:rgba(174,135,83,.16);stroke:var(--accent);stroke-width:1.6}.rlabel{font-size:9px;fill:#605b55;font-family:Pretendard,sans-serif}
+.comp-title{font-size:13px;font-weight:700;margin-bottom:10px}.tcg-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}.tcg{font-size:11px;padding:5px 9px;border-radius:999px;background:var(--chip)}.bar-row{display:flex;align-items:center;gap:12px;margin:10px 0}.bar-label{width:58px;font-size:12px;color:#5b5650}.track{height:8px;flex:1;background:#ece9e3;border-radius:999px;overflow:hidden}.fill{height:100%;background:var(--accent);border-radius:999px}
+.reviews-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.review-card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px}.platform{font-size:10px;color:var(--ter);margin-bottom:5px}.review-title{font-size:12px;font-weight:700;line-height:1.4}
+@media(min-width:768px){.map-wrap{height:320px}.list{padding-left:24px;padding-right:24px}.detail{padding-left:24px;padding-right:24px}.hero{height:360px}}
 </style>
 </head>
 <body>
-
-<header class="app-header">
-  <div class="shell">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span class="brand-name">TCG MAP</span>
-    </div>
-    <span class="brand-sub">카드샵 지도</span>
-  </div>
-</header>
-
-<!-- ================= HOME ================= -->
+<header class="app-header"><div class="shell"><div class="brand"><strong>TCG MAP</strong><span>by 깽퐌커플</span></div></div></header>
 <div id="home-view">
-  <div class="map-wrap">
-    <div class="map-placeholder" aria-hidden="true"><span>지도 로드 중…</span></div>
-    <!-- ────────────────────────────────────────────────────────────
-         Google My Maps 임베드 URL을 여기에 붙여넣으세요.
-         My Maps → 공유 → "웹에 삽입(Embed a map)"에서 나오는
-         https://www.google.com/maps/d/embed?mid=... 주소를
-         아래 iframe의 src에 교체하면 즉시 적용됩니다.
-         ──────────────────────────────────────────────────────────── -->
-    <iframe id="home-map"
-      src="https://www.google.com/maps/d/u/0/embed?mid=12pEoFfhiJwtcqpBhCR0HYaVQOA5mhfw&ehbc=2E312F&noprof=1"
-      title="TCG 샵 지도" loading="eager" allowfullscreen></iframe>
-    <span class="map-note">TCG MAP</span>
-  </div>
-
-  <nav class="filter-bar" aria-label="카드샵 필터">
-    <div class="filter-track" id="filter-track" role="group" aria-label="취급 TCG · 서비스 필터"></div>
-  </nav>
-
-  <main class="list shell">
-    <p class="list-count" id="list-count" aria-live="polite"><i></i><span id="list-count-text"></span></p>
-    <div id="shop-list"></div>
-    <div id="empty-state" class="empty" hidden>
-      <div class="e-mark" aria-hidden="true"></div>
-      <h3>조건에 맞는 카드샵이 없습니다</h3>
-      <p>필터를 해제하거나 다른 조건을 선택해 주세요.</p>
-      <button type="button" id="empty-reset">필터 초기화</button>
-    </div>
-  </main>
+  <nav class="filter-bar"><div class="filter-track shell" id="filter-track"></div></nav>
+  <div class="map-wrap"><iframe src="https://www.google.com/maps/d/u/0/embed?mid=12pEoFfhiJwtcqpBhCR0HYaVQOA5mhfw&ehbc=2E312F&noprof=1" title="TCG MAP" loading="eager"></iframe></div>
+  <main class="list shell"><p class="list-count" id="count"></p><div id="shop-list"></div><div id="empty" class="empty" hidden>조건에 맞는 카드샵이 없습니다.</div></main>
 </div>
-
-<!-- ================= DETAIL ================= -->
 <div id="detail-view" hidden>
-  <div class="detail-top">
-    <button type="button" class="back-btn" id="back-btn">
-      <span class="arr">←</span> 카드샵 목록
-      <span class="hint">필터·위치 그대로</span>
-    </button>
-  </div>
-  <article class="detail-body shell" id="detail-body"></article>
+  <div class="detail-nav shell"><button class="icon-btn" id="back" aria-label="뒤로가기">←</button><button class="icon-btn" id="share" aria-label="공유">↗</button></div>
+  <div class="hero shell" id="hero"></div>
+  <article class="detail shell" id="detail"></article>
 </div>
-
 <script>
-/* ============================================================
-   실제 카드샵 데이터 (KR-SEO-001 ~ KR-SEO-015)
-   - 15개 매장의 상호(가게 이름)와 Shop ID를 반영했습니다.
-   - 그 외 필드(주소·전화·영업시간·정기휴무·주차·좌표·링크·TCG·
-     상품·서비스)는 사용자 제공 shopData가 접수되면 채워 넣습니다.
-     현재는 전부 null/false이며, null/false인 값은 화면에
-     렌더링되지 않습니다. (추측 데이터 없음)
-   - ※ 카드노바(KR-SEO-001)의 영문명/지역/도보/특징 일부만
-     첫 번째 요청의 카드 예시(와이어프레임)에서 제공된 값을 사용.
-   ============================================================ */
-
-/* 취급 TCG 표시명 등록부 (키 → 화면 표시 이름) */
-/* ============================================================
-   실제 카드샵 데이터 (KR-SEO-001 ~ KR-SEO-015)
-   데이터 상태: true(확인됨) / false(확인된 미운영) / null(미확인)
-   - null은 절대 false로 변환하지 않음
-   - 화면 표시는 true인 항목만
-   - 주소·링크·좌표 등은 사용자 제공 데이터 그대로 (추측 없음)
-   ============================================================ */
-
-/* 취급 TCG 표시명 등록부 (Pokemon 필터는 만들지 않음) */
-const TCG_REGISTRY = {
-  pokemon:    { kr: "포켓몬",   en: "POKÉMON" },
-  onepiece:   { kr: "원피스",   en: "ONE PIECE" },
-  dragonball: { kr: "드래곤볼", en: "DRAGON BALL" }
-};
-
-/* 리스트 카드 주요 태그 (5개 계열, FEATURE true만) */
-const CARD_TAG_LABELS = {
-  single:  "싱글카드",
-  graded:  "그레이딩",
-  vintage: "빈티지",
-  oripa:   "오리파",
-  play:    "플레이 공간"
-};
-
-/* 판매상품 표시명 (true만) */
-const PRODUCT_LABELS = {
-  single:   "싱글카드",
-  pack:     "미개봉팩",
-  box:      "BOX",
-  promo:    "프로모카드",
-  graded:   "그레이딩카드",
-  vintage:  "빈티지카드",
-  supplies: "카드용품"
-};
-
-/* 서비스 표시명 (true만) */
-const SERVICE_LABELS = {
-  buy:            "카드매입",
-  consignment:    "위탁판매",
-  gradingService: "그레이딩접수",
-  event:          "이벤트",
-  onlineShop:     "온라인판매",
-  shipping:       "택배거래",
-  oripa:          "오리파",
-  play:           "플레이 공간"
-};
-
-/* 값 미확인(null) 상태로 기본 생성 — 명시된 true/false만 덮어씀 */
-function rawShop(id, name){
-  return {
-    id: id, name: name, en: null,
-    address: null, area: null,
-    phone: null, hours: null, closedDay: null, parking: null,
-    lat: null, lng: null,
-    station: null, walkMin: null,
-    status: null, lastVerified: null,
-    links: { naver: null, google: null, instagram: null, website: null },
-    tcg: { pokemon: null, onepiece: null, dragonball: null },
-    features: {
-      single: null, pack: null, box: null, promo: null,
-      graded: null, vintage: null, supplies: null,
-      buy: null, consignment: null, gradingService: null,
-      event: null, onlineShop: null, shipping: null,
-      oripa: null, play: null
-    }
-  };
-}
-function shop(id, name, over){
-  const s = rawShop(id, name);
-  if (over){
-    for (const k in over){
-      if (k === "features" || k === "tcg" || k === "links") Object.assign(s[k], over[k]);
-      else if (over[k] !== undefined) s[k] = over[k];   // 미명시 키는 null 유지 (undefined로 덮지 않음)
-    }
-  }
-  return s;
-}
-
-const SHOPS = [
-
-  /* KR-SEO-001 카드노바 */
-  shop("KR-SEO-001", "카드노바", {
-    en: "CARD NOVA",
-    address: "테헤란로1길 16 4층", area: "강남",
-    phone: "010-6403-1020",
-    links: { instagram: "https://www.instagram.com/tcgcardnova/", google: "https://maps.app.goo.gl/cZRfaEBzQ5m4htJn6", naver: "https://naver.me/x3caqohD" },
-    station: "강남역", walkMin: 2, parking: "불가능",
-    hours: "매일 13:00~22:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, box: true, graded: true, event: true, oripa: true, play: true }
-  }),
-
-  /* KR-SEO-002 루비카드샵 */
-  shop("KR-SEO-002", "루비카드샵", {
-    en: "RUBY CARD SHOP",
-    address: "강남대로102길 11 3층", area: "강남",
-    phone: "010-2277-9424",
-    links: { website: "https://rubycardshop.com/", instagram: "https://www.instagram.com/rubycard_shop", naver: "https://naver.me/G6RqQSBi" },
-    station: "강남역", walkMin: 6, parking: "가능",
-    hours: "매일 13:00~22:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true, onepiece: true },
-    features: { pack: true, box: true, supplies: true, buy: true, gradingService: true, onlineShop: true }
-  }),
-
-  /* KR-SEO-003 퍼스트카드샵 */
-  shop("KR-SEO-003", "퍼스트카드샵", {
-    en: "FIRST CARD SHOP",
-    address: "잔다리로7안길 31 3층", area: "합정",
-    links: { instagram: "https://www.instagram.com/firstcardshop", naver: "https://naver.me/5SK6FsQX" },
-    station: "합정역", walkMin: 3, parking: "불가능",
-    hours: "월~금 13:00~22:00 / 토~일 13:00~21:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, box: true, graded: true, oripa: true }
-  }),
-
-  /* KR-SEO-004 콜렉트온 */
-  shop("KR-SEO-004", "콜렉트온", {
-    en: "COLLECT ON",
-    address: "도림로 178 1층", area: "대림",
-    links: { google: "https://maps.app.goo.gl/WGEae6mDkv1TzCVG7", naver: "https://naver.me/FKG9F8Ef" },
-    station: "대림역", walkMin: 7, parking: "가능",
-    hours: "금~월 12:00~20:00", closedDay: "화~목",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, consignment: true }
-  }),
-
-  /* KR-SEO-005 카드가든 */
-  shop("KR-SEO-005", "카드가든", {
-    en: "CARD GARDEN",
-    address: "어울마당로 149-2 2층", area: "홍대",
-    links: { instagram: "https://www.instagram.com/cardgarden.hongdae/", naver: "https://naver.me/5ulF8Zis" },
-    station: "홍대입구역", walkMin: 2, parking: "불가능",
-    hours: "매일 12:00~22:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true, onepiece: true },
-    features: { single: true, pack: true, event: true, oripa: true }
-  }),
-
-  /* KR-SEO-006 카드타운 */
-  shop("KR-SEO-006", "카드타운", {
-    en: "CARD TOWN",
-    address: "천호대로168길 35 카드타운 2층", area: "강동",
-    phone: "010-7463-2004",
-    links: { google: "https://maps.app.goo.gl/raJd4gPNyWUFqc3j7", naver: "https://naver.me/G65gMVif" },
-    station: "강동역", walkMin: 2, parking: "불가능",
-    hours: "화~금 14:00~22:00 / 토~일 12:00~22:00", closedDay: "월요일",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { oripa: true }
-  }),
-
-  /* KR-SEO-007 모아카드샵 */
-  shop("KR-SEO-007", "모아카드샵", {
-    en: "MOA CARD SHOP",
-    address: "마조로5길 3-3 2층", area: "왕십리/한양대",
-    phone: "010-2135-0147",
-    links: { google: "https://maps.app.goo.gl/SE2QA6fJEt4dApHT8", naver: "https://naver.me/GKIpPGQ5" },
-    station: "왕십리역", walkMin: 5, parking: "불가능",
-    hours: "매일 11:00~02:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true, onepiece: true },
-    features: { single: true, pack: true, box: true, promo: true, graded: true, supplies: true, consignment: true, event: true, onlineShop: true, shipping: true, oripa: true }
-  }),
-
-  /* KR-SEO-008 카드스토리 */
-  shop("KR-SEO-008", "카드스토리", {
-    en: "CARD STORY",
-    address: "도산대로34길 38 지하 1층", area: "논현",
-    station: "학동역", walkMin: 6,
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, consignment: true, oripa: false }
-  }),
-
-  /* KR-SEO-009 더카드룸 */
-  shop("KR-SEO-009", "더카드룸", {
-    en: "THE CARD ROOM",
-    address: "연남로3길 40 2층", area: "홍대",
-    links: { website: "https://smartstore.naver.com/fogandsunset", naver: "https://naver.me/xQJzmHui" },
-    station: "홍대입구역", walkMin: 8, parking: "불가능",
-    hours: "매일 11:00~22:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true, onepiece: true, dragonball: true },
-    features: { single: true, pack: true, box: true, promo: true, graded: true, event: true, oripa: true }
-  }),
-
-  /* KR-SEO-010 골든아카이브 */
-  shop("KR-SEO-010", "골든아카이브", {
-    en: "GOLDEN ARCHIVE",
-    address: "양화로7길 14 1층, 2층", area: "합정",
-    links: { instagram: "https://www.instagram.com/golden_archive2", naver: "https://naver.me/GqfMFTpe" },
-    station: "합정역", walkMin: 1, parking: "불가능",
-    hours: "월, 수~금 12:00~22:00 / 토~일 13:00~21:00", closedDay: "화요일",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true }
-  }),
-
-  /* KR-SEO-011 금빛박물관 */
-  shop("KR-SEO-011", "금빛박물관", {
-    en: "GOLDEN MUSEUM",
-    address: "오금로19길 6 2층 201호", area: "송파",
-    links: { naver: "https://naver.me/xbKL9Ahd" },
-    station: "송파나루역", walkMin: 2, parking: "불가능",
-    hours: "화~금 14:00~22:00 / 토~일 13:00~21:00", closedDay: "월요일",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { oripa: true }
-  }),
-
-  /* KR-SEO-012 콜렉토티시지 */
-  shop("KR-SEO-012", "콜렉토티시지", {
-    en: "COLLECTO TCG",
-    address: "세무서길 84 3층", area: "서대문",
-    links: { google: "https://maps.app.goo.gl/GD9haWQq1ymqkFvx7", naver: "https://naver.me/5BcjJoMY" },
-    station: "홍제역", walkMin: 7, parking: "불가능",
-    hours: "목~월 12:00~21:00", closedDay: "화요일, 수요일",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, box: true, vintage: true }
-  }),
-
-  /* KR-SEO-013 카드볼트 */
-  shop("KR-SEO-013", "카드볼트", {
-    en: "CARD VAULT",
-    address: "갈현로 10-7 2층", area: "은평",
-    links: { naver: "https://naver.me/5JqDQJBg" },
-    station: "응암역", walkMin: 7, parking: "불가능",
-    hours: "화~일 14:00~22:00", closedDay: "월요일",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true },
-    features: { single: true, graded: true }
-  }),
-
-  /* KR-SEO-014 카드성지 */
-  shop("KR-SEO-014", "카드성지", {
-    en: "CARD SUNGJI",
-    address: "한강대로 95 지하2층 B212호", area: "용산",
-    links: { instagram: "https://www.instagram.com/card_sungji/", naver: "https://naver.me/GCJh2L2n" },
-    lat: 37.5290927, lng: 126.9668857,
-    station: "신용산역", walkMin: 1, parking: "가능",
-    hours: "월~목 14:00~21:00 / 금~일 13:00~21:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true, onepiece: true },
-    features: { single: true, promo: true, graded: false, oripa: false }
-  }),
-
-  /* KR-SEO-015 레드라벨 */
-  shop("KR-SEO-015", "레드라벨", {
-    en: "REDLABEL tcgstore",
-    address: "연무장길 56 2층", area: "성수",
-    links: { naver: "https://naver.me/GQGURlky" },
-    station: "성수역", walkMin: 4, parking: "불가능",
-    hours: "월~금 12:00~22:00 / 토~일 11:00~22:00",
-    status: "운영", lastVerified: "2026-09-09",
-    tcg: { pokemon: true }
-  })
+const FEATURES={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',supplies:'카드용품',consignment:'위탁판매'};
+const FILTERS=[['pokemon','포켓몬'],['onepiece','원피스'],['dragonball','드래곤볼'],['single','싱글카드'],['graded','등급카드'],['vintage','빈티지'],['oripa','오리파'],['box','박스제품'],['supplies','카드용품'],['consignment','위탁판매']];
+const shops=[
+{id:'KR-SEO-001',name:'카드노바',en:'CARD NOVA',area:'강남',station:'강남역',walk:2,address:'테헤란로1길 16 4층',phone:'010-6403-1020',hours:'매일 13:00~22:00',parking:'불가능',instagram:'https://www.instagram.com/tcgcardnova/',google:'https://maps.app.goo.gl/cZRfaEBzQ5m4htJn6',naver:'https://naver.me/x3caqohD',tcg:{pokemon:true,onepiece:true,dragonball:false},f:{single:true,graded:true,vintage:true,oripa:true,box:true,supplies:true,consignment:false}},
+{id:'KR-SEO-002',name:'루비카드샵',en:'RUBY CARD SHOP',area:'강남',station:'강남역',walk:6,address:'강남대로102길 11 3층',phone:'010-2277-9424',hours:'매일 13:00~22:00',parking:'가능',instagram:'https://www.instagram.com/rubycard_shop',naver:'https://naver.me/G6RqQSBi',tcg:{pokemon:true,onepiece:true,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-003',name:'퍼스트카드샵',en:'FIRST CARD SHOP',area:'합정',station:'합정역',walk:3,address:'잔다리로7안길 31 3층',hours:'월~금 13:00~22:00 / 토~일 13:00~21:00',parking:'불가능',instagram:'https://www.instagram.com/firstcardshop',naver:'https://naver.me/5SK6FsQX',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-004',name:'콜렉트온',en:'COLLECT ON',area:'대림',station:'대림역',walk:7,address:'도림로 178 1층',hours:'금~월 12:00~20:00',parking:'가능',google:'https://maps.app.goo.gl/WGEae6mDkv1TzCVG7',naver:'https://naver.me/FKG9F8Ef',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:true,oripa:false,box:false,supplies:true,consignment:true}},
+{id:'KR-SEO-005',name:'카드가든',en:'CARD GARDEN',area:'홍대',station:'홍대입구역',walk:2,address:'어울마당로 149-2 2층',hours:'매일 12:00~22:00',parking:'불가능',instagram:'https://www.instagram.com/cardgarden.hongdae/',naver:'https://naver.me/5ulF8Zis',tcg:{pokemon:true,onepiece:true,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-006',name:'카드타운',en:'CARD TOWN',area:'강동',station:'강동역',walk:2,address:'천호대로168길 35 카드타운 2층',phone:'010-7463-2004',hours:'화~금 14:00~22:00 / 토~일 12:00~22:00',parking:'불가능',google:'https://maps.app.goo.gl/raJd4gPNyWUFqc3j7',naver:'https://naver.me/G65gMVif',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:false,graded:false,vintage:false,oripa:true,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-007',name:'모아카드샵',en:'MOA CARD SHOP',area:'왕십리/한양대',station:'왕십리역',walk:5,address:'마조로5길 3-3 2층',phone:'010-2135-0147',hours:'매일 11:00~02:00',parking:'불가능',google:'https://maps.app.goo.gl/SE2QA6fJEt4dApHT8',naver:'https://naver.me/GKIpPGQ5',tcg:{pokemon:true,onepiece:true,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:true,consignment:true}},
+{id:'KR-SEO-008',name:'카드스토리',en:'CARD STORY',area:'논현',station:'학동역',walk:6,address:'도산대로34길 38 지하 1층',hours:'화~일 14:00~21:00',parking:'불가능',naver:'https://naver.me/GZDGNAwy',tcg:{pokemon:true,onepiece:true,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:false,box:true,supplies:false,consignment:true}},
+{id:'KR-SEO-009',name:'더카드룸',en:'THE CARD ROOM',area:'홍대',station:'홍대입구역',walk:8,address:'연남로3길 40 2층',hours:'매일 11:00~22:00',parking:'불가능',naver:'https://naver.me/xQJzmHui',tcg:{pokemon:true,onepiece:true,dragonball:true},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:true,consignment:false}},
+{id:'KR-SEO-010',name:'골든아카이브',en:'GOLDEN ARCHIVE',area:'합정',station:'합정역',walk:1,address:'양화로7길 14 1층, 2층',hours:'월, 수~금 12:00~22:00 / 토~일 13:00~21:00',parking:'불가능',instagram:'https://www.instagram.com/golden_archive2',naver:'https://naver.me/GqfMFTpe',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:true,consignment:false}},
+{id:'KR-SEO-011',name:'금빛박물관',en:'GOLDEN MUSEUM',area:'송파',station:'송파나루역',walk:2,address:'오금로19길 6 2층 201호',hours:'화~금 14:00~22:00 / 토~일 13:00~21:00',parking:'불가능',naver:'https://naver.me/xbKL9Ahd',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-012',name:'콜렉토티시지',en:'COLLECTO TCG',area:'서대문',station:'홍제역',walk:7,address:'세무서길 84 3층',hours:'목~월 12:00~21:00',parking:'불가능',google:'https://maps.app.goo.gl/GD9haWQq1ymqkFvx7',naver:'https://naver.me/5BcjJoMY',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:true,oripa:true,box:true,supplies:true,consignment:false}},
+{id:'KR-SEO-013',name:'카드볼트',en:'CARD VAULT',area:'은평',station:'응암역',walk:7,address:'갈현로 10-7 2층',hours:'화~일 14:00~22:00',parking:'불가능',naver:'https://naver.me/5JqDQJBg',tcg:{pokemon:true,onepiece:false,dragonball:false},f:{single:true,graded:true,vintage:false,oripa:true,box:true,supplies:true,consignment:false}},
+{id:'KR-SEO-014',name:'카드성지',en:'CARD SUNGJI',area:'용산',station:'신용산역',walk:1,address:'한강대로 95 지하2층 B212호',hours:'월~목 14:00~21:00 / 금~일 13:00~21:00',parking:'가능',instagram:'https://www.instagram.com/card_sungji/',naver:'https://naver.me/GCJh2L2n',tcg:{pokemon:true,onepiece:true,dragonball:true},f:{single:true,graded:false,vintage:false,oripa:false,box:true,supplies:false,consignment:false}},
+{id:'KR-SEO-015',name:'레드라벨',en:'REDLABEL tcgstore',area:'성수',station:'성수역',walk:4,address:'연무장길 56 2층',hours:'월~금 12:00~22:00 / 토~일 11:00~22:00',parking:'불가능',naver:'https://naver.me/GQGURlky',tcg:{pokemon:true,onepiece:true,dragonball:true},f:{single:true,graded:true,vintage:true,oripa:true,box:true,supplies:false,consignment:false}}
 ];
-
-/* 필터 — 다중 선택 AND, true인 Shop만 포함 (Pokemon 필터 없음) */
-const FILTERS = [
-  { id: "onepiece",   label: "One Piece",   test: s => s.tcg.onepiece === true },
-  { id: "dragonball", label: "Dragon Ball", test: s => s.tcg.dragonball === true },
-  { id: "single",     label: "싱글카드",       test: s => s.features.single === true },
-  { id: "grading",    label: "그레이딩",       test: s => s.features.graded === true },
-  { id: "vintage",    label: "빈티지",         test: s => s.features.vintage === true },
-  { id: "oripa",      label: "오리파",         test: s => s.features.oripa === true },
-  { id: "play",       label: "플레이 공간",     test: s => s.features.play === true }
-];
-
-const state = {
-  filters: new Set(),   // 선택된 필터 id 집합 (AND 조건)
-  scrollY: 0            // 홈 스크롤 위치 보존
+const reviews={
+'KR-SEO-001':[5,5,4,4,3,5,4,5], 'KR-SEO-002':[1,5,4,4,3,5,4,5], 'KR-SEO-003':[2,3,3,3,3,3,3,4], 'KR-SEO-004':[5,3,0,0,4,2,4,3], 'KR-SEO-005':[3,3,3,3,3,2,3,4], 'KR-SEO-006':[1,3,4,5,3,4,4,4], 'KR-SEO-007':[4,4,5,3,3,4,4,3], 'KR-SEO-008':[0,2,5,0,4,3,4,3], 'KR-SEO-009':[3,4,4,4,3,4,4,3], 'KR-SEO-010':[3,4,4,5,3,5,4,5], 'KR-SEO-011':[2,3,3,3,3,3,3,4], 'KR-SEO-012':[5,4,3,2,4,2,3,3], 'KR-SEO-013':[3,4,3,3,3,3,3,3], 'KR-SEO-014':[0,0,5,0,5,2,4,5], 'KR-SEO-015':[3,3,4,3,3,2,4,4]};
+const content={
+'KR-SEO-001':[{p:'Naver Blog',t:'카드노바 방문 후기',u:'https://blog.naver.com/ffunyggang/224388450899'},{p:'Instagram Reel',t:'카드노바 방문 후기',u:'https://www.instagram.com/reel/DcZ1flqvgFH/'}],
+'KR-SEO-002':[{p:'Naver Blog',t:'루비카드샵 방문 후기',u:'https://blog.naver.com/ffunyggang/224350706203'},{p:'Instagram Reel',t:'루비카드샵 오픈 후기 이벤트 당첨',u:'https://www.instagram.com/reel/DbmmbWbzsHa/'}],
+'KR-SEO-003':[{p:'Naver Blog',t:'퍼스트카드샵 방문 후기',u:'https://blog.naver.com/ffunyggang/224347441463'},{p:'Instagram Reel',t:'퍼스트카드샵 오리파 후기',u:'https://www.instagram.com/reel/DbpAqG0zIx1/'}],
+'KR-SEO-004':[{p:'Naver Blog',t:'콜렉트온 방문 후기',u:'https://blog.naver.com/ffunyggang/224362855173'},{p:'Instagram Reel',t:'콜렉트온 싱글카드 소개 #2',u:'https://www.instagram.com/reel/DcoB5R_zsBh/'}],
+'KR-SEO-005':[{p:'Instagram Reel',t:'카드가든 오픈 후기',u:'https://www.instagram.com/reel/Dbrq-27TpNd/'}],
+'KR-SEO-006':[{p:'Instagram Reel',t:'카드타운 오리파 후기',u:'https://www.instagram.com/reel/DcIE-TRTDm4/'}],
+'KR-SEO-007':[{p:'Instagram Reel',t:'모아카드샵 방문 후기',u:'https://www.instagram.com/reel/DcFhMP4T3An/'}],
+'KR-SEO-008':[{p:'Naver Blog',t:'카드스토리 방문 후기',u:'https://blog.naver.com/ffunyggang/224386430347'},{p:'Instagram Reel',t:'카드스토리 방문 후기',u:'https://www.instagram.com/reel/DcVhPgQzS9b/'}],
+'KR-SEO-009':[{p:'Naver Blog',t:'더카드룸 방문 후기 - 오리파',u:'https://blog.naver.com/ffunyggang/224334733833'},{p:'Instagram Reel',t:'더카드룸 오리파 후기',u:'https://www.instagram.com/reel/DbixQUTz5k1/'}],
+'KR-SEO-012':[{p:'Naver Blog',t:'콜렉토티시지 방문 후기',u:'https://blog.naver.com/ffunyggang/224360140084'}],
+'KR-SEO-014':[{p:'Naver Blog',t:'카드성지 방문 후기',u:'https://blog.naver.com/ffunyggang/224343790623'}],
+'KR-SEO-015':[{p:'Instagram Reel',t:'성수 레드라벨 방문 후기',u:'https://www.instagram.com/reel/DcuLflezLZb/'}]
 };
-
-const $ = (id) => document.getElementById(id);
-
-/* ---------- 필터 ---------- */
-function renderFilters(){
-  const track = $("filter-track");
-  const allChip = chipHTML("all", "전체", state.filters.size === 0);
-  const chips = FILTERS.map(f => chipHTML(f.id, f.label, state.filters.has(f.id)));
-  track.innerHTML = allChip + chips.join("");
-}
-function chipHTML(id, label, active){
-  return '<button type="button" class="f-chip' + (active ? ' active' : '') + '" data-fid="' + id + '" aria-pressed="' + active + '">'
-       + '<span class="dot" aria-hidden="true"></span>' + label + '</button>';
-}
-function toggleFilter(id){
-  if (id === "all") { state.filters.clear(); }
-  else {
-    if (state.filters.has(id)) state.filters.delete(id);
-    else state.filters.add(id);
-  }
-  renderFilters();
-  renderList();
-}
-$("filter-track").addEventListener("click", (e) => {
-  const btn = e.target.closest(".f-chip");
-  if (btn) toggleFilter(btn.dataset.fid);
-});
-
-/* ---------- 샵 리스트 ---------- */
-function matchAll(shop){
-  for (const fid of state.filters){
-    const f = FILTERS.find(x => x.id === fid);
-    if (!f || !f.test(shop)) return false;
-  }
-  return true;
-}
-function renderList(){
-  const list = SHOPS.filter(matchAll);
-  $("list-count-text").textContent = "총 " + list.length + "곳";
-  $("empty-state").hidden = list.length > 0;
-  $("shop-list").innerHTML = list.map(cardHTML).join("");
-}
-function cardHTML(s){
-  const en = s.en ? '<span class="shop-en">' + s.en + '</span>' : "";
-  const loc = (s.area && s.station && s.walkMin != null)
-    ? '<p class="shop-loc"><span class="loc-dot" aria-hidden="true"></span>' + s.area + ' · ' + s.station + ' 도보 ' + s.walkMin + '분</p>'
-    : "";
-  const tags = Object.keys(CARD_TAG_LABELS)
-    .filter(k => s.features[k] === true)
-    .map(k => '<span class="tag">' + CARD_TAG_LABELS[k] + '</span>').join("");
-  return '<a class="shop-card" href="#/shop/' + s.id + '" data-shop="' + s.id + '">'
-       +   '<div class="shop-name-row"><span class="shop-name">' + s.name + '</span>' + en + '</div>'
-       +   loc
-       +   (tags ? '<div class="tags">' + tags + '</div>' : "")
-       + '</a>';
-}
-$("shop-list").addEventListener("click", (e) => {
-  const card = e.target.closest(".shop-card");
-  if (!card) return;
-  e.preventDefault();
-  openDetail(card.dataset.shop);
-});
-$("empty-reset").addEventListener("click", () => { state.filters.clear(); renderFilters(); renderList(); });
-
-/* ---------- 상세 ---------- */
-function openDetail(id){
-  const shop = SHOPS.find(s => s.id === id);
-  if (!shop) return;
-  state.scrollY = window.scrollY;          // 홈 스크롤 위치 저장
-  $("detail-body").innerHTML = detailHTML(shop);
-  $("home-view").hidden = true;
-  $("detail-view").hidden = false;
-  window.scrollTo(0, 0);
-}
-function closeDetail(){
-  $("detail-view").hidden = true;
-  $("home-view").hidden = false;
-  renderList();
-  requestAnimationFrame(() => window.scrollTo(0, state.scrollY));  // 필터·스크롤 복원
-}
-function detailHTML(s){
-  /* 기본정보 — 값이 있는(null이 아닌) 행만 */
-  const basicRows = [
-    ["주소", s.address],
-    ["전화번호", s.phone],
-    ["영업시간", s.hours],
-    ["정기휴무", s.closedDay],
-    ["주차", s.parking]
-  ].filter(r => r[1] != null && r[1] !== "")
-   .map(r => '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>').join("");
-
-  /* 빠른 링크 — 값이 있는 버튼만 (새 탭, 보안 속성) */
-  const links = [];
-  if (s.links.naver)       links.push(["네이버지도", s.links.naver]);
-  if (s.links.google)      links.push(["Google Maps", s.links.google]);
-  if (s.links.instagram)   links.push(["Instagram", s.links.instagram]);
-  if (s.links.website)     links.push(["Website", s.links.website]);
-  const linkChips = links.length
-    ? '<div class="sns-row">' + links.map(l => '<a class="sns-chip" href="' + l[1] + '" target="_blank" rel="noopener noreferrer">' + l[0] + ' <span class="up">↗</span></a>').join("") + '</div>'
-    : "";
-
-  /* 상세 지도 — 위도·경도가 모두 있을 때만 (좌표 추정 금지) */
-  const miniMap = (s.lat != null && s.lng != null)
-    ? '<div class="mini-map"><div class="map-placeholder" aria-hidden="true"><span>지도 로드 중…</span></div>'
-      + '<iframe src="https://maps.google.com/maps?q=' + s.lat + ',' + s.lng + '&z=16&output=embed&hl=ko" title="' + s.name + ' 위치" loading="lazy" allowfullscreen></iframe></div>'
-    : "";
-
-  /* 취급 TCG — true 항목만 */
-  const tcgChips = Object.keys(TCG_REGISTRY)
-    .filter(k => s.tcg[k] === true)
-    .map(k => { const t = TCG_REGISTRY[k]; return '<span class="tcg-chip">' + t.kr + '<span class="en">' + t.en + '</span></span>'; })
-    .join("");
-
-  /* 판매상품 / 서비스 — FEATURE true 항목만 */
-  const prodItems = trueLabels(s.features, PRODUCT_LABELS).map(i => '<li>' + i + '</li>').join("");
-  const svcItems  = trueLabels(s.features, SERVICE_LABELS).map(i => '<li>' + i + '</li>').join("");
-
-  let html = '<header class="d-name"><h1>' + s.name + '</h1>'
-           + (s.en ? '<p class="en">' + s.en + '</p>' : '')
-           + '</header>';
-  if (basicRows)  html += '<section class="d-section"><h2 class="d-label">기본정보</h2><dl class="dsec-dl">' + basicRows + '</dl></section>';
-  if (miniMap || linkChips) html += '<section class="d-section"><h2 class="d-label">지도 · 빠른 링크</h2>' + miniMap + linkChips + '</section>';
-  if (tcgChips)   html += '<section class="d-section"><h2 class="d-label">취급 TCG</h2><div class="chips">' + tcgChips + '</div></section>';
-  if (prodItems)  html += '<section class="d-section"><h2 class="d-label">판매상품</h2><ul class="d-list">' + prodItems + '</ul></section>';
-  if (svcItems)   html += '<section class="d-section"><h2 class="d-label">서비스</h2><ul class="d-list">' + svcItems + '</ul></section>';
-  html += '<p class="d-checked-note">정보 확인일 ' + (s.lastVerified || "") + '</p>';
-  return html;
-}
-/* {표시명 맵}에서 FEATURE 값이 true인 라벨만 배열로 */
-function trueLabels(obj, map){
-  return Object.keys(map).filter(k => obj[k] === true).map(k => map[k]);
-}
-
-/* ---------- 네비게이션 (뒤로가기 보존) ---------- */
-$("back-btn").addEventListener("click", () => history.back());
-window.addEventListener("popstate", () => {
-  const m = location.hash.match(/^#\/shop\/(.+)$/);
-  if (m && SHOPS.some(s => s.id === m[1])) openDetail(m[1]);
-  else closeDetail();
-});
-
-/* ---------- 초기화 ---------- */
-renderFilters();
-renderList();
-const initMatch = location.hash.match(/^#\/shop\/(.+)$/);
-if (initMatch && SHOPS.some(s => s.id === initMatch[1])){
-  openDetail(initMatch[1]);   // 딥링크: 자동로그에 바로 상세
-} else {
-  try { history.replaceState(null, "", location.pathname + location.search); }  // 깨끗한 URL
-  catch(e){ /* file://·웹뷰 등 URL 변경이 제한된 환경 — 리스트 표시에는 영향 없음 */ }
-}
+const state={filters:new Set(),scroll:0,current:null};
+const $=id=>document.getElementById(id);
+function renderFilters(){ $('filter-track').innerHTML='<button class="f-chip '+(state.filters.size?'':'active')+'" data-f="all">전체</button>'+FILTERS.map(([id,label])=>`<button class="f-chip ${state.filters.has(id)?'active':''}" data-f="${id}">${label}</button>`).join('') }
+function match(s){for(const f of state.filters){if(['pokemon','onepiece','dragonball'].includes(f)){if(s.tcg[f]!==true)return false}else if(s.f[f]!==true)return false}return true}
+function tags(s){const a=[];Object.entries(FEATURES).forEach(([k,v])=>{if(s.f[k]===true)a.push(v)});return a.slice(0,5)}
+function renderList(){const arr=shops.filter(match);$('count').textContent=`총 ${arr.length}곳`;$('empty').hidden=arr.length>0;$('shop-list').innerHTML=arr.map(s=>`<a class="shop-card" href="#/shop/${s.id}" data-id="${s.id}"><div class="shop-thumb">매장 이미지</div><div class="shop-info"><div class="shop-head"><div class="shop-name">${s.name}</div><div class="chev">›</div></div><div class="meta">${s.area} · ${s.station} 도보 ${s.walk}분</div><div class="hours">영업시간 · ${s.hours}</div><div class="tags">${tags(s).map(x=>`<span class="tag">${x}</span>`).join('')}</div></div></a>`).join('')}
+function radar(v){const comp=(v[0]+v[1]+v[2]+v[3])/4, vals=[comp,v[4],v[5],v[6],v[7]], labels=['상품구성','가격','매장규모','매장분위기','접근성'],cx=135,cy=125,R=80,n=5;const pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[cx+R*r*Math.cos(a),cy+R*r*Math.sin(a)]};let g='';for(let l=1;l<=5;l++)g+=`<polygon class="grid" points="${[0,1,2,3,4].map(i=>pt(i,l/5).join(',')).join(' ')}"/>`;let axes='',labs='';for(let i=0;i<n;i++){const p=pt(i,1),q=pt(i,1.25);axes+=`<line class="axis" x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}"/>`;labs+=`<text class="rlabel" x="${q[0]}" y="${q[1]}" text-anchor="middle" dominant-baseline="middle">${labels[i]}</text>`}const poly=`<polygon class="poly" points="${vals.map((v,i)=>pt(i,v/5).join(',')).join(' ')}"/>`;return `<svg viewBox="0 0 270 250">${g}${axes}${poly}${labs}</svg>`}
+function bars(v){return [['싱글카드',v[0]],['등급카드',v[1]],['박스제품',v[2]],['오리파',v[3]]].map(([l,x])=>`<div class="bar-row"><span class="bar-label">${l}</span><span class="track"><span class="fill" style="width:${x/5*100}%"></span></span></div>`).join('')}
+function quick(s){const a=[];if(s.naver)a.push(['네이버지도',s.naver]);if(s.google)a.push(['Google Maps',s.google]);if(s.instagram)a.push(['Instagram',s.instagram]);if(s.phone)a.push(['전화','tel:'+s.phone]);return a.map(([l,u])=>`<a class="q-btn" href="${u}" ${u.startsWith('http')?'target="_blank" rel="noopener"':''}>${l}</a>`).join('')}
+function openDetail(id,push=true){const s=shops.find(x=>x.id===id);if(!s)return;state.current=id;state.scroll=window.scrollY;const v=reviews[id];$('home-view').hidden=true;$('detail-view').hidden=false;$('hero').innerHTML='<div class="hero-empty">등록된 매장 이미지가 없습니다.</div><div class="counter">1 / 1</div>';
+const info=[['주소',s.address],['영업시간',s.hours],['주차',s.parking],['SNS',s.instagram?'Instagram':null]].filter(x=>x[1]);const tcgs=Object.entries(s.tcg).filter(x=>x[1]===true).map(([k])=>k==='pokemon'?'포켓몬':k==='onepiece'?'원피스':'드래곤볼');const rv=(content[id]||[]).map(c=>`<a class="review-card" href="${c.u}" target="_blank" rel="noopener"><div class="platform">${c.p}</div><div class="review-title">${c.t}</div></a>`).join('');$('detail').innerHTML=`<h1 class="d-name">${s.name}</h1><div class="d-en">${s.en||''}</div><div class="d-meta">${s.area} · ${s.station} 도보 ${s.walk}분</div><div class="d-tags">${tags(s).map(x=>`<span class="d-tag">${x}</span>`).join('')}</div>${quick(s)?`<div class="quick">${quick(s)}</div>`:''}<section class="section"><h2>기본 정보</h2><dl class="info">${info.map(([l,x])=>`<div class="info-row"><dt>${l}</dt><dd>${x}</dd></div>`).join('')}</dl></section>${v?`<section class="section"><h2>한눈에 보는 매장 분석</h2><p class="note">※ 깽퐌커플 방문 평점으로 단순 참고용으로 활용해주세요.</p><div class="radar-card">${radar(v)}</div></section><section class="section"><h2>상품 구성 상세</h2><div class="composition"><div class="comp-title">취급 TCG</div><div class="tcg-row">${tcgs.map(x=>`<span class="tcg">${x}</span>`).join('')}</div>${bars(v)}</div></section>`:''}${rv?`<section class="section"><h2>깽퐌커플 리뷰</h2><div class="reviews-grid">${rv}</div></section>`:''}`;window.scrollTo(0,0);if(push)history.pushState({shop:id},'',`#/shop/${id}`)}
+function closeDetail(){ $('detail-view').hidden=true;$('home-view').hidden=false;history.replaceState(null,'',location.pathname+location.search);requestAnimationFrame(()=>window.scrollTo(0,state.scroll)) }
+$('filter-track').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;const f=b.dataset.f;if(f==='all')state.filters.clear();else state.filters.has(f)?state.filters.delete(f):state.filters.add(f);renderFilters();renderList()});
+$('shop-list').addEventListener('click',e=>{const a=e.target.closest('[data-id]');if(!a)return;e.preventDefault();openDetail(a.dataset.id)});
+$('back').addEventListener('click',()=>history.back());$('share').addEventListener('click',async()=>{const url=location.href;try{if(navigator.share)await navigator.share({title:'TCG MAP',url});else{await navigator.clipboard.writeText(url);alert('링크를 복사했습니다.')}}catch(e){}});
+window.addEventListener('popstate',()=>{const m=location.hash.match(/^#\/shop\/(.+)$/);if(m)openDetail(m[1],false);else{ $('detail-view').hidden=true;$('home-view').hidden=false;requestAnimationFrame(()=>window.scrollTo(0,state.scroll)) }});
+renderFilters();renderList();const m=location.hash.match(/^#\/shop\/(.+)$/);if(m)openDetail(m[1],false);
 </script>
 </body>
 </html>

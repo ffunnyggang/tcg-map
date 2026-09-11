@@ -12,7 +12,7 @@
     try{naver.maps.Event.clearInstanceListeners(marker);}catch(e){}
     naver.maps.Event.addListener(marker,'click',()=>{
       try{if(activeInfoWindow)activeInfoWindow.close();}catch(e){}
-      const iw=new naver.maps.InfoWindow({content:popupHTML(s),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(14,10),anchorSkew:true,pixelOffset:new naver.maps.Point(0,-14)});
+      const iw=new naver.maps.InfoWindow({content:popupHTML(s),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),anchorSkew:false,pixelOffset:new naver.maps.Point(0,-18)});
       iw.open(naverMap,marker);
       try{activeInfoWindow=iw;}catch(e){}
     });

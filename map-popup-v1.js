@@ -1,18 +1,22 @@
-/* Floating map shop popup: name + location + hours, matching list metadata */
+/* Floating map shop popup: thumbnail + name + location + hours */
 (function(){
   if(!(window.naver&&naver.maps)) return;
   const pinSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
   const clockSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const bound=new WeakSet();
   function popupHTML(s){
-    return `<button type="button" class="map-shop-popup" onclick="location.hash='#/shop/${s.id}';openDetail('${s.id}');return false;"><strong>${esc(s.name)}</strong><span class="map-popup-line">${pinSvg}<span>${esc(s.area)} · ${esc(s.station)} 도보 ${esc(s.walkMin)}분</span></span><span class="map-popup-line">${clockSvg}<span>${esc(todayHours(s))}</span></span><span class="map-popup-chevron">›</span></button>`;
+    const image=(typeof SHOP_IMAGES!=='undefined'&&SHOP_IMAGES[s.id])||((typeof SHOP_GALLERIES!=='undefined'&&SHOP_GALLERIES[s.id]&&SHOP_GALLERIES[s.id][0])||'');
+    const thumb=image
+      ? `<span class="map-popup-thumb"><img src="${esc(image)}" alt="${esc(s.name)} 매장 사진" loading="eager" decoding="async"></span>`
+      : `<span class="map-popup-thumb map-popup-thumb-empty" aria-hidden="true">TCG</span>`;
+    return `<div class="map-popup-bubble"><button type="button" class="map-shop-popup" onclick="location.hash='#/shop/${s.id}';openDetail('${s.id}');return false;">${thumb}<span class="map-popup-copy"><strong>${esc(s.name)}</strong><span class="map-popup-line">${pinSvg}<span>${esc(s.area)} · ${esc(s.station)} 도보 ${esc(s.walkMin)}분</span></span><span class="map-popup-line">${clockSvg}<span>${esc(todayHours(s))}</span></span></span><span class="map-popup-chevron">›</span></button></div>`;
   }
   function bindMarker(s,marker){
     if(!marker||bound.has(marker)) return;
     try{naver.maps.Event.clearInstanceListeners(marker);}catch(e){}
     naver.maps.Event.addListener(marker,'click',()=>{
       try{if(activeInfoWindow)activeInfoWindow.close();}catch(e){}
-      const iw=new naver.maps.InfoWindow({content:popupHTML(s),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),anchorSkew:false,pixelOffset:new naver.maps.Point(0,-18)});
+      const iw=new naver.maps.InfoWindow({content:popupHTML(s),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),anchorSkew:false,pixelOffset:new naver.maps.Point(0,-20)});
       iw.open(naverMap,marker);
       try{activeInfoWindow=iw;}catch(e){}
     });

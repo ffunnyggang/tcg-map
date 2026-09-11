@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TCG MAP · Inpock 방문기 crop test</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Noto Sans KR",sans-serif;background:#f7f4ee;color:#222}.wrap{width:min(100%,460px);margin:0 auto;min-height:100vh;padding:18px 16px 28px}.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}.brand{font-size:20px;font-weight:800;letter-spacing:-.4px}.brand small{display:block;margin-top:3px;font-size:11px;font-weight:600;color:#8b6f47}.badge{font-size:11px;color:#766b5d;background:#eee8df;padding:6px 9px;border-radius:999px}.panel{padding:12px;border:1px solid #e4ddd2;border-radius:18px;background:#fff;margin-bottom:12px}.panel strong{font-size:13px}.panel p{margin:6px 0 10px;font-size:11px;line-height:1.5;color:#80766a}.ctrl{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.ctrl button{border:1px solid #ddd3c4;background:#f7f3ed;border-radius:11px;padding:10px 5px;font-size:12px;color:#4d453c}.readout{margin-top:8px;font-size:11px;color:#8b6f47;font-weight:700;text-align:center}.crop{position:relative;height:620px;overflow:hidden;border:1px solid #e4ddd2;border-radius:20px;background:#fff;box-shadow:0 8px 28px rgba(43,35,25,.07)}iframe{position:absolute;left:0;top:0;display:block;width:100%;height:2200px;border:0;background:#fff;transform:translateY(var(--offset));transform-origin:top left}.hint{margin:12px 3px 0;font-size:12px;line-height:1.55;color:#81786d}.direct{display:block;margin-top:12px;padding:13px 16px;border-radius:14px;background:#8b6f47;color:#fff;text-decoration:none;text-align:center;font-size:14px;font-weight:700}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="head"><div class="brand">TCG MAP<small>by 깽퐌커플</small></div><span class="badge">방문기 CROP TEST</span></header>
+<section class="panel">
+<strong>인포크 내부 위치 조정</strong>
+<p>아래 버튼으로 iframe 전체를 위/아래로 이동해서 ‘방문기’ 영역만 화면 안에 맞출 수 있는지 테스트합니다.</p>
+<div class="ctrl"><button data-d="-200">▲ 200</button><button data-d="-50">▲ 50</button><button data-d="50">▼ 50</button><button data-d="200">▼ 200</button></div>
+<div class="readout">offset: <span id="readout">-700</span>px</div>
+</section>
+<section class="crop" id="crop"><iframe id="frame" src="https://link.inpock.co.kr/ffunnyggang" title="깽퐌커플 Inpock 방문기 테스트" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe></section>
+<p class="hint">이 방식은 데이터 추출이 아니라 인포크 화면을 잘라 보여주는 방식입니다. 방문기 영역 위치가 고정적이면 TCG MAP에 시각적으로 넣을 수 있지만, 인포크 레이아웃 변경 시 위치를 다시 맞춰야 할 수 있습니다.</p>
+<a class="direct" href="https://link.inpock.co.kr/ffunnyggang" target="_blank" rel="noopener">인포크 원본 페이지 열기</a>
+</main>
+<script>
+let offset=-700;const crop=document.getElementById('crop'),readout=document.getElementById('readout');function apply(){crop.style.setProperty('--offset',offset+'px');readout.textContent=offset}document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{offset+=Number(b.dataset.d);offset=Math.min(0,Math.max(-1580,offset));apply()}));apply();
+</script>
+</body>
+</html>

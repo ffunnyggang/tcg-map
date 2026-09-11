@@ -4,7 +4,28 @@ import re
 app=Path('app.js')
 js=app.read_text(encoding='utf-8')
 
-gallery_data="const SHOP_GALLERIES={'KR-SEO-001':['images/shops/cardnova/detail/IMG_8686.jpeg','images/shops/cardnova/detail/IMG_8687.jpeg','images/shops/cardnova/detail/IMG_8685.jpeg','images/shops/cardnova/detail/IMG_8688.jpeg','images/shops/cardnova/detail/IMG_8689.jpeg','images/shops/cardnova/detail/IMG_8690.jpeg','images/shops/cardnova/detail/IMG_8691.jpeg','images/shops/cardnova/detail/IMG_8692.jpeg'],'KR-SEO-008':['images/shops/cardstory/detail/IMG_8703.jpeg','images/shops/cardstory/detail/IMG_8704.jpeg','images/shops/cardstory/detail/IMG_8705.jpeg']};"
+galleries={
+'KR-SEO-001':[f'images/shops/cardnova/detail/cardnova_detail_{i:03d}.jpg' for i in range(1,9)],
+'KR-SEO-002':[f'images/shops/rubycard/detail/rubycard_detail_{i:03d}.jpg' for i in range(1,8)],
+'KR-SEO-003':[f'images/shops/firstcard/detail/firstcard_detail_{i:03d}.jpg' for i in range(1,6)],
+'KR-SEO-004':[f'images/shops/collecton/detail/colleton_detail_{i:03d}.jpg' for i in range(1,9)],
+'KR-SEO-005':['images/shops/cardgarden/detail/cardgarden_detail_001.jpg'],
+'KR-SEO-006':[f'images/shops/cardtown/detail/cardtown_detail_{i:03d}.jpg' for i in range(1,3)],
+'KR-SEO-007':[f'images/shops/moacard/detail/moacard_detail_{i:03d}.jpg' for i in range(1,7)],
+'KR-SEO-008':[f'images/shops/cardstory/detail/cardstory_detail_{i:03d}.jpg' for i in range(1,5)],
+'KR-SEO-009':[f'images/shops/thecardroom/detail/thecardroom_detail_{i:03d}.jpg' for i in range(1,6)],
+'KR-SEO-010':[f'images/shops/goldenarchive/detail/goldenarchive_detail_{i:03d}.jpg' for i in range(1,7)],
+'KR-SEO-011':[f'images/shops/goldenmuseum/detail/goldenmuseum_detail_{i:03d}.jpg' for i in range(1,3)],
+'KR-SEO-012':[f'images/shops/collectotcg/detail/collectotcg_detail_{i:03d}.jpg' for i in range(1,8)],
+'KR-SEO-013':[f'images/shops/cardvault/detail/cardvault_detail_{i:03d}.jpg' for i in range(1,6)],
+'KR-SEO-014':[f'images/shops/cardsungji/detail/cardsungji_detail_{i:03d}.jpg' for i in range(1,7)],
+'KR-SEO-015':[f'images/shops/redlabel/detail/redlabel_detail_{i:03d}.jpg' for i in range(1,4)],
+}
+
+def js_array(items):
+    return '['+','.join(repr(x) for x in items)+']'
+
+gallery_data='const SHOP_GALLERIES={'+','.join(repr(k)+':'+js_array(v) for k,v in galleries.items())+'};'
 if 'const SHOP_GALLERIES=' in js:
     js=re.sub(r"const SHOP_GALLERIES=\{.*?\};",gallery_data,js,count=1)
 else:

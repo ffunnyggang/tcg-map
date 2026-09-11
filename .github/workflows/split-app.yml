@@ -19,5 +19,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app.js style.css
-          git commit -m "Add Card Story detail gallery" || exit 0
+          git commit -m "Update all shop detail galleries" || exit 0
           git push

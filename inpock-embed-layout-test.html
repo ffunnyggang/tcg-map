@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TCG MAP · Inpock Embed Layout Test</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#f6f2eb;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Noto Sans KR",sans-serif}.wrap{width:min(100%,460px);margin:0 auto;padding:18px 14px 32px}.head{margin-bottom:14px}.title{font-size:20px;font-weight:800;letter-spacing:-.5px}.sub{margin-top:5px;font-size:12px;line-height:1.5;color:#766e64}.panel{margin-top:14px;background:#fff;border:1px solid #e6dfd4;border-radius:18px;padding:14px;box-shadow:0 7px 24px rgba(46,37,25,.05)}.panel h2{margin:0 0 4px;font-size:15px}.desc{margin:0 0 12px;font-size:11px;color:#8b8277}.crop{position:relative;overflow:hidden;height:300px;border-radius:14px;background:#eee8df;border:1px solid #e7e0d7}.crop iframe{position:absolute;left:0;top:0;width:100%;height:1600px;border:0;background:#fff;transform:translateY(var(--y));transform-origin:top left}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.controls button{border:1px solid #ded5ca;background:#faf8f4;border-radius:10px;padding:9px 4px;font-size:12px}.readout{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11px;color:#665e55}.value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#8b6f47;font-weight:700}.hrow{display:flex;gap:7px;margin-top:8px}.hrow button{flex:1;border:1px solid #ded5ca;background:#fff;border-radius:10px;padding:8px;font-size:11px}.copy{margin-top:10px;width:100%;border:0;border-radius:11px;padding:10px;background:#8b6f47;color:white;font-weight:700}.note{margin-top:15px;font-size:11px;line-height:1.55;color:#81786e}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="head"><div class="title">TCG MAP · 인포크 좌표 테스트</div><div class="sub">새 홈의 방문기 / 링크 모음, 새 리뷰 화면의 방문기 전체 영역을 각각 맞추기 위한 전용 테스트 페이지입니다. 기존 TCG MAP 화면은 수정하지 않았습니다.</div></header>
+<div id="panels"></div>
+<p class="note">각 영역에서 ▲/▼ 버튼으로 인포크 화면의 Y 좌표를 움직이고, 높이 버튼으로 잘라낼 영역의 높이를 조절하세요. 맞는 값이 나오면 “설정값 복사”를 눌러 보내주면 그대로 신규 홈/리뷰 화면에 적용할 수 있습니다.</p>
+</main>
+<script>
+const SRC='https://link.inpock.co.kr/ffunnyggang';
+const defs=[
+ {id:'homeVisit',title:'홈 · 깽퐌커플 방문기',desc:'홈에서 일부 방문기만 노출할 영역',y:-500,h:300},
+ {id:'homeLinks',title:'홈 · 링크 모음',desc:'블로그 / 인스타 / 유튜브 / 틱톡 링크 모음 영역',y:-1000,h:240},
+ {id:'reviewAll',title:'리뷰 · 방문기 전체',desc:'리뷰 화면에서 방문기 콘텐츠를 길게 노출할 영역',y:-500,h:620}
+];
+const root=document.getElementById('panels');
+root.innerHTML=defs.map(d=>`<section class="panel" data-id="${d.id}" data-y="${d.y}" data-h="${d.h}"><h2>${d.title}</h2><p class="desc">${d.desc}</p><div class="crop" style="height:${d.h}px"><iframe src="${SRC}" title="${d.title}" style="--y:${d.y}px" loading="eager"></iframe></div><div class="controls"><button data-move="-200">▲ 200</button><button data-move="-50">▲ 50</button><button data-move="50">▼ 50</button><button data-move="200">▼ 200</button></div><div class="hrow"><button data-height="-100">높이 -100</button><button data-height="100">높이 +100</button></div><div class="readout"><span>현재 설정</span><span class="value">Y ${d.y}px · H ${d.h}px</span></div><button class="copy" data-copy>설정값 복사</button></section>`).join('');
+function sync(panel){const y=Number(panel.dataset.y),h=Number(panel.dataset.h);panel.querySelector('iframe').style.setProperty('--y',y+'px');panel.querySelector('.crop').style.height=h+'px';panel.querySelector('.value').textContent=`Y ${y}px · H ${h}px`;}
+root.addEventListener('click',async e=>{const panel=e.target.closest('.panel');if(!panel)return;if(e.target.dataset.move){panel.dataset.y=String(Number(panel.dataset.y)+Number(e.target.dataset.move));sync(panel)}if(e.target.dataset.height){panel.dataset.h=String(Math.max(120,Number(panel.dataset.h)+Number(e.target.dataset.height)));sync(panel)}if(e.target.matches('[data-copy]')){const txt=`${panel.dataset.id}: Y ${panel.dataset.y}px / H ${panel.dataset.h}px`;try{await navigator.clipboard.writeText(txt);e.target.textContent='복사 완료';setTimeout(()=>e.target.textContent='설정값 복사',900)}catch{prompt('아래 값을 복사해주세요',txt)}}});
+</script>
+</body>
+</html>

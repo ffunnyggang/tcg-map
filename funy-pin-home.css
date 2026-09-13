@@ -1,0 +1,31 @@
+/* FUNY PIN home refinements */
+.portal-header{height:68px;padding:0 20px}
+.portal-brand{gap:8px}
+.portal-brand strong{font-size:24px;letter-spacing:-.025em}
+.portal-brand .portal-by{font-size:11.5px}
+.portal-logo{width:34px;height:38px}
+.portal-logo svg{width:34px;height:38px}
+.portal-beta{height:22px;padding:0 9px;font-size:9.5px!important}
+
+.portal-hero-concept{padding-top:28px}
+.hero-eyebrow{margin-bottom:7px}
+.portal-hero-concept h1{margin-top:0}
+
+/* cleaner, more premium map visual */
+.hero-map-art{right:-8px;top:4px;width:50%;height:92%;opacity:.88}
+.map-grid{opacity:.62;filter:blur(.1px)}
+.hero-ripple{right:38px;top:92px;width:96px;height:96px;background:radial-gradient(circle,rgba(117,87,200,.12) 0 17%,transparent 18% 34%,rgba(117,87,200,.08) 35% 48%,transparent 49%);filter:blur(.2px)}
+.hero-pin-a{right:70px;top:79px;width:38px;height:38px;border-radius:50% 50% 50% 0;background:linear-gradient(145deg,#a98cf1 0%,#8062d8 48%,#6749bd 100%);box-shadow:0 8px 18px rgba(91,64,164,.18);}
+.hero-pin-a:before{content:"";position:absolute;left:1px;right:1px;top:17px;height:2px;background:rgba(255,255,255,.95);transform:rotate(45deg);transform-origin:center;z-index:2}
+.hero-pin-a:after{width:10px;height:10px;left:12px;top:12px;background:linear-gradient(145deg,#fff,#eee9fb);box-shadow:0 1px 4px rgba(72,53,118,.16)}
+.hero-pin-b,.hero-pin-c{opacity:.72;box-shadow:0 4px 10px rgba(98,70,174,.12)}
+
+@media(max-width:430px){
+  .portal-header{height:66px;padding:0 18px}
+  .portal-brand strong{font-size:23px}
+  .portal-brand .portal-by{font-size:11px}
+  .portal-logo{width:33px;height:37px}
+  .portal-logo svg{width:33px;height:37px}
+  .portal-hero-concept{padding-top:27px}
+  .hero-eyebrow{margin-bottom:6px}
+}

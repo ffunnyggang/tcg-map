@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620">
+<defs>
+ <linearGradient id="p" x1="420" y1="220" x2="520" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#a88af2"/><stop offset=".52" stop-color="#8061df"/><stop offset="1" stop-color="#6546c7"/></linearGradient>
+ <radialGradient id="b" cx="35%" cy="25%" r="80%"><stop stop-color="#fff"/><stop offset="1" stop-color="#eee9fb"/></radialGradient>
+ <filter id="s" x="-50%" y="-50%" width="200%" height="220%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#7655d2" flood-opacity=".18"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation=".6"/></filter>
+</defs>
+<g fill="none" stroke="#8062dd" opacity=".055">
+ <ellipse cx="505" cy="390" rx="150" ry="66" stroke-width="18"/><ellipse cx="505" cy="390" rx="235" ry="112" stroke-width="17"/><ellipse cx="505" cy="390" rx="330" ry="166" stroke-width="16"/><ellipse cx="505" cy="390" rx="420" ry="222" stroke-width="15"/>
+</g>
+<g opacity=".32" filter="url(#soft)"><circle cx="215" cy="170" r="56" fill="#fff" fill-opacity=".56"/><path d="M185 164h60v43h-60zm-8 0 10-18h56l10 18M202 164v43m27-43v43" stroke="#866ce3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+<g opacity=".22" filter="url(#soft)"><circle cx="730" cy="130" r="56" fill="#fff" fill-opacity=".56"/><path d="M700 112h61v45h-38l-23 16v-61z" stroke="#866ce3" stroke-width="7" stroke-linejoin="round" fill="none"/><circle cx="716" cy="134" r="4" fill="#866ce3"/><circle cx="731" cy="134" r="4" fill="#866ce3"/><circle cx="746" cy="134" r="4" fill="#866ce3"/></g>
+<g opacity=".16" filter="url(#soft)"><circle cx="730" cy="455" r="58" fill="#fff" fill-opacity=".6"/><path d="m730 419 12 25 28 4-20 20 5 28-25-13-25 13 5-28-20-20 28-4z" fill="#866ce3"/></g>
+<circle cx="590" cy="72" r="9" fill="#8d73e8" opacity=".18"/><circle cx="645" cy="225" r="7" fill="#8d73e8" opacity=".12"/><circle cx="160" cy="360" r="9" fill="#8d73e8" opacity=".17"/><circle cx="335" cy="555" r="7" fill="#8d73e8" opacity=".11"/>
+<g filter="url(#s)"><ellipse cx="505" cy="430" rx="82" ry="25" fill="#7958d4" opacity=".10"/><path d="M505 205c-68 0-123 55-123 123 0 92 123 219 123 219s123-127 123-219c0-68-55-123-123-123z" fill="url(#p)"/><path d="M389 328h77m78 0h77" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="505" cy="328" r="39" fill="url(#b)"/></g>
+</svg>

@@ -1,89 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 420" fill="none">
   <defs>
-    <linearGradient id="pinGrad" x1="304" y1="118" x2="360" y2="252" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#B597F7"/>
-      <stop offset=".48" stop-color="#8162DE"/>
-      <stop offset="1" stop-color="#6547C5"/>
+    <linearGradient id="pinGrad" x1="375" y1="128" x2="452" y2="306" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B99CF8"/>
+      <stop offset=".46" stop-color="#8666E0"/>
+      <stop offset="1" stop-color="#6546C5"/>
     </linearGradient>
-    <linearGradient id="pinShade" x1="320" y1="140" x2="360" y2="254" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" stop-opacity=".18"/>
-      <stop offset="1" stop-color="#4D319C" stop-opacity=".18"/>
+    <linearGradient id="pinShade" x1="398" y1="138" x2="452" y2="304" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#43278F" stop-opacity=".16"/>
     </linearGradient>
-    <radialGradient id="buttonGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(333 164) rotate(49) scale(39)">
+    <radialGradient id="buttonGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(418 190) rotate(50) scale(42)">
       <stop stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#EAE5FA"/>
+      <stop offset="1" stop-color="#E8E2FA"/>
     </radialGradient>
-    <linearGradient id="mapFill" x1="213" y1="226" x2="456" y2="318" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8F5FF" stop-opacity=".98"/>
-      <stop offset="1" stop-color="#EDE7FB" stop-opacity=".86"/>
+    <linearGradient id="mapFill" x1="190" y1="270" x2="600" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF9FF"/>
+      <stop offset="1" stop-color="#EEE8FC"/>
     </linearGradient>
-    <linearGradient id="cardFill" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#A98AF2"/>
-      <stop offset="1" stop-color="#6D4BCB"/>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#A98BF4"/>
+      <stop offset="1" stop-color="#6E4BCB"/>
     </linearGradient>
-    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="12" stdDeviation="11" flood-color="#5E42B3" flood-opacity=".18"/>
-    </filter>
-    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#6A52B4" flood-opacity=".11"/>
-    </filter>
-    <filter id="blur"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#5F43B4" flood-opacity=".20"/></filter>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#7359C4" flood-opacity=".10"/></filter>
+    <filter id="blur"><feGaussianBlur stdDeviation="7"/></filter>
   </defs>
 
-  <ellipse cx="350" cy="303" rx="126" ry="27" fill="#8062D8" fill-opacity=".08" filter="url(#blur)"/>
+  <!-- soft ground -->
+  <ellipse cx="423" cy="347" rx="146" ry="25" fill="#8061D8" fill-opacity=".075" filter="url(#blur)"/>
 
   <!-- isometric map plate -->
-  <g filter="url(#softShadow)">
-    <path d="M191 240 347 184 480 248 326 319 191 240Z" fill="url(#mapFill)" stroke="#FFFFFF" stroke-opacity=".9"/>
-    <path d="m211 244 139-49M238 260l139-51M270 276l136-53M306 292l132-55" stroke="#D7CCF1" stroke-opacity=".72" stroke-width="4" stroke-linecap="round"/>
-    <path d="m234 224 114 75M274 209l112 74M315 195l110 72M359 192l93 61" stroke="#E0D7F4" stroke-opacity=".78" stroke-width="4" stroke-linecap="round"/>
-    <path d="M295 221 323 210 350 223 321 236 295 221Z" fill="#E3F0E9" fill-opacity=".78"/>
-    <path d="M393 252 423 240 448 252 418 266 393 252Z" fill="#E6F0E7" fill-opacity=".7"/>
-    <path d="M225 258 251 248 273 260 247 272 225 258Z" fill="#E8EDF8"/>
+  <g filter="url(#soft)">
+    <path d="M160 288 394 218 602 303 370 395 160 288Z" fill="url(#mapFill)" stroke="#FFFFFF" stroke-width="2"/>
+    <path d="m188 292 211-64M221 309l211-65M259 328l208-66M300 349l203-67M343 370l193-67" stroke="#DCD2F4" stroke-width="5" stroke-linecap="round" stroke-opacity=".82"/>
+    <path d="m215 270 164 104M270 253l162 104M327 236l158 101M385 225l151 92M441 238l116 76" stroke="#E4DCF7" stroke-width="5" stroke-linecap="round" stroke-opacity=".84"/>
+    <path d="M278 286 312 276 340 291 306 304 278 286Z" fill="#E3F0E9"/>
+    <path d="M467 314 503 301 533 314 496 329 467 314Z" fill="#E6F1EA"/>
+    <path d="M220 318 250 308 276 321 245 333 220 318Z" fill="#E7ECF8"/>
   </g>
 
-  <!-- small secondary pin -->
-  <g transform="translate(438 222) scale(.43)" filter="url(#softShadow)">
-    <path d="M0 0c-23 0-42 19-42 42 0 31 42 72 42 72s42-41 42-72C42 19 23 0 0 0Z" fill="#8B6BE3"/>
-    <path d="M-40 42h26M14 42h26" stroke="#fff" stroke-width="4"/>
-    <circle cy="42" r="13" fill="#fff"/>
-  </g>
-
-  <!-- main pin -->
-  <g filter="url(#shadow)">
-    <ellipse cx="333" cy="280" rx="39" ry="11" fill="#6E51C7" fill-opacity=".13"/>
-    <path d="M333 103c-37 0-67 30-67 67 0 50 67 116 67 116s67-66 67-116c0-37-30-67-67-67Z" fill="url(#pinGrad)"/>
-    <path d="M333 103c-37 0-67 30-67 67 0 50 67 116 67 116s67-66 67-116c0-37-30-67-67-67Z" fill="url(#pinShade)"/>
-    <ellipse cx="309" cy="132" rx="18" ry="8" transform="rotate(-27 309 132)" fill="#fff" fill-opacity=".18"/>
-    <path d="M269 169h40M357 169h40" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="333" cy="169" r="24" fill="url(#buttonGrad)"/>
-    <circle cx="333" cy="169" r="15" stroke="#fff" stroke-opacity=".55"/>
+  <!-- floating review bubble -->
+  <g transform="translate(442 74)" filter="url(#soft)">
+    <rect width="116" height="58" rx="19" fill="#FFFFFF" fill-opacity=".88" stroke="#EEE9FA"/>
+    <path d="M24 35 28 27l4 8 9 1-6.5 6.3L36 51l-8-4.3L20 51l1.5-8.7L15 36l9-1Zm29 0 4-8 4 8 9 1-6.5 6.3L65 51l-8-4.3L49 51l1.5-8.7L44 36l9-1Zm29 0 4-8 4 8 9 1-6.5 6.3L94 51l-8-4.3L78 51l1.5-8.7L73 36l9-1Z" fill="#9271E7"/>
   </g>
 
   <!-- floating card -->
-  <g transform="translate(218 104) rotate(-10)" filter="url(#softShadow)">
-    <rect width="61" height="84" rx="13" fill="url(#cardFill)"/>
-    <rect x="6" y="6" width="49" height="72" rx="9" stroke="#fff" stroke-opacity=".33"/>
-    <circle cx="31" cy="41" r="11" fill="#fff" fill-opacity=".95"/>
-    <path d="M8 41h12M42 41h11" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="31" cy="41" r="5" fill="#8365DD"/>
+  <g transform="translate(282 128) rotate(-10 35 48)" filter="url(#soft)">
+    <rect width="70" height="96" rx="14" fill="url(#cardGrad)"/>
+    <rect x="7" y="7" width="56" height="82" rx="10" stroke="#FFFFFF" stroke-opacity=".35"/>
+    <circle cx="35" cy="48" r="13" fill="#FFFFFF"/>
+    <path d="M10 48h13M47 48h13" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="35" cy="48" r="5.8" fill="#8666DE"/>
   </g>
 
-  <!-- store badge -->
-  <g transform="translate(410 111)" filter="url(#softShadow)">
-    <rect width="76" height="68" rx="20" fill="#fff" fill-opacity=".82" stroke="#fff"/>
-    <path d="M21 31h34v23H21V31Zm-4 0 6-13h30l7 13M31 31v23M45 31v23" stroke="#7E61D6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- card shop bubble -->
+  <g transform="translate(503 153)" filter="url(#soft)">
+    <rect width="90" height="78" rx="22" fill="#FFFFFF" fill-opacity=".88" stroke="#EEE9FA"/>
+    <path d="M25 37h40v26H25V37Zm-5 0 7-15h36l8 15M36 37v26M53 37v26" stroke="#8061D8" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 
-  <!-- review badge -->
-  <g transform="translate(376 61)" filter="url(#softShadow)">
-    <rect width="94" height="47" rx="17" fill="#fff" fill-opacity=".82" stroke="#fff"/>
-    <path d="m18 24 3-6 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Zm24 0 3-6 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Zm24 0 3-6 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#8C6CE3"/>
+  <!-- main 3D pin -->
+  <g filter="url(#shadow)">
+    <ellipse cx="418" cy="325" rx="42" ry="11" fill="#674AC4" fill-opacity=".13"/>
+    <path d="M418 112c-40 0-73 33-73 73 0 55 73 128 73 128s73-73 73-128c0-40-33-73-73-73Z" fill="url(#pinGrad)"/>
+    <path d="M418 112c-40 0-73 33-73 73 0 55 73 128 73 128s73-73 73-128c0-40-33-73-73-73Z" fill="url(#pinShade)"/>
+    <ellipse cx="390" cy="145" rx="20" ry="9" transform="rotate(-27 390 145)" fill="#FFFFFF" fill-opacity=".18"/>
+    <path d="M348 187h44M444 187h44" stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round"/>
+    <circle cx="418" cy="187" r="26" fill="url(#buttonGrad)"/>
+    <circle cx="418" cy="187" r="16" stroke="#FFFFFF" stroke-opacity=".55"/>
   </g>
 
-  <!-- sparkles -->
-  <path d="M457 196c0 8-4 12-12 12 8 0 12 4 12 12 0-8 4-12 12-12-8 0-12-4-12-12Z" fill="#8D6DE4" fill-opacity=".42"/>
-  <path d="M233 79c0 6-3 9-9 9 6 0 9 3 9 9 0-6 3-9 9-9-6 0-9-3-9-9Z" fill="#9A7BE9" fill-opacity=".35"/>
-  <circle cx="479" cy="150" r="4" fill="#9D80EA" fill-opacity=".3"/>
-  <circle cx="204" cy="183" r="5" fill="#8A6BE0" fill-opacity=".24"/>
+  <!-- small accents -->
+  <path d="M546 255c0 8-4 12-12 12 8 0 12 4 12 12 0-8 4-12 12-12-8 0-12-4-12-12Z" fill="#9474E8" fill-opacity=".36"/>
+  <path d="M258 110c0 6-3 9-9 9 6 0 9 3 9 9 0-6 3-9 9-9-6 0-9-3-9-9Z" fill="#9B7CEB" fill-opacity=".32"/>
+  <circle cx="573" cy="137" r="4" fill="#9D80EA" fill-opacity=".28"/>
 </svg>

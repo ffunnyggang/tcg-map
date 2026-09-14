@@ -1,14 +1,20 @@
 /* FUNY PIN current-location control */
-.map-location-control{position:absolute;top:126px;right:14px;z-index:24;pointer-events:auto}
+.map-location-control{position:absolute;right:14px;bottom:18px;z-index:24;pointer-events:auto;transition:top .32s cubic-bezier(.22,.8,.24,1),bottom .32s cubic-bezier(.22,.8,.24,1),opacity .2s ease}
 .map-location-btn{display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:1px solid rgba(255,255,255,.9);border-radius:15px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 7px 22px rgba(34,29,44,.14),inset 0 1px 0 rgba(255,255,255,.96);color:#6753a1;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .map-location-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .map-location-btn:active{transform:scale(.96)}
 .map-location-btn.is-loading svg{animation:funy-location-spin .9s linear infinite}
 .map-location-btn.is-active{color:#fff;background:linear-gradient(135deg,rgba(141,108,240,.94),rgba(103,72,213,.94));border-color:rgba(255,255,255,.5);box-shadow:0 8px 22px rgba(91,62,197,.25),inset 0 1px 0 rgba(255,255,255,.26)}
-.map-location-toast{position:absolute;top:178px;right:14px;z-index:25;max-width:230px;padding:9px 12px;border:1px solid rgba(255,255,255,.88);border-radius:12px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(18px) saturate(145%);backdrop-filter:blur(18px) saturate(145%);box-shadow:0 6px 18px rgba(34,29,44,.13);color:#5f5868;font-size:11px;font-weight:650;line-height:1.35;pointer-events:none}
+.map-location-toast{position:absolute;right:14px;bottom:70px;z-index:25;max-width:230px;padding:9px 12px;border:1px solid rgba(255,255,255,.88);border-radius:12px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(18px) saturate(145%);backdrop-filter:blur(18px) saturate(145%);box-shadow:0 6px 18px rgba(34,29,44,.13);color:#5f5868;font-size:11px;font-weight:650;line-height:1.35;pointer-events:none;transition:top .32s cubic-bezier(.22,.8,.24,1),bottom .32s cubic-bezier(.22,.8,.24,1)}
 .funy-current-location{position:relative;width:26px;height:26px}
 .funy-current-location:before{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(70,129,255,.18);animation:funy-location-pulse 1.8s ease-out infinite}
 .funy-current-location:after{content:"";position:absolute;left:7px;top:7px;width:12px;height:12px;border:3px solid #fff;border-radius:50%;box-sizing:border-box;background:#4285f4;box-shadow:0 2px 8px rgba(42,93,190,.34)}
 @keyframes funy-location-pulse{0%{transform:scale(.55);opacity:.9}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
 @keyframes funy-location-spin{to{transform:rotate(360deg)}}
-@media(max-width:430px){.map-location-control{top:116px;right:12px}.map-location-btn{width:42px;height:42px;border-radius:14px}.map-location-toast{top:166px;right:12px;max-width:210px;font-size:10.8px}.map-sheet-open .map-location-control{opacity:.92}}
+@media(max-width:430px){
+  .map-location-control{right:12px;bottom:auto;top:calc(var(--map-sheet-top, 50dvh) - 54px)}
+  .map-location-btn{width:42px;height:42px;border-radius:14px}
+  .map-location-toast{right:12px;bottom:auto;top:calc(var(--map-sheet-top, 50dvh) - 96px);max-width:210px;font-size:10.8px}
+  .map-shop-sheet[style*="transition: none"]~* .map-location-control{transition:none}
+  .map-sheet-open .map-location-control{opacity:.9}
+}

@@ -12,9 +12,9 @@
 @keyframes funy-location-pulse{0%{transform:scale(.55);opacity:.9}70%{transform:scale(1.35);opacity:0}100%{transform:scale(1.35);opacity:0}}
 @keyframes funy-location-spin{to{transform:rotate(360deg)}}
 @media(max-width:430px){
-  .map-location-control{right:12px;bottom:auto;top:calc(var(--map-sheet-top, 50dvh) - 54px)}
+  .map-location-control{right:12px;bottom:auto;top:max(calc(var(--map-sheet-top, 50dvh) - 54px),calc(var(--map-sheet-half-top, 50dvh) - 54px))}
   .map-location-btn{width:42px;height:42px;border-radius:14px}
-  .map-location-toast{right:12px;bottom:auto;top:calc(var(--map-sheet-top, 50dvh) - 96px);max-width:210px;font-size:10.8px}
+  .map-location-toast{right:12px;bottom:auto;top:max(calc(var(--map-sheet-top, 50dvh) - 96px),calc(var(--map-sheet-half-top, 50dvh) - 96px));max-width:210px;font-size:10.8px}
   .map-shop-sheet[style*="transition: none"]~* .map-location-control{transition:none}
   .map-sheet-open .map-location-control{opacity:.9}
 }

@@ -1,0 +1,19 @@
+/* FUNY PIN map UX v1: selected marker + popup hierarchy only */
+.funy-map-marker{position:relative;width:30px;height:34px;transform-origin:50% 100%;transition:transform .18s cubic-bezier(.2,.75,.25,1),filter .18s ease;filter:drop-shadow(0 5px 9px rgba(73,49,151,.24));will-change:transform}
+.funy-map-marker-core{position:absolute;left:50%;top:0;width:26px;height:26px;transform:translateX(-50%) rotate(45deg);border-radius:50% 50% 50% 8px;background:linear-gradient(135deg,#8f70f1 0%,#6949d5 100%);border:3px solid #fff;box-shadow:0 4px 11px rgba(72,48,155,.28),inset 0 1px 0 rgba(255,255,255,.35)}
+.funy-map-marker-dot{position:absolute;left:50%;top:50%;width:7px;height:7px;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.22)}
+.funy-map-marker.is-selected{transform:scale(1.18) translateY(-2px);filter:drop-shadow(0 9px 15px rgba(73,49,151,.36))}
+.funy-map-marker.is-selected .funy-map-marker-core{background:linear-gradient(135deg,#9c7cff 0%,#5f3fc8 100%);box-shadow:0 7px 18px rgba(69,43,153,.38),inset 0 1px 0 rgba(255,255,255,.42)}
+.funy-map-marker.is-selected:after{content:"";position:absolute;left:50%;bottom:-3px;width:34px;height:12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(92,62,180,.22),rgba(92,62,180,0) 70%);animation:funy-pin-pulse .8s ease-out 1}
+@keyframes funy-pin-pulse{0%{opacity:0;transform:translateX(-50%) scale(.55)}45%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1.25)}}
+.map-popup-title-row{display:flex;align-items:center;gap:7px;min-width:0;margin-bottom:1px}
+.map-popup-title-row strong{flex:1;min-width:0;margin-bottom:0!important}
+.map-popup-status{flex:0 0 auto;display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:-.01em;background:#f1eef5;color:#80758c}
+.map-popup-status.is-open{background:#eef8f2;color:#318153}
+.map-popup-status.is-closed{background:#f3f0f6;color:#82788c}
+.map-popup-badges{display:flex;gap:4px;margin-top:7px;min-width:0;overflow:hidden}
+.map-popup-badges>span{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;background:#f4f0fb;color:#6d5a93;font-size:9.5px;font-weight:760;white-space:nowrap}
+.map-popup-bubble .map-shop-popup{transition:transform .16s ease,box-shadow .16s ease}
+.map-popup-bubble .map-shop-popup:active{transform:scale(.985)}
+@media(max-width:430px){.funy-map-marker{width:28px;height:32px}.funy-map-marker-core{width:24px;height:24px}.funy-map-marker-dot{width:6px;height:6px}.map-popup-title-row{gap:5px}.map-popup-status{height:19px;padding:0 6px;font-size:9px}.map-popup-badges{margin-top:6px}.map-popup-badges>span{height:19px;padding:0 6px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.funy-map-marker,.map-popup-bubble .map-shop-popup{transition:none}.funy-map-marker.is-selected:after{animation:none;display:none}}

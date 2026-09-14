@@ -10,6 +10,13 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M8.5 6.5 12 3l3.5 3.5"/><path d="M6 10H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1"/></svg>';
   }
 
+  function visitDateHTML(s){
+    if(!s.verified)return'';
+    const m=String(s.verified).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const date=m?`${m[1]}. ${m[2]}. ${m[3]}`:String(s.verified);
+    return `<div class="analysis-visit-date"><span class="analysis-visit-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"/><path d="m8.5 15 2 2 4.5-4.5"/></svg></span><span>매장 방문일 ${esc(date)}</span></div>`;
+  }
+
   actionsHTML = function(s){
     const a=[];
     if(s.naver)a.push([s.naver,'naver','네이버지도']);
@@ -107,7 +114,7 @@
 
   detailHTML = function(s){
     const rv=REVIEWS[s.id],tags=tagList(s).slice(0,8);
-    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div></div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>${otherShopsFabHTML()}`;
+    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div>${visitDateHTML(s)}</div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>${otherShopsFabHTML()}`;
   };
 
   function bindAnalysisMotion(){

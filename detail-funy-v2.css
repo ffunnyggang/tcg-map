@@ -74,9 +74,9 @@
 #detail-view .detail-sticky{background:rgba(251,250,255,.94);border-bottom:1px solid var(--fp-border)}
 #detail-view .other-shops-fab-wrap{position:fixed;left:0;right:0;bottom:max(16px,calc(env(safe-area-inset-bottom) + 10px));z-index:45;display:flex;justify-content:center;padding:0 18px;pointer-events:none;opacity:1;transform:translateY(0);transition:opacity .24s ease,transform .34s cubic-bezier(.22,.8,.22,1)}
 #detail-view .other-shops-fab-wrap.is-hidden{opacity:0;transform:translateY(20px)}
-#detail-view .other-shops-fab{pointer-events:auto;min-height:50px;width:min(100%,360px);border:0;border-radius:999px;padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#957be3 0%,#8062d8 55%,#6749bd 100%);color:#fff;font:inherit;font-size:13px;font-weight:760;letter-spacing:-.02em;box-shadow:0 10px 28px rgba(103,73,189,.28);-webkit-tap-highlight-color:transparent}
+#detail-view .other-shops-fab{pointer-events:auto;min-height:40px;width:min(80%,288px);border:0;border-radius:999px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,rgba(149,123,227,.9) 0%,rgba(128,98,216,.9) 55%,rgba(103,73,189,.9) 100%);color:#fff;font:inherit;font-size:11px;font-weight:760;letter-spacing:-.02em;box-shadow:0 8px 22px rgba(103,73,189,.22);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);-webkit-tap-highlight-color:transparent}
 #detail-view .other-shops-fab:active{transform:scale(.985)}
-#detail-view .other-shops-fab-icon{display:inline-grid;width:18px;height:18px}
-#detail-view .other-shops-fab-icon svg{width:18px;height:18px;stroke-width:1.9}
+#detail-view .other-shops-fab-icon{display:inline-grid;width:14px;height:14px}
+#detail-view .other-shops-fab-icon svg{width:14px;height:14px;stroke-width:1.9}
 @media(max-width:430px){#detail-view .analysis-grid{grid-template-columns:1fr 1.12fr;gap:8px}#detail-view .analysis-card{padding:12px 10px}#detail-view .comp-card{padding-left:10px}#detail-view .radar-label{font-size:17px!important}#detail-view .bar-label{font-size:10.5px!important}#detail-view .bar-row,#detail-view .tcg-line{grid-template-columns:49px minmax(0,1fr);gap:7px}}
 @media(prefers-reduced-motion:reduce){#detail-view .radar-poly{transform:scale(1);opacity:1!important;animation:none!important}#detail-view .bar-fill{transition:none!important;width:var(--bar-width)!important}#detail-view .other-shops-fab-wrap{transition:none!important}}

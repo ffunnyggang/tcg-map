@@ -88,13 +88,21 @@
     return '현재 위치를 확인하지 못했습니다.';
   }
 
+  function emitLocationError(message,error){
+    window.dispatchEvent(new CustomEvent('funy:locationerror',{detail:{message,error:error||null}}));
+  }
+
   function locateMe(){
     if(!navigator.geolocation){
-      showToast('이 브라우저에서는 위치 기능을 지원하지 않습니다.');
+      const message='이 브라우저에서는 위치 기능을 지원하지 않습니다.';
+      showToast(message);
+      emitLocationError(message);
       return;
     }
     if(!ready()){
-      showToast('지도를 불러온 뒤 다시 시도해주세요.');
+      const message='지도를 불러온 뒤 다시 시도해주세요.';
+      showToast(message);
+      emitLocationError(message);
       return;
     }
     setLoading(true);
@@ -102,12 +110,17 @@
       position=>{
         setLoading(false);
         const {latitude,longitude,accuracy}=position.coords;
-        updateLocation(latitude,longitude,accuracy);
+        const current={lat:Number(latitude),lng:Number(longitude),accuracy:Number(accuracy)||0,ts:Date.now()};
+        window.FUNY_CURRENT_LOCATION=current;
+        updateLocation(current.lat,current.lng,current.accuracy);
+        window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:current}));
         showToast('현재 위치를 지도에 표시했습니다.');
       },
       error=>{
         setLoading(false);
-        showToast(errorMessage(error));
+        const message=errorMessage(error);
+        showToast(message);
+        emitLocationError(message,error);
       },
       {enableHighAccuracy:true,timeout:10000,maximumAge:15000}
     );

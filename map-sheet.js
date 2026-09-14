@@ -42,6 +42,7 @@
   }
 
   function fitMapToVisibleArea(){
+    if(document.body.classList.contains('country-japan'))return;
     if(!mq()||mode==='full')return;
     try{
       if(!(window.naver&&naver.maps)||!naverMap||!markerById||!SHOPS)return;

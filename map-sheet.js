@@ -18,6 +18,15 @@
   let mode='half',startY=0,startTop=0,dragging=false,mapPointerDown=false,mapStartX=0,mapStartY=0,
     touchStartY=0,touchStartX=0,touchTracking=false,touchConsumed=false;
 
+  function syncSheetTop(top){
+    if(!mq()){
+      mapWrap.style.removeProperty('--map-sheet-top');
+      return;
+    }
+    const value=Number.isFinite(Number(top))?Number(top):(parseFloat(sheet.style.top)||tops()[mode]);
+    mapWrap.style.setProperty('--map-sheet-top',value+'px');
+  }
+
   function tops(){
     const vh=window.innerHeight;
     const filter=document.querySelector('.map-filter-bar');
@@ -66,6 +75,7 @@
     const t=tops()[next];
     sheet.style.transition=animate?'top .32s cubic-bezier(.22,.8,.24,1)':'none';
     sheet.style.top=t+'px';
+    syncSheetTop(t);
     sheet.dataset.sheet=next;
     document.body.classList.toggle('map-sheet-open',next==='full');
     if(next!=='full')sheet.scrollTop=0;
@@ -92,7 +102,9 @@
   function move(e){
     if(!dragging)return;
     const y=e.touches?e.touches[0].clientY:e.clientY,dy=y-startY,t=tops();
-    sheet.style.top=Math.max(t.full,Math.min(t.quarter,startTop+dy))+'px';
+    const nextTop=Math.max(t.full,Math.min(t.quarter,startTop+dy));
+    sheet.style.top=nextTop+'px';
+    syncSheetTop(nextTop);
     e.preventDefault?.();
   }
 
@@ -110,7 +122,7 @@
   window.addEventListener('resize',()=>{setMode(mode,false);if(mode==='half')queueMapFit()});
 
   if(mq())setMode('half',false);
-  else{sheet.style.top='';sheet.style.transition=''}
+  else{sheet.style.top='';sheet.style.transition='';syncSheetTop()}
 
   /* Geocoding finishes asynchronously. Re-fit once every shop marker exists so
      the app's final full-map fit cannot leave pins hidden behind the half sheet. */

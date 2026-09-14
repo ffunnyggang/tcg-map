@@ -169,6 +169,7 @@
   mapWrap.addEventListener('click',e=>{
     if(e.target.closest('.map-filter-bar'))return;
     if(e.target.closest('.map-sheet-handle'))return;
+    if(e.target.closest('.map-location-control'))return;
     collapseForMap();
   },true);
 

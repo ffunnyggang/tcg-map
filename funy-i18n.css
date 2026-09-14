@@ -1,6 +1,6 @@
 /* FUNY PIN global language switch */
-.funy-lang-switch{position:fixed;top:max(12px,env(safe-area-inset-top));right:14px;z-index:120;display:none;align-items:center;padding:3px;border:1px solid rgba(116,99,153,.18);border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 4px 14px rgba(54,42,78,.09);-webkit-backdrop-filter:blur(16px) saturate(145%);backdrop-filter:blur(16px) saturate(145%)}
-body.funy-lang-home .funy-lang-switch{display:flex}
+.funy-lang-switch{position:fixed;top:max(12px,env(safe-area-inset-top));right:14px;z-index:120;display:none!important;align-items:center;padding:3px;border:1px solid rgba(116,99,153,.18);border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 4px 14px rgba(54,42,78,.09);-webkit-backdrop-filter:blur(16px) saturate(145%);backdrop-filter:blur(16px) saturate(145%)}
+body.funy-lang-home .funy-lang-switch{display:none!important}
 .funy-lang-switch button{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#8a8493;height:27px;min-width:38px;padding:0 9px;border-radius:999px;font:700 10px/1 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.02em;cursor:pointer}
 .funy-lang-switch button[aria-pressed="true"]{background:#7860c7;color:#fff;box-shadow:0 2px 7px rgba(100,73,185,.24)}
 @media(max-width:430px){.funy-lang-switch{top:max(10px,env(safe-area-inset-top));right:10px}.funy-lang-switch button{height:26px;min-width:35px;padding:0 8px;font-size:9.5px}}

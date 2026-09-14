@@ -1,8 +1,8 @@
 /* FUNY PIN map country selector */
 (function(){
   function loadGlobalI18n(){
-    if(!document.querySelector('link[data-funy-i18n]')){const l=document.createElement('link');l.rel='stylesheet';l.href='funy-i18n.css?v=20260915-0505';l.dataset.funyI18n='';document.head.appendChild(l)}
-    if(!document.querySelector('script[data-funy-i18n]')){const s=document.createElement('script');s.src='funy-i18n.js?v=20260915-0505';s.defer=true;s.dataset.funyI18n='';document.head.appendChild(s)}
+    if(!document.querySelector('link[data-funy-i18n]')){const l=document.createElement('link');l.rel='stylesheet';l.href='funy-i18n.css?v=20260915-0523';l.dataset.funyI18n='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-funy-i18n]')){const s=document.createElement('script');s.src='funy-i18n.js?v=20260915-0523';s.dataset.funyI18n='';document.head.appendChild(s)}
   }
   loadGlobalI18n();
 

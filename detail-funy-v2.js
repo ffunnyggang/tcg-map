@@ -4,6 +4,10 @@
     return '<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="fpNaverPin" x1="8" y1="4" x2="24" y2="27" gradientUnits="userSpaceOnUse"><stop stop-color="#9b82e6"/><stop offset=".55" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient></defs><path d="M16 2.6A10 10 0 0 0 6 12.6c0 7.1 10 16.8 10 16.8s10-9.7 10-16.8A10 10 0 0 0 16 2.6Z" fill="url(#fpNaverPin)"/><path d="M11 9.2h3.2l3.6 5.4V9.2H21v11.5h-3.1l-3.7-5.4v5.4H11Z" fill="#fff"/></svg>';
   }
 
+  function shareIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M8.5 6.5 12 3l3.5 3.5"/><path d="M6 10H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1"/></svg>';
+  }
+
   actionsHTML = function(s){
     const a=[];
     if(s.naver)a.push([s.naver,'naver','네이버지도']);
@@ -39,7 +43,7 @@
 
   detailHTML = function(s){
     const rv=REVIEWS[s.id],tags=tagList(s).slice(0,8);
-    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${icon('share')}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div></div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>`;
+    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div></div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>`;
   };
 
   function bindAnalysisMotion(){
@@ -50,12 +54,12 @@
     obs.observe(card);
   }
 
-  const originalOpenDetail = openDetail;
   openDetail = function(id){
     const s=SHOPS.find(x=>x.id===id);if(!s)return;
     state.current=id;
     $('#home-view').hidden=true;$('#detail-view').hidden=false;
     $('#detail').innerHTML=detailHTML(s);$('#sticky-name').textContent=s.name;
+    const stickyShare=document.querySelector('#detail-sticky .share-btn');if(stickyShare)stickyShare.innerHTML=shareIcon();
     window.scrollTo(0,0);
     setTimeout(()=>{bindDetail();bindHeroGallery();loadReviewThumbs();bindAnalysisMotion()},0);
   };

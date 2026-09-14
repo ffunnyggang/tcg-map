@@ -21,10 +21,13 @@
   function syncSheetTop(top){
     if(!mq()){
       mapWrap.style.removeProperty('--map-sheet-top');
+      mapWrap.style.removeProperty('--map-sheet-half-top');
       return;
     }
-    const value=Number.isFinite(Number(top))?Number(top):(parseFloat(sheet.style.top)||tops()[mode]);
+    const t=tops();
+    const value=Number.isFinite(Number(top))?Number(top):(parseFloat(sheet.style.top)||t[mode]);
     mapWrap.style.setProperty('--map-sheet-top',value+'px');
+    mapWrap.style.setProperty('--map-sheet-half-top',t.half+'px');
   }
 
   function tops(){

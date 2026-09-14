@@ -1,5 +1,7 @@
 /* FUNY PIN detail interaction/render overrides */
 (function(){
+  let otherShopsScrollHandler=null,otherShopsScrollTimer=null;
+
   function naverMapIcon(){
     return '<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="fpNaverPin" x1="8" y1="4" x2="24" y2="27" gradientUnits="userSpaceOnUse"><stop stop-color="#9b82e6"/><stop offset=".55" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient></defs><path d="M16 2.6A10 10 0 0 0 6 12.6c0 7.1 10 16.8 10 16.8s10-9.7 10-16.8A10 10 0 0 0 16 2.6Z" fill="url(#fpNaverPin)"/><path d="M11 9.2h3.2l3.6 5.4V9.2H21v11.5h-3.1l-3.7-5.4v5.4H11Z" fill="#fff"/></svg>';
   }
@@ -99,9 +101,13 @@
     g.addEventListener('touchend',()=>{if(Math.abs(deltaX)>45)show(index+(deltaX<0?1:-1));startX=0;deltaX=0},{passive:true});
   };
 
+  function otherShopsFabHTML(){
+    return `<div class="other-shops-fab-wrap" data-other-shops-fab><button class="other-shops-fab" type="button" aria-label="다른 카드샵 더 찾아보기"><span class="other-shops-fab-icon">${icon('pin')}</span><span>다른 카드샵 더 찾아보기</span></button></div>`;
+  }
+
   detailHTML = function(s){
     const rv=REVIEWS[s.id],tags=tagList(s).slice(0,8);
-    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div></div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>`;
+    return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(s.area)} · ${esc(s.station)} 도보 ${s.walkMin}분</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div></div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>${otherShopsFabHTML()}`;
   };
 
   function bindAnalysisMotion(){
@@ -112,6 +118,23 @@
     obs.observe(card);
   }
 
+  function bindOtherShopsFab(){
+    const wrap=document.querySelector('[data-other-shops-fab]');
+    if(!wrap)return;
+    const btn=wrap.querySelector('.other-shops-fab');
+    if(btn)btn.addEventListener('click',()=>{document.querySelector('#hero-back')?.click();});
+    if(otherShopsScrollHandler)window.removeEventListener('scroll',otherShopsScrollHandler);
+    otherShopsScrollHandler=()=>{
+      if(document.querySelector('#detail-view')?.hidden)return;
+      wrap.classList.add('is-hidden');
+      clearTimeout(otherShopsScrollTimer);
+      otherShopsScrollTimer=setTimeout(()=>{
+        if(!document.querySelector('#detail-view')?.hidden)wrap.classList.remove('is-hidden');
+      },220);
+    };
+    window.addEventListener('scroll',otherShopsScrollHandler,{passive:true});
+  }
+
   openDetail = function(id){
     const s=SHOPS.find(x=>x.id===id);if(!s)return;
     state.current=id;
@@ -119,7 +142,7 @@
     $('#detail').innerHTML=detailHTML(s);$('#sticky-name').textContent=s.name;
     const stickyShare=document.querySelector('#detail-sticky .share-btn');if(stickyShare)stickyShare.innerHTML=shareIcon();
     window.scrollTo(0,0);
-    setTimeout(()=>{bindDetail();bindHeroGallery();loadReviewThumbs();bindAnalysisMotion()},0);
+    setTimeout(()=>{bindDetail();bindHeroGallery();loadReviewThumbs();bindAnalysisMotion();bindOtherShopsFab()},0);
   };
 
   const m=location.hash.match(/^#\/shop\/(KR-SEO-\d{3})$/);

@@ -5,7 +5,7 @@
   const googleMapEl=document.getElementById('google-map');
   if(!track||!mapWrap||typeof renderFilters!=='function'||typeof syncMapMarkers!=='function')return;
 
-  const JAPAN_CENTER={lat:35.6984,lng:139.7731,zoom:15};
+  const JAPAN_CENTER={lat:35.698683,lng:139.773148,zoom:15};
   let country='KR';
   let googleMap=null;
   let googleLoader=null;

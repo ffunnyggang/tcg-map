@@ -27,13 +27,13 @@
   function markerMetrics(){
     let z=11;
     try{if(naverMap)z=naverMap.getZoom();}catch(e){}
-    if(z<=9)return{pinW:14,pinH:24,markerW:18,markerH:29,waveW:20,waveH:7};
-    if(z===10)return{pinW:16,pinH:27,markerW:20,markerH:32,waveW:22,waveH:8};
-    if(z===11)return{pinW:18,pinH:31,markerW:22,markerH:36,waveW:25,waveH:9};
-    if(z===12)return{pinW:20,pinH:35,markerW:24,markerH:40,waveW:28,waveH:10};
-    if(z===13)return{pinW:23,pinH:40,markerW:27,markerH:45,waveW:32,waveH:11};
-    if(z===14)return{pinW:26,pinH:45,markerW:30,markerH:50,waveW:35,waveH:12};
-    return{pinW:29,pinH:50,markerW:33,markerH:55,waveW:39,waveH:13};
+    if(z<=9)return{pinW:16,pinH:22,markerW:20,markerH:28,waveW:21,waveH:7};
+    if(z===10)return{pinW:18,pinH:25,markerW:22,markerH:31,waveW:23,waveH:8};
+    if(z===11)return{pinW:21,pinH:29,markerW:25,markerH:35,waveW:27,waveH:9};
+    if(z===12)return{pinW:24,pinH:33,markerW:28,markerH:39,waveW:30,waveH:10};
+    if(z===13)return{pinW:27,pinH:37,markerW:31,markerH:43,waveW:34,waveH:11};
+    if(z===14)return{pinW:30,pinH:41,markerW:34,markerH:47,waveW:37,waveH:12};
+    return{pinW:33,pinH:45,markerW:37,markerH:51,waveW:41,waveH:13};
   }
 
   function markerHTML(selected=false){
@@ -41,19 +41,17 @@
     const vars=`--pin-w:${m.pinW}px;--pin-h:${m.pinH}px;--marker-w:${m.markerW}px;--marker-h:${m.markerH}px;--wave-w:${m.waveW}px;--wave-h:${m.waveH}px`;
     return `<div class="funy-pin-marker${selected?' is-selected':''}" style="${vars}" aria-hidden="true">
       <span class="funy-pin-wave"></span>
-      <svg viewBox="0 0 90 150" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <linearGradient id="funyPinGrad${selected?'S':'N'}" x1="18" y1="8" x2="72" y2="126" gradientUnits="userSpaceOnUse">
+          <linearGradient id="funyPinGrad${selected?'S':'N'}" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse">
             <stop stop-color="#A98BF4"/>
-            <stop offset=".5" stop-color="#8061DD"/>
+            <stop offset=".48" stop-color="#8061DD"/>
             <stop offset="1" stop-color="#6546C5"/>
           </linearGradient>
         </defs>
-        <path d="M45 4C21.8 4 3 22.8 3 46c0 35.5 42 98 42 98s42-62.5 42-98C87 22.8 68.2 4 45 4Z" fill="url(#funyPinGrad${selected?'S':'N'})"/>
-        <path d="M5 46h27M58 46h27" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="45" cy="46" r="13.5" fill="#FFFFFF"/>
-        <circle cx="45" cy="46" r="7.5" fill="#8061DD"/>
-        <ellipse cx="27" cy="21" rx="8.5" ry="4" transform="rotate(-28 27 21)" fill="#FFFFFF" fill-opacity=".16"/>
+        <path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#funyPinGrad${selected?'S':'N'})"/>
+        <path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/>
       </svg>
     </div>`;
   }

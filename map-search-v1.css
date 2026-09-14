@@ -1,0 +1,12 @@
+/* FUNY PIN floating map search */
+.map-search-float{position:absolute;top:14px;left:14px;right:14px;z-index:24;pointer-events:none}
+.map-search-box{position:relative;display:flex;align-items:center;width:min(520px,100%);height:46px;border:1px solid rgba(255,255,255,.9);border-radius:16px;background:rgba(255,255,255,.93);-webkit-backdrop-filter:blur(20px) saturate(155%);backdrop-filter:blur(20px) saturate(155%);box-shadow:0 7px 24px rgba(34,29,44,.14),inset 0 1px 0 rgba(255,255,255,.98);pointer-events:auto;overflow:hidden}
+.map-search-icon{width:18px;height:18px;flex:0 0 18px;margin-left:15px;fill:none;stroke:#817694;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.map-search-input{width:100%;height:100%;min-width:0;padding:0 42px 0 10px;border:0;outline:0;background:transparent;color:#27232d;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;font-weight:650;letter-spacing:-.015em;-webkit-appearance:none;appearance:none}
+.map-search-input::placeholder{color:#9b95a2;font-weight:580;opacity:1}
+.map-search-input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.map-search-clear{position:absolute;right:8px;top:50%;width:32px;height:32px;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:transparent;color:#8c8496;font-size:21px;font-weight:300;line-height:1;cursor:pointer}
+.map-search-clear:active{background:rgba(106,81,183,.09)}
+.map-search-clear[hidden]{display:none!important}
+.map-filter-bar{top:72px!important}
+@media(max-width:430px){.map-search-float{top:12px;left:12px;right:12px}.map-search-box{width:100%;height:44px;border-radius:15px}.map-search-icon{width:17px;height:17px;flex-basis:17px;margin-left:14px}.map-search-input{font-size:12.5px;padding-left:9px}.map-filter-bar{top:64px!important}.map-sheet-open .map-search-float{opacity:.92}}

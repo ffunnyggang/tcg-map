@@ -66,7 +66,7 @@
 
       const script=document.createElement('script');
       script.id='funy-google-maps-sdk';
-      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+callback+'&v=weekly&language=ja&region=JP';
+      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+callback+'&v=weekly&language=ko&region=JP';
       script.async=true;
       script.defer=true;
       script.onerror=()=>finish(false,new Error('Google Maps SDK load failed'));

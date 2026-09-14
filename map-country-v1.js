@@ -1,5 +1,11 @@
 /* FUNY PIN map country selector */
 (function(){
+  function loadGlobalI18n(){
+    if(!document.querySelector('link[data-funy-i18n]')){const l=document.createElement('link');l.rel='stylesheet';l.href='funy-i18n.css?v=20260915-0505';l.dataset.funyI18n='';document.head.appendChild(l)}
+    if(!document.querySelector('script[data-funy-i18n]')){const s=document.createElement('script');s.src='funy-i18n.js?v=20260915-0505';s.defer=true;s.dataset.funyI18n='';document.head.appendChild(s)}
+  }
+  loadGlobalI18n();
+
   const track=document.getElementById('filters');
   const mapWrap=document.querySelector('.map-wrap-hero');
   const googleMapEl=document.getElementById('google-map');
@@ -9,6 +15,8 @@
   let country='KR';
   let googleMap=null;
   let googleLoader=null;
+
+  function currentLanguage(){return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}
 
   function ensureServiceState(){
     let state=mapWrap.querySelector('[data-country-service-state]');
@@ -66,7 +74,7 @@
 
       const script=document.createElement('script');
       script.id='funy-google-maps-sdk';
-      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+callback+'&v=weekly&language=ko&region=JP';
+      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+callback+'&v=weekly&language='+currentLanguage()+'&region=JP';
       script.async=true;
       script.defer=true;
       script.onerror=()=>finish(false,new Error('Google Maps SDK load failed'));

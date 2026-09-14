@@ -43,32 +43,52 @@
   }
 
   function loadGoogleMaps(){
-    if(window.google&&google.maps)return Promise.resolve();
+    if(window.google&&google.maps&&google.maps.Map)return Promise.resolve();
     if(googleLoader)return googleLoader;
     const key=(window.FUNY_GOOGLE_MAPS_API_KEY||'').trim();
     if(!key)return Promise.reject(new Error('Google Maps API key is not configured'));
+
     googleLoader=new Promise((resolve,reject)=>{
+      const callback='__funyGoogleMapsReady';
+      let settled=false;
+      const finish=(ok,error)=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(timer);
+        try{delete window[callback]}catch(e){window[callback]=undefined}
+        ok?resolve():reject(error||new Error('Google Maps SDK load failed'));
+      };
+
+      window[callback]=()=>{
+        if(window.google&&google.maps&&google.maps.Map)finish(true);
+        else finish(false,new Error('Google Maps SDK initialized without Map API'));
+      };
+
       const script=document.createElement('script');
-      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&v=weekly&loading=async';
+      script.id='funy-google-maps-sdk';
+      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+callback+'&v=weekly&language=ja&region=JP';
       script.async=true;
       script.defer=true;
-      script.onload=resolve;
-      script.onerror=()=>reject(new Error('Google Maps SDK load failed'));
+      script.onerror=()=>finish(false,new Error('Google Maps SDK load failed'));
       document.head.appendChild(script);
+
+      const timer=setTimeout(()=>finish(false,new Error('Google Maps SDK load timeout')),12000);
     });
+
     return googleLoader;
   }
 
   function initJapanMap(){
     const service=ensureServiceState();
-    if(!googleMapEl){
-      service.hidden=false;
-      return;
-    }
+    service.hidden=false;
+    if(!googleMapEl)return;
+
     loadGoogleMaps().then(()=>{
+      if(country!=='JP')return;
+      const center={lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng};
       if(!googleMap){
         googleMap=new google.maps.Map(googleMapEl,{
-          center:{lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng},
+          center,
           zoom:JAPAN_CENTER.zoom,
           mapTypeControl:false,
           streetViewControl:false,
@@ -77,12 +97,17 @@
           gestureHandling:'greedy'
         });
       }else{
-        googleMap.setCenter({lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng});
+        googleMap.setCenter(center);
         googleMap.setZoom(JAPAN_CENTER.zoom);
       }
-      service.hidden=false;
-      requestAnimationFrame(()=>window.google&&google.maps&&google.maps.event.trigger(googleMap,'resize'));
-    }).catch(()=>{
+      requestAnimationFrame(()=>{
+        if(window.google&&google.maps&&google.maps.event){
+          google.maps.event.trigger(googleMap,'resize');
+          googleMap.setCenter(center);
+        }
+      });
+    }).catch(error=>{
+      console.error('[FUNY PIN] Google Maps load error:',error);
       service.hidden=false;
     });
   }
@@ -98,7 +123,7 @@
     if(country==='JP'){
       hideKoreaMarkers();
       service.hidden=false;
-      initJapanMap();
+      requestAnimationFrame(initJapanMap);
     }else{
       service.hidden=true;
       try{baseSyncMapMarkers(true)}catch(e){}

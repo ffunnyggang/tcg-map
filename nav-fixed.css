@@ -1,0 +1,67 @@
+/* FUNY PIN shared bottom navigation — single source of truth */
+.portal-bottom-nav,.shops-bottom-nav{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  width:min(calc(100% - 26px),720px)!important;
+  height:66px!important;
+  min-height:66px!important;
+  max-height:66px!important;
+  padding:4px!important;
+  margin:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:3px!important;
+  box-sizing:border-box!important;
+}
+.portal-bottom-nav>a,.shops-bottom-nav>a{
+  width:100%!important;
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+  padding:0!important;
+  margin:0!important;
+  border:1px solid transparent;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:2px!important;
+  font-size:9.5px!important;
+  line-height:14px!important;
+  font-weight:600;
+  white-space:nowrap!important;
+}
+.portal-bottom-nav>a.active,.shops-bottom-nav>a.active{
+  font-size:9.5px!important;
+  line-height:14px!important;
+  font-weight:800;
+}
+.portal-bottom-nav>a svg,.shops-bottom-nav>a svg{
+  display:block!important;
+  flex:0 0 20px!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  min-height:20px!important;
+  max-width:20px!important;
+  max-height:20px!important;
+  margin:0!important;
+}
+.portal-bottom-nav>a span,.shops-bottom-nav>a span{
+  display:block!important;
+  width:auto!important;
+  height:14px!important;
+  min-height:14px!important;
+  max-height:14px!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:9.5px!important;
+  line-height:14px!important;
+  font-weight:inherit!important;
+  letter-spacing:0!important;
+}
+.portal-bottom-nav>a.active::after,.shops-bottom-nav>a.active::after{display:none!important;content:none!important}

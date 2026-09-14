@@ -23,6 +23,64 @@
     return `<div class="comp-card"><h3 class="sub-title">상품 구성 상세</h3>${tcg?`<div class="tcg-line"><span class="tcg-label">취급 TCG</span><span class="tcg-value">${tcg}</span></div>`:''}<div class="bar-list">${bars.map(([l,v],idx)=>`<div class="bar-row"><div class="bar-label">${l}</div><div class="bar-track"><div class="bar-fill" style="--bar-width:${v/5*100}%;--bar-delay:${120+idx*90}ms"></div></div></div>`).join('')}</div></div>`;
   };
 
+  const REVIEW_META_TTL=1000*60*60*24*7;
+  function reviewMetaKey(url){return 'funy-review-meta-v2:'+url;}
+  function getCachedReviewMeta(url){
+    try{
+      const v=JSON.parse(localStorage.getItem(reviewMetaKey(url))||'null');
+      if(v&&Date.now()-v.ts<REVIEW_META_TTL)return v;
+    }catch(e){}
+    return null;
+  }
+  function setCachedReviewMeta(url,data){
+    try{localStorage.setItem(reviewMetaKey(url),JSON.stringify({...data,ts:Date.now()}));}catch(e){}
+  }
+  function cleanMetaTitle(value,platform){
+    const t=String(value||'').replace(/\s+/g,' ').trim();
+    if(!t)return '';
+    if(platform==='Instagram'&&/^(instagram|instagram reel|reel)$/i.test(t))return '';
+    return t;
+  }
+  function metaTarget(url){
+    return /^https:\/\/blog\.naver\.com\//.test(url)?url.replace('https://blog.naver.com/','https://m.blog.naver.com/'):url;
+  }
+  async function fetchReviewMeta(url,platform){
+    const cached=getCachedReviewMeta(url);
+    if(cached)return cached;
+    const api='https://api.microlink.io/?meta=true&url='+encodeURIComponent(metaTarget(url));
+    const r=await fetch(api,{mode:'cors'});
+    if(!r.ok)throw new Error('metadata');
+    const j=await r.json(),d=j&&j.data||{};
+    const image=d.image&&(d.image.url||d.image)||'';
+    let title=cleanMetaTitle(d.title,platform);
+    if(!title&&platform==='Instagram')title=cleanMetaTitle(d.description,platform);
+    const out={image,title};
+    setCachedReviewMeta(url,out);
+    return out;
+  }
+
+  reviewHTML = function(s){
+    const cs=CONTENTS.filter(c=>c.shop===s.id);if(!cs.length)return'';
+    const picks=[],reel=cs.find(c=>c.type==='Reel'),blog=cs.find(c=>c.type==='Blog');
+    if(reel)picks.push(reel);if(blog)picks.push(blog);
+    return `<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('review')}</span>깽퐌커플 리뷰</h2><div class="review-grid">${picks.map(c=>`<a class="content-card" href="${c.url}" target="_blank" rel="noopener" data-review-card data-review-url="${esc(c.url)}" data-platform="${esc(c.platform)}"><div class="content-thumb loading" data-review-thumb>${esc(c.platform)}</div><div class="content-body"><p class="content-title" data-review-title>${esc(c.title)}</p><div class="content-platform"><span class="platform-icon">${icon(c.platform==='Instagram'?'ig':'globe')}</span>${esc(c.platform)}</div></div></a>`).join('')}</div></section>`;
+  };
+
+  loadReviewThumbs = function(){
+    document.querySelectorAll('[data-review-card]').forEach(async card=>{
+      const url=card.dataset.reviewUrl,platform=card.dataset.platform,thumb=card.querySelector('[data-review-thumb]'),titleEl=card.querySelector('[data-review-title]');
+      if(!url)return;
+      try{
+        const meta=await fetchReviewMeta(url,platform);
+        if(meta.image&&thumb){thumb.innerHTML=`<img src="${esc(meta.image)}" alt="${esc(meta.title||titleEl?.textContent||'리뷰')} 썸네일" loading="lazy" referrerpolicy="no-referrer">`;thumb.classList.remove('loading');}
+        else if(thumb){thumb.classList.remove('loading');thumb.textContent=platform||'Review';}
+        if(meta.title&&titleEl)titleEl.textContent=meta.title;
+      }catch(e){
+        if(thumb){thumb.classList.remove('loading');thumb.textContent=platform||'Review';}
+      }
+    });
+  };
+
   heroGalleryHTML = function(s){
     const imgs=SHOP_GALLERIES[s.id]||[];
     if(!imgs.length)return `<div class="hero-placeholder">매장 이미지 준비 중</div><div class="hero-count">${icon('image')}<span>1 / 1</span></div>`;

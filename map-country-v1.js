@@ -2,10 +2,13 @@
 (function(){
   const track=document.getElementById('filters');
   const mapWrap=document.querySelector('.map-wrap-hero');
+  const googleMapEl=document.getElementById('google-map');
   if(!track||!mapWrap||typeof renderFilters!=='function'||typeof syncMapMarkers!=='function')return;
 
   const JAPAN_CENTER={lat:35.6984,lng:139.7731,zoom:15};
   let country='KR';
+  let googleMap=null;
+  let googleLoader=null;
 
   function ensureServiceState(){
     let state=mapWrap.querySelector('[data-country-service-state]');
@@ -39,13 +42,49 @@
     try{setMapStatus('',true)}catch(e){}
   }
 
-  function centerJapan(){
-    try{
-      if(naverMap&&window.naver&&naver.maps){
-        naverMap.setCenter(new naver.maps.LatLng(JAPAN_CENTER.lat,JAPAN_CENTER.lng));
-        naverMap.setZoom(JAPAN_CENTER.zoom);
+  function loadGoogleMaps(){
+    if(window.google&&google.maps)return Promise.resolve();
+    if(googleLoader)return googleLoader;
+    const key=(window.FUNY_GOOGLE_MAPS_API_KEY||'').trim();
+    if(!key)return Promise.reject(new Error('Google Maps API key is not configured'));
+    googleLoader=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&v=weekly&loading=async';
+      script.async=true;
+      script.defer=true;
+      script.onload=resolve;
+      script.onerror=()=>reject(new Error('Google Maps SDK load failed'));
+      document.head.appendChild(script);
+    });
+    return googleLoader;
+  }
+
+  function initJapanMap(){
+    const service=ensureServiceState();
+    if(!googleMapEl){
+      service.hidden=false;
+      return;
+    }
+    loadGoogleMaps().then(()=>{
+      if(!googleMap){
+        googleMap=new google.maps.Map(googleMapEl,{
+          center:{lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng},
+          zoom:JAPAN_CENTER.zoom,
+          mapTypeControl:false,
+          streetViewControl:false,
+          fullscreenControl:false,
+          clickableIcons:true,
+          gestureHandling:'greedy'
+        });
+      }else{
+        googleMap.setCenter({lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng});
+        googleMap.setZoom(JAPAN_CENTER.zoom);
       }
-    }catch(e){}
+      service.hidden=false;
+      requestAnimationFrame(()=>window.google&&google.maps&&google.maps.event.trigger(googleMap,'resize'));
+    }).catch(()=>{
+      service.hidden=false;
+    });
   }
 
   function applyCountry(next){
@@ -59,7 +98,7 @@
     if(country==='JP'){
       hideKoreaMarkers();
       service.hidden=false;
-      requestAnimationFrame(()=>requestAnimationFrame(centerJapan));
+      initJapanMap();
     }else{
       service.hidden=true;
       try{baseSyncMapMarkers(true)}catch(e){}
@@ -76,7 +115,7 @@
   syncMapMarkers=function(refit=true){
     if(country==='JP'){
       hideKoreaMarkers();
-      centerJapan();
+      initJapanMap();
       return;
     }
     return baseSyncMapMarkers(refit);

@@ -1,6 +1,6 @@
 /* FUNY PIN current-location control */
 (function(){
-  const ready=()=>window.naver&&naver.maps&&window.naverMap;
+  const ready=()=>window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap;
   let currentMarker=null;
   let accuracyCircle=null;
   let toastTimer=null;

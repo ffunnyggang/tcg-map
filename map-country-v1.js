@@ -30,18 +30,31 @@
     return state;
   }
 
+  function flagSvg(code){
+    if(code==='JP')return '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9.4" fill="#fff" stroke="rgba(31,28,36,.14)" stroke-width=".7"/><circle cx="10" cy="10" r="4.2" fill="#bc002d"/></svg>';
+    return '<svg viewBox="0 0 20 20" aria-hidden="true"><defs><clipPath id="funy-kr-flag"><circle cx="10" cy="10" r="9.4"/></clipPath></defs><circle cx="10" cy="10" r="9.4" fill="#fff" stroke="rgba(31,28,36,.14)" stroke-width=".7"/><g clip-path="url(#funy-kr-flag)"><path d="M6.1 10a3.9 3.9 0 0 1 7.8 0 1.95 1.95 0 0 0-3.9 0 1.95 1.95 0 0 1-3.9 0Z" fill="#cd2e3a"/><path d="M13.9 10a3.9 3.9 0 0 1-7.8 0 1.95 1.95 0 0 0 3.9 0 1.95 1.95 0 0 1 3.9 0Z" fill="#0047a0"/><g fill="#111"><rect x="4.1" y="4.15" width=".85" height="3.15" rx=".2" transform="rotate(-34 4.525 5.725)"/><rect x="5.45" y="3.25" width=".85" height="3.15" rx=".2" transform="rotate(-34 5.875 4.825)"/><rect x="14.2" y="12.9" width=".85" height="3.15" rx=".2" transform="rotate(-34 14.625 14.475)"/><rect x="15.55" y="12" width=".85" height="3.15" rx=".2" transform="rotate(-34 15.975 13.575)"/></g></g></svg>';
+  }
+
+  function updateCountryVisual(){
+    const wrap=track.querySelector('.country-filter-wrap');
+    if(!wrap)return;
+    const flag=wrap.querySelector('.country-filter-flag');
+    if(flag)flag.innerHTML=flagSvg(country);
+  }
+
   function ensureCountryControl(){
-    if(track.querySelector('[data-country-filter]'))return;
+    if(track.querySelector('[data-country-filter]')){updateCountryVisual();return;}
     const wrap=document.createElement('div');
     wrap.className='country-filter-wrap';
     wrap.setAttribute('data-country-filter','');
-    wrap.innerHTML='<select class="country-filter-select" aria-label="국가 선택"><option value="KR">한국</option><option value="JP">일본</option></select>';
+    wrap.innerHTML='<span class="country-filter-flag" aria-hidden="true"></span><select class="country-filter-select" aria-label="국가 선택"><option value="KR">한국</option><option value="JP">일본</option></select>';
     const sep=document.createElement('span');
     sep.className='country-filter-sep';
     sep.setAttribute('aria-hidden','true');
     track.prepend(sep);
     track.prepend(wrap);
     wrap.querySelector('select').value=country;
+    updateCountryVisual();
   }
 
   function hideKoreaMarkers(){
@@ -126,6 +139,7 @@
     ensureCountryControl();
     const select=track.querySelector('.country-filter-select');
     if(select)select.value=country;
+    updateCountryVisual();
     const service=ensureServiceState();
 
     if(country==='JP'){

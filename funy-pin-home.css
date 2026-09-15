@@ -1,4 +1,5 @@
 /* FUNY PIN — approved hero with final PNG artwork */
+.portal-shell{width:min(100%,420px)!important;max-width:420px!important}.portal-bottom-nav{max-width:394px!important}
 .portal-header{height:66px;padding:0 20px}.portal-brand{gap:8px}.portal-brand strong{font-size:24px;letter-spacing:-.035em}.portal-brand .portal-by{font-size:11.5px;color:#85818e}.portal-logo{width:34px;height:38px}.portal-logo svg{width:34px;height:38px}.portal-beta{height:22px;padding:0 10px;font-size:9.5px!important}
 .portal-hero-concept{position:relative;margin:-18px -14px 0!important;padding:22px 20px 18px;overflow:hidden;min-height:0!important;background:linear-gradient(135deg,#fbfaff 0%,#f7f4ff 52%,#f2edfb 100%);border:0!important;box-shadow:none!important}.portal-hero-concept::after{display:none!important}.hero-copy{position:relative;z-index:2;max-width:56%}.hero-eyebrow{margin:0 0 11px;font-size:10px;letter-spacing:.23em}.portal-hero-concept h1{margin:0;font-size:25px;line-height:1.28;letter-spacing:-.055em;white-space:normal}.portal-hero-concept p{margin:15px 0 0;font-size:14px;line-height:1.65;color:#8d8993}
 .hero-map-art{position:absolute;z-index:1;right:-16px;top:24px;width:60%;height:auto;max-height:278px;object-fit:contain;object-position:right center;pointer-events:none;display:block!important;opacity:1!important;visibility:visible!important}
@@ -10,7 +11,7 @@
 .portal-bottom-nav a[href="./"] span::after{content:"홈";font-size:9.5px!important;line-height:14px!important}
 .portal-bottom-nav a[href="shops.html"] span::after{content:"TCG MAP";font-size:9.5px!important;line-height:14px!important}
 .portal-bottom-nav a[href="reviews.html"] span::after{content:"리뷰•정보";font-size:9.5px!important;line-height:14px!important}
-.portal-bottom-nav{bottom:max(8px,env(safe-area-inset-bottom))!important;width:min(calc(100% - 26px),720px)!important;height:66px!important;min-height:66px!important;max-height:66px!important;padding:4px!important;gap:3px!important}
+.portal-bottom-nav{bottom:max(8px,env(safe-area-inset-bottom))!important;width:min(calc(100% - 26px),394px)!important;height:66px!important;min-height:66px!important;max-height:66px!important;padding:4px!important;gap:3px!important}
 .portal-bottom-nav a{height:56px!important;min-height:56px!important;max-height:56px!important;padding:0!important;margin:0!important;border:1px solid transparent;box-sizing:border-box!important;gap:2px!important;font-size:9.5px!important;line-height:14px!important;white-space:nowrap!important}
 .portal-bottom-nav a.active{font-size:9.5px!important;line-height:14px!important}
 .portal-bottom-nav a span{display:block!important;height:14px!important;min-height:14px!important;max-height:14px!important;line-height:14px!important;margin:0!important;padding:0!important;white-space:nowrap!important}

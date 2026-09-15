@@ -1,0 +1,62 @@
+name: Sync Master DB shops
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/sync-master-db-shops.yml']
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request,csv,io,json,re
+          from pathlib import Path
+          doc='1B-156G9p46FoWA85VpqxKKKGYq3SDP5C6m8ZzeITs5w'
+          host='docs'+'.google'+'.com'
+          def rows(gid):
+            u='https://'+host+'/spreadsheets/d/'+doc+'/export?format=csv&gid='+gid
+            return list(csv.reader(io.StringIO(urllib.request.urlopen(u,timeout=30).read().decode('utf-8-sig'))))
+          sr,fr,rr=rows('1151544385'),rows('1874061473'),rows('944611475')
+          fm={r[0]:r for r in fr[1:] if r and r[0]}
+          def a(r,i): return r[i].strip() if i<len(r) and r[i].strip() else None
+          def ox(v): return True if v=='O' else False if v=='X' else None
+          S=[]
+          for r in sr[1:]:
+            sid=a(r,0)
+            if not sid or not re.fullmatch(r'KR-SEO-\d{3}',sid): continue
+            f=fm.get(sid,[]); city=a(r,4); dist=a(r,5); road=a(r,6)
+            d={'id':sid,'city':dist or city,'name':a(r,1),'en':a(r,2),'area':a(r,7),'address':' '.join(x for x in (city,dist,road) if x)}
+            for k,i in [('phone',8),('website',9),('instagram',10),('google',11),('naver',12)]:
+              if a(r,i): d[k]=a(r,i)
+            if a(r,13) and a(r,14): d.update(lat=float(a(r,13)),lng=float(a(r,14)))
+            d.update(station=a(r,15),walkMin=int(float(a(r,16))) if a(r,16) else None,parking='불가능' if a(r,17)=='불가' else a(r,17),hours=a(r,18),closed=a(r,19),status=a(r,20),verified=a(r,21))
+            d['tcg']={'pokemon':ox(a(f,2)),'onePiece':ox(a(f,3)),'dragonBall':ox(a(f,4))}
+            d['f']={'single':ox(a(f,7)),'promo':ox(a(f,8)),'vintage':ox(a(f,9)),'graded':ox(a(f,10)),'oripa':ox(a(f,11)),'pack':ox(a(f,12)),'box':ox(a(f,13)),'supplies':ox(a(f,14)),'sleeve':ox(a(f,15)),'buy':ox(a(f,16)),'consignment':ox(a(f,17)),'grading':ox(a(f,18)),'event':ox(a(f,21)),'online':ox(a(f,23)),'shipping':ox(a(f,24))}
+            if a(f,19): d['f']['gradingDetail']=a(f,19)
+            if a(f,22): d['f']['eventDetail']=a(f,22)
+            S.append(d)
+          if len(S)!=42 or S[-1]['id']!='KR-SEO-042': raise SystemExit('Master DB shop count mismatch')
+          R={}
+          for r in rr[1:]:
+            sid=a(r,1)
+            if not sid or not a(r,4): continue
+            def n(i):
+              v=a(r,i); return float(v) if v and '.' in v else int(v) if v else None
+            R[sid]={'single':n(4),'graded':n(5),'box':n(6),'oripa':n(7),'price':n(8),'scale':n(9),'mood':n(10),'access':n(11),'staff':n(12),'recommendation':a(r,13)}
+          p=Path('app.js'); t=p.read_text(encoding='utf-8')
+          m=re.search(r'^const SHOPS = .*?;const REVIEWS=.*?;',t,re.S)
+          if not m: raise SystemExit('data constants not found')
+          prefix='const SHOPS = '+json.dumps(S,ensure_ascii=False,separators=(',',':'))+';const REVIEWS='+json.dumps(R,ensure_ascii=False,separators=(',',':'))+';'
+          p.write_text(prefix+t[m.end():],encoding='utf-8')
+          Path('.github/workflows/sync-master-db-shops.yml').unlink()
+          PY
+          git add -A
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m 'Sync card shops through KR-SEO-042 from Master DB'
+          git push

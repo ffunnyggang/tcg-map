@@ -40,13 +40,27 @@
   }
   function stars(rating){const rounded=Math.round(Number(rating)||0);return '<span class="google-stars" aria-label="별점 '+escJP(rating)+'점">'+[1,2,3,4,5].map(i=>'<span class="'+(i<=rounded?'on':'')+'">★</span>').join('')+'</span>'}
   function authorHTML(review){const a=review&&review.author_name?review.author_name:'Google 사용자';const uri=review&&review.author_url;return uri?'<a class="google-review-author" href="'+escJP(uri)+'" target="_blank" rel="noopener">'+escJP(a)+'</a>':'<span class="google-review-author">'+escJP(a)+'</span>'}
-  function photoHTML(photo,idx){let src='';try{src=photo.getUrl({maxWidth:900,maxHeight:700})}catch(e){}if(!src)return'';const attrs=(photo.html_attributions||[]).join(' ');return '<figure class="google-place-photo"><img src="'+escJP(src)+'" alt="Google 매장 사진 '+(idx+1)+'" loading="lazy" referrerpolicy="no-referrer">'+(attrs?'<figcaption>'+attrs+'</figcaption>':'')+'</figure>'}
+  function photoData(photo,idx){let src='';try{src=photo.getUrl({maxWidth:1200,maxHeight:900})}catch(e){}if(!src)return null;return{src,alt:'Google 매장 사진 '+(idx+1),attrs:(photo.html_attributions||[]).join(' ')}}
+  function injectGoogleHeroPhotos(shop,photos){
+    if(!photos.length||state.current!==shop.id)return;
+    const hero=document.querySelector('#detail-view .hero');if(!hero)return;
+    const own=(typeof SHOP_GALLERIES!=='undefined'&&SHOP_GALLERIES[shop.id])||[];
+    const items=[...own.map((src,i)=>({src,alt:shop.name+' 매장 사진 '+(i+1),attrs:''})),...photos].slice(0,Math.max(5,own.length));
+    if(!items.length)return;
+    const old=hero.querySelector('.hero-gallery,.hero-placeholder');if(old)old.remove();
+    const oldCount=hero.querySelector('.hero-count');if(oldCount)oldCount.remove();
+    const gallery=document.createElement('div');gallery.className='hero-gallery';gallery.setAttribute('data-gallery','');
+    gallery.innerHTML='<div class="hero-track">'+items.map((item,i)=>'<div class="hero-slide"><img src="'+escJP(item.src)+'" alt="'+escJP(item.alt)+'" '+(i?'loading="lazy"':'')+' decoding="async">'+(item.attrs?'<div class="google-hero-attribution">'+item.attrs+'</div>':'')+'</div>').join('')+'</div><div class="hero-count">'+(typeof icon==='function'?icon('image'):'')+'<span data-gallery-count>1 / '+items.length+'</span></div>';
+    const top=hero.querySelector('.hero-top');if(top)top.insertAdjacentElement('afterend',gallery);else hero.prepend(gallery);
+    if(typeof bindHeroGallery==='function')bindHeroGallery();
+  }
   function renderPlace(shop,place){
     const root=document.querySelector('[data-google-place-content]');if(!root||state.current!==shop.id)return;
-    const rating=Number(place.rating)||0,count=Number(place.user_ratings_total)||0,photos=(place.photos||[]).slice(0,5),reviews=(place.reviews||[]).slice(0,3);
-    const photosHTML=photos.map(photoHTML).join('');
+    const rating=Number(place.rating)||0,count=Number(place.user_ratings_total)||0,reviews=(place.reviews||[]).slice(0,3);
+    const googlePhotos=(place.photos||[]).slice(0,5).map(photoData).filter(Boolean);
+    injectGoogleHeroPhotos(shop,googlePhotos);
     const reviewsHTML=reviews.map(r=>'<article class="google-review-item"><div class="google-review-head">'+authorHTML(r)+'<span class="google-review-rating">★ '+escJP(r.rating||'')+'</span></div>'+(r.relative_time_description?'<div class="google-review-time">'+escJP(r.relative_time_description)+'</div>':'')+(r.text?'<p>'+escJP(r.text)+'</p>':'')+'</article>').join('');
-    root.innerHTML='<div class="google-rating-row"><div><strong>'+escJP(rating.toFixed(1))+'</strong>'+stars(rating)+'</div><span>Google 평점 · 리뷰 '+count.toLocaleString()+'개</span></div>'+(photosHTML?'<div class="google-place-photos">'+photosHTML+'</div>':'')+(reviewsHTML?'<div class="google-review-list"><h3>Google 리뷰</h3>'+reviewsHTML+'</div>':'')+(place.url?'<a class="google-place-more" href="'+escJP(place.url)+'" target="_blank" rel="noopener">Google Maps에서 전체 보기</a>':'')+'<p class="google-place-source">Google Maps 제공 정보</p>';
+    root.innerHTML='<div class="google-rating-row"><div><strong>'+escJP(rating.toFixed(1))+'</strong>'+stars(rating)+'</div><span>Google 평점 · 리뷰 '+count.toLocaleString()+'개</span></div>'+(reviewsHTML?'<div class="google-review-list"><h3>Google 리뷰</h3>'+reviewsHTML+'</div>':'')+(place.url?'<a class="google-place-more" href="'+escJP(place.url)+'" target="_blank" rel="noopener">Google Maps에서 전체 보기</a>':'')+'<p class="google-place-source">Google Maps 제공 정보</p>';
   }
   function loadGooglePlace(shop){if(!isJapan(shop))return;findPlace(shop).then(place=>renderPlace(shop,place)).catch(()=>{const root=document.querySelector('[data-google-place-content]');if(root&&state.current===shop.id)root.innerHTML='<div class="google-place-empty">Google 매장 정보를 불러오지 못했습니다.</div>'})}
 

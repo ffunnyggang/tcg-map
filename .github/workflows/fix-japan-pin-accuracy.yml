@@ -1,0 +1,44 @@
+name: Fix Japan pin accuracy
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-japan-pin-accuracy.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply requested map fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('map-country-v1.js')
+          s=p.read_text()
+          s=s.replace("function flagSvg(code){if(code==='KR')return '<span class=\"country-flag-korea\" aria-hidden=\"true\"><span class=\"kr-taegeuk\"></span><i class=\"kr-gwae kr-gwae-1\"></i><i class=\"kr-gwae kr-gwae-2\"></i><i class=\"kr-gwae kr-gwae-3\"></i><i class=\"kr-gwae kr-gwae-4\"></i></span>';return '<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"11.2\" fill=\"#fff\" stroke=\"#d8d8dc\" stroke-width=\".8\"/><circle cx=\"12\" cy=\"12\" r=\"4.55\" fill=\"#bc002d\"/></svg>'}\n  function updateCountryVisual(){const wrap=track.querySelector('.country-filter-wrap');if(!wrap)return;const flag=wrap.querySelector('.country-filter-flag');if(flag)flag.innerHTML=flagSvg(country)}", "function updateCountryVisual(){}")
+          s=s.replace("wrap.innerHTML='<span class=\"country-filter-flag\" aria-hidden=\"true\"></span><select class=\"country-filter-select\"", "wrap.innerHTML='<select class=\"country-filter-select\"")
+          s=s.replace("+'&region=JP';", "+'&region=JP&libraries=places';")
+          old="function syncJapanMarkers(){const shops=SHOPS.filter(isJapan),bounds=new google.maps.LatLngBounds(),geocoder=new google.maps.Geocoder();let pending=shops.length;if(!pending)return;clearGoogleSelection();googleMarkers.forEach(m=>m.setMap(null));googleMarkers.clear();const done=()=>{pending--;if(pending===0){lastJapanBounds=bounds;if(country==='JP'&&!bounds.isEmpty())fitJapan()}};shops.forEach(s=>{geocoder.geocode({address:japanGeocodeAddress(s),region:'JP',componentRestrictions:{country:'JP'}},(results,status)=>{if(status==='OK'&&results&&results[0]){const loc=results[0].geometry.location,p={lat:loc.lat(),lng:loc.lng()};const inTokyo=p.lat>35.45&&p.lat<35.90&&p.lng>139.45&&p.lng<140.05;if(inTokyo){s._coord=p;addGoogleMarker(s,p);bounds.extend(p)}else console.warn('[FUNY PIN] Japan geocode outside Tokyo:',s.id,p)}else{console.warn('[FUNY PIN] Japan geocode failed:',s.id,status,japanGeocodeAddress(s))}done()})})}"
+          new="function syncJapanMarkers(){const shops=SHOPS.filter(isJapan),bounds=new google.maps.LatLngBounds(),geocoder=new google.maps.Geocoder(),places=(google.maps.places&&google.maps.places.PlacesService)?new google.maps.places.PlacesService(googleMap):null;let pending=shops.length;if(!pending)return;clearGoogleSelection();googleMarkers.forEach(m=>m.setMap(null));googleMarkers.clear();const done=()=>{pending--;if(pending===0){lastJapanBounds=bounds;if(country==='JP'&&!bounds.isEmpty())fitJapan()}};const usePos=(s,loc,source)=>{const p={lat:loc.lat(),lng:loc.lng()},inTokyo=p.lat>35.45&&p.lat<35.90&&p.lng>139.45&&p.lng<140.05;if(!inTokyo){console.warn('[FUNY PIN] Japan location outside Tokyo:',s.id,source,p);return false}s._coord=p;addGoogleMarker(s,p);bounds.extend(p);return true};const fallback=(s)=>geocoder.geocode({address:japanGeocodeAddress(s),region:'JP',componentRestrictions:{country:'JP'}},(results,status)=>{if(status==='OK'&&results&&results[0])usePos(s,results[0].geometry.location,'geocode');else console.warn('[FUNY PIN] Japan geocode failed:',s.id,status,japanGeocodeAddress(s));done()});shops.forEach(s=>{const lat=Number(s.lat),lng=Number(s.lng);if(Number.isFinite(lat)&&Number.isFinite(lng)&&lat>30&&lng>120){usePos(s,new google.maps.LatLng(lat,lng),'master-db');done();return}if(!places){fallback(s);return}const query=[s.en||s.name,s.address,s.city,'Japan'].filter(Boolean).join(' ');places.findPlaceFromQuery({query,fields:['geometry','name','formatted_address','place_id']},(results,status)=>{if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]&&results[0].geometry&&results[0].geometry.location&&usePos(s,results[0].geometry.location,'place'))done();else fallback(s)})})}"
+          if old not in s:
+              raise SystemExit('syncJapanMarkers target not found')
+          s=s.replace(old,new)
+          p.write_text(s)
+
+          p=Path('map-country-v1.css')
+          s=p.read_text()
+          s += "\n/* country icons removed by request */\n.map-filter-bar .country-filter-flag{display:none!important}.map-filter-bar .country-filter-select{min-width:78px!important;padding-left:16px!important;padding-right:30px!important}\n"
+          p.write_text(s)
+
+          p=Path('shops.html')
+          s=p.read_text().replace('map-country-v1.css?v=20260915-1729','map-country-v1.css?v=20260915-1737').replace('map-country-v1.js?v=20260915-1729','map-country-v1.js?v=20260915-1737')
+          p.write_text(s)
+          PY
+      - name: Commit fixes
+        run: |
+          git config user.name "ffunnyggang"
+          git config user.email "ffunnyggang@gmail.com"
+          git add map-country-v1.js map-country-v1.css shops.html
+          git commit -m "Remove country flags and improve Japan pin accuracy"
+          git push

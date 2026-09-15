@@ -1,0 +1,104 @@
+name: Migrate shop images to Shop IDs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/migrate-shop-images-to-ids.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Migrate image folders, filenames and references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, shutil
+
+          root = Path('images/shops')
+          shops = [
+              ('KR-SEO-001','cardnova','cardnova.jpg'),
+              ('KR-SEO-002','rubycard','ruby.jpg'),
+              ('KR-SEO-003','firstcard','firstcardshop.jpg'),
+              ('KR-SEO-004','collecton','collecton.jpg'),
+              ('KR-SEO-005','cardgarden','cardgarden.jpg'),
+              ('KR-SEO-006','cardtown','cardtown.jpg'),
+              ('KR-SEO-007','moacard','moa.jpg'),
+              ('KR-SEO-008','cardstory','cardstory.jpg'),
+              ('KR-SEO-009','thecardroom','thecardroom.jpg'),
+              ('KR-SEO-010','goldenarchive','goldenarchive.jpg'),
+              ('KR-SEO-011','goldenmuseum','goldenmuseum.jpg'),
+              ('KR-SEO-012','collectotcg','collectotcg.jpg'),
+              ('KR-SEO-013','cardvault','cardvault.jpg'),
+              ('KR-SEO-014','cardsungji','cardsungji.jpg'),
+              ('KR-SEO-015','redlabel','redlabel.jpg'),
+          ]
+
+          replacements = {}
+          for shop_id, slug, thumb_name in shops:
+              old_dir = root / slug
+              new_dir = root / shop_id
+              old_thumb = root / thumb_name
+
+              if old_dir.exists():
+                  if new_dir.exists():
+                      raise RuntimeError(f'target already exists: {new_dir}')
+                  old_detail_files = [p for p in (old_dir/'detail').glob('*') if p.is_file() and p.name != '.gitkeep'] if (old_dir/'detail').exists() else []
+                  old_rel = {p: p.as_posix() for p in old_detail_files}
+                  old_dir.rename(new_dir)
+
+                  detail = new_dir / 'detail'
+                  if detail.exists():
+                      files = [p for p in detail.iterdir() if p.is_file() and p.name != '.gitkeep']
+                      files.sort(key=lambda p: p.name)
+                      for idx, p in enumerate(files, 1):
+                          ext = p.suffix.lower()
+                          m = re.search(r'(\d+)(?=\.[^.]+$)', p.name)
+                          num = int(m.group(1)) if m else idx
+                          new_name = f'{shop_id}-detail-{num:02d}{ext}'
+                          old_path = old_rel.get(old_dir/'detail'/p.name, f'images/shops/{slug}/detail/{p.name}')
+                          new_path = (detail/new_name).as_posix()
+                          replacements[old_path] = new_path
+                          p.rename(detail/new_name)
+
+              if old_thumb.exists():
+                  new_dir.mkdir(parents=True, exist_ok=True)
+                  new_thumb = new_dir / f'{shop_id}-thumb{old_thumb.suffix.lower()}'
+                  replacements[old_thumb.as_posix()] = new_thumb.as_posix()
+                  old_thumb.rename(new_thumb)
+
+              replacements[f'images/shops/{slug}/detail/'] = f'images/shops/{shop_id}/detail/'
+              replacements[f'images/shops/{slug}/'] = f'images/shops/{shop_id}/'
+
+          text_exts = {'.html','.js','.css','.json','.md','.txt','.yml','.yaml'}
+          skip = {Path('.github/workflows/migrate-shop-images-to-ids.yml')}
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or path in skip or '.git' in path.parts or path.suffix.lower() not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new_text = text
+              for old, new in sorted(replacements.items(), key=lambda kv: len(kv[0]), reverse=True):
+                  new_text = new_text.replace(old, new)
+                  new_text = new_text.replace('./'+old, './'+new)
+              if new_text != text:
+                  path.write_text(new_text, encoding='utf-8')
+
+          Path('.github/workflows/migrate-shop-images-to-ids.yml').unlink()
+          PY
+          git add -A
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Migrate shop image assets to Shop ID naming'
+          git push origin main

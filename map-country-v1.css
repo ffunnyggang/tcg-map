@@ -8,9 +8,11 @@
 body.country-japan{--jp-accent:#d93b55;--jp-dark:#b9002d;--jp-light:#ef6b7c;--jp-soft:#fff0f2;--jp-soft2:#f9e6ea}
 body.country-japan .map-filter-bar .filter-chip.active{background:linear-gradient(135deg,var(--jp-light),var(--jp-dark))!important;box-shadow:0 7px 20px rgba(185,0,45,.23),inset 0 1px 0 rgba(255,255,255,.28)!important}
 body.country-japan .map-filter-bar .country-filter-select:focus{box-shadow:0 5px 18px rgba(34,29,44,.11),0 0 0 3px rgba(217,59,85,.09),inset 0 1px 0 rgba(255,255,255,.82)}
-body.country-japan .map-shop-sheet .tag{background:var(--jp-soft)!important;color:#a82b40!important}
-body.country-japan .map-shop-sheet .tag-more{background:var(--jp-soft2)!important;color:#9d2940!important}
-body.country-japan .map-shop-sheet .chev{color:#c64c61!important}
-body.country-japan .map-popup-bubble .map-popup-icon{stroke:#c34c60!important}
-body.country-japan .map-popup-bubble .map-popup-chevron{color:#c34c60!important}
+body.country-japan .map-shop-sheet .tag{background:var(--jp-soft)!important;color:#a82b40!important}body.country-japan .map-shop-sheet .tag-more{background:var(--jp-soft2)!important;color:#9d2940!important}body.country-japan .map-shop-sheet .chev{color:#c64c61!important}body.country-japan .map-popup-bubble .map-popup-icon{stroke:#c34c60!important}body.country-japan .map-popup-bubble .map-popup-chevron{color:#c34c60!important}
+/* Remaining Japan map accents */
+body.country-japan .map-location-btn{color:#b93a50!important}body.country-japan .map-location-btn.is-active{color:#fff!important;background:linear-gradient(135deg,rgba(239,107,124,.95),rgba(185,0,45,.95))!important;box-shadow:0 8px 22px rgba(185,0,45,.23),inset 0 1px 0 rgba(255,255,255,.26)!important}body.country-japan .map-location-guide-icon{background:var(--jp-soft)!important;color:#bd3c52!important}body.country-japan .map-location-guide-card b{color:#a92b40!important}body.country-japan .map-location-guide-confirm{background:#c63850!important}
+body.country-japan .list-heading.list-heading-v2 .list-count{color:#c63850!important}body.country-japan .list-sort-select:focus{border-color:rgba(217,59,85,.64)!important;box-shadow:0 0 0 3px rgba(217,59,85,.08),inset 0 1px 0 rgba(255,255,255,.92)!important}
+body.country-japan .shop-thumb.is-fallback{background:linear-gradient(145deg,#fff4f5,#f7e8eb)!important}body.country-japan .shop-thumb-fallback{color:#a96d77!important}body.country-japan .shop-thumb-fallback .fallback-pin-body{fill:#c56a79!important}body.country-japan .shop-thumb-fallback .fallback-pin-line{stroke:#fff8f9!important}body.country-japan .shop-thumb-fallback .fallback-pin-center{fill:#fff8f9!important}body.country-japan .shop-thumb-fallback b{color:#a96d77!important}
+/* Navigation exception: keep its original purple active color. */
+body.country-japan .shops-bottom-nav a.active{color:#6f55c7!important}
 @media(max-width:430px){.map-filter-bar .country-filter-wrap,.map-filter-bar .country-filter-select{height:36px}.map-filter-bar .country-filter-select{min-width:74px!important;padding-left:14px!important;padding-right:29px!important;font-size:11px}.map-filter-bar .country-filter-wrap:after{right:12px;width:7px;height:7px}.map-filter-bar .country-filter-sep{height:21px;margin-top:7px;margin-bottom:7px}}

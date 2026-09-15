@@ -1,7 +1,8 @@
 /* FUNY PIN map country selector */
 .map-filter-bar .country-filter-wrap{position:relative;display:flex;align-items:center;flex:0 0 auto;height:38px}
-.map-filter-bar .country-filter-select{height:38px;min-width:76px;padding:0 32px 0 14px;border:1px solid rgba(128,121,139,.48);border-radius:999px;background:rgba(255,255,255,.96);color:#28242d;font:inherit;font-size:11.5px;font-weight:800;box-shadow:0 1px 3px rgba(34,29,44,.04),inset 0 1px 0 rgba(255,255,255,.98);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);appearance:none;-webkit-appearance:none;outline:none;cursor:pointer}
+.map-filter-bar .country-filter-select{height:38px;min-width:76px;padding:0 32px 0 14px;border:1px solid rgba(255,255,255,.76);border-radius:999px;background:rgba(255,255,255,.78);color:#28242d;font:inherit;font-size:11.5px;font-weight:800;box-shadow:0 5px 18px rgba(34,29,44,.11),inset 0 1px 0 rgba(255,255,255,.82);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);appearance:none;-webkit-appearance:none;outline:none;cursor:pointer}
 .map-filter-bar .country-filter-wrap:after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:1.8px solid #625b69;border-bottom:1.8px solid #625b69;transform:translateY(-68%) rotate(45deg);pointer-events:none}
+.map-filter-bar .country-filter-select:focus{border-color:rgba(255,255,255,.76);box-shadow:0 5px 18px rgba(34,29,44,.11),0 0 0 3px rgba(117,87,200,.08),inset 0 1px 0 rgba(255,255,255,.82)}
 .map-filter-bar .country-filter-sep{flex:0 0 auto;width:1px;height:23px;margin:7px 1px;background:rgba(96,86,111,.22)}
 #google-map{position:absolute;inset:0;z-index:0;display:none;background:#f4f4f6}
 body.country-japan #naver-map{visibility:hidden}

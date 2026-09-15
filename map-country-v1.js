@@ -2,6 +2,8 @@
 (function(){
   function loadGlobalI18n(){if(!document.querySelector('link[data-funy-i18n]')){const l=document.createElement('link');l.rel='stylesheet';l.href='funy-i18n.css?v=20260915-0523';l.dataset.funyI18n='';document.head.appendChild(l)}if(!document.querySelector('script[data-funy-i18n]')){const s=document.createElement('script');s.src='funy-i18n.js?v=20260915-0523';s.dataset.funyI18n='';document.head.appendChild(s)}}
   loadGlobalI18n();
+  const reviewInfoDates={'KR-SEO-004':'2026-09-13','KR-SEO-005':'2026-09-14','KR-SEO-008':'2026-09-13'};
+  if(typeof SHOPS!=='undefined'&&Array.isArray(SHOPS))SHOPS.forEach(shop=>{shop.verified=reviewInfoDates[shop.id]||null});
   const track=document.getElementById('filters'),mapWrap=document.querySelector('.map-wrap-hero'),googleMapEl=document.getElementById('google-map');if(!track||!mapWrap||typeof renderFilters!=='function'||typeof syncMapMarkers!=='function')return;
   const JAPAN_CENTER={lat:35.698683,lng:139.773148,zoom:15};let country='KR',googleMap=null,googleLoader=null;
   function currentLanguage(){return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}

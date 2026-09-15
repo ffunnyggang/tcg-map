@@ -26,20 +26,34 @@
   function closePermissionGuide(){
     const guide=document.getElementById('map-location-guide');
     if(guide)guide.remove();
+    document.documentElement.classList.remove('funy-location-modal-open');
+  }
+
+  function deviceGuide(){
+    const ua=navigator.userAgent||'';
+    const isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    const isAndroid=/Android/i.test(ua);
+    const isSafari=isIOS&&/Safari/i.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+    const isChrome=(isAndroid&&/Chrome/i.test(ua))||/CriOS/i.test(ua);
+    if(isIOS&&isSafari)return{lead:'iPhone Safari에서 아래 순서로 허용해주세요.',steps:['주소창의 <b>페이지 메뉴</b>를 눌러주세요.','<b>웹사이트 설정 → 위치</b>를 선택해주세요.','<b>허용</b>으로 변경한 뒤 다시 시도해주세요.']};
+    if(isIOS)return{lead:'iPhone 브라우저에서 위치 권한을 허용해주세요.',steps:['iPhone <b>설정 → 개인정보 보호 및 보안 → 위치 서비스</b>를 열어주세요.','사용 중인 <b>브라우저</b>의 위치 접근을 허용해주세요.','FUNY PIN으로 돌아와 다시 시도해주세요.']};
+    if(isAndroid&&isChrome)return{lead:'Android Chrome에서 아래 순서로 허용해주세요.',steps:['주소창 왼쪽의 <b>사이트 정보</b>를 눌러주세요.','<b>권한 → 위치</b>를 선택해주세요.','<b>허용</b>으로 변경한 뒤 다시 시도해주세요.']};
+    if(isAndroid)return{lead:'Android 브라우저에서 위치 권한을 허용해주세요.',steps:['브라우저의 <b>사이트 설정 또는 권한</b>을 열어주세요.','현재 사이트의 <b>위치 권한</b>을 허용해주세요.','FUNY PIN으로 돌아와 다시 시도해주세요.']};
+    return{lead:'브라우저에서 위치 권한을 허용해주세요.',steps:['주소창의 <b>사이트 정보 또는 설정</b>을 열어주세요.','현재 사이트의 <b>위치 권한</b>을 허용해주세요.','페이지로 돌아와 다시 시도해주세요.']};
   }
 
   function showPermissionGuide(){
-    const wrap=document.querySelector('.map-wrap-hero');
-    if(!wrap)return;
     closePermissionGuide();
+    const info=deviceGuide();
     const guide=document.createElement('div');
     guide.id='map-location-guide';
     guide.className='map-location-guide';
     guide.setAttribute('role','dialog');
     guide.setAttribute('aria-modal','true');
     guide.setAttribute('aria-label','위치 권한 안내');
-    guide.innerHTML=`<div class="map-location-guide-backdrop" data-location-guide-close></div><div class="map-location-guide-card"><button class="map-location-guide-close" type="button" aria-label="닫기" data-location-guide-close>×</button><div class="map-location-guide-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></div><strong>내 위치를 표시하려면<br>위치 권한이 필요해요</strong><p>iPhone Safari에서 아래 순서로 허용해주세요.</p><ol><li>주소창의 <b>페이지 메뉴</b>를 눌러주세요.</li><li><b>웹사이트 설정 → 위치</b>를 선택해주세요.</li><li><b>허용</b>으로 변경한 뒤 다시 시도해주세요.</li></ol><button class="map-location-guide-confirm" type="button" data-location-guide-close>확인</button></div>`;
-    wrap.appendChild(guide);
+    guide.innerHTML=`<div class="map-location-guide-backdrop" data-location-guide-close></div><div class="map-location-guide-card"><button class="map-location-guide-close" type="button" aria-label="닫기" data-location-guide-close>×</button><div class="map-location-guide-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></div><strong>내 위치를 표시하려면<br>위치 권한이 필요해요</strong><p>${info.lead}</p><ol>${info.steps.map(step=>`<li>${step}</li>`).join('')}</ol><button class="map-location-guide-confirm" type="button" data-location-guide-close>확인</button></div>`;
+    document.body.appendChild(guide);
+    document.documentElement.classList.add('funy-location-modal-open');
     guide.addEventListener('click',e=>{if(e.target.closest('[data-location-guide-close]'))closePermissionGuide()});
   }
 

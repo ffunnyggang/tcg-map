@@ -1,2 +1,7 @@
 /* FUNY PIN bottom navigation: 4 items */
-.portal-bottom-nav,.shops-bottom-nav{grid-template-columns:repeat(4,1fr)!important}
+.portal-bottom-nav,.shops-bottom-nav{grid-template-columns:repeat(4,1fr)!important;bottom:max(8px,env(safe-area-inset-bottom))!important;width:min(calc(100% - 26px),394px)!important;height:66px!important;min-height:66px!important;max-height:66px!important;padding:4px!important;gap:3px!important}
+.portal-bottom-nav a,.shops-bottom-nav a{height:56px!important;min-height:56px!important;max-height:56px!important;padding:0!important;margin:0!important;border:1px solid transparent;box-sizing:border-box!important;gap:2px!important;font-size:9.5px!important;line-height:14px!important;white-space:nowrap!important}
+.portal-bottom-nav a.active,.shops-bottom-nav a.active{font-size:9.5px!important;line-height:14px!important}
+.portal-bottom-nav a span,.shops-bottom-nav a span{display:block!important;height:14px!important;min-height:14px!important;max-height:14px!important;line-height:14px!important;margin:0!important;padding:0!important;font-size:9.5px!important;white-space:nowrap!important}
+.portal-bottom-nav svg,.shops-bottom-nav svg{display:block!important;width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;max-width:20px!important;max-height:20px!important;flex:0 0 20px!important;margin:0!important}
+.portal-bottom-nav a.active::after,.shops-bottom-nav a.active::after{display:none!important;content:none!important}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Generate FUNY PIN's read-only Pokamo public feed.
 
-Only publicly accessible cafe pages are requested. Trading boards are excluded.
-On a partial detail failure, that item is skipped. The output is replaced only
-when at least one valid detailed post was collected.
+Only publicly accessible cafe pages are requested. The feed includes the public
+community boards used by FUNY TALK, including trade boards. Engagement values
+visible on the public cafe listing are retained for the Popular tab.
 """
 from __future__ import annotations
 import html, json, re, urllib.request
@@ -13,8 +13,7 @@ from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 CAFE_URL = "https://cafe.daangn.com/pokamo-pokesm-1"
 OUT = Path("data/pokamo-feed.json")
-EXCLUDED = ("중고거래", "카드 트레이딩")
-MAX_ITEMS = 20
+MAX_ITEMS = 40
 UA = "Mozilla/5.0 (compatible; FUNY-PIN-Pokamo-Feed/1.0; +https://funypin.kr/)"
 
 
@@ -55,9 +54,23 @@ def jsonlds(raw):
 
 
 def parse_category(label):
-    for name in ("카드 자랑","자유 게시판","카드깡/카드샵 후기","정보 공유"):
-        if name in label: return name
+    for name in ("카드 자랑","자유 게시판","카드깡/카드샵 후기","정보 공유","중고거래","카드 트레이딩"):
+        if name in label:
+            return "중고거래" if name in ("중고거래","카드 트레이딩") else name
     return None
+
+
+def parse_engagement(label, title):
+    text=clean(label)
+    if title and title in text:
+        text=text.split(title,1)[1]
+    nums=[int(x.replace(",","")) for x in re.findall(r"\d[\d,]*",text)]
+    views=nums[0] if nums else 0
+    likes=nums[1] if len(nums)>1 else 0
+    comments=nums[2] if len(nums)>2 else 0
+    if "좋아요" in text and len(nums)==2:
+        likes=nums[1]
+    return views,likes,comments
 
 
 def detail(url, label):
@@ -75,7 +88,8 @@ def detail(url, label):
         excerpt=excerpt or o.get("description")
     title=clean(title)
     title=re.sub(r"\s*\|\s*포카모.*$", "", title).strip()
-    return {"category":parse_category(label),"title":title or None,"author":clean(author) or None,"publishedAt":published,"excerpt":clean(excerpt)[:240] or None,"image":image,"url":url}
+    views,likes,comments=parse_engagement(label,title)
+    return {"category":parse_category(label),"title":title or None,"author":clean(author) or None,"publishedAt":published,"excerpt":clean(excerpt)[:240] or None,"image":image,"url":url,"views":views,"likes":likes,"comments":comments,"popularityScore":likes*3+comments*2+min(views,500)/100}
 
 
 def main():
@@ -84,7 +98,8 @@ def main():
     candidates=[]; seen=set()
     for href,body in anchors:
         label=clean(body); url=urljoin(CAFE_URL,html.unescape(href))
-        if not label or url in seen or any(x in label for x in EXCLUDED): continue
+        category=parse_category(label)
+        if not label or not category or url in seen: continue
         seen.add(url); candidates.append((url,label))
         if len(candidates)>=MAX_ITEMS: break
     items=[]

@@ -1,0 +1,29 @@
+name: Pokamo crawl test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  crawl-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch public Pokamo feed
+        run: python scripts/pokamo-crawl-test.py
+
+      - name: Upload test result
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokamo-feed-test
+          path: data/pokamo-feed-test.json
+          if-no-files-found: error

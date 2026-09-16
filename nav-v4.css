@@ -5,3 +5,7 @@
 .portal-bottom-nav a span,.shops-bottom-nav a span{display:block!important;height:14px!important;min-height:14px!important;max-height:14px!important;line-height:14px!important;margin:0!important;padding:0!important;font-size:9.5px!important;white-space:nowrap!important}
 .portal-bottom-nav svg,.shops-bottom-nav svg{display:block!important;width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;max-width:20px!important;max-height:20px!important;flex:0 0 20px!important;margin:0!important}
 .portal-bottom-nav a.active::after,.shops-bottom-nav a.active::after{display:none!important;content:none!important}
+
+/* FUNY TALK hero art: use only the requested right-side graphic area */
+.talk-hero::after{content:"";display:block;width:100%;height:238px;margin-top:18px;border-radius:18px;background-image:url("assets/talk/funy-talk-hero.png");background-repeat:no-repeat;background-size:140% auto;background-position:right center;overflow:hidden}
+@media(max-width:430px){.talk-hero::after{height:228px;background-size:142% auto}}

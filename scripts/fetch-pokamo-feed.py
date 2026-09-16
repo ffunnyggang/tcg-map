@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Generate FUNY PIN's read-only Pokamo public feed.
+
+Only publicly accessible cafe pages are requested. Trading boards are excluded.
+On a partial detail failure, that item is skipped. The output is replaced only
+when at least one valid detailed post was collected.
+"""
+from __future__ import annotations
+import html, json, re, urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import quote, urljoin, urlsplit, urlunsplit
+
+CAFE_URL = "https://cafe.daangn.com/pokamo-pokesm-1"
+OUT = Path("data/pokamo-feed.json")
+EXCLUDED = ("중고거래", "카드 트레이딩")
+MAX_ITEMS = 20
+UA = "Mozilla/5.0 (compatible; FUNY-PIN-Pokamo-Feed/1.0; +https://funypin.kr/)"
+
+
+def clean(s):
+    s = re.sub(r"<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>", " ", s or "", flags=re.I|re.S)
+    s = re.sub(r"<[^>]+>", " ", s)
+    return re.sub(r"\s+", " ", html.unescape(s)).strip()
+
+
+def encoded_url(url):
+    p = urlsplit(url)
+    return urlunsplit((p.scheme, p.netloc, quote(p.path, safe="/%:@!$&'()*+,;=-._~%"), quote(p.query, safe="=&?/:;+,%@-._~"), ""))
+
+
+def fetch(url):
+    req = urllib.request.Request(encoded_url(url), headers={"User-Agent":UA,"Accept-Language":"ko-KR,ko;q=0.9,en;q=0.8"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return r.read().decode("utf-8", errors="replace")
+
+
+def meta(raw, key):
+    for pat in (
+        rf'<meta[^>]+(?:property|name)=["\']{re.escape(key)}["\'][^>]+content=["\']([^"\']*)["\']',
+        rf'<meta[^>]+content=["\']([^"\']*)["\'][^>]+(?:property|name)=["\']{re.escape(key)}["\']'):
+        m = re.search(pat, raw, re.I|re.S)
+        if m: return html.unescape(m.group(1)).strip() or None
+    return None
+
+
+def jsonlds(raw):
+    for body in re.findall(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', raw, re.I|re.S):
+        try: data=json.loads(html.unescape(body))
+        except Exception: continue
+        if isinstance(data,dict): yield data
+        elif isinstance(data,list):
+            for x in data:
+                if isinstance(x,dict): yield x
+
+
+def parse_category(label):
+    for name in ("카드 자랑","자유 게시판","카드깡/카드샵 후기","정보 공유"):
+        if name in label: return name
+    return None
+
+
+def detail(url, label):
+    raw=fetch(url)
+    title=meta(raw,"og:title") or meta(raw,"twitter:title")
+    excerpt=meta(raw,"og:description") or meta(raw,"description")
+    image=meta(raw,"og:image") or meta(raw,"twitter:image")
+    author=published=None
+    for o in jsonlds(raw):
+        a=o.get("author")
+        if isinstance(a,dict): author=author or a.get("name")
+        elif isinstance(a,str): author=author or a
+        published=published or o.get("datePublished") or o.get("dateCreated")
+        title=title or o.get("headline") or o.get("name")
+        excerpt=excerpt or o.get("description")
+    title=clean(title)
+    title=re.sub(r"\s*\|\s*포카모.*$", "", title).strip()
+    return {"category":parse_category(label),"title":title or None,"author":clean(author) or None,"publishedAt":published,"excerpt":clean(excerpt)[:240] or None,"image":image,"url":url}
+
+
+def main():
+    raw=fetch(CAFE_URL)
+    anchors=re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/posts/[^"\']+)["\'][^>]*>(.*?)</a>', raw, re.I|re.S)
+    candidates=[]; seen=set()
+    for href,body in anchors:
+        label=clean(body); url=urljoin(CAFE_URL,html.unescape(href))
+        if not label or url in seen or any(x in label for x in EXCLUDED): continue
+        seen.add(url); candidates.append((url,label))
+        if len(candidates)>=MAX_ITEMS: break
+    items=[]
+    for url,label in candidates:
+        try: items.append(detail(url,label))
+        except Exception as e: print(f"skip detail: {url}: {type(e).__name__}: {e}")
+    if not items: raise SystemExit("No valid public Pokamo detail posts collected; preserving previous feed.")
+    payload={"source":"Pokamo public cafe","updatedAt":datetime.now(timezone.utc).isoformat(),"count":len(items),"items":items}
+    OUT.parent.mkdir(parents=True,exist_ok=True)
+    tmp=OUT.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    tmp.replace(OUT)
+    print(f"generated {OUT}: {len(items)} posts")
+
+if __name__=="__main__": main()

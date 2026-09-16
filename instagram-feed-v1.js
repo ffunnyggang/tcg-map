@@ -27,10 +27,10 @@
       if(section) review?detail.insertBefore(section,review):detail.appendChild(section);
     }catch(e){/* Fail closed: no empty Instagram block. */}
   }
-  function currentShop(){const m=location.hash.match(/^#\/shop\/([^/?#]+)$/);return m&&window.SHOPS?SHOPS.find(s=>s.id===m[1]):null}
+  function currentShop(){const m=location.hash.match(/^#\/shop\/([^/?#]+)$/);return m&&typeof SHOPS!=='undefined'?SHOPS.find(s=>s.id===m[1]):null}
   function refresh(){setTimeout(()=>load(currentShop()),0)}
   window.addEventListener('hashchange',refresh);
-  new MutationObserver(()=>{if(!document.querySelector('#detail-view')?.hidden)refresh()}).observe(document.getElementById('detail-view'),{attributes:true,attributeFilter:['hidden']});
+  const view=document.getElementById('detail-view');if(view)new MutationObserver(()=>{if(!view.hidden)refresh()}).observe(view,{attributes:true,attributeFilter:['hidden']});
   window.FUNY_INSTAGRAM_FEED={eligible:ELIGIBLE,refresh};
   refresh();
 })();

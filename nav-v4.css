@@ -1,0 +1,2 @@
+/* FUNY PIN bottom navigation: 4 items */
+.portal-bottom-nav,.shops-bottom-nav{grid-template-columns:repeat(4,1fr)!important}

@@ -1,0 +1,40 @@
+name: Update Pokamo feed
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-pokamo-feed
+  cancel-in-progress: false
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate public Pokamo feed
+        run: python scripts/fetch-pokamo-feed.py
+
+      - name: Commit feed when changed
+        run: |
+          if git diff --quiet -- data/pokamo-feed.json; then
+            echo "No feed changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pokamo-feed.json
+          git commit -m "Update Pokamo public feed"
+          git push

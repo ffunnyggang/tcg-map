@@ -1,0 +1,97 @@
+name: FUNY PIN SEO and platform fixes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/seo-platform-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply SEO, favicon and Naver Maps fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          site='https://www.funypin.kr'
+          og=f'{site}/assets/og/funy-pin-og.png'
+          pages={
+            'index.html': {
+              'title':'FUNY PIN | TCG 카드샵 지도',
+              'desc':'포켓몬카드부터 다양한 TCG 카드샵까지. FUNY PIN에서 가까운 카드샵을 찾고 방문 정보와 리뷰를 확인해보세요.',
+              'url':f'{site}/'
+            },
+            'shops.html': {
+              'title':'TCG 카드샵 지도 | FUNY PIN',
+              'desc':'한국과 일본의 TCG 카드샵을 지도에서 찾아보세요. 지역 검색과 매장 상세정보를 FUNY PIN에서 한눈에 확인할 수 있습니다.',
+              'url':f'{site}/shops.html'
+            },
+            'reviews.html': {
+              'title':'카드샵 리뷰·정보 | FUNY PIN',
+              'desc':'깽퐌커플이 직접 경험한 TCG 카드샵 방문기와 카드샵 정보를 FUNY PIN에서 확인해보세요.',
+              'url':f'{site}/reviews.html'
+            }
+          }
+
+          for fn,m in pages.items():
+            p=Path(fn); s=p.read_text(encoding='utf-8')
+            title=re.search(r'<title>.*?</title>',s,re.S)
+            if not title: raise SystemExit(f'No title in {fn}')
+            extra=f'''<title>{m['title']}</title><meta name="description" content="{m['desc']}"><link rel="canonical" href="{m['url']}"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="{m['title']}"><meta property="og:description" content="{m['desc']}"><meta property="og:url" content="{m['url']}"><meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{m['title']}"><meta name="twitter:description" content="{m['desc']}"><meta name="twitter:image" content="{og}">'''
+            if fn=='index.html':
+              extra += f'''<script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebSite","name":"FUNY PIN","alternateName":"FUNYPIN","url":"{site}/","description":"{m['desc']}"}}</script>'''
+            s=s[:title.start()]+extra+s[title.end():]
+            p.write_text(s,encoding='utf-8')
+
+          # NAVER Maps: load core first, then geocoder submodule sequentially.
+          p=Path('shops.html'); s=p.read_text(encoding='utf-8')
+          old='<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9&submodules=geocoder"></script>'
+          new='<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9"></script><script src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script>'
+          if old not in s: raise SystemExit('Expected NAVER Maps loader not found')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+
+          Path('robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: https://www.funypin.kr/sitemap.xml\n',encoding='utf-8')
+          Path('sitemap.xml').write_text('''<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://www.funypin.kr/</loc></url>\n  <url><loc>https://www.funypin.kr/shops.html</loc></url>\n  <url><loc>https://www.funypin.kr/reviews.html</loc></url>\n</urlset>\n''',encoding='utf-8')
+          Path('favicon.svg').write_text('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="12" y1="8" x2="52" y2="54" gradientUnits="userSpaceOnUse"><stop stop-color="#b093f4"/><stop offset=".5" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient></defs><path fill="url(#g)" d="M32 4C17.6 4 9 14.7 9 27.1 9 43.5 32 60 32 60s23-16.5 23-32.9C55 14.7 46.4 4 32 4Z"/><path fill="#fff" d="M10 26h13.5a9 9 0 0 1 17 0H54v3H41a9 9 0 0 1-18 0H10Z"/><circle cx="32" cy="27.5" r="6.2" fill="#f6f3ff"/></svg>''',encoding='utf-8')
+          PY
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          from pathlib import Path
+          Path('assets/og').mkdir(parents=True,exist_ok=True)
+          # favicon / touch icon
+          im=Image.new('RGBA',(512,512),(247,244,255,255)); d=ImageDraw.Draw(im)
+          d.ellipse((104,42,408,346),fill=(128,98,216,255)); d.polygon([(150,260),(362,260),(256,470)],fill=(128,98,216,255)); d.rectangle((108,188,404,214),fill='white'); d.ellipse((214,157,298,241),fill=(247,244,255,255))
+          im.resize((180,180),Image.Resampling.LANCZOS).save('apple-touch-icon.png')
+          im.save('favicon.ico',sizes=[(16,16),(32,32),(48,48),(64,64)])
+          # OG 1200x630
+          og=Image.new('RGB',(1200,630),(247,244,255)); od=ImageDraw.Draw(og)
+          for y in range(630):
+            t=y/629; c=tuple(int(a*(1-t)+b*t) for a,b in zip((251,250,255),(235,226,255)))
+            od.line((0,y,1200,y),fill=c)
+          od.ellipse((110,105,350,345),fill=(128,98,216)); od.polygon([(145,285),(315,285),(230,470)],fill=(128,98,216)); od.rectangle((114,220,346,240),fill='white'); od.ellipse((198,190,262,254),fill=(247,244,255))
+          try:
+            f1=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',72)
+            f2=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',31)
+            f3=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24)
+          except: f1=f2=f3=None
+          od.text((430,190),'FUNY PIN',font=f1,fill=(31,27,42))
+          od.text((434,290),'TCG CARD SHOP MAP',font=f2,fill=(104,83,158))
+          od.text((435,355),'COLLECT  ·  TRADE  ·  BE HAPPY',font=f3,fill=(118,112,128))
+          od.text((435,420),'www.funypin.kr',font=f3,fill=(128,98,216))
+          og.save('assets/og/funy-pin-og.png',quality=92)
+          PY
+      - name: Commit generated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html shops.html reviews.html robots.txt sitemap.xml favicon.svg favicon.ico apple-touch-icon.png assets/og/funy-pin-og.png
+          git commit -m "Improve SEO social sharing favicon and Naver geocoder loading"
+          git push

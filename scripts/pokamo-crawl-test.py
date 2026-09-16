@@ -13,14 +13,14 @@ import re
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 CAFE_URL = "https://cafe.daangn.com/pokamo-pokesm-1"
 OUT = Path("data/pokamo-feed-test.json")
 EXCLUDED = ("중고거래", "카드 트레이딩")
 MAX_ITEMS = 20
 DETAIL_ITEMS = 5
-UA = "Mozilla/5.0 (compatible; FUNY-PIN-Pokamo-Test/1.1; +https://funypin.kr/)"
+UA = "Mozilla/5.0 (compatible; FUNY-PIN-Pokamo-Test/1.2; +https://funypin.kr/)"
 
 
 def clean(text: str) -> str:
@@ -29,8 +29,20 @@ def clean(text: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
 
 
+def request_url(url: str) -> str:
+    """Percent-encode Unicode path/query while preserving URL separators."""
+    parts = urlsplit(url)
+    path = quote(parts.path, safe="/%:@!$&'()*+,;=-._~%")
+    query = quote(parts.query, safe="=&?/:;+,%@-._~")
+    fragment = quote(parts.fragment, safe="")
+    return urlunsplit((parts.scheme, parts.netloc, path, query, fragment))
+
+
 def fetch(url: str) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"})
+    req = urllib.request.Request(
+        request_url(url),
+        headers={"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"},
+    )
     with urllib.request.urlopen(req, timeout=20) as res:
         return res.read().decode("utf-8", errors="replace")
 
@@ -81,7 +93,6 @@ def detail(url: str) -> dict:
         elif not image and isinstance(img, list) and img:
             image = img[0] if isinstance(img[0], str) else None
 
-    # Keep only a short public preview in the test artifact.
     if description:
         description = clean(description)[:240]
     return {
@@ -91,6 +102,7 @@ def detail(url: str) -> dict:
         "excerpt": description,
         "image": image,
         "url": url,
+        "requestUrl": request_url(url),
     }
 
 

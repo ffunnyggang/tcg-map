@@ -4,7 +4,7 @@ from __future__ import annotations
 import html, json, re, urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import quote, urljoin, urlsplit, urlunsplit
+from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit
 
 CAFE_URL = "https://cafe.daangn.com/pokamo-pokesm-1"
 REVIEW_BOARD_URL = CAFE_URL + "/boards/%F0%9F%98%B1-%EC%B9%B4%EB%93%9C%EA%B9%A1-%ED%9B%84%EA%B8%B0-yPwKkDEP"
@@ -23,7 +23,7 @@ def encoded_url(url):
 
 def fetch(url):
     req=urllib.request.Request(encoded_url(url),headers={"User-Agent":UA,"Accept-Language":"ko-KR,ko;q=0.9,en;q=0.8"})
-    with urllib.request.urlopen(req,timeout=20) as r: return r.read().decode("utf-8",errors="replace")
+    with urllib.request.urlopen(req,timeout=20) as r:return r.read().decode("utf-8",errors="replace")
 
 def meta(raw,key):
     for pat in (rf'<meta[^>]+(?:property|name)=["\']{re.escape(key)}["\'][^>]+content=["\']([^"\']*)["\']',rf'<meta[^>]+content=["\']([^"\']*)["\'][^>]+(?:property|name)=["\']{re.escape(key)}["\']'):
@@ -46,7 +46,7 @@ def parse_category(label):
     if "카드 자랑" in text:return "카드 자랑"
     if "자유 게시판" in text:return "자유 게시판"
     if "정보 공유" in text:return "정보 공유"
-    if "중고거래" in text or "카드 트레이딩" in text:return "카드거래"
+    if "카드거래" in text or "중고거래" in text:return "카드거래"
     return None
 
 def parse_engagement(label,title):
@@ -56,35 +56,35 @@ def parse_engagement(label,title):
     return (nums[0] if nums else 0,nums[1] if len(nums)>1 else 0,nums[2] if len(nums)>2 else 0)
 
 def detail(url,label,category):
-    raw=fetch(url); title=meta(raw,"og:title") or meta(raw,"twitter:title"); excerpt=meta(raw,"og:description") or meta(raw,"description"); image=meta(raw,"og:image") or meta(raw,"twitter:image"); author=published=None
+    raw=fetch(url);title=meta(raw,"og:title") or meta(raw,"twitter:title");excerpt=meta(raw,"og:description") or meta(raw,"description");image=meta(raw,"og:image") or meta(raw,"twitter:image");author=published=None
     for o in jsonlds(raw):
         a=o.get("author")
         if isinstance(a,dict):author=author or a.get("name")
         elif isinstance(a,str):author=author or a
-        published=published or o.get("datePublished") or o.get("dateCreated"); title=title or o.get("headline") or o.get("name"); excerpt=excerpt or o.get("description")
-    title=re.sub(r"\s*\|\s*포카모.*$","",clean(title)).strip(); views,likes,comments=parse_engagement(label,title)
+        published=published or o.get("datePublished") or o.get("dateCreated");title=title or o.get("headline") or o.get("name");excerpt=excerpt or o.get("description")
+    title=re.sub(r"\s*\|\s*포카모.*$","",clean(title)).strip();views,likes,comments=parse_engagement(label,title)
     return {"category":category,"title":title or None,"author":clean(author) or None,"publishedAt":published,"excerpt":clean(excerpt)[:240] or None,"image":image,"url":url,"views":views,"likes":likes,"comments":comments,"popularityScore":likes*3+comments*2+min(views,500)/100}
 
 def post_anchors(raw):return re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/posts/[^"\']+)["\'][^>]*>(.*?)</a>',raw,re.I|re.S)
 def board_anchors(raw):return re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/boards/[^"\']+)["\'][^>]*>(.*?)</a>',raw,re.I|re.S)
 
 def main():
-    home=fetch(CAFE_URL); review=fetch(REVIEW_BOARD_URL); discovery_pages=[home,review]
-    boards=[]; seen_boards=set()
+    home=fetch(CAFE_URL);review=fetch(REVIEW_BOARD_URL);discovery_pages=[home,review]
+    boards=[];seen_boards=set()
     for page in discovery_pages:
         for href,body in board_anchors(page):
-            url=urljoin(CAFE_URL,html.unescape(href)); category=parse_category(body)
+            url=urljoin(CAFE_URL,html.unescape(href));category=parse_category(body)
             if category and url not in seen_boards:seen_boards.add(url);boards.append((url,category))
     if REVIEW_BOARD_URL not in seen_boards:seen_boards.add(REVIEW_BOARD_URL);boards.append((REVIEW_BOARD_URL,"카드깡/카드샵 후기"))
 
-    # Daangn currently renders the two trade board names in the board navigation,
-    # but their hrefs can be omitted from the anchor subset. Recover those board
-    # URLs from any /boards/ URL tokens in the server HTML, then classify by the
-    # decoded slug text. This keeps us on public board pages only.
+    # Recover board URLs from server HTML when Daangn omits them from normal
+    # anchor extraction. Decode URL slugs before category matching. Current
+    # Pokamo trade content is represented only as 카드거래; legacy 카드 트레이딩
+    # is intentionally not mapped into FUNY TALK.
     for page in discovery_pages:
         for href in re.findall(r'(["\']?[^"\'<>\s]*?/pokamo-pokesm-1/boards/[^"\'<>\s]+)',page,re.I):
-            href=html.unescape(href.strip("\"'")); url=urljoin(CAFE_URL,href)
-            slug=clean(urlsplit(url).path.replace('-', ' '))
+            href=html.unescape(href.strip("\"'"));url=urljoin(CAFE_URL,href)
+            slug=clean(unquote(urlsplit(url).path).replace('-', ' '))
             category=parse_category(slug)
             if category and url not in seen_boards:seen_boards.add(url);boards.append((url,category))
 

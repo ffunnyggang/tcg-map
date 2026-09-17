@@ -12,6 +12,9 @@ from pathlib import Path
 from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 CAFE_URL = "https://cafe.daangn.com/pokamo-pokesm-1"
+# The cafe home HTML can expose only a subset of board links. Seed one verified
+# public board whose server-rendered navigation exposes the complete board list.
+REVIEW_BOARD_URL = CAFE_URL + "/boards/%F0%9F%98%B1-%EC%B9%B4%EB%93%9C%EA%B9%A1-%ED%9B%84%EA%B8%B0-yPwKkDEP"
 OUT = Path("data/pokamo-feed.json")
 MAX_ITEMS = 40
 MAX_PER_BOARD = 12
@@ -100,19 +103,35 @@ def post_anchors(raw):
     return re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/posts/[^"\']+)["\'][^>]*>(.*?)</a>', raw, re.I|re.S)
 
 
+def board_anchors(raw):
+    return re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/boards/[^"\']+)["\'][^>]*>(.*?)</a>', raw, re.I|re.S)
+
+
 def main():
     home=fetch(CAFE_URL)
-    board_anchors=re.findall(r'<a\b[^>]*href=["\']([^"\']*/pokamo-pokesm-1/boards/[^"\']+)["\'][^>]*>(.*?)</a>', home, re.I|re.S)
+    discovery_pages=[home]
+    try:
+        discovery_pages.append(fetch(REVIEW_BOARD_URL))
+    except Exception as e:
+        print(f"review board discovery fallback unavailable: {type(e).__name__}: {e}")
+
     boards=[]; seen_boards=set()
-    for href,body in board_anchors:
-        category=parse_category(body)
-        url=urljoin(CAFE_URL,html.unescape(href))
-        if category and url not in seen_boards:
-            seen_boards.add(url); boards.append((url,category))
+    # Discover from both the cafe home and a verified public board page. The
+    # latter contains the full board navigation even when the home page does not.
+    for page in discovery_pages:
+        for href,body in board_anchors(page):
+            category=parse_category(body)
+            url=urljoin(CAFE_URL,html.unescape(href))
+            if category and url not in seen_boards:
+                seen_boards.add(url); boards.append((url,category))
+
+    # Guarantee the verified review board itself is included even if Daangn
+    # changes the navigation markup around its board links.
+    if REVIEW_BOARD_URL not in seen_boards:
+        seen_boards.add(REVIEW_BOARD_URL)
+        boards.append((REVIEW_BOARD_URL,"카드깡/카드샵 후기"))
 
     candidates=[]; seen=set()
-    # Primary path: read each board directly. This avoids the cafe home page's
-    # limited mixed feed hiding categories such as reviews and trading.
     for board_url,category in boards:
         try: raw=fetch(board_url)
         except Exception as e:
@@ -124,7 +143,6 @@ def main():
             seen.add(url); candidates.append((url,clean(body),category)); added+=1
             if added>=MAX_PER_BOARD: break
 
-    # Fallback for unexpected cafe markup changes.
     if not candidates:
         for href,body in post_anchors(home):
             label=clean(body); category=parse_category(label)

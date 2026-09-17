@@ -1,8 +1,47 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-17T13:29:01.978090+00:00",
+  "updatedAt": "2026-09-17T14:29:18.769151+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "🛠️ 사전 테스터로 여러분을 초대합니다! ✨",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-09-17T13:49:45.245595Z",
+      "excerpt": "안녕하세요. 포켓몬카드를 수집하는 깽퐌커플입니다 :) 저희가 직접 만들고 있는 TCG 카드샵 지도 서비스 ‘FUNY PIN (퍼니핀)’ 정식 오픈 전, 포카모 회원분들에게 먼저 공유드리고 있습니다. 📍 아직은 BETA 단계이고 부족한 부분도 많지만, 평소 저희가 여러 카드샵을 직접 다니",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17896531411350812032a1c39396dde204c8494253bcd8d83e99dc60fb872ed6bee723d41f5ff0.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사전-테스터로-여러분을-초대합니다-✨-Pnzm1qWP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "직뽑 이브이 ✌️",
+      "author": "깽깽깽",
+      "publishedAt": "2026-09-17T13:49:36.283729Z",
+      "excerpt": "ㅎㅎ 이번주는 직뽑했던 이브이 싸rrrr입니다 😁 하나씩 인증해갈게요 ✨️",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/aee3bd1c-ce19-4d70-ae15-fa80cc76be1a.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/직뽑-이브이-Pm6wBJRd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "피카츄입니다 너무귀여워요!! 대표캐릭터",
+      "author": "쇼핑중독눈",
+      "publishedAt": "2026-09-17T13:44:33.560248Z",
+      "excerpt": "피카츄입니다 너무귀여워요!! 대표캐릭터",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄입니다-너무귀여워요-대표캐릭터-j8BY9mkP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "북미 팩, 박스, 카드 구해드립니다.",
@@ -121,45 +160,6 @@
       "popularityScore": 6.12
     },
     {
-      "category": "자유 게시판",
-      "title": "카드들 얼마에 팔릴까요?",
-      "author": "쥬리",
-      "publishedAt": "2026-09-13T09:29:17.123448Z",
-      "excerpt": "이 등카들이랑 30주년 카드있는데 얼마면 팔릴지 궁금하네요. 판매도 하니 연락주세요.",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/89af5b02-5546-4bef-9e06-86075cc703d9.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드들-얼마에-팔릴까요-dQ2GnG8j",
-      "views": 56,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.56
-    },
-    {
-      "category": "자유 게시판",
-      "title": "포켓몬 카드 게임 하는 아들을 키워요",
-      "author": "진몽",
-      "publishedAt": "2026-09-13T09:01:25.129438Z",
-      "excerpt": "포켓몬 카드 게임 하는 아들을 키워요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-게임-하는-아들을-키워요-PWDvQxqd",
-      "views": 15,
-      "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.15
-    },
-    {
-      "category": "자유 게시판",
-      "title": "아직 구매 안해봤어요",
-      "author": "오아시스",
-      "publishedAt": "2026-09-13T06:16:38.168394Z",
-      "excerpt": "아직 구매 안해봤어요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아직-구매-안해봤어요-dXqD6lwj",
-      "views": 4,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.04
-    },
-    {
       "category": "카드 자랑",
       "title": "찬란한이브이 ✌️",
       "author": "깽깽깽",
@@ -258,10 +258,10 @@
       "excerpt": "포켓몬 카드 게임 MEGA 확장팩 『30th CELEBRATION』 구매권 추첨 응모 이벤트 오픈🎉 #포켓몬카드30주년응모일정 • 응모 기간: 2026년 9월 8일(화) 10:00 ~ 9월 13일(일) 23:59 • 추첨 발표: 2026년 9월 14일(월) 당첨자 개별 연락 • 배송 기",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178883960090217f83cf23d9f1e10d0e67f24f672a697d98ce0ffd61045ec409f4132d3df73eb0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-MEGA-확장팩-추첨-응모-시작🎉-초간단-응모-방법-PMDXByWA",
-      "views": 80,
+      "views": 82,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.8
+      "popularityScore": 7.82
     },
     {
       "category": "카드거래",
@@ -349,10 +349,10 @@
       "excerpt": "30주년 판매해요! 일판 박스, 에브이블래키박스! 가격은 각각 38 43 입니다!! 아 참고로 교환도 가능해요 박스만.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드30주년-PwgV7nkP",
-      "views": 57,
+      "views": 58,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.57
+      "popularityScore": 0.58
     },
     {
       "category": "카드 자랑",
@@ -375,10 +375,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 154,
+      "views": 155,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 13.54
+      "popularityScore": 13.55
     },
     {
       "category": "카드 자랑",
@@ -401,10 +401,10 @@
       "excerpt": "오오야마 벤딩머신 시리즈 피카츄, 히메노 카게마루 2001 NW 생카츄 사인본, 북미 초판 옐로칙 피카츄, 2001 웹 서핑츄 1st ed, 2010 월드콜렉션 미국 피카츄, 포켓몬센터 20주년 피카츄, 25주년 일판 정글츄, 30주년 1번, 21번(오오야마)",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788403381961a793871c4c65414d88b1b12717f39ebd8b252d332d561aa5ddaad41097299ee50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-콜렉션-공개-dpDxQ7zd",
-      "views": 14,
+      "views": 15,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.14
+      "popularityScore": 5.15
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -492,10 +492,10 @@
       "excerpt": "한판 리피아 sar cgc10등급입니다 택포 8에 판매합니다 챗 주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787939232639999502726f8f6fdfa46aaafe57e5565ccbba2c11ceb8a7567e301f980fad102d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/한판-리피아cgc10-dY6ro1gj",
-      "views": 9,
+      "views": 10,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.09
+      "popularityScore": 3.1
     },
     {
       "category": "카드거래",
@@ -687,10 +687,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 264,
+      "views": 267,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 9.64
+      "popularityScore": 9.67
     },
     {
       "category": "정보 공유",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 278,
+      "views": 279,
       "likes": 6,
       "comments": 5,
-      "popularityScore": 30.78
+      "popularityScore": 30.79
     },
     {
       "category": "정보 공유",

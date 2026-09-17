@@ -1,13 +1,14 @@
-/* FUNY PIN Instagram feed — Master DB L-column eligibility + 3-column renderer */
+/* FUNY PIN Instagram feed — Master DB L-column eligibility + Card Garden sample UI */
 (function(){
-  const ELIGIBLE=new Set([
-    'KR-SEO-001','KR-SEO-002','KR-SEO-003','KR-SEO-005','KR-SEO-006','KR-SEO-007','KR-SEO-008',
-    'KR-SEO-009','KR-SEO-010','KR-SEO-011','KR-SEO-012','KR-SEO-014','KR-SEO-016'
-  ]);
-  const API=String(window.FUNY_INSTAGRAM_FEED_ENDPOINT||'').trim();
+  const FEED='data/instagram-feed.json';
+  const CONFIG='data/instagram-shops.json';
   const MOCK_SHOP_ID='KR-SEO-005';
-  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  let feedPromise=null,configPromise=null;
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const username=url=>{try{const p=new URL(url).pathname.split('/').filter(Boolean);return p[0]||''}catch(e){return''}};
+  const getJSON=url=>fetch(url+'?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('feed');return r.json()});
+  function config(){return configPromise||(configPromise=getJSON(CONFIG).catch(()=>({shops:{}})))}
+  function feed(){return feedPromise||(feedPromise=getJSON(FEED).catch(()=>({shops:{}})))}
   function sectionHTML(shop,posts,isMock){
     if(!posts||!posts.length)return'';
     const handle=username(shop.instagram);
@@ -20,24 +21,19 @@
     if(section)review?detail.insertBefore(section,review):detail.appendChild(section);
   }
   async function load(shop){
-    if(!shop||!ELIGIBLE.has(shop.id)||!shop.instagram)return;
-    if(!API){
-      if(shop.id===MOCK_SHOP_ID)mount(shop,[{placeholder:true},{placeholder:true},{placeholder:true}],true);
-      return;
-    }
-    try{
-      const u=username(shop.instagram);if(!u)return;
-      const r=await fetch(API+(API.includes('?')?'&':'?')+'username='+encodeURIComponent(u),{headers:{Accept:'application/json'}});
-      if(!r.ok)throw new Error('feed');
-      const data=await r.json();const posts=Array.isArray(data)?data:(data.posts||data.data||[]);
-      const valid=posts.filter(p=>p&&(p.image||p.thumbnail_url||p.media_url)).slice(0,3);
-      if(valid.length)mount(shop,valid,false);
-    }catch(e){/* Fail closed: no empty Instagram block. */}
+    if(!shop||!shop.instagram)return;
+    const cfg=await config(),eligible=cfg.shops&&cfg.shops[shop.id];
+    if(!eligible)return; // Master DB L열이 O인 매장만 노출
+    const data=await feed(),posts=data.shops?.[shop.id]?.posts||[];
+    const valid=posts.filter(p=>p&&(p.image||p.thumbnail_url||p.media_url)).slice(0,3);
+    if(valid.length){mount(shop,valid,false);return}
+    // 실제 피드가 아직 수집되지 않은 동안 기존 카드가든 샘플만 유지
+    if(shop.id===MOCK_SHOP_ID)mount(shop,[{placeholder:true},{placeholder:true},{placeholder:true}],true);
   }
   function currentShop(){const m=location.hash.match(/^#\/shop\/([^/?#]+)$/);return m&&typeof SHOPS!=='undefined'?SHOPS.find(s=>s.id===m[1]):null}
   function refresh(){setTimeout(()=>load(currentShop()),0)}
   window.addEventListener('hashchange',refresh);
   const view=document.getElementById('detail-view');if(view)new MutationObserver(()=>{if(!view.hidden)refresh()}).observe(view,{attributes:true,attributeFilter:['hidden']});
-  window.FUNY_INSTAGRAM_FEED={eligible:ELIGIBLE,refresh};
+  window.FUNY_INSTAGRAM_FEED={refresh};
   refresh();
 })();

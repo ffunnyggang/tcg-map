@@ -24,9 +24,11 @@ jobs:
           s=p.read_text(encoding='utf-8')
           old='data-cat="중고거래">🤝 중고거래</button>'
           new='data-cat="카드거래">🤝 카드거래</button>'
-          if old not in s:
+          if old in s:
+              s=s.replace(old,new,1)
+          elif new not in s:
               raise SystemExit('Expected TALK trade tab markup not found')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Rebuild Pokamo feed
         run: python scripts/fetch-pokamo-feed.py
@@ -43,6 +45,10 @@ jobs:
       - name: Commit TALK fix
         run: |
           git add talk.html data/pokamo-feed.json
+          if git diff --cached --quiet; then
+            echo "No TALK changes to commit"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Fix TALK review and card trade feeds"

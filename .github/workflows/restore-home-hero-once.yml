@@ -1,0 +1,38 @@
+name: Restore home hero once
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-home-hero-once.yml'
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+      - name: Restore original inline hero image only
+        run: |
+          python3 - <<'PY'
+          import re, subprocess
+          from pathlib import Path
+          current = Path('index.html').read_text()
+          old = subprocess.check_output(['git','show','c98e16e8f92d0f2d3db8aa87ea7d3f7e37ad35c5^:index.html'], text=True)
+          m = re.search(r'<img class="hero-map-art" src="(data:image/png;base64,[^"]+)" alt="" aria-hidden="true">', old)
+          if not m:
+              raise SystemExit('Original inline hero image not found')
+          replacement = '<img class="hero-map-art" src="' + m.group(1) + '" alt="" aria-hidden="true">'
+          updated, n = re.subn(r'<img class="hero-map-art" src="[^"]+" alt="" aria-hidden="true">', replacement, current, count=1)
+          if n != 1:
+              raise SystemExit('Current hero image tag not found')
+          Path('index.html').write_text(updated)
+          PY
+      - name: Commit restored hero
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Restore home hero image'
+          git push

@@ -6,11 +6,11 @@
 #detail-view .instagram-feed-title svg{width:20px;height:20px;color:var(--fp-purple);flex:none}
 #detail-view .instagram-feed-handle{margin:3px 0 0;font-size:10.5px;font-weight:600;color:#938c9e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #detail-view .instagram-feed-more{flex:none;font-size:10.5px;font-weight:700;color:var(--fp-purple);text-decoration:none}
-#detail-view .instagram-feed-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-items:start}
-#detail-view .instagram-feed-item{display:block;min-width:0;border-radius:11px;overflow:hidden;background:#eeeaf4;text-decoration:none;box-shadow:0 2px 10px rgba(82,62,130,.04)}
+#detail-view .instagram-feed-grid{columns:2;column-gap:6px}
+#detail-view .instagram-feed-item{display:inline-block;width:100%;min-width:0;margin:0 0 6px;break-inside:avoid;border-radius:11px;overflow:hidden;background:#eeeaf4;text-decoration:none;box-shadow:0 2px 10px rgba(82,62,130,.04);vertical-align:top}
 #detail-view .instagram-feed-item img{display:block;width:100%;height:auto;object-fit:contain;background:#eeeaf4}
 #detail-view .instagram-feed-item:active{transform:scale(.985)}
 #detail-view .instagram-feed-placeholder{aspect-ratio:4/5;display:grid;place-items:center;background:linear-gradient(145deg,#f1edf7,#e6def2);color:#9a8ead;font-size:10px;font-weight:800;line-height:1.35;letter-spacing:.08em;text-align:center}
 #detail-view .instagram-feed-section.is-mock .instagram-feed-more{min-height:32px;display:flex;align-items:center}
 body.country-japan #detail-view .instagram-feed-item{background:#f2e9eb;box-shadow:0 2px 10px rgba(130,52,67,.035)}
-@media(max-width:360px){#detail-view .instagram-feed-grid{gap:5px}#detail-view .instagram-feed-item{border-radius:9px}}
+@media(max-width:360px){#detail-view .instagram-feed-grid{column-gap:5px}#detail-view .instagram-feed-item{margin-bottom:5px;border-radius:9px}}

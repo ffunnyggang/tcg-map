@@ -21,9 +21,9 @@
 </form>
 </main>
 <script>
-const FEEDBACK_ENDPOINT=''; // Google Apps Script 웹앱 배포 URL 연결 후 입력
+const FEEDBACK_ENDPOINT='https://script.google.com/macros/s/AKfycbyRvpY-nGktR-xPX009kuEUhv-tOGozPWDlXxHiQKpMVFdLDLcig7Q3PiQh9sNvPe29yw/exec';
 const form=document.getElementById('feedback-form'),btn=document.getElementById('submit-btn'),statusEl=document.getElementById('form-status');
-form.addEventListener('submit',async e=>{e.preventDefault();if(!FEEDBACK_ENDPOINT){statusEl.textContent='의견 접수 연결을 준비 중이에요.';return}const fd=new FormData(form);btn.disabled=true;btn.textContent='제출 중...';statusEl.textContent='';try{await fetch(FEEDBACK_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({rating:fd.get('rating'),inconvenience:fd.get('inconvenience')||'',improvement:fd.get('improvement')||''})});form.reset();statusEl.textContent='소중한 의견 감사합니다.';btn.textContent='제출 완료';setTimeout(()=>{btn.disabled=false;btn.textContent='제출하기'},1800)}catch(err){statusEl.textContent='제출하지 못했어요. 잠시 후 다시 시도해 주세요.';btn.disabled=false;btn.textContent='제출하기'}});
+form.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(form);btn.disabled=true;btn.textContent='제출 중...';statusEl.textContent='';try{await fetch(FEEDBACK_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({satisfaction:fd.get('rating'),inconvenience:fd.get('inconvenience')||'',improvement:fd.get('improvement')||''})});form.reset();statusEl.textContent='소중한 의견 감사합니다.';btn.textContent='제출 완료';setTimeout(()=>{btn.disabled=false;btn.textContent='제출하기'},1800)}catch(err){statusEl.textContent='제출하지 못했어요. 잠시 후 다시 시도해 주세요.';btn.disabled=false;btn.textContent='제출하기'}});
 </script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 
   function start(){
     if(!/(^|\/)reviews\.html$/.test(location.pathname||''))return;
-    if(!GOOGLE_CALENDAR_API_KEY||GOOGLE_CALENDAR_API_KEY===API_KEY_PLACEHOLDER)return;
+    if(!GOOGLE_CALENDAR_API_KEY)return;
     const waitForSchedule=setInterval(()=>{
       const list=document.querySelector('.review-schedule-list');
       if(!list)return;

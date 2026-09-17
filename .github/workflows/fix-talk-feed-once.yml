@@ -44,4 +44,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Fix TALK review and card trade feeds"
           git push
-# validation run: trade discovery fix 2026-09-17T02:12Z
+# validation run: current card-trade-only structure 2026-09-17T02:17Z

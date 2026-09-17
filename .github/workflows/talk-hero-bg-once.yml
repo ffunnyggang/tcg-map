@@ -1,0 +1,32 @@
+name: Adjust TALK hero background once
+on:
+  push:
+    paths:
+      - '.github/workflows/talk-hero-bg-once.yml'
+permissions:
+  contents: write
+jobs:
+  adjust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Blend TALK hero background with artwork
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('talk.html')
+          s=p.read_text()
+          old=".talk-hero{position:relative;overflow:hidden;padding:20px 18px 18px;background:transparent}"
+          new=".talk-hero{position:relative;overflow:hidden;padding:20px 18px 18px;background:linear-gradient(135deg,rgba(251,250,255,.96) 0%,rgba(247,244,255,.94) 48%,rgba(238,232,251,.90) 100%)}"
+          if old not in s:
+              raise SystemExit('Expected TALK hero style not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+          rm .github/workflows/talk-hero-bg-once.yml
+      - name: Commit adjustment
+        run: |
+          git config user.name "ffunnyggang"
+          git config user.email "ffunnyggang@gmail.com"
+          git add talk.html .github/workflows/talk-hero-bg-once.yml
+          git commit -m "Blend TALK hero background with hero artwork"
+          git push

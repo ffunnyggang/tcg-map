@@ -20,7 +20,12 @@ function validPost(post) {
     /^https?:\/\//i.test(post?.image_url || '');
 }
 
-async function fetchProfile(profileUrl) {
+function findProfile(data) {
+  const candidates = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [data];
+  return candidates.find(item => Array.isArray(item?.posts)) || null;
+}
+
+async function requestProfile(profileUrl) {
   const endpoint = `https://api.brightdata.com/datasets/v3/scrape?dataset_id=${encodeURIComponent(DATASET_ID)}&notify=false&include_errors=true`;
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -36,10 +41,22 @@ async function fetchProfile(profileUrl) {
 
   let data;
   try { data = JSON.parse(text); } catch { throw new Error('Bright Data returned invalid JSON'); }
-  const profiles = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [data];
-  const profile = profiles.find(item => Array.isArray(item?.posts));
-  if (!profile) throw new Error('Bright Data response has no profile posts array');
-  return profile;
+  return findProfile(data);
+}
+
+async function fetchProfile(profileUrl) {
+  // Bright Data can occasionally return a completed response without the profile
+  // posts payload. Retry the same profile request once before failing, while the
+  // existing feed remains untouched if both attempts are unusable.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const profile = await requestProfile(profileUrl);
+    if (profile) return profile;
+    if (attempt < 2) {
+      console.warn(`Bright Data response has no profile posts array; retrying once`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+  throw new Error('Bright Data response has no profile posts array after retry');
 }
 
 try {

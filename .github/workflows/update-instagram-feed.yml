@@ -1,0 +1,35 @@
+name: Update Instagram Feed
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-instagram-feed
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Crawl eligible Instagram profiles
+        run: node scripts/update-instagram-feed.mjs
+      - name: Commit feed when changed
+        run: |
+          if git diff --quiet -- data/instagram-feed.json; then
+            echo "No Instagram feed changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/instagram-feed.json
+          git commit -m "Update Instagram feed"
+          git push

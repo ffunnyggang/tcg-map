@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-17T07:13:51.659Z",
-  "source": "temporary-public-instagram-fallback",
+  "updatedAt": "2026-09-17T09:13:26.176Z",
+  "source": "brightdata-instagram-profiles",
   "shops": {
     "KR-SEO-001": {
       "username": "tcgcardnova",
@@ -34,11 +34,25 @@
     },
     "KR-SEO-005": {
       "username": "cardgarden.hongdae",
-      "source": "pictame-public-viewer",
+      "source": "brightdata-instagram-profiles",
       "posts": [
         {
-          "image": "https://mc.yandex.ru/watch/109746145",
-          "permalink": "https://www.instagram.com/cardgarden.hongdae/"
+          "image": "https://scontent-sea5-1.cdninstagram.com/v/t51.82787-15/813467263_18178410232426100_1852964846321553084_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=108&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiRkVFRC5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=leb6uo6aOMkQ7kNvwHbY0vE&_nc_oc=Ado_M2gxvRtjYbmbLJcgUkSemWc-4_aqAtwTDIHaO_1Ca04IC529nXZXHs4UzQAggdM&_nc_zt=23&_nc_ht=scontent-sea5-1.cdninstagram.com&_nc_gid=LgYDwn7zqJPhcHyDXTwP4g&_nc_ss=7a689&oh=00_AQIPj-yH2K2yqy3RUCR7s_f7tiOD_kU-FFUIgqg2k1T0lw&oe=6AB16683",
+          "permalink": "https://www.instagram.com/p/DdYa0MqknGz",
+          "timestamp": "2026-09-17T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "https://scontent-sea5-1.cdninstagram.com/v/t51.82787-15/799867945_18176472901426100_5263327293635100494_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=102&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=ykx0KWpc2BYQ7kNvwELSESh&_nc_oc=Adqxm9OYPGmoLxjprYvhJohhV32Rtna5Zc0FEEevQbmaeOjxxGGeYG5KoI51PsZ8JHY&_nc_zt=23&_nc_ht=scontent-sea5-1.cdninstagram.com&_nc_gid=LgYDwn7zqJPhcHyDXTwP4g&_nc_ss=7a689&oh=00_AQLsXBfYJfC4jFkwbKr47CcHowBCnZcICaE30fpRCQQ1qg&oe=6AB172DB",
+          "permalink": "https://www.instagram.com/p/DdAze4LEk7B",
+          "timestamp": "2026-09-07T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "https://scontent-sea5-1.cdninstagram.com/v/t51.82787-15/808855653_18177737911426100_6464568306732477547_n.jpg?stp=dst-jpg_e35_s640x640_tt6&_nc_cat=111&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiRkVFRC5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=haeH_zBXnkgQ7kNvwHFTEuW&_nc_oc=Adqn5V0cBpnkl8-nrGIXOLvERUsXF3cTY-TdCAHw-6BuPno47T8fEzwJMbQH5p2EMqE&_nc_zt=23&_nc_ht=scontent-sea5-1.cdninstagram.com&_nc_gid=LgYDwn7zqJPhcHyDXTwP4g&_nc_ss=7a689&oh=00_AQIWx5R7ryUgwehN6iDJmV3hQ5-j2vp2zWbBnkqFXdn0zQ&oe=6AB19330",
+          "permalink": "https://www.instagram.com/p/DdQTSuKSVMr",
+          "timestamp": "2026-09-13T00:00:00.000Z",
+          "contentType": "Image"
         }
       ]
     },

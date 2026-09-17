@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-17T15:27:58.707105+00:00",
+  "updatedAt": "2026-09-17T16:28:23.465102+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "저는 고양이집사로 냐옹..",
+      "author": "곰기린",
+      "publishedAt": "2026-09-17T15:30:34.300824Z",
+      "excerpt": "저는 고양이집사로 냐옹..",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-고양이집사로-냐옹-dpD5rMkd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "🛠️ 사전 테스터로 여러분을 초대합니다! ✨",
@@ -11,10 +24,10 @@
       "excerpt": "안녕하세요. 포켓몬카드를 수집하는 깽퐌커플입니다 :) 저희가 직접 만들고 있는 TCG 카드샵 지도 서비스 ‘FUNY PIN (퍼니핀)’ 정식 오픈 전, 포카모 회원분들에게 먼저 공유드리고 있습니다. 📍 아직은 BETA 단계이고 부족한 부분도 많지만, 평소 저희가 여러 카드샵을 직접 다니",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17896531411350812032a1c39396dde204c8494253bcd8d83e99dc60fb872ed6bee723d41f5ff0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사전-테스터로-여러분을-초대합니다-✨-Pnzm1qWP",
-      "views": 2,
-      "likes": 1,
+      "views": 12,
+      "likes": 3,
       "comments": 0,
-      "popularityScore": 3.02
+      "popularityScore": 9.12
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "피카츄입니다 너무귀여워요!! 대표캐릭터",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄입니다-너무귀여워요-대표캐릭터-j8BY9mkP",
-      "views": 15,
+      "views": 17,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.15
+      "popularityScore": 3.17
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "요새 자꾸 포켓몬포켓몬 거려서 어릴적 향수 되돌리며 보다보니 빠지게 됐어요.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/요새-자꾸-포켓몬포켓몬-거려서-어릴적-향수-되돌리며-보다보니-빠지게-됐어요-PklaY4Dd",
-      "views": 19,
+      "views": 20,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.19
+      "popularityScore": 6.2
     },
     {
       "category": "카드 자랑",
@@ -89,10 +102,10 @@
       "excerpt": "이거좋은건가요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260915/c620d52a-c671-4f84-952b-ab6a988a5d02.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거좋은건가요-d9W8GOeA",
-      "views": 8,
+      "views": 9,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.08
+      "popularityScore": 7.09
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "홍대에 붓카게먹으러 갔다가 근처 샵에 가봤는데 카드쇼때 제가 처음으로 피카츄들을 무리로 들였던 밴더님이 오픈하셨던 거였어요 😁 제가 짐프로모 모았던거도 기억해주시고~~ 쏘 감동 😆",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/ac49c979-e389-4313-8131-1a7509359b6e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드가든-다녀왔어요-PwgG5nJP",
-      "views": 39,
+      "views": 40,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.39
+      "popularityScore": 3.4
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 2,
       "popularityScore": 7.28
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이거 구매하고 싶은데 찐일까요?",
-      "author": "마을글쓰기컨설턴트",
-      "publishedAt": "2026-09-13T15:04:12.061455Z",
-      "excerpt": "이거 구매하고 싶은데 찐일까요?",
-      "image": "https://img.kr.gcp-karroter.net/community/community/20260913/4367dff8-1bc2-4201-86d2-781e88d83580.jpeg?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-구매하고-싶은데-찐일까요-Pm6gq8ld",
-      "views": 13,
-      "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.13
     },
     {
       "category": "카드 자랑",
@@ -232,10 +232,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 89,
+      "views": 90,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 18.89
+      "popularityScore": 18.9
     },
     {
       "category": "카드 자랑",
@@ -375,10 +375,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 155,
+      "views": 156,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 13.55
+      "popularityScore": 13.56
     },
     {
       "category": "카드 자랑",
@@ -596,10 +596,10 @@
       "excerpt": "*반택 +0.2 / 일택 0.4",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/08569548-e6ea-47e1-82a0-a9a08b5f8802.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/태그팀-님피아-가디안-50-Pklq3qDd",
-      "views": 36,
+      "views": 37,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.36
+      "popularityScore": 0.37
     },
     {
       "category": "카드거래",

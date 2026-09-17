@@ -1,0 +1,49 @@
+name: Fix TALK category feed once
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-talk-feed-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-talk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rename trade tab
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('talk.html')
+          s=p.read_text(encoding='utf-8')
+          old='data-cat="중고거래">🤝 중고거래</button>'
+          new='data-cat="카드거래">🤝 카드거래</button>'
+          if old not in s:
+              raise SystemExit('Expected TALK trade tab markup not found')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Rebuild Pokamo feed
+        run: python scripts/fetch-pokamo-feed.py
+      - name: Verify required categories
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('data/pokamo-feed.json',encoding='utf-8'))
+          cats={x.get('category') for x in d.get('items',[])}
+          print('categories:', sorted(cats))
+          missing={'카드깡/카드샵 후기','카드거래'}-cats
+          if missing: raise SystemExit('Missing required categories: '+', '.join(sorted(missing)))
+          PY
+      - name: Commit TALK fix
+        run: |
+          git add talk.html data/pokamo-feed.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Fix TALK review and card trade feeds"
+          git push

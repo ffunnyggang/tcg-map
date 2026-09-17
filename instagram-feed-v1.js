@@ -4,7 +4,7 @@
   const CONFIG='data/instagram-shops.json';
   const MOCK_SHOP_ID='KR-SEO-005';
   let feedPromise=null,configPromise=null;
-  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const getJSON=url=>fetch(url+'?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('feed');return r.json()});
   function config(){return configPromise||(configPromise=getJSON(CONFIG).catch(()=>({shops:{}})))}
   function feed(){return feedPromise||(feedPromise=getJSON(FEED).catch(()=>({shops:{}})))}

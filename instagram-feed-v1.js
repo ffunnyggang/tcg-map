@@ -4,7 +4,7 @@
   const CONFIG='data/instagram-shops.json';
   const MOCK_SHOP_ID='KR-SEO-005';
   let feedPromise=null,configPromise=null;
-  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const getJSON=url=>fetch(url+'?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('feed');return r.json()});
   function config(){return configPromise||(configPromise=getJSON(CONFIG).catch(()=>({shops:{}})))}
   function feed(){return feedPromise||(feedPromise=getJSON(FEED).catch(()=>({shops:{}})))}
@@ -26,7 +26,10 @@
   }
   function balanceMasonry(section){
     const cols=[...section.querySelectorAll('.instagram-feed-column')],pool=section.querySelector('.instagram-feed-pool');if(cols.length!==2||!pool)return;
-    const items=[...pool.children];let pending=items.length;if(!pending){pool.remove();return}
+    const items=[...pool.children];if(!items.length){pool.remove();return}
+    items.forEach((item,i)=>cols[i%2].appendChild(item));
+    pool.remove();
+    let pending=items.length;
     const place=()=>{
       const ratios=items.map(item=>{const img=item.querySelector('img');return img&&img.naturalWidth?img.naturalHeight/img.naturalWidth:1.25});
       let bestMask=1,bestDiff=Infinity,bestCountDiff=Infinity;
@@ -37,8 +40,8 @@
         const countDiff=Math.abs(leftCount-(items.length-leftCount)),diff=Math.abs(left-right);
         if(diff<bestDiff-.0001||(Math.abs(diff-bestDiff)<.0001&&countDiff<bestCountDiff)){bestMask=mask;bestDiff=diff;bestCountDiff=countDiff}
       }
+      cols.forEach(col=>{while(col.firstChild)col.removeChild(col.firstChild)});
       items.forEach((item,i)=>cols[(bestMask&(1<<i))?0:1].appendChild(item));
-      pool.remove();
     };
     const ready=()=>{if(--pending===0)place()};
     items.forEach(item=>{const img=item.querySelector('img');if(!img){ready();return}if(img.complete){ready();return}img.addEventListener('load',ready,{once:true});img.addEventListener('error',ready,{once:true})})

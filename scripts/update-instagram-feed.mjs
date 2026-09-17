@@ -48,7 +48,7 @@ try {
 
   // IMPORTANT: preserve Bright Data profile-grid order. Do not sort by datetime;
   // pinned Instagram posts may be older but intentionally appear at the top.
-  const posts = profile.posts.filter(validPost).slice(0, 3).map(post => ({
+  const posts = profile.posts.filter(validPost).slice(0, 4).map(post => ({
     image: post.image_url,
     permalink: post.url,
     timestamp: post.datetime || null,

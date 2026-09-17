@@ -1,6 +1,6 @@
 /* FUNY PIN review schedule · Google Calendar */
 (function(){
-  const GOOGLE_CALENDAR_API_KEY='PASTE_YOUR_API_KEY_HERE';
+  const GOOGLE_CALENDAR_API_KEY='AIzaSyBFdEvEvlFJNfiV1shZnHyi_h_I47EKYao';
   const CALENDAR_ID='32475a73be5a7c48db3c46d180e659e870c8ca823b7d62071f3586387c91b4ca@group.calendar.google.com';
 
   function start(){

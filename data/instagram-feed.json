@@ -1,5 +1,136 @@
 {
-  "updatedAt": "2026-09-17T06:59:38.314Z",
-  "source": "temporary-public-instagram-crawl",
-  "shops": {}
+  "updatedAt": "2026-09-17T07:05:36.699Z",
+  "source": "temporary-public-instagram-fallback",
+  "shops": {
+    "KR-SEO-001": {
+      "username": "tcgcardnova",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/tcgcardnova/"
+        }
+      ]
+    },
+    "KR-SEO-002": {
+      "username": "rubycard_shop",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/rubycard_shop/"
+        }
+      ]
+    },
+    "KR-SEO-003": {
+      "username": "firstcardshop",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/firstcardshop/"
+        }
+      ]
+    },
+    "KR-SEO-005": {
+      "username": "cardgarden.hongdae",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/cardgarden.hongdae/"
+        }
+      ]
+    },
+    "KR-SEO-006": {
+      "username": "cardtown_kr",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/cardtown_kr/"
+        }
+      ]
+    },
+    "KR-SEO-007": {
+      "username": "moacardshop",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/moacardshop/"
+        }
+      ]
+    },
+    "KR-SEO-008": {
+      "username": "cardstory.tcg",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/cardstory.tcg/"
+        }
+      ]
+    },
+    "KR-SEO-009": {
+      "username": "tcr_kr",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/tcr_kr/"
+        }
+      ]
+    },
+    "KR-SEO-010": {
+      "username": "golden_archive2",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/golden_archive2/"
+        }
+      ]
+    },
+    "KR-SEO-011": {
+      "username": "golden.m_kr",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/golden.m_kr/"
+        }
+      ]
+    },
+    "KR-SEO-012": {
+      "username": "collectotcg",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/collectotcg/"
+        }
+      ]
+    },
+    "KR-SEO-014": {
+      "username": "card_sungji",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/card_sungji/"
+        }
+      ]
+    },
+    "KR-SEO-016": {
+      "username": "kadotrade",
+      "source": "pictame-public-viewer",
+      "posts": [
+        {
+          "image": "https://mc.yandex.ru/watch/109746145",
+          "permalink": "https://www.instagram.com/kadotrade/"
+        }
+      ]
+    }
+  }
 }

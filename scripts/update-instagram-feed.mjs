@@ -9,7 +9,11 @@ let previous={shops:{}};
 try{previous=JSON.parse(await fs.readFile(OUTPUT,'utf8'))}catch{}
 
 function decode(s=''){
-  return s.replace(/\\u0026/g,'&').replace(/\\u003d/g,'=').replace(/\\u002f/g,'/').replace(/\\u0025/g,'%').replace(/\\\//g,'/').replace(/&amp;/g,'&').replace(/&#x2F;/g,'/');
+  return s.replace(/\\u0026/g,'&').replace(/\\u003d/g,'=').replace(/\\u002f/g,'/').replace(/\\u0025/g,'%').replace(/\\\//g,'/').replace(/&amp;/g,'&').replace(/&#x2F;/g,'/').replace(/&quot;/g,'"');
+}
+function abs(base,raw=''){
+  const v=decode(raw);
+  try{return new URL(v,base).href}catch{return v}
 }
 function uniquePosts(items){
   const seen=new Set();
@@ -39,27 +43,50 @@ function parseInstagram(html,profileUrl){
   return uniquePosts(posts);
 }
 
-function parseViewer(html,username){
-  const posts=[];
-  const imageUrls=[];
-  const addImage=(raw)=>{
-    const image=decode(raw||'');
-    if(!/^https?:\/\//.test(image))return;
-    if(/avatar|profile|logo|favicon/i.test(image))return;
-    if(!imageUrls.includes(image))imageUrls.push(image);
-  };
-  for(const m of html.matchAll(/<img[^>]+(?:src|data-src)=["']([^"']+)["'][^>]*>/gi))addImage(m[1]);
-  for(const m of html.matchAll(/"(?:image|thumbnailUrl|display_url|thumbnail_src)"\s*:\s*"([^"]+)"/gi))addImage(m[1]);
+function extractViewerCards(html,viewerUrl,username){
+  const cards=[];
+  // Parse each anchor as a post card so thumbnail and target stay paired.
+  for(const m of html.matchAll(/<a\b([^>]*href=["'][^"']+["'][^>]*)>([\s\S]*?)<\/a>/gi)){
+    const attrs=m[1],body=m[2];
+    const hm=attrs.match(/href=["']([^"']+)["']/i);
+    const im=body.match(/<img[^>]+(?:src|data-src|data-lazy-src)=["']([^"']+)["'][^>]*>/i);
+    if(!hm||!im)continue;
+    const href=abs(viewerUrl,hm[1]);
+    const image=abs(viewerUrl,im[1]);
+    if(!/^https?:\/\//.test(image)||/avatar|profile|logo|favicon/i.test(image))continue;
+    const looksPost=/\/(?:p|reel)\/[A-Za-z0-9_-]+/i.test(href)||/post|media/i.test(href);
+    if(!looksPost)continue;
+    const code=(href.match(/instagram\.com\/(?:p|reel)\/([A-Za-z0-9_-]+)/i)||href.match(/\/(?:p|reel)\/([A-Za-z0-9_-]+)/i))?.[1];
+    cards.push({image,permalink:code?`https://www.instagram.com/p/${code}/`:`https://www.instagram.com/${username}/`});
+  }
+  return uniquePosts(cards);
+}
 
-  const links=[];
-  for(const m of html.matchAll(/href=["']([^"']+)["']/gi)){
-    const href=decode(m[1]);
-    if(/instagram\.com\/(?:p|reel)\/[A-Za-z0-9_-]+/i.test(href))links.push(href.startsWith('http')?href:`https://www.instagram.com${href}`);
+function parseViewer(html,viewerUrl,username){
+  const cardPosts=extractViewerCards(html,viewerUrl,username);
+  if(cardPosts.length>=3)return cardPosts;
+
+  // Fallback for viewers that serialize posts in JSON rather than anchor cards.
+  const serialized=[];
+  for(const m of html.matchAll(/\{[^{}]{0,2500}?(?:shortcode|code)["']?\s*:\s*["']([A-Za-z0-9_-]+)["'][^{}]{0,2500}?\}/gi)){
+    const chunk=m[0],code=m[1];
+    const im=chunk.match(/(?:display_url|thumbnail_url|thumbnailUrl|image_url|image)["']?\s*:\s*["']([^"']+)["']/i);
+    if(im)serialized.push({image:decode(im[1]),permalink:`https://www.instagram.com/p/${code}/`});
   }
-  for(let i=0;i<Math.min(imageUrls.length,12);i++){
-    posts.push({image:imageUrls[i],permalink:links[i]||`https://www.instagram.com/${username}/`});
-  }
-  return uniquePosts(posts);
+  const merged=uniquePosts([...cardPosts,...serialized]);
+  if(merged.length>=3)return merged;
+
+  // Last resort: collect unique content images. Do not duplicate one image to fill the grid.
+  const images=[];
+  const add=(raw)=>{
+    const image=abs(viewerUrl,raw||'');
+    if(!/^https?:\/\//.test(image)||/avatar|profile|logo|favicon/i.test(image))return;
+    if(!images.includes(image))images.push(image);
+  };
+  for(const m of html.matchAll(/<img[^>]+(?:src|data-src|data-lazy-src)=["']([^"']+)["'][^>]*>/gi))add(m[1]);
+  for(const m of html.matchAll(/"(?:image|thumbnailUrl|thumbnail_url|display_url|thumbnail_src)"\s*:\s*"([^"]+)"/gi))add(m[1]);
+  const extras=images.map(image=>({image,permalink:`https://www.instagram.com/${username}/`}));
+  return uniquePosts([...merged,...extras]);
 }
 
 async function crawl(username){
@@ -67,26 +94,40 @@ async function crawl(username){
   try{
     const html=await getText(profileUrl);
     const posts=parseInstagram(html,profileUrl);
-    if(posts.length)return {posts,source:'instagram-public'};
+    if(posts.length>=3)return {posts,source:'instagram-public'};
   }catch(e){
     console.warn(`  Instagram direct: ${e.message}`);
   }
 
   // Temporary fallback until Meta Graph API is connected.
-  // Pictame is a public Instagram viewer; only public thumbnails/permalinks are consumed.
-  const viewerUrl=`https://pictame.com/en/instagram/${encodeURIComponent(username)}`;
-  const html=await getText(viewerUrl);
-  const posts=parseViewer(html,username);
-  if(!posts.length)throw new Error('viewer returned no usable posts');
-  return {posts,source:'pictame-public-viewer'};
+  const viewers=[
+    `https://pictame.com/en/instagram/${encodeURIComponent(username)}`,
+    `https://pictame.com/en/profile/${encodeURIComponent(username)}`,
+    `https://pictame.com/user/${encodeURIComponent(username)}`
+  ];
+  let best=[];
+  for(const viewerUrl of viewers){
+    try{
+      const html=await getText(viewerUrl);
+      const posts=parseViewer(html,viewerUrl,username);
+      if(posts.length>best.length)best=posts;
+      if(best.length>=3)break;
+    }catch(e){
+      console.warn(`  Viewer ${viewerUrl}: ${e.message}`);
+    }
+  }
+  if(!best.length)throw new Error('viewer returned no usable posts');
+  return {posts:best,source:'pictame-public-viewer'};
 }
 
 const out={updatedAt:new Date().toISOString(),source:'temporary-public-instagram-fallback',shops:{}};
 for(const [id,shop] of Object.entries(cfg.shops||{})){
   try{
     const result=await crawl(shop.username);
-    if(result.posts.length)out.shops[id]={username:shop.username,source:result.source,posts:result.posts};
-    else if(previous.shops?.[id]?.posts?.length)out.shops[id]=previous.shops[id];
+    // Last-known-good: never replace a fuller prior feed with a thinner crawl.
+    const old=previous.shops?.[id];
+    if(old?.posts?.length>result.posts.length)out.shops[id]=old;
+    else out.shops[id]={username:shop.username,source:result.source,posts:result.posts};
     console.log(`${id} @${shop.username}: ${result.posts.length} posts via ${result.source}`);
   }catch(e){
     console.warn(`${id} @${shop.username}: ${e.message}`);

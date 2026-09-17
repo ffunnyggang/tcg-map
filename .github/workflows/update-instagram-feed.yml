@@ -18,10 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch Cardgarden Instagram profile via Bright Data
+      - name: Fetch eligible Instagram profiles via Bright Data
         env:
           BRIGHTDATA_API_KEY: ${{ secrets.BRIGHTDATA_API_KEY }}
-          INSTAGRAM_SHOP_ID: KR-SEO-005
         run: node scripts/update-instagram-feed.mjs
       - name: Commit feed when changed
         run: |

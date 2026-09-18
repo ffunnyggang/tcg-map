@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.funypin.kr/sitemap.xml
+Sitemap: https://funypin.kr/sitemap.xml

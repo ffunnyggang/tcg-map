@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-19T06:31:10.570392+00:00",
+  "updatedAt": "2026-09-19T07:25:16.849797+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "유튜브에서 스트리머들이 카드깡 하는거 보고 했습니다",
+      "author": "솬이",
+      "publishedAt": "2026-09-19T07:07:19.407562Z",
+      "excerpt": "유튜브에서 스트리머들이 카드깡 하는거 보고 했습니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/유튜브에서-스트리머들이-카드깡-하는거-보고-했습니다-dJyXnmKP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "취미로 모으고있습니다",
@@ -24,10 +37,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 15,
-      "likes": 2,
+      "views": 27,
+      "likes": 3,
       "comments": 3,
-      "popularityScore": 12.15
+      "popularityScore": 15.27
     },
     {
       "category": "자유 게시판",
@@ -128,10 +141,10 @@
       "excerpt": "이거좋은건가요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260915/c620d52a-c671-4f84-952b-ab6a988a5d02.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거좋은건가요-d9W8GOeA",
-      "views": 9,
+      "views": 10,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.09
+      "popularityScore": 7.1
     },
     {
       "category": "자유 게시판",
@@ -154,23 +167,10 @@
       "excerpt": "홍대에 붓카게먹으러 갔다가 근처 샵에 가봤는데 카드쇼때 제가 처음으로 피카츄들을 무리로 들였던 밴더님이 오픈하셨던 거였어요 😁 제가 짐프로모 모았던거도 기억해주시고~~ 쏘 감동 😆",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/ac49c979-e389-4313-8131-1a7509359b6e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드가든-다녀왔어요-PwgG5nJP",
-      "views": 42,
+      "views": 44,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.42
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이번주는",
-      "author": "깽깽깽",
-      "publishedAt": "2026-09-14T14:38:03.89556Z",
-      "excerpt": "고라파덕입니다 😁 표정이 너무 귀여워서 미쵸요 😎",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/bac87f62-8340-4956-a57a-841ac2637f83.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이번주는-A62Vl38A",
-      "views": 17,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.17
+      "popularityScore": 3.44
     },
     {
       "category": "카드 자랑",
@@ -362,10 +362,10 @@
       "excerpt": "30주년 판매해요! 일판 박스, 에브이블래키박스! 가격은 각각 38 43 입니다!! 아 참고로 교환도 가능해요 박스만.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드30주년-PwgV7nkP",
-      "views": 67,
+      "views": 68,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.67
+      "popularityScore": 0.68
     },
     {
       "category": "카드 자랑",
@@ -388,10 +388,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 170,
+      "views": 171,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 13.7
+      "popularityScore": 13.71
     },
     {
       "category": "카드 자랑",
@@ -453,10 +453,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 118,
+      "views": 120,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.18
+      "popularityScore": 7.2
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -544,10 +544,10 @@
       "excerpt": "낱팩말고 드디어 박스 만져봄.. 첫봉 뜯자마자 사려고 찜해놨던 ㅋㅋㅋ 요염한 켈리몬 뜸 👽 더 뜯어말어 하다 다 뜯어봄 ㅎㅎㅎㅎㅎ 다음엔 귀여운거 없어서... 안남김.... 에메랄다는... 켈리몬만 내스탈...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/474017a4-f111-4adb-9e79-c2d37047f93d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스톰에메랄다-👽-AOD5GwDP",
-      "views": 75,
+      "views": 76,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.75
+      "popularityScore": 5.76
     },
     {
       "category": "카드거래",
@@ -687,10 +687,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 286,
+      "views": 287,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 9.86
+      "popularityScore": 9.870000000000001
     },
     {
       "category": "정보 공유",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 296,
+      "views": 297,
       "likes": 6,
       "comments": 6,
-      "popularityScore": 32.96
+      "popularityScore": 32.97
     },
     {
       "category": "정보 공유",

@@ -19,13 +19,13 @@ const esc=v=>{const d=document.createElement('div');d.textContent=v??'';return d
 const ago=t=>{const m=Math.max(0,Math.floor((Date.now()-new Date(t))/60000));return m<1?'방금 전':m<60?m+'분 전':Math.floor(m/60)+'시간 전'};
 async function load(){
  try{
-  const res=await fetch(URL+'/rest/v1/live_reports?select=*&order=created_at.desc&limit=100&_='+Date.now(),{headers:directHeaders,cache:'no-store'});
+  const res=await fetch(URL+'/rest/v1/live_reports?select=*&order=created_at.desc&limit=100',{headers:directHeaders,cache:'no-store'});
   if(!res.ok){let msg='HTTP '+res.status;try{const e=await res.json();msg=e.message||e.details||msg}catch(_){}throw new Error(msg)}
   const data=await res.json();console.log('[LIVE PIN] reports',data);
   let reactionRows=[];
   if(data.length){
    const ids=data.map(r=>r.id).join(',');
-   const rr=await fetch(URL+'/rest/v1/live_reactions?select=*&report_id=in.('+ids+')&_='+Date.now(),{headers:directHeaders,cache:'no-store'});
+   const rr=await fetch(URL+'/rest/v1/live_reactions?select=*&report_id=in.('+ids+')',{headers:directHeaders,cache:'no-store'});
    if(rr.ok)reactionRows=await rr.json();
   }
   feed.innerHTML=data.length?'':'<div class="trust">아직 LIVE PIN이 없어요. 첫 현장 정보를 등록해보세요.</div>';

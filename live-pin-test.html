@@ -10,9 +10,10 @@
 const URL='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 let db=null;
 const directHeaders={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json','Accept':'application/json'};
+window.addEventListener('error',e=>{const box=document.createElement('div');box.className='trust';box.style.cssText='position:relative;z-index:99;background:#fff1f1;color:#b42318';box.textContent='JS 오류: '+(e.message||'unknown')+' / '+(e.filename?e.filename.split('/').pop():'')+':'+(e.lineno||'');document.querySelector('.feed')?.prepend(box)});
 const bg=document.getElementById('bg'),feed=document.querySelector('.feed'),shop=document.getElementById('shop'),memo=document.getElementById('memo');
 let mode='report',filter='전체';
-let clientId=localStorage.getItem('funypin_live_client');if(!clientId){clientId=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():'fp-'+Date.now()+'-'+Math.random().toString(36).slice(2);localStorage.setItem('funypin_live_client',clientId)}
+let clientId='';try{clientId=localStorage.getItem('funypin_live_client')||''}catch(_){}if(!clientId){clientId=(window.crypto&&typeof crypto.randomUUID==='function')?crypto.randomUUID():'fp-'+Date.now()+'-'+Math.random().toString(36).slice(2);try{localStorage.setItem('funypin_live_client',clientId)}catch(_){}}
 const cats={queue:['👥','대기'],stock:['📦','재고'],store:['🏪','매장']};
 const esc=v=>{const d=document.createElement('div');d.textContent=v??'';return d.innerHTML};
 const ago=t=>{const m=Math.max(0,Math.floor((Date.now()-new Date(t))/60000));return m<1?'방금 전':m<60?m+'분 전':Math.floor(m/60)+'시간 전'};

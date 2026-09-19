@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-19T11:24:50.201542+00:00",
+  "updatedAt": "2026-09-19T12:30:33.696255+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "이거 에러카드인가요?",
+      "author": "꼴배추",
+      "publishedAt": "2026-09-19T11:41:05.721809Z",
+      "excerpt": "이거 에러카드인가요?",
+      "image": "https://img.kr.gcp-karroter.net/community/community/20260919/d777e308-d4bd-4577-af19-b45240ef74d3.png?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-에러카드인가요-PBXaWaVj",
+      "views": 20,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.2
+    },
     {
       "category": "자유 게시판",
       "title": "게임하다가 모으기 시작햇어요",
@@ -11,10 +24,10 @@
       "excerpt": "게임하다가 모으기 시작햇어요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/게임하다가-모으기-시작햇어요-dz9qymkP",
-      "views": 11,
+      "views": 13,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.11
+      "popularityScore": 3.13
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 36,
+      "views": 37,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 17.36
+      "popularityScore": 17.37
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "안녕하세요. 포켓몬카드를 수집하는 깽퐌커플입니다 :) 저희가 직접 만들고 있는 TCG 카드샵 지도 서비스 ‘FUNY PIN (퍼니핀)’ 정식 오픈 전, 포카모 회원분들에게 먼저 공유드리고 있습니다. 📍 아직은 BETA 단계이고 부족한 부분도 많지만, 평소 저희가 여러 카드샵을 직접 다니",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17896531411350812032a1c39396dde204c8494253bcd8d83e99dc60fb872ed6bee723d41f5ff0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사전-테스터로-여러분을-초대합니다-✨-Pnzm1qWP",
-      "views": 27,
+      "views": 28,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.27
+      "popularityScore": 9.28
     },
     {
       "category": "자유 게시판",
@@ -89,10 +102,10 @@
       "excerpt": "ㅎㅎ 이번주는 직뽑했던 이브이 싸rrrr입니다 😁 하나씩 인증해갈게요 ✨️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/aee3bd1c-ce19-4d70-ae15-fa80cc76be1a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/직뽑-이브이-Pm6wBJRd",
-      "views": 28,
+      "views": 30,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.28
+      "popularityScore": 5.3
     },
     {
       "category": "자유 게시판",
@@ -158,19 +171,6 @@
       "likes": 1,
       "comments": 2,
       "popularityScore": 7.1
-    },
-    {
-      "category": "자유 게시판",
-      "title": "TCG MAP 'FUNY PIN'을 만들었어요📍",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-09-15T15:29:47.497747Z",
-      "excerpt": "내 주변 TCG 카드샵을 한눈에 👀 카드샵 찾는 시간을 더 쉽고 편하게! 포켓몬 · 원피스 등 TCG 카드샵 정보를 지도에서 한 번에 찾아보세요 📍 ✨ FUNY PIN 오픈 알림 받는 법 깽퐌커플 인스타 계정 팔로우하고 댓글에 “FUNY PIN”을 남겨주세요! 서비스가 정식 오픈하면 바",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/TCG-MAP-FUNY-PIN을-만들었어요📍-jKK3kWQj",
-      "views": 38,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.38
     },
     {
       "category": "카드 자랑",
@@ -271,10 +271,10 @@
       "excerpt": "포켓몬 카드 게임 MEGA 확장팩 『30th CELEBRATION』 구매권 추첨 응모 이벤트 오픈🎉 #포켓몬카드30주년응모일정 • 응모 기간: 2026년 9월 8일(화) 10:00 ~ 9월 13일(일) 23:59 • 추첨 발표: 2026년 9월 14일(월) 당첨자 개별 연락 • 배송 기",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178883960090217f83cf23d9f1e10d0e67f24f672a697d98ce0ffd61045ec409f4132d3df73eb0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-MEGA-확장팩-추첨-응모-시작🎉-초간단-응모-방법-PMDXByWA",
-      "views": 94,
+      "views": 96,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.9399999999999995
+      "popularityScore": 7.96
     },
     {
       "category": "카드거래",
@@ -427,10 +427,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 82,
+      "views": 83,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.82
+      "popularityScore": 8.83
     },
     {
       "category": "정보 공유",
@@ -453,10 +453,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 122,
+      "views": 123,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.22
+      "popularityScore": 7.23
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 300,
+      "views": 304,
       "likes": 6,
       "comments": 6,
-      "popularityScore": 33.0
+      "popularityScore": 33.04
     },
     {
       "category": "정보 공유",
@@ -778,10 +778,10 @@
       "excerpt": "드디어 많은 팬들이 기다리던 나루토 공식 TCG의 카드 디자인이 공개됐습니다 ​ 그동안 게임 시스템이나 출시 소식만 조금씩 알려졌다면, 이번에는 실제 카드 디자인과 레이아웃이 공개되면서 전 세계 카드 수집가들의 관심이 집중되고 있습니다 | 드디어 베일을 벗은 나루토 TCG 나루토는 전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202607/1785380792631e1241df96fbcb44fd7ee5cf58ca2f12fc06ad2656dd6e7f667f884579e835ab20.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나루토-TCG-카드-디지인-공개-🎉-daW7LXnA",
-      "views": 51,
+      "views": 53,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.51
+      "popularityScore": 6.53
     }
   ]
 }

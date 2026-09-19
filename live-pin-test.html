@@ -19,7 +19,7 @@ async function load(){
  try{
   const res=await fetch(URL+'/rest/v1/live_reports?select=*&order=created_at.desc&limit=100',{headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Accept':'application/json'},cache:'no-store'});
   if(!res.ok){let msg='HTTP '+res.status;try{const e=await res.json();msg=e.message||e.details||msg}catch(_){}throw new Error(msg)}
-  const data=await res.json();
+  const data=await res.json();console.log('[LIVE PIN] reports',data);
   let reactionRows=[];
   if(data.length){
    const ids=data.map(r=>r.id).join(',');
@@ -32,7 +32,7 @@ async function load(){
  }catch(e){feed.innerHTML='<div class="trust">LIVE PIN 조회 실패: '+esc(e.message)+'</div>'}
 }
 function bindCards(){document.querySelectorAll('[data-react]').forEach(b=>b.onclick=async()=>{const report_id=+b.closest('.card').dataset.id,reaction_type=b.dataset.react;const {error}=await db.from('live_reactions').insert({report_id,reaction_type,client_id:clientId});if(error&&error.code!=='23505')alert('반응 등록 실패: '+error.message);await load()});document.querySelectorAll('.request-action').forEach(b=>b.onclick=()=>{const c=b.closest('.card');bg.classList.add('open');document.querySelector('.mode [data-mode="report"]').click();shop.value='';const name=c.querySelector('.shop').textContent.replace('📍 ','');[...shop.options].forEach(o=>{if(o.text===name)shop.value=o.value})});document.querySelectorAll('.report').forEach(b=>b.onclick=async()=>{const reason=prompt('신고 사유를 간단히 입력해주세요.');if(!reason)return;const {error}=await db.from('live_report_flags').insert({report_id:+b.closest('.card').dataset.id,client_id:clientId,reason:reason.slice(0,50)});alert(error&&error.code!=='23505'?'신고 실패: '+error.message:'신고가 접수됐어요.')})}
-function applyFilter(){document.querySelectorAll('.card').forEach(c=>c.style.display=filter==='전체'||(filter.includes('사진')&&c.dataset.photo==='yes')||filter.includes(c.dataset.type)?'block':'none')}
+function applyFilter(){document.querySelectorAll('.card').forEach(c=>{const show=filter==='전체'||(filter.includes('사진')&&c.dataset.photo==='yes')||filter.includes(c.dataset.type);c.style.display=show?'block':'none'})}
 document.getElementById('open').onclick=()=>bg.classList.add('open');bg.onclick=e=>{if(e.target===bg)bg.classList.remove('open')};
 document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.textContent.trim();applyFilter()});
 document.querySelectorAll('.types button,.states button').forEach(b=>b.onclick=()=>{[...b.parentElement.children].forEach(x=>x.classList.remove('on'));b.classList.add('on')});

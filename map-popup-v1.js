@@ -20,7 +20,7 @@
       .funy-pin-marker svg{position:absolute;left:50%;top:0;width:var(--pin-w);height:var(--pin-h);transform:translateX(-50%);overflow:visible}
       .funy-pin-wave{display:none;position:absolute;left:50%;bottom:0;width:var(--wave-w);height:var(--wave-h);transform:translateX(-50%);pointer-events:none}
       .funy-pin-marker.is-selected .funy-pin-wave{display:block}
-      .funy-live-mark{position:absolute;right:-5px;top:-5px;z-index:3;width:15px;height:15px;border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#8063d7,#6749bd);color:#fff;font:900 9px/1 Arial,sans-serif;box-shadow:0 2px 6px rgba(103,73,189,.28)}
+      .funy-live-mark{position:absolute;left:50%;top:39%;z-index:3;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);color:#6749bd;font:900 clamp(9px,calc(var(--pin-w) * .42),14px)/1 Arial,sans-serif;text-shadow:0 1px 2px rgba(255,255,255,.9);pointer-events:none}
       .funy-pin-wave:before,.funy-pin-wave:after{content:"";position:absolute;left:50%;top:50%;border:1.5px solid rgba(125,96,214,.24);border-radius:50%;transform:translate(-50%,-50%)}
       .funy-pin-wave:before{width:58%;height:34%;background:rgba(139,111,220,.06)}
       .funy-pin-wave:after{width:94%;height:68%;border-color:rgba(125,96,214,.11)}

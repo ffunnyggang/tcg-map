@@ -19,7 +19,7 @@ const esc=v=>{const d=document.createElement('div');d.textContent=v??'';return d
 const ago=t=>{const m=Math.max(0,Math.floor((Date.now()-new Date(t))/60000));return m<1?'방금 전':m<60?m+'분 전':Math.floor(m/60)+'시간 전'};
 async function load(){
  try{
-  const q=new URLSearchParams();q.set('select','*');q.set('order','created_at.desc');q.set('limit','100');const now=new Date(),kst=new Date(now.getTime()+9*60*60*1000),day=kst.toISOString().slice(0,10),midnightUtc=new Date(day+'T00:00:00+09:00').toISOString();q.set('created_at','gte.'+midnightUtc);
+  const q=new URLSearchParams();q.set('select','*');q.set('order','created_at.desc');q.set('limit','100');const now=new Date(),kst=new Date(now.getTime()+9*60*60*1000),day=kst.toISOString().slice(0,10),midnightUtc=new Date(day+'T00:00:00+09:00').toISOString();q.set('created_at','gte.'+midnightUtc);q.set('is_hidden','eq.false');
   const res=await fetch(URL+'/rest/v1/live_reports?'+q.toString(),{headers:directHeaders,cache:'no-store'});
   const raw=await res.text();
   if(!res.ok)throw new Error('HTTP '+res.status+' / '+raw.slice(0,180));

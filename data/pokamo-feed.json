@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-20T05:25:46.474899+00:00",
+  "updatedAt": "2026-09-20T06:31:15.933159+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "포켓몬카드",
+      "author": "비버비버",
+      "publishedAt": "2026-09-20T05:33:17.832764Z",
+      "excerpt": "비싼 카드일까요?",
+      "image": "https://img.kr.gcp-karroter.net/community/community/20260920/f95b5086-d7f7-475e-b08b-4458636bb16d.jpeg?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-dymrxM7d",
+      "views": 6,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.06
+    },
+    {
+      "category": "자유 게시판",
+      "title": "추억때문입니다..",
+      "author": "비버비버",
+      "publishedAt": "2026-09-20T05:32:45.605791Z",
+      "excerpt": "추억때문입니다..",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/추억때문입니다-PmV9KZod",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "작년 카드모으는거에 짜저 살다가 포켓몬으로 정착",
@@ -11,10 +37,10 @@
       "excerpt": "작년 카드모으는거에 짜저 살다가 포켓몬으로 정착",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/작년-카드모으는거에-짜저-살다가-포켓몬으로-정착-AeD52lej",
-      "views": 10,
+      "views": 13,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.1
+      "popularityScore": 3.13
     },
     {
       "category": "자유 게시판",
@@ -134,32 +160,6 @@
       "popularityScore": 9.29
     },
     {
-      "category": "자유 게시판",
-      "title": "직뽑 이브이 ✌️",
-      "author": "깽깽깽",
-      "publishedAt": "2026-09-17T13:49:36.283729Z",
-      "excerpt": "ㅎㅎ 이번주는 직뽑했던 이브이 싸rrrr입니다 😁 하나씩 인증해갈게요 ✨️",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/aee3bd1c-ce19-4d70-ae15-fa80cc76be1a.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/직뽑-이브이-Pm6wBJRd",
-      "views": 31,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.31
-    },
-    {
-      "category": "자유 게시판",
-      "title": "피카츄입니다 너무귀여워요!! 대표캐릭터",
-      "author": "쇼핑중독눈",
-      "publishedAt": "2026-09-17T13:44:33.560248Z",
-      "excerpt": "피카츄입니다 너무귀여워요!! 대표캐릭터",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄입니다-너무귀여워요-대표캐릭터-j8BY9mkP",
-      "views": 19,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.19
-    },
-    {
       "category": "카드 자랑",
       "title": "뱅기프로모세투🛩",
       "author": "깽깽깽",
@@ -245,10 +245,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 102,
+      "views": 103,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.02
+      "popularityScore": 19.03
     },
     {
       "category": "카드 자랑",
@@ -648,10 +648,10 @@
       "excerpt": "😮 방문했던 카드샵 중 가장 넓은 규모 매장에 들어가자마자 가장 먼저 느낀 점은 생각보다 규모가 정말 크고 쾌적하다는 점이었습니다 지금까지 방문했던 카드샵 중에서도 손에 꼽을 정도로 넓은 공간이었는데요 매장 내부는 오리파 / 싱글카드 / 등급카드 / 박스 제품 공간으로 나뉘어 있어 원하",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178754170555540308b27df7d1ee27046a0f3a9ab4fad6b4a417c9c6aa279c06bcd029100743f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/강남-카드노바-오픈-후기-dXq39l3j",
-      "views": 97,
+      "views": 98,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.97
+      "popularityScore": 5.98
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 312,
+      "views": 313,
       "likes": 6,
       "comments": 6,
-      "popularityScore": 33.12
+      "popularityScore": 33.13
     },
     {
       "category": "정보 공유",

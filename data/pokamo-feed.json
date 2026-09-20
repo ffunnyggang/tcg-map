@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-20T03:27:18.153379+00:00",
+  "updatedAt": "2026-09-20T04:27:15.782243+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "작년 카드모으는거에 짜저 살다가 포켓몬으로 정착",
+      "author": "윙윙",
+      "publishedAt": "2026-09-20T04:06:27.612541Z",
+      "excerpt": "작년 카드모으는거에 짜저 살다가 포켓몬으로 정착",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/작년-카드모으는거에-짜저-살다가-포켓몬으로-정착-AeD52lej",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "아들과 함께 시작",
@@ -11,10 +24,10 @@
       "excerpt": "아들과 함께 시작",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아들과-함께-시작-P21GKL3A",
-      "views": 11,
+      "views": 12,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.11
+      "popularityScore": 5.12
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "30주년 카드깡했는데 얼마나 가치있는지 모르겠어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17898242118642553095d8652bd3d66067eaf1aba9099508aa2f0e7cdf9798c27efcc593747920.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포린이는-시세가-궁금합니다-형님들-d7LQ1vvj",
-      "views": 33,
+      "views": 34,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.33
+      "popularityScore": 0.34
     },
     {
       "category": "자유 게시판",
@@ -147,19 +160,6 @@
       "popularityScore": 3.19
     },
     {
-      "category": "자유 게시판",
-      "title": "북미 팩, 박스, 카드 구해드립니다.(마감)",
-      "author": "쥬리",
-      "publishedAt": "2026-09-17T05:36:54.477727Z",
-      "excerpt": "안녕하세요 미국사는 컬렉터입니다. 10월 초에 한국들어가서 원하시는것 말씀햐주시면 구해다드리겠습니다. 수고비는 제품가격의 10~25프로로 받겠습니다. 마감했습니다 낱팩들은 사다드릴수있지만 박스는 가방에 자리가 없어요 ㅠㅠ 제가 오픈 채팅은 안해서 커뮤니티에 김포 포켓몬카드 소통,거래라고",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/북미-팩-박스-카드-구해드립니다마감-dY69wyrj",
-      "views": 26,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.26
-    },
-    {
       "category": "카드 자랑",
       "title": "뱅기프로모세투🛩",
       "author": "깽깽깽",
@@ -245,10 +245,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 100,
+      "views": 101,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.0
+      "popularityScore": 19.01
     },
     {
       "category": "카드 자랑",
@@ -310,10 +310,10 @@
       "excerpt": "발매일에 광클 실패하고 당근에서 나름? 합리적인 가격에 루피&나미만 영입했는데 구매가보다 뻥뻐벙튀기되서 거래되고 있네요🤣 생각보다 나름이뻐요! #ktwiz원피스 #루피 #나미",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788789864081e789929fa6448153f37ef4c6d3ed4e882c50715e88373f9691116e28e39902300.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/kt-wiz-x-원피스-루피나미-Aqa7L3oA",
-      "views": 25,
+      "views": 26,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.25
+      "popularityScore": 0.26
     },
     {
       "category": "카드거래",
@@ -453,10 +453,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 125,
+      "views": 126,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.25
+      "popularityScore": 7.26
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 309,
+      "views": 310,
       "likes": 6,
       "comments": 6,
-      "popularityScore": 33.09
+      "popularityScore": 33.1
     },
     {
       "category": "정보 공유",

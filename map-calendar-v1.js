@@ -12,7 +12,7 @@
   function icon(){return {content:'<div class="funy-event-pin" aria-label="일정 위치"><span>📅</span></div>',anchor:new naver.maps.Point(20,44)}}
   function addStyle(){if(document.getElementById('funy-event-marker-style'))return;const s=document.createElement('style');s.id='funy-event-marker-style';s.textContent='.funy-event-pin{position:relative;width:40px;height:44px;display:flex;align-items:flex-start;justify-content:center;padding-top:7px;box-sizing:border-box;font-size:18px;filter:drop-shadow(0 3px 5px rgba(43,34,55,.18))}.funy-event-pin:before{content:"";position:absolute;left:5px;top:1px;width:30px;height:30px;border-radius:50% 50% 50% 8px;background:#fff;border:2px solid #8062d8;transform:rotate(-45deg);box-sizing:border-box}.funy-event-pin span{position:relative;z-index:1;font-size:15px}.funy-event-popup{width:220px;padding:13px 14px;border:1px solid #e9e4ee;border-radius:15px;background:#fff;box-shadow:0 8px 24px rgba(42,33,52,.14);font-family:"Pretendard Variable",Pretendard,sans-serif}.funy-event-popup b{display:block;margin-bottom:7px;font-size:13px;color:#2c2730}.funy-event-popup p{margin:3px 0;color:#817a86;font-size:10.5px;line-height:1.45}.funy-event-popup .tag{color:#7656d1;font-weight:800}';document.head.appendChild(s)}
   async function load(){
-    if(!window.naver?.maps||!window.naverMap)return;
+    if(!window.naver?.maps||typeof naverMap==='undefined'||!naverMap)return;
     const now=new Date(),end=new Date(now);end.setMonth(end.getMonth()+13);
     const p=new URLSearchParams({key:API_KEY,singleEvents:'true',orderBy:'startTime',timeMin:now.toISOString(),timeMax:end.toISOString(),maxResults:'100'});
     try{
@@ -29,5 +29,5 @@
       }
     }catch(e){console.warn('FUNY PIN calendar map markers unavailable',e)}
   }
-  addStyle();let tries=0,t=setInterval(()=>{tries++;if(window.naver?.maps?.Service&&window.naverMap){clearInterval(t);load()}else if(tries>60)clearInterval(t)},250);
+  addStyle();let tries=0,t=setInterval(()=>{tries++;if(window.naver?.maps?.Service&&typeof naverMap!=='undefined'&&naverMap){clearInterval(t);load()}else if(tries>60)clearInterval(t)},250);
 })();

@@ -1,6 +1,6 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-20T06:31:15.933159+00:00",
+  "updatedAt": "2026-09-20T07:25:38.454678+00:00",
   "count": 60,
   "items": [
     {
@@ -11,10 +11,10 @@
       "excerpt": "비싼 카드일까요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260920/f95b5086-d7f7-475e-b08b-4458636bb16d.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-dymrxM7d",
-      "views": 6,
+      "views": 10,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.06
+      "popularityScore": 0.1
     },
     {
       "category": "자유 게시판",
@@ -24,10 +24,10 @@
       "excerpt": "추억때문입니다..",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/추억때문입니다-PmV9KZod",
-      "views": 1,
-      "likes": 0,
+      "views": 6,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.06
     },
     {
       "category": "자유 게시판",
@@ -245,10 +245,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 103,
+      "views": 104,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.03
+      "popularityScore": 19.04
     },
     {
       "category": "카드 자랑",
@@ -427,10 +427,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 85,
+      "views": 86,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.85
+      "popularityScore": 8.86
     },
     {
       "category": "정보 공유",
@@ -596,10 +596,10 @@
       "excerpt": "*반택 +0.2 / 일택 0.4",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/08569548-e6ea-47e1-82a0-a9a08b5f8802.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/태그팀-님피아-가디안-50-Pklq3qDd",
-      "views": 37,
+      "views": 38,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.37
+      "popularityScore": 0.38
     },
     {
       "category": "카드거래",
@@ -778,10 +778,10 @@
       "excerpt": "드디어 많은 팬들이 기다리던 나루토 공식 TCG의 카드 디자인이 공개됐습니다 ​ 그동안 게임 시스템이나 출시 소식만 조금씩 알려졌다면, 이번에는 실제 카드 디자인과 레이아웃이 공개되면서 전 세계 카드 수집가들의 관심이 집중되고 있습니다 | 드디어 베일을 벗은 나루토 TCG 나루토는 전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202607/1785380792631e1241df96fbcb44fd7ee5cf58ca2f12fc06ad2656dd6e7f667f884579e835ab20.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나루토-TCG-카드-디지인-공개-🎉-daW7LXnA",
-      "views": 54,
+      "views": 55,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.54
+      "popularityScore": 6.55
     }
   ]
 }

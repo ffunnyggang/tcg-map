@@ -22,11 +22,13 @@
       .funy-pin-wave{display:none;position:absolute;left:50%;bottom:0;width:var(--wave-w);height:var(--wave-h);transform:translateX(-50%);pointer-events:none}
       .funy-pin-marker.is-selected .funy-pin-wave{display:block}
       .funy-live-mark{position:absolute;left:50%;top:39%;z-index:3;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);color:#6749bd;font:900 clamp(27px,calc(var(--pin-w) * 1.26),42px)/1 Arial,sans-serif;text-shadow:0 1px 2px rgba(255,255,255,.9);pointer-events:none}
-      .funy-pin-marker.is-event:before,.funy-pin-marker.is-event:after{content:"";position:absolute;left:50%;top:42%;z-index:-1;width:calc(var(--pin-w) * 1.15);height:calc(var(--pin-w) * 1.15);border:1.5px solid rgba(128,97,221,.48);border-radius:50%;transform:translate(-50%,-50%) scale(.72);opacity:0;pointer-events:none;animation:funyEventPulse 2s ease-out infinite}
-      .funy-pin-marker.is-event:after{animation-delay:1s}
-      .funy-event-mark{position:absolute;right:-7px;top:-6px;z-index:5;min-width:17px;height:17px;padding:0 4px;border:1.5px solid #fff;border-radius:9px;background:#7657d5;color:#fff;box-shadow:0 2px 5px rgba(75,53,139,.24);display:flex;align-items:center;justify-content:center;font:800 8px/1 Arial,sans-serif;letter-spacing:-.02em;pointer-events:none}
-      @keyframes funyEventPulse{0%{transform:translate(-50%,-50%) scale(.72);opacity:.58}72%,100%{transform:translate(-50%,-50%) scale(1.75);opacity:0}}
-      @media (prefers-reduced-motion:reduce){.funy-pin-marker.is-event:before,.funy-pin-marker.is-event:after{animation:none;opacity:.28;transform:translate(-50%,-50%) scale(1.28)}}
+      .funy-pin-marker.is-event{filter:drop-shadow(0 3px 5px rgba(88,63,166,.22));animation:funyEventPinGlow 1.45s ease-in-out infinite}
+      .funy-pin-marker.is-event:before{content:"";position:absolute;left:50%;top:0;z-index:4;width:var(--pin-w);height:var(--pin-h);transform:translateX(-50%);border-radius:48% 48% 54% 54%;background:linear-gradient(112deg,transparent 20%,rgba(255,255,255,0) 36%,rgba(255,255,255,.92) 49%,rgba(255,255,255,0) 62%,transparent 78%);background-size:220% 100%;background-position:160% 0;mix-blend-mode:screen;clip-path:polygon(50% 0,82% 9%,100% 35%,96% 59%,77% 79%,50% 100%,23% 79%,4% 59%,0 35%,18% 9%);pointer-events:none;animation:funyEventShine 1.45s ease-in-out infinite}
+      .funy-event-mark{position:absolute;left:50%;top:-12px;z-index:6;height:18px;padding:0 6px;border:1.5px solid #fff;border-radius:9px;background:#6846c7;color:#fff;box-shadow:0 3px 7px rgba(75,53,139,.32);display:flex;align-items:center;justify-content:center;transform:translateX(-50%);white-space:nowrap;font:900 8px/1 Arial,sans-serif;letter-spacing:.04em;pointer-events:none}
+      .funy-event-mark:before{content:"";position:absolute;left:50%;bottom:-4px;width:6px;height:6px;background:#6846c7;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:translateX(-50%) rotate(45deg);z-index:-1}
+      @keyframes funyEventPinGlow{0%,100%{filter:drop-shadow(0 3px 5px rgba(88,63,166,.22)) drop-shadow(0 0 0 rgba(158,124,255,0));transform:scale(1)}50%{filter:drop-shadow(0 4px 7px rgba(88,63,166,.30)) drop-shadow(0 0 7px rgba(158,124,255,.82));transform:scale(1.07)}}
+      @keyframes funyEventShine{0%,20%{background-position:160% 0;opacity:0}38%{opacity:1}65%,100%{background-position:-70% 0;opacity:0}}
+      @media (prefers-reduced-motion:reduce){.funy-pin-marker.is-event{animation:none;filter:drop-shadow(0 3px 6px rgba(88,63,166,.3)) drop-shadow(0 0 5px rgba(158,124,255,.55))}.funy-pin-marker.is-event:before{animation:none;opacity:.28;background-position:50% 0}}
       .funy-pin-wave:before,.funy-pin-wave:after{content:"";position:absolute;left:50%;top:50%;border:1.5px solid rgba(125,96,214,.24);border-radius:50%;transform:translate(-50%,-50%)}
       .funy-pin-wave:before{width:58%;height:34%;background:rgba(139,111,220,.06)}
       .funy-pin-wave:after{width:94%;height:68%;border-color:rgba(125,96,214,.11)}
@@ -50,7 +52,7 @@
     const m=markerMetrics();
     const vars=`--pin-w:${m.pinW}px;--pin-h:${m.pinH}px;--marker-w:${m.markerW}px;--marker-h:${m.markerH}px;--wave-w:${m.waveW}px;--wave-h:${m.waveH}px`;
     return `<div class="funy-pin-marker${selected?' is-selected':''}${eventShopIds.has(shopId)?' is-event':''}" style="${vars}" aria-hidden="true">
-      <span class="funy-pin-wave"></span>${liveShopIds.has(shopId)?'<span class="funy-live-mark">⚡</span>':''}${eventShopIds.has(shopId)?'<span class="funy-event-mark">✦</span>':''}
+      <span class="funy-pin-wave"></span>${liveShopIds.has(shopId)?'<span class="funy-live-mark">⚡</span>':''}${eventShopIds.has(shopId)?'<span class="funy-event-mark">EVENT</span>':''}
       <svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs><linearGradient id="funyPinGrad${selected?'S':'N'}" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#A98BF4"/><stop offset=".48" stop-color="#8061DD"/><stop offset="1" stop-color="#6546C5"/></linearGradient></defs>
         <path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#funyPinGrad${selected?'S':'N'})"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/>

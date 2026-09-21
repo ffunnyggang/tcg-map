@@ -40,7 +40,7 @@
 <div class="sheetbg" id="scannerBg"><section class="sheet" role="dialog" aria-modal="true"><div class="handle"></div><div class="sheet-head"><h3>카드볼트 방문 인증</h3><button class="close" id="scannerClose" type="button">×</button></div><div class="camera"><video id="video" playsinline muted></video><canvas id="canvas" hidden></canvas><div class="scanbox"></div></div><p class="scantext">매장에 비치된 FUNY PIN QR코드를 화면 안에 맞춰주세요.</p><div class="error" id="scanError"></div><div class="fallback"><button id="fallbackToggle" type="button">QR 인증이 어려우신가요? 직원 인증 코드 사용</button><div class="staffbox" id="staffBox"><input id="staffCode" type="tel" inputmode="numeric" maxlength="6" placeholder="6자리 코드"><button id="staffSubmit" type="button">인증</button></div></div></section></div>
 <script>
 const EVENT_ID='cardvault-chuseok-2026',SHOP_ID='KR-SEO-013';
-const QR_HASH='71e539511c4aff9a234b8924946b3b934d6fd2dc4d2436201cec881b48e3c9f8';
+const QR_HASH='6cac25f63908dfae6512b35b09b02216dd4d140fb4b3c8f416d207836cbcc1c8';
 const STAFF_HASH='13d1befccac1aa707bb81564f8798cbb271f953e5c3e498192888291a6cb9d43';
 const VERIFIED_KEY='funypin_event_'+EVENT_ID+'_verified',ENTRY_KEY='funypin_event_'+EVENT_ID+'_entry';
 const bg=document.getElementById('scannerBg'),video=document.getElementById('video'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),scanError=document.getElementById('scanError');

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-21T03:28:55.572635+00:00",
+  "updatedAt": "2026-09-21T04:28:32.362951+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "많은 관심 부탁드립니다",
+      "author": "쥬리",
+      "publishedAt": "2026-09-21T04:20:39.649696Z",
+      "excerpt": "여려분 이 카페도 좋지만, 같이 판매/정보 공유하는 방 더 들오시고 싶으신분? 이방은 개인채팅도 가능하니 많이많이 들어와주세요! 멤버가 60명정도 계신데, 연말까지 150명까지 방에 계시면 좋겠어요. 커뮤니티에 김포 포켓몬카드 소통,거래라고 치면 나와요 이건 링크입니다 https://d",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/많은-관심-부탁드립니다-PM0KkO5A",
+      "views": 10,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.1
+    },
     {
       "category": "자유 게시판",
       "title": "mur 망나뇽 카드를 얻었을때",
@@ -11,10 +24,10 @@
       "excerpt": "mur 망나뇽 카드를 얻었을때",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/mur-망나뇽-카드를-얻었을때-dQM9V9Yd",
-      "views": 1,
-      "likes": 0,
+      "views": 2,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.02
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "한국에서 조그만하게 구매대행 겸 국내유통 하려고 준비 하는데 수요가 있을까요?? 특히 포켓몬 카드가 요즘 크림이랑 스니덩에 가격비교하면 비슷하거나 약간 비싼 느낌이라서",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구매대행-관련-PM0KV0aA",
-      "views": 31,
+      "views": 35,
       "likes": 1,
       "comments": 4,
-      "popularityScore": 11.31
+      "popularityScore": 11.35
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "비싼 카드일까요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260920/f95b5086-d7f7-475e-b08b-4458636bb16d.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-dymrxM7d",
-      "views": 43,
+      "views": 45,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.43
+      "popularityScore": 0.45
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.14
-    },
-    {
-      "category": "자유 게시판",
-      "title": "아들과 함께 시작",
-      "author": "드림카카오",
-      "publishedAt": "2026-09-20T00:07:57.167627Z",
-      "excerpt": "아들과 함께 시작",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아들과-함께-시작-P21GKL3A",
-      "views": 12,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.12
     },
     {
       "category": "카드 자랑",
@@ -297,10 +297,10 @@
       "excerpt": "제 눈으로 봤을때 하자는 없습니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178879677188447c59eecd8ab68b2111f4f4f9a7275106f9a844243e7755916fdd0467a6851070.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-5만원에-구매하실분-계실까요-dgWb28od",
-      "views": 20,
+      "views": 21,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.2
+      "popularityScore": 0.21
     },
     {
       "category": "카드 자랑",
@@ -687,10 +687,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 304,
+      "views": 305,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.04
+      "popularityScore": 10.05
     },
     {
       "category": "정보 공유",
@@ -700,10 +700,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 324,
+      "views": 325,
       "likes": 6,
       "comments": 6,
-      "popularityScore": 33.24
+      "popularityScore": 33.25
     },
     {
       "category": "정보 공유",
@@ -752,10 +752,10 @@
       "excerpt": "포켓몬 굿즈가 출시될 때마다 한 번씩은 구매하게 되는데, 이번에는 롯데리아에서 출시한 포켓몬 마그넷을 구매해 봤습니다 ​ 처음 공개됐을 때는 단순한 자석 정도로 생각했는데, 실물을 보니 예상보다 훨씬 퀄리티가 좋았습니다 특히 포켓몬 도감을 그대로 축소한 듯한 디자인이라 포켓몬을 좋아하는",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1785676355907e0ba79d73625811ed3c3fcd7b2da65d2c3647df02b4e81ed1352129914d27d220.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/롯데리아-포켓몬-마그넷-후기-20종-전부-모으고-싶은-한정-굿즈-PWDrZQxd",
-      "views": 409,
+      "views": 410,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 12.09
+      "popularityScore": 12.1
     },
     {
       "category": "정보 공유",
@@ -778,10 +778,10 @@
       "excerpt": "드디어 많은 팬들이 기다리던 나루토 공식 TCG의 카드 디자인이 공개됐습니다 ​ 그동안 게임 시스템이나 출시 소식만 조금씩 알려졌다면, 이번에는 실제 카드 디자인과 레이아웃이 공개되면서 전 세계 카드 수집가들의 관심이 집중되고 있습니다 | 드디어 베일을 벗은 나루토 TCG 나루토는 전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202607/1785380792631e1241df96fbcb44fd7ee5cf58ca2f12fc06ad2656dd6e7f667f884579e835ab20.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나루토-TCG-카드-디지인-공개-🎉-daW7LXnA",
-      "views": 59,
+      "views": 60,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.59
+      "popularityScore": 6.6
     }
   ]
 }

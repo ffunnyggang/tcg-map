@@ -29,7 +29,7 @@
         const marker=new naver.maps.Marker({map:naverMap,position:new naver.maps.LatLng(pos.lat,pos.lng),icon:icon(),zIndex:150});
         const html=popup(e);
         const iw=new naver.maps.InfoWindow({content:html,borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-10)});
-        naver.maps.Event.addListener(marker,'click',()=>{try{if(window.activeInfoWindow)window.activeInfoWindow.close()}catch(_){}iw.open(naverMap,marker);try{window.activeInfoWindow=iw}catch(_){}});
+        naver.maps.Event.addListener(marker,'click',()=>{try{if(window.activeInfoWindow===iw){iw.close();window.activeInfoWindow=null;return}if(window.activeInfoWindow)window.activeInfoWindow.close()}catch(_){}iw.open(naverMap,marker);try{window.activeInfoWindow=iw}catch(_){}});
         marker.__event=e;markers.push(marker)
       }
     }catch(e){console.warn('FUNY PIN calendar map markers unavailable',e)}

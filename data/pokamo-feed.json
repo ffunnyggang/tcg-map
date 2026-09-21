@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-21T18:30:13.246042+00:00",
+  "updatedAt": "2026-09-21T19:26:50.758423+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "카드 자랑",
+      "title": "[카드볼트] 30주년 낱팩 2개 깠는데… 복각 여기서?! 🔥",
+      "author": "당균주때엽",
+      "publishedAt": "2026-09-21T19:22:00.024581Z",
+      "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.02
+    },
     {
       "category": "자유 게시판",
       "title": "안녕하세요~카드 판매하려고 하는데 관심 있으신 분들 편하게 연락 주세요~!!",
@@ -11,10 +24,10 @@
       "excerpt": "전부 케이스에 깨끗하게 잘 보관 중입니다☺️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790004237720db4fb6d06a79914d078349b5a749d649ee1f2efc55c708f74e8f3eaa80ea1a5c0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요카드-판매하려고-하는데-관심-있으신-분들-편하게-연락-주세요-P5nLWypd",
-      "views": 20,
+      "views": 22,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.2
+      "popularityScore": 3.22
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "메타몽 프로모 카드 판매합니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/54236366-b36f-4cb9-8c15-3522c5efc796.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모-카드-판매합니다-A04N1wmA",
-      "views": 10,
+      "views": 11,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.1
+      "popularityScore": 7.11
     },
     {
       "category": "자유 게시판",
@@ -392,19 +405,6 @@
       "likes": 0,
       "comments": 0,
       "popularityScore": 0.77
-    },
-    {
-      "category": "카드 자랑",
-      "title": "이번주 카드깡중 젤 귀욤 👍",
-      "author": "깽깽깽",
-      "publishedAt": "2026-09-04T03:05:22.452786Z",
-      "excerpt": "ㅎㅎㅎㅎㅎ 카드노바 갔다가 원피스도 까봤는데 젤 맘에들어요 😁",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/ae59650e-0ac0-4912-9a18-b372ddef7b61.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이번주-카드깡중-젤-귀욤-👍-dXqKpM9j",
-      "views": 18,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.18
     },
     {
       "category": "정보 공유",

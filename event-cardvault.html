@@ -19,19 +19,20 @@
 <section class="section"><h2>참여 방법</h2><div class="steps">
 <div class="step"><div class="num">1</div><div><b>카드볼트 방문</b><span>FUNY PIN 등록 카드샵 카드볼트(KR-SEO-013)에 방문해주세요.</span></div></div>
 <div class="step"><div class="num">2</div><div><b>QR로 방문 인증</b><span>매장에 비치된 FUNY PIN 전용 QR코드를 스캔해주세요.</span></div></div>
-<div class="step"><div class="num">3</div><div><b>깽퐌커플 인스타그램 팔로우</b><span>@ffunnyggang 팔로우 후 인스타그램 아이디를 입력해주세요.</span></div></div>
+<div class="step"><div class="num">3</div><div><b>인스타그램 팔로우</b><span>깽퐌커플 @ffunnyggang 및 카드볼트 @cardvault_official 계정을 모두 팔로우해주세요.</span></div></div>
 <div class="step"><div class="num">4</div><div><b>이벤트 응모</b><span>방문 인증 완료 후 1인 1회 응모할 수 있어요.</span></div></div>
 </div></section>
 <section class="section" id="entrySection"><h2>이벤트 응모</h2>
 <div class="status-card" id="visitStatus"><div class="status-row"><div class="status-dot" id="visitIcon">1</div><div class="status-copy"><b id="visitTitle">먼저 방문 인증을 해주세요</b><p id="visitDesc">카드볼트 매장 QR코드가 필요합니다.</p></div></div><button class="btn" id="verifyBtn" type="button">방문 인증하기</button></div>
 <div class="form" id="entryForm">
-<label class="label">STEP 2 · 깽퐌커플 인스타그램 팔로우</label>
-<a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">Instagram @ffunnyggang 방문하기 ›</a>
+<label class="label">STEP 2 · 인스타그램 팔로우</label>
+<a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">깽퐌커플 @ffunnyggang 방문하기 ›</a>
+<a class="link-btn" style="margin-top:8px" href="https://www.instagram.com/cardvault_official/" target="_blank" rel="noopener">카드볼트 @cardvault_official 방문하기 ›</a>
 <label class="label" for="instagramId">STEP 3 · 인스타그램 아이디</label>
 <input class="input" id="instagramId" type="text" inputmode="text" autocomplete="off" maxlength="30" placeholder="@ 제외하고 아이디 입력">
-<label class="check"><input id="followCheck" type="checkbox"><span>깽퐌커플 인스타그램 @ffunnyggang 계정을 팔로우했습니다.</span></label>
+<label class="check"><input id="followCheck" type="checkbox"><span>깽퐌커플 @ffunnyggang 및 카드볼트 @cardvault_official 계정을 모두 팔로우했습니다.</span></label>
 <button class="btn" id="entryBtn" type="button">이벤트 응모하기</button>
-<p class="note">※ 인스타그램 아이디 기준 1인 1회 참여 가능합니다.<br>※ 당첨자 선정 시 방문 인증 및 팔로우 여부를 확인하며 조건 미충족 시 당첨이 취소될 수 있습니다.<br>※ 당첨자 발표: 9월 28일</p>
+<p class="note">※ 인스타그램 아이디 기준 1인 1회 참여 가능합니다.<br>※ 당첨자 선정 시 방문 인증 및 두 계정의 팔로우 여부를 확인하며 조건 미충족 시 당첨이 취소될 수 있습니다.<br>※ 당첨자 발표: 9월 28일</p>
 <div class="error" id="entryError"></div>
 </div>
 <div class="complete" id="complete"><div class="icon">✓</div><h3>응모가 완료됐어요!</h3><p>9월 28일 당첨자 발표를 확인해주세요.<br>FUNY PIN 이벤트에 참여해주셔서 감사합니다 💜</p></div>
@@ -72,7 +73,7 @@ document.getElementById('entryBtn').onclick=async()=>{
  const btn=document.getElementById('entryBtn'),err=document.getElementById('entryError'),id=document.getElementById('instagramId').value.trim().replace(/^@/,'').toLowerCase(),follow=document.getElementById('followCheck').checked;
  err.textContent='';if(!localStorage.getItem(VERIFIED_KEY)){err.textContent='먼저 카드볼트 방문 인증을 완료해주세요.';return}
  if(!/^[a-z0-9._]{1,30}$/.test(id)){err.textContent='인스타그램 아이디를 정확히 입력해주세요.';return}
- if(!follow){err.textContent='깽퐌커플 인스타그램 팔로우 확인에 체크해주세요.';return}
+ if(!follow){err.textContent='깽퐌커플과 카드볼트 두 계정 모두 팔로우 후 확인에 체크해주세요.';return}
  if(localStorage.getItem(ENTRY_KEY)){err.textContent='이미 이 이벤트에 응모했어요.';return}
  if(!inEventPeriod()){err.textContent='현재 이벤트 응모 기간이 아닙니다.';return}
  btn.disabled=true;btn.textContent='응모 확인 중...';

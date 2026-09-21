@@ -39,7 +39,9 @@
 </main>
 <div class="sheetbg" id="scannerBg"><section class="sheet" role="dialog" aria-modal="true"><div class="handle"></div><div class="sheet-head"><h3>카드볼트 방문 인증</h3><button class="close" id="scannerClose" type="button">×</button></div><div class="camera"><video id="video" playsinline muted></video><canvas id="canvas" hidden></canvas><div class="scanbox"></div></div><p class="scantext">매장에 비치된 FUNY PIN QR코드를 화면 안에 맞춰주세요.</p><div class="error" id="scanError"></div><div class="fallback"><button id="fallbackToggle" type="button">QR 인증이 어려우신가요? 직원 인증 코드 사용</button><div class="staffbox" id="staffBox"><input id="staffCode" type="tel" inputmode="numeric" maxlength="6" placeholder="6자리 코드"><button id="staffSubmit" type="button">인증</button></div></div></section></div>
 <script>
-const EVENT_ID='cardvault-chuseok-2026',SHOP_ID='KR-SEO-013';
+const EVENT_ID='cardvault-chuseok-2026',SHOP_ID='KR-SEO-013',EVENT_STORE_ID='EV-CARDVAULT-2026';
+const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co',SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const SB_HEADERS={apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json','Accept':'application/json'};
 const QR_HASH='6cac25f63908dfae6512b35b09b02216dd4d140fb4b3c8f416d207836cbcc1c8';
 const STAFF_HASH='13d1befccac1aa707bb81564f8798cbb271f953e5c3e498192888291a6cb9d43';
 const VERIFIED_KEY='funypin_event_'+EVENT_ID+'_verified',ENTRY_KEY='funypin_event_'+EVENT_ID+'_entry';
@@ -62,14 +64,25 @@ document.getElementById('scannerClose').onclick=()=>{stopScan();bg.classList.rem
 bg.onclick=e=>{if(e.target===bg){stopScan();bg.classList.remove('open');document.body.style.overflow=''}};
 document.getElementById('fallbackToggle').onclick=()=>document.getElementById('staffBox').classList.toggle('show');
 document.getElementById('staffSubmit').onclick=async()=>{const v=document.getElementById('staffCode').value.trim();if(await sha(v)===STAFF_HASH)markVerified();else scanError.textContent='인증 코드를 다시 확인해주세요.'};
-document.getElementById('entryBtn').onclick=()=>{
- const err=document.getElementById('entryError'),id=document.getElementById('instagramId').value.trim().replace(/^@/,'').toLowerCase(),follow=document.getElementById('followCheck').checked;
+function getClientId(){let v='';try{v=localStorage.getItem('funypin_event_client')||''}catch(_){}if(!v){v=(crypto&&crypto.randomUUID)?crypto.randomUUID():'ev-'+Date.now()+'-'+Math.random().toString(36).slice(2);try{localStorage.setItem('funypin_event_client',v)}catch(_){}}return v}
+function inEventPeriod(){const now=Date.now(),start=new Date('2026-09-22T00:00:00+09:00').getTime(),end=new Date('2026-09-27T23:59:59+09:00').getTime();return now>=start&&now<=end}
+async function findExistingEntry(id){const q=new URLSearchParams({select:'id,content,created_at',shop_id:'eq.'+EVENT_STORE_ID,status:'eq.EVENT_ENTRY',content:'eq.'+id,limit:'1'});const r=await fetch(SB_URL+'/rest/v1/live_reports?'+q.toString(),{headers:SB_HEADERS,cache:'no-store'});if(!r.ok)throw new Error('중복 확인 실패');const rows=await r.json();return rows&&rows.length?rows[0]:null}
+async function saveEntry(id){const body={shop_id:EVENT_STORE_ID,shop_name:'FUNY PIN EVENT · CARDVAULT',post_type:'report',category:'store',status:'EVENT_ENTRY',content:id,client_id:getClientId()};const r=await fetch(SB_URL+'/rest/v1/live_reports',{method:'POST',headers:{...SB_HEADERS,Prefer:'return=representation'},body:JSON.stringify(body)});const raw=await r.text();if(!r.ok){let msg='응모 저장 실패';try{const e=JSON.parse(raw);msg=e.message||e.details||msg}catch(_){}throw new Error(msg)}try{return JSON.parse(raw)}catch(_){return null}}
+document.getElementById('entryBtn').onclick=async()=>{
+ const btn=document.getElementById('entryBtn'),err=document.getElementById('entryError'),id=document.getElementById('instagramId').value.trim().replace(/^@/,'').toLowerCase(),follow=document.getElementById('followCheck').checked;
  err.textContent='';if(!localStorage.getItem(VERIFIED_KEY)){err.textContent='먼저 카드볼트 방문 인증을 완료해주세요.';return}
  if(!/^[a-z0-9._]{1,30}$/.test(id)){err.textContent='인스타그램 아이디를 정확히 입력해주세요.';return}
  if(!follow){err.textContent='깽퐌커플 인스타그램 팔로우 확인에 체크해주세요.';return}
  if(localStorage.getItem(ENTRY_KEY)){err.textContent='이미 이 이벤트에 응모했어요.';return}
- localStorage.setItem(ENTRY_KEY,JSON.stringify({eventId:EVENT_ID,shopId:SHOP_ID,instagramId:id,enteredAt:new Date().toISOString(),followConfirmed:true}));
- document.getElementById('entryForm').classList.remove('show');document.getElementById('visitStatus').style.display='none';document.getElementById('complete').classList.add('show');
+ if(!inEventPeriod()){err.textContent='현재 이벤트 응모 기간이 아닙니다.';return}
+ btn.disabled=true;btn.textContent='응모 확인 중...';
+ try{
+  const exists=await findExistingEntry(id);if(exists){err.textContent='이미 응모한 인스타그램 아이디입니다.';return}
+  btn.textContent='응모 중...';await saveEntry(id);
+  localStorage.setItem(ENTRY_KEY,JSON.stringify({eventId:EVENT_ID,shopId:SHOP_ID,instagramId:id,enteredAt:new Date().toISOString(),followConfirmed:true}));
+  document.getElementById('entryForm').classList.remove('show');document.getElementById('visitStatus').style.display='none';document.getElementById('complete').classList.add('show');
+ }catch(e){err.textContent=e&&e.message?e.message:'응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'}
+ finally{btn.disabled=false;btn.textContent='이벤트 응모하기'}
 };
 try{if(localStorage.getItem(ENTRY_KEY)){document.getElementById('visitStatus').style.display='none';document.getElementById('complete').classList.add('show')}else if(localStorage.getItem(VERIFIED_KEY)){markVerified()}}catch(_){}
 </script>

@@ -1,19 +1,76 @@
 {
   "source": "TCG 카드샵 Master DB_v0.1 / 01_CARD_SHOP / L열 Instagram 게시물 노출",
-  "updatedAt": "2026-09-17",
+  "updatedAt": "2026-09-21",
   "shops": {
-    "KR-SEO-001": {"name":"카드노바","username":"tcgcardnova","url":"https://www.instagram.com/tcgcardnova/"},
-    "KR-SEO-002": {"name":"루비카드","username":"rubycard_shop","url":"https://www.instagram.com/rubycard_shop"},
-    "KR-SEO-003": {"name":"퍼스트카드","username":"firstcardshop","url":"https://www.instagram.com/firstcardshop"},
-    "KR-SEO-005": {"name":"카드가든","username":"cardgarden.hongdae","url":"https://www.instagram.com/cardgarden.hongdae"},
-    "KR-SEO-006": {"name":"카드타운","username":"cardtown_kr","url":"https://www.instagram.com/cardtown_kr"},
-    "KR-SEO-007": {"name":"모아카드","username":"moacardshop","url":"https://www.instagram.com/moacardshop"},
-    "KR-SEO-008": {"name":"카드스토리","username":"cardstory.tcg","url":"https://www.instagram.com/cardstory.tcg"},
-    "KR-SEO-009": {"name":"더카드룸","username":"tcr_kr","url":"https://www.instagram.com/tcr_kr"},
-    "KR-SEO-010": {"name":"골든아카이브","username":"golden_archive2","url":"https://www.instagram.com/golden_archive2"},
-    "KR-SEO-011": {"name":"금빛박물관","username":"golden.m_kr","url":"https://www.instagram.com/golden.m_kr"},
-    "KR-SEO-012": {"name":"콜렉토티씨지","username":"collectotcg","url":"https://www.instagram.com/collectotcg"},
-    "KR-SEO-014": {"name":"카드성지","username":"card_sungji","url":"https://www.instagram.com/card_sungji"},
-    "KR-SEO-016": {"name":"카도","username":"kadotrade","url":"https://www.instagram.com/kadotrade"}
+    "KR-SEO-001": {
+      "name": "카드노바",
+      "username": "tcgcardnova",
+      "url": "https://www.instagram.com/tcgcardnova/"
+    },
+    "KR-SEO-002": {
+      "name": "루비카드",
+      "username": "rubycard_shop",
+      "url": "https://www.instagram.com/rubycard_shop"
+    },
+    "KR-SEO-003": {
+      "name": "퍼스트카드",
+      "username": "firstcardshop",
+      "url": "https://www.instagram.com/firstcardshop"
+    },
+    "KR-SEO-005": {
+      "name": "카드가든",
+      "username": "cardgarden.hongdae",
+      "url": "https://www.instagram.com/cardgarden.hongdae"
+    },
+    "KR-SEO-006": {
+      "name": "카드타운",
+      "username": "cardtown_kr",
+      "url": "https://www.instagram.com/cardtown_kr"
+    },
+    "KR-SEO-007": {
+      "name": "모아카드",
+      "username": "moacardshop",
+      "url": "https://www.instagram.com/moacardshop"
+    },
+    "KR-SEO-008": {
+      "name": "카드스토리",
+      "username": "cardstory.tcg",
+      "url": "https://www.instagram.com/cardstory.tcg"
+    },
+    "KR-SEO-009": {
+      "name": "더카드룸",
+      "username": "tcr_kr",
+      "url": "https://www.instagram.com/tcr_kr"
+    },
+    "KR-SEO-010": {
+      "name": "골든아카이브",
+      "username": "golden_archive2",
+      "url": "https://www.instagram.com/golden_archive2"
+    },
+    "KR-SEO-011": {
+      "name": "금빛박물관",
+      "username": "golden.m_kr",
+      "url": "https://www.instagram.com/golden.m_kr"
+    },
+    "KR-SEO-012": {
+      "name": "콜렉토티씨지",
+      "username": "collectotcg",
+      "url": "https://www.instagram.com/collectotcg"
+    },
+    "KR-SEO-014": {
+      "name": "카드성지",
+      "username": "card_sungji",
+      "url": "https://www.instagram.com/card_sungji"
+    },
+    "KR-SEO-016": {
+      "name": "카도",
+      "username": "kadotrade",
+      "url": "https://www.instagram.com/kadotrade"
+    },
+    "KR-SEO-036": {
+      "name": "카드스팟",
+      "username": "card_spot",
+      "url": "https://www.instagram.com/card_spot/"
+    }
   }
 }

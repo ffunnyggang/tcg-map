@@ -10,6 +10,7 @@
   let mapDismissBound=false;
   let zoomBound=false;
   const liveShopIds=new Set();
+  const eventShopIds=(window.FUNY_ACTIVE_EVENT_SHOPS instanceof Set)?window.FUNY_ACTIVE_EVENT_SHOPS:new Set();
 
   function ensureMarkerStyles(){
     if(document.getElementById('funy-pin-marker-styles')) return;
@@ -21,6 +22,20 @@
       .funy-pin-wave{display:none;position:absolute;left:50%;bottom:0;width:var(--wave-w);height:var(--wave-h);transform:translateX(-50%);pointer-events:none}
       .funy-pin-marker.is-selected .funy-pin-wave{display:block}
       .funy-live-mark{position:absolute;left:50%;top:39%;z-index:3;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);color:#6749bd;font:900 clamp(27px,calc(var(--pin-w) * 1.26),42px)/1 Arial,sans-serif;text-shadow:0 1px 2px rgba(255,255,255,.9);pointer-events:none}
+      .funy-pin-marker.is-event{filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 7px rgba(211,73,255,.9)) drop-shadow(0 0 13px rgba(126,66,255,.72));animation:funyEventPinGlow 1.35s ease-in-out infinite}
+      .funy-pin-marker.is-event:before{content:"";position:absolute;left:50%;top:0;z-index:4;width:var(--pin-w);height:var(--pin-h);transform:translateX(-50%);border-radius:48% 48% 54% 54%;background:linear-gradient(112deg,transparent 20%,rgba(255,255,255,0) 36%,rgba(255,255,255,.92) 49%,rgba(255,255,255,0) 62%,transparent 78%);background-size:220% 100%;background-position:160% 0;mix-blend-mode:screen;clip-path:polygon(50% 0,82% 9%,100% 35%,96% 59%,77% 79%,50% 100%,23% 79%,4% 59%,0 35%,18% 9%);pointer-events:none;animation:funyEventShine 1.45s ease-in-out infinite}
+      .funy-event-mark{position:absolute;left:50%;top:-14px;z-index:7;height:19px;padding:0 8px;border:1.5px solid rgba(255,255,255,.98);border-radius:10px;background:linear-gradient(135deg,#ffb12e 0%,#ff783d 55%,#ff4f78 100%);color:#fff;box-shadow:0 0 3px #fff,0 0 7px rgba(255,177,46,.95),0 0 13px rgba(255,93,74,.78);display:flex;align-items:center;justify-content:center;transform:translateX(-50%);white-space:nowrap;font:900 8px/1 Arial,sans-serif;letter-spacing:.05em;text-shadow:0 1px 2px rgba(168,54,23,.35);pointer-events:none;animation:funyEventBadgeNeon 1.35s ease-in-out infinite}
+      .funy-event-sparkles{position:absolute;inset:-8px -10px 0;z-index:6;pointer-events:none}
+      .funy-event-sparkles i{position:absolute;display:block;color:#ffd84a;font-style:normal;font-weight:900;line-height:1;text-shadow:0 0 3px #fff,0 0 7px currentColor;animation:funySparkle 1.15s ease-in-out infinite}
+      .funy-event-sparkles i:nth-child(1){left:-1px;top:10px;font-size:9px}
+      .funy-event-sparkles i:nth-child(2){right:-2px;top:17px;font-size:12px;animation-delay:.35s;color:#fff}
+      .funy-event-sparkles i:nth-child(3){right:2px;bottom:5px;font-size:8px;animation-delay:.7s;color:#d9c4ff}
+      .funy-event-sparkles i:nth-child(4){left:2px;bottom:9px;font-size:11px;animation-delay:1s;color:#fff}
+      @keyframes funySparkle{0%,100%{opacity:.18;transform:scale(.55) rotate(0deg)}45%{opacity:1;transform:scale(1.18) rotate(22deg)}70%{opacity:.42;transform:scale(.75) rotate(40deg)}}
+      @keyframes funyEventPinGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(255,255,255,.8)) drop-shadow(0 0 6px rgba(211,73,255,.68)) drop-shadow(0 0 10px rgba(126,66,255,.55));transform:scale(1)}50%{filter:drop-shadow(0 0 4px rgba(255,255,255,1)) drop-shadow(0 0 10px rgba(238,83,255,1)) drop-shadow(0 0 18px rgba(126,66,255,.95));transform:scale(1.07)}}
+      @keyframes funyEventBadgeNeon{0%,100%{box-shadow:0 0 2px #fff,0 0 6px rgba(255,177,46,.78),0 0 10px rgba(255,93,74,.62)}50%{box-shadow:0 0 4px #fff,0 0 10px rgba(255,190,58,1),0 0 17px rgba(255,80,91,.95)}}
+      @keyframes funyEventShine{0%,20%{background-position:160% 0;opacity:0}38%{opacity:1}65%,100%{background-position:-70% 0;opacity:0}}
+      @media (prefers-reduced-motion:reduce){.funy-pin-marker.is-event{animation:none;filter:drop-shadow(0 3px 6px rgba(88,63,166,.3)) drop-shadow(0 0 5px rgba(158,124,255,.55))}.funy-pin-marker.is-event:before{animation:none;opacity:.28;background-position:50% 0}.funy-event-sparkles i{animation:none;opacity:.8}}
       .funy-pin-wave:before,.funy-pin-wave:after{content:"";position:absolute;left:50%;top:50%;border:1.5px solid rgba(125,96,214,.24);border-radius:50%;transform:translate(-50%,-50%)}
       .funy-pin-wave:before{width:58%;height:34%;background:rgba(139,111,220,.06)}
       .funy-pin-wave:after{width:94%;height:68%;border-color:rgba(125,96,214,.11)}
@@ -43,8 +58,8 @@
   function markerHTML(selected=false,shopId=''){
     const m=markerMetrics();
     const vars=`--pin-w:${m.pinW}px;--pin-h:${m.pinH}px;--marker-w:${m.markerW}px;--marker-h:${m.markerH}px;--wave-w:${m.waveW}px;--wave-h:${m.waveH}px`;
-    return `<div class="funy-pin-marker${selected?' is-selected':''}" style="${vars}" aria-hidden="true">
-      <span class="funy-pin-wave"></span>${liveShopIds.has(shopId)?'<span class="funy-live-mark">⚡</span>':''}
+    return `<div class="funy-pin-marker${selected?' is-selected':''}${eventShopIds.has(shopId)?' is-event':''}" style="${vars}" aria-hidden="true">
+      <span class="funy-pin-wave"></span>${liveShopIds.has(shopId)?'<span class="funy-live-mark">⚡</span>':''}${eventShopIds.has(shopId)?'<span class="funy-event-mark">EVENT</span><span class="funy-event-sparkles" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></span>':''}
       <svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs><linearGradient id="funyPinGrad${selected?'S':'N'}" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#A98BF4"/><stop offset=".48" stop-color="#8061DD"/><stop offset="1" stop-color="#6546C5"/></linearGradient></defs>
         <path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#funyPinGrad${selected?'S':'N'})"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/>

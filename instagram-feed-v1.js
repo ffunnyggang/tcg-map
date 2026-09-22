@@ -12,8 +12,12 @@
     if(!p)return false;
     const image=p.image||p.thumbnail_url||p.media_url||'';
     const link=p.permalink||'';
-    const isRemote=/^https?:\/\//i.test(image),isLocal=/^(?:\.\/|\/)?images\/instagram\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+$/i.test(image);\n    if((!isRemote&&!isLocal)||!/^https:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[A-Za-z0-9_-]+\/?/i.test(link))return false;
-    if(isRemote){try{\n      const host=new URL(image).hostname.toLowerCase();\n      if(host==='mc.yandex.ru'||host.endsWith('.yandex.ru')||/logo|favicon|avatar|profile/i.test(image))return false;\n    }catch(e){return false}}
+    const isRemote=/^https?:\/\//i.test(image),isLocal=/^(?:\.\/|\/)?images\/instagram\/[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+$/i.test(image);
+    if((!isRemote&&!isLocal)||!/^https:\/\/(?:www\.)?instagram\.com\/(?:p|reel)\/[A-Za-z0-9_-]+\/?/i.test(link))return false;
+    if(isRemote){try{
+      const host=new URL(image).hostname.toLowerCase();
+      if(host==='mc.yandex.ru'||host.endsWith('.yandex.ru')||/logo|favicon|avatar|profile/i.test(image))return false;
+    }catch(e){return false}}
     return true;
   }
   function postHTML(shop,p,i){return p.placeholder?`<a class="instagram-feed-item instagram-feed-placeholder" href="${esc(shop.instagram)}" target="_blank" rel="noopener" aria-label="Instagram UI 미리보기 ${i+1}"><span>POST<br>${i+1}</span></a>`:`<a class="instagram-feed-item" href="${esc(p.permalink)}" target="_blank" rel="noopener" aria-label="Instagram 게시물 보기"><img src="${esc(p.image||p.thumbnail_url||p.media_url)}" alt="${esc(shop.name)} Instagram 게시물" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a>`}

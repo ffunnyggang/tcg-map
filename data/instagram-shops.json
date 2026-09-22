@@ -1,6 +1,6 @@
 {
   "source": "TCG 카드샵 Master DB_v0.1 / 01_CARD_SHOP / L열 Instagram 게시물 노출",
-  "updatedAt": "2026-09-21",
+  "updatedAt": "2026-09-22",
   "shops": {
     "KR-SEO-001": {
       "name": "카드노바",
@@ -76,6 +76,11 @@
       "name": "카드볼트",
       "username": "cardvault_official",
       "url": "https://www.instagram.com/cardvault_official"
+    },
+    "KR-SEO-027": {
+      "name": "카드체이서",
+      "username": "card._.chaser",
+      "url": "https://www.instagram.com/card._.chaser/"
     }
   }
 }

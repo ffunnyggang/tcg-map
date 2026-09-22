@@ -99,6 +99,31 @@ document.getElementById('entryBtn').onclick=async()=>{
  }catch(e){err.textContent=e&&e.message?e.message:'응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'}
  finally{btn.textContent='이벤트 응모하기';updateEntryButton()}
 };
-try{if(localStorage.getItem(ENTRY_KEY)){document.getElementById('eventFlow').style.display='none';document.getElementById('complete').classList.add('show')}else if(localStorage.getItem(VERIFIED_KEY)){markVerified()}else{updateEntryButton()}}catch(_){}
+async function reconcileEntryState(){
+ try{
+  const raw=localStorage.getItem(ENTRY_KEY);
+  if(raw){
+   let saved=null;try{saved=JSON.parse(raw)}catch(_){}
+   const id=(saved&&saved.instagramId?String(saved.instagramId):'').trim().replace(/^@/,'').toLowerCase();
+   if(id){
+    const exists=await findExistingEntry(id);
+    if(exists){
+     document.getElementById('eventFlow').style.display='none';
+     document.getElementById('complete').classList.add('show');
+     return;
+    }
+   }
+   localStorage.removeItem(ENTRY_KEY);
+   localStorage.removeItem(VERIFIED_KEY);
+  }
+  document.getElementById('complete').classList.remove('show');
+  document.getElementById('eventFlow').style.display='';
+  if(localStorage.getItem(VERIFIED_KEY))markVerified();else updateEntryButton();
+ }catch(_){
+  if(localStorage.getItem(ENTRY_KEY)){document.getElementById('eventFlow').style.display='none';document.getElementById('complete').classList.add('show')}
+  else if(localStorage.getItem(VERIFIED_KEY))markVerified();else updateEntryButton();
+ }
+}
+reconcileEntryState();
 </script>
 </body></html>

@@ -27,12 +27,12 @@ jobs:
         run: node scripts/update-instagram-feed.mjs
       - name: Commit feed when changed
         run: |
-          if git diff --quiet -- data/instagram-feed.json; then
+          if git diff --quiet -- data/instagram-feed.json images/instagram; then
             echo "No Instagram feed changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/instagram-feed.json
+          git add data/instagram-feed.json images/instagram
           git commit -m "Update Instagram feed from Bright Data"
           git push

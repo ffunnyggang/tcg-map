@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>카드 센터링 측정 | FUNY PIN</title>
+<meta name="description" content="카드 사진을 올리고 가이드라인을 맞춰 좌우·상하 센터링 비율을 확인하는 FUNY PIN 카드 도구입니다.">
+<link rel="canonical" href="https://funypin.kr/card-centering.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#f4f4f6;color:#28242d;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif}button,input{font:inherit}
+.shell{width:min(100%,420px);min-height:100vh;margin:auto;background:#fff;padding-bottom:40px}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);border-bottom:1px solid #f0edf3}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;color:#3e3943;padding:0;text-align:left}.brand{margin-left:auto;font-weight:850;font-size:15px;letter-spacing:-.02em}.spacer{width:38px;margin-left:auto}
+main{padding:18px 14px}.eyebrow{font-size:11px;font-weight:800;color:#8062d8;letter-spacing:.08em}.title{margin:6px 0 5px;font-size:25px;line-height:1.2;letter-spacing:-.045em}.desc{margin:0 0 18px;color:#77717c;font-size:12.5px;line-height:1.55}
+.upload{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;border:0;border-radius:14px;background:#7557c8;color:#fff;font-weight:800;cursor:pointer}.upload input{display:none}
+.workspace{display:none;margin-top:14px}.workspace.on{display:block}.stage{position:relative;width:100%;height:470px;border-radius:18px;background:#211f25;overflow:hidden;touch-action:none}.stage img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;transform-origin:0 0}
+.guide{position:absolute;z-index:5;background:#a98cff;box-shadow:0 0 0 1px rgba(255,255,255,.35);touch-action:none}.guide.v{top:0;bottom:0;width:2px}.guide.h{left:0;right:0;height:2px}.guide:after{content:"";position:absolute;background:#fff;border:2px solid #7557c8;border-radius:50%;width:17px;height:17px;box-shadow:0 2px 8px rgba(0,0,0,.25)}.guide.v:after{left:50%;top:50%;transform:translate(-50%,-50%)}.guide.h:after{left:50%;top:50%;transform:translate(-50%,-50%)}
+.guide.outer{background:#fff}.guide.inner{background:#a98cff}.tag{position:absolute;z-index:6;padding:3px 6px;border-radius:6px;background:rgba(36,31,42,.78);color:#fff;font-size:9px;font-weight:800;pointer-events:none}
+.help{margin:10px 2px 0;color:#8a8490;font-size:11px;line-height:1.45}.controls{display:flex;gap:7px;margin-top:12px}.controls button{flex:1;height:39px;border:1px solid #e7e2eb;border-radius:11px;background:#fff;color:#5e5864;font-size:11px;font-weight:750}
+.results{display:none;margin-top:18px}.results.on{display:block}.result-card{border:1px solid #ebe6ef;border-radius:18px;padding:16px;background:#fff;box-shadow:0 5px 20px rgba(52,42,65,.05)}.result-title{font-size:12px;font-weight:850;color:#8062d8}.ratio-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.ratio{padding:14px 10px;border-radius:13px;background:#f8f6fb;text-align:center}.ratio span{display:block;font-size:10px;color:#8a8390;font-weight:700;margin-bottom:5px}.ratio strong{font-size:20px;letter-spacing:-.04em}.status{margin-top:12px;padding:12px;border-radius:12px;background:#f5f3f8;font-size:12px;line-height:1.5}.status strong{display:block;margin-bottom:2px}.notice{margin:12px 2px 0;color:#98919c;font-size:10.5px;line-height:1.55}
+.reset{width:100%;height:46px;margin-top:10px;border:1px solid #ded8e5;border-radius:13px;background:#fff;color:#5f5865;font-weight:800}
+.empty{margin-top:14px;padding:32px 18px;border:1px dashed #ddd6e5;border-radius:18px;text-align:center;color:#8b8490;font-size:12px;line-height:1.55}.empty b{display:block;color:#4e4853;font-size:14px;margin-bottom:5px}
+</style>
+</head>
+<body><div class="shell">
+<header><button class="back" onclick="history.length>1?history.back():location.href='./'" aria-label="뒤로가기">‹</button><div class="brand">FUNY PIN</div><div class="spacer"></div></header>
+<main>
+<div class="eyebrow">FUNY CARD TOOL · BETA</div>
+<h1 class="title">카드 센터링 측정</h1>
+<p class="desc">카드 사진을 올린 뒤 흰색 선은 카드 외곽, 보라색 선은 안쪽 프레임에 맞춰주세요. 사진은 서버로 전송하지 않고 현재 브라우저에서만 처리됩니다.</p>
+<label class="upload">＋ 카드 사진 선택<input id="file" type="file" accept="image/*"></label>
+<div id="empty" class="empty"><b>정면에서 촬영한 카드 사진을 준비해주세요</b>기울어짐과 원근 왜곡이 적을수록 측정값이 정확해집니다.</div>
+<section id="workspace" class="workspace">
+<div id="stage" class="stage">
+<img id="photo" alt="측정할 카드">
+<div class="guide v outer" data-k="ol"></div><div class="guide v outer" data-k="or"></div><div class="guide h outer" data-k="ot"></div><div class="guide h outer" data-k="ob"></div>
+<div class="guide v inner" data-k="il"></div><div class="guide v inner" data-k="ir"></div><div class="guide h inner" data-k="it"></div><div class="guide h inner" data-k="ib"></div>
+</div>
+<p class="help">선을 직접 드래그해 테두리에 맞춰주세요. 바깥쪽 4개 선과 안쪽 4개 선 사이의 간격으로 센터링을 계산합니다.</p>
+<div class="controls"><button id="fit">가이드 초기화</button><button id="zoomOut">사진 −</button><button id="zoomIn">사진 ＋</button></div>
+</section>
+<section id="results" class="results"><div class="result-card"><div class="result-title">CENTERING RESULT</div><div class="ratio-grid"><div class="ratio"><span>LEFT ↔ RIGHT</span><strong id="lr">50.0 : 50.0</strong></div><div class="ratio"><span>TOP ↕ BOTTOM</span><strong id="tb">50.0 : 50.0</strong></div></div><div id="status" class="status"><strong>가이드라인을 맞춰주세요</strong>선을 움직이면 결과가 실시간으로 계산됩니다.</div><p class="notice">※ 본 결과는 이미지상의 센터링 비율을 계산한 참고용 측정값입니다. 실제 PSA·BGS·CGC 등 그레이딩 등급을 보장하거나 예측하지 않습니다. 촬영 각도와 이미지 왜곡에 따라 오차가 발생할 수 있습니다.</p></div><button id="reset" class="reset">다른 카드 측정하기</button></section>
+</main></div>
+<script>
+(()=>{const file=document.getElementById('file'),stage=document.getElementById('stage'),photo=document.getElementById('photo'),workspace=document.getElementById('workspace'),results=document.getElementById('results'),empty=document.getElementById('empty');const guides={};document.querySelectorAll('.guide').forEach(g=>guides[g.dataset.k]=g);let scale=1,baseScale=1,imgX=0,imgY=0;
+function setGuide(k,v){const g=guides[k];if(g.classList.contains('v'))g.style.left=v+'px';else g.style.top=v+'px'}
+function pos(k){const g=guides[k];return parseFloat(g.classList.contains('v')?g.style.left:g.style.top)||0}
+function defaults(){const w=stage.clientWidth,h=stage.clientHeight;setGuide('ol',w*.13);setGuide('or',w*.87);setGuide('ot',h*.08);setGuide('ob',h*.92);setGuide('il',w*.20);setGuide('ir',w*.80);setGuide('it',h*.16);setGuide('ib',h*.84);calc()}
+function renderImage(){photo.style.transform='translate('+imgX+'px,'+imgY+'px) scale('+scale+')'}
+function fitImage(){if(!photo.naturalWidth)return;const w=stage.clientWidth,h=stage.clientHeight;baseScale=Math.min(w/photo.naturalWidth,h/photo.naturalHeight);scale=baseScale;imgX=(w-photo.naturalWidth*scale)/2;imgY=(h-photo.naturalHeight*scale)/2;renderImage()}
+function ratio(a,b){const s=a+b;if(s<=0)return[50,50];return[a/s*100,b/s*100]}
+function calc(){const left=pos('il')-pos('ol'),right=pos('or')-pos('ir'),top=pos('it')-pos('ot'),bottom=pos('ob')-pos('ib');const lr=ratio(Math.max(0,left),Math.max(0,right)),tb=ratio(Math.max(0,top),Math.max(0,bottom));document.getElementById('lr').textContent=lr[0].toFixed(1)+' : '+lr[1].toFixed(1);document.getElementById('tb').textContent=tb[0].toFixed(1)+' : '+tb[1].toFixed(1);const worst=Math.max(Math.abs(lr[0]-50),Math.abs(tb[0]-50));const s=document.getElementById('status');if(worst<=2)s.innerHTML='<strong>센터링이 매우 균형적이에요</strong>이미지 기준으로 좌우·상하 편차가 작습니다.';else if(worst<=5)s.innerHTML='<strong>센터링이 비교적 양호해요</strong>한쪽으로 약간 치우쳐 보일 수 있습니다.';else s.innerHTML='<strong>센터링 편차가 보여요</strong>가이드 위치와 촬영 각도를 다시 확인해보세요.'}
+document.querySelectorAll('.guide').forEach(g=>{let active=false;const move=e=>{if(!active)return;e.preventDefault();const r=stage.getBoundingClientRect(),p=e.touches?e.touches[0]:e;let v=g.classList.contains('v')?p.clientX-r.left:p.clientY-r.top;v=Math.max(0,Math.min(g.classList.contains('v')?r.width:r.height,v));setGuide(g.dataset.k,v);calc()};g.addEventListener('pointerdown',e=>{active=true;g.setPointerCapture?.(e.pointerId);move(e)});g.addEventListener('pointermove',move);g.addEventListener('pointerup',()=>active=false);g.addEventListener('pointercancel',()=>active=false)});
+file.addEventListener('change',()=>{const f=file.files&&file.files[0];if(!f)return;const u=URL.createObjectURL(f);photo.onload=()=>{fitImage();defaults();workspace.classList.add('on');results.classList.add('on');empty.style.display='none';URL.revokeObjectURL(u)};photo.src=u});
+document.getElementById('fit').onclick=defaults;document.getElementById('zoomIn').onclick=()=>{scale=Math.min(scale*1.12,baseScale*3);renderImage()};document.getElementById('zoomOut').onclick=()=>{scale=Math.max(scale/1.12,baseScale*.7);renderImage()};document.getElementById('reset').onclick=()=>{file.value='';photo.removeAttribute('src');workspace.classList.remove('on');results.classList.remove('on');empty.style.display='block';window.scrollTo({top:0,behavior:'smooth'})};
+window.addEventListener('resize',()=>{if(photo.src){fitImage();defaults()}})})();
+</script>
+</body></html>

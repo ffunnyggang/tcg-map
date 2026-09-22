@@ -1,7 +1,7 @@
 /* FUNY PIN global language switch */
 .funy-lang-switch{position:fixed;top:max(15px,env(safe-area-inset-top));right:58px;z-index:120;display:flex!important;align-items:center;padding:0;background:transparent}
 body.funy-lang-home .funy-lang-switch{display:flex!important}
-.funy-lang-switch button{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#8062d8;height:28px;min-width:44px;padding:0 4px;font:800 10px/1 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.025em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
-.funy-lang-switch button span:first-child{font-size:13px;line-height:1;filter:saturate(.72)}
+.funy-lang-switch button{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#8062d8;height:28px;min-width:44px;padding:0 4px;font:800 11.5px/1 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.025em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.funy-lang-icon{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .funy-lang-switch button:active{opacity:.58}
-@media(max-width:430px){.funy-lang-switch{top:max(14px,env(safe-area-inset-top));right:54px}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:9.5px;gap:3px}.funy-lang-switch button span:first-child{font-size:12px}}
+@media(max-width:430px){.funy-lang-switch{top:max(14px,env(safe-area-inset-top));right:54px}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:11.5px;gap:4px}.funy-lang-icon{width:15px;height:15px}}

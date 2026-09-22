@@ -50,7 +50,7 @@
 const EVENT_ID='cardvault-chuseok-2026',SHOP_ID='KR-SEO-013',EVENT_STORE_ID='EV-CARDVAULT-2026';
 const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co',SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const SB_HEADERS={apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json','Accept':'application/json'};
-const QR_HASH='051a2520380a4268d32358b47d90f7bf437cc99bf09f74629b0c6995b53066bf';
+const QR_VALUE='FUNYPIN-CARDVAULT-CHUSEOK-2026-QR-V2';
 const STAFF_HASH='b79ea17b7c5ca8fe9cccd8cdba6e8f8ed0b3c948f9f709ed0f47d2fd47fcba82';
 const VERIFIED_KEY='funypin_event_'+EVENT_ID+'_verified',ENTRY_KEY='funypin_event_'+EVENT_ID+'_entry';
 const bg=document.getElementById('scannerBg'),video=document.getElementById('video'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),scanError=document.getElementById('scanError');
@@ -68,7 +68,7 @@ async function startScan(){
  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});video.srcObject=stream;await video.play();scanning=true;tick()}catch(e){scanError.textContent='카메라를 열 수 없어요. 브라우저 카메라 권한을 확인해주세요.'}
 }
 function stopScan(){scanning=false;cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null}
-async function tick(){if(!scanning)return;if(video.readyState===video.HAVE_ENOUGH_DATA){canvas.width=video.videoWidth;canvas.height=video.videoHeight;ctx.drawImage(video,0,0,canvas.width,canvas.height);const img=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});if(code){const h=await sha(String(code.data||'').trim());if(h===QR_HASH){markVerified();return}else scanError.textContent='이벤트용 QR코드가 아니에요'}}raf=requestAnimationFrame(tick)}
+async function tick(){if(!scanning)return;if(video.readyState===video.HAVE_ENOUGH_DATA){canvas.width=video.videoWidth;canvas.height=video.videoHeight;ctx.drawImage(video,0,0,canvas.width,canvas.height);const img=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});if(code){const qrValue=String(code.data||'').trim();if(qrValue===QR_VALUE){markVerified();return}else scanError.textContent='이벤트용 QR코드가 아니에요'}}raf=requestAnimationFrame(tick)}
 document.getElementById('verifyBtn').onclick=startScan;
 document.getElementById('scannerClose').onclick=()=>{stopScan();bg.classList.remove('open');document.body.style.overflow=''};
 bg.onclick=e=>{if(e.target===bg){stopScan();bg.classList.remove('open');document.body.style.overflow=''}};

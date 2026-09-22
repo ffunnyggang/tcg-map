@@ -38,13 +38,13 @@ function renderEventEntries(query){
  $('eventCsv').onclick=exportEventCsv;$('eventReset').onclick=resetEventEntries;
 }
 async function resetEventEntries(){
- if(!eventRows.length){alert('삭제할 응모이력이 없습니다.');return}
- if(!confirm('카드볼트 이벤트 응모이력 '+eventRows.length+'건을 모두 삭제할까요?\n\n삭제 후에는 복구할 수 없습니다.'))return;
+ if(!eventRows.length){alert('리셋할 응모이력이 없습니다.');return}
+ if(!confirm('카드볼트 이벤트 응모이력 '+eventRows.length+'건을 모두 리셋할까요?\n\n리셋된 테스트 응모는 운영 목록과 중복체크에서 제외됩니다.'))return;
  try{
-  await api('/rest/v1/live_reports?shop_id=eq.EV-CARDVAULT-2026&status=eq.EVENT_ENTRY',{method:'DELETE',headers:{Prefer:'return=minimal'}});
-  alert('이벤트 응모이력을 모두 삭제했습니다.');
+  await api('/rest/v1/live_reports?shop_id=eq.EV-CARDVAULT-2026&status=eq.EVENT_ENTRY',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'EVENT_ENTRY_RESET'})});
+  alert('이벤트 응모이력을 리셋했습니다.');
   await loadEventEntries();
- }catch(e){alert('응모이력 삭제 실패: '+e.message)}
+ }catch(e){alert('응모이력 리셋 실패: '+e.message)}
 }
 function exportEventCsv(){
  const csv=['instagram_id,entered_at'].concat(eventRows.map(x=>'"'+String(x.content||'').replaceAll('"','""')+'","'+String(x.created_at||'').replaceAll('"','""')+'"')).join('\n');

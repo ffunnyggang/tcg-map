@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-22T05:26:29.000535+00:00",
+  "updatedAt": "2026-09-22T06:32:56.625931+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "얼마전에 뽑은 썬더 카드 입니다",
+      "author": "울이",
+      "publishedAt": "2026-09-22T06:23:21.189072Z",
+      "excerpt": "얼마전에 뽑은 썬더 카드 입니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/얼마전에-뽑은-썬더-카드-입니다-dJyxkkwP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "카드거래",
+      "title": "메타몽 프로모 팝니다(미개봉)",
+      "author": "동지",
+      "publishedAt": "2026-09-22T05:44:29.668946Z",
+      "excerpt": "메타몽 프로모 12에 팝니다",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/e6604502-43b2-46ca-be84-7e74014b5fa4.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모-팝니다미개봉-ARok1loP",
+      "views": 22,
+      "likes": 2,
+      "comments": 0,
+      "popularityScore": 6.22
+    },
     {
       "category": "자유 게시판",
       "title": "아들이 갖고 놀던 포켓몬카드가 있어서 궁금해서 가입해요^^",
@@ -11,10 +37,10 @@
       "excerpt": "아들이 갖고 놀던 포켓몬카드가 있어서 궁금해서 가입해요^^",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260922/fcc85976-2704-4b26-8c36-b7043c676cb7.png?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아들이-갖고-놀던-포켓몬카드가-있어서-궁금해서-가입해요-A4QEgkkP",
-      "views": 21,
+      "views": 24,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.21
+      "popularityScore": 6.24
     },
     {
       "category": "카드 자랑",
@@ -24,10 +50,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 44,
+      "views": 45,
       "likes": 2,
       "comments": 2,
-      "popularityScore": 10.44
+      "popularityScore": 10.45
     },
     {
       "category": "자유 게시판",
@@ -37,10 +63,10 @@
       "excerpt": "전부 케이스에 깨끗하게 잘 보관 중입니다☺️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790004237720db4fb6d06a79914d078349b5a749d649ee1f2efc55c708f74e8f3eaa80ea1a5c0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요카드-판매하려고-하는데-관심-있으신-분들-편하게-연락-주세요-P5nLWypd",
-      "views": 33,
+      "views": 34,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.33
+      "popularityScore": 3.34
     },
     {
       "category": "자유 게시판",
@@ -69,19 +95,6 @@
       "popularityScore": 0.19
     },
     {
-      "category": "카드거래",
-      "title": "메타몽 프로모 카드 판매합니다",
-      "author": "동지",
-      "publishedAt": "2026-09-21T07:43:25.799992Z",
-      "excerpt": "메타몽 프로모 카드 판매합니다",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/54236366-b36f-4cb9-8c15-3522c5efc796.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모-카드-판매합니다-A04N1wmA",
-      "views": 11,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.11
-    },
-    {
       "category": "자유 게시판",
       "title": "구합니다",
       "author": "진몽",
@@ -89,10 +102,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 67,
+      "views": 68,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.67
+      "popularityScore": 54.68
     },
     {
       "category": "자유 게시판",
@@ -128,10 +141,10 @@
       "excerpt": "한국에서 조그만하게 구매대행 겸 국내유통 하려고 준비 하는데 수요가 있을까요?? 특히 포켓몬 카드가 요즘 크림이랑 스니덩에 가격비교하면 비슷하거나 약간 비싼 느낌이라서",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구매대행-관련-PM0KV0aA",
-      "views": 56,
+      "views": 57,
       "likes": 1,
       "comments": 4,
-      "popularityScore": 11.56
+      "popularityScore": 11.57
     },
     {
       "category": "자유 게시판",
@@ -171,19 +184,6 @@
       "likes": 2,
       "comments": 1,
       "popularityScore": 8.32
-    },
-    {
-      "category": "자유 게시판",
-      "title": "피카츄카드입니다. 좋아햐요",
-      "author": "운린이",
-      "publishedAt": "2026-09-20T10:51:10.419364Z",
-      "excerpt": "피카츄카드입니다. 좋아햐요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄카드입니다-좋아햐요-dlYWMgqj",
-      "views": 18,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.18
     },
     {
       "category": "카드 자랑",
@@ -375,10 +375,10 @@
       "excerpt": "카드 시세를 잘 몰라서 알려주시면 감사하겠습니다..!!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788687520200c17daa7028c1f692b48a605c40bf0c3cc9c834ed9cd20af50aeede2329a5bf3d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이-카드는-시세가-얼마정도일까요-j8BXJgkP",
-      "views": 15,
+      "views": 16,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.15
+      "popularityScore": 0.16
     },
     {
       "category": "카드 자랑",
@@ -414,10 +414,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 189,
+      "views": 190,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 13.89
+      "popularityScore": 13.9
     },
     {
       "category": "카드깡/카드샵 후기",

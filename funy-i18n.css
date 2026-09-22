@@ -5,3 +5,24 @@ body.funy-lang-home .funy-lang-switch{display:flex!important}
 .funy-lang-icon{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .funy-lang-switch button:active{opacity:.58}
 @media(max-width:430px){.funy-lang-switch{top:max(14px,env(safe-area-inset-top));right:54px}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:11.5px;gap:4px}.funy-lang-icon{width:15px;height:15px}}
+
+/* EN overflow guards: preserve existing KO layout and structure */
+html[lang="en"] .header-more-menu{width:min(270px,calc(100vw - 28px))}
+html[lang="en"] .header-more-menu a{line-height:1.25}
+html[lang="en"] .home-beta-copy strong,
+html[lang="en"] .home-beta-copy>span,
+html[lang="en"] .shop-request-list-banner-title,
+html[lang="en"] .shop-request-list-banner-desc{overflow-wrap:anywhere}
+html[lang="en"] .live-pin-entry{width:auto;min-width:132px;max-width:190px}
+html[lang="en"] .info-tabs,
+html[lang="en"] .filters{overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+html[lang="en"] .info-tabs::-webkit-scrollbar,
+html[lang="en"] .filters::-webkit-scrollbar{display:none}
+html[lang="en"] .info-tab,
+html[lang="en"] .filter{flex:0 0 auto}
+html[lang="en"] .popular-sort{overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+html[lang="en"] .popular-sort::-webkit-scrollbar{display:none}
+html[lang="en"] .popular-sort button{flex:0 0 auto}
+html[lang="en"] .pokamo-fab{width:auto;min-width:154px;max-width:205px}
+html[lang="en"] .portal-bottom-nav a span,
+html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

@@ -53,6 +53,7 @@ const SB_HEADERS={apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'a
 const QR_VALUE='FUNYPIN-CARDVAULT-CHUSEOK-2026-QR-V2';
 const STAFF_HASH='b79ea17b7c5ca8fe9cccd8cdba6e8f8ed0b3c948f9f709ed0f47d2fd47fcba82';
 const VERIFIED_KEY='funypin_event_'+EVENT_ID+'_verified',ENTRY_KEY='funypin_event_'+EVENT_ID+'_entry';
+try{localStorage.removeItem(VERIFIED_KEY)}catch(_){}
 const bg=document.getElementById('scannerBg'),video=document.getElementById('video'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true}),scanError=document.getElementById('scanError');
 let stream=null,raf=0,scanning=false;
 const sha=async s=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))).map(b=>b.toString(16).padStart(2,'0')).join('');

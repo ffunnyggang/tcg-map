@@ -3,8 +3,8 @@ name: Update Instagram Feed
 on:
   workflow_dispatch:
   schedule:
-    # Instagram CDN URLs expire; refresh twice daily (00:17 / 12:17 UTC = 09:17 / 21:17 KST)
-    - cron: '17 0,12 * * *'
+    # Instagram CDN URLs expire; refresh twice daily (00:00 / 12:00 UTC = 09:00 / 21:00 KST)
+    - cron: '0 0,12 * * *'
 
 permissions:
   contents: write

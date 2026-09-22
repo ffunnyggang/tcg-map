@@ -9,7 +9,17 @@
   document.documentElement.lang=lang;
   document.body&&document.body.classList.toggle('funy-lang-home',isHome);
 
-  const textMap={'다가오는 TCG 일정':{en:'Upcoming TCG Events'}};
+  const textMap={
+'다가오는 TCG 일정':{en:'Upcoming TCG Events'},
+'더보기 메뉴':{en:'More menu'},'서비스 메뉴':{en:'Service menu'},'자주 묻는 질문':{en:'FAQ'},'서비스 만족도 조사':{en:'Service Survey'},'매장 등록 · 정보 수정 요청':{en:'Add / Update Shop'},'광고 · 제휴 문의':{en:'Advertising & Partnerships'},
+'FUNY PIN은 현재 베타 서비스입니다.':{en:'FUNY PIN is currently in beta.'},'카드샵 정보는 계속 업데이트 중이에요.':{en:'Card shop information is continuously updated.'},'안내 닫기':{en:'Close notice'},'FUNY PIN BETA 서비스 안내':{en:'FUNY PIN BETA Notice'},
+'FUNY PIN은 현재 BETA 서비스로 운영 중입니다.':{en:'FUNY PIN is currently operating as a BETA service.'},'카드샵 데이터는 지속적으로 업데이트하고 있으며, 일부 정보는 실제 매장 정보와 다를 수 있습니다.':{en:'Card shop data is continuously updated, and some information may differ from the actual shop.'},'이용 중 발견한 오류나 잘못된 정보, 개선 의견이 있다면 편하게 제보해주세요 :)':{en:'If you find an error or have a suggestion, please let us know :)'},
+'카드샵 추천':{en:'Recommended Card Shops'},'TCG MAP에서 카드샵 찾아보기':{en:'Find card shops on TCG MAP'},'카드샵 소식':{en:'Card Shop News'},'링크 모음':{en:'Links'},'실시간으로 정보 공유해요!':{en:'Share card shop updates in real time!'},'LIVE PIN 열기':{en:'Open LIVE PIN'},'새 글':{en:'New'},'하단 메뉴':{en:'Bottom navigation'},
+'카드샵 이름 또는 지역으로 검색':{en:'Search by shop name or area'},'검색어 지우기':{en:'Clear search'},'매장 위치를 불러오는 중...':{en:'Loading shop locations...'},'카드를 눌러 상세정보 보기':{en:'Tap a card to view details'},'매장 등록 및 정보 수정 요청':{en:'Add or update a shop'},'새로운 카드샵 또는 변경된 정보를 알려주세요':{en:'Tell us about a new shop or updated information'},'조건에 맞는 카드샵이 없습니다.':{en:'No card shops match these filters.'},'뒤로가기':{en:'Back'},'공유':{en:'Share'},
+'💡 정보':{en:'💡 INFO'},'📅 일정':{en:'📅 EVENTS'},'📝 깽퐌커플 리뷰':{en:'📝 FFUNNYGGANG REVIEWS'},'추천 배너':{en:'Featured banner'},'광고주 모집중':{en:'Advertising Available'},'깽퐌커플 TCG 정보':{en:'FFUNNYGGANG TCG Info'},'📅 다가오는 TCG 일정':{en:'📅 Upcoming TCG Events'},'일정을 불러오는 중입니다.':{en:'Loading events...'},'깽퐌커플 카드샵 리뷰':{en:'FFUNNYGGANG Card Shop Reviews'},
+'전체':{en:'All'},'✨ 전체':{en:'✨ All'},'인기':{en:'Popular'},'🔥 인기':{en:'🔥 Popular'},'자유 게시판':{en:'General'},'💬 자유 게시판':{en:'💬 General'},'카드 자랑':{en:'Showcase'},'🃏 카드 자랑':{en:'🃏 Showcase'},'카드깡/카드샵 후기':{en:'Pack / Shop Reviews'},'📍 카드샵 후기':{en:'📍 Shop Reviews'},'정보 공유':{en:'Tips & Info'},'💡 정보 공유':{en:'💡 Tips & Info'},'카드거래':{en:'Trading'},'🤝 카드거래':{en:'🤝 Trading'},'인기 게시글 정렬':{en:'Sort popular posts'},'요즘 인기':{en:'Trending'},'공감 많은':{en:'Most Reactions'},'댓글 많은':{en:'Most Comments'},'최신 이야기를 불러오는 중...':{en:'Loading the latest posts...'},'POKAMO에 글쓰기':{en:'Post on POKAMO'},'+ POKAMO에 글쓰기':{en:'+ Post on POKAMO'},'해당 카테고리의 게시글이 없습니다.':{en:'No posts in this category.'},'게시글을 불러오지 못했습니다.':{en:'Could not load posts.'},'잠시 후 다시 확인해주세요.':{en:'Please try again shortly.'},
+'추천순':{en:'Recommended'},'거리순':{en:'Distance'},'영업중':{en:'Open Now'},'싱글카드':{en:'Singles'},'위탁판매':{en:'Consignment'},'무인매장':{en:'Unmanned'},'필터':{en:'Filter'},'영업시간':{en:'Hours'},'주소':{en:'Address'},'방문정보':{en:'Visit Info'},'리뷰':{en:'Reviews'},'가능':{en:'Available'},'불가':{en:'Unavailable'},'운영':{en:'Open'}
+};
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){if(lang==='ko')return value;const direct=textMap[value];if(direct&&direct[lang])return direct[lang];return value}
   function translateTextNode(node){if(!originalText.has(node))originalText.set(node,node.nodeValue);const base=originalText.get(node);node.nodeValue=lang==='ko'?base:tr(base)}

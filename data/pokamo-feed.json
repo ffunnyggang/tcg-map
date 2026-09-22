@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-22T07:27:52.518608+00:00",
+  "updatedAt": "2026-09-22T08:28:52.650870+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "ㅇㅇㅇㅇㅇㄹㄹㄹㄹㄹ",
+      "author": "하하",
+      "publishedAt": "2026-09-22T08:04:11.259334Z",
+      "excerpt": "ㅇㅇㅇㅇㅇㄹㄹㄹㄹㄹ",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/ㅇㅇㅇㅇㅇㄹㄹㄹㄹㄹ-A6XWqyXd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "안녕하세요!!!",
+      "author": "chaw",
+      "publishedAt": "2026-09-22T07:58:53.226709Z",
+      "excerpt": "안녕하세요!!!",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-j8r4qzkP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "카드 자랑",
       "title": "가장 최애는 아니고 3번째로 아끼는 최애",
@@ -11,10 +37,10 @@
       "excerpt": "초판 베이스셋 북미버전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/704dcb36-428e-4f52-80a9-b7d284470827.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가장-최애는-아니고-3번째로-아끼는-최애-ARoklvGP",
-      "views": 1,
-      "likes": 1,
+      "views": 19,
+      "likes": 4,
       "comments": 0,
-      "popularityScore": 3.01
+      "popularityScore": 12.19
     },
     {
       "category": "자유 게시판",
@@ -24,10 +50,10 @@
       "excerpt": "얼마전에 뽑은 썬더 카드 입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/얼마전에-뽑은-썬더-카드-입니다-dJyxkkwP",
-      "views": 4,
+      "views": 6,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.04
+      "popularityScore": 3.06
     },
     {
       "category": "카드거래",
@@ -37,10 +63,10 @@
       "excerpt": "메타몽 프로모 12에 팝니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/e6604502-43b2-46ca-be84-7e74014b5fa4.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모-팝니다미개봉-ARok1loP",
-      "views": 24,
+      "views": 27,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.24
+      "popularityScore": 9.27
     },
     {
       "category": "자유 게시판",
@@ -50,10 +76,10 @@
       "excerpt": "아들이 갖고 놀던 포켓몬카드가 있어서 궁금해서 가입해요^^",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260922/fcc85976-2704-4b26-8c36-b7043c676cb7.png?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아들이-갖고-놀던-포켓몬카드가-있어서-궁금해서-가입해요-A4QEgkkP",
-      "views": 25,
+      "views": 26,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.25
+      "popularityScore": 6.26
     },
     {
       "category": "카드 자랑",
@@ -115,10 +141,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 69,
+      "views": 72,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.69
+      "popularityScore": 54.72
     },
     {
       "category": "자유 게시판",
@@ -160,32 +186,6 @@
       "popularityScore": 11.57
     },
     {
-      "category": "자유 게시판",
-      "title": "30주년 rgb 뮤용",
-      "author": "골프마니아",
-      "publishedAt": "2026-09-20T14:51:59.999149Z",
-      "excerpt": "30주년 rgb 뮤용",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-rgb-뮤용-PnN3NvnP",
-      "views": 4,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "기라티나 루기아를 제일 좋아하는데 카드 실물보고 본격적으로 시작하게 되었",
-      "author": "parksh",
-      "publishedAt": "2026-09-20T14:31:42.868282Z",
-      "excerpt": "기라티나 루기아를 제일 좋아하는데 카드 실물보고 본격적으로 시작하게 되었습니다!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/기라티나-루기아를-제일-좋아하는데-카드-실물보고-본격적으로-시작하게-되었습니다-A34rp6DP",
-      "views": 4,
-      "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.04
-    },
-    {
       "category": "카드 자랑",
       "title": "감카츄⚡",
       "author": "퐌퐌퐌",
@@ -193,10 +193,10 @@
       "excerpt": "어제 동대문 트레이드 행사 방문했다 감스트님 오셔서 30주년 피카츄 카드에 싸인 받았습니다🤣",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789902772317e2570287417e5c7b718f666a302853cd3bb735ef6ba3267125e9ccf5822b2e4c0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/감카츄⚡-dago35nA",
-      "views": 33,
+      "views": 34,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.33
+      "popularityScore": 8.34
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "포켓몬 카드 게임 MEGA 확장팩 『30th CELEBRATION』 구매권 추첨 응모 이벤트 오픈🎉 #포켓몬카드30주년응모일정 • 응모 기간: 2026년 9월 8일(화) 10:00 ~ 9월 13일(일) 23:59 • 추첨 발표: 2026년 9월 14일(월) 당첨자 개별 연락 • 배송 기",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178883960090217f83cf23d9f1e10d0e67f24f672a697d98ce0ffd61045ec409f4132d3df73eb0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-MEGA-확장팩-추첨-응모-시작🎉-초간단-응모-방법-PMDXByWA",
-      "views": 102,
+      "views": 103,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 8.02
+      "popularityScore": 8.03
     },
     {
       "category": "카드거래",
@@ -336,10 +336,10 @@
       "excerpt": "제 눈으로 봤을때 하자는 없습니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178879677188447c59eecd8ab68b2111f4f4f9a7275106f9a844243e7755916fdd0467a6851070.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-5만원에-구매하실분-계실까요-dgWb28od",
-      "views": 22,
+      "views": 23,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.22
+      "popularityScore": 0.23
     },
     {
       "category": "카드 자랑",
@@ -479,10 +479,10 @@
       "excerpt": "오랜만에 글씁니다 오늘 우연히 원피스14탄 정가에 구해서 ㅋㅋ 대흥했습니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/9930e8ac-d133-4d11-9dfd-84fa4b64c4e6.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/원피스-14탄-5박스-깡-대흥-PVDY5vpj",
-      "views": 65,
+      "views": 66,
       "likes": 5,
       "comments": 1,
-      "popularityScore": 17.65
+      "popularityScore": 17.66
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -687,10 +687,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 313,
+      "views": 314,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.129999999999999
+      "popularityScore": 10.14
     },
     {
       "category": "정보 공유",

@@ -6,15 +6,15 @@ Source shop-images-extra-v1.js SHA: b39e97bc1bc199615739523f771e0204c799fa61
 Counts:
 - shops: 68
 - shop_tcg: 204
-- shop_features: 1156
-- shop_images: 98
+- shop_features: 1092
+- shop_images: 176
 - active actual image files: 176
 
 Integrity:
 - duplicate shop IDs: 0
 - missing coordinates: 0
 - broken image references: 0
-- unmapped active image files: 78
+- unmapped active image files: 0
 - orphan image folder IDs: KR-SEO-035
 
 Import order:

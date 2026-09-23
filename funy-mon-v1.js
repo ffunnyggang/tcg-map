@@ -219,7 +219,7 @@
         position:new naver.maps.LatLng(lat,lng),
         map:hiddenByRoute()||currentZoom()<14?null:naverMap,
         clickable:true,zIndex:120,
-        icon:{content:html,anchor:new naver.maps.Point(21,31)}
+        icon:{content:html,anchor:new naver.maps.Point(24,34)}
       });
       const meta={marker,shop,def:d};
       markers.push(marker);

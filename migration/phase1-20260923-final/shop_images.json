@@ -1,0 +1,982 @@
+[
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-001/KR-SEO-001-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-07.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 7",
+    "sort_order": 7,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-001",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-001/detail/KR-SEO-001-detail-08.jpg",
+    "storage_path": null,
+    "alt_text": "카드노바 매장 이미지 8",
+    "sort_order": 8,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-002/KR-SEO-002-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-002",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-002/detail/KR-SEO-002-detail-07.jpg",
+    "storage_path": null,
+    "alt_text": "루비카드 매장 이미지 7",
+    "sort_order": 7,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-003/KR-SEO-003-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-003/detail/KR-SEO-003-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-003/detail/KR-SEO-003-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-003/detail/KR-SEO-003-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-003/detail/KR-SEO-003-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-003",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-003/detail/KR-SEO-003-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "퍼스트카드 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-004/KR-SEO-004-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-07.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 7",
+    "sort_order": 7,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-004",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-004/detail/KR-SEO-004-detail-08.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉트온 매장 이미지 8",
+    "sort_order": 8,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-005",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-005/KR-SEO-005-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드가든 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-005",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-005/detail/KR-SEO-005-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드가든 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-006",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-006/KR-SEO-006-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드타운 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-006",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-006/detail/KR-SEO-006-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드타운 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-006",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-006/detail/KR-SEO-006-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드타운 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-007/KR-SEO-007-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-007",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-007/detail/KR-SEO-007-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "모아카드 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-008",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-008/KR-SEO-008-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드스토리 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-008",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-008/detail/KR-SEO-008-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드스토리 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-008",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-008/detail/KR-SEO-008-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드스토리 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-008",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-008/detail/KR-SEO-008-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "카드스토리 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-008",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-008/detail/KR-SEO-008-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "카드스토리 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-009/KR-SEO-009-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-009/detail/KR-SEO-009-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-009/detail/KR-SEO-009-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-009/detail/KR-SEO-009-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-009/detail/KR-SEO-009-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-009",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-009/detail/KR-SEO-009-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "더카드룸 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-010/KR-SEO-010-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-010",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-010/detail/KR-SEO-010-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "골든아카이브 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-011",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-011/KR-SEO-011-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "금빛박물관 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-011",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-011/detail/KR-SEO-011-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "금빛박물관 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-011",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-011/detail/KR-SEO-011-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "금빛박물관 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-012/KR-SEO-012-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-07.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 7",
+    "sort_order": 7,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-08.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 8",
+    "sort_order": 8,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-09.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 9",
+    "sort_order": 9,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-012",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-012/detail/KR-SEO-012-detail-10.jpg",
+    "storage_path": null,
+    "alt_text": "콜렉토티씨지 매장 이미지 10",
+    "sort_order": 10,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-013/KR-SEO-013-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-013/detail/KR-SEO-013-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-013/detail/KR-SEO-013-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-013/detail/KR-SEO-013-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-013/detail/KR-SEO-013-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-013",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-013/detail/KR-SEO-013-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "카드볼트 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-014/KR-SEO-014-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-05.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 5",
+    "sort_order": 5,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-014",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-014/detail/KR-SEO-014-detail-06.jpg",
+    "storage_path": null,
+    "alt_text": "카드성지 매장 이미지 6",
+    "sort_order": 6,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-015",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-015/KR-SEO-015-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "레드라벨 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-015",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-015/detail/KR-SEO-015-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "레드라벨 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-015",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-015/detail/KR-SEO-015-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "레드라벨 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-015",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-015/detail/KR-SEO-015-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "레드라벨 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-036",
+    "image_type": "thumbnail",
+    "source_path": "images/shops/KR-SEO-036/KR-SEO-036-thumb.jpg",
+    "storage_path": null,
+    "alt_text": "카드스팟 대표 이미지",
+    "sort_order": 0,
+    "is_primary": true,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-036",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-036/KR-SEO-036-detail-01.jpg",
+    "storage_path": null,
+    "alt_text": "카드스팟 매장 이미지 1",
+    "sort_order": 1,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-036",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-036/KR-SEO-036-detail-02.jpg",
+    "storage_path": null,
+    "alt_text": "카드스팟 매장 이미지 2",
+    "sort_order": 2,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-036",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-036/KR-SEO-036-detail-03.jpg",
+    "storage_path": null,
+    "alt_text": "카드스팟 매장 이미지 3",
+    "sort_order": 3,
+    "is_primary": false,
+    "is_active": true
+  },
+  {
+    "shop_id": "KR-SEO-036",
+    "image_type": "gallery",
+    "source_path": "images/shops/KR-SEO-036/KR-SEO-036-detail-04.jpg",
+    "storage_path": null,
+    "alt_text": "카드스팟 매장 이미지 4",
+    "sort_order": 4,
+    "is_primary": false,
+    "is_active": true
+  }
+]

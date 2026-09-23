@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FUNY PIN Coordinate Resolver v2</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Pretendard",sans-serif;margin:0;background:#f5f5f7;color:#222}
+main{max-width:900px;margin:auto;padding:24px}.card{background:#fff;border:1px solid #e8e8ec;border-radius:16px;padding:18px}
+button{border:0;border-radius:10px;padding:12px 16px;font-weight:700}.primary{background:#6f53c6;color:#fff}.secondary{background:#ece8f8;color:#5d45aa}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.stat{background:#f7f5fb;border-radius:12px;padding:12px}
+.stat b{display:block;font-size:22px}.stat span{font-size:11px;color:#777}
+#log{white-space:pre-wrap;background:#15151a;color:#eee;padding:14px;border-radius:12px;max-height:460px;overflow:auto;font:12px/1.5 ui-monospace,monospace}
+@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body><main><div class="card">
+<h1>FUNY PIN Coordinate Resolver v2</h1>
+<p>실패 4개 주소를 좌표 추출 단계에서만 정규화합니다. 운영 SHOPS 데이터와 DB는 수정하지 않습니다.</p>
+<button id="run" class="primary">좌표 생성 시작</button>
+<button id="json" class="secondary" disabled>JSON 다운로드</button>
+<button id="csv" class="secondary" disabled>CSV 다운로드</button>
+<button id="copy" class="secondary" disabled>결과 복사</button>
+<div class="stats">
+<div class="stat"><b id="total">0</b><span>전체</span></div>
+<div class="stat"><b id="done">0</b><span>완료</span></div>
+<div class="stat"><b id="ok">0</b><span>성공</span></div>
+<div class="stat"><b id="fail">0</b><span>실패</span></div>
+</div>
+<div id="log">준비 중...</div>
+</div></main>
+<script src="../app.js"></script>
+<script src="../map-google-config.js"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),results=[],sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const log=s=>{const e=$('log');e.textContent+='\n'+s;e.scrollTop=e.scrollHeight};
+const KR_ADDRESS_OVERRIDES={
+ 'KR-GGI-001':'경기도 수원시 영통구 청명로 73-1',
+ 'KR-GGI-003':'경기도 용인시 수지구 신수로 801',
+ 'KR-GGI-004':'경기도 김포시 봉화로 4',
+ 'KR-GGI-006':'경기도 성남시 분당구 황새울로214번길 8'
+};
+const validKR=(a,b)=>a>=33&&a<=39.5&&b>=124&&b<=132,validJP=(a,b)=>a>=30&&a<=46&&b>=128&&b<=146;
+function loadGoogle(){if(window.google?.maps?.Geocoder)return Promise.resolve();return new Promise((resolve,reject)=>{const key=(window.FUNY_GOOGLE_MAPS_API_KEY||'').trim();if(!key)return reject(new Error('Google Maps API key missing'));const cb='__funyCoordV2GoogleReady';window[cb]=()=>{delete window[cb];resolve()};const s=document.createElement('script');s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback='+cb+'&v=weekly&language=ko&region=JP';s.async=true;s.defer=true;s.onerror=()=>reject(new Error('Google Maps SDK load failed'));document.head.appendChild(s)})}
+function geocodeKR(shop){return new Promise(resolve=>{if(!(window.naver?.maps?.Service))return resolve({ok:false,error:'Naver geocoder unavailable'});const query=KR_ADDRESS_OVERRIDES[shop.id]||String(shop.address||'').trim();naver.maps.Service.geocode({query},(status,response)=>{try{if(status===naver.maps.Service.Status.OK&&response?.v2?.addresses?.length){const a=response.v2.addresses[0],lat=Number(a.y),lng=Number(a.x);if(validKR(lat,lng))return resolve({ok:true,lat,lng,source:'naver_geocoder',matched_address:a.roadAddress||a.jibunAddress||'',query})}resolve({ok:false,error:'No valid Naver result',query})}catch(e){resolve({ok:false,error:e.message,query})}})})}
+async function geocodeJP(shop){try{await loadGoogle();const geocoder=new google.maps.Geocoder(),address=String(shop.address||'').replace(/^도쿄\s*/,'').trim()+', Tokyo, Japan',res=await geocoder.geocode({address,region:'JP'}),loc=res?.results?.[0]?.geometry?.location;if(!loc)return{ok:false,error:'No Google result',query:address};const lat=loc.lat(),lng=loc.lng();if(!validJP(lat,lng))return{ok:false,error:'Google result outside Japan bounds',query:address};return{ok:true,lat,lng,source:'google_geocoder',matched_address:res.results[0].formatted_address||'',query:address}}catch(e){return{ok:false,error:e.message||String(e)}}}
+async function run(){if(typeof SHOPS==='undefined'){alert('SHOPS를 읽지 못했습니다.');return}results.length=0;$('total').textContent=SHOPS.length;$('done').textContent=0;$('ok').textContent=0;$('fail').textContent=0;$('json').disabled=true;$('csv').disabled=true;$('copy').disabled=true;$('run').disabled=true;$('log').textContent='좌표 생성을 시작합니다...';let ok=0,fail=0;
+for(let i=0;i<SHOPS.length;i++){const s=SHOPS[i];let r;if(Number.isFinite(Number(s.lat))&&Number.isFinite(Number(s.lng)))r={ok:true,lat:Number(s.lat),lng:Number(s.lng),source:'existing_master',matched_address:s.address||'',query:s.address||''};else if(String(s.id).startsWith('KR-'))r=await geocodeKR(s);else if(String(s.id).startsWith('JP-'))r=await geocodeJP(s);else r={ok:false,error:'Unsupported country',query:s.address||''};
+results.push({id:s.id,name:s.name,address:s.address||'',geocode_address:r.query||s.address||'',lat:r.ok?r.lat:null,lng:r.ok?r.lng:null,coordinate_status:r.ok?'resolved':'failed',coordinate_source:r.source||'',matched_address:r.matched_address||'',error:r.error||''});
+if(r.ok){ok++;log('✓ '+s.id+' '+s.name+' → '+r.lat+', '+r.lng+(KR_ADDRESS_OVERRIDES[s.id]?' [정규화]':''))}else{fail++;log('✕ '+s.id+' '+s.name+' → '+(r.error||'failed'))}
+$('done').textContent=i+1;$('ok').textContent=ok;$('fail').textContent=fail;await sleep(String(s.id).startsWith('JP-')?180:100)}
+$('json').disabled=false;$('csv').disabled=false;$('copy').disabled=false;$('run').disabled=false;log('완료: 성공 '+ok+' / 실패 '+fail);if(fail)log('실패 매장: '+results.filter(x=>x.coordinate_status==='failed').map(x=>x.id+' '+x.name).join(' | '))}
+function download(name,text,type){const blob=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function csv(){const cols=['id','name','address','geocode_address','lat','lng','coordinate_status','coordinate_source','matched_address','error'],esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';return '\ufeff'+[cols.join(','),...results.map(r=>cols.map(k=>esc(r[k])).join(','))].join('\n')}
+$('json').onclick=()=>download('funypin-shop-coordinates-v2.json',JSON.stringify(results,null,2),'application/json;charset=utf-8');
+$('csv').onclick=()=>download('funypin-shop-coordinates-v2.csv',csv(),'text/csv;charset=utf-8');
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(results,null,2));log('결과 JSON을 클립보드에 복사했습니다.')}catch(e){log('복사 실패: '+e.message)}};
+}
+$('run').onclick=run;
+})();
+</script></body></html>

@@ -194,3 +194,8 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-lose-copy{max-width:260px;margin:11px auto 0!important;text-align:center!important}
 .funy-mon-claim-code{margin-top:10px!important;justify-content:center!important}
 .funy-mon-post-guide{width:100%;margin-top:10px!important;text-align:center!important}
+
+/* restore FUNY MON sheet + scope reward centering */
+.funy-mon-sheet{position:relative!important;width:min(100%,420px)!important;padding:18px 20px calc(22px + env(safe-area-inset-bottom))!important;border:2px solid #302557!important;border-bottom:0!important;border-radius:24px 24px 0 0!important;background:linear-gradient(180deg,#faf8ff 0%,#fff 48%)!important;text-align:center!important;box-shadow:0 -4px 0 #9e83f1,0 -18px 48px rgba(30,19,52,.28)!important;overflow:hidden!important;transform-origin:50% 100%!important}
+.funy-mon-reward-result{text-align:center!important;align-items:center!important}
+.funy-mon-reward-result>strong,.funy-mon-reward-result>p,.funy-mon-reward-title,.funy-mon-lose-copy,.funy-mon-post-guide{text-align:center!important}

@@ -1,9 +1,17 @@
-/* FUNY PIN pixel creature prototype */
-.funy-mon-marker{position:relative;width:34px;height:34px;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(44,35,58,.22));animation:funyMonHop 1.15s ease-in-out infinite}
+/* FUNY PIN pixel creature MVP */
+.funy-mon-marker{position:relative;width:34px;height:34px;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 3px 2px rgba(44,35,58,.22));animation:funyMonHop 1.15s ease-in-out infinite;touch-action:manipulation}
 .funy-mon-marker.mon-b{animation-delay:.28s}.funy-mon-marker.mon-c{animation-delay:.54s}
-.funy-mon-marker svg{display:block;width:34px;height:34px;overflow:visible;shape-rendering:crispEdges;image-rendering:pixelated}
-.funy-mon-shadow{position:absolute;left:8px;bottom:-1px;width:18px;height:5px;border-radius:50%;background:rgba(50,42,60,.16);transform-origin:center;animation:funyMonShadow 1.15s ease-in-out infinite}
+.funy-mon-marker svg{display:block;width:34px;height:34px;overflow:visible;shape-rendering:crispEdges;image-rendering:pixelated;pointer-events:none}
+.funy-mon-shadow{position:absolute;left:8px;bottom:-1px;width:18px;height:5px;border-radius:50%;background:rgba(50,42,60,.16);transform-origin:center;animation:funyMonShadow 1.15s ease-in-out infinite;pointer-events:none}
 .funy-mon-marker.mon-b .funy-mon-shadow{animation-delay:.28s}.funy-mon-marker.mon-c .funy-mon-shadow{animation-delay:.54s}
+.funy-mon-modal[hidden]{display:none!important}.funy-mon-modal{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}.funy-mon-backdrop{position:absolute;inset:0;background:rgba(24,20,29,.48)}
+.funy-mon-sheet{position:relative;width:min(100%,420px);padding:28px 22px calc(24px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:#fff;text-align:center;box-shadow:0 -14px 42px rgba(36,28,45,.18)}
+.funy-mon-close{position:absolute;right:14px;top:13px;width:34px;height:34px;border:0;border-radius:50%;background:#f4f1f7;color:#6d6672;font-size:22px}
+.funy-mon-result-icon{width:78px;height:78px;margin:0 auto 10px;display:grid;place-items:center}.funy-mon-result-icon svg{width:72px;height:72px;shape-rendering:crispEdges;image-rendering:pixelated}
+.funy-mon-kicker{color:#8062d8;font-size:10px;font-weight:900;letter-spacing:.14em}.funy-mon-sheet h3{margin:8px 0 7px;font-size:21px;letter-spacing:-.04em}.funy-mon-sheet p{margin:0;color:#77707b;font-size:13px;line-height:1.6}
+.funy-mon-reward{margin:18px 0 0;padding:15px 14px;border:1px solid #e9e1f6;border-radius:14px;background:#faf7ff;color:#5f47b9;font-size:14px;font-weight:850}
+.funy-mon-code{margin:9px 0 0;color:#49424f;font-size:12px;font-weight:750;letter-spacing:.04em}.funy-mon-actions{display:grid;gap:8px;margin-top:20px}
+.funy-mon-actions button{min-height:46px;border-radius:13px;font:800 13px 'Pretendard Variable',Pretendard,sans-serif}.funy-mon-primary{border:0;background:linear-gradient(135deg,#8063d7,#6749bd);color:#fff}.funy-mon-secondary{border:1px solid #e6e1ea;background:#fff;color:#625c68}
 @keyframes funyMonHop{0%,100%{transform:translate3d(-4px,0,0)}25%{transform:translate3d(1px,-7px,0)}50%{transform:translate3d(6px,0,0)}75%{transform:translate3d(1px,-4px,0)}}
 @keyframes funyMonShadow{0%,50%,100%{transform:scaleX(1);opacity:.16}25%,75%{transform:scaleX(.72);opacity:.1}}
 @media(prefers-reduced-motion:reduce){.funy-mon-marker,.funy-mon-shadow{animation:none!important}}

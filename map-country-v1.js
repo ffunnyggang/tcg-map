@@ -5,7 +5,7 @@
   core.async=false;
   core.onload=()=>{
     const cluster=document.createElement('script');
-    cluster.src='map-cluster-v1.js?v=20260916-2359';
+    cluster.src='map-cluster-v1.js?v=20260924-0320';
     cluster.async=false;
     document.body.appendChild(cluster);
   };

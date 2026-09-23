@@ -146,7 +146,7 @@
     title.textContent=def.name;
     meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span>';
     meta.hidden=false;
-    copy.innerHTML='<span aria-hidden="true">📍</span>'+data.shop_name+'에서 포획했어요';
+    copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
     rewardResult.innerHTML=rewardMarkup(data);
     reward.hidden=false;reward.classList.remove('is-revealed');
     cover.style.transform='translateX(0)';cover.style.pointerEvents='auto';cover.style.transition='';

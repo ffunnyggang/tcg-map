@@ -87,9 +87,11 @@ async function loadShopsFromSupabase(){
     window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'static-fallback',count:SHOPS.length,error:String(err?.message||err)}}));
   }finally{
     clearTimeout(timer);
+    window.FUNY_SHOPS_BOOTSTRAPPING=false;
   }
 }
 
+window.FUNY_SHOPS_BOOTSTRAPPING=true;
 (async()=>{
   await loadShopsFromSupabase();
   renderFilters();

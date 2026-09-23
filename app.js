@@ -4,6 +4,23 @@ const REVIEWS={"KR-SEO-001":{"single":5,"graded":5,"box":4,"oripa":4,"price":3,"
 async function loadShopsFromSupabase(){
   const API='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+  const startedAt=performance.now();
+  let imageSource='static-fallback';
+  let fallbackReason='';
+  const trackSource=(source)=>{
+    const loadMs=Math.max(0,Math.round(performance.now()-startedAt));
+    window.FUNY_SHOPS_LOAD_MS=loadMs;
+    window.FUNY_SHOP_IMAGES_SOURCE=imageSource;
+    try{
+      if(typeof gtag==='function')gtag('event','shop_data_source',{
+        data_source:source,
+        image_source:imageSource,
+        load_time_ms:loadMs,
+        shop_count:SHOPS.length,
+        fallback_reason:fallbackReason||undefined
+      });
+    }catch(_){}
+  };
   const ctrl=new AbortController();
   const timer=setTimeout(()=>ctrl.abort(),3500);
   const headers={apikey:KEY,Authorization:'Bearer '+KEY};
@@ -79,12 +96,43 @@ async function loadShopsFromSupabase(){
     const ids=new Set(mapped.map(s=>s.id));
     if(ids.size!==mapped.length||SHOPS.some(s=>!ids.has(s.id)))throw new Error('shop id mismatch');
     SHOPS.splice(0,SHOPS.length,...mapped);
+
+    try{
+      const images=await get('shop_images?select=shop_id,image_type,source_path,storage_path,sort_order,is_primary,is_active&is_active=eq.true&order=shop_id.asc,sort_order.asc');
+      if(!Array.isArray(images))throw new Error('image rows invalid');
+      const thumbs={},galleries={};
+      for(const row of images){
+        const src=row.storage_path||row.source_path;
+        if(!src||!ids.has(row.shop_id))continue;
+        if(row.is_primary||row.image_type==='thumbnail'){
+          if(!thumbs[row.shop_id])thumbs[row.shop_id]=src;
+        }
+        if(row.image_type==='gallery'){
+          if(!galleries[row.shop_id])galleries[row.shop_id]=[];
+          galleries[row.shop_id].push(src);
+        }
+      }
+      if(images.length&&Object.keys(thumbs).length){
+        Object.keys(SHOP_IMAGES).forEach(k=>delete SHOP_IMAGES[k]);
+        Object.assign(SHOP_IMAGES,thumbs);
+        Object.keys(SHOP_GALLERIES).forEach(k=>delete SHOP_GALLERIES[k]);
+        Object.assign(SHOP_GALLERIES,galleries);
+        imageSource='supabase';
+      }
+    }catch(imageErr){
+      imageSource='static-fallback';
+      console.warn('[FUNY PIN] Supabase shop images fallback:',imageErr?.message||imageErr);
+    }
+
     window.FUNY_SHOPS_SOURCE='supabase';
-    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase',count:SHOPS.length}}));
+    trackSource('supabase');
+    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS}}));
   }catch(err){
     window.FUNY_SHOPS_SOURCE='static-fallback';
+    fallbackReason=err?.name==='AbortError'?'timeout':String(err?.message||err).slice(0,80);
+    trackSource('static-fallback');
     console.warn('[FUNY PIN] Supabase shop data fallback:',err?.message||err);
-    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'static-fallback',count:SHOPS.length,error:String(err?.message||err)}}));
+    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'static-fallback',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS,error:String(err?.message||err)}}));
   }finally{
     clearTimeout(timer);
     window.FUNY_SHOPS_BOOTSTRAPPING=false;

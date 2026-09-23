@@ -162,3 +162,35 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-reward-title-link{margin-top:11px;padding:0;border:0;border-bottom:2px dashed #8062d8;background:none;color:#6541c0;font-size:15px;font-weight:900;cursor:pointer}
 .funy-mon-lose-copy{margin:12px 0 0!important;color:#746b78!important;font-size:12px!important;font-weight:800}
 .funy-mon-reward-viewer[hidden]{display:none!important}.funy-mon-reward-viewer{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px}.funy-mon-reward-viewer-bg{position:absolute;inset:0;background:rgba(17,12,28,.76)}.funy-mon-reward-viewer-card{position:relative;z-index:1;width:min(92vw,420px);padding:12px;border:4px solid #2d2355;background:#fff;box-shadow:7px 7px 0 #8c71d6}.funy-mon-reward-viewer-card img{display:block;width:100%;max-height:70vh;object-fit:contain;background:#f7f4fb}.funy-mon-reward-viewer-card button{position:absolute;right:8px;top:8px;width:34px;height:34px;border:3px solid #2d2355;border-radius:2px;background:#fff;color:#4e3d70;font:900 20px/1 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:3px 3px 0 #b9a7ef}
+
+/* FUNY MON visual refinement v4 */
+.funy-mon-sheet{--mon-fx:#8d73dd;--mon-glow:rgba(141,115,221,.22)}
+.funy-mon-sheet.mon-ponanyang{--mon-fx:#8b72d8;--mon-glow:rgba(139,114,216,.22)}
+.funy-mon-sheet.mon-bubblelong{--mon-fx:#59b9df;--mon-glow:rgba(89,185,223,.22)}
+.funy-mon-sheet.mon-hatring{--mon-fx:#ed79ad;--mon-glow:rgba(237,121,173,.24)}
+.funy-mon-sheet.mon-bulgi{--mon-fx:#ee7b4d;--mon-glow:rgba(238,123,77,.24)}
+.funy-mon-sheet.mon-namumong{--mon-fx:#67a85b;--mon-glow:rgba(103,168,91,.22)}
+.funy-mon-sheet.mon-ggomagureum{--mon-fx:#9db9d4;--mon-glow:rgba(157,185,212,.22)}
+.funy-mon-sheet.mon-bawidong{--mon-fx:#9b8c74;--mon-glow:rgba(155,140,116,.22)}
+.funy-mon-sheet.mon-grimjamong{--mon-fx:#7764ae;--mon-glow:rgba(119,100,174,.24)}
+.funy-mon-sheet.mon-beonjjeogi{--mon-fx:#e5b633;--mon-glow:rgba(229,182,51,.25)}
+.funy-mon-sheet.mon-neon{--mon-fx:#8a71ff;--mon-glow:rgba(138,113,255,.28)}
+.funy-mon-visual:before{inset:6px -4px -2px!important;background:radial-gradient(circle at 50% 48%,var(--mon-glow) 0 18%,color-mix(in srgb,var(--mon-glow) 65%,transparent) 36%,transparent 68%)!important;filter:blur(3px);animation:funyMonAura 2.1s ease-in-out infinite}
+@keyframes funyMonAura{0%,100%{transform:scale(.96);opacity:.66}50%{transform:scale(1.04);opacity:1}}
+.funy-mon-fx i{color:var(--mon-fx)!important;text-shadow:0 0 9px var(--mon-glow)!important;opacity:.72}
+.funy-mon-fx i:nth-child(1){animation-delay:0s!important}.funy-mon-fx i:nth-child(2){animation-delay:.18s!important}.funy-mon-fx i:nth-child(3){animation-delay:.32s!important}.funy-mon-fx i:nth-child(4){animation-delay:.48s!important}.funy-mon-fx i:nth-child(5){animation-delay:.66s!important}
+
+/* pixel close control */
+.funy-mon-close{border-radius:0!important;border-width:3px!important;box-shadow:2px 0 0 #2d2355,-2px 0 0 #2d2355,0 2px 0 #2d2355,0 -2px 0 #2d2355,4px 4px 0 #c8b9ee!important;image-rendering:pixelated}
+
+/* coupon-shaped reward */
+.funy-mon-reward-kuji{clip-path:polygon(0 0,100% 0,100% 38%,97% 38%,97% 62%,100% 62%,100% 100%,0 100%,0 62%,3% 62%,3% 38%,0 38%)!important;border:0!important;box-shadow:none!important;background:#2d2355!important;padding:4px}
+.funy-mon-reward-kuji:before{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 0 3%,rgba(255,255,255,.2) 3% 3.7%,transparent 3.7% 96.3%,rgba(255,255,255,.2) 96.3% 97%,transparent 97%)}
+.funy-mon-reward-result{inset:5px!important;clip-path:polygon(0 0,100% 0,100% 38%,97% 38%,97% 62%,100% 62%,100% 100%,0 100%,0 62%,3% 62%,3% 38%,0 38%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:16px 22px!important}
+.funy-mon-reward-cover{inset:5px!important;clip-path:polygon(0 0,100% 0,100% 38%,97% 38%,97% 62%,100% 62%,100% 100%,0 100%,0 62%,3% 62%,3% 38%,0 38%)!important}
+.funy-mon-reward-retro{font-size:30px!important;text-align:center!important;letter-spacing:-.08em!important;text-shadow:3px 3px 0 #e2d7ff!important}
+.funy-mon-reward-title{display:block;margin-top:10px;color:#312944;font-size:15px;font-weight:900;text-align:center}
+.funy-mon-reward-detail{margin-top:7px;padding:0;border:0;border-bottom:1px solid currentColor;background:none;color:#6d50c3;font-size:11px;font-weight:850;cursor:pointer}
+.funy-mon-lose-copy{max-width:260px;margin:11px auto 0!important;text-align:center!important}
+.funy-mon-claim-code{margin-top:10px!important;justify-content:center!important}
+.funy-mon-post-guide{width:100%;margin-top:10px!important;text-align:center!important}

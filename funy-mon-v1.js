@@ -59,7 +59,7 @@
     }catch(_){return false}
   }
   function hiddenByRoute(){
-    return location.hash.includes('/shop/')||document.body.classList.contains('country-japan')||caughtToday();
+    return location.hash.includes('/shop/')||document.body.classList.contains('country-japan');
   }
   function currentZoom(){try{return naverMap.getZoom()}catch(_){return 0}}
   function syncVisibility(){
@@ -136,7 +136,6 @@
   }
   async function catchMonster(meta){
     if(busy)return;
-    if(caughtToday()){showMessage('오늘은 이미 포획했어요','티씨지서울에서는 하루에 한 번만 포획할 수 있어요.');return}
     busy=true;
     try{
       const pos=await getPosition();
@@ -155,12 +154,10 @@
       if(!res.ok){
         if(data.error==='too_far')showMessage('조금 더 가까이 가보세요','티씨지서울까지 약 '+data.distance_m+'m예요. 100m 이내에서 포획할 수 있어요.');
         else if(data.error==='already_caught_today'){
-          markCaughtToday();hideAll();
-          showMessage('오늘은 이미 포획했어요','티씨지서울에서는 하루에 한 번만 포획할 수 있어요.');
+          showMessage('테스트 제한 오류','테스트 모드에서는 반복 포획이 가능해야 해요. 잠시 후 다시 시도해주세요.');
         }else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');
         return;
       }
-      markCaughtToday();hideAll();
       saveHistory({monster_id:meta.def.id,shop_id:TARGET_SHOP_ID,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
       openResult(data,meta.def);
     }catch(err){
@@ -210,7 +207,7 @@
   }
 
   function spawn(){
-    if(started||caughtToday())return;
+    if(started)return;
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
     const shop=(typeof SHOPS!=='undefined'?SHOPS:[]).find(s=>s.id===TARGET_SHOP_ID&&s._coord);
     if(!shop){if(tries++<80)setTimeout(spawn,250);return}

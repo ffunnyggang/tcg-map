@@ -55,8 +55,9 @@
   }
   async function load(shop){
     if(!shop||!shop.instagram)return;
-    const cfg=await config(),eligible=cfg.shops&&cfg.shops[shop.id];
-    if(!eligible)return; // Master DB L열이 O인 매장만 노출
+    let eligible=shop.instagramFeedEnabled;
+    if(eligible==null){const cfg=await config();eligible=cfg.shops&&cfg.shops[shop.id]}
+    if(!eligible)return; // Supabase 설정 우선, 기존 Master DB JSON fallback
     const data=await feed(),posts=data.shops?.[shop.id]?.posts||[];
     const valid=posts.filter(isValidPost).slice(0,4);
     if(valid.length){mount(shop,valid,false);return}

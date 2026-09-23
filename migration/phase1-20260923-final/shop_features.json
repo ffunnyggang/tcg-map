@@ -96,12 +96,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-001",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-002",
     "feature_code": "single",
     "value": true,
@@ -194,12 +188,6 @@
   {
     "shop_id": "KR-SEO-002",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-002",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -300,12 +288,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-003",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-004",
     "feature_code": "single",
     "value": true,
@@ -398,12 +380,6 @@
   {
     "shop_id": "KR-SEO-004",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-004",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -504,12 +480,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-005",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-006",
     "feature_code": "single",
     "value": false,
@@ -602,12 +572,6 @@
   {
     "shop_id": "KR-SEO-006",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-006",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -705,12 +669,6 @@
     "shop_id": "KR-SEO-007",
     "feature_code": "online",
     "value": true,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-007",
-    "feature_code": "unmanned",
-    "value": null,
     "detail": null
   },
   {
@@ -810,12 +768,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-008",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-009",
     "feature_code": "single",
     "value": true,
@@ -912,12 +864,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-009",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-010",
     "feature_code": "single",
     "value": true,
@@ -1010,12 +956,6 @@
   {
     "shop_id": "KR-SEO-010",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-010",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -1116,12 +1056,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-011",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-012",
     "feature_code": "single",
     "value": true,
@@ -1214,12 +1148,6 @@
   {
     "shop_id": "KR-SEO-012",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-012",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -1320,12 +1248,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-013",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-014",
     "feature_code": "single",
     "value": true,
@@ -1418,12 +1340,6 @@
   {
     "shop_id": "KR-SEO-014",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-014",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -1524,12 +1440,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-015",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-016",
     "feature_code": "single",
     "value": true,
@@ -1626,12 +1536,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-016",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-017",
     "feature_code": "single",
     "value": null,
@@ -1724,12 +1628,6 @@
   {
     "shop_id": "KR-SEO-017",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-017",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -1830,12 +1728,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-018",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-019",
     "feature_code": "single",
     "value": null,
@@ -1928,12 +1820,6 @@
   {
     "shop_id": "KR-SEO-019",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-019",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -2034,12 +1920,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-020",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-021",
     "feature_code": "single",
     "value": null,
@@ -2132,12 +2012,6 @@
   {
     "shop_id": "KR-SEO-021",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-021",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -2238,12 +2112,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-022",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-023",
     "feature_code": "single",
     "value": null,
@@ -2336,12 +2204,6 @@
   {
     "shop_id": "KR-SEO-023",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-023",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -2442,12 +2304,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-024",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-ICN-001",
     "feature_code": "single",
     "value": null,
@@ -2540,12 +2396,6 @@
   {
     "shop_id": "KR-ICN-001",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-ICN-001",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -2646,12 +2496,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-025",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-GGI-001",
     "feature_code": "single",
     "value": null,
@@ -2744,12 +2588,6 @@
   {
     "shop_id": "KR-GGI-001",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-GGI-001",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -2952,12 +2790,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-027",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-028",
     "feature_code": "single",
     "value": null,
@@ -3050,12 +2882,6 @@
   {
     "shop_id": "KR-SEO-028",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-028",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -3156,12 +2982,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-029",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-030",
     "feature_code": "single",
     "value": null,
@@ -3254,12 +3074,6 @@
   {
     "shop_id": "KR-SEO-030",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-030",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -3360,12 +3174,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-031",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-GGI-002",
     "feature_code": "single",
     "value": null,
@@ -3458,12 +3266,6 @@
   {
     "shop_id": "KR-GGI-002",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-GGI-002",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -3564,12 +3366,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-GGI-003",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-GGI-004",
     "feature_code": "single",
     "value": null,
@@ -3662,12 +3458,6 @@
   {
     "shop_id": "KR-GGI-004",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-GGI-004",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -3768,12 +3558,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-GGI-005",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-GGI-006",
     "feature_code": "single",
     "value": null,
@@ -3866,12 +3650,6 @@
   {
     "shop_id": "KR-GGI-006",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-GGI-006",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -3972,12 +3750,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-032",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-033",
     "feature_code": "single",
     "value": null,
@@ -4074,12 +3846,6 @@
     "detail": null
   },
   {
-    "shop_id": "KR-SEO-033",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "KR-SEO-034",
     "feature_code": "single",
     "value": null,
@@ -4172,12 +3938,6 @@
   {
     "shop_id": "KR-SEO-034",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-034",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -4376,12 +4136,6 @@
   {
     "shop_id": "KR-SEO-037",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "KR-SEO-037",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -4686,12 +4440,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-001",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-002",
     "feature_code": "single",
     "value": null,
@@ -4784,12 +4532,6 @@
   {
     "shop_id": "JP-TYO-002",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-002",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -4890,12 +4632,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-003",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-004",
     "feature_code": "single",
     "value": null,
@@ -4988,12 +4724,6 @@
   {
     "shop_id": "JP-TYO-004",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-004",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -5094,12 +4824,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-005",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-006",
     "feature_code": "single",
     "value": null,
@@ -5192,12 +4916,6 @@
   {
     "shop_id": "JP-TYO-006",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-006",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -5298,12 +5016,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-007",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-008",
     "feature_code": "single",
     "value": null,
@@ -5396,12 +5108,6 @@
   {
     "shop_id": "JP-TYO-008",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-008",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -5502,12 +5208,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-009",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-010",
     "feature_code": "single",
     "value": null,
@@ -5600,12 +5300,6 @@
   {
     "shop_id": "JP-TYO-010",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-010",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -5706,12 +5400,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-011",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-012",
     "feature_code": "single",
     "value": null,
@@ -5804,12 +5492,6 @@
   {
     "shop_id": "JP-TYO-012",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-012",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -5910,12 +5592,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-013",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-014",
     "feature_code": "single",
     "value": null,
@@ -6008,12 +5684,6 @@
   {
     "shop_id": "JP-TYO-014",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-014",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -6114,12 +5784,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-015",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-016",
     "feature_code": "single",
     "value": null,
@@ -6212,12 +5876,6 @@
   {
     "shop_id": "JP-TYO-016",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-016",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -6318,12 +5976,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-017",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-018",
     "feature_code": "single",
     "value": true,
@@ -6416,12 +6068,6 @@
   {
     "shop_id": "JP-TYO-018",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-018",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -6522,12 +6168,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-019",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-020",
     "feature_code": "single",
     "value": null,
@@ -6620,12 +6260,6 @@
   {
     "shop_id": "JP-TYO-020",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-020",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   },
@@ -6726,12 +6360,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-021",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-022",
     "feature_code": "single",
     "value": true,
@@ -6828,12 +6456,6 @@
     "detail": null
   },
   {
-    "shop_id": "JP-TYO-022",
-    "feature_code": "unmanned",
-    "value": null,
-    "detail": null
-  },
-  {
     "shop_id": "JP-TYO-023",
     "feature_code": "single",
     "value": true,
@@ -6926,12 +6548,6 @@
   {
     "shop_id": "JP-TYO-023",
     "feature_code": "online",
-    "value": null,
-    "detail": null
-  },
-  {
-    "shop_id": "JP-TYO-023",
-    "feature_code": "unmanned",
     "value": null,
     "detail": null
   }

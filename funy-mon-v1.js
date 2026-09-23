@@ -74,7 +74,7 @@
     if(document.getElementById('funyMonModal'))return;
     const el=document.createElement('div');
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
-    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong><small>75% 이상 밀면 공개됩니다</small></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
+    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
     el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',closeModal));
   }
@@ -128,12 +128,12 @@
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',is_win:false,claim_code:null,image_url:null};
     const win=r.is_win===true;
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const imageAttr=r.image_url?' data-reward-image="'+esc(r.image_url)+'"':'';
     return '<div class="funy-mon-reward-retro '+(win?'win':'lose')+'">'+(win?'당첨!':'꽝')+'</div>'+
-      (win?'<button class="funy-mon-reward-title-link" type="button"'+imageAttr+'>'+esc(r.title||'당첨 상품')+'</button>':'')+
+      (win?'<strong class="funy-mon-reward-title">'+esc(r.title||'당첨 상품')+'</strong>':'')+
+      (win&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">자세히보기</button>':'')+
       (!win?'<p class="funy-mon-lose-copy">아쉬워요! 다음 기회에 다시 도전해보세요!</p>':'')+
       (win&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'')+
-      '<div class="funy-mon-post-guide">이미지를 저장한 뒤 이벤트 게시물 댓글로 등록해주세요.</div>';
+      (win?'<div class="funy-mon-post-guide">이미지를 저장한 뒤 이벤트 게시물에 댓글로 등록해주세요.</div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -163,10 +163,25 @@
     };
     cover.onpointerup=cover.onpointercancel=()=>{if(!revealed&&active)reset()};
   }
+  function funyMonFxMarkup(def){
+    const shapes={
+      ponanyang:['✦','♡','✧','♡','✦'],
+      bubblelong:['○','✦','◌','✦','○'],
+      hatring:['♡','♥','✦','♥','♡'],
+      bulgi:['✦','◆','✧','◆','✦'],
+      namumong:['❖','✦','❧','✦','❖'],
+      ggomagureum:['✧','☁','✦','☁','✧'],
+      bawidong:['◆','✦','◇','✦','◆'],
+      grimjamong:['✦','☾','✧','☾','✦'],
+      beonjjeogi:['✦','ϟ','✧','ϟ','✦'],
+      neon:['✦','✧','★','✧','✦']
+    };
+    return (shapes[def.id]||shapes.ponanyang).map(x=>'<i>'+x+'</i>').join('');
+  }
   function openResult(data,def){
     ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
-    sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success');document.getElementById('funyMonFx').innerHTML='<i>✦</i><i>✦</i><i>★</i><i>✦</i><i>✦</i>';
+    sheet.className=sheet.className.replace(/\bmon-[\w-]+\b/g,'').trim();sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
     icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';
     title.textContent=def.name;
     meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span>';

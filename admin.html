@@ -130,7 +130,7 @@ function openEditorWith(s){
  field('latitude','위도',s.latitude??'','number')+field('longitude','경도',s.longitude??'','number')+field('verified_at','확인일',s.verified_at||'','date')+
  field('website_url','웹사이트',s.website_url||'','wide')+field('instagram_url','Instagram',s.instagram_url||'','wide')+'<div class="field"><label>Instagram 게시물 연동</label><select id="instagram_feed_enabled" class="select"><option value="null">미확인</option><option value="true">노출</option><option value="false">미노출</option></select></div>'+field('naver_map_url','네이버 지도 URL',s.naver_map_url||'','wide')+field('google_map_url','Google Maps URL',s.google_map_url||'','wide')+
  field('other_tcg_note','기타 TCG 메모',s.other_tcg_note||'')+
- '<div class="field"><label>서비스 노출</label><select id="is_active" class="select"><option value="true">활성</option><option value="false">비활성</option></select></div></div></section>'+
+ '<div class="field"><label>노출 설정</label><select id="is_active" class="select"><option value="true">노출</option><option value="false">비노출</option></select></div></div></section>'+
  '<section class="editor-section"><h3>취급 TCG</h3><div class="tri-grid">'+tcgHtml+'</div></section>'+
  '<section class="editor-section"><h3>매장 특징</h3><div class="feature-grid">'+featHtml+'</div></section>'+
  '<section class="editor-section"><h3>이미지</h3><div class="form-grid"><div class="field wide"><label>대표 이미지 경로</label><input id="primary_image" class="input" value="'+esc(primary?(primary.storage_path||primary.source_path||''):'')+'" placeholder="images/shops/..."></div><div class="field wide"><label>갤러리 이미지 경로 · 한 줄에 하나</label><textarea id="gallery_images" class="textarea" placeholder="images/shops/...">'+esc(gallery.map(x=>x.storage_path||x.source_path||'').join('\n'))+'</textarea></div></div></section></div>'+
@@ -191,11 +191,6 @@ async function saveShopEditor(){
 async function deleteShopEditor(){
  if(isNewShop||!editingShopId)return;
  const shop=shopRows.find(x=>x.id===editingShopId);if(!shop)return;
- const deactivate=confirm('['+shop.name+'] 매장을 퍼니핀에서 숨길까요?\n\n확인 = 비활성화\n취소 = 영구 삭제 여부 선택');
- if(deactivate){
-  try{await api('/rest/v1/rpc/admin_delete_shop',{method:'POST',body:JSON.stringify({p_shop_id:editingShopId,p_permanent:false})});closeShopEditor();await loadShopManager();alert('매장을 비활성화했습니다.')}catch(e){alert('비활성화 실패: '+e.message)}
-  return;
- }
  if(!confirm('['+shop.name+'] 매장을 영구 삭제할까요?\n\nTCG, 특징, 이미지, 방문분석, 리뷰 콘텐츠도 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.'))return;
  const typed=prompt('영구 삭제 확인을 위해 매장 ID를 입력해주세요.\n'+editingShopId);
  if(typed!==editingShopId){if(typed!==null)alert('매장 ID가 일치하지 않아 삭제하지 않았습니다.');return}

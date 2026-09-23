@@ -257,47 +257,65 @@
   async function savePrizeImage(data,def){
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;
     const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
-    const g=ctx.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#faf7ff');g.addColorStop(1,'#eee7ff');
+    const fxMap={
+      ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],
+      bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],
+      bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']
+    };
+    const g=ctx.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#faf8ff');g.addColorStop(.48,'#ffffff');g.addColorStop(1,'#f4f0f8');
     ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
-    ctx.fillStyle='#8062d8';ctx.font='800 52px sans-serif';ctx.fillText('FUNY PIN · FUNY MON',70,100);
+
+    // Header: mirror the restrained FUNY MON sheet instead of a large banner title.
+    ctx.textAlign='center';ctx.fillStyle='#786b88';ctx.font='900 23px ui-monospace,monospace';ctx.fillText('FUNY PIN',540,72);
+    ctx.fillStyle='#2d2832';ctx.font='950 42px sans-serif';ctx.fillText('FUNY MON',540,120);
+    ctx.fillStyle='#d9d2e1';ctx.fillRect(420,145,240,4);
+
+    // Monster aura + individual FX.
+    const aura=ctx.createRadialGradient(540,365,30,540,365,270);
+    aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');
+    ctx.fillStyle=aura;ctx.beginPath();ctx.arc(540,365,270,0,Math.PI*2);ctx.fill();
+    const marks=fxMap[def.id]||fxMap.ponanyang,pts=[[300,390],[365,245],[540,215],[715,250],[780,395]];
+    ctx.fillStyle='#8f82a7';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
     try{
       const mon=await loadCanvasImage(def.asset);
-      const size=420,x=(1080-size)/2,y=150;ctx.drawImage(mon,x,y,size,size);
+      const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size);
     }catch(_){}
-    ctx.textAlign='center';ctx.fillStyle='#2d2832';ctx.font='900 66px sans-serif';ctx.fillText(def.name,540,640);
-    ctx.fillStyle='#6f6874';ctx.font='700 31px sans-serif';ctx.fillText('No.'+def.no+'  ·  '+def.type,540,700);
-    ctx.font='650 29px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,770);
-    ctx.textAlign='left';
+
+    ctx.fillStyle='#2d2832';ctx.font='950 64px sans-serif';ctx.fillText(def.name,540,650);
+    // compact meta chips
+    const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
+    chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,'#f1edf6','#655d6e');
+    ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
+
+    // Coupon-style REWARD area matching the front-end result sheet.
+    const rx=80,ry=845,rw=920,rh=330;
+    ctx.fillStyle='#8f82a7';roundRect(ctx,rx,ry,rw,rh,12);
+    ctx.fillStyle='#fffdf9';roundRect(ctx,rx+8,ry+8,rw-16,rh-16,9);
+    ctx.fillStyle='#786b88';ctx.font='900 22px ui-monospace,monospace';ctx.fillText('REWARD',540,900);
+    ctx.font='950 52px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,965);
     if(win){
-      ctx.fillStyle='#fff';roundRect(ctx,70,835,940,340,30);
-      ctx.fillStyle='#8062d8';ctx.font='900 27px sans-serif';ctx.fillText('REWARD · 당첨!',110,895);
-      ctx.fillStyle='#2d2832';ctx.font='900 44px sans-serif';wrapText(ctx,r.title||'당첨 상품',110,965,850,56,2);
-      if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='800 26px sans-serif';ctx.fillText('당첨 코드  '+r.claim_code,110,1095)}
-      ctx.fillStyle='#77707b';ctx.font='700 24px sans-serif';wrapText(ctx,'이미지를 저장한 뒤 이벤트 게시물 댓글로 등록해주세요.',110,1145,850,38,2);
+      ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1025,760,44,2);
+      if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1110)}
+    }else{
+      ctx.fillStyle='#746b78';ctx.font='800 25px sans-serif';ctx.fillText('아쉬워요! 다음 기회에 다시 도전해보세요!',540,1040);
     }
-    ctx.fillStyle='#9a92a0';ctx.font='600 23px sans-serif';ctx.fillText('funypin.kr',70,1280);
+    ctx.fillStyle='#8c8491';ctx.font='700 21px sans-serif';ctx.fillText(win?'이미지를 저장한 뒤 이벤트 게시물 댓글로 등록해주세요.':'FUNY MON 포획 완료',540,1150);
+
+    ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
     const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.png';
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(blob){
       const file=new File([blob],fileName,{type:'image/png'});
-      // Mobile browsers that support file sharing hand the image to the native
-      // share/save sheet, where users can save it directly to Photos/Gallery.
       if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
-        try{
-          await navigator.share({files:[file],title:'FUNY MON 이미지'});
-          return;
-        }catch(e){
-          // Cancelling the native sheet is intentional; other share failures
-          // fall through to the browser download fallback below.
-          if(e&&e.name==='AbortError')return;
-        }
+        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});return}
+        catch(e){if(e&&e.name==='AbortError')return}
       }
       const url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.download=fileName;a.href=url;a.rel='noopener';
-      document.body.appendChild(a);a.click();a.remove();
+      a.download=fileName;a.href=url;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1500);
     }
   }
+
   function spawn(){
     if(started)return;
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}

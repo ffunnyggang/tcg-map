@@ -30,14 +30,12 @@ async function loadShopsFromSupabase(){
     return res.json();
   };
   try{
-    const [shops,tcgTypes,shopTcg,features,shopFeatures,shopReviews,shopContents]=await Promise.all([
+    const [shops,tcgTypes,shopTcg,features,shopFeatures]=await Promise.all([
       get('shops?select=*&is_active=eq.true&order=id.asc'),
       get('tcg_types?select=id,code&is_active=eq.true'),
       get('shop_tcg?select=shop_id,tcg_id,status,detail'),
       get('features?select=id,code&is_active=eq.true'),
-      get('shop_features?select=shop_id,feature_id,value,detail'),
-      get('shop_reviews?select=*'),
-      get('shop_contents?select=*&status=eq.%EA%B3%B5%EA%B0%9C&order=published_at.desc.nullslast,content_id.asc')
+      get('shop_features?select=shop_id,feature_id,value,detail')
     ]);
     if(!Array.isArray(shops)||shops.length!==SHOPS.length)throw new Error('shop count mismatch');
 
@@ -96,17 +94,27 @@ async function loadShopsFromSupabase(){
     }));
 
     const ids=new Set(mapped.map(s=>s.id));
-    Object.keys(REVIEWS).forEach(k=>delete REVIEWS[k]);
-    for(const r of (shopReviews||[])){
-      if(!ids?.has?.(r.shop_id))continue;
-      const meaningful=[r.single_score,r.graded_score,r.box_score,r.oripa_score,r.price_score,r.scale_score,r.mood_score,r.access_score,r.staff_score,r.one_line_review].some(v=>v!==null&&v!=='');
-      if(!meaningful)continue;
-      REVIEWS[r.shop_id]={single:Number(r.single_score||0),graded:Number(r.graded_score||0),box:Number(r.box_score||0),oripa:Number(r.oripa_score||0),price:Number(r.price_score||0),scale:Number(r.scale_score||0),mood:Number(r.mood_score||0),access:Number(r.access_score||0),staff:Number(r.staff_score||0),recommendation:r.one_line_review||''};
-    }
-    CONTENTS.splice(0,CONTENTS.length,...(shopContents||[]).map(x=>({id:x.content_id,shop:x.shop_id,type:x.content_type==='Instagram Reel'?'Reel':x.content_type,title:x.title,platform:x.platform,url:x.url,publishedAt:x.published_at,coverImage:x.cover_image_url,views:x.view_count,note:x.note})));
-
     if(ids.size!==mapped.length||SHOPS.some(s=>!ids.has(s.id)))throw new Error('shop id mismatch');
     SHOPS.splice(0,SHOPS.length,...mapped);
+
+    try{
+      const [shopReviews,shopContents]=await Promise.all([
+        get('shop_reviews?select=*'),
+        get('shop_contents?select=*&status=eq.%EA%B3%B5%EA%B0%9C&order=published_at.desc.nullslast,content_id.asc')
+      ]);
+      Object.keys(REVIEWS).forEach(k=>delete REVIEWS[k]);
+      for(const r of (shopReviews||[])){
+        if(!ids.has(r.shop_id))continue;
+        const meaningful=[r.single_score,r.graded_score,r.box_score,r.oripa_score,r.price_score,r.scale_score,r.mood_score,r.access_score,r.staff_score,r.one_line_review].some(v=>v!==null&&v!=='');
+        if(!meaningful)continue;
+        REVIEWS[r.shop_id]={single:Number(r.single_score||0),graded:Number(r.graded_score||0),box:Number(r.box_score||0),oripa:Number(r.oripa_score||0),price:Number(r.price_score||0),scale:Number(r.scale_score||0),mood:Number(r.mood_score||0),access:Number(r.access_score||0),staff:Number(r.staff_score||0),recommendation:r.one_line_review||''};
+      }
+      CONTENTS.splice(0,CONTENTS.length,...(shopContents||[]).map(x=>({id:x.content_id,shop:x.shop_id,type:x.content_type==='Instagram Reel'?'Reel':x.content_type,title:x.title,platform:x.platform,url:x.url,publishedAt:x.published_at,coverImage:x.cover_image_url,views:x.view_count,note:x.note})));
+      window.FUNY_REVIEW_CONTENT_SOURCE='supabase';
+    }catch(contentErr){
+      window.FUNY_REVIEW_CONTENT_SOURCE='static-fallback';
+      console.warn('[FUNY PIN] Supabase review/content fallback:',contentErr?.message||contentErr);
+    }
 
     try{
       const images=await get('shop_images?select=shop_id,image_type,source_path,storage_path,sort_order,is_primary,is_active&is_active=eq.true&order=shop_id.asc,sort_order.asc');

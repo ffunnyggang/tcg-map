@@ -59,7 +59,9 @@ async function api(path,opt={},retried=false){
   }
   throw new Error(msg||('HTTP '+r.status));
  }
- return r.status===204?null:r.json();
+ if(r.status===204)return null;
+ const raw=await r.text();
+ return raw?JSON.parse(raw):null;
 }
 async function login(){const b=$('loginBtn');b.disabled=true;b.textContent='로그인 중...';$('loginMsg').textContent='';try{const d=await api('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});token=d.access_token;refreshToken=d.refresh_token||'';sessionStorage.setItem('funypin_admin_token',token);if(refreshToken)sessionStorage.setItem('funypin_admin_refresh',refreshToken);await verify()}catch(e){$('loginMsg').className='sub error';$('loginMsg').textContent='로그인 실패: '+e.message}finally{b.disabled=false;b.textContent='로그인'}}
 async function verify(){try{const rows=await api('/rest/v1/admin_users?select=user_id&limit=1');if(!rows.length)throw new Error('관리자 권한이 없는 계정입니다.');$('login').classList.add('hidden');document.querySelector('.main')?.classList.remove('login-state');$('toolbar').classList.add('show');$('side').classList.add('show');$('mobileTabs').classList.add('show');await load()}catch(e){token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');$('login').classList.remove('hidden');document.querySelector('.main')?.classList.add('login-state');$('toolbar').classList.remove('show');$('side').classList.remove('show');$('mobileTabs').classList.remove('show');$('loginMsg').className='sub error';$('loginMsg').textContent=e.message}}

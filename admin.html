@@ -18,7 +18,7 @@
 <nav id="mobileTabs" class="mobile-tabs"><button class="on" data-admin-tab="stores">카드샵 관리</button><button data-admin-tab="shop">등록·수정 요청</button><button data-admin-tab="live">LIVE PIN 신고</button><button data-admin-tab="event">이벤트 응모</button></nav>
 <section id="feed" class="feed"></section>
 </section></div></main>
-<div id="shopEditor" class="editor" aria-hidden="true"><div class="editor-panel"><div class="editor-head"><div><b id="editorTitle">카드샵 수정</b><br><span id="editorIdLabel"></span></div><button id="editorClose" class="editor-close" type="button" aria-label="닫기">×</button></div><nav id="editorTabs" class="editor-tabs"><button class="on" data-editor-tab="info" type="button">매장 정보</button><button data-editor-tab="review" type="button">방문 분석</button><button data-editor-tab="content" type="button">리뷰 콘텐츠</button></nav><div id="editorBody" class="editor-body"></div><div class="editor-foot"><button id="editorDelete" class="editor-delete" type="button">삭제</button><button id="editorCancel" class="editor-cancel" type="button">취소</button><button id="editorSave" class="editor-save" type="button">저장</button></div></div></div>
+<div id="shopEditor" class="editor" aria-hidden="true"><div class="editor-panel"><div class="editor-head"><div><b id="editorTitle">카드샵 수정</b><br><span id="editorIdLabel"></span></div><button id="editorClose" class="editor-close" type="button" aria-label="닫기">×</button></div><nav id="editorTabs" class="editor-tabs"><button class="on" data-editor-tab="info" type="button">매장 정보</button><button data-editor-tab="review" type="button">방문 분석</button><button data-editor-tab="content" type="button">리뷰 콘텐츠</button><button data-editor-tab="settings" type="button">설정</button></nav><div id="editorBody" class="editor-body"></div><div class="editor-foot"><button id="editorDelete" class="editor-delete" type="button">삭제</button><button id="editorCancel" class="editor-cancel" type="button">취소</button><button id="editorSave" class="editor-save" type="button">저장</button></div></div></div>
 <script>
 let adminTab='stores';
 const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';let token='',refreshToken='';
@@ -135,13 +135,14 @@ function openEditorWith(s){
  '<section class="editor-section"><h3>취급 TCG</h3><div class="tri-grid">'+tcgHtml+'</div></section>'+
  '<section class="editor-section"><h3>매장 특징</h3><div class="feature-grid">'+featHtml+'</div></section>'+
  '<section class="editor-section"><h3>이미지</h3><div class="form-grid"><div class="field wide"><label>대표 이미지 경로</label><input id="primary_image" class="input" value="'+esc(primary?(primary.storage_path||primary.source_path||''):'')+'" placeholder="images/shops/..."></div><div class="field wide"><label>갤러리 이미지 경로 · 한 줄에 하나</label><textarea id="gallery_images" class="textarea" placeholder="images/shops/...">'+esc(gallery.map(x=>x.storage_path||x.source_path||'').join('\n'))+'</textarea></div></div></section>'+
- '<section class="editor-section"><h3>설정</h3><div class="form-grid"><div class="field"><label>노출 설정</label><select id="is_active" class="select"><option value="true">노출</option><option value="false">비노출</option></select></div></div></section></div>'+
+ '</div>'+
  '<div class="editor-pane" data-editor-pane="review"><section class="editor-section"><h3>깽퐌커플 방문 분석</h3><div class="score-grid">'+
  scoreField('review_product_score','상품구성',review.product_score,true)+scoreField('review_single_score','싱글카드',review.single_score)+scoreField('review_graded_score','등급카드',review.graded_score)+scoreField('review_box_score','BOX',review.box_score)+scoreField('review_oripa_score','오리파',review.oripa_score)+scoreField('review_price_score','가격',review.price_score)+scoreField('review_scale_score','매장규모',review.scale_score)+scoreField('review_mood_score','매장분위기',review.mood_score)+scoreField('review_access_score','접근성',review.access_score)+scoreField('review_staff_score','직원응대',review.staff_score)+'</div><div class="form-grid" style="margin-top:10px">'+field('review_one_line','한줄평',review.one_line_review||'','wide')+field('review_verified_at','분석 정보확인일',review.verified_at||'','date')+'<div class="field wide"><label>방문후기</label><textarea id="review_visit" class="textarea">'+esc(review.visit_review||'')+'</textarea></div><div class="field wide"><label>당시 주요상품</label><textarea id="review_products" class="textarea">'+esc(review.key_products||'')+'</textarea></div><div class="field"><label>당시 이벤트</label><input id="review_event" class="input" value="'+esc(review.event_note||'')+'"></div><div class="field"><label>재고 메모</label><input id="review_stock" class="input" value="'+esc(review.stock_note||'')+'"></div></div>'+
  '</section></div>'+
  '<div class="editor-pane" data-editor-pane="content"><section class="editor-section"><h3>깽퐌커플 리뷰 콘텐츠</h3><div id="contentAdminList" class="content-admin-list">'+contents.map(contentRowHTML).join('')+'</div><button id="contentAdd" class="content-add" type="button">+ 콘텐츠 추가</button></section></div>'+
- '<p id="editorMsg" class="editor-msg">저장 버튼을 누르면 세 영역의 변경사항이 함께 반영됩니다.</p>';
- $('is_active').value=String(s.is_active!==false);$('status').value=['운영','오픈예정','휴업','폐점'].includes(s.status)?s.status:'운영';$('instagram_feed_enabled').value=triValue(s.instagram_feed_enabled);$('contentAdd').onclick=()=>addContentRow();bindContentRemove();bindReviewAutoScore();bindCoordinateTools();
+ '<div class="editor-pane" data-editor-pane="settings"><section class="editor-section"><h3>기본 설정</h3><div class="form-grid"><div class="field"><label>FUNY PIN 노출 설정</label><select id="is_active" class="select"><option value="true">노출</option><option value="false">비노출</option></select></div></div></section><section class="editor-section"><h3>이벤트 설정</h3><div class="form-grid"><div class="field"><label>이벤트 강조</label><select id="event_highlight_enabled" class="select"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field wide"><label>이벤트 기간</label><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center"><input id="event_start_at" class="input" type="datetime-local" value="'+esc(toKstLocalInput(s.event_start_at))+'"><span style="font-size:11px;color:#8d8591">~</span><input id="event_end_at" class="input" type="datetime-local" value="'+esc(toKstLocalInput(s.event_end_at))+'"></div></div></div></section></div>'+
+ '<p id="editorMsg" class="editor-msg">저장 버튼을 누르면 모든 탭의 변경사항이 함께 반영됩니다.</p>';
+ $('is_active').value=String(s.is_active!==false);$('event_highlight_enabled').value=String(s.event_highlight_enabled===true);$('status').value=['운영','오픈예정','휴업','폐점'].includes(s.status)?s.status:'운영';$('instagram_feed_enabled').value=triValue(s.instagram_feed_enabled);$('contentAdd').onclick=()=>addContentRow();bindContentRemove();bindReviewAutoScore();bindCoordinateTools();
  tcgTypes.forEach(t=>{const el=document.querySelector('[data-tcg-code="'+CSS.escape(t.code)+'"]');if(el)el.value=triValue(tcgMap[String(t.id)])});
  featureTypes.forEach(t=>{const row=featMap[String(t.id)]||{};const el=document.querySelector('[data-feature-code="'+CSS.escape(t.code)+'"]');if(el)el.value=triValue(row.value)});
  bindShopIdControls(s);
@@ -199,6 +200,8 @@ function setEditorTab(tab){document.querySelectorAll('[data-editor-tab]').forEac
 document.querySelectorAll('[data-editor-tab]').forEach(b=>b.onclick=()=>setEditorTab(b.dataset.editorTab));
 function closeShopEditor(){$('shopEditor').classList.remove('show');$('shopEditor').setAttribute('aria-hidden','true');document.body.style.overflow='';editingShopId='';isNewShop=false}
 function nullableInput(id){const v=$(id)?.value?.trim();return v? v:null}
+function toKstLocalInput(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';return new Date(d.getTime()+9*36e5).toISOString().slice(0,16)}
+function kstLocalToIso(v){if(!v)return null;const d=new Date(v+':00+09:00');return Number.isNaN(d.getTime())?null:d.toISOString()}
 function triPayload(value){return value==='true'?true:value==='false'?false:null}
 async function saveShopEditor(){
  const btn=$('editorSave'),msg=$('editorMsg');btn.disabled=true;btn.textContent='저장 중...';if(msg){msg.className='editor-msg';msg.textContent='저장 중...'}
@@ -209,11 +212,14 @@ async function saveShopEditor(){
    phone:nullableInput('phone'),website_url:nullableInput('website_url'),instagram_url:nullableInput('instagram_url'),instagram_feed_enabled:triPayload($('instagram_feed_enabled').value),naver_map_url:nullableInput('naver_map_url'),
    google_map_url:nullableInput('google_map_url'),nearest_station:nullableInput('nearest_station'),walk_minutes:nullableInput('walk_minutes'),parking_status:nullableInput('parking_status'),
    hours_display:nullableInput('hours_display'),closed_display:nullableInput('closed_display'),latitude:nullableInput('latitude'),longitude:nullableInput('longitude'),
-   status:nullableInput('status')||'운영',verified_at:nullableInput('verified_at'),other_tcg_note:nullableInput('other_tcg_note'),is_active:$('is_active').value==='true'
+   status:nullableInput('status')||'운영',verified_at:nullableInput('verified_at'),other_tcg_note:nullableInput('other_tcg_note'),is_active:$('is_active').value==='true',
+   event_highlight_enabled:$('event_highlight_enabled').value==='true',event_start_at:kstLocalToIso(nullableInput('event_start_at')),event_end_at:kstLocalToIso(nullableInput('event_end_at'))
   };
   if(!shop.id||!shop.name||!shop.address)throw new Error('매장 ID, 매장명, 주소는 필수입니다.');
   if(!/^[A-Z]{3}$/.test(shop.region_code))throw new Error('지역 코드는 3자리 영문 대문자로 입력해주세요.');
   if(shop.is_active&&(!Number.isFinite(Number(shop.latitude))||!Number.isFinite(Number(shop.longitude))))throw new Error('노출 매장은 위도·경도가 필요합니다. 주소의 좌표 자동조회를 먼저 진행해주세요.');
+  if(shop.event_highlight_enabled&&(!shop.event_start_at||!shop.event_end_at))throw new Error('이벤트 강조 ON 시 시작일시와 종료일시를 모두 입력해주세요.');
+  if(shop.event_highlight_enabled&&new Date(shop.event_end_at)<=new Date(shop.event_start_at))throw new Error('이벤트 종료일시는 시작일시보다 이후여야 합니다.');
   if(!/^(KR|JP)-[A-Z]{3}-\d{3}$/.test(shop.id))throw new Error('매장 ID 형식은 KR-SEO-001 또는 JP-TYO-001 형태여야 합니다.');
   if(isNewShop&&shopRows.some(x=>x.id===shop.id))throw new Error('이미 사용 중인 매장 ID입니다.');
   const tcg={};document.querySelectorAll('[data-tcg-code]').forEach(el=>tcg[el.dataset.tcgCode]=triPayload(el.value));

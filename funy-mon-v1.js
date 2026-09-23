@@ -214,7 +214,7 @@
     started=true;
     defs.filter(d=>d.spawnable).forEach((d,i)=>{
       const off=offsets[i],lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
-      const html='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span><span class="funy-mon-pixel-tag">10×10</span></div>';
+      const html='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
       const marker=new naver.maps.Marker({
         position:new naver.maps.LatLng(lat,lng),
         map:hiddenByRoute()||currentZoom()<14?null:naverMap,

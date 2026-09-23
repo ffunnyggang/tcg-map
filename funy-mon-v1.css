@@ -1,9 +1,9 @@
 /* FUNY PIN / FUNY MON 10x10 retro capture UI */
-.funy-mon-marker{position:relative;width:30px;height:30px;pointer-events:auto;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 2px 1px rgba(38,27,54,.25));transform-origin:50% 100%}
-.funy-mon-sprite{position:absolute;left:3px;top:1px;width:24px;height:24px;display:block;image-rendering:pixelated;animation:funyMonIdle .85s steps(2,end) infinite}
-.funy-mon-marker img{display:block;width:24px;height:24px;object-fit:contain;image-rendering:pixelated;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.funy-mon-shadow{position:absolute;left:7px;bottom:1px;width:16px;height:4px;border-radius:50%;background:rgba(34,28,42,.17);transform-origin:center;animation:funyMonShadow .85s steps(2,end) infinite;pointer-events:none}
-.funy-mon-pixel-tag{position:absolute;left:50%;top:-8px;transform:translateX(-50%);padding:1px 3px;border:1px solid rgba(255,255,255,.92);border-radius:2px;background:#5d44b8;color:#fff;font:700 6px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.04em;opacity:.86;pointer-events:none}
+.funy-mon-marker{position:relative;width:42px;height:42px;pointer-events:auto;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 2px 1px rgba(38,27,54,.25));transform-origin:50% 100%}
+.funy-mon-sprite{position:absolute;left:3px;top:1px;width:36px;height:36px;display:block;image-rendering:pixelated;animation:funyMonIdle .85s steps(2,end) infinite}
+.funy-mon-marker img{display:block;width:36px;height:36px;object-fit:contain;image-rendering:pixelated;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.funy-mon-shadow{position:absolute;left:10px;bottom:2px;width:22px;height:5px;border-radius:50%;background:rgba(34,28,42,.17);transform-origin:center;animation:funyMonShadow .85s steps(2,end) infinite;pointer-events:none}
+
 .funy-mon-marker.move-0{animation:funyMonWalk 2.7s steps(6,end) infinite}
 .funy-mon-marker.move-1{animation:funyMonFloat 2.2s steps(5,end) infinite}
 .funy-mon-marker.move-2{animation:funyMonWander 3.1s steps(7,end) infinite}

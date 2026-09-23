@@ -17,3 +17,5 @@
 @media(prefers-reduced-motion:reduce){.funy-mon-marker,.funy-mon-shadow{animation:none!important}}
 body.funy-mon-open .shops-bottom-nav{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entry{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+
+.funy-mon-reward strong{display:block}.funy-mon-test-note{display:block;margin-top:7px;color:#c45656;font-size:11px;font-weight:800;line-height:1.45}

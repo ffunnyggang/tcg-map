@@ -6,9 +6,9 @@
   const HISTORY_KEY='funypin_mon_history_v1';
   const DAILY_KEY='funypin_mon_daily_catch_v1';
   const defs=[
-    {id:'moru',name:'모루',cls:'mon-a',svg:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="2" width="2" height="2" fill="#6f58c9"/><rect x="9" y="2" width="2" height="2" fill="#6f58c9"/><rect x="4" y="4" width="8" height="7" fill="#8b73df"/><rect x="3" y="6" width="2" height="4" fill="#8b73df"/><rect x="11" y="6" width="2" height="4" fill="#8b73df"/><rect x="6" y="6" width="1" height="1" fill="#fff"/><rect x="9" y="6" width="1" height="1" fill="#fff"/><rect x="7" y="8" width="2" height="1" fill="#f7d36b"/><rect x="5" y="11" width="2" height="2" fill="#6f58c9"/><rect x="9" y="11" width="2" height="2" fill="#6f58c9"/></svg>'},
-    {id:'nubi',name:'누비',cls:'mon-b',svg:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="3" height="2" fill="#4da47b"/><rect x="10" y="2" width="2" height="3" fill="#4da47b"/><rect x="4" y="5" width="8" height="6" fill="#6dc69a"/><rect x="2" y="7" width="2" height="3" fill="#6dc69a"/><rect x="12" y="7" width="2" height="3" fill="#6dc69a"/><rect x="6" y="7" width="1" height="1" fill="#18392d"/><rect x="9" y="7" width="1" height="1" fill="#18392d"/><rect x="7" y="9" width="2" height="1" fill="#fff"/><rect x="5" y="11" width="2" height="2" fill="#4da47b"/><rect x="9" y="11" width="2" height="2" fill="#4da47b"/></svg>'},
-    {id:'piri',name:'피리',cls:'mon-c',svg:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="7" y="1" width="2" height="3" fill="#df7551"/><rect x="5" y="4" width="6" height="7" fill="#f08c61"/><rect x="3" y="6" width="2" height="3" fill="#f08c61"/><rect x="11" y="6" width="2" height="3" fill="#f08c61"/><rect x="6" y="6" width="1" height="1" fill="#38251e"/><rect x="9" y="6" width="1" height="1" fill="#38251e"/><rect x="7" y="8" width="2" height="1" fill="#ffe6a3"/><rect x="5" y="11" width="2" height="2" fill="#df7551"/><rect x="9" y="11" width="2" height="2" fill="#df7551"/><rect x="12" y="4" width="2" height="2" fill="#ffd35e"/></svg>'}
+    {id:'moru',name:'별콩',cls:'mon-a',svg:'<svg viewBox="0 0 10 10" aria-hidden="true"><rect x="2" y="1" width="2" height="2" fill="#5c45b8"/><rect x="6" y="1" width="2" height="2" fill="#5c45b8"/><rect x="1" y="3" width="8" height="5" fill="#8b73df"/><rect x="2" y="4" width="1" height="1" fill="#fff"/><rect x="7" y="4" width="1" height="1" fill="#fff"/><rect x="4" y="5" width="2" height="1" fill="#ffd86a"/><rect x="2" y="8" width="2" height="1" fill="#5c45b8"/><rect x="6" y="8" width="2" height="1" fill="#5c45b8"/><rect x="8" y="2" width="1" height="1" fill="#ffe36e"/></svg>'},
+    {id:'nubi',name:'물방울콩',cls:'mon-b',svg:'<svg viewBox="0 0 10 10" aria-hidden="true"><rect x="4" y="0" width="2" height="2" fill="#249bd8"/><rect x="2" y="2" width="6" height="6" fill="#49bff1"/><rect x="1" y="4" width="1" height="2" fill="#49bff1"/><rect x="8" y="4" width="1" height="2" fill="#49bff1"/><rect x="3" y="4" width="1" height="1" fill="#fff"/><rect x="6" y="4" width="1" height="1" fill="#fff"/><rect x="4" y="6" width="2" height="1" fill="#166a9a"/><rect x="2" y="8" width="2" height="1" fill="#249bd8"/><rect x="6" y="8" width="2" height="1" fill="#249bd8"/><rect x="8" y="1" width="1" height="1" fill="#8be4ff"/></svg>'},
+    {id:'piri',name:'불꼬리콩',cls:'mon-c',svg:'<svg viewBox="0 0 10 10" aria-hidden="true"><rect x="3" y="1" width="4" height="2" fill="#ef704e"/><rect x="2" y="3" width="6" height="5" fill="#ff9664"/><rect x="1" y="4" width="1" height="2" fill="#ff9664"/><rect x="8" y="4" width="1" height="2" fill="#ff9664"/><rect x="3" y="4" width="1" height="1" fill="#3b261f"/><rect x="6" y="4" width="1" height="1" fill="#3b261f"/><rect x="4" y="6" width="2" height="1" fill="#ffe28c"/><rect x="3" y="8" width="1" height="1" fill="#ef704e"/><rect x="6" y="8" width="1" height="1" fill="#ef704e"/><rect x="8" y="1" width="1" height="2" fill="#ffcc3f"/><rect x="9" y="0" width="1" height="1" fill="#ff6d35"/></svg>'}
   ];
   const offsets=[
     {lat:0.00010,lng:0.00013},
@@ -65,7 +65,7 @@
     if(document.getElementById('funyMonModal'))return;
     const el=document.createElement('div');
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
-    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-result-icon" id="funyMonIcon"></div><div class="funy-mon-kicker" id="funyMonKicker">FUNY MON</div><h3 id="funyMonTitle"></h3><p id="funyMonCopy"></p><div class="funy-mon-reward" id="funyMonReward" hidden></div><div class="funy-mon-code" id="funyMonCode" hidden></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" hidden>당첨 이미지 저장</button><button class="funy-mon-secondary" type="button" data-mon-close>닫기</button></div></section>';
+    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div><div class="funy-mon-kicker" id="funyMonKicker">FUNY MON</div><h3 id="funyMonTitle"></h3><p id="funyMonCopy"></p><div class="funy-mon-reward" id="funyMonReward" hidden></div><div class="funy-mon-code" id="funyMonCode" hidden></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" hidden>당첨 이미지 저장</button><button class="funy-mon-secondary" type="button" data-mon-close>닫기</button></div></section>';
     document.body.appendChild(el);
     el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',closeModal));
   }
@@ -74,9 +74,18 @@
     if(!el)return;
     el.hidden=true;document.body.style.overflow='';document.body.classList.remove('funy-mon-open');
   }
+  function setResultState(state){
+    const sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
+    if(!sheet)return;
+    sheet.classList.remove('is-fail','is-success','is-prize');
+    sheet.classList.add(state);
+    const fx=document.getElementById('funyMonFx');
+    if(fx)fx.innerHTML=state==='is-fail'?'<i>💔</i><i>·</i><i>·</i>':state==='is-prize'?'<i>✦</i><i>✦</i><i>★</i><i>✦</i><i>✦</i>':'<i>♡</i><i>✦</i><i>♡</i>';
+  }
   function showMessage(title,copy){
     ensureModal();
-    document.getElementById('funyMonIcon').innerHTML='📍';
+    setResultState('is-fail');
+    document.getElementById('funyMonIcon').innerHTML='<span class="funy-mon-fail-icon">×</span>';
     document.getElementById('funyMonKicker').textContent='FUNY MON';
     document.getElementById('funyMonTitle').textContent=title;
     document.getElementById('funyMonCopy').textContent=copy;
@@ -92,13 +101,15 @@
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),code=document.getElementById('funyMonCode'),save=document.getElementById('funyMonSave');
     icon.innerHTML=def.svg;reward.hidden=true;code.hidden=true;save.hidden=true;
     if(data.result==='winner'){
+      setResultState('is-prize');
       document.getElementById('funyMonKicker').textContent='FUNY MON · WINNER';
       title.textContent=def.name+' 포획 성공! 🎉';
       copy.textContent=data.shop_name+'에서 특별한 상품에 당첨됐어요.';
-      reward.innerHTML='<strong>🎁 '+data.reward.title+'</strong><span class="funy-mon-test-note">'+(data.reward.description||'')+'</span>';reward.hidden=false;
+      reward.innerHTML='<span class="funy-mon-test-badge">TEST MODE</span><strong>🎁 '+data.reward.title+'</strong><span class="funy-mon-test-note">현재 상품 지급 기능을 테스트 중입니다.<br>실제 상품은 지급되지 않습니다.</span>';reward.hidden=false;
       code.textContent='당첨코드 '+data.reward.claim_code;code.hidden=false;
       save.hidden=false;save.onclick=()=>savePrizeImage(data,def);
     }else{
+      setResultState('is-success');
       document.getElementById('funyMonKicker').textContent='FUNY MON · CATCH';
       title.textContent=def.name+' 포획 성공!';
       copy.textContent=data.shop_name+'에서 오늘의 포획을 완료했어요.';
@@ -196,12 +207,12 @@
     started=true;
     defs.forEach((d,i)=>{
       const off=offsets[i],lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
-      const html='<div class="funy-mon-marker '+d.cls+'" role="button" aria-label="'+d.name+' 포획">'+d.svg+'<span class="funy-mon-shadow"></span></div>';
+      const html='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite">'+d.svg+'</span><span class="funy-mon-shadow"></span><span class="funy-mon-pixel-tag">10×10</span></div>';
       const marker=new naver.maps.Marker({
         position:new naver.maps.LatLng(lat,lng),
         map:hiddenByRoute()||currentZoom()<14?null:naverMap,
         clickable:true,zIndex:120,
-        icon:{content:html,anchor:new naver.maps.Point(17,24)}
+        icon:{content:html,anchor:new naver.maps.Point(15,22)}
       });
       const meta={marker,shop,def:d};
       markers.push(marker);

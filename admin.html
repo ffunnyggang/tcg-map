@@ -83,7 +83,7 @@ function requestItemMappings(items){
  const set=new Set(items||[]);
  return {
   tcg:{pokemon:set.has('포켓몬'),one_piece:set.has('원피스'),dragon_ball:set.has('드래곤볼')},
-  features:{single:set.has('싱글카드'),vintage:set.has('빈티지카드'),graded:set.has('등급카드'),oripa:set.has('오리파'),pack:set.has('낱개팩'),box:set.has('박스제품'),supplies:set.has('카드용품'),buy:set.has('카드매입'),consignment:set.has('위탁판매'),grading:set.has('등급대행'),unmanned:set.has('무인매장')},
+  features:{single:set.has('싱글카드'),graded:set.has('등급카드'),vintage:set.has('빈티지카드'),oripa:set.has('오리파'),box:set.has('박스제품'),pack:set.has('낱개팩'),supplies:set.has('카드용품'),buy:set.has('카드매입'),consignment:set.has('위탁판매'),grading:set.has('등급대행'),play_space:set.has('플레이공간'),unmanned:set.has('무인매장'),tax_free:set.has('면세')},
   otherTcg:set.has('기타 TCG')
  };
 }

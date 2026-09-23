@@ -1190,7 +1190,7 @@
     "closed_display": null,
     "latitude": 35.6805435,
     "longitude": 139.7743296,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1216,7 +1216,7 @@
     "closed_display": null,
     "latitude": 35.6822889,
     "longitude": 139.7684903,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1242,7 +1242,7 @@
     "closed_display": null,
     "latitude": 35.6812898,
     "longitude": 139.7751065,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1268,7 +1268,7 @@
     "closed_display": null,
     "latitude": 35.6986829,
     "longitude": 139.7712782,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1294,7 +1294,7 @@
     "closed_display": null,
     "latitude": 35.6978846,
     "longitude": 139.7721865,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1320,7 +1320,7 @@
     "closed_display": null,
     "latitude": 35.6979149,
     "longitude": 139.7719571,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1346,7 +1346,7 @@
     "closed_display": null,
     "latitude": 35.6983248,
     "longitude": 139.7718016,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1372,7 +1372,7 @@
     "closed_display": null,
     "latitude": 35.698561,
     "longitude": 139.7716676,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1398,7 +1398,7 @@
     "closed_display": null,
     "latitude": 35.6981581,
     "longitude": 139.7708442,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1424,7 +1424,7 @@
     "closed_display": null,
     "latitude": 35.6984019,
     "longitude": 139.7707285,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1450,7 +1450,7 @@
     "closed_display": null,
     "latitude": 35.6980492,
     "longitude": 139.7707419,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1476,7 +1476,7 @@
     "closed_display": null,
     "latitude": 35.6988349,
     "longitude": 139.7715938,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1502,7 +1502,7 @@
     "closed_display": null,
     "latitude": 35.7012267,
     "longitude": 139.7718565,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1528,7 +1528,7 @@
     "closed_display": null,
     "latitude": 35.7019757,
     "longitude": 139.7720106,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1554,7 +1554,7 @@
     "closed_display": "수요일",
     "latitude": 35.7020993,
     "longitude": 139.7724737,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1580,7 +1580,7 @@
     "closed_display": null,
     "latitude": 35.7026701,
     "longitude": 139.7719513,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1606,7 +1606,7 @@
     "closed_display": null,
     "latitude": 35.7022571,
     "longitude": 139.7714173,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1632,7 +1632,7 @@
     "closed_display": null,
     "latitude": 35.7012042,
     "longitude": 139.7712634,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1658,7 +1658,7 @@
     "closed_display": null,
     "latitude": 35.7013557,
     "longitude": 139.7712989,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1684,7 +1684,7 @@
     "closed_display": null,
     "latitude": 35.7016391,
     "longitude": 139.7713277,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1710,7 +1710,7 @@
     "closed_display": null,
     "latitude": 35.7016403,
     "longitude": 139.7706859,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": "O",
     "is_active": true
@@ -1736,7 +1736,7 @@
     "closed_display": "수요일, 목요일",
     "latitude": 35.7015515,
     "longitude": 139.7694784,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true
@@ -1762,7 +1762,7 @@
     "closed_display": null,
     "latitude": 35.7005879,
     "longitude": 139.7694001,
-    "status": null,
+    "status": "운영",
     "verified_at": null,
     "other_tcg_note": null,
     "is_active": true

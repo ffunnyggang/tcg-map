@@ -72,7 +72,7 @@
   function closeModal(){
     const el=document.getElementById('funyMonModal');
     if(!el)return;
-    el.hidden=true;document.body.style.overflow='';
+    el.hidden=true;document.body.style.overflow='';document.body.classList.remove('funy-mon-open');
   }
   function showMessage(title,copy){
     ensureModal();
@@ -84,6 +84,7 @@
     document.getElementById('funyMonCode').hidden=true;
     document.getElementById('funyMonSave').hidden=true;
     document.getElementById('funyMonModal').hidden=false;
+    document.body.classList.add('funy-mon-open');
     document.body.style.overflow='hidden';
   }
   function openResult(data,def){
@@ -103,6 +104,7 @@
       copy.textContent=data.shop_name+'에서 오늘의 포획을 완료했어요.';
     }
     document.getElementById('funyMonModal').hidden=false;
+    document.body.classList.add('funy-mon-open');
     document.body.style.overflow='hidden';
   }
   function getPosition(){

@@ -77,3 +77,14 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 @media(prefers-reduced-motion:reduce){
   .funy-mon-marker,.funy-mon-sprite,.funy-mon-shadow,.funy-mon-sheet,.funy-mon-result-icon,.funy-mon-fx i{animation:none!important}
 }
+
+.funy-mon-meta{position:relative;z-index:2;display:flex;justify-content:center;align-items:center;gap:5px;margin:0 0 8px;flex-wrap:wrap}
+.funy-mon-meta[hidden]{display:none!important}
+.funy-mon-meta span{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border:1px solid #ded5ef;border-radius:4px;background:#f8f5fc;color:#665d70;font:850 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em}
+.funy-mon-meta span:nth-child(1){background:#2f2852;border-color:#2f2852;color:#fff}
+.funy-mon-meta span:nth-child(3){background:#eee8ff;border-color:#d8ccff;color:#684eb5}
+.funy-mon-meta .type-ponanyang{background:#eeeef1;border-color:#d9d9df;color:#5e5c66}
+.funy-mon-meta .type-bubblelong{background:#e7f6ff;border-color:#bfe8fb;color:#2587ba}
+.funy-mon-meta .type-hatring{background:#fff0f7;border-color:#f6cfe1;color:#ce5f91}
+.funy-mon-meta .type-bulgi{background:#fff0e9;border-color:#ffd3bf;color:#d65d34}
+.funy-mon-meta .type-namumong{background:#edf8e9;border-color:#cde8c3;color:#448d48}

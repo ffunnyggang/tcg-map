@@ -95,7 +95,7 @@
       document.getElementById('funyMonKicker').textContent='FUNY MON · WINNER';
       title.textContent=def.name+' 포획 성공! 🎉';
       copy.textContent=data.shop_name+'에서 특별한 상품에 당첨됐어요.';
-      reward.textContent='🎁 '+data.reward.title;reward.hidden=false;
+      reward.innerHTML='<strong>🎁 '+data.reward.title+'</strong><span class="funy-mon-test-note">'+(data.reward.description||'')+'</span>';reward.hidden=false;
       code.textContent='당첨코드 '+data.reward.claim_code;code.hidden=false;
       save.hidden=false;save.onclick=()=>savePrizeImage(data,def);
     }else{
@@ -175,7 +175,7 @@
     ctx.fillStyle='#fff';roundRect(ctx,70,790,940,180,28);
     ctx.fillStyle='#8062d8';ctx.font='800 30px sans-serif';ctx.fillText('당첨 코드',110,855);
     ctx.fillStyle='#2d2832';ctx.font='900 52px sans-serif';ctx.fillText(data.reward.claim_code,110,925);
-    ctx.fillStyle='#716a77';ctx.font='600 28px sans-serif';wrapText(ctx,'이 이미지를 저장해 본인 게시물에 업로드한 뒤 FUNY PIN 안내에 따라 당첨을 인증해주세요.',70,1060,940,46,3);
+    ctx.fillStyle='#d45555';ctx.font='800 30px sans-serif';wrapText(ctx,data.reward.description||'※ 테스트용 당첨 화면입니다. 실제 상품은 지급되지 않습니다.',70,1060,940,46,3);
     ctx.fillStyle='#9a92a0';ctx.font='600 24px sans-serif';ctx.fillText('by 깽퐌커플',70,1265);
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png',1));
     if(!blob)return;

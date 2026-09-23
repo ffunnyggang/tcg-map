@@ -276,7 +276,15 @@
       ctx.fillStyle='#77707b';ctx.font='700 24px sans-serif';wrapText(ctx,'이미지를 저장한 뒤 이벤트 게시물 댓글로 등록해주세요.',110,1145,850,38,2);
     }
     ctx.fillStyle='#9a92a0';ctx.font='600 23px sans-serif';ctx.fillText('funypin.kr',70,1280);
-    const a=document.createElement('a');a.download='FUNY-MON-'+def.id+'-'+Date.now()+'.png';a.href=canvas.toDataURL('image/png');a.click();
+    const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.png';
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(blob){
+      const file=new File([blob],fileName,{type:'image/png'});
+      if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});return}catch(e){if(e&&e.name==='AbortError')return}
+      }
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }
   }
   function spawn(){
     if(started)return;

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-23T09:27:54.926445+00:00",
+  "updatedAt": "2026-09-23T10:27:55.498375+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "카드샵 현황을 실시간으로 공유하기⚡️",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-09-23T10:14:04.376641Z",
+      "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
+      "views": 3,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.03
+    },
     {
       "category": "정보 공유",
       "title": "요즘 30주년 핫해서 해외판을 직구나 개인거래로 구하시는분 많은데",
@@ -11,10 +24,10 @@
       "excerpt": "가품 은근 있으니까 조심하세요~ 웬만하면 영수증 인증이 된 제품 구매하시는거 추천드려요~ 차라리 슈링크가 없어도 포켓몬센터같은곳에서 구매했다고 영수증 인증하는분들이 훨씬 안전해요 다들 조심하시고 좋은 취미생활되시길",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/요즘-30주년-핫해서-해외판을-직구나-개인거래로-구하시는분-많은데-PM0m0V9A",
-      "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.01
+      "views": 18,
+      "likes": 2,
+      "comments": 1,
+      "popularityScore": 8.18
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "일본 여행갔다가 우연히 30주년 4팩 구해서 깠는데 뮤가!!! 시작한지 아직 한달차라 PSA 풀리면 등급 보내고 싶은데 괜찮을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179011589343230fa4b8bcb74120a1b9713542fc45dc5eb15777277e5dfb22a02dec67c184b2a0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포린이-30주년-4팩깡-Aqr0b7qP",
-      "views": 36,
+      "views": 39,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 18.36
+      "popularityScore": 18.39
     },
     {
       "category": "정보 공유",
@@ -167,10 +180,10 @@
       "excerpt": "전부 케이스에 깨끗하게 잘 보관 중입니다☺️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790004237720db4fb6d06a79914d078349b5a749d649ee1f2efc55c708f74e8f3eaa80ea1a5c0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요카드-판매하려고-하는데-관심-있으신-분들-편하게-연락-주세요-P5nLWypd",
-      "views": 38,
+      "views": 39,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.38
+      "popularityScore": 3.39
     },
     {
       "category": "자유 게시판",
@@ -210,19 +223,6 @@
       "likes": 18,
       "comments": 0,
       "popularityScore": 54.85
-    },
-    {
-      "category": "자유 게시판",
-      "title": "선생님들...혹시 포켓몬카드에 입문한지 일주일밖에 안된 뉴비입니다...",
-      "author": "지명이",
-      "publishedAt": "2026-09-21T06:04:57.94346Z",
-      "excerpt": "선생님들...혹시 포켓몬카드에 입문한지 일주일밖에 안된 뉴비입니다... 알려주실 꿀팁들이나 정보 있으면 감사하겠습니다...",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/선생님들-dpWo2KkP",
-      "views": 29,
-      "likes": 5,
-      "comments": 0,
-      "popularityScore": 15.29
     },
     {
       "category": "카드 자랑",

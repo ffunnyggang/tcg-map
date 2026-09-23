@@ -135,3 +135,30 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-reward-kuji.is-revealed .funy-mon-reward-result{animation:funyRewardReveal .32s ease both}
 @keyframes funyRewardReveal{from{transform:scale(.96);opacity:.55}to{transform:scale(1);opacity:1}}
 .funy-mon-primary:disabled{background:#d8d2e1!important;color:#9c93a6!important;box-shadow:none!important;cursor:not-allowed!important}
+
+/* FUNY MON flow refinement v3 */
+.funy-mon-outcome{pointer-events:auto}
+.funy-mon-outcome-box{border-radius:2px}
+.funy-mon-outcome-box button{width:100%;height:44px;margin-top:16px;border:3px solid #2d2355;border-radius:2px;background:#7657c8;color:#fff;box-shadow:inset 0 -4px 0 rgba(41,30,69,.22),4px 4px 0 rgba(45,35,85,.18);font:900 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em}
+.funy-mon-close{width:34px!important;height:34px!important;border:3px solid #322653!important;border-radius:2px!important;background:#f8f4ff!important;color:#5f477f!important;box-shadow:3px 3px 0 #c8b9ee!important;font:900 22px/27px ui-monospace,SFMono-Regular,Menlo,monospace!important}
+.funy-mon-visual{overflow:visible}
+.funy-mon-fx{inset:0 -18px -4px!important;height:auto!important}
+.funy-mon-fx i{font-size:18px;animation:funyPrizeSpark 1s steps(5,end) infinite!important}
+.funy-mon-fx i:nth-child(1){left:0!important;top:48%!important}.funy-mon-fx i:nth-child(2){left:18%!important;top:4%!important}.funy-mon-fx i:nth-child(3){left:48%!important;top:-4%!important}.funy-mon-fx i:nth-child(4){left:76%!important;top:7%!important}.funy-mon-fx i:nth-child(5){right:0!important;top:50%!important}
+
+.funy-mon-reward-kuji{height:188px;border:4px solid #2d2355!important;border-radius:3px!important;background:#fff!important;box-shadow:5px 5px 0 #b9a7ef!important}
+.funy-mon-reward-result{opacity:0;visibility:hidden;background:#fffdf7!important;border:5px double #7c61c5;inset:6px!important;padding:14px!important}
+.funy-mon-reward-kuji.is-revealed .funy-mon-reward-result{opacity:1;visibility:visible;animation:funyRewardReveal .32s steps(4,end) both}
+.funy-mon-reward-kuji.is-flashing:after{content:"";position:absolute;z-index:8;inset:-20px;background:radial-gradient(circle,rgba(255,255,255,.98) 0 12%,rgba(255,235,125,.8) 13% 24%,transparent 52%);pointer-events:none;animation:funyRewardFlash .75s steps(6,end) both}
+@keyframes funyRewardFlash{0%{opacity:0;transform:scale(.5)}25%{opacity:1}60%{opacity:.75;transform:scale(1.35)}100%{opacity:0;transform:scale(1.7)}}
+.funy-mon-reward-cover{border:0!important;border-radius:0!important;background:repeating-linear-gradient(0deg,#7657c8 0,#7657c8 7px,#6749bd 7px,#6749bd 14px)!important;box-shadow:inset 0 0 0 5px #2d2355,inset 0 0 0 8px #c2b2ef!important}
+.funy-mon-reward-cover:before,.funy-mon-reward-cover:after{height:4px!important;background:#fff3a6!important;left:18px!important;right:18px!important}
+.funy-mon-kuji-label{padding:4px 8px;border:2px solid #fff;background:#2d2355;color:#fff;font-size:11px!important}
+.funy-mon-reward-cover strong{font:900 15px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace!important;text-shadow:2px 2px 0 rgba(48,37,87,.35)}
+.funy-mon-reward-cover small{font:800 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.02em!important}
+.funy-mon-reward-kuji.is-swiping .funy-mon-reward-cover{filter:brightness(1.08);box-shadow:inset 0 0 0 5px #2d2355,inset 0 0 0 8px #fff0a4,0 0 14px rgba(255,219,89,.5)!important}
+.funy-mon-reward-retro{font:950 26px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.06em;text-shadow:3px 3px 0 #ddd0ff}
+.funy-mon-reward-retro.win{color:#6541c0}.funy-mon-reward-retro.lose{color:#776d7e}
+.funy-mon-reward-title-link{margin-top:11px;padding:0;border:0;border-bottom:2px dashed #8062d8;background:none;color:#6541c0;font-size:15px;font-weight:900;cursor:pointer}
+.funy-mon-lose-copy{margin:12px 0 0!important;color:#746b78!important;font-size:12px!important;font-weight:800}
+.funy-mon-reward-viewer[hidden]{display:none!important}.funy-mon-reward-viewer{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px}.funy-mon-reward-viewer-bg{position:absolute;inset:0;background:rgba(17,12,28,.76)}.funy-mon-reward-viewer-card{position:relative;z-index:1;width:min(92vw,420px);padding:12px;border:4px solid #2d2355;background:#fff;box-shadow:7px 7px 0 #8c71d6}.funy-mon-reward-viewer-card img{display:block;width:100%;max-height:70vh;object-fit:contain;background:#f7f4fb}.funy-mon-reward-viewer-card button{position:absolute;right:8px;top:8px;width:34px;height:34px;border:3px solid #2d2355;border-radius:2px;background:#fff;color:#4e3d70;font:900 20px/1 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:3px 3px 0 #b9a7ef}

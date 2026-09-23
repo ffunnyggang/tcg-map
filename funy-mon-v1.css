@@ -1,0 +1,9 @@
+/* FUNY PIN pixel creature prototype */
+.funy-mon-marker{position:relative;width:34px;height:34px;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(44,35,58,.22));animation:funyMonHop 1.15s ease-in-out infinite}
+.funy-mon-marker.mon-b{animation-delay:.28s}.funy-mon-marker.mon-c{animation-delay:.54s}
+.funy-mon-marker svg{display:block;width:34px;height:34px;overflow:visible;shape-rendering:crispEdges;image-rendering:pixelated}
+.funy-mon-shadow{position:absolute;left:8px;bottom:-1px;width:18px;height:5px;border-radius:50%;background:rgba(50,42,60,.16);transform-origin:center;animation:funyMonShadow 1.15s ease-in-out infinite}
+.funy-mon-marker.mon-b .funy-mon-shadow{animation-delay:.28s}.funy-mon-marker.mon-c .funy-mon-shadow{animation-delay:.54s}
+@keyframes funyMonHop{0%,100%{transform:translate3d(-4px,0,0)}25%{transform:translate3d(1px,-7px,0)}50%{transform:translate3d(6px,0,0)}75%{transform:translate3d(1px,-4px,0)}}
+@keyframes funyMonShadow{0%,50%,100%{transform:scaleX(1);opacity:.16}25%,75%{transform:scaleX(.72);opacity:.1}}
+@media(prefers-reduced-motion:reduce){.funy-mon-marker,.funy-mon-shadow{animation:none!important}}

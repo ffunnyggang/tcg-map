@@ -280,10 +280,22 @@
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(blob){
       const file=new File([blob],fileName,{type:'image/png'});
+      // Mobile browsers that support file sharing hand the image to the native
+      // share/save sheet, where users can save it directly to Photos/Gallery.
       if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});return}catch(e){if(e&&e.name==='AbortError')return}
+        try{
+          await navigator.share({files:[file],title:'FUNY MON 이미지'});
+          return;
+        }catch(e){
+          // Cancelling the native sheet is intentional; other share failures
+          // fall through to the browser download fallback below.
+          if(e&&e.name==='AbortError')return;
+        }
       }
-      const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.download=fileName;a.href=url;a.rel='noopener';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
     }
   }
   function spawn(){

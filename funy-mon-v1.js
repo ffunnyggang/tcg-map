@@ -74,7 +74,7 @@
     if(document.getElementById('funyMonModal'))return;
     const el=document.createElement('div');
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
-    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div><div class="funy-mon-kicker" id="funyMonKicker">FUNY MON</div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p id="funyMonCopy"></p><div class="funy-mon-reward" id="funyMonReward" hidden></div><div class="funy-mon-code" id="funyMonCode" hidden></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" hidden>당첨 이미지 저장</button><button class="funy-mon-secondary" type="button" data-mon-close>닫기</button></div></section>';
+    el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><div class="funy-mon-kicker" id="funyMonKicker">FUNY MON</div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p id="funyMonCopy"></p><div class="funy-mon-reward" id="funyMonReward" hidden></div><div class="funy-mon-code" id="funyMonCode" hidden></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" hidden>당첨 이미지 저장</button><button class="funy-mon-secondary" type="button" data-mon-close>확인</button></div></section>';
     document.body.appendChild(el);
     el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',closeModal));
   }
@@ -95,7 +95,7 @@
     ensureModal();
     setResultState('is-fail');
     document.getElementById('funyMonIcon').innerHTML='<span class="funy-mon-fail-icon">×</span>';
-    document.getElementById('funyMonKicker').textContent='FUNY MON';
+    document.getElementById('funyMonKicker').textContent='FUNY MON · NOTICE';
     document.getElementById('funyMonTitle').textContent=title;
     document.getElementById('funyMonMeta').hidden=true;
     document.getElementById('funyMonCopy').textContent=copy;
@@ -112,16 +112,16 @@
     icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span><span>'+def.tier+'</span>';meta.hidden=false;reward.hidden=true;code.hidden=true;save.hidden=true;
     if(data.result==='winner'){
       setResultState('is-prize');
-      document.getElementById('funyMonKicker').textContent='FUNY MON · WINNER';
-      title.textContent=def.name+' 포획 성공! 🎉';
+      document.getElementById('funyMonKicker').textContent='REWARD WINNER';
+      title.textContent=def.name;
       copy.textContent=data.shop_name+'에서 특별한 상품에 당첨됐어요.';
       reward.innerHTML='<span class="funy-mon-test-badge">TEST MODE</span><strong>🎁 '+data.reward.title+'</strong><span class="funy-mon-test-note">현재 상품 지급 기능을 테스트 중입니다.<br>실제 상품은 지급되지 않습니다.</span>';reward.hidden=false;
       code.textContent='당첨코드 '+data.reward.claim_code;code.hidden=false;
       save.hidden=false;save.onclick=()=>savePrizeImage(data,def);
     }else{
       setResultState('is-success');
-      document.getElementById('funyMonKicker').textContent='FUNY MON · CATCH';
-      title.textContent=def.name+' 포획 성공!';
+      document.getElementById('funyMonKicker').textContent='CATCH SUCCESS';
+      title.textContent=def.name;
       copy.textContent=data.shop_name+'에서 오늘의 포획을 완료했어요.';
     }
     document.getElementById('funyMonModal').hidden=false;

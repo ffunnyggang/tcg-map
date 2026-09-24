@@ -363,107 +363,83 @@ async function deleteShopEditor(){
 $('editorClose').onclick=closeShopEditor;$('editorCancel').onclick=closeShopEditor;$('editorDelete').onclick=deleteShopEditor;$('editorSave').onclick=saveShopEditor;$('shopEditor').addEventListener('click',e=>{if(e.target===$('shopEditor'))closeShopEditor()});
 
 
-let funyMonRewards=[],funyMonClaims=[],funyMonEvents=[],funyMonShops=[];
+let funyMonRewards=[],funyMonClaims=[],funyMonEvents=[],funyMonShops=[],funyMonEditingEventId=null;
+const FUNY_MON_DEFS=[
+{id:'ponanyang',no:'01',name:'포냐냥',type:'노말',asset:'assets/funymon/01-ponanyang.png'},{id:'bubblelong',no:'02',name:'버블롱',type:'물',asset:'assets/funymon/02-bubblelong.png'},{id:'hatring',no:'03',name:'하트링',type:'페어리',asset:'assets/funymon/03-hatring.png'},{id:'bulgi',no:'04',name:'불기',type:'불',asset:'assets/funymon/04-bulgi.png'},{id:'namumong',no:'05',name:'나무몽',type:'풀',asset:'assets/funymon/05-namumong.png'},{id:'ggomagureum',no:'06',name:'꼬마구름',type:'비행',asset:'assets/funymon/06-ggomagureum.png'},{id:'bawidong',no:'07',name:'바위동',type:'바위',asset:'assets/funymon/07-bawidong.png'},{id:'grimjamong',no:'08',name:'그림자몽',type:'고스트',asset:'assets/funymon/08-grimjamong.png'},{id:'beonjjeogi',no:'09',name:'번쩍이',type:'전기',asset:'assets/funymon/09-beonjjeogi.png'},{id:'neon',no:'10',name:'네온',type:'코스믹',asset:'assets/funymon/10-neon.png'}];
+const monLocal=v=>{if(!v)return '';const d=new Date(v),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+const monStatus=ev=>{const n=Date.now(),s=new Date(ev.starts_at).getTime(),e=new Date(ev.ends_at).getTime();return ev.is_force_paused||n>e?'종료':n<s?'진행예정':'진행중'};
+const monStatusClass=s=>s==='진행중'?'live':s==='진행예정'?'soon':'';
+const monShop=id=>funyMonShops.find(x=>x.id===id)?.name||id||'-';
 async function loadFunyMonRewards(){
  const f=$('feed');f.innerHTML='<div class="empty">FUNY MON 데이터를 불러오는 중...</div>';
  try{
   [funyMonRewards,funyMonClaims,funyMonEvents,funyMonShops]=await Promise.all([
    api('/rest/v1/funy_mon_rewards?select=*&order=sort_order.asc,created_at.asc'),
-   api('/rest/v1/funy_mon_reward_claims?select=id,reward_id,claim_code,status,created_at&order=created_at.desc&limit=500'),
+   api('/rest/v1/funy_mon_reward_claims?select=id,event_id,reward_id,claim_code,status,created_at&order=created_at.desc&limit=500'),
    api('/rest/v1/funy_mon_events?select=*&order=created_at.desc'),
    api('/rest/v1/shops?select=id,name&is_active=eq.true&order=name.asc')
   ]);
+  if(funyMonEditingEventId&&!funyMonEvents.some(x=>x.id===funyMonEditingEventId))funyMonEditingEventId=null;
   renderFunyMonRewards();
  }catch(e){f.innerHTML='<div class="empty error">FUNY MON 데이터 조회 실패: '+esc(e.message)+'</div>'}
 }
-async function resetFunyMonEvent(){
- const ev=funyMonEvents[0];if(!ev)return;
- if(!confirm('FUNY MON 이벤트 설정을 초기화할까요? 퍼니몬 노출이 즉시 중단됩니다.'))return;
- try{await api('/rest/v1/funy_mon_events?id=eq.'+encodeURIComponent(ev.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});await loadFunyMonRewards()}
- catch(e){alert('이벤트 설정 초기화 실패: '+e.message)}
-}
-async function deleteFunyMonReward(id){
- const r=funyMonRewards.find(x=>x.id===id);
- if(!confirm('상세 설정 “'+(r?.title||'리워드')+'”을 삭제할까요?'))return;
- try{await api('/rest/v1/funy_mon_rewards?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{Prefer:'return=minimal'}});await loadFunyMonRewards()}
- catch(e){alert('상세 설정 삭제 실패: '+e.message)}
-}
-async function saveFunyMonEvent(){
- const shopId=$('monEventShop')?.value,start=$('monEventStart')?.value,end=$('monEventEnd')?.value,btn=$('monEventSave');
- if(!shopId||!start||!end){alert('적용 카드샵과 이벤트 기간을 모두 설정해주세요.');return}
- if(new Date(end)<=new Date(start)){alert('종료 일시는 시작 일시보다 뒤여야 합니다.');return}
- btn.disabled=true;btn.textContent='저장 중...';
- try{
-  const body={shop_id:shopId,starts_at:new Date(start).toISOString(),ends_at:new Date(end).toISOString(),title:'FUNY MON 이벤트'};
-  if(funyMonEvents[0])await api('/rest/v1/funy_mon_events?id=eq.'+encodeURIComponent(funyMonEvents[0].id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
-  else await api('/rest/v1/funy_mon_events',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
-  await loadFunyMonRewards();
- }catch(e){alert('이벤트 설정 저장 실패: '+e.message)}
- finally{if(btn){btn.disabled=false;btn.textContent='설정 저장'}}
-}
 function renderFunyMonRewards(){
  const f=$('feed');
- const active=funyMonRewards.filter(x=>x.is_active),sum=active.reduce((a,x)=>a+(Number(x.probability_bp)||0),0),pct=(sum/100).toFixed(2).replace(/\.00$/,'');
- const ev=funyMonEvents[0]||null,now=Date.now(),start=ev?new Date(ev.starts_at).getTime():0,end=ev?new Date(ev.ends_at).getTime():0,status=!ev?'미설정':ev.is_force_paused?'중지':now<start?'예정':now>end?'종료':'진행중',statusClass=status==='진행중'?'live':status==='예정'?'soon':'';
- const local=v=>{if(!v)return '';const d=new Date(v),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
- f.innerHTML='<section class="mon-event-card"><div class="mon-event-head"><div><h2>이벤트 기본 설정</h2><p>카드샵과 이벤트 기간을 기준으로 FUNY MON 노출을 관리합니다.</p></div><div style="display:flex;gap:6px;align-items:center"><span class="mon-event-status '+statusClass+'">'+status+'</span>'+(ev?'<button id="monEventReset" class="mini-btn" type="button">설정 초기화</button>':'')+'</div></div><div class="mon-event-grid"><div class="mon-event-field"><label>적용 카드샵</label><select id="monEventShop"><option value="">카드샵 선택</option>'+funyMonShops.map(s=>'<option value="'+esc(s.id)+'"'+(ev&&ev.shop_id===s.id?' selected':'')+'>'+esc(s.name)+' ('+esc(s.id)+')</option>').join('')+'</select></div><div class="mon-event-field"><label>시작 일시</label><input id="monEventStart" type="datetime-local" value="'+local(ev?.starts_at)+'"></div><div class="mon-event-field"><label>종료 일시</label><input id="monEventEnd" type="datetime-local" value="'+local(ev?.ends_at)+'"></div><button id="monEventSave" class="mon-event-save" type="button">설정 저장</button></div><p class="mon-event-help">기간 전에는 미노출, 기간 중에는 노출, 종료 후에는 자동 미노출됩니다.</p></section><details class="mon-details"><summary>상세 설정 · 리워드 / 당첨 관리</summary><div class="mon-details-body"><div class="mon-tools"><div class="mon-summary"><span class="mon-pill '+(sum===10000?'':'bad')+'">활성 확률 합계 <b class="mon-prob">'+pct+'%</b></span><span class="mon-pill">활성 결과 '+active.length+'개</span><span class="mon-pill">당첨 이력 '+funyMonClaims.length+'건</span></div><button id="monNew" class="mon-new" type="button">+ 리워드 결과 추가</button></div><div class="mon-list" id="monList"></div><p class="mon-note">활성 결과의 확률 합계는 100%를 권장합니다. 100% 미만의 남는 확률은 안전장치로 꽝 처리됩니다.</p><section class="mon-claim-section"><div class="mon-claim-head"><h3>당첨 이력</h3><span>부정 방지 확인용 · 최근 500건</span></div><div id="monClaimList" class="mon-claim-list"></div></section></div></details>';
- $('monEventSave').onclick=saveFunyMonEvent;
- if($('monEventReset'))$('monEventReset').onclick=resetFunyMonEvent;
+ if(funyMonEditingEventId){renderFunyMonEventEditor(funyMonEditingEventId);return}
+ f.innerHTML='<div class="mon-page-head"><div><h2>FUNY MON 이벤트</h2><p>복수 카드샵의 퍼니몬 이벤트를 각각 관리합니다.</p></div><button id="monCreateEvent" class="mon-new">+ 이벤트 추가</button></div><div class="mon-event-list">'+(funyMonEvents.length?funyMonEvents.map(ev=>{const s=monStatus(ev);return '<button class="mon-event-row" data-mon-event="'+esc(ev.id)+'"><span class="mon-event-shop"><b>'+esc(monShop(ev.shop_id))+'</b><small>'+esc(ev.shop_id)+'</small></span><span><small>시작</small>'+new Date(ev.starts_at).toLocaleString('ko-KR')+'</span><span><small>종료</small>'+new Date(ev.ends_at).toLocaleString('ko-KR')+'</span><span class="mon-event-status '+monStatusClass(s)+'">'+s+'</span><span class="mon-row-arrow">›</span></button>'}).join(''):'<div class="empty">등록된 FUNY MON 이벤트가 없습니다.</div>')+'</div>';
+ $('monCreateEvent').onclick=()=>{funyMonEditingEventId='new';renderFunyMonEventEditor('new')};
+ document.querySelectorAll('[data-mon-event]').forEach(b=>b.onclick=()=>{funyMonEditingEventId=b.dataset.monEvent;renderFunyMonEventEditor(funyMonEditingEventId)});
+}
+function renderFunyMonEventEditor(id){
+ const f=$('feed'),isNew=id==='new',ev=isNew?null:funyMonEvents.find(x=>x.id===id);
+ if(!isNew&&!ev){funyMonEditingEventId=null;return renderFunyMonRewards()}
+ const rewards=isNew?[]:funyMonRewards.filter(x=>x.event_id===id),claims=isNew?[]:funyMonClaims.filter(x=>x.event_id===id),active=rewards.filter(x=>x.is_active),sum=active.reduce((a,x)=>a+(Number(x.probability_bp)||0),0),pct=(sum/100).toFixed(2).replace(/\.00$/,'');
+ const selected=Array.isArray(ev?.selected_monsters)?ev.selected_monsters:['ponanyang','bubblelong','hatring','bulgi','namumong'];
+ const monsters=FUNY_MON_DEFS.map(d=>'<label class="mon-monster-card"><input type="checkbox" data-monster="'+d.id+'" '+(selected.includes(d.id)?'checked':'')+'><img src="'+d.asset+'" alt=""><span><b>'+d.name+'</b><small>No.'+d.no+' · '+d.type+'</small></span></label>').join('');
+ f.innerHTML='<div class="mon-editor-top"><button id="monBack" class="mini-btn">‹ 이벤트 목록</button><div>'+(ev?'<span class="mon-event-status '+monStatusClass(monStatus(ev))+'">'+monStatus(ev)+'</span>':'')+'</div></div>'+
+ '<section class="mon-section"><div class="mon-section-title"><div><span>01</span><h2>기본 설정</h2></div><p>카드샵, 기간, 지도에 노출할 퍼니몬을 설정합니다.</p></div><div class="mon-basic-grid"><div class="mon-event-field"><label>적용 카드샵</label><select id="monEventShop"><option value="">카드샵 선택</option>'+funyMonShops.map(s=>'<option value="'+esc(s.id)+'"'+(ev?.shop_id===s.id?' selected':'')+'>'+esc(s.name)+' ('+esc(s.id)+')</option>').join('')+'</select></div><div class="mon-event-field"><label>시작 일시</label><input id="monEventStart" type="datetime-local" value="'+monLocal(ev?.starts_at)+'"></div><div class="mon-event-field"><label>종료 일시</label><input id="monEventEnd" type="datetime-local" value="'+monLocal(ev?.ends_at)+'"></div></div><div class="mon-subtitle">노출 퍼니몬 설정</div><div class="mon-monster-grid">'+monsters+'</div><div class="mon-spawn-row"><div class="mon-event-field"><label>한 번에 지도에 노출되는 퍼니몬 개수</label><input id="monSpawnCount" type="number" min="1" max="10" value="'+Number(ev?.spawn_count||5)+'"></div><span>선택한 퍼니몬 중 설정한 개수만 지도에 노출됩니다.</span></div><div class="mon-section-actions">'+(!isNew?'<button id="monDeleteEvent" class="mini-btn danger">이벤트 삭제</button>':'')+'<button id="monEventSave" class="mon-event-save">기본 설정 저장</button></div></section>'+
+ '<section class="mon-section"><div class="mon-section-title"><div><span>02</span><h2>상세 설정</h2></div><p>리워드 / 당첨 결과와 확률·재고를 관리합니다.</p></div><div class="mon-tools"><div class="mon-summary"><span class="mon-pill '+(sum===10000?'':'bad')+'">활성 확률 합계 <b>'+pct+'%</b></span><span class="mon-pill">활성 결과 '+active.length+'개</span></div><button id="monNew" class="mon-new" '+(isNew?'disabled':'')+'>+ 리워드 결과 추가</button></div><div class="mon-list" id="monList"></div><p class="mon-note">활성 결과의 확률 합계는 100%를 권장합니다. 100% 미만의 남는 확률은 꽝 처리됩니다.</p></section>'+
+ '<section class="mon-section"><div class="mon-section-title"><div><span>03</span><h2>당첨 이력 <em>'+claims.length+'건</em></h2></div><p>자동 발급된 고유 당첨코드 기준 이력입니다.</p></div><div id="monClaimList" class="mon-claim-list"></div></section>';
+ $('monBack').onclick=()=>{funyMonEditingEventId=null;renderFunyMonRewards()};
+ $('monEventSave').onclick=()=>saveFunyMonEvent(id);
+ if($('monDeleteEvent'))$('monDeleteEvent').onclick=()=>deleteFunyMonEvent(id);
  const list=$('monList');
- if(!funyMonRewards.length)list.innerHTML='<div class="empty">등록된 리워드 결과가 없습니다.</div>';
- else list.innerHTML=funyMonRewards.map(r=>'<article class="mon-card" data-mon-id="'+esc(r.id)+'"><div class="mon-grid">'+
-  '<div class="mon-field"><label>코드</label><input data-k="code" value="'+esc(r.code)+'"></div>'+
-  '<div class="mon-field"><label>결과명 / 상품명</label><input data-k="title" value="'+esc(r.title)+'"></div>'+
-  '<div class="mon-field"><label>결과</label><select data-k="is_win"><option value="true"'+(r.is_win?' selected':'')+'>당첨</option><option value="false"'+(!r.is_win?' selected':'')+'>꽝</option></select></div>'+
-  '<div class="mon-field"><label>확률 (%)</label><input data-k="probability" type="number" min="0" max="100" step="0.01" value="'+((Number(r.probability_bp)||0)/100)+'"></div>'+
-  '<div class="mon-field"><label>총 수량</label><input data-k="stock_total" type="number" min="0" step="1" value="'+Number(r.stock_total||0)+'"></div>'+
-  '<div class="mon-field"><label>잔여 수량</label><input data-k="stock_remaining" type="number" min="0" step="1" value="'+Number(r.stock_remaining||0)+'"></div>'+
-  '<div class="mon-field"><label>활성화</label><select data-k="is_active"><option value="true"'+(r.is_active?' selected':'')+'>ON</option><option value="false"'+(!r.is_active?' selected':'')+'>OFF</option></select></div>'+
-  '<div class="mon-field mon-wide"><label>설명</label><textarea data-k="description">'+esc(r.description||'')+'</textarea></div>'+
-  '<div class="mon-field mon-wide"><label>당첨 상품 이미지</label><div class="mon-image-row">'+(r.image_url?'<img class="mon-image-preview" src="'+esc(r.image_url)+'" alt="상품 이미지">':'<div class="mon-image-empty">이미지 없음</div>')+'<div class="mon-image-input"><input data-k="image_file" type="file" accept="image/jpeg,image/png,image/webp"><input data-k="image_url" type="hidden" value="'+esc(r.image_url||'')+'"><div class="mon-note">당첨 상품명을 누르면 사용자 화면에서 이 이미지가 열립니다.</div></div></div></div>'+
-  '<div class="mon-field"><label>노출 순서</label><input data-k="sort_order" type="number" step="1" value="'+Number(r.sort_order||0)+'"></div>'+
-  '</div><div class="mon-actions"><button class="mini-btn" data-mon-delete="'+esc(r.id)+'" type="button">삭제</button><button class="mon-save" data-mon-save="'+esc(r.id)+'" type="button">저장</button></div></article>').join('');
- const claimList=$('monClaimList'),rewardMap=Object.fromEntries(funyMonRewards.map(x=>[x.id,x.title]));
- if(!funyMonClaims.length)claimList.innerHTML='<div class="empty">아직 당첨 이력이 없습니다.</div>';
- else claimList.innerHTML=funyMonClaims.map(x=>'<div class="mon-claim-row"><div class="mon-claim-code">'+esc(x.claim_code)+'</div><div>'+esc(rewardMap[x.reward_id]||'삭제/변경된 상품')+'</div><div><span class="mon-claim-status">'+esc(x.status||'issued')+'</span></div><div class="mon-claim-time">'+new Date(x.created_at).toLocaleString('ko-KR')+'</div></div>').join('');
- $('monNew').onclick=createFunyMonReward;
+ if(isNew)list.innerHTML='<div class="empty">기본 설정을 먼저 저장하면 리워드를 추가할 수 있습니다.</div>';
+ else if(!rewards.length)list.innerHTML='<div class="empty">등록된 리워드 결과가 없습니다.</div>';
+ else list.innerHTML=rewards.map(r=>rewardCard(r)).join('');
+ const rewardMap=Object.fromEntries(rewards.map(x=>[x.id,x.title]));
+ const cl=$('monClaimList');
+ if(!claims.length)cl.innerHTML='<div class="empty">아직 당첨 이력이 없습니다.</div>';
+ else cl.innerHTML=claims.map(x=>'<div class="mon-claim-row"><div class="mon-claim-code">'+esc(x.claim_code)+'</div><div>'+esc(rewardMap[x.reward_id]||'삭제/변경된 상품')+'</div><div><span class="mon-claim-status">'+esc(({issued:'발급',verified:'확인완료',sent:'지급완료',cancelled:'취소'}[x.status]||x.status||'발급'))+'</span></div><div class="mon-claim-time">'+new Date(x.created_at).toLocaleString('ko-KR')+'</div></div>').join('');
+ if(!isNew)$('monNew').onclick=()=>createFunyMonReward(id);
  document.querySelectorAll('[data-mon-save]').forEach(b=>b.onclick=()=>saveFunyMonReward(b.dataset.monSave));
  document.querySelectorAll('[data-mon-delete]').forEach(b=>b.onclick=()=>deleteFunyMonReward(b.dataset.monDelete));
+ document.querySelectorAll('[data-k="is_win"]').forEach(sel=>{const sync=()=>syncRewardType(sel.closest('.mon-card'));sel.onchange=sync;sync()});
 }
-async function createFunyMonReward(){
- const code='REWARD-'+Date.now().toString(36).toUpperCase();
- try{
-  await api('/rest/v1/funy_mon_rewards',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({code,title:'새 리워드',description:'',probability_bp:0,stock_total:0,stock_remaining:0,is_active:false,is_win:true,sort_order:(funyMonRewards.length+1)*10})});
-  await loadFunyMonRewards();
- }catch(e){alert('리워드 추가 실패: '+e.message)}
+function rewardCard(r){return '<article class="mon-card" data-mon-id="'+esc(r.id)+'"><div class="mon-grid">'+
+ '<div class="mon-field"><label>유형</label><select data-k="is_win"><option value="true"'+(r.is_win?' selected':'')+'>당첨</option><option value="false"'+(!r.is_win?' selected':'')+'>꽝</option></select></div>'+
+ '<div class="mon-field"><label>결과명 / 상품명</label><input data-k="title" value="'+esc(r.title||'')+'"></div>'+
+ '<div class="mon-field"><label>확률 (%)</label><input data-k="probability" type="number" min="0" max="100" step="0.01" value="'+((Number(r.probability_bp)||0)/100)+'"></div>'+
+ '<div class="mon-field"><label>총 수량</label><input data-k="stock_total" type="number" min="0" step="1" value="'+Number(r.stock_total||0)+'"></div>'+
+ '<div class="mon-field"><label>잔여 수량</label><input data-k="stock_remaining" type="number" value="'+Number(r.stock_remaining||0)+'" readonly></div>'+
+ '<div class="mon-field"><label>상태</label><select data-k="is_active"><option value="true"'+(r.is_active?' selected':'')+'>ON</option><option value="false"'+(!r.is_active?' selected':'')+'>OFF</option></select></div>'+
+ '<div class="mon-field mon-wide"><label>설명</label><textarea data-k="description">'+esc(r.description||'')+'</textarea></div>'+
+ '<div class="mon-field mon-wide"><label>당첨 상품 이미지</label><div class="mon-image-row">'+(r.image_url?'<img class="mon-image-preview" src="'+esc(r.image_url)+'" alt="상품 이미지">':'<div class="mon-image-empty">이미지 없음</div>')+'<div class="mon-image-input"><input data-k="image_file" type="file" accept="image/jpeg,image/png,image/webp"><input data-k="image_url" type="hidden" value="'+esc(r.image_url||'')+'"></div></div></div>'+
+ '<div class="mon-field"><label>노출 순서</label><input data-k="sort_order" type="number" step="1" value="'+Number(r.sort_order||0)+'"></div></div><div class="mon-actions"><button class="mini-btn" data-mon-delete="'+esc(r.id)+'">삭제</button><button class="mon-save" data-mon-save="'+esc(r.id)+'">저장</button></div></article>'}
+function syncRewardType(card){if(!card)return;const win=card.querySelector('[data-k="is_win"]').value==='true';['title','description','image_file'].forEach(k=>{const el=card.querySelector('[data-k="'+k+'"]');if(el)el.disabled=!win});if(!win){const t=card.querySelector('[data-k="title"]');if(t)t.value='꽝'}}
+async function saveFunyMonEvent(id){
+ const shopId=$('monEventShop').value,start=$('monEventStart').value,end=$('monEventEnd').value,selected=[...document.querySelectorAll('[data-monster]:checked')].map(x=>x.dataset.monster),spawn=Math.max(1,Math.min(10,Number($('monSpawnCount').value)||1)),btn=$('monEventSave');
+ if(!shopId||!start||!end){alert('적용 카드샵과 이벤트 기간을 모두 설정해주세요.');return}if(!selected.length){alert('노출할 퍼니몬을 1종 이상 선택해주세요.');return}if(spawn>selected.length){alert('지도 노출 개수는 선택한 퍼니몬 수보다 많을 수 없습니다.');return}if(new Date(end)<=new Date(start)){alert('종료 일시는 시작 일시보다 뒤여야 합니다.');return}
+ btn.disabled=true;try{const body={shop_id:shopId,starts_at:new Date(start).toISOString(),ends_at:new Date(end).toISOString(),selected_monsters:selected,spawn_count:spawn,title:'FUNY MON 이벤트'};
+ if(id==='new'){const rows=await api('/rest/v1/funy_mon_events',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(body)});funyMonEditingEventId=rows[0]?.id||null}else await api('/rest/v1/funy_mon_events?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)});
+ await loadFunyMonRewards()}catch(e){alert('이벤트 설정 저장 실패: '+e.message)}finally{btn.disabled=false}
 }
+async function deleteFunyMonEvent(id){if(!confirm('이 FUNY MON 이벤트를 삭제할까요? 연결된 리워드 설정도 함께 삭제됩니다.'))return;try{await api('/rest/v1/funy_mon_events?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{Prefer:'return=minimal'}});funyMonEditingEventId=null;await loadFunyMonRewards()}catch(e){alert('이벤트 삭제 실패: '+e.message)}}
+async function createFunyMonReward(eventId){try{await api('/rest/v1/funy_mon_rewards',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({event_id:eventId,code:null,title:'새 리워드',description:'',probability_bp:0,stock_total:0,stock_remaining:0,is_active:false,is_win:true,sort_order:(funyMonRewards.filter(x=>x.event_id===eventId).length+1)*10})});await loadFunyMonRewards()}catch(e){alert('리워드 추가 실패: '+e.message)}}
+async function deleteFunyMonReward(id){const r=funyMonRewards.find(x=>x.id===id);if(!confirm('“'+(r?.title||'리워드')+'” 결과를 삭제할까요?'))return;try{await api('/rest/v1/funy_mon_rewards?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{Prefer:'return=minimal'}});await loadFunyMonRewards()}catch(e){alert('리워드 삭제 실패: '+e.message)}}
 async function saveFunyMonReward(id){
- const card=document.querySelector('.mon-card[data-mon-id="'+CSS.escape(id)+'"]');if(!card)return;
- const val=k=>card.querySelector('[data-k="'+k+'"]')?.value;
- const probability=Math.max(0,Math.min(100,Number(val('probability'))||0));
- let imageUrl=String(val('image_url')||'').trim()||null;
- const imageFile=card.querySelector('[data-k="image_file"]')?.files?.[0]||null;
- const oldImageUrl=imageUrl;
- try{
-  if(imageFile)imageUrl=await uploadFunyMonRewardImage(imageFile,id);
-  const payload={
-   code:String(val('code')||'').trim(),
-   title:String(val('title')||'').trim(),
-   description:String(val('description')||'').trim()||null,
-   probability_bp:Math.round(probability*100),
-   stock_total:Math.max(0,Math.round(Number(val('stock_total'))||0)),
-   stock_remaining:Math.max(0,Math.round(Number(val('stock_remaining'))||0)),
-   is_active:val('is_active')==='true',
-   is_win:val('is_win')==='true',
-   image_url:imageUrl,
-   sort_order:Math.round(Number(val('sort_order'))||0),
-   updated_at:new Date().toISOString()
-  };
-  if(!payload.code||!payload.title)throw new Error('코드와 결과명은 필수입니다.');
-  await api('/rest/v1/funy_mon_rewards?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
-  if(imageFile&&oldImageUrl&&oldImageUrl!==imageUrl){try{await deleteFunyMonRewardImage(oldImageUrl)}catch(_){}}
-  await loadFunyMonRewards();
- }catch(e){alert('리워드 저장 실패: '+e.message)}
+ const card=document.querySelector('.mon-card[data-mon-id="'+CSS.escape(id)+'"]');if(!card)return;const old=funyMonRewards.find(x=>x.id===id),val=k=>card.querySelector('[data-k="'+k+'"]')?.value,win=val('is_win')==='true',prob=Math.max(0,Math.min(100,Number(val('probability'))||0)),total=Math.max(0,Math.round(Number(val('stock_total'))||0));let imageUrl=String(val('image_url')||'').trim()||null;const file=card.querySelector('[data-k="image_file"]')?.files?.[0]||null,oldImage=imageUrl;
+ try{if(file&&win)imageUrl=await uploadFunyMonRewardImage(file,id);const oldTotal=Number(old?.stock_total||0),oldRemain=Number(old?.stock_remaining||0),remain=oldTotal===0?total:Math.max(0,oldRemain+(total-oldTotal));const payload={code:null,title:win?String(val('title')||'').trim():'꽝',description:win?(String(val('description')||'').trim()||null):null,probability_bp:Math.round(prob*100),stock_total:total,stock_remaining:remain,is_active:val('is_active')==='true',is_win:win,image_url:win?imageUrl:null,sort_order:Math.round(Number(val('sort_order'))||0),updated_at:new Date().toISOString()};if(win&&!payload.title)throw new Error('당첨 유형은 결과명 / 상품명이 필수입니다.');await api('/rest/v1/funy_mon_rewards?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});if(file&&oldImage&&oldImage!==imageUrl){try{await deleteFunyMonRewardImage(oldImage)}catch(_){}}await loadFunyMonRewards()}catch(e){alert('리워드 저장 실패: '+e.message)}
 }
 
 let eventRows=[];

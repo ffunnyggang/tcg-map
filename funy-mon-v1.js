@@ -358,7 +358,13 @@
       });
       const meta={marker,shop,def:d};
       markers.push(marker);
-      naver.maps.Event.addListener(marker,'click',()=>catchMonster(meta));
+      naver.maps.Event.addListener(marker,'click',()=>{
+        document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));
+        try{marker.getElement?.()?.querySelector?.('.funy-mon-marker')?.classList.add('is-selected')}catch(_){}
+        const markerEl=document.querySelector('[aria-label="'+d.name+' 포획"]');
+        if(markerEl)markerEl.classList.add('is-selected');
+        catchMonster(meta);
+      });
     });
     try{naver.maps.Event.addListener(naverMap,'zoom_changed',syncVisibility)}catch(_){}
     syncVisibility();

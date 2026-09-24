@@ -135,7 +135,7 @@
       (win&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">자세히보기</button>':'')+
       (!win?'<p class="funy-mon-lose-copy">아쉬워요! 다음 기회에 다시 도전해보세요!</p>':'')+
       (win&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'')+
-      (win?'<div class="funy-mon-post-guide">이미지를 저장한 뒤 이벤트 게시물에 댓글로 등록해주세요.</div>':'');
+      (win&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -276,14 +276,15 @@
     ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
 
     // Header: mirror the restrained FUNY MON sheet instead of a large banner title.
-    ctx.textAlign='center';ctx.fillStyle='#786b88';ctx.font='900 24px ui-monospace,monospace';ctx.fillText('FUNY MON',540,88);
+    ctx.textAlign='center';ctx.fillStyle='#765bc1';ctx.font='900 24px ui-monospace,monospace';ctx.fillText('FUNY MON',540,88);
  
     // Monster aura + individual FX.
     const aura=ctx.createRadialGradient(540,365,30,540,365,270);
     aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');
     ctx.fillStyle=aura;ctx.beginPath();ctx.arc(540,365,270,0,Math.PI*2);ctx.fill();
     const marks=fxMap[def.id]||fxMap.ponanyang,pts=[[300,390],[365,245],[540,215],[715,250],[780,395]];
-    ctx.fillStyle='#8f82a7';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
+    const fxColors={ponanyang:'#8b72d8',bubblelong:'#59b9df',hatring:'#ed79ad',bulgi:'#ee7b4d',namumong:'#67a85b',ggomagureum:'#9db9d4',bawidong:'#9b8c74',grimjamong:'#7764ae',beonjjeogi:'#e5b633',neon:'#8a71ff'};
+    ctx.fillStyle=fxColors[def.id]||'#8b72d8';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
     try{
       const mon=await loadCanvasImage(def.asset);
       const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size);
@@ -292,12 +293,13 @@
     ctx.fillStyle='#2d2832';ctx.font='950 64px sans-serif';ctx.fillText(def.name,540,650);
     // compact meta chips
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
-    chip(397,132,'No.'+def.no,'#f7f4fb','#665d70');chip(541,142,def.type,'#7860c8','#ffffff');
+    const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;
+    chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,tc[0],tc[1]);
     ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
 
     // Coupon-style REWARD area matching the front-end result sheet.
     const rx=80,ry=845,rw=920,rh=330;
-    const px=['#6f56bd','#8d73d2','#aa96df','#7a60c3','#c0b1e8','#927bd3'];
+    const px=['#7863b9','#8c75c8','#9c87d0','#ad9bd8','#9781cb','#846dc1','#b6a7dd','#9179c9'];
     for(let x=rx;x<rx+rw;x+=12){ctx.fillStyle=px[(x/12)%px.length|0];ctx.fillRect(x,ry,12,8);ctx.fillStyle=px[((x/12)+2)%px.length|0];ctx.fillRect(x,ry+rh-8,12,8)}
     for(let y=ry;y<ry+rh;y+=12){ctx.fillStyle=px[(y/12)%px.length|0];ctx.fillRect(rx,y,8,12);ctx.fillStyle=px[((y/12)+3)%px.length|0];ctx.fillRect(rx+rw-8,y,8,12)}
     ctx.fillStyle='#fffdf9';ctx.fillRect(rx+8,ry+8,rw-16,rh-16);

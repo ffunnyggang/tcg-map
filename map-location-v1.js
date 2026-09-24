@@ -4,6 +4,10 @@
   let currentMarker=null;
   let accuracyCircle=null;
   let toastTimer=null;
+  let watchId=null;
+  let heading=null;
+  let orientationBound=false;
+  let firstFix=true;
 
   function ensureControl(){
     const wrap=document.querySelector('.map-wrap-hero');
@@ -59,12 +63,16 @@
 
   function setLoading(loading){const btn=document.getElementById('map-location-btn');if(!btn)return;btn.classList.toggle('is-loading',loading);btn.disabled=loading;}
 
-  function updateLocation(lat,lng,accuracy){
+  function applyHeading(value){if(!Number.isFinite(value))return;heading=((value%360)+360)%360;const el=document.querySelector('.funy-current-location');if(el)el.style.setProperty('--funy-heading',heading+'deg')}
+
+  function bindOrientation(){if(orientationBound)return;orientationBound=true;window.addEventListener('deviceorientationabsolute',e=>{if(Number.isFinite(e.alpha))applyHeading(360-e.alpha)},true);window.addEventListener('deviceorientation',e=>{const h=Number.isFinite(e.webkitCompassHeading)?e.webkitCompassHeading:(Number.isFinite(e.alpha)?360-e.alpha:null);if(Number.isFinite(h))applyHeading(h)},true)}
+
+  function updateLocation(lat,lng,accuracy,shouldCenter=false){
     if(!ready()) return;
     const pos=new naver.maps.LatLng(lat,lng);
-    if(!currentMarker){currentMarker=new naver.maps.Marker({position:pos,map:naverMap,zIndex:900,title:'내 위치',icon:{content:'<div class="funy-current-location" aria-hidden="true"></div>',anchor:new naver.maps.Point(13,13)}})}else{currentMarker.setPosition(pos);currentMarker.setMap(naverMap)}
+    if(!currentMarker){currentMarker=new naver.maps.Marker({position:pos,map:naverMap,zIndex:900,title:'내 위치',icon:{content:'<div class="funy-current-location" aria-hidden="true"><span class="funy-current-heading"></span></div>',anchor:new naver.maps.Point(18,18)}})}else{currentMarker.setPosition(pos);currentMarker.setMap(naverMap)}
     if(Number.isFinite(accuracy)&&accuracy>0){if(!accuracyCircle){accuracyCircle=new naver.maps.Circle({map:naverMap,center:pos,radius:accuracy,strokeColor:'#4285F4',strokeOpacity:.18,strokeWeight:1,fillColor:'#4285F4',fillOpacity:.06,clickable:false})}else{accuracyCircle.setCenter(pos);accuracyCircle.setRadius(accuracy);accuracyCircle.setMap(naverMap)}}
-    naverMap.setCenter(pos);try{if(naverMap.getZoom()<15)naverMap.setZoom(15)}catch(e){}
+    if(Number.isFinite(heading))applyHeading(heading);if(shouldCenter){naverMap.setCenter(pos);try{if(naverMap.getZoom()<15)naverMap.setZoom(15)}catch(e){}}
     const btn=document.getElementById('map-location-btn');if(btn)btn.classList.add('is-active');
   }
 
@@ -76,8 +84,7 @@
     window.dispatchEvent(new CustomEvent('funy:locationrequest'));
     if(!navigator.geolocation){const message='이 브라우저에서는 위치 기능을 지원하지 않습니다.';showToast(message);emitLocationError(message);return}
     if(!ready()){const message='지도를 불러온 뒤 다시 시도해주세요.';showToast(message);emitLocationError(message);return}
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(position=>{setLoading(false);const{latitude,longitude,accuracy}=position.coords;const current={lat:Number(latitude),lng:Number(longitude),accuracy:Number(accuracy)||0,ts:Date.now()};window.FUNY_CURRENT_LOCATION=current;updateLocation(current.lat,current.lng,current.accuracy);window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:current}));showToast('현재 위치를 지도에 표시했습니다.')},error=>{setLoading(false);const message=errorMessage(error);if(error&&error.code===1)showPermissionGuide();else showToast(message);emitLocationError(message,error)},{enableHighAccuracy:true,timeout:10000,maximumAge:15000});
+    setLoading(true);bindOrientation();firstFix=true;if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}watchId=navigator.geolocation.watchPosition(position=>{setLoading(false);const{latitude,longitude,accuracy,heading:geoHeading}=position.coords;if(Number.isFinite(geoHeading)&&geoHeading>=0)applyHeading(geoHeading);const current={lat:Number(latitude),lng:Number(longitude),accuracy:Number(accuracy)||0,heading:Number.isFinite(heading)?heading:null,ts:Date.now()};window.FUNY_CURRENT_LOCATION=current;updateLocation(current.lat,current.lng,current.accuracy,firstFix);window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:current}));if(firstFix){firstFix=false;showToast('현재 위치를 지도에 표시했습니다.')}} ,error=>{setLoading(false);const message=errorMessage(error);if(error&&error.code===1)showPermissionGuide();else showToast(message);emitLocationError(message,error)},{enableHighAccuracy:true,timeout:10000,maximumAge:3000});
   }
 
   let tries=0;const timer=setInterval(()=>{tries++;ensureControl();if(document.getElementById('map-location-btn')||tries>40)clearInterval(timer)},200);

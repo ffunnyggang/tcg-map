@@ -17,7 +17,7 @@
     if(!wrap||document.getElementById('map-location-btn')) return;
     const control=document.createElement('div');
     control.className='map-location-control';
-    control.innerHTML=`<button id="map-location-avatar-btn" class="map-location-btn map-location-avatar-btn" type="button" aria-label="현재 위치 마커 설정" title="현재 위치 마커 설정"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.2 7.5 19 8.2 15.5 11.6 16.3 16.4 12 14.2 7.7 16.4 8.5 11.6 5 8.2 9.8 7.5Z"/></svg></button><button id="map-location-btn"` class="map-location-btn" type="button" aria-label="내 위치 보기" title="내 위치 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>`;
+    control.innerHTML=`<button id="map-location-avatar-btn" class="map-location-btn map-location-avatar-btn" type="button" aria-label="현재 위치 마커 설정" title="현재 위치 마커 설정"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.2 7.5 19 8.2 15.5 11.6 16.3 16.4 12 14.2 7.7 16.4 8.5 11.6 5 8.2 9.8 7.5Z"/></svg></button><button id="map-location-btn" class="map-location-btn" type="button" aria-label="내 위치 보기" title="내 위치 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>`;
     wrap.appendChild(control);
     control.querySelector('#map-location-btn').addEventListener('click',locateMe);control.querySelector('#map-location-avatar-btn').addEventListener('click',openAvatarSettings);
   }

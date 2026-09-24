@@ -73,6 +73,7 @@
 
   function locateMe(){
     closePermissionGuide();
+    window.dispatchEvent(new CustomEvent('funy:locationrequest'));
     if(!navigator.geolocation){const message='이 브라우저에서는 위치 기능을 지원하지 않습니다.';showToast(message);emitLocationError(message);return}
     if(!ready()){const message='지도를 불러온 뒤 다시 시도해주세요.';showToast(message);emitLocationError(message);return}
     setLoading(true);

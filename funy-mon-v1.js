@@ -27,7 +27,7 @@
     {lat:0.00015,lng:-0.00002}
   ];
   const markers=[];
-  let started=false,tries=0,busy=false;
+  let started=false,tries=0,busy=false,resultNeedsSave=false;
 
   function todayKst(){
     const d=new Date(Date.now()+9*60*60*1000);
@@ -78,7 +78,7 @@
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
     el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
-    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',closeModal));
+    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{if(resultNeedsSave&&!confirm('이미지를 저장하지 않고 닫으시겠어요?\n지금 닫으면 당첨 이미지를 다시 볼 수 없어요.'))return;resultNeedsSave=false;closeModal()}));
   }
   function closeModal(){
     const el=document.getElementById('funyMonModal');
@@ -146,7 +146,7 @@
     cover.style.opacity='0';cover.style.pointerEvents='none';
     if(data.reward?.is_win===true)document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
     reward.querySelector('[data-reward-image]')?.addEventListener('click',e=>openRewardImage(e.currentTarget.dataset.rewardImage));
-    save.disabled=false;save.onclick=()=>savePrizeImage(data,def);
+    save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
     setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){
@@ -181,6 +181,7 @@
     return (shapes[def.id]||shapes.ponanyang).map(x=>'<i>'+x+'</i>').join('');
   }
   function openResult(data,def){
+    resultNeedsSave=true;
     ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
     [...sheet.classList].filter(x=>x.startsWith('mon-')).forEach(x=>sheet.classList.remove(x));sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
@@ -276,8 +277,7 @@
 
     // Header: mirror the restrained FUNY MON sheet instead of a large banner title.
     ctx.textAlign='center';ctx.fillStyle='#786b88';ctx.font='900 24px ui-monospace,monospace';ctx.fillText('FUNY MON',540,88);
-    ctx.fillStyle='#d9d2e1';ctx.fillRect(450,116,180,4);
-
+ 
     // Monster aura + individual FX.
     const aura=ctx.createRadialGradient(540,365,30,540,365,270);
     aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');
@@ -292,13 +292,15 @@
     ctx.fillStyle='#2d2832';ctx.font='950 64px sans-serif';ctx.fillText(def.name,540,650);
     // compact meta chips
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
-    chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,'#f1edf6','#655d6e');
+    chip(397,132,'No.'+def.no,'#f7f4fb','#665d70');chip(541,142,def.type,'#7860c8','#ffffff');
     ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
 
     // Coupon-style REWARD area matching the front-end result sheet.
     const rx=80,ry=845,rw=920,rh=330;
-    ctx.fillStyle='#8f82a7';roundRect(ctx,rx,ry,rw,rh,12);
-    ctx.fillStyle='#fffdf9';roundRect(ctx,rx+8,ry+8,rw-16,rh-16,9);
+    const px=['#6f56bd','#8d73d2','#aa96df','#7a60c3','#c0b1e8','#927bd3'];
+    for(let x=rx;x<rx+rw;x+=12){ctx.fillStyle=px[(x/12)%px.length|0];ctx.fillRect(x,ry,12,8);ctx.fillStyle=px[((x/12)+2)%px.length|0];ctx.fillRect(x,ry+rh-8,12,8)}
+    for(let y=ry;y<ry+rh;y+=12){ctx.fillStyle=px[(y/12)%px.length|0];ctx.fillRect(rx,y,8,12);ctx.fillStyle=px[((y/12)+3)%px.length|0];ctx.fillRect(rx+rw-8,y,8,12)}
+    ctx.fillStyle='#fffdf9';ctx.fillRect(rx+8,ry+8,rw-16,rh-16);
     ctx.font='950 52px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,940);
     if(win){
       ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1025,760,44,2);

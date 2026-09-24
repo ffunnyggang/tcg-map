@@ -2,6 +2,7 @@
 (function(){
   const ENDPOINT='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/funy-mon-catch';
   const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
+  const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   let TARGET_SHOP_ID='';
   const ANON_KEY='funypin_mon_anon_id';
   const HISTORY_KEY='funypin_mon_history_v1';
@@ -317,18 +318,7 @@
     }
   }
 
-  async function loadActiveEvent(){
-    try{
-      const now=new Date().toISOString();
-      const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=shop_id&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc&limit=1',{headers:{apikey:'__ANON_FROM_PAGE__'}});
-      if(!r.ok)return null;
-      const rows=await r.json();
-      return rows&&rows[0]?rows[0]:null;
-    }catch(_){return null}
-  }
-  function pageAnonKey(){
-    try{return window.SUPABASE_ANON_KEY||window.FUNY_SUPABASE_ANON_KEY||''}catch(_){return ''}
-  }
+  function pageAnonKey(){return SUPABASE_KEY}
   async function spawn(){
     if(started)return;
     if(!TARGET_SHOP_ID){

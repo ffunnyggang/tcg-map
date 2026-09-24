@@ -22,3 +22,6 @@
 .map-location-avatar-grid{grid-template-columns:repeat(4,1fr);gap:10px}
 .map-location-avatar-grid button{display:flex;align-items:center;justify-content:center;min-width:0;height:68px;padding:0;border-radius:15px}
 .map-location-avatar-grid img{width:48px;height:48px;margin:0;object-position:center}
+
+.map-location-avatar-head{border-bottom:0!important}
+.map-location-avatar-grid button span{display:none!important}

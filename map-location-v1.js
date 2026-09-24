@@ -9,17 +9,23 @@
   let orientationBound=false;
   let firstFix=true;
   let lastLat=null,lastLng=null;
+  const AVATARS=[['ponanyang','포나냥','assets/funymon/01-ponanyang.png'],['bubblelong','버블롱','assets/funymon/02-bubblelong.png'],['hatring','하트링','assets/funymon/03-hatring.png'],['bulgi','불기','assets/funymon/04-bulgi.png']];
+  let avatarOn=false,avatarId='ponanyang';try{avatarOn=localStorage.getItem('funypin-location-avatar-on')==='1';avatarId=localStorage.getItem('funypin-location-avatar-id')||avatarId}catch(e){}
 
   function ensureControl(){
     const wrap=document.querySelector('.map-wrap-hero');
     if(!wrap||document.getElementById('map-location-btn')) return;
     const control=document.createElement('div');
     control.className='map-location-control';
-    control.innerHTML=`<button id="map-location-btn" class="map-location-btn" type="button" aria-label="내 위치 보기" title="내 위치 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>`;
+    control.innerHTML=`<button id="map-location-avatar-btn" class="map-location-btn map-location-avatar-btn" type="button" aria-label="현재 위치 마커 설정" title="현재 위치 마커 설정"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.2 7.5 19 8.2 15.5 11.6 16.3 16.4 12 14.2 7.7 16.4 8.5 11.6 5 8.2 9.8 7.5Z"/></svg></button><button id="map-location-btn"` class="map-location-btn" type="button" aria-label="내 위치 보기" title="내 위치 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg></button>`;
     wrap.appendChild(control);
-    control.querySelector('button').addEventListener('click',locateMe);
+    control.querySelector('#map-location-btn').addEventListener('click',locateMe);control.querySelector('#map-location-avatar-btn').addEventListener('click',openAvatarSettings);
   }
 
+  function markerContent(){const a=AVATARS.find(x=>x[0]===avatarId)||AVATARS[0];return '<div class="funy-current-location'+(avatarOn?' is-avatar':'')+'" aria-hidden="true"><span class="funy-current-heading"></span>'+(avatarOn?'<img class="funy-current-avatar" src="'+a[2]+'" alt="">':'')+'</div>'}
+  function refreshMarkerStyle(){if(!currentMarker)return;currentMarker.setIcon({content:markerContent(),anchor:new naver.maps.Point(18,18)});if(Number.isFinite(heading))applyHeading(heading)}
+  function closeAvatarSettings(){document.getElementById('map-location-avatar-sheet')?.remove()}
+  function openAvatarSettings(){closeAvatarSettings();const panel=document.createElement('div');panel.id='map-location-avatar-sheet';panel.className='map-location-avatar-sheet';panel.innerHTML='<div class="map-location-avatar-card"><div class="map-location-avatar-head"><strong>내 위치 마커</strong><button type="button" data-avatar-close aria-label="닫기">×</button></div><label class="map-location-avatar-toggle"><span>픽셀 캐릭터 사용</span><input type="checkbox" '+(avatarOn?'checked':'')+'><i></i></label><div class="map-location-avatar-grid">'+AVATARS.map(a=>'<button type="button" data-avatar="'+a[0]+'" class="'+(avatarId===a[0]?'is-selected':'')+'"><img src="'+a[2]+'" alt=""><span>'+a[1]+'</span></button>').join('')+'</div></div>';document.body.appendChild(panel);panel.addEventListener('click',e=>{if(e.target===panel||e.target.closest('[data-avatar-close]')){closeAvatarSettings();return}const b=e.target.closest('[data-avatar]');if(b){avatarId=b.dataset.avatar;avatarOn=true;try{localStorage.setItem('funypin-location-avatar-id',avatarId);localStorage.setItem('funypin-location-avatar-on','1')}catch(_){}panel.querySelector('input').checked=true;panel.querySelectorAll('[data-avatar]').forEach(x=>x.classList.toggle('is-selected',x===b));refreshMarkerStyle()}});panel.querySelector('input').addEventListener('change',e=>{avatarOn=e.target.checked;try{localStorage.setItem('funypin-location-avatar-on',avatarOn?'1':'0')}catch(_){}refreshMarkerStyle()})}
   function showToast(message){
     const wrap=document.querySelector('.map-wrap-hero');
     if(!wrap) return;
@@ -73,7 +79,7 @@
   function updateLocation(lat,lng,accuracy,shouldCenter=false){
     if(!ready()) return;
     const pos=new naver.maps.LatLng(lat,lng);
-    if(!currentMarker){currentMarker=new naver.maps.Marker({position:pos,map:naverMap,zIndex:900,title:'내 위치',icon:{content:'<div class="funy-current-location" aria-hidden="true"><span class="funy-current-heading"></span></div>',anchor:new naver.maps.Point(18,18)}})}else{currentMarker.setPosition(pos);currentMarker.setMap(naverMap)}
+    if(!currentMarker){currentMarker=new naver.maps.Marker({position:pos,map:naverMap,zIndex:900,title:'내 위치',icon:{content:markerContent(),anchor:new naver.maps.Point(18,18)}})}else{currentMarker.setPosition(pos);currentMarker.setMap(naverMap)}
     if(Number.isFinite(accuracy)&&accuracy>0){if(!accuracyCircle){accuracyCircle=new naver.maps.Circle({map:naverMap,center:pos,radius:accuracy,strokeColor:'#7057C7',strokeOpacity:.18,strokeWeight:1,fillColor:'#7057C7',fillOpacity:.06,clickable:false})}else{accuracyCircle.setCenter(pos);accuracyCircle.setRadius(accuracy);accuracyCircle.setMap(naverMap)}}
     if(Number.isFinite(heading))applyHeading(heading);if(shouldCenter){naverMap.setCenter(pos);try{if(naverMap.getZoom()<15)naverMap.setZoom(15)}catch(e){}}
     const btn=document.getElementById('map-location-btn');if(btn)btn.classList.add('is-active');

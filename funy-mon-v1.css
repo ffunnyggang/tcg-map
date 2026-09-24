@@ -282,3 +282,15 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-outcome-box button,#funyMonOutcomeConfirm{border:3px solid #765bc1!important}
 .funy-mon-reward-kuji{padding:4px!important;background:repeating-linear-gradient(0deg,#7863b9 0 3px,#8c75c8 3px 6px,#9c87d0 6px 9px,#ad9bd8 9px 12px,#9781cb 12px 15px,#846dc1 15px 18px,#b6a7dd 18px 21px,#9179c9 21px 24px)!important;background-image:repeating-linear-gradient(0deg,#7863b9 0 3px,#8c75c8 3px 6px,#9c87d0 6px 9px,#ad9bd8 9px 12px,#9781cb 12px 15px,#846dc1 15px 18px,#b6a7dd 18px 21px,#9179c9 21px 24px)!important}
 .funy-mon-reward-kuji:after{display:none!important}
+
+/* FUNY MON calm reward border */
+.funy-mon-reward-kuji{padding:3px!important;background:#8067c8!important;background-image:none!important;border:0!important;box-shadow:4px 4px 0 #ddd7ee!important}
+.funy-mon-reward-kuji:after{display:none!important}
+.funy-mon-reward-kuji:before{display:none!important}
+
+/* FUNY MON map selection feedback */
+.funy-mon-marker{transition:transform .18s ease,filter .18s ease}
+.funy-mon-marker.is-selected{transform:translateY(-5px) scale(1.12);filter:drop-shadow(0 0 5px rgba(126,94,203,.72)) drop-shadow(0 5px 5px rgba(69,48,111,.25))}
+.funy-mon-marker.is-selected .funy-mon-sprite{animation:funyMonSelected .48s ease both}
+.funy-mon-marker.is-selected .funy-mon-shadow{transform:scale(.72);opacity:.45}
+@keyframes funyMonSelected{0%{transform:scale(1)}35%{transform:scale(1.12) rotate(-3deg)}65%{transform:scale(1.08) rotate(3deg)}100%{transform:scale(1.05) rotate(0)}}

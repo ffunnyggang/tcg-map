@@ -266,3 +266,8 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-outcome-box strong{color:#392b59!important}
 .funy-mon-outcome-box p{color:#725f8b!important}
 #funyMonOutcomeConfirm{background:#795dc6!important;box-shadow:3px 3px 0 #b8a6e4!important}
+
+/* FUNY MON final visual alignment */
+.funy-mon-reward-detail{font-weight:400!important}
+.funy-mon-reward-kuji{background:repeating-linear-gradient(90deg,#7863b9 0 5px,#8c75c8 5px 10px,#9c87d0 10px 15px,#ad9bd8 15px 20px,#9781cb 20px 25px,#846dc1 25px 30px,#b6a7dd 30px 35px,#9179c9 35px 40px)!important}
+.funy-mon-close{box-shadow:-3px 0 0 #7863b9,-3px -3px 0 #9c87d0,0 -3px 0 #ad9bd8,3px -3px 0 #846dc1,3px 0 0 #9781cb,3px 3px 0 #b6a7dd,0 3px 0 #8c75c8,-3px 3px 0 #9179c9!important}

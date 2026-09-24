@@ -30,3 +30,8 @@
 .funy-current-avatar{display:block;background-image:var(--avatar-sheet);background-repeat:no-repeat;background-size:96px 128px;background-position:calc(var(--avatar-x,1) * -32px) calc(var(--avatar-y,0) * -32px);object-fit:initial}
 .funy-current-location.is-avatar.is-moving .funy-current-avatar{animation:funy-avatar-walk .48s steps(1,end) infinite}
 @keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -32px)}33%{background-position:-32px calc(var(--avatar-y,0) * -32px)}66%{background-position:-64px calc(var(--avatar-y,0) * -32px)}}
+
+/* Uploaded avatar previews + larger map avatar */
+.map-location-avatar-preview{display:block!important;width:48px;height:48px;margin:0 auto;background-image:var(--preview-sheet);background-repeat:no-repeat;background-size:144px 192px;background-position:-48px 0;image-rendering:pixelated}
+.funy-current-avatar{width:42px;height:42px;background-size:126px 168px;background-position:calc(var(--avatar-x,1) * -42px) calc(var(--avatar-y,0) * -42px)}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -42px)}33%{background-position:-42px calc(var(--avatar-y,0) * -42px)}66%{background-position:-84px calc(var(--avatar-y,0) * -42px)}}

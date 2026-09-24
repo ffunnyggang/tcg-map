@@ -8,6 +8,7 @@
   let heading=null;
   let orientationBound=false;
   let firstFix=true;
+  let lastLat=null,lastLng=null;
 
   function ensureControl(){
     const wrap=document.querySelector('.map-wrap-hero');
@@ -65,7 +66,9 @@
 
   function applyHeading(value){if(!Number.isFinite(value))return;heading=((value%360)+360)%360;const el=document.querySelector('.funy-current-location');if(el)el.style.setProperty('--funy-heading',heading+'deg')}
 
-  function bindOrientation(){if(orientationBound)return;orientationBound=true;window.addEventListener('deviceorientationabsolute',e=>{if(Number.isFinite(e.alpha))applyHeading(360-e.alpha)},true);window.addEventListener('deviceorientation',e=>{const h=Number.isFinite(e.webkitCompassHeading)?e.webkitCompassHeading:(Number.isFinite(e.alpha)?360-e.alpha:null);if(Number.isFinite(h))applyHeading(h)},true)}
+  function orientationHandler(e){const h=Number.isFinite(e.webkitCompassHeading)?e.webkitCompassHeading:(Number.isFinite(e.alpha)?360-e.alpha:null);if(Number.isFinite(h))applyHeading(h)}
+  async function bindOrientation(){if(orientationBound)return;try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){const state=await DeviceOrientationEvent.requestPermission();if(state!=='granted')return}}catch(e){return}orientationBound=true;window.addEventListener('deviceorientationabsolute',orientationHandler,true);window.addEventListener('deviceorientation',orientationHandler,true)}
+  function movementHeading(lat,lng){if(!Number.isFinite(lastLat)||!Number.isFinite(lastLng))return null;const p1=lastLat*Math.PI/180,p2=lat*Math.PI/180,dl=(lng-lastLng)*Math.PI/180,y=Math.sin(dl)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl),d=Math.hypot(lat-lastLat,lng-lastLng);lastLat=lat;lastLng=lng;if(d<.000015)return null;return(Math.atan2(y,x)*180/Math.PI+360)%360}
 
   function updateLocation(lat,lng,accuracy,shouldCenter=false){
     if(!ready()) return;
@@ -84,7 +87,7 @@
     window.dispatchEvent(new CustomEvent('funy:locationrequest'));
     if(!navigator.geolocation){const message='이 브라우저에서는 위치 기능을 지원하지 않습니다.';showToast(message);emitLocationError(message);return}
     if(!ready()){const message='지도를 불러온 뒤 다시 시도해주세요.';showToast(message);emitLocationError(message);return}
-    setLoading(true);bindOrientation();firstFix=true;if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}watchId=navigator.geolocation.watchPosition(position=>{setLoading(false);const{latitude,longitude,accuracy,heading:geoHeading}=position.coords;if(Number.isFinite(geoHeading)&&geoHeading>=0)applyHeading(geoHeading);const current={lat:Number(latitude),lng:Number(longitude),accuracy:Number(accuracy)||0,heading:Number.isFinite(heading)?heading:null,ts:Date.now()};window.FUNY_CURRENT_LOCATION=current;updateLocation(current.lat,current.lng,current.accuracy,firstFix);window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:current}));if(firstFix){firstFix=false;showToast('현재 위치를 지도에 표시했습니다.')}} ,error=>{setLoading(false);const message=errorMessage(error);if(error&&error.code===1)showPermissionGuide();else showToast(message);emitLocationError(message,error)},{enableHighAccuracy:true,timeout:10000,maximumAge:3000});
+    setLoading(true);bindOrientation();firstFix=true;lastLat=null;lastLng=null;if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null}watchId=navigator.geolocation.watchPosition(position=>{setLoading(false);const{latitude,longitude,accuracy,heading:geoHeading}=position.coords;const lat=Number(latitude),lng=Number(longitude),moveHeading=movementHeading(lat,lng);if(Number.isFinite(geoHeading)&&geoHeading>=0)applyHeading(geoHeading);else if(Number.isFinite(moveHeading))applyHeading(moveHeading);if(lastLat===null){lastLat=lat;lastLng=lng}const current={lat:Number(latitude),lng:Number(longitude),accuracy:Number(accuracy)||0,heading:Number.isFinite(heading)?heading:null,ts:Date.now()};window.FUNY_CURRENT_LOCATION=current;updateLocation(current.lat,current.lng,current.accuracy,firstFix);window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:current}));if(firstFix){firstFix=false;showToast('현재 위치를 지도에 표시했습니다.')}} ,error=>{setLoading(false);const message=errorMessage(error);if(error&&error.code===1)showPermissionGuide();else showToast(message);emitLocationError(message,error)},{enableHighAccuracy:true,timeout:10000,maximumAge:3000});
   }
 
   let tries=0;const timer=setInterval(()=>{tries++;ensureControl();if(document.getElementById('map-location-btn')||tries>40)clearInterval(timer)},200);

@@ -228,9 +228,11 @@
       const res=await fetchPromise;
       const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){
-        if(data.error==='too_far')showMessage('조금 더 가까이 가보세요','티씨지서울까지 약 '+data.distance_m+'m예요. 100m 이내에서 포획할 수 있어요.');
-        else if(data.error==='already_caught_today'){
-          showMessage('테스트 제한 오류','테스트 모드에서는 반복 포획이 가능해야 해요. 잠시 후 다시 시도해주세요.');
+        if(data.error==='too_far')showMessage('조금 더 가까이 가보세요',meta.shop.name+'까지 약 '+data.distance_m+'m예요. '+(data.required_m||100)+'m 이내에서 포획할 수 있어요.');
+        else if(data.error==='daily_catch_limit'){
+          showMessage('오늘 포획을 모두 완료했어요','이 이벤트에서는 하루 '+data.limit+'마리까지 포획할 수 있어요.');
+        }else if(data.error==='already_caught_today'){
+          showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
         }else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');
         return;
       }

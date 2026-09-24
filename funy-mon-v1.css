@@ -294,3 +294,24 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-marker.is-selected .funy-mon-sprite{animation:funyMonSelected .48s ease both}
 .funy-mon-marker.is-selected .funy-mon-shadow{transform:scale(.72);opacity:.45}
 @keyframes funyMonSelected{0%{transform:scale(1)}35%{transform:scale(1.12) rotate(-3deg)}65%{transform:scale(1.08) rotate(3deg)}100%{transform:scale(1.05) rotate(0)}}
+
+/* FUNY MON retro type */
+.funy-mon-modal,.funy-mon-outcome,.funy-mon-reward-viewer{font-family:'DotGothic16','Pretendard Variable',Pretendard,sans-serif!important}
+.funy-mon-modal button,.funy-mon-outcome button{font-family:'DotGothic16','Pretendard Variable',Pretendard,sans-serif!important}
+
+/* 3-beat surprised selection before catch result */
+.funy-mon-marker.is-selected{transform:translateY(-5px) scale(1.12);filter:drop-shadow(0 0 6px rgba(126,94,203,.82)) drop-shadow(0 6px 6px rgba(69,48,111,.28))}
+.funy-mon-marker.is-selected .funy-mon-sprite{animation:funyMonSurprise .72s steps(1,end) both!important}
+.funy-mon-surprise{position:absolute;z-index:20;left:50%;top:-18px;width:54px;height:24px;transform:translateX(-50%);pointer-events:none}
+.funy-mon-surprise i{position:absolute;top:0;opacity:0;color:#765bc1;font:950 18px/1 'DotGothic16',monospace;text-shadow:1px 1px 0 #fff}
+.funy-mon-surprise i:nth-child(1){left:3px;animation:funySurprisePop .22s 0s steps(2,end) both}
+.funy-mon-surprise i:nth-child(2){left:21px;animation:funySurprisePop .22s .20s steps(2,end) both}
+.funy-mon-surprise i:nth-child(3){left:39px;animation:funySurprisePop .22s .40s steps(2,end) both}
+@keyframes funySurprisePop{0%{opacity:0;transform:translateY(5px) scale(.55)}45%,100%{opacity:1;transform:translateY(0) scale(1.12)}}
+@keyframes funyMonSurprise{0%{transform:translate(0,0) scale(1)}18%{transform:translate(-2px,-5px) scale(1.12)}34%{transform:translate(2px,-2px) scale(1.07)}52%{transform:translate(-2px,-6px) scale(1.13)}68%{transform:translate(2px,-2px) scale(1.08)}84%{transform:translate(0,-7px) scale(1.14)}100%{transform:translate(0,-4px) scale(1.1)}}
+
+/* full reward-area flash before result */
+.funy-mon-reward-kuji.is-flashing{animation:funyRewardWholeFlash .82s steps(5,end) both!important}
+.funy-mon-reward-kuji.is-flashing:after{display:block!important;content:"";position:absolute;z-index:20;inset:0;pointer-events:none;background:#fff!important;clip-path:none!important;animation:funyRewardFlashLayer .82s steps(5,end) both}
+@keyframes funyRewardWholeFlash{0%,100%{filter:none}18%{filter:brightness(2)}38%{filter:brightness(.95)}58%{filter:brightness(2.2)}78%{filter:brightness(1.05)}}
+@keyframes funyRewardFlashLayer{0%{opacity:0}18%{opacity:.94}38%{opacity:.12}58%{opacity:.88}78%,100%{opacity:0}}

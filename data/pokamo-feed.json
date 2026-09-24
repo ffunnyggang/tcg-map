@@ -1,6 +1,6 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-24T05:26:59.113154+00:00",
+  "updatedAt": "2026-09-24T06:33:31.066795+00:00",
   "count": 60,
   "items": [
     {
@@ -12,22 +12,9 @@
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/반고흐-피카츄-카드-dXE6WQaj",
       "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.01
-    },
-    {
-      "category": "자유 게시판",
-      "title": "팬텀 sar 30주년 팔아여 3만원",
-      "author": "원숭이",
-      "publishedAt": "2026-09-24T03:54:26.620774Z",
-      "excerpt": "팬텀 sar 30주년 3만원",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1a2bd471-dfb5-409f-a6b7-d6eab628831b.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-sar-30주년-팔아여-3만원-dz9YJR7P",
-      "views": 26,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.26
+      "popularityScore": 3.01
     },
     {
       "category": "자유 게시판",
@@ -50,10 +37,10 @@
       "excerpt": "가품 은근 있으니까 조심하세요~ 웬만하면 영수증 인증이 된 제품 구매하시는거 추천드려요~ 차라리 슈링크가 없어도 포켓몬센터같은곳에서 구매했다고 영수증 인증하는분들이 훨씬 안전해요 다들 조심하시고 좋은 취미생활되시길",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/요즘-30주년-핫해서-해외판을-직구나-개인거래로-구하시는분-많은데-PM0m0V9A",
-      "views": 39,
+      "views": 41,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.39
+      "popularityScore": 8.41
     },
     {
       "category": "자유 게시판",
@@ -76,10 +63,10 @@
       "excerpt": "일본 여행갔다가 우연히 30주년 4팩 구해서 깠는데 뮤가!!! 시작한지 아직 한달차라 PSA 풀리면 등급 보내고 싶은데 괜찮을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179011589343230fa4b8bcb74120a1b9713542fc45dc5eb15777277e5dfb22a02dec67c184b2a0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포린이-30주년-4팩깡-Aqr0b7qP",
-      "views": 54,
+      "views": 55,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 18.54
+      "popularityScore": 18.55
     },
     {
       "category": "정보 공유",
@@ -89,10 +76,10 @@
       "excerpt": "카드볼트 방문하고 FUNY PIN으로 방문 인증하면, 추첨을 통해 총 3분께 경품을 드려요! 🎁 📅 이벤트 기간 9/22(화) ~ 9/27(일) 오후 10시까지 📢 당첨자 발표 9/28(월) 🎁 경품 • 포켓몬 퍼스트파트너 시리즈1 1BOX — 1명 • 유미의 세포들 콜렉션 카드 1BO",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790072548121996f7d5c3eb23c351e13ccd2b08b52152e0be071cb92a4e262b65e56f1e50edf0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🌕-FUNY-PIN-CARDVAULT-한가위-방문-인증-이벤트-🐰🍂-AeDJ1gZj",
-      "views": 22,
+      "views": 23,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.22
+      "popularityScore": 5.23
     },
     {
       "category": "자유 게시판",
@@ -212,6 +199,19 @@
       "popularityScore": 3.4
     },
     {
+      "category": "자유 게시판",
+      "title": "이번에 나온 30주년 뮤츠fur 제인생 첫 히트 입니다",
+      "author": "Gray",
+      "publishedAt": "2026-09-21T10:21:31.657787Z",
+      "excerpt": "이번에 나온 30주년 뮤츠fur 제인생 첫 히트 입니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이번에-나온-30주년-뮤츠fur-제인생-첫-히트-입니다-dY0m5N6P",
+      "views": 30,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.3
+    },
+    {
       "category": "카드거래",
       "title": "구합니다",
       "author": "진몽",
@@ -219,10 +219,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 88,
+      "views": 89,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.88
+      "popularityScore": 54.89
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "이거 45에 팔아요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1996-초판-리자몽-PVD3yyvj",
-      "views": 26,
+      "views": 27,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.26
+      "popularityScore": 0.27
     },
     {
       "category": "카드 자랑",
@@ -336,10 +336,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 123,
+      "views": 124,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.23
+      "popularityScore": 19.24
     },
     {
       "category": "카드 자랑",
@@ -622,10 +622,10 @@
       "excerpt": "아키하바라역에서 가까운 카드윙스 🃏🇯🇵 📍CARDWINGS 아키하바라역앞점 東京都千代田区外神田1-15-15 🚶아키하바라역 전기상점가 출구 도보 1분 숙소 체크인 전 잠깐 들러 포켓몬카드 위주로 둘러봤어요! 싱글카드가 많고 희귀도·타입별로 잘 분류되어 있어 구경하기 편했습니다 👀 가격은 평",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17878247866423675224f137d6a185d08a55706ea6f768657361f6c35227a8f0c5ad15c481ecc0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아키하바라-카드샵-추천-카드윙스-A4Nywy2d",
-      "views": 41,
+      "views": 42,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.41
+      "popularityScore": 0.42
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -726,10 +726,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 335,
+      "views": 336,
       "likes": 7,
       "comments": 6,
-      "popularityScore": 36.35
+      "popularityScore": 36.36
     },
     {
       "category": "정보 공유",

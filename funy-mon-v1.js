@@ -298,15 +298,15 @@
     ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
 
     // Coupon-style REWARD area matching the front-end result sheet.
-    const rx=80,ry=845,rw=920,rh=330;
+    const rx=80,ry=845,rw=920,rh=300;
     const px=['#7863b9','#8c75c8','#9c87d0','#ad9bd8','#9781cb','#846dc1','#b6a7dd','#9179c9'];
     for(let x=rx;x<rx+rw;x+=12){ctx.fillStyle=px[(x/12)%px.length|0];ctx.fillRect(x,ry,12,8);ctx.fillStyle=px[((x/12)+2)%px.length|0];ctx.fillRect(x,ry+rh-8,12,8)}
     for(let y=ry;y<ry+rh;y+=12){ctx.fillStyle=px[(y/12)%px.length|0];ctx.fillRect(rx,y,8,12);ctx.fillStyle=px[((y/12)+3)%px.length|0];ctx.fillRect(rx+rw-8,y,8,12)}
     ctx.fillStyle='#fffdf9';ctx.fillRect(rx+8,ry+8,rw-16,rh-16);
-    ctx.font='950 52px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,940);
+    ctx.font='950 58px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,935);
     if(win){
-      ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1025,760,44,2);
-      if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1110)}
+      ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1005,760,44,2);
+      if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1090)}
     }else{
       ctx.fillStyle='#746b78';ctx.font='800 25px sans-serif';ctx.fillText('아쉬워요! 다음 기회에 다시 도전해보세요!',540,1040);
     }

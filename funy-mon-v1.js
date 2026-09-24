@@ -218,7 +218,7 @@
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           anonymous_id:anonId(),
-          shop_id:TARGET_SHOP_ID,
+          shop_id:meta.shop.id,
           monster_id:meta.def.id,
           latitude:pos.coords.latitude,
           longitude:pos.coords.longitude
@@ -234,7 +234,7 @@
         }else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');
         return;
       }
-      saveHistory({monster_id:meta.def.id,shop_id:TARGET_SHOP_ID,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
+      saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
       hiddenMarkers.add(meta.marker);
       try{meta.marker.setMap(null)}catch(_){}
       if(data.result==='failed'){
@@ -334,45 +334,38 @@
   function pageAnonKey(){return SUPABASE_KEY}
   async function spawn(){
     if(started)return;
-    if(!TARGET_SHOP_ID){
-      const key=pageAnonKey();
-      if(!key){if(tries++<80)setTimeout(spawn,250);return}
-      try{
-        const now=new Date().toISOString();
-        const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=shop_id&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc&limit=1',{headers:{apikey:key,Authorization:'Bearer '+key}});
-        if(!r.ok)return;
-        const rows=await r.json();
-        if(!rows||!rows[0]){clear();return}
-        TARGET_SHOP_ID=rows[0].shop_id;
-      }catch(_){return}
-    }
+    const key=pageAnonKey();
+    if(!key){if(tries++<80)setTimeout(spawn,250);return}
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
-    const shop=(typeof SHOPS!=='undefined'?SHOPS:[]).find(s=>s.id===TARGET_SHOP_ID&&s._coord);
-    if(!shop){
-      if(tries++<240)setTimeout(spawn,500);
-      return
-    }
+    let events=[];
+    try{
+      const now=new Date().toISOString();
+      const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,shop_id,selected_monsters,spawn_count&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});
+      if(!r.ok)return;
+      events=await r.json();
+    }catch(_){return}
+    if(!events.length){clear();return}
+    const shops=typeof SHOPS!=='undefined'?SHOPS:[];
+    const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));
+    if(!ready){if(tries++<240)setTimeout(spawn,500);return}
     started=true;
-    defs.filter(d=>d.spawnable).forEach((d,i)=>{
-      const off=offsets[i],lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
-      const html='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
-      const marker=new naver.maps.Marker({
-        position:new naver.maps.LatLng(lat,lng),
-        map:hiddenByRoute()?null:naverMap,
-        clickable:true,zIndex:120,
-        icon:{content:html,anchor:new naver.maps.Point(24,34)}
-      });
-      const meta={marker,shop,def:d};
-      markers.push(marker);
-      naver.maps.Event.addListener(marker,'click',()=>{
-        document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));
-        try{marker.getElement?.()?.querySelector?.('.funy-mon-marker')?.classList.add('is-selected')}catch(_){}
-        const markerEl=document.querySelector('[aria-label="'+d.name+' 포획"]');
-        if(markerEl){
-          markerEl.classList.add('is-selected');
-          markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>');
-        }
-        catchMonster(meta);
+    events.forEach((ev,eventIndex)=>{
+      const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;
+      const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);
+      const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));
+      selected.slice(0,count).forEach((d,i)=>{
+        const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};
+        const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
+        const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
+        const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});
+        const meta={marker,shop,def:d,eventId:ev.id};markers.push(marker);
+        naver.maps.Event.addListener(marker,'click',()=>{
+          if(busy)return;
+          document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));
+          const markerEl=marker.getElement?.()?.querySelector?.('.funy-mon-marker')||document.querySelector('[aria-label="'+d.name+' 포획"]');
+          if(markerEl){markerEl.classList.add('is-selected');markerEl.querySelector('.funy-mon-surprise')?.remove();markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>')}
+          catchMonster(meta);
+        });
       });
     });
     try{naver.maps.Event.addListener(naverMap,'zoom_changed',syncVisibility)}catch(_){}

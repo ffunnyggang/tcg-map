@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-24T08:29:50.628740+00:00",
+  "updatedAt": "2026-09-24T10:28:20.781698+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "카드투어 하고 왔습니다.",
+      "author": "김철왕",
+      "publishedAt": "2026-09-24T10:18:28.989119Z",
+      "excerpt": "만들어주신 사이트 도움이 많이 되었습니다 ~",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/bea31271-f3c6-4599-905c-9a5f7c9be99a.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-하고-왔습니다-PWMwwQWj",
+      "views": 14,
+      "likes": 2,
+      "comments": 0,
+      "popularityScore": 6.14
+    },
     {
       "category": "자유 게시판",
       "title": "반고흐 피카츄 카드",
@@ -11,10 +24,10 @@
       "excerpt": "반고흐 피카츄 카드",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/반고흐-피카츄-카드-dXE6WQaj",
-      "views": 1,
+      "views": 4,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.01
+      "popularityScore": 3.04
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
-      "views": 36,
+      "views": 37,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.36
+      "popularityScore": 3.37
     },
     {
       "category": "정보 공유",
@@ -63,10 +76,10 @@
       "excerpt": "일본 여행갔다가 우연히 30주년 4팩 구해서 깠는데 뮤가!!! 시작한지 아직 한달차라 PSA 풀리면 등급 보내고 싶은데 괜찮을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179011589343230fa4b8bcb74120a1b9713542fc45dc5eb15777277e5dfb22a02dec67c184b2a0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포린이-30주년-4팩깡-Aqr0b7qP",
-      "views": 56,
+      "views": 57,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 18.56
+      "popularityScore": 18.57
     },
     {
       "category": "정보 공유",
@@ -180,10 +193,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 67,
+      "views": 68,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.67
+      "popularityScore": 13.68
     },
     {
       "category": "자유 게시판",
@@ -197,19 +210,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.4
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이번에 나온 30주년 뮤츠fur 제인생 첫 히트 입니다",
-      "author": "Gray",
-      "publishedAt": "2026-09-21T10:21:31.657787Z",
-      "excerpt": "이번에 나온 30주년 뮤츠fur 제인생 첫 히트 입니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이번에-나온-30주년-뮤츠fur-제인생-첫-히트-입니다-dY0m5N6P",
-      "views": 30,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.3
     },
     {
       "category": "카드거래",
@@ -453,10 +453,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 198,
+      "views": 199,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 13.98
+      "popularityScore": 13.99
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -635,10 +635,10 @@
       "excerpt": "입구부터 PSA 10 카드가 가득🔥 판초츄·뭉크·마리오츄부터 최애 갸라도스까지👀 그리고 화제의 1억 원짜리 릴리에 카드도 영접했습니다😱 최근 관심이 생긴 원피스 등급카드도 다양하게 구경하고, 소문으로만 듣던 스니덩 오리파는 냄새만 킁킁🐽 결국 데려온 첫 원피스 등급카드는 바로 루피 매거",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178771770624496bfa3eb24839fff96c7576148e979c2baa56268ac402b139c641f81accb7f8f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🇯🇵-도쿄-도착하자마자-달려간-곳-아키하바라-스니덩-jvqy6VLd",
-      "views": 125,
+      "views": 127,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.25
+      "popularityScore": 9.27
     },
     {
       "category": "자유 게시판",
@@ -713,10 +713,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 322,
+      "views": 323,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.22
+      "popularityScore": 10.23
     },
     {
       "category": "정보 공유",

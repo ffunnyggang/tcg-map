@@ -25,3 +25,8 @@
 
 .map-location-avatar-head{border-bottom:0!important}
 .map-location-avatar-grid button span{display:none!important}
+
+/* Directional location avatar sprite */
+.funy-current-avatar{display:block;background-image:var(--avatar-sheet);background-repeat:no-repeat;background-size:96px 512px;background-position:calc(var(--avatar-x,1) * -32px) calc(var(--avatar-y,0) * -32px);object-fit:initial}
+.funy-current-location.is-avatar.is-moving .funy-current-avatar{animation:funy-avatar-walk .48s steps(1,end) infinite}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -32px)}33%{background-position:-32px calc(var(--avatar-y,0) * -32px)}66%{background-position:-64px calc(var(--avatar-y,0) * -32px)}}

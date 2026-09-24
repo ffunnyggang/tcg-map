@@ -271,3 +271,8 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-reward-detail{font-weight:400!important}
 .funy-mon-reward-kuji{background:repeating-linear-gradient(90deg,#7863b9 0 5px,#8c75c8 5px 10px,#9c87d0 10px 15px,#ad9bd8 15px 20px,#9781cb 20px 25px,#846dc1 25px 30px,#b6a7dd 30px 35px,#9179c9 35px 40px)!important}
 .funy-mon-close{box-shadow:-3px 0 0 #7863b9,-3px -3px 0 #9c87d0,0 -3px 0 #ad9bd8,3px -3px 0 #846dc1,3px 0 0 #9781cb,3px 3px 0 #b6a7dd,0 3px 0 #8c75c8,-3px 3px 0 #9179c9!important}
+
+/* FUNY MON chip sizing + discrete pixel mosaic */
+.funy-mon-meta span{width:68px!important;box-sizing:border-box!important;padding:0 6px!important}
+.funy-mon-reward-kuji{background:#7863b9!important;background-image:none!important}
+.funy-mon-reward-kuji:after{content:"";position:absolute;z-index:9;inset:0;pointer-events:none;clip-path:polygon(0 0,100% 0,100% 4px,0 4px,0 100%,4px 100%,4px 0,100% 0,100% 100%,calc(100% - 4px) 100%,calc(100% - 4px) 0,0 0,0 calc(100% - 4px),100% calc(100% - 4px),100% 100%,0 100%);background:repeating-linear-gradient(90deg,#7863b9 0 6px,#8c75c8 6px 12px,#9c87d0 12px 18px,#ad9bd8 18px 24px,#9781cb 24px 30px,#846dc1 30px 36px,#b6a7dd 36px 42px,#9179c9 42px 48px)}

@@ -41,3 +41,9 @@
 .funy-current-avatar{left:50%;top:50%;width:44px;height:44px;overflow:visible;background-size:132px 176px;background-position:calc(var(--avatar-x,1) * -44px) calc(var(--avatar-y,0) * -44px);transform:translate(-50%,-50%)}
 .map-location-avatar-preview{width:52px;height:52px;background-size:156px 208px;background-position:-52px 0;background-origin:border-box;background-clip:border-box}
 @keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -44px)}33%{background-position:-44px calc(var(--avatar-y,0) * -44px)}66%{background-position:-88px calc(var(--avatar-y,0) * -44px)}}
+
+/* Safe-frame avatar crop: render each source cell inside the marker with padding */
+.funy-current-avatar{width:46px;height:46px;background-size:120px 160px;background-position:calc(3px - (var(--avatar-x,1) * 40px)) calc(3px - (var(--avatar-y,0) * 40px));overflow:visible}
+.funy-current-location.is-avatar{width:48px;height:48px}
+@keyframes funy-avatar-walk{0%,100%{background-position:3px calc(3px - (var(--avatar-y,0) * 40px))}33%{background-position:-37px calc(3px - (var(--avatar-y,0) * 40px))}66%{background-position:-77px calc(3px - (var(--avatar-y,0) * 40px))}}
+.map-location-avatar-preview{width:52px;height:52px;background-size:132px 176px;background-position:-40px 4px;background-repeat:no-repeat}

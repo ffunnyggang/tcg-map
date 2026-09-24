@@ -35,3 +35,9 @@
 .map-location-avatar-preview{display:block!important;width:48px;height:48px;margin:0 auto;background-image:var(--preview-sheet);background-repeat:no-repeat;background-size:144px 192px;background-position:-48px 0;image-rendering:pixelated}
 .funy-current-avatar{width:42px;height:42px;background-size:126px 168px;background-position:calc(var(--avatar-x,1) * -42px) calc(var(--avatar-y,0) * -42px)}
 @keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -42px)}33%{background-position:-42px calc(var(--avatar-y,0) * -42px)}66%{background-position:-84px calc(var(--avatar-y,0) * -42px)}}
+
+/* Center full 3x4 source cells and keep sprite edges visible */
+.funy-current-location.is-avatar{width:46px;height:46px}
+.funy-current-avatar{left:50%;top:50%;width:44px;height:44px;overflow:visible;background-size:132px 176px;background-position:calc(var(--avatar-x,1) * -44px) calc(var(--avatar-y,0) * -44px);transform:translate(-50%,-50%)}
+.map-location-avatar-preview{width:52px;height:52px;background-size:156px 208px;background-position:-52px 0;background-origin:border-box;background-clip:border-box}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -44px)}33%{background-position:-44px calc(var(--avatar-y,0) * -44px)}66%{background-position:-88px calc(var(--avatar-y,0) * -44px)}}

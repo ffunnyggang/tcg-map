@@ -47,3 +47,6 @@
 .funy-current-location.is-avatar{width:48px;height:48px}
 @keyframes funy-avatar-walk{0%,100%{background-position:3px calc(3px - (var(--avatar-y,0) * 40px))}33%{background-position:-37px calc(3px - (var(--avatar-y,0) * 40px))}66%{background-position:-77px calc(3px - (var(--avatar-y,0) * 40px))}}
 .map-location-avatar-preview{width:52px;height:52px;background-size:132px 176px;background-position:-40px 4px;background-repeat:no-repeat}
+
+/* Current-location toast: place left of the control, vertically centered to the button */
+.map-location-toast{right:70px;bottom:18px;max-width:230px;transform:translateY(0);white-space:normal}

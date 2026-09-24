@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-24T03:27:57.854054+00:00",
+  "updatedAt": "2026-09-24T04:28:23.958074+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "팬텀 sar 30주년 팔아여 3만원",
+      "author": "원숭이",
+      "publishedAt": "2026-09-24T03:54:26.620774Z",
+      "excerpt": "팬텀 sar 30주년 3만원",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1a2bd471-dfb5-409f-a6b7-d6eab628831b.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-sar-30주년-팔아여-3만원-dz9YJR7P",
+      "views": 6,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.06
+    },
     {
       "category": "자유 게시판",
       "title": "카드샵 현황을 실시간으로 공유하기⚡️",
@@ -11,10 +24,10 @@
       "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
-      "views": 6,
-      "likes": 0,
+      "views": 31,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.06
+      "popularityScore": 3.31
     },
     {
       "category": "정보 공유",
@@ -24,10 +37,10 @@
       "excerpt": "가품 은근 있으니까 조심하세요~ 웬만하면 영수증 인증이 된 제품 구매하시는거 추천드려요~ 차라리 슈링크가 없어도 포켓몬센터같은곳에서 구매했다고 영수증 인증하는분들이 훨씬 안전해요 다들 조심하시고 좋은 취미생활되시길",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/요즘-30주년-핫해서-해외판을-직구나-개인거래로-구하시는분-많은데-PM0m0V9A",
-      "views": 36,
+      "views": 38,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.36
+      "popularityScore": 8.38
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "일본 여행갔다가 우연히 30주년 4팩 구해서 깠는데 뮤가!!! 시작한지 아직 한달차라 PSA 풀리면 등급 보내고 싶은데 괜찮을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179011589343230fa4b8bcb74120a1b9713542fc45dc5eb15777277e5dfb22a02dec67c184b2a0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포린이-30주년-4팩깡-Aqr0b7qP",
-      "views": 51,
+      "views": 53,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 18.51
+      "popularityScore": 18.53
     },
     {
       "category": "정보 공유",
@@ -63,10 +76,10 @@
       "excerpt": "카드볼트 방문하고 FUNY PIN으로 방문 인증하면, 추첨을 통해 총 3분께 경품을 드려요! 🎁 📅 이벤트 기간 9/22(화) ~ 9/27(일) 오후 10시까지 📢 당첨자 발표 9/28(월) 🎁 경품 • 포켓몬 퍼스트파트너 시리즈1 1BOX — 1명 • 유미의 세포들 콜렉션 카드 1BO",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790072548121996f7d5c3eb23c351e13ccd2b08b52152e0be071cb92a4e262b65e56f1e50edf0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🌕-FUNY-PIN-CARDVAULT-한가위-방문-인증-이벤트-🐰🍂-AeDJ1gZj",
-      "views": 21,
+      "views": 22,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.21
+      "popularityScore": 5.22
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "초판 베이스셋 북미버전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/704dcb36-428e-4f52-80a9-b7d284470827.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가장-최애는-아니고-3번째로-아끼는-최애-ARoklvGP",
-      "views": 30,
+      "views": 31,
       "likes": 4,
       "comments": 1,
-      "popularityScore": 14.3
+      "popularityScore": 14.31
     },
     {
       "category": "자유 게시판",
@@ -197,19 +210,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.3
-    },
-    {
-      "category": "자유 게시판",
-      "title": "안녕하세용~~",
-      "author": "발표하는시",
-      "publishedAt": "2026-09-21T09:08:41.423672Z",
-      "excerpt": "30주년 구하기 참 힘들군요.. 다들 즐거운 추석되세요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세용-dY0m8W2P",
-      "views": 20,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.2
     },
     {
       "category": "카드거래",
@@ -479,10 +479,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 99,
+      "views": 100,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.99
+      "popularityScore": 9.0
     },
     {
       "category": "정보 공유",

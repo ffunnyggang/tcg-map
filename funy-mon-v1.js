@@ -210,7 +210,7 @@
     if(busy)return;
     busy=true;
     try{
-      await new Promise(resolve=>setTimeout(resolve,720));
+      const effectDone=new Promise(resolve=>setTimeout(resolve,720));
       const pos=await getPosition();
       const res=await fetch(ENDPOINT,{
         method:'POST',
@@ -224,6 +224,7 @@
         })
       });
       const data=await res.json().catch(()=>({error:'invalid_response'}));
+      await effectDone;
       if(!res.ok){
         if(data.error==='too_far')showMessage('조금 더 가까이 가보세요','티씨지서울까지 약 '+data.distance_m+'m예요. 100m 이내에서 포획할 수 있어요.');
         else if(data.error==='already_caught_today'){

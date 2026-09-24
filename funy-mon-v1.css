@@ -276,3 +276,9 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-meta span{width:68px!important;box-sizing:border-box!important;padding:0 6px!important}
 .funy-mon-reward-kuji{background:#7863b9!important;background-image:none!important}
 .funy-mon-reward-kuji:after{content:"";position:absolute;z-index:9;inset:0;pointer-events:none;clip-path:polygon(0 0,100% 0,100% 4px,0 4px,0 100%,4px 100%,4px 0,100% 0,100% 100%,calc(100% - 4px) 100%,calc(100% - 4px) 0,0 0,0 calc(100% - 4px),100% calc(100% - 4px),100% 100%,0 100%);background:repeating-linear-gradient(90deg,#7863b9 0 6px,#8c75c8 6px 12px,#9c87d0 12px 18px,#ad9bd8 18px 24px,#9781cb 24px 30px,#846dc1 30px 36px,#b6a7dd 36px 42px,#9179c9 42px 48px)}
+
+/* FUNY MON compact chips / line mosaic reward / purple outcome button border */
+.funy-mon-meta span{width:auto!important;min-width:48px!important;max-width:58px!important;padding:0 6px!important}
+.funy-mon-outcome-box button,#funyMonOutcomeConfirm{border:3px solid #765bc1!important}
+.funy-mon-reward-kuji{padding:4px!important;background:repeating-linear-gradient(0deg,#7863b9 0 3px,#8c75c8 3px 6px,#9c87d0 6px 9px,#ad9bd8 9px 12px,#9781cb 12px 15px,#846dc1 15px 18px,#b6a7dd 18px 21px,#9179c9 21px 24px)!important;background-image:repeating-linear-gradient(0deg,#7863b9 0 3px,#8c75c8 3px 6px,#9c87d0 6px 9px,#ad9bd8 9px 12px,#9781cb 12px 15px,#846dc1 15px 18px,#b6a7dd 18px 21px,#9179c9 21px 24px)!important}
+.funy-mon-reward-kuji:after{display:none!important}

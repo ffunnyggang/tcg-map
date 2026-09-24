@@ -27,6 +27,7 @@
     {lat:0.00015,lng:-0.00002}
   ];
   const markers=[];
+  const hiddenMarkers=new Set();
   let started=false,tries=0,busy=false,resultNeedsSave=false;
 
   function todayKst(){
@@ -66,7 +67,7 @@
   function currentZoom(){try{return naverMap.getZoom()}catch(_){return 0}}
   function syncVisibility(){
     const hide=hiddenByRoute();
-    markers.forEach(m=>{try{m.setMap(hide?null:naverMap)}catch(_){}});
+    markers.forEach(m=>{try{m.setMap(hide||hiddenMarkers.has(m)?null:naverMap)}catch(_){}});
   }
   function hideAll(){markers.forEach(m=>{try{m.setMap(null)}catch(_){}})}
   function clear(){hideAll();markers.length=0}
@@ -209,6 +210,7 @@
     if(busy)return;
     busy=true;
     try{
+      await new Promise(resolve=>setTimeout(resolve,720));
       const pos=await getPosition();
       const res=await fetch(ENDPOINT,{
         method:'POST',
@@ -230,6 +232,7 @@
         return;
       }
       saveHistory({monster_id:meta.def.id,shop_id:TARGET_SHOP_ID,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
+      hiddenMarkers.add(meta.marker);
       try{meta.marker.setMap(null)}catch(_){}
       if(data.result==='failed'){
         showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');
@@ -290,7 +293,7 @@
       const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size);
     }catch(_){}
 
-    ctx.fillStyle='#2d2832';ctx.font='950 64px sans-serif';ctx.fillText(def.name,540,650);
+    ctx.fillStyle='#2d2832';ctx.font='950 64px "DotGothic16",monospace';ctx.fillText(def.name,540,650);
     // compact meta chips
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
     const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;
@@ -306,7 +309,7 @@
     ctx.fillStyle='#fffdf9';ctx.fillRect(rx+8,ry+8,rw-16,rh-16);
     ctx.font='950 58px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,935);
     if(win){
-      ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1005,760,44,2);
+      ctx.fillStyle='#312944';ctx.font='900 34px "DotGothic16",monospace';wrapText(ctx,r.title||'당첨 상품',540,1005,760,44,2);
       if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1090)}
     }
     }
@@ -362,7 +365,10 @@
         document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));
         try{marker.getElement?.()?.querySelector?.('.funy-mon-marker')?.classList.add('is-selected')}catch(_){}
         const markerEl=document.querySelector('[aria-label="'+d.name+' 포획"]');
-        if(markerEl)markerEl.classList.add('is-selected');
+        if(markerEl){
+          markerEl.classList.add('is-selected');
+          markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>');
+        }
         catchMonster(meta);
       });
     });

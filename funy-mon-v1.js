@@ -229,6 +229,7 @@
         return;
       }
       saveHistory({monster_id:meta.def.id,shop_id:TARGET_SHOP_ID,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
+      try{meta.marker.setMap(null)}catch(_){}
       if(data.result==='failed'){
         showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');
         return;
@@ -256,6 +257,12 @@
   function loadCanvasImage(src){
     return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>resolve(im);im.onerror=reject;im.src=src});
   }
+  function notifyImageSaved(){
+    let n=document.getElementById('funyMonSaveNotice');
+    if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}
+    n.textContent='이미지 저장이 완료되었습니다.';n.classList.add('show');
+    clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200);
+  }
   async function savePrizeImage(data,def){
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;
     const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
@@ -268,9 +275,8 @@
     ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
 
     // Header: mirror the restrained FUNY MON sheet instead of a large banner title.
-    ctx.textAlign='center';ctx.fillStyle='#786b88';ctx.font='900 23px ui-monospace,monospace';ctx.fillText('FUNY PIN',540,72);
-    ctx.fillStyle='#2d2832';ctx.font='950 42px sans-serif';ctx.fillText('FUNY MON',540,120);
-    ctx.fillStyle='#d9d2e1';ctx.fillRect(420,145,240,4);
+    ctx.textAlign='center';ctx.fillStyle='#786b88';ctx.font='900 24px ui-monospace,monospace';ctx.fillText('FUNY MON',540,88);
+    ctx.fillStyle='#d9d2e1';ctx.fillRect(450,116,180,4);
 
     // Monster aura + individual FX.
     const aura=ctx.createRadialGradient(540,365,30,540,365,270);
@@ -293,28 +299,25 @@
     const rx=80,ry=845,rw=920,rh=330;
     ctx.fillStyle='#8f82a7';roundRect(ctx,rx,ry,rw,rh,12);
     ctx.fillStyle='#fffdf9';roundRect(ctx,rx+8,ry+8,rw-16,rh-16,9);
-    ctx.fillStyle='#786b88';ctx.font='900 22px ui-monospace,monospace';ctx.fillText('REWARD',540,900);
-    ctx.font='950 52px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,965);
+    ctx.font='950 52px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,940);
     if(win){
       ctx.fillStyle='#312944';ctx.font='900 34px sans-serif';wrapText(ctx,r.title||'당첨 상품',540,1025,760,44,2);
       if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1110)}
     }else{
       ctx.fillStyle='#746b78';ctx.font='800 25px sans-serif';ctx.fillText('아쉬워요! 다음 기회에 다시 도전해보세요!',540,1040);
     }
-    ctx.fillStyle='#8c8491';ctx.font='700 21px sans-serif';ctx.fillText(win?'이미지를 저장한 뒤 이벤트 게시물 댓글로 등록해주세요.':'FUNY MON 포획 완료',540,1150);
-
-    ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
+        ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
     const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.png';
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(blob){
       const file=new File([blob],fileName,{type:'image/png'});
       if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});return}
+        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}
         catch(e){if(e&&e.name==='AbortError')return}
       }
       const url=URL.createObjectURL(blob),a=document.createElement('a');
       a.download=fileName;a.href=url;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),1500);
+      setTimeout(()=>URL.revokeObjectURL(url),1500);notifyImageSaved();
     }
   }
 

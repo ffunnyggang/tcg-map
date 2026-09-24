@@ -1,6 +1,6 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-24T14:29:24.469778+00:00",
+  "updatedAt": "2026-09-24T15:29:01.704008+00:00",
   "count": 60,
   "items": [
     {
@@ -11,10 +11,10 @@
       "excerpt": "30주년 뮤 사르",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-뮤-사르-PM0203RA",
-      "views": 30,
+      "views": 32,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.3
+      "popularityScore": 3.32
     },
     {
       "category": "자유 게시판",
@@ -24,10 +24,10 @@
       "excerpt": "만들어주신 사이트 도움이 많이 되었습니다 ~",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/bea31271-f3c6-4599-905c-9a5f7c9be99a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-하고-왔습니다-PWMwwQWj",
-      "views": 45,
-      "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.45
+      "views": 47,
+      "likes": 1,
+      "comments": 3,
+      "popularityScore": 9.47
     },
     {
       "category": "자유 게시판",
@@ -336,10 +336,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 125,
+      "views": 126,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.25
+      "popularityScore": 19.26
     },
     {
       "category": "카드 자랑",

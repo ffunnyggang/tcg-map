@@ -65,7 +65,7 @@
   }
   function currentZoom(){try{return naverMap.getZoom()}catch(_){return 0}}
   function syncVisibility(){
-    const hide=hiddenByRoute()||currentZoom()<14;
+    const hide=hiddenByRoute();
     markers.forEach(m=>{try{m.setMap(hide?null:naverMap)}catch(_){}});
   }
   function hideAll(){markers.forEach(m=>{try{m.setMap(null)}catch(_){}})}
@@ -342,14 +342,17 @@
     }
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
     const shop=(typeof SHOPS!=='undefined'?SHOPS:[]).find(s=>s.id===TARGET_SHOP_ID&&s._coord);
-    if(!shop){if(tries++<80)setTimeout(spawn,250);return}
+    if(!shop){
+      if(tries++<240)setTimeout(spawn,500);
+      return
+    }
     started=true;
     defs.filter(d=>d.spawnable).forEach((d,i)=>{
       const off=offsets[i],lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
       const html='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
       const marker=new naver.maps.Marker({
         position:new naver.maps.LatLng(lat,lng),
-        map:hiddenByRoute()||currentZoom()<14?null:naverMap,
+        map:hiddenByRoute()?null:naverMap,
         clickable:true,zIndex:120,
         icon:{content:html,anchor:new naver.maps.Point(24,34)}
       });
@@ -362,8 +365,12 @@
   }
   window.addEventListener('hashchange',syncVisibility);
   window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});
-  new MutationObserver(syncVisibility).observe(document.body,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});
+  new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   setTimeout(spawn,450);
+  setTimeout(()=>{if(!started){tries=0;spawn()}},2500);
+  setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
   window.FUNY_MON_PROTO={
     respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},
     count:()=>markers.length,

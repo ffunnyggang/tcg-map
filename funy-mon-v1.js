@@ -326,11 +326,13 @@
     }
     }
         ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
-    const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.png';
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    const isAndroid=/Android/i.test(navigator.userAgent);
+    const mime=isAndroid?'image/jpeg':'image/png';
+    const ext=isAndroid?'jpg':'png';
+    const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
     if(blob){
-      const isAndroid=/Android/i.test(navigator.userAgent);
-      const file=new File([blob],fileName,{type:'image/png'});
+      const file=new File([blob],fileName,{type:mime});
       if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
         try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}
         catch(e){if(e&&e.name==='AbortError')return}

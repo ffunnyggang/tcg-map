@@ -63,3 +63,8 @@
 
 /* Avatar picker: exact front-facing center frame from 3x4 (1086x1448) sprite */
 .map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px;height:52px;margin:0 auto;background-image:var(--preview-sheet)!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated;overflow:hidden}
+
+/* Canonical 1086x1448 / 3x4 sprite rules. Source cell = 362x362. */
+.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated!important;overflow:hidden!important}
+.funy-current-avatar{width:46px!important;height:46px!important;background-size:138px 184px!important;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px)!important;background-repeat:no-repeat!important;overflow:hidden!important}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}

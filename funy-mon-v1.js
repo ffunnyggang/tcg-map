@@ -29,6 +29,7 @@
   const markers=[];
   const hiddenMarkers=new Set();
   const hiddenKeys=new Set();
+  const markerKeys=new Set();
   let started=false,tries=0,busy=false,resultNeedsSave=false;
 
   function todayKst(){
@@ -71,7 +72,7 @@
     markers.forEach(m=>{try{m.setMap(hide||hiddenMarkers.has(m)||hiddenKeys.has(m.__funyMonKey)?null:naverMap)}catch(_){}});
   }
   function hideAll(){markers.forEach(m=>{try{m.setMap(null)}catch(_){}})}
-  function clear(){hideAll();markers.length=0}
+  function clear(){hideAll();markers.length=0;markerKeys.clear()}
   function defById(id){return defs.find(x=>x.id===id)||defs[0]}
 
   function ensureModal(){
@@ -368,7 +369,7 @@
         const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
         const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
         const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});
-        const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
+        const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
         naver.maps.Event.addListener(marker,'click',()=>{
           if(busy)return;
           document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));

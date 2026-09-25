@@ -1,1 +1,40 @@
-{"expo":{"name":"FUNY PIN","slug":"funy-pin","scheme":"funypin","version":"0.1.0","orientation":"portrait","userInterfaceStyle":"light","plugins":["expo-router","expo-secure-store"],"ios":{"supportsTablet":false,"bundleIdentifier":"kr.funypin.app"},"android":{"package":"kr.funypin.app"},"experiments":{"typedRoutes":true}}}
+{
+  "expo": {
+    "name": "FUNY PIN",
+    "slug": "funy-pin",
+    "scheme": "funypin",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-secure-store",
+        {}
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "현재 위치 주변의 카드샵과 FUNYMON을 찾기 위해 위치 권한이 필요합니다."
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "kr.funypin.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "현재 위치 주변의 카드샵과 FUNYMON을 찾기 위해 위치 권한이 필요합니다."
+      }
+    },
+    "android": {
+      "package": "kr.funypin.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

@@ -39,7 +39,7 @@
     if(!wrap) return;
     let toast=document.getElementById('map-location-toast');
     if(!toast){toast=document.createElement('div');toast.id='map-location-toast';toast.className='map-location-toast';wrap.appendChild(toast);}
-    toast.textContent=message;toast.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toast.hidden=true},2600);
+    toast.textContent=message;const btn=document.getElementById('map-location-btn');if(btn){const wrapRect=wrap.getBoundingClientRect(),btnRect=btn.getBoundingClientRect();toast.style.top=(btnRect.top-wrapRect.top+(btnRect.height/2))+'px';toast.style.bottom='auto';toast.style.transform='translateY(-50%)'}toast.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toast.hidden=true},2600);
   }
 
   function closePermissionGuide(){

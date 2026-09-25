@@ -1,4 +1,0 @@
-import { useEffect,useState } from 'react';
-import { ActivityIndicator,FlatList,SafeAreaView,Text,View } from 'react-native';
-import { AppShop,getShops } from '../lib/shops';
-export default function Home(){const [shops,setShops]=useState<AppShop[]>([]);const [error,setError]=useState('');useEffect(()=>{getShops().then(setShops).catch(e=>setError(String(e.message||e)))},[]);return <SafeAreaView style={{flex:1,padding:20}}><Text style={{fontSize:26,fontWeight:'700'}}>FUNY PIN</Text><Text style={{marginTop:4,marginBottom:16}}>내 취향의 카드샵을 찾아보세요</Text>{error?<Text>{error}</Text>:shops.length===0?<ActivityIndicator/>:<FlatList data={shops} keyExtractor={x=>x.id} renderItem={({item})=><View style={{paddingVertical:12,borderBottomWidth:1,borderBottomColor:'#eee'}}><Text style={{fontWeight:'700'}}>{item.name}</Text><Text>{item.area||item.city||item.address}</Text></View>}/>}</SafeAreaView>}

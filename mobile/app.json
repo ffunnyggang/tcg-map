@@ -1,0 +1,1 @@
+{"expo":{"name":"FUNY PIN","slug":"funy-pin","scheme":"funypin","version":"0.1.0","orientation":"portrait","userInterfaceStyle":"light","plugins":["expo-router","expo-secure-store"],"ios":{"supportsTablet":false,"bundleIdentifier":"kr.funypin.app"},"android":{"package":"kr.funypin.app"},"experiments":{"typedRoutes":true}}}

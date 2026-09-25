@@ -1,0 +1,8 @@
+import 'react-native-url-polyfill/auto';
+import * as SecureStore from 'expo-secure-store';
+import { createClient } from '@supabase/supabase-js';
+
+const url='https://wdttzpbmqavaqfcbaywj.supabase.co';
+const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const storage={getItem:(k:string)=>SecureStore.getItemAsync(k),setItem:(k:string,v:string)=>SecureStore.setItemAsync(k,v),removeItem:(k:string)=>SecureStore.deleteItemAsync(k)};
+export const supabase=createClient(url,key,{auth:{storage,autoRefreshToken:true,persistSession:true,detectSessionInUrl:false}});

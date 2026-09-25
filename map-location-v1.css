@@ -68,6 +68,3 @@
 .map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated!important;overflow:hidden!important}
 .funy-current-avatar{width:46px!important;height:46px!important;background-size:138px 184px!important;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px)!important;background-repeat:no-repeat!important;overflow:hidden!important}
 @keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}
-
-/* GPS success toast: compact single-line bubble beside location control */
-.map-location-toast{right:70px!important;bottom:18px!important;top:auto!important;width:max-content!important;height:auto!important;min-height:0!important;max-width:min(210px,calc(100vw - 100px))!important;padding:7px 10px!important;line-height:1.2!important;white-space:nowrap!important;transform:none!important}

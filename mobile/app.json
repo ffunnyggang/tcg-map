@@ -41,6 +41,12 @@
     },
     "experiments": {
       "typedRoutes": true
+    },
+    "owner": "funypin",
+    "extra": {
+      "eas": {
+        "projectId": "777bf7d4-7850-48f4-8560-a04478afb878"
+      }
     }
   }
 }

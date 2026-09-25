@@ -50,3 +50,9 @@
 
 /* Current-location toast: place left of the control, vertically centered to the button */
 .map-location-toast{right:70px;bottom:18px;max-width:230px;transform:translateY(0);white-space:normal}
+
+/* Exact 362x362 cell crop for 1086x1448 (3x4) uploaded avatar sheets */
+.funy-current-location.is-avatar{width:48px;height:48px}
+.funy-current-avatar{left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);background-size:138px 184px;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px);background-repeat:no-repeat;overflow:hidden}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}
+.map-location-avatar-preview{width:52px;height:52px;background-size:156px 208px;background-position:-52px 0;background-repeat:no-repeat}

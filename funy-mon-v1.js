@@ -131,10 +131,10 @@
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',is_win:false,claim_code:null,image_url:null};
     const win=r.is_win===true;
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    return '<div class="funy-mon-reward-retro '+(win?'win':'lose')+'">'+(win?'당첨!':'꽝')+'</div>'+
+    return '<div class="funy-mon-reward-retro '+(win?'win':'lose')+'">'+esc(r.result_label||(win?'당첨!':'꽝'))+'</div>'+
       (win?'<strong class="funy-mon-reward-title">'+esc(r.title||'당첨 상품')+'</strong>':'')+
       (win&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">자세히보기</button>':'')+
-      (!win?'<p class="funy-mon-lose-copy">아쉬워요! 다음 기회에 다시 도전해보세요!</p>':'')+
+      (!win?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
       (win&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'')+
       (win&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'');
   }
@@ -162,7 +162,7 @@
       const max=reward.clientWidth||300,ratio=dx/max;
       const jitter=Math.min(10,dx*.045),rot=((Math.floor(dx/12)%2)?1:-1)*Math.min(2.2,dx/90);
       cover.style.transform='translateX('+jitter+'px) rotate('+rot+'deg)';
-      if(ratio>=.75){revealed=true;active=false;revealReward(data,def)}
+      if(ratio>=.60){revealed=true;active=false;revealReward(data,def)}
     };
     cover.onpointerup=cover.onpointercancel=()=>{if(!revealed&&active)reset()};
   }

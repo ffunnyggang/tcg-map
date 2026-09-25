@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-25T05:26:55.000965+00:00",
+  "updatedAt": "2026-09-25T06:33:40.541680+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "포켓몬카드 질문",
+      "author": "양심거래",
+      "publishedAt": "2026-09-25T06:26:33.18576Z",
+      "excerpt": "25주년 카드중에 리자몽 거북왕 이상해꽃이 있는데 PSA10기준으로 리자몽이 거북왕 이상해꽃보다 유난히 훨씬 비싼이유가 뭘까요?같이 나왔는데",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-질문-j8roxeaP",
+      "views": 1,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.01
+    },
     {
       "category": "자유 게시판",
       "title": "원래 티씨지 플레이어였다가 고레어 댁을 만드는 과정에서 수집에 빠지게 되",
@@ -24,10 +37,10 @@
       "excerpt": "포켓몬에 대한 지식은 많은데 카드에는 관심이 없었는데 요즘 카드에 관심에 생겨서 알아가고 있습니다. PSA10 25주년 레시라무를 사려는데 크림에서 사려고 합니다 카드를 크림에서 사도되는게 맞는지 궁금하고 지금도 구할수 있는 카드말고 이제는 한정판이 된 카드를 구매하고 싶습니다. 의견",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-처음-입문자-질문-ARoLML3P",
-      "views": 4,
+      "views": 12,
       "likes": 1,
       "comments": 6,
-      "popularityScore": 15.04
+      "popularityScore": 15.12
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "레시라무 좋아합니다!",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/레시라무-좋아합니다-PmVlJ1ed",
-      "views": 16,
+      "views": 17,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.16
+      "popularityScore": 9.17
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "안녕하세요 잘부탁드립니다!",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-잘부탁드립니다-dY0DVJyP",
-      "views": 17,
+      "views": 18,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.17
+      "popularityScore": 3.18
     },
     {
       "category": "자유 게시판",
@@ -134,19 +147,6 @@
       "popularityScore": 8.43
     },
     {
-      "category": "자유 게시판",
-      "title": "피카츄 이뻐요",
-      "author": "당근세상",
-      "publishedAt": "2026-09-23T03:33:28.456591Z",
-      "excerpt": "피카츄 이뻐요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-이뻐요-PV242aQP",
-      "views": 3,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
-    },
-    {
       "category": "정보 공유",
       "title": "🌕 FUNY PIN × CARDVAULT 한가위 방문 인증 이벤트 🐰🍂",
       "author": "퐌퐌퐌",
@@ -193,10 +193,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 83,
+      "views": 84,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.83
+      "popularityScore": 13.84
     },
     {
       "category": "카드거래",
@@ -206,10 +206,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 96,
+      "views": 97,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.96
+      "popularityScore": 54.97
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 129,
+      "views": 130,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.29
+      "popularityScore": 19.3
     },
     {
       "category": "카드 자랑",
@@ -440,10 +440,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 203,
+      "views": 204,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.03
+      "popularityScore": 14.04
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -466,10 +466,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 103,
+      "views": 104,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.03
+      "popularityScore": 9.04
     },
     {
       "category": "정보 공유",
@@ -661,10 +661,10 @@
       "excerpt": "😮 방문했던 카드샵 중 가장 넓은 규모 매장에 들어가자마자 가장 먼저 느낀 점은 생각보다 규모가 정말 크고 쾌적하다는 점이었습니다 지금까지 방문했던 카드샵 중에서도 손에 꼽을 정도로 넓은 공간이었는데요 매장 내부는 오리파 / 싱글카드 / 등급카드 / 박스 제품 공간으로 나뉘어 있어 원하",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178754170555540308b27df7d1ee27046a0f3a9ab4fad6b4a417c9c6aa279c06bcd029100743f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/강남-카드노바-오픈-후기-dXq39l3j",
-      "views": 105,
+      "views": 106,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 6.05
+      "popularityScore": 6.0600000000000005
     },
     {
       "category": "카드깡/카드샵 후기",

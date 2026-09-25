@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-25T11:27:58.119330+00:00",
+  "updatedAt": "2026-09-25T12:33:34.936000+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "가격 궁금합니닷…",
+      "author": "당근을흔들어주세요",
+      "publishedAt": "2026-09-25T12:26:29.668329Z",
+      "excerpt": "피카츄만 모아서 이번에 30주년 피카츄 많이나온데서 2박스깟는데 피카츄는 30종중 27종 모았고 중복있어요 뮤랑 이런거 뽑았는데 가격어느정도예요? 잘안나와잇ㅇㅓ서욥.. 밑에 두장 가격궁금합니다 나머지도 알랴주시면 감사해욤!!",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179033911948764f1209f85f49a67697318c40cb1249299e027436277e53914255b1592e6060b0.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가격-궁금합니닷-dGGDYq3d",
+      "views": 3,
+      "likes": 3,
+      "comments": 0,
+      "popularityScore": 9.03
+    },
+    {
+      "category": "자유 게시판",
+      "title": "피카츄만 모아요!!",
+      "author": "당근을흔들어주세요",
+      "publishedAt": "2026-09-25T12:25:03.679907Z",
+      "excerpt": "피카츄만 모아요!!",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄만-모아요-j8rop0QP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "아직 없습니다. 뽑고 싶어요",
@@ -24,10 +50,10 @@
       "excerpt": "25주년 카드중에 리자몽 거북왕 이상해꽃이 있는데 PSA10기준으로 리자몽이 거북왕 이상해꽃보다 유난히 훨씬 비싼이유가 뭘까요?같이 나왔는데",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-질문-j8roxeaP",
-      "views": 19,
+      "views": 21,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.19
+      "popularityScore": 3.21
     },
     {
       "category": "자유 게시판",
@@ -108,32 +134,6 @@
       "popularityScore": 9.5
     },
     {
-      "category": "자유 게시판",
-      "title": "반고흐 피카츄 카드",
-      "author": "우니_24kg",
-      "publishedAt": "2026-09-24T05:18:58.840014Z",
-      "excerpt": "반고흐 피카츄 카드",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/반고흐-피카츄-카드-dXE6WQaj",
-      "views": 5,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.05
-    },
-    {
-      "category": "자유 게시판",
-      "title": "카드샵 현황을 실시간으로 공유하기⚡️",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-09-23T10:14:04.376641Z",
-      "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
-      "views": 40,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.4
-    },
-    {
       "category": "정보 공유",
       "title": "요즘 30주년 핫해서 해외판을 직구나 개인거래로 구하시는분 많은데",
       "author": "유기오",
@@ -206,10 +206,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 101,
+      "views": 102,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.01
+      "popularityScore": 55.02
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 132,
+      "views": 134,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.32
+      "popularityScore": 19.34
     },
     {
       "category": "카드 자랑",
@@ -609,10 +609,10 @@
       "excerpt": "아키하바라역에서 가까운 카드윙스 🃏🇯🇵 📍CARDWINGS 아키하바라역앞점 東京都千代田区外神田1-15-15 🚶아키하바라역 전기상점가 출구 도보 1분 숙소 체크인 전 잠깐 들러 포켓몬카드 위주로 둘러봤어요! 싱글카드가 많고 희귀도·타입별로 잘 분류되어 있어 구경하기 편했습니다 👀 가격은 평",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17878247866423675224f137d6a185d08a55706ea6f768657361f6c35227a8f0c5ad15c481ecc0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아키하바라-카드샵-추천-카드윙스-A4Nywy2d",
-      "views": 43,
+      "views": 44,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.43
+      "popularityScore": 0.44
     },
     {
       "category": "카드깡/카드샵 후기",

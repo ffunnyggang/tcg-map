@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>FUNY PIN | CMS HOME 테스트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f4f7;color:#28232e;font-family:"Pretendard Variable",Pretendard,sans-serif}.shell{width:min(100%,520px);min-height:100dvh;margin:auto;background:#fff}.head{position:sticky;top:0;z-index:5;height:58px;display:flex;align-items:center;padding:0 16px;background:rgba(255,255,255,.96);border-bottom:1px solid #eeeaf1}.head b{font-size:18px}.badge{margin-left:auto;padding:5px 8px;border-radius:999px;background:#f0e9ff;color:#7557c8;font-size:9px;font-weight:850}.intro{padding:16px;background:#faf8fc;border-bottom:1px solid #eeeaf1}.intro b{font-size:13px}.intro p{margin:5px 0 0;color:#8d8591;font-size:10px;line-height:1.5}.section{padding:20px 14px;border-bottom:9px solid #f4f4f5}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}.section-head h2{margin:0;font-size:17px;letter-spacing:-.04em}.section-head span{font-size:9px;color:#9b939f}.cards{display:grid;gap:10px}.card{display:grid;grid-template-columns:96px minmax(0,1fr) 18px;gap:12px;align-items:center;min-height:96px;padding:10px;border:1px solid #ece8ef;border-radius:15px;background:#fff;color:inherit;text-decoration:none}.thumb{width:96px;height:76px;border-radius:11px;object-fit:cover;background:#f2eff4}.thumb.empty{display:grid;place-items:center;color:#a49ca8;font-size:9px}.copy{min-width:0}.copy b{display:block;font-size:13px;line-height:1.35}.copy p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin:5px 0 0;color:#7f7784;font-size:10px;line-height:1.45}.meta{margin-top:6px;color:#9b939f;font-size:9px}.arrow{color:#a49ca8;font-size:20px}.empty-state{padding:28px 12px;text-align:center;color:#9b939f;font-size:11px;border:1px dashed #ddd7e1;border-radius:14px}.error{color:#b42318}.footer{padding:18px 14px 28px;color:#9b939f;font-size:9px;line-height:1.5}
+</style>
+</head>
+<body><main class="shell"><header class="head"><b>FUNY PIN CMS</b><span class="badge">TEST</span></header><div class="intro"><b>HOME 콘텐츠 테스트 렌더링</b><p>운영 HOME의 Inpock iframe은 변경하지 않습니다. Supabase CMS 데이터만 별도로 렌더링합니다.</p></div><section class="section"><div class="section-head"><h2>카드샵 소식</h2><span>home_news</span></div><div id="news" class="cards"><div class="empty-state">불러오는 중...</div></div></section><div class="footer">TEST PAGE · 검색엔진 비노출</div></main>
+<script>
+const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function get(path){const r=await fetch(BASE+path,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+(async()=>{const root=document.getElementById('news');try{
+ const ps=await get('/rest/v1/cms_placements?select=content_id,sort_order&placement=eq.home_news&is_active=eq.true&order=sort_order.asc');
+ if(!ps.length){root.innerHTML='<div class="empty-state">등록된 카드샵 소식이 없습니다.</div>';return}
+ const ids=ps.map(x=>x.content_id);const rows=await get('/rest/v1/cms_contents?select=id,title,subtitle,description,image_url,target_url,platform,published_at,shop_id&id=in.('+ids.join(',')+')');
+ const map=Object.fromEntries(rows.map(x=>[x.id,x]));const items=ps.map(p=>map[p.content_id]).filter(Boolean);
+ root.innerHTML=items.map(x=>{const body='<div class="thumb '+(x.image_url?'':'empty')+'">'+(x.image_url?'<img class="thumb" src="'+esc(x.image_url)+'" alt="">':'이미지 없음')+'</div><div class="copy"><b>'+esc(x.title)+'</b>'+(x.description||x.subtitle?'<p>'+esc(x.description||x.subtitle)+'</p>':'')+'<div class="meta">'+esc([x.platform,x.shop_id].filter(Boolean).join(' · ')||'FUNY PIN')+'</div></div><span class="arrow">›</span>';return x.target_url?'<a class="card" href="'+esc(x.target_url)+'">'+body+'</a>':'<article class="card">'+body+'</article>'}).join('');
+ }catch(e){root.innerHTML='<div class="empty-state error">CMS 데이터 조회 실패: '+esc(e.message)+'</div>'}})();
+</script></body></html>

@@ -60,3 +60,6 @@
 /* Keep location toast compact when positioned left of the button */
 .map-location-toast{right:70px;bottom:18px;width:max-content;max-width:210px;padding:8px 11px;white-space:nowrap;box-sizing:border-box}
 @media(max-width:430px){.map-location-toast{max-width:min(210px,calc(100vw - 100px));font-size:10.8px}}
+
+/* Avatar picker: exact front-facing center frame from 3x4 (1086x1448) sprite */
+.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px;height:52px;margin:0 auto;background-image:var(--preview-sheet)!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated;overflow:hidden}

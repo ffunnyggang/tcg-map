@@ -1,0 +1,3 @@
+import { supabase } from './supabase';
+export type AppShop={id:string;name:string;name_en:string|null;country_code:'KR'|'JP';city:string|null;area:string|null;address:string;latitude:number;longitude:number;tcg:Record<string,{status:boolean|null;detail:string|null}>;features:Record<string,{value:boolean|null;detail:string|null}>;images:Array<{id:string;type:string;source_path:string|null;storage_path:string|null;alt_text:string|null;sort_order:number;is_primary:boolean}>};
+export async function getShops(){const {data,error}=await supabase.from('v_app_shops').select('*').order('id');if(error)throw error;return (data??[]) as AppShop[];}

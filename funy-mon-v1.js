@@ -133,14 +133,14 @@
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.action_label||'자세히보기')+'</button>':'';
+    const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.url_action_label||r.action_label||'자세히보기')+'</button>':'';
     return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+
       (!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+
       (!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+
-      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.action_label||'이미지 보기')+'</button>':'')+
+      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+
       (!lose?action:'')+
       (lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
-      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b><button class="funy-mon-copy-code" type="button" data-copy-claim="'+esc(r.claim_code)+'" aria-label="당첨 코드 복사" title="복사">⧉</button></div>':'');
+      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -152,7 +152,6 @@
     if((data.reward?.reward_type|| (data.reward?.is_win===true?'win':'lose'))!=='lose')document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
     reward.querySelector('[data-reward-image]')?.addEventListener('click',e=>openRewardImage(e.currentTarget.dataset.rewardImage));
     reward.querySelector('[data-reward-url]')?.addEventListener('click',e=>{const url=e.currentTarget.dataset.rewardUrl;if(url)window.open(url,'_blank','noopener,noreferrer')});
-    reward.querySelector('[data-copy-claim]')?.addEventListener('click',async e=>{const code=e.currentTarget.dataset.copyClaim||'';try{await navigator.clipboard.writeText(code);alert('당첨 코드가 복사되었습니다.')}catch(_){const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('당첨 코드가 복사되었습니다.')}});
     save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
     setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
@@ -330,8 +329,9 @@
     const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.png';
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
     if(blob){
+      const isAndroid=/Android/i.test(navigator.userAgent);
       const file=new File([blob],fileName,{type:'image/png'});
-      if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
+      if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
         try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}
         catch(e){if(e&&e.name==='AbortError')return}
       }

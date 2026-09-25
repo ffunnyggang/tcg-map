@@ -28,7 +28,7 @@
   function avatarColor(){return avatarId==='female2'?'#f06486':avatarId==='female1'?'#a76ee8':'#7057c7'}
   function syncAvatarButton(){const b=document.getElementById('map-location-avatar-btn');if(b)b.classList.toggle('is-active',avatarOn)}
   function directionFromHeading(v){if(!Number.isFinite(v))return avatarDirection;v=((v%360)+360)%360;return v>=315||v<45?'up':v<135?'right':v<225?'down':'left'}
-  function avatarStyle(){const row={down:0,right:1,up:2,left:3}[avatarDirection]||0;return '--avatar-sheet:url(\''+(AVATAR_FILES[avatarId]||AVATAR_FILES.male1)+'\');--avatar-x:'+avatarFrame+';--avatar-y:'+row}
+  function avatarStyle(){const row={down:0,right:1,up:2,left:3}[avatarDirection]||0,xp=['0%','50%','100%'][avatarFrame]||'50%',yp=['0%','33.3333%','66.6667%','100%'][row]||'0%';return '--avatar-sheet:url(\''+(AVATAR_FILES[avatarId]||AVATAR_FILES.male1)+'\');--avatar-xp:'+xp+';--avatar-yp:'+yp}
   function markerContent(){return '<div class="funy-current-location'+(avatarOn?' is-avatar':'')+(avatarMoving?' is-moving':'')+'" style="--avatar-color:'+avatarColor()+';'+avatarStyle()+'" aria-hidden="true"><span class="funy-current-heading"></span>'+(avatarOn?'<span class="funy-current-avatar"></span>':'')+'</div>'}
   function setAvatarMotion(moving,dir){if(dir)avatarDirection=dir;avatarMoving=!!moving;if(!moving)avatarFrame=1;const el=document.querySelector('.funy-current-location');if(!el||!avatarOn)return;el.classList.toggle('is-moving',avatarMoving);el.style.setProperty('--avatar-y',({down:0,right:1,up:2,left:3}[avatarDirection]||0));if(!avatarMoving)el.style.setProperty('--avatar-x','1')}
   function pulseAvatarMovement(dir){setAvatarMotion(true,dir);clearTimeout(avatarStopTimer);avatarStopTimer=setTimeout(()=>setAvatarMotion(false,dir),900)}

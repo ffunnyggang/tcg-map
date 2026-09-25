@@ -56,3 +56,7 @@
 .funy-current-avatar{left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);background-size:138px 184px;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px);background-repeat:no-repeat;overflow:hidden}
 @keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}
 .map-location-avatar-preview{width:52px;height:52px;background-size:156px 208px;background-position:-52px 0;background-repeat:no-repeat}
+
+/* Keep location toast compact when positioned left of the button */
+.map-location-toast{right:70px;bottom:18px;width:max-content;max-width:210px;padding:8px 11px;white-space:nowrap;box-sizing:border-box}
+@media(max-width:430px){.map-location-toast{max-width:min(210px,calc(100vw - 100px));font-size:10.8px}}

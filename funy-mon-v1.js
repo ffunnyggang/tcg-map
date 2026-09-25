@@ -355,7 +355,8 @@
       const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;
       const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);
       const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));
-      selected.slice(0,count).forEach((d,i)=>{
+      const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
+      visible.forEach((d,i)=>{
         const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};
         const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
         const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';

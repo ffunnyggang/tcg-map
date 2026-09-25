@@ -17,6 +17,12 @@
         {
           "locationWhenInUsePermission": "현재 위치 주변의 카드샵과 FUNYMON을 찾기 위해 위치 권한이 필요합니다."
         }
+      ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": false
+        }
       ]
     ],
     "ios": {

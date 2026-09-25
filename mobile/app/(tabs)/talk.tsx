@@ -1,0 +1,1 @@
+import { SafeAreaView,Text,View } from 'react-native';export default function Talk(){return <SafeAreaView style={{flex:1,backgroundColor:'#fff'}}><View style={{padding:20}}><Text style={{fontSize:24,fontWeight:'800'}}>TALK</Text><Text style={{marginTop:8}}>FUNY PIN 커뮤니티 영역</Text></View></SafeAreaView>}

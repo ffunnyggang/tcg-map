@@ -78,6 +78,9 @@
 /* FUNY MON claim download spacing */
 .mon-claim-title{margin-bottom:12px}
 @media(max-width:899px){.mon-claim-title{margin-bottom:14px!important}}
+
+/* FUNY MON mobile event value emphasis */
+@media(max-width:899px){.mon-admin-row>.mon-admin-period{display:flex!important;align-items:center;gap:8px;white-space:nowrap!important;overflow:hidden}.mon-admin-row>.mon-admin-period:before{display:inline!important;margin:0!important;flex:none}.mon-admin-row>.mon-admin-period b{display:inline!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;font-weight:850!important;color:#302936!important}.mon-admin-row>.mon-admin-meta b,.mon-admin-row>.mon-admin-meta span{font-weight:850!important;color:#302936!important}.mon-admin-row>.mon-admin-meta:before{color:#9a929e!important;font-weight:800!important}}
 </style><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script><script src="map-google-config.js"></script><script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9"></script><script src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script></head><body><main class="shell"><header class="head"><strong>FUNY PIN 관리자</strong><span class="test">ADMIN</span><button id="headerLogout" class="header-logout hidden" type="button">로그아웃</button></header>
 <div class="admin-layout">
 <aside id="side" class="side"><div class="side-title">MANAGEMENT</div><nav id="adminTabs" class="admin-tabs"><button class="on" data-admin-tab="stores">카드샵 관리</button><button data-admin-tab="shop">매장 등록·수정 요청</button><button data-admin-tab="live">LIVE PIN 신고</button><button data-admin-tab="event">이벤트 응모</button><button data-admin-tab="mon">FUNY MON</button></nav></aside>

@@ -89,7 +89,7 @@
     const pos=new naver.maps.LatLng(lat,lng);
     if(!currentMarker){currentMarker=new naver.maps.Marker({position:pos,map:naverMap,zIndex:900,title:'내 위치',icon:{content:markerContent(),anchor:new naver.maps.Point(18,18)}})}else{currentMarker.setPosition(pos);currentMarker.setMap(naverMap)}
     if(Number.isFinite(accuracy)&&accuracy>0){if(!accuracyCircle){accuracyCircle=new naver.maps.Circle({map:naverMap,center:pos,radius:accuracy,strokeColor:'#7057C7',strokeOpacity:.18,strokeWeight:1,fillColor:'#7057C7',fillOpacity:.06,clickable:false})}else{accuracyCircle.setCenter(pos);accuracyCircle.setRadius(accuracy);accuracyCircle.setMap(naverMap)}}
-    if(Number.isFinite(heading))applyHeading(heading);if(shouldCenter){naverMap.setCenter(pos);try{if(naverMap.getZoom()<15)naverMap.setZoom(15)}catch(e){}}
+    if(Number.isFinite(heading))applyHeading(heading);if(shouldCenter){naverMap.setCenter(pos)}
     const btn=document.getElementById('map-location-btn');if(btn)btn.classList.add('is-active');
   }
 

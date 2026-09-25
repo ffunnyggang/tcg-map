@@ -1,0 +1,1 @@
+import { SafeAreaView,Text,View } from 'react-native';export default function Pick(){return <SafeAreaView style={{flex:1,backgroundColor:'#fff'}}><View style={{padding:20}}><Text style={{fontSize:24,fontWeight:'800'}}>PICK</Text><Text style={{marginTop:8}}>정보 · 일정 · CREATOR · 깽퐌커플 리뷰</Text></View></SafeAreaView>}

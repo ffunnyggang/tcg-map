@@ -1,6 +1,6 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-25T09:29:02.963624+00:00",
+  "updatedAt": "2026-09-25T10:28:19.690742+00:00",
   "count": 60,
   "items": [
     {
@@ -12,9 +12,9 @@
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아직-없습니다-뽑고-싶어요-PM02ZBYA",
       "views": 1,
-      "likes": 0,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.01
     },
     {
       "category": "자유 게시판",
@@ -24,10 +24,10 @@
       "excerpt": "25주년 카드중에 리자몽 거북왕 이상해꽃이 있는데 PSA10기준으로 리자몽이 거북왕 이상해꽃보다 유난히 훨씬 비싼이유가 뭘까요?같이 나왔는데",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-질문-j8roxeaP",
-      "views": 16,
+      "views": 19,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.16
+      "popularityScore": 3.19
     },
     {
       "category": "자유 게시판",
@@ -50,23 +50,10 @@
       "excerpt": "포켓몬에 대한 지식은 많은데 카드에는 관심이 없었는데 요즘 카드에 관심에 생겨서 알아가고 있습니다. PSA10 25주년 레시라무를 사려는데 크림에서 사려고 합니다 카드를 크림에서 사도되는게 맞는지 궁금하고 지금도 구할수 있는 카드말고 이제는 한정판이 된 카드를 구매하고 싶습니다. 의견",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-처음-입문자-질문-ARoLML3P",
-      "views": 20,
+      "views": 21,
       "likes": 1,
       "comments": 6,
-      "popularityScore": 15.2
-    },
-    {
-      "category": "자유 게시판",
-      "title": "레시라무 좋아합니다!",
-      "author": "양심거래",
-      "publishedAt": "2026-09-25T03:38:47.142915Z",
-      "excerpt": "레시라무 좋아합니다!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/레시라무-좋아합니다-PmVlJ1ed",
-      "views": 19,
-      "likes": 3,
-      "comments": 0,
-      "popularityScore": 9.19
+      "popularityScore": 15.21
     },
     {
       "category": "자유 게시판",
@@ -115,10 +102,10 @@
       "excerpt": "만들어주신 사이트 도움이 많이 되었습니다 ~",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/bea31271-f3c6-4599-905c-9a5f7c9be99a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-하고-왔습니다-PWMwwQWj",
-      "views": 49,
+      "views": 50,
       "likes": 1,
       "comments": 3,
-      "popularityScore": 9.49
+      "popularityScore": 9.5
     },
     {
       "category": "자유 게시판",
@@ -132,6 +119,19 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.05
+    },
+    {
+      "category": "자유 게시판",
+      "title": "카드샵 현황을 실시간으로 공유하기⚡️",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-09-23T10:14:04.376641Z",
+      "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
+      "views": 40,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.4
     },
     {
       "category": "정보 공유",
@@ -193,10 +193,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 85,
+      "views": 86,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.85
+      "popularityScore": 13.86
     },
     {
       "category": "카드거래",
@@ -232,10 +232,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 70,
+      "views": 71,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 17.7
+      "popularityScore": 17.71
     },
     {
       "category": "카드 자랑",
@@ -492,10 +492,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 144,
+      "views": 145,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.4399999999999995
+      "popularityScore": 7.45
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -635,10 +635,10 @@
       "excerpt": "서울 용산 근처 어디쯤에서 10~15명 정도 규모로 포켓몬카드 트레이딩 오프라인 모임을 진행해보면 어떨까?하는 생각에 카페 멤버님들의 의견을 확인하고자 올려봅니다😁 그냥 편하고 자유롭게 수집 카드 자랑하고 트레이딩하는 자리로 참여 의사가 있으신 분들이 10~15명 정도 된다면 진행해볼게",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1015명-정도-규모로-포켓몬카드-트레이딩-모임을-진행한다면-AODMngDP",
-      "views": 127,
+      "views": 128,
       "likes": 5,
       "comments": 7,
-      "popularityScore": 30.27
+      "popularityScore": 30.28
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -778,10 +778,10 @@
       "excerpt": "맛집부터 취미까지, 당근 카페에서 관심 있는 주제에 대해 소통해보세요.",
       "image": "https://cafe.daangn.com/opengraph-image-12o0cb?1c7c1549b06c0934",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/집에-있는-카드인데-얼마나-할까요-dGGDgnNd",
-      "views": 34,
+      "views": 35,
       "likes": 5,
       "comments": 0,
-      "popularityScore": 15.34
+      "popularityScore": 15.35
     }
   ]
 }

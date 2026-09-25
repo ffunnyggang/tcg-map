@@ -14,11 +14,8 @@ async function loadShopsFromSupabase(){
     window.FUNY_SHOP_IMAGES_SOURCE=imageSource;
     try{
       if(typeof gtag==='function')gtag('event','shop_data_source',{
-        data_source:source,
-        image_source:imageSource,
-        load_time_ms:loadMs,
-        shop_count:SHOPS.length,
-        fallback_reason:fallbackReason||undefined
+        data_source:source,image_source:imageSource,load_time_ms:loadMs,
+        shop_count:SHOPS.length,fallback_reason:fallbackReason||undefined
       });
     }catch(_){}
   };
@@ -31,83 +28,68 @@ async function loadShopsFromSupabase(){
     return res.json();
   };
   try{
-    const [shops,tcgTypes,shopTcg,features,shopFeatures]=await Promise.all([
-      get('shops?select=*&is_active=eq.true&order=id.asc'),
-      get('tcg_types?select=id,code&is_active=eq.true'),
-      get('shop_tcg?select=shop_id,tcg_id,status,detail'),
-      get('features?select=id,code&is_active=eq.true'),
-      get('shop_features?select=shop_id,feature_id,value,detail')
-    ]);
+    const shops=await get('v_app_shops?select=*&order=id.asc');
     if(!Array.isArray(shops)||!shops.length)throw new Error('shop data empty');
     const rawIds=shops.map(s=>String(s.id||''));
     if(new Set(rawIds).size!==rawIds.length)throw new Error('duplicate shop id');
     if(shops.some(s=>! /^(KR|JP)-[A-Z]{3}-\d{3}$/.test(String(s.id||''))||!String(s.name||'').trim()||!String(s.address||'').trim()||!Number.isFinite(Number(s.latitude))||!Number.isFinite(Number(s.longitude))))throw new Error('invalid shop row');
 
-    const tcgCodeById=new Map(tcgTypes.map(x=>[String(x.id),x.code]));
-    const featureCodeById=new Map(features.map(x=>[String(x.id),x.code]));
-    const tcgByShop=new Map(),featureByShop=new Map();
-
     const tcgLegacy={pokemon:'pokemon',one_piece:'onePiece',dragon_ball:'dragonBall'};
-    for(const row of shopTcg){
-      const code=tcgLegacy[tcgCodeById.get(String(row.tcg_id))];
-      if(!code)continue;
-      if(!tcgByShop.has(row.shop_id))tcgByShop.set(row.shop_id,{pokemon:null,onePiece:null,dragonBall:null});
-      tcgByShop.get(row.shop_id)[code]=row.status;
-    }
-
     const featureLegacy={
       single:'single',graded:'graded',vintage:'vintage',oripa:'oripa',
       box:'box',pack:'pack',supplies:'supplies',buy:'buy',
       consignment:'consignment',grading:'grading',play_space:'playSpace',
       unmanned:'unmanned',tax_free:'taxFree'
     };
-    for(const row of shopFeatures){
-      const code=featureLegacy[featureCodeById.get(String(row.feature_id))];
-      if(!code)continue;
-      if(!featureByShop.has(row.shop_id))featureByShop.set(row.shop_id,{});
-      const target=featureByShop.get(row.shop_id);
-      target[code]=row.value;
-      if(row.detail!=null&&row.detail!=='')target[code+'Detail']=row.detail;
-    }
-
-    const mapped=shops.map(s=>({
-      id:s.id,
-      city:s.city,
-      name:s.name,
-      en:s.name_en,
-      country:s.country_code==='JP'?'일본':'대한민국',
-      area:s.area,
-      address:s.address,
-      ...(s.phone?{phone:s.phone}:{}),
-      ...(s.website_url?{website:s.website_url}:{}),
-      ...(s.instagram_url?{instagram:s.instagram_url}:{}),instagramFeedEnabled:s.instagram_feed_enabled,
-      ...(s.google_map_url?{google:s.google_map_url}:{}),
-      ...(s.naver_map_url?{naver:s.naver_map_url}:{}),
-      lat:s.latitude,
-      lng:s.longitude,
-      ...(s.nearest_station?{station:s.nearest_station}:{}),
-      ...(s.walk_minutes!=null?{walkMin:s.walk_minutes}:{}),
-      ...(s.parking_status?{parking:s.parking_status}:{}),
-      ...(s.hours_display?{hours:s.hours_display}:{}),
-      ...(s.closed_display?{closed:s.closed_display}:{}),
-      ...(s.status?{status:s.status}:{}),
-      eventHighlightEnabled:s.event_highlight_enabled===true,
-      eventStartAt:s.event_start_at||null,
-      eventEndAt:s.event_end_at||null,
-      ...(s.verified_at?{verified:s.verified_at}:{}),
-      tcg:tcgByShop.get(s.id)||{pokemon:null,onePiece:null,dragonBall:null},
-      f:featureByShop.get(s.id)||{},
-      ...(s.other_tcg_note?{otherTcg:s.other_tcg_note}:{})
-    }));
+    const mapped=shops.map(s=>{
+      const tcg={pokemon:null,onePiece:null,dragonBall:null};
+      for(const [code,data] of Object.entries(s.tcg||{})){
+        const key=tcgLegacy[code]; if(key)tcg[key]=data?.status??null;
+      }
+      const f={};
+      for(const [code,data] of Object.entries(s.features||{})){
+        const key=featureLegacy[code]; if(!key)continue;
+        f[key]=data?.value??null;
+        if(data?.detail!=null&&data.detail!=='')f[key+'Detail']=data.detail;
+      }
+      return {
+        id:s.id,city:s.city,name:s.name,en:s.name_en,
+        country:s.country_code==='JP'?'일본':'대한민국',area:s.area,address:s.address,
+        ...(s.phone?{phone:s.phone}:{}),...(s.website_url?{website:s.website_url}:{}),
+        ...(s.instagram_url?{instagram:s.instagram_url}:{}),instagramFeedEnabled:s.instagram_feed_enabled,
+        ...(s.google_map_url?{google:s.google_map_url}:{}),...(s.naver_map_url?{naver:s.naver_map_url}:{}),
+        lat:s.latitude,lng:s.longitude,...(s.nearest_station?{station:s.nearest_station}:{}),
+        ...(s.walk_minutes!=null?{walkMin:s.walk_minutes}:{}),...(s.parking_status?{parking:s.parking_status}:{}),
+        ...(s.hours_display?{hours:s.hours_display}:{}),...(s.closed_display?{closed:s.closed_display}:{}),
+        ...(s.status?{status:s.status}:{}),eventHighlightEnabled:s.event_highlight_enabled===true,
+        eventStartAt:s.event_start_at||null,eventEndAt:s.event_end_at||null,
+        ...(s.verified_at?{verified:s.verified_at}:{}),tcg,f,
+        ...(s.other_tcg_note?{otherTcg:s.other_tcg_note}:{})
+      };
+    });
 
     const ids=new Set(mapped.map(s=>s.id));
-    if(ids.size!==mapped.length)throw new Error('shop id mismatch');
     SHOPS.splice(0,SHOPS.length,...mapped);
     const now=Date.now(),eventSet=window.FUNY_ACTIVE_EVENT_SHOPS;
     eventSet.clear();
     for(const s of SHOPS){
-      const start=s.eventStartAt?Date.parse(s.eventStartAt):NaN,end=s.eventEndAt?Date.parse(s.eventEndAt):NaN;
-      if(s.eventHighlightEnabled&&Number.isFinite(start)&&Number.isFinite(end)&&now>=start&&now<end)eventSet.add(s.id);
+      const st=s.eventStartAt?Date.parse(s.eventStartAt):NaN,en=s.eventEndAt?Date.parse(s.eventEndAt):NaN;
+      if(s.eventHighlightEnabled&&Number.isFinite(st)&&Number.isFinite(en)&&now>=st&&now<en)eventSet.add(s.id);
+    }
+
+    const thumbs={},galleries={};
+    for(const shop of shops){
+      for(const row of (shop.images||[])){
+        const src=row.storage_path||row.source_path;
+        if(!src)continue;
+        if(row.is_primary||row.type==='thumbnail'){if(!thumbs[shop.id])thumbs[shop.id]=src}
+        if(row.type==='gallery'){if(!galleries[shop.id])galleries[shop.id]=[];galleries[shop.id].push(src)}
+      }
+    }
+    if(Object.keys(thumbs).length){
+      Object.keys(SHOP_IMAGES).forEach(k=>delete SHOP_IMAGES[k]);Object.assign(SHOP_IMAGES,thumbs);
+      Object.keys(SHOP_GALLERIES).forEach(k=>delete SHOP_GALLERIES[k]);Object.assign(SHOP_GALLERIES,galleries);
+      imageSource='supabase-read-model';
     }
 
     try{
@@ -129,36 +111,9 @@ async function loadShopsFromSupabase(){
       console.warn('[FUNY PIN] Supabase review/content fallback:',contentErr?.message||contentErr);
     }
 
-    try{
-      const images=await get('shop_images?select=shop_id,image_type,source_path,storage_path,sort_order,is_primary,is_active&is_active=eq.true&order=shop_id.asc,sort_order.asc');
-      if(!Array.isArray(images))throw new Error('image rows invalid');
-      const thumbs={},galleries={};
-      for(const row of images){
-        const src=row.storage_path||row.source_path;
-        if(!src||!ids.has(row.shop_id))continue;
-        if(row.is_primary||row.image_type==='thumbnail'){
-          if(!thumbs[row.shop_id])thumbs[row.shop_id]=src;
-        }
-        if(row.image_type==='gallery'){
-          if(!galleries[row.shop_id])galleries[row.shop_id]=[];
-          galleries[row.shop_id].push(src);
-        }
-      }
-      if(images.length&&Object.keys(thumbs).length){
-        Object.keys(SHOP_IMAGES).forEach(k=>delete SHOP_IMAGES[k]);
-        Object.assign(SHOP_IMAGES,thumbs);
-        Object.keys(SHOP_GALLERIES).forEach(k=>delete SHOP_GALLERIES[k]);
-        Object.assign(SHOP_GALLERIES,galleries);
-        imageSource='supabase';
-      }
-    }catch(imageErr){
-      imageSource='static-fallback';
-      console.warn('[FUNY PIN] Supabase shop images fallback:',imageErr?.message||imageErr);
-    }
-
-    window.FUNY_SHOPS_SOURCE='supabase';
-    trackSource('supabase');
-    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS}}));
+    window.FUNY_SHOPS_SOURCE='supabase-read-model';
+    trackSource('supabase-read-model');
+    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase-read-model',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS}}));
   }catch(err){
     window.FUNY_SHOPS_SOURCE='static-fallback';
     fallbackReason=err?.name==='AbortError'?'timeout':String(err?.message||err).slice(0,80);

@@ -133,14 +133,14 @@
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.title||(entry?'이벤트 응모하기':'자세히보기'))+'</button>':'';
+    const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.action_label||'자세히보기')+'</button>':'';
     return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+
       (!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+
-      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">이미지 보기</button>':'')+
+      (!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+
+      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.action_label||'이미지 보기')+'</button>':'')+
       (!lose?action:'')+
       (lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
-      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b><button type="button" data-copy-claim="'+esc(r.claim_code)+'">복사하기</button></div>':'')+
-      (!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'');
+      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b><button class="funy-mon-copy-code" type="button" data-copy-claim="'+esc(r.claim_code)+'" aria-label="당첨 코드 복사" title="복사">⧉</button></div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -336,8 +336,8 @@
         catch(e){if(e&&e.name==='AbortError')return}
       }
       const url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.download=fileName;a.href=url;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),1500);notifyImageSaved();
+      a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();
+      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved();
     }
   }
 
@@ -359,6 +359,7 @@
     const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));
     if(!ready){if(tries++<240)setTimeout(spawn,500);return}
     started=true;
+    clear();
     events.forEach((ev,eventIndex)=>{
       const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;
       const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);

@@ -72,3 +72,7 @@
 /* Final avatar sample crop + GPS toast alignment */
 .map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;background-image:inherit!important;overflow:hidden!important;image-rendering:pixelated!important}
 .map-location-toast{right:68px!important;top:auto!important;bottom:18px!important;width:max-content!important;height:42px!important;min-height:42px!important;max-height:42px!important;padding:0 11px!important;display:flex!important;align-items:center!important;box-sizing:border-box!important;line-height:1!important;white-space:nowrap!important;transform:none!important}
+
+/* Hotfix: preserve inline avatar sprite source; place GPS toast above sheet layer */
+.map-location-avatar-grid .map-location-avatar-preview{background-image:revert-layer!important;background-size:156px 208px!important;background-position:-52px 0!important;background-repeat:no-repeat!important}
+.map-location-toast{position:absolute!important;right:68px!important;top:auto!important;bottom:18px!important;z-index:80!important;height:42px!important;min-height:42px!important;max-height:42px!important;padding:0 11px!important;display:flex!important;align-items:center!important;white-space:nowrap!important;box-sizing:border-box!important}

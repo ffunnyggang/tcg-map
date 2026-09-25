@@ -312,19 +312,7 @@
     chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,tc[0],tc[1]);
     ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
 
-    // Coupon-style REWARD area matching the front-end result sheet. Winners only.
-    if(win){
-    const rx=80,ry=845,rw=920,rh=300;
-    const px=['#7863b9','#8c75c8','#9c87d0','#ad9bd8','#9781cb','#846dc1','#b6a7dd','#9179c9'];
-    for(let x=rx;x<rx+rw;x+=12){ctx.fillStyle=px[(x/12)%px.length|0];ctx.fillRect(x,ry,12,8);ctx.fillStyle=px[((x/12)+2)%px.length|0];ctx.fillRect(x,ry+rh-8,12,8)}
-    for(let y=ry;y<ry+rh;y+=12){ctx.fillStyle=px[(y/12)%px.length|0];ctx.fillRect(rx,y,8,12);ctx.fillStyle=px[((y/12)+3)%px.length|0];ctx.fillRect(rx+rw-8,y,8,12)}
-    ctx.fillStyle='#fffdf9';ctx.fillRect(rx+8,ry+8,rw-16,rh-16);
-    ctx.font='950 58px ui-monospace,monospace';ctx.fillStyle=win?'#6541c0':'#776d7e';ctx.fillText(win?'당첨!':'꽝',540,935);
-    if(win){
-      ctx.fillStyle='#312944';ctx.font='900 34px "DotGothic16",monospace';wrapText(ctx,r.title||'당첨 상품',540,1005,760,44,2);
-      if(r.claim_code){ctx.fillStyle='#6e4fd3';ctx.font='850 24px ui-monospace,monospace';ctx.fillText('당첨 코드  '+r.claim_code,540,1090)}
-    }
-    }
+    // Saved capture image intentionally excludes all reward/result details.
         ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
     const isAndroid=/Android/i.test(navigator.userAgent);
     const mime=isAndroid?'image/jpeg':'image/png';

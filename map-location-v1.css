@@ -58,3 +58,6 @@
 @keyframes funy-avatar-walk{0%,100%{background-position:0 var(--avatar-yp,0%)}33%{background-position:50% var(--avatar-yp,0%)}66%{background-position:100% var(--avatar-yp,0%)}}
 
 .map-location-toast[hidden]{display:none!important}
+
+/* Avatar 4 thumbnail: nudge crop right */
+.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-position:48% 0!important}

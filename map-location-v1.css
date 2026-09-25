@@ -81,3 +81,9 @@
 .map-location-avatar-grid button:first-child .map-location-avatar-preview,
 .map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-size:150px 200px!important;background-position:-49px 1px!important}
 @media(max-width:430px){.map-location-toast{position:absolute!important;right:12px!important;left:auto!important;top:auto!important;bottom:calc(100% - var(--map-sheet-top,75dvh) + 8px)!important;z-index:120!important;height:36px!important;min-height:36px!important;max-height:36px!important;padding:0 11px!important;display:flex!important;align-items:center!important;line-height:1!important;white-space:nowrap!important;transform:none!important}}
+
+/* Canonical location UI fixes: hidden state, sheet toast geometry, edge-safe avatar samples */
+.map-location-toast[hidden]{display:none!important}
+@media(max-width:430px){.map-location-toast{position:absolute!important;right:62px!important;left:auto!important;top:auto!important;bottom:calc(100% - var(--map-sheet-top,75dvh) + 8px)!important;z-index:120!important;width:max-content!important;height:42px!important;min-height:42px!important;max-height:42px!important;padding:0 11px!important;display:flex!important;align-items:center!important;box-sizing:border-box!important;line-height:1!important;white-space:nowrap!important;transform:none!important}}
+.map-location-avatar-grid button:first-child .map-location-avatar-preview,
+.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{width:52px!important;height:52px!important;background-size:144px 192px!important;background-position:-46px -1px!important;background-repeat:no-repeat!important}

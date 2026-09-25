@@ -377,7 +377,7 @@ async function deleteShopEditor(){
  if(typed!==editingShopId){if(typed!==null)alert('매장 ID가 일치하지 않아 삭제하지 않았습니다.');return}
  try{await api('/rest/v1/rpc/admin_delete_shop',{method:'POST',body:JSON.stringify({p_shop_id:editingShopId,p_permanent:true})});closeShopEditor();await loadShopManager();alert('매장을 영구 삭제했습니다.')}catch(e){alert('영구 삭제 실패: '+e.message)}
 }
-$('editorClose').onclick=closeShopEditor;$('editorCancel').onclick=closeShopEditor;$('editorDelete').onclick=deleteShopEditor;$('editorSave').onclick=saveShopEditor;$('shopEditor').addEventListener('click',e=>{if(e.target===$('shopEditor'))closeShopEditor()});
+$('editorClose').onclick=closeShopEditor;$('editorCancel').onclick=()=>{};$('editorDelete').onclick=deleteShopEditor;$('editorSave').onclick=saveShopEditor;
 
 
 let funyMonRewards=[],funyMonClaims=[],funyMonEvents=[],funyMonShops=[],funyMonEditingEventId=null;

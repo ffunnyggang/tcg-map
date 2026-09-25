@@ -128,15 +128,17 @@
     img.src=url;viewer.hidden=false;
   }
   function rewardMarkup(data){
-    const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',is_win:false,claim_code:null,image_url:null};
-    const win=r.is_win===true;
+    const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
+    const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    return '<div class="funy-mon-reward-retro '+(win?'win':'lose')+'">'+esc(r.result_label||(win?'당첨!':'꽝'))+'</div>'+
-      (win?'<strong class="funy-mon-reward-title">'+esc(r.title||'당첨 상품')+'</strong>':'')+
-      (win&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">자세히보기</button>':'')+
-      (!win?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
-      (win&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'')+
-      (win&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'');
+    const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.title||(entry?'이벤트 응모하기':'자세히보기'))+'</button>':'';
+    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+
+      (!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+
+      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">이미지 보기</button>':'')+
+      (!lose?action:'')+
+      (lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
+      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b><button type="button" data-copy-claim="'+esc(r.claim_code)+'">복사하기</button></div>':'')+
+      (!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -145,8 +147,10 @@
     cover.style.transition='transform .34s steps(5,end),opacity .2s ease';
     cover.style.transform='translateX(112%) rotate(2deg)';
     cover.style.opacity='0';cover.style.pointerEvents='none';
-    if(data.reward?.is_win===true)document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
+    if((data.reward?.reward_type|| (data.reward?.is_win===true?'win':'lose'))!=='lose')document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
     reward.querySelector('[data-reward-image]')?.addEventListener('click',e=>openRewardImage(e.currentTarget.dataset.rewardImage));
+    reward.querySelector('[data-reward-url]')?.addEventListener('click',e=>{const url=e.currentTarget.dataset.rewardUrl;if(url)window.open(url,'_blank','noopener,noreferrer')});
+    reward.querySelector('[data-copy-claim]')?.addEventListener('click',async e=>{const code=e.currentTarget.dataset.copyClaim||'';try{await navigator.clipboard.writeText(code);alert('당첨 코드가 복사되었습니다.')}catch(_){const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('당첨 코드가 복사되었습니다.')}});
     save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
     setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
@@ -198,7 +202,8 @@
     document.getElementById('funyMonModal').hidden=false;
     document.body.classList.add('funy-mon-open');
     document.body.style.overflow='hidden';
-    bindRewardSwipe(data,def);
+    const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');
+    if(rewardType==='entry')revealReward(data,def);else bindRewardSwipe(data,def);
   }
   function getPosition(){
     return new Promise((resolve,reject)=>{

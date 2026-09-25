@@ -60,4 +60,4 @@
 .map-location-toast[hidden]{display:none!important}
 
 /* Avatar 4 thumbnail: nudge crop right */
-.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-position:48% 0!important}
+.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-position:54% 0!important}

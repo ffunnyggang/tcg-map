@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-24T23:25:35.856004+00:00",
+  "updatedAt": "2026-09-25T00:35:23.565382+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "어릴때모습...",
+      "author": "키키킼",
+      "publishedAt": "2026-09-24T23:48:43.325593Z",
+      "excerpt": "어릴때모습...",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/어릴때모습-dDO2NGbP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "안녕하세요 잘부탁드립니다!",
@@ -167,23 +180,10 @@
       "excerpt": "초판 베이스셋 북미버전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/704dcb36-428e-4f52-80a9-b7d284470827.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가장-최애는-아니고-3번째로-아끼는-최애-ARoklvGP",
-      "views": 33,
+      "views": 34,
       "likes": 5,
       "comments": 1,
-      "popularityScore": 17.33
-    },
-    {
-      "category": "자유 게시판",
-      "title": "얼마전에 뽑은 썬더 카드 입니다",
-      "author": "울이",
-      "publishedAt": "2026-09-22T06:23:21.189072Z",
-      "excerpt": "얼마전에 뽑은 썬더 카드 입니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/얼마전에-뽑은-썬더-카드-입니다-dJyxkkwP",
-      "views": 8,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.08
+      "popularityScore": 17.34
     },
     {
       "category": "카드거래",
@@ -206,10 +206,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 77,
+      "views": 78,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.77
+      "popularityScore": 13.78
     },
     {
       "category": "카드거래",
@@ -219,10 +219,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 92,
+      "views": 94,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.92
+      "popularityScore": 54.94
     },
     {
       "category": "카드 자랑",
@@ -505,10 +505,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 143,
+      "views": 144,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.43
+      "popularityScore": 7.4399999999999995
     },
     {
       "category": "카드깡/카드샵 후기",

@@ -62,6 +62,6 @@
 /* Avatar 4 thumbnail: nudge crop right */
 .map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-position:52% 0!important}
 /* Avatar 4 map sprite: same horizontal crop offset as its thumbnail. */
-.funy-current-location[style*="female2.png"] .funy-current-avatar{background-position:calc(var(--avatar-xp,50%) - 1%) var(--avatar-yp,0%)!important}
+.funy-current-location[style*="female2.png"] .funy-current-avatar{background-position:var(--avatar-xp,52%) var(--avatar-yp,0%)!important}
 .funy-current-location.is-moving[style*="female2.png"] .funy-current-avatar{animation-name:funy-avatar4-walk!important}
-@keyframes funy-avatar4-walk{0%,100%{background-position:-1% var(--avatar-yp,0%)}33%{background-position:49% var(--avatar-yp,0%)}66%{background-position:99% var(--avatar-yp,0%)}}
+@keyframes funy-avatar4-walk{0%,100%{background-position:2% var(--avatar-yp,0%)}33%{background-position:52% var(--avatar-yp,0%)}66%{background-position:100% var(--avatar-yp,0%)}}

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-25T08:29:53.724931+00:00",
+  "updatedAt": "2026-09-25T09:29:02.963624+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "아직 없습니다. 뽑고 싶어요",
+      "author": "뽀돌이_5b9h",
+      "publishedAt": "2026-09-25T09:16:59.73779Z",
+      "excerpt": "아직 없습니다. 뽑고 싶어요",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아직-없습니다-뽑고-싶어요-PM02ZBYA",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "포켓몬카드 질문",
@@ -11,10 +24,10 @@
       "excerpt": "25주년 카드중에 리자몽 거북왕 이상해꽃이 있는데 PSA10기준으로 리자몽이 거북왕 이상해꽃보다 유난히 훨씬 비싼이유가 뭘까요?같이 나왔는데",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-질문-j8roxeaP",
-      "views": 2,
+      "views": 16,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.02
+      "popularityScore": 3.16
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "포켓몬에 대한 지식은 많은데 카드에는 관심이 없었는데 요즘 카드에 관심에 생겨서 알아가고 있습니다. PSA10 25주년 레시라무를 사려는데 크림에서 사려고 합니다 카드를 크림에서 사도되는게 맞는지 궁금하고 지금도 구할수 있는 카드말고 이제는 한정판이 된 카드를 구매하고 싶습니다. 의견",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-처음-입문자-질문-ARoLML3P",
-      "views": 19,
+      "views": 20,
       "likes": 1,
       "comments": 6,
-      "popularityScore": 15.19
+      "popularityScore": 15.2
     },
     {
       "category": "자유 게시판",
@@ -121,19 +134,6 @@
       "popularityScore": 3.05
     },
     {
-      "category": "자유 게시판",
-      "title": "카드샵 현황을 실시간으로 공유하기⚡️",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-09-23T10:14:04.376641Z",
-      "excerpt": "오픈런 대기부터 재고·이벤트까지, FUNY PIN에서 카드샵 현황을 실시간으로 공유해보세요! 지도에서 ⚡표시를 확인하세요 www.funypin.kr",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드샵-현황을-실시간으로-공유하기⚡-P12E1bkd",
-      "views": 40,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.4
-    },
-    {
       "category": "정보 공유",
       "title": "요즘 30주년 핫해서 해외판을 직구나 개인거래로 구하시는분 많은데",
       "author": "유기오",
@@ -206,10 +206,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 98,
+      "views": 100,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 54.98
+      "popularityScore": 55.0
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 131,
+      "views": 132,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.31
+      "popularityScore": 19.32
     },
     {
       "category": "카드 자랑",
@@ -778,10 +778,10 @@
       "excerpt": "맛집부터 취미까지, 당근 카페에서 관심 있는 주제에 대해 소통해보세요.",
       "image": "https://cafe.daangn.com/opengraph-image-12o0cb?1c7c1549b06c0934",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/집에-있는-카드인데-얼마나-할까요-dGGDgnNd",
-      "views": 33,
+      "views": 34,
       "likes": 5,
       "comments": 0,
-      "popularityScore": 15.33
+      "popularityScore": 15.34
     }
   ]
 }

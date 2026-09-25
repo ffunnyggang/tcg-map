@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-25T15:28:40.481981+00:00",
+  "updatedAt": "2026-09-25T16:29:55.634072+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "어릴때부터 관심있어서 모았급니다",
+      "author": "갈색고래",
+      "publishedAt": "2026-09-25T16:20:30.906709Z",
+      "excerpt": "어릴때부터 관심있어서 모았급니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/어릴때부터-관심있어서-모았급니다-PWMwk88j",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "크림에도 짭이 있나요?",
@@ -11,10 +24,10 @@
       "excerpt": "크림에서 PSA10등급 고라파덕 AR카드를 사려고 하는데 처음시켜봐서 짭이오면 어떡하나..해서요 아시는분 계실까요..?",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/크림에도-짭이-있나요-dXEo1kmj",
-      "views": 4,
+      "views": 5,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.04
+      "popularityScore": 3.05
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "피카츄만 모아서 이번에 30주년 피카츄 많이나온데서 2박스깟는데 피카츄는 30종중 27종 모았고 중복있어요 뮤랑 이런거 뽑았는데 가격어느정도예요? 잘안나와잇ㅇㅓ서욥.. 밑에 두장 가격궁금합니다 나머지도 알랴주시면 감사해욤!!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179033911948764f1209f85f49a67697318c40cb1249299e027436277e53914255b1592e6060b0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가격-궁금합니닷-dGGDYq3d",
-      "views": 15,
+      "views": 29,
       "likes": 11,
       "comments": 0,
-      "popularityScore": 33.15
+      "popularityScore": 33.29
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "피카츄만 모아요!!",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄만-모아요-j8rop0QP",
-      "views": 12,
+      "views": 13,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.12
+      "popularityScore": 3.13
     },
     {
       "category": "자유 게시판",
@@ -119,19 +132,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.18
-    },
-    {
-      "category": "자유 게시판",
-      "title": "30주년 뮤 사르",
-      "author": "달코",
-      "publishedAt": "2026-09-24T11:50:27.058683Z",
-      "excerpt": "30주년 뮤 사르",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-뮤-사르-PM0203RA",
-      "views": 34,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.34
     },
     {
       "category": "정보 공유",
@@ -232,10 +232,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 72,
+      "views": 74,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 17.72
+      "popularityScore": 17.74
     },
     {
       "category": "카드 자랑",
@@ -323,10 +323,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 139,
+      "views": 140,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.39
+      "popularityScore": 19.4
     },
     {
       "category": "카드 자랑",
@@ -427,10 +427,10 @@
       "excerpt": "30주년 판매해요! 일판 박스, 에브이블래키박스! 가격은 각각 38 43 입니다!! 아 참고로 교환도 가능해요 박스만.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드30주년-PwgV7nkP",
-      "views": 84,
+      "views": 86,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.84
+      "popularityScore": 0.86
     },
     {
       "category": "정보 공유",
@@ -440,10 +440,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 205,
+      "views": 207,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.05
+      "popularityScore": 14.07
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -492,10 +492,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 146,
+      "views": 147,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.46
+      "popularityScore": 7.47
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -505,10 +505,10 @@
       "excerpt": "오랜만에 글씁니다 오늘 우연히 원피스14탄 정가에 구해서 ㅋㅋ 대흥했습니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/9930e8ac-d133-4d11-9dfd-84fa4b64c4e6.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/원피스-14탄-5박스-깡-대흥-PVDY5vpj",
-      "views": 68,
+      "views": 69,
       "likes": 5,
       "comments": 1,
-      "popularityScore": 17.68
+      "popularityScore": 17.69
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -778,10 +778,10 @@
       "excerpt": "맛집부터 취미까지, 당근 카페에서 관심 있는 주제에 대해 소통해보세요.",
       "image": "https://cafe.daangn.com/opengraph-image-12o0cb?1c7c1549b06c0934",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/집에-있는-카드인데-얼마나-할까요-dGGDgnNd",
-      "views": 35,
+      "views": 36,
       "likes": 5,
       "comments": 0,
-      "popularityScore": 15.35
+      "popularityScore": 15.36
     }
   ]
 }

@@ -51,39 +51,10 @@
 /* Current-location toast: place left of the control, vertically centered to the button */
 
 
-/* Exact 362x362 cell crop for 1086x1448 (3x4) uploaded avatar sheets */
+/* Current avatar sheets: 3 columns x 4 rows. Percentage geometry tolerates 844/845px source widths. */
 .funy-current-location.is-avatar{width:48px;height:48px}
-.funy-current-avatar{left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);background-size:138px 184px;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px);background-repeat:no-repeat;overflow:hidden}
-@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}
-.map-location-avatar-preview{width:52px;height:52px;background-size:156px 208px;background-position:-52px 0;background-repeat:no-repeat}
-
-
-
-/* Avatar picker: exact front-facing center frame from 3x4 (1086x1448) sprite */
-.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px;height:52px;margin:0 auto;background-image:var(--preview-sheet)!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated;overflow:hidden}
-
-/* Canonical 1086x1448 / 3x4 sprite rules. Source cell = 362x362. */
-.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;image-rendering:pixelated!important;overflow:hidden!important}
-.funy-current-avatar{width:46px!important;height:46px!important;background-size:138px 184px!important;background-position:calc(var(--avatar-x,1) * -46px) calc(var(--avatar-y,0) * -46px)!important;background-repeat:no-repeat!important;overflow:hidden!important}
-@keyframes funy-avatar-walk{0%,100%{background-position:0 calc(var(--avatar-y,0) * -46px)}33%{background-position:-46px calc(var(--avatar-y,0) * -46px)}66%{background-position:-92px calc(var(--avatar-y,0) * -46px)}}
-
-/* Final avatar sample crop + GPS toast alignment */
-.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:156px 208px!important;background-position:-52px 0!important;background-image:inherit!important;overflow:hidden!important;image-rendering:pixelated!important}
-
-
-/* Hotfix: preserve inline avatar sprite source; place GPS toast above sheet layer */
-.map-location-avatar-grid .map-location-avatar-preview{background-image:revert-layer!important;background-size:156px 208px!important;background-position:-52px 0!important;background-repeat:no-repeat!important}
-
-
-/* Avatar sample edge-safe crop + GPS toast above current card-shop sheet */
-.map-location-avatar-grid button:first-child .map-location-avatar-preview,
-.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{background-size:150px 200px!important;background-position:-49px 1px!important}
-
-
-
-.map-location-avatar-grid button:first-child .map-location-avatar-preview,
-.map-location-avatar-grid button:nth-child(4) .map-location-avatar-preview{width:52px!important;height:52px!important;background-size:144px 192px!important;background-position:-46px -1px!important;background-repeat:no-repeat!important}
-
-
+.map-location-avatar-grid .map-location-avatar-preview{display:block!important;width:52px!important;height:52px!important;margin:0 auto!important;background-repeat:no-repeat!important;background-size:300% 400%!important;background-position:50% 0!important;image-rendering:pixelated!important;overflow:hidden!important}
+.funy-current-avatar{left:50%;top:50%;width:46px!important;height:46px!important;transform:translate(-50%,-50%);background-size:300% 400%!important;background-position:var(--avatar-xp,50%) var(--avatar-yp,0%)!important;background-repeat:no-repeat!important;overflow:hidden!important}
+@keyframes funy-avatar-walk{0%,100%{background-position:0 var(--avatar-yp,0%)}33%{background-position:50% var(--avatar-yp,0%)}66%{background-position:100% var(--avatar-yp,0%)}}
 
 .map-location-toast[hidden]{display:none!important}

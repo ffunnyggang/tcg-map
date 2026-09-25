@@ -28,6 +28,7 @@
   ];
   const markers=[];
   const hiddenMarkers=new Set();
+  const hiddenKeys=new Set();
   let started=false,tries=0,busy=false,resultNeedsSave=false;
 
   function todayKst(){
@@ -67,7 +68,7 @@
   function currentZoom(){try{return naverMap.getZoom()}catch(_){return 0}}
   function syncVisibility(){
     const hide=hiddenByRoute();
-    markers.forEach(m=>{try{m.setMap(hide||hiddenMarkers.has(m)?null:naverMap)}catch(_){}});
+    markers.forEach(m=>{try{m.setMap(hide||hiddenMarkers.has(m)||hiddenKeys.has(m.__funyMonKey)?null:naverMap)}catch(_){}});
   }
   function hideAll(){markers.forEach(m=>{try{m.setMap(null)}catch(_){}})}
   function clear(){hideAll();markers.length=0}
@@ -242,8 +243,9 @@
         return;
       }
       saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
-      hiddenMarkers.add(meta.marker);
+      hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);
       try{meta.marker.setMap(null)}catch(_){}
+      syncVisibility();
       if(data.result==='failed'){
         showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');
         return;
@@ -366,7 +368,7 @@
         const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
         const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
         const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});
-        const meta={marker,shop,def:d,eventId:ev.id};markers.push(marker);
+        const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
         naver.maps.Event.addListener(marker,'click',()=>{
           if(busy)return;
           document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));

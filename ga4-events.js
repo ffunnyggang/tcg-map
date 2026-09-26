@@ -51,3 +51,46 @@
     input.addEventListener('search',()=>{clearTimeout(timer);record()});
   }
 })();
+
+/* FUNY MON saved-image layout: only winning rewards are included. */
+(function(){
+  if(window.__funyMonSaveLayoutV2)return;
+  window.__funyMonSaveLayoutV2=true;
+  let lastReward=null;
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=async function(input,init){
+    const res=await nativeFetch(input,init);
+    try{
+      const url=typeof input==='string'?input:(input&&input.url)||'';
+      if(url.includes('/functions/v1/funy-mon-catch')){
+        res.clone().json().then(data=>{if(data&&data.ok)lastReward=data.reward||null}).catch(()=>{});
+      }
+    }catch(_){}
+    return res;
+  };
+  const nativeToBlob=HTMLCanvasElement.prototype.toBlob;
+  HTMLCanvasElement.prototype.toBlob=function(callback,type,quality){
+    const source=this;
+    const modal=document.getElementById('funyMonModal');
+    if(source.width!==1080||source.height!==1350||!modal||modal.hidden)return nativeToBlob.call(source,callback,type,quality);
+    try{
+      const reward=lastReward;
+      const rewardType=reward?(reward.reward_type||(reward.is_win===true?'win':'lose')):'none';
+      const isWin=rewardType==='win';
+      const out=document.createElement('canvas');
+      out.width=1080;out.height=isWin?1350:960;
+      const ctx=out.getContext('2d');
+      ctx.drawImage(source,0,0,1080,Math.min(source.height,out.height),0,0,1080,Math.min(source.height,out.height));
+      if(isWin){
+        ctx.fillStyle='#ffffff';ctx.shadowColor='rgba(77,55,110,.12)';ctx.shadowBlur=22;ctx.beginPath();ctx.roundRect(105,850,870,330,28);ctx.fill();ctx.shadowColor='transparent';ctx.shadowBlur=0;
+        ctx.textAlign='center';ctx.fillStyle='#8062d8';ctx.font='900 28px "Pretendard Variable",Pretendard,sans-serif';ctx.fillText(String(reward.result_label||'당첨!'),540,910);
+        ctx.fillStyle='#2d2832';ctx.font='900 42px "Pretendard Variable",Pretendard,sans-serif';ctx.fillText(String(reward.title||'당첨 상품'),540,970);
+        if(reward.description){ctx.fillStyle='#746d78';ctx.font='700 24px "Pretendard Variable",Pretendard,sans-serif';const text=String(reward.description),max=760;let line='',lines=[];for(const ch of text){const test=line+ch;if(ctx.measureText(test).width>max&&line){lines.push(line);line=ch}else line=test}if(line)lines.push(line);lines.slice(0,2).forEach((v,i)=>ctx.fillText(v,540,1020+i*34))}
+        if(reward.claim_code){ctx.fillStyle='#f4f0fb';ctx.beginPath();ctx.roundRect(285,1090,510,64,14);ctx.fill();ctx.fillStyle='#5f49a7';ctx.font='850 25px ui-monospace,monospace';ctx.fillText('당첨 코드  '+String(reward.claim_code),540,1132)}
+      }else{
+        ctx.fillStyle='#faf8ff';ctx.fillRect(0,850,1080,110);ctx.textAlign='center';ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,915);
+      }
+      return nativeToBlob.call(out,callback,type,quality);
+    }catch(_){return nativeToBlob.call(source,callback,type,quality)}
+  };
+})();

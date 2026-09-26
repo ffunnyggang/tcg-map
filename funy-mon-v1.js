@@ -134,257 +134,93 @@
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.url_action_label||r.action_label||'자세히보기')+'</button>':'';
-    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+
-      (!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+
-      (!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+
-      (!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+
-      (!lose?action:'')+
-      (lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+
-      (!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
+    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+(!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
     if(!reward||reward.classList.contains('is-revealed'))return;
     reward.classList.remove('is-swiping');reward.classList.add('is-revealed','is-flashing');
-    cover.style.transition='transform .34s steps(5,end),opacity .2s ease';
-    cover.style.transform='translateX(112%) rotate(2deg)';
-    cover.style.opacity='0';cover.style.pointerEvents='none';
-    if((data.reward?.reward_type|| (data.reward?.is_win===true?'win':'lose'))!=='lose')document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
+    cover.style.transition='transform .34s steps(5,end),opacity .2s ease';cover.style.transform='translateX(112%) rotate(2deg)';cover.style.opacity='0';cover.style.pointerEvents='none';
+    if((data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose'))!=='lose')document.querySelector('#funyMonModal .funy-mon-sheet')?.classList.add('is-prize');
     reward.querySelector('[data-reward-image]')?.addEventListener('click',e=>openRewardImage(e.currentTarget.dataset.rewardImage));
     reward.querySelector('[data-reward-url]')?.addEventListener('click',e=>{const url=e.currentTarget.dataset.rewardUrl;if(url)window.open(url,'_blank','noopener,noreferrer')});
-    save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
-    setTimeout(()=>reward.classList.remove('is-flashing'),900);
+    save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){
-    const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover');
-    if(!reward||!cover)return;
+    const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover');if(!reward||!cover)return;
     let active=false,startX=0,dx=0,revealed=false;
     const reset=()=>{active=false;dx=0;reward.classList.remove('is-swiping');cover.style.transition='transform .18s steps(3,end)';cover.style.transform='translateX(0) rotate(0)';setTimeout(()=>cover.style.transition='',200)};
     cover.onpointerdown=e=>{if(revealed)return;active=true;startX=e.clientX;dx=0;reward.classList.add('is-swiping');cover.setPointerCapture?.(e.pointerId);cover.style.transition='none'};
-    cover.onpointermove=e=>{
-      if(!active||revealed)return;
-      dx=Math.max(0,e.clientX-startX);
-      const max=reward.clientWidth||300,ratio=dx/max;
-      const jitter=Math.min(10,dx*.045),rot=((Math.floor(dx/12)%2)?1:-1)*Math.min(2.2,dx/90);
-      cover.style.transform='translateX('+jitter+'px) rotate('+rot+'deg)';
-      if(ratio>=.60){revealed=true;active=false;revealReward(data,def)}
-    };
+    cover.onpointermove=e=>{if(!active||revealed)return;dx=Math.max(0,e.clientX-startX);const max=reward.clientWidth||300,ratio=dx/max;const jitter=Math.min(10,dx*.045),rot=((Math.floor(dx/12)%2)?1:-1)*Math.min(2.2,dx/90);cover.style.transform='translateX('+jitter+'px) rotate('+rot+'deg)';if(ratio>=.60){revealed=true;active=false;revealReward(data,def)}};
     cover.onpointerup=cover.onpointercancel=()=>{if(!revealed&&active)reset()};
   }
   function funyMonFxMarkup(def){
-    const shapes={
-      ponanyang:['✦','♡','✧','♡','✦'],
-      bubblelong:['○','✦','◌','✦','○'],
-      hatring:['♡','♥','✦','♥','♡'],
-      bulgi:['✦','◆','✧','◆','✦'],
-      namumong:['❖','✦','❧','✦','❖'],
-      ggomagureum:['✧','☁','✦','☁','✧'],
-      bawidong:['◆','✦','◇','✦','◆'],
-      grimjamong:['✦','☾','✧','☾','✦'],
-      beonjjeogi:['✦','ϟ','✧','ϟ','✦'],
-      neon:['✦','✧','★','✧','✦']
-    };
+    const shapes={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']};
     return (shapes[def.id]||shapes.ponanyang).map(x=>'<i>'+x+'</i>').join('');
   }
   function openResult(data,def){
-    resultNeedsSave=true;
-    ensureModal();
+    resultNeedsSave=true;ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
     [...sheet.classList].filter(x=>x.startsWith('mon-')).forEach(x=>sheet.classList.remove(x));sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
-    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';
-    title.textContent=def.name;
-    meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span>';
-    meta.hidden=false;
-    copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
-    rewardResult.innerHTML=rewardMarkup(data);
-    reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');
-    cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';
-    save.disabled=true;save.onclick=null;
-    document.getElementById('funyMonModal').hidden=false;
-    document.body.classList.add('funy-mon-open');
-    document.body.style.overflow='hidden';
-    const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');
-    if(rewardType==='entry')revealReward(data,def);else bindRewardSwipe(data,def);
+    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
+    const hasReward=!!data.reward;
+    if(hasReward){
+      rewardResult.innerHTML=rewardMarkup(data);reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';save.disabled=true;save.onclick=null;
+    }else{
+      reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
+    }
+    document.getElementById('funyMonModal').hidden=false;document.body.classList.add('funy-mon-open');document.body.style.overflow='hidden';
+    if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry')revealReward(data,def);else bindRewardSwipe(data,def)}
   }
-  function getPosition(){
-    return new Promise((resolve,reject)=>{
-      if(!navigator.geolocation)return reject(new Error('unsupported'));
-      navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000});
-    });
-  }
+  function getPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('unsupported'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
   async function catchMonster(meta){
-    if(busy)return;
-    busy=true;
+    if(busy)return;busy=true;
     try{
-      const effectDone=new Promise(resolve=>setTimeout(resolve,620));
-      const positionPromise=getPosition();
-      const pos=await positionPromise;
-      const fetchPromise=fetch(ENDPOINT,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          anonymous_id:anonId(),
-          shop_id:meta.shop.id,
-          monster_id:meta.def.id,
-          latitude:pos.coords.latitude,
-          longitude:pos.coords.longitude
-        })
-      });
-      await effectDone;
-      const res=await fetchPromise;
-      const data=await res.json().catch(()=>({error:'invalid_response'}));
+      const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
+      const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
+      await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){
         if(data.error==='too_far')showMessage('조금 더 가까이 가보세요',meta.shop.name+'까지 약 '+data.distance_m+'m예요. '+(data.required_m||100)+'m 이내에서 포획할 수 있어요.');
-        else if(data.error==='daily_catch_limit'){
-          showMessage('오늘 포획을 모두 완료했어요','이 이벤트에서는 하루 '+data.limit+'마리까지 포획할 수 있어요.');
-        }else if(data.error==='already_caught_today'){
-          showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
-        }else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');
-        return;
+        else if(data.error==='daily_catch_limit')showMessage('오늘 포획을 모두 완료했어요','이 이벤트에서는 하루 '+data.limit+'마리까지 포획할 수 있어요.');
+        else if(data.error==='already_caught_today')showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
+        else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');return;
       }
-      saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});
-      hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);
-      try{meta.marker.setMap(null)}catch(_){}
-      syncVisibility();
-      if(data.result==='failed'){
-        showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');
-        return;
-      }
-      showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
-    }catch(err){
-      const code=err&&typeof err==='object'&&'code' in err?err.code:null;
-      if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');
-      else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.');
-    }finally{busy=false}
+      saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);try{meta.marker.setMap(null)}catch(_){}syncVisibility();
+      if(data.result==='failed'){showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
+    }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false}
   }
 
-  function roundRect(ctx,x,y,w,h,r){
-    ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();
-  }
-  function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){
-    const words=String(text||'').split(' ');let line='',lines=[];
-    for(const w of words){
-      const test=line?line+' '+w:w;
-      if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test;
-    }
-    if(line)lines.push(line);
-    lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
-  }
-  function loadCanvasImage(src){
-    return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>resolve(im);im.onerror=reject;im.src=src});
-  }
-  function notifyImageSaved(){
-    let n=document.getElementById('funyMonSaveNotice');
-    if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}
-    n.textContent='이미지 저장이 완료되었습니다.';n.classList.add('show');
-    clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200);
-  }
+  function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+  function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){const words=String(text||'').split(' ');let line='',lines=[];for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight))}
+  function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
+  function notifyImageSaved(){let n=document.getElementById('funyMonSaveNotice');if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}n.textContent='이미지 저장이 완료되었습니다.';n.classList.add('show');clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200)}
   async function savePrizeImage(data,def){
-    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;
-    const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
-    const fxMap={
-      ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],
-      bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],
-      bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']
-    };
-    const g=ctx.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#faf8ff');g.addColorStop(.48,'#ffffff');g.addColorStop(1,'#f4f0f8');
-    ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
-
-    // Header: mirror the restrained FUNY MON sheet instead of a large banner title.
+    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
+    const fxMap={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']};
+    const g=ctx.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#faf8ff');g.addColorStop(.48,'#ffffff');g.addColorStop(1,'#f4f0f8');ctx.fillStyle=g;ctx.fillRect(0,0,1080,1350);
     ctx.textAlign='center';ctx.fillStyle='#765bc1';ctx.font='900 24px ui-monospace,monospace';ctx.fillText('FUNY MON',540,88);
- 
-    // Monster aura + individual FX.
-    const aura=ctx.createRadialGradient(540,365,30,540,365,270);
-    aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');
-    ctx.fillStyle=aura;ctx.beginPath();ctx.arc(540,365,270,0,Math.PI*2);ctx.fill();
-    const marks=fxMap[def.id]||fxMap.ponanyang,pts=[[300,390],[365,245],[540,215],[715,250],[780,395]];
-    const fxColors={ponanyang:'#8b72d8',bubblelong:'#59b9df',hatring:'#ed79ad',bulgi:'#ee7b4d',namumong:'#67a85b',ggomagureum:'#9db9d4',bawidong:'#9b8c74',grimjamong:'#7764ae',beonjjeogi:'#e5b633',neon:'#8a71ff'};
-    ctx.fillStyle=fxColors[def.id]||'#8b72d8';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
-    try{
-      const mon=await loadCanvasImage(def.asset);
-      const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size);
-    }catch(_){}
-
+    const aura=ctx.createRadialGradient(540,365,30,540,365,270);aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');ctx.fillStyle=aura;ctx.beginPath();ctx.arc(540,365,270,0,Math.PI*2);ctx.fill();
+    const marks=fxMap[def.id]||fxMap.ponanyang,pts=[[300,390],[365,245],[540,215],[715,250],[780,395]];const fxColors={ponanyang:'#8b72d8',bubblelong:'#59b9df',hatring:'#ed79ad',bulgi:'#ee7b4d',namumong:'#67a85b',ggomagureum:'#9db9d4',bawidong:'#9b8c74',grimjamong:'#7764ae',beonjjeogi:'#e5b633',neon:'#8a71ff'};ctx.fillStyle=fxColors[def.id]||'#8b72d8';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
+    try{const mon=await loadCanvasImage(def.asset);const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size)}catch(_){}
     ctx.fillStyle='#2d2832';ctx.font='950 64px "DotGothic16",monospace';ctx.fillText(def.name,540,650);
-    // compact meta chips
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
-    const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;
-    chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,tc[0],tc[1]);
-    ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);
-
-    // Saved capture image intentionally excludes all reward/result details.
-        ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
-    const isAndroid=/Android/i.test(navigator.userAgent);
-    const mime=isAndroid?'image/jpeg':'image/png';
-    const ext=isAndroid?'jpg':'png';
-    const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
-    if(blob){
-      const file=new File([blob],fileName,{type:mime});
-      if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}
-        catch(e){if(e&&e.name==='AbortError')return}
-      }
-      const url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved();
-    }
+    const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,tc[0],tc[1]);ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
+    const isAndroid=/Android/i.test(navigator.userAgent);const mime=isAndroid?'image/jpeg':'image/png';const ext=isAndroid?'jpg':'png';const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
+    if(blob){const file=new File([blob],fileName,{type:mime});if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}catch(e){if(e&&e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved()}
   }
 
   function pageAnonKey(){return SUPABASE_KEY}
   async function spawn(){
-    if(started)return;
-    const key=pageAnonKey();
-    if(!key){if(tries++<80)setTimeout(spawn,250);return}
-    if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
-    let events=[];
-    try{
-      const now=new Date().toISOString();
-      const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,shop_id,selected_monsters,spawn_count&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});
-      if(!r.ok)return;
-      events=await r.json();
-    }catch(_){return}
-    if(!events.length){clear();return}
-    const shops=typeof SHOPS!=='undefined'?SHOPS:[];
-    const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));
-    if(!ready){if(tries++<240)setTimeout(spawn,500);return}
-    started=true;
-    clear();
-    events.forEach((ev,eventIndex)=>{
-      const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;
-      const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);
-      const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));
-      const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
-      visible.forEach((d,i)=>{
-        const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};
-        const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;
-        const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
-        const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});
-        const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
-        naver.maps.Event.addListener(marker,'click',()=>{
-          if(busy)return;
-          document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));
-          const markerEl=marker.getElement?.()?.querySelector?.('.funy-mon-marker')||document.querySelector('[aria-label="'+d.name+' 포획"]');
-          if(markerEl){markerEl.classList.add('is-selected');markerEl.querySelector('.funy-mon-surprise')?.remove();markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>')}
-          catchMonster(meta);
-        });
-      });
+    if(started)return;const key=pageAnonKey();if(!key){if(tries++<80)setTimeout(spawn,250);return}if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
+    let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,shop_id,selected_monsters,spawn_count&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json()}catch(_){return}
+    if(!events.length){clear();return}const shops=typeof SHOPS!=='undefined'?SHOPS:[];const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
+    events.forEach((ev,eventIndex)=>{const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
+      visible.forEach((d,i)=>{const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
+        naver.maps.Event.addListener(marker,'click',()=>{if(busy)return;document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));const markerEl=marker.getElement?.()?.querySelector?.('.funy-mon-marker')||document.querySelector('[aria-label="'+d.name+' 포획"]');if(markerEl){markerEl.classList.add('is-selected');markerEl.querySelector('.funy-mon-surprise')?.remove();markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>')}catchMonster(meta)})
+      })
     });
-    try{naver.maps.Event.addListener(naverMap,'zoom_changed',syncVisibility)}catch(_){}
-    syncVisibility();
+    try{naver.maps.Event.addListener(naverMap,'zoom_changed',syncVisibility)}catch(_){}syncVisibility();
   }
-  window.addEventListener('hashchange',syncVisibility);
-  window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});
-  window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});
-  new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});
-  setTimeout(spawn,450);
-  setTimeout(()=>{if(!started){tries=0;spawn()}},2500);
-  setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
-  window.FUNY_MON_PROTO={
-    respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},
-    count:()=>markers.length,
-    history:()=>{try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(_){return[]}},
-    targetShop:()=>TARGET_SHOP_ID
-  };
+  window.addEventListener('hashchange',syncVisibility);window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(spawn,450);setTimeout(()=>{if(!started){tries=0;spawn()}},2500);setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
+  window.FUNY_MON_PROTO={respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:()=>{try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(_){return[]}},targetShop:()=>TARGET_SHOP_ID};
 })();

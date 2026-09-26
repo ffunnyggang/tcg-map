@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-26T05:26:12.825465+00:00",
+  "updatedAt": "2026-09-26T06:32:21.524672+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "이제 막 시작해서 아직 특별한게 없네요ㅠ",
+      "author": "고소한앙증",
+      "publishedAt": "2026-09-26T06:05:41.285267Z",
+      "excerpt": "이제 막 시작해서 아직 특별한게 없네요ㅠ",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이제-막-시작해서-아직-특별한게-없네요ㅠ-jvxqq2LP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "어릴때부터 관심있어서 모았급니다",
@@ -24,10 +37,10 @@
       "excerpt": "크림에서 PSA10등급 고라파덕 AR카드를 사려고 하는데 처음시켜봐서 짭이오면 어떡하나..해서요 아시는분 계실까요..?",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/크림에도-짭이-있나요-dXEo1kmj",
-      "views": 5,
+      "views": 25,
       "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.05
+      "comments": 2,
+      "popularityScore": 7.25
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "피카츄만 모아서 이번에 30주년 피카츄 많이나온데서 2박스깟는데 피카츄는 30종중 27종 모았고 중복있어요 뮤랑 이런거 뽑았는데 가격어느정도예요? 잘안나와잇ㅇㅓ서욥.. 밑에 두장 가격궁금합니다 나머지도 알랴주시면 감사해욤!!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179033911948764f1209f85f49a67697318c40cb1249299e027436277e53914255b1592e6060b0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가격-궁금합니닷-dGGDYq3d",
-      "views": 56,
+      "views": 63,
       "likes": 2,
       "comments": 15,
-      "popularityScore": 36.56
+      "popularityScore": 36.63
     },
     {
       "category": "자유 게시판",
@@ -121,19 +134,6 @@
       "popularityScore": 3.17
     },
     {
-      "category": "자유 게시판",
-      "title": "안녕하세요 잘부탁드립니다!",
-      "author": "멍뭉이",
-      "publishedAt": "2026-09-24T15:34:45.218998Z",
-      "excerpt": "안녕하세요 잘부탁드립니다!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-잘부탁드립니다-dY0DVJyP",
-      "views": 18,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.18
-    },
-    {
       "category": "정보 공유",
       "title": "요즘 30주년 핫해서 해외판을 직구나 개인거래로 구하시는분 많은데",
       "author": "유기오",
@@ -193,10 +193,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 89,
+      "views": 90,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.89
+      "popularityScore": 13.9
     },
     {
       "category": "카드거래",
@@ -206,10 +206,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 111,
+      "views": 114,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.11
+      "popularityScore": 55.14
     },
     {
       "category": "카드 자랑",
@@ -349,10 +349,10 @@
       "excerpt": "포켓몬 카드 게임 MEGA 확장팩 『30th CELEBRATION』 구매권 추첨 응모 이벤트 오픈🎉 #포켓몬카드30주년응모일정 • 응모 기간: 2026년 9월 8일(화) 10:00 ~ 9월 13일(일) 23:59 • 추첨 발표: 2026년 9월 14일(월) 당첨자 개별 연락 • 배송 기",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178883960090217f83cf23d9f1e10d0e67f24f672a697d98ce0ffd61045ec409f4132d3df73eb0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-MEGA-확장팩-추첨-응모-시작🎉-초간단-응모-방법-PMDXByWA",
-      "views": 105,
+      "views": 106,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 8.05
+      "popularityScore": 8.06
     },
     {
       "category": "카드거래",
@@ -362,10 +362,10 @@
       "excerpt": "제 눈으로 봤을때 하자는 없습니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178879677188447c59eecd8ab68b2111f4f4f9a7275106f9a844243e7755916fdd0467a6851070.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-5만원에-구매하실분-계실까요-dgWb28od",
-      "views": 24,
+      "views": 26,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.24
+      "popularityScore": 0.26
     },
     {
       "category": "카드 자랑",
@@ -401,10 +401,10 @@
       "excerpt": "관심있으신분들 연락주세용",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-판매합니당-P54B7RvA",
-      "views": 42,
+      "views": 43,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.42
+      "popularityScore": 3.43
     },
     {
       "category": "카드거래",
@@ -492,10 +492,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 148,
+      "views": 149,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.48
+      "popularityScore": 7.49
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -713,10 +713,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 346,
+      "views": 347,
       "likes": 7,
       "comments": 6,
-      "popularityScore": 36.46
+      "popularityScore": 36.47
     },
     {
       "category": "정보 공유",
@@ -778,10 +778,10 @@
       "excerpt": "맛집부터 취미까지, 당근 카페에서 관심 있는 주제에 대해 소통해보세요.",
       "image": "https://cafe.daangn.com/opengraph-image-12o0cb?1c7c1549b06c0934",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/집에-있는-카드인데-얼마나-할까요-dGGDgnNd",
-      "views": 39,
+      "views": 40,
       "likes": 5,
       "comments": 0,
-      "popularityScore": 15.39
+      "popularityScore": 15.4
     }
   ]
 }

@@ -1,0 +1,33 @@
+name: Wire CMS link enhancements
+on:
+  push:
+    paths:
+      - '.github/workflows/inject-cms-link-enhancements.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject enhancement script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="cms-link-enhancements.js"></script>'
+          if tag not in s:
+              if '</body>' not in s:
+                  raise SystemExit('admin.html has no </body>')
+              s=s.replace('</body>',tag+'</body>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit admin wiring
+        run: |
+          if git diff --quiet -- admin.html; then exit 0; fi
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          git commit -m "enable enhanced CMS link block editor"
+          git push

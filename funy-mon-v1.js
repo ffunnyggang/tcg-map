@@ -180,14 +180,18 @@
       const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){
-        if(data.error==='too_far')showMessage('조금 더 가까이 가보세요',meta.shop.name+'까지 약 '+data.distance_m+'m예요. '+(data.required_m||100)+'m 이내에서 포획할 수 있어요.');
-        else if(data.error==='daily_catch_limit')showMessage('오늘 포획을 모두 완료했어요','이 이벤트에서는 하루 '+data.limit+'마리까지 포획할 수 있어요.');
+        if(data.error==='too_far')showMessage('포획 가능 거리 밖이에요','현재 위치에서 '+meta.shop.name+'까지 약 '+data.distance_m+'m예요. 포획 가능 거리는 '+(data.required_m||100)+'m 이내예요.');
+        else if(data.error==='daily_catch_limit')showMessage('오늘 포획 가능 횟수를 모두 사용했어요','이 이벤트에서는 하루 '+data.limit+'회까지 포획할 수 있어요.');
         else if(data.error==='already_caught_today')showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
-        else showMessage('포획하지 못했어요','잠시 후 다시 시도해주세요.');return;
+        else if(data.error==='event_unavailable')showMessage('이벤트에 참여할 수 없어요','이벤트가 종료되었거나 현재 운영 중이 아니에요.');
+        else if(data.error==='monster_unavailable')showMessage('포획할 수 없는 퍼니몬이에요','이벤트 설정이 변경되었어요. 지도를 새로고침해주세요.');
+        else if(data.error==='shop_unavailable')showMessage('카드샵 정보를 확인할 수 없어요','잠시 후 다시 시도해주세요.');
+        else if(data.error==='invalid_payload'||data.error==='invalid_anonymous_id')showMessage('포획 정보를 확인하지 못했어요','페이지를 새로고침한 뒤 다시 시도해주세요.');
+        else showMessage('포획 처리 중 오류가 발생했어요','잠시 후 다시 시도해주세요.');return;
       }
       saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);try{meta.marker.setMap(null)}catch(_){}syncVisibility();
-      if(data.result==='failed'){showCatchOutcome(false,'다른 퍼니몬을 포획해보세요!');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
-    }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false}
+      if(data.result==='failed'){showCatchOutcome(false,'아쉽게 놓쳤어요! 다른 퍼니몬을 포획해보세요.');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
+    }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else if(code===2)showMessage('현재 위치를 확인하지 못했어요','GPS 또는 위치 서비스를 켠 뒤 다시 시도해주세요.');else if(code===3)showMessage('위치 확인 시간이 초과됐어요','잠시 후 다시 시도해주세요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false}
   }
 
   function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}

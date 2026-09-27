@@ -1,0 +1,37 @@
+name: Wire CMS collection enhancements
+on:
+  push:
+    paths:
+      - '.github/workflows/inject-cms-collection-enhancements.yml'
+permissions:
+  contents: write
+jobs:
+  wire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject collection enhancement script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="cms-collection-enhancements.js"></script>'
+          if tag not in s:
+              anchor='<script src="cms-link-enhancements.js"></script>'
+              if anchor in s:
+                  s=s.replace(anchor,anchor+tag,1)
+              elif '</body>' in s:
+                  s=s.replace('</body>',tag+'</body>',1)
+              else:
+                  raise SystemExit('admin.html injection point missing')
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit admin wiring
+        run: |
+          if git diff --quiet -- admin.html; then exit 0; fi
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          git commit -m "enable enhanced CMS collection block editor"
+          git push

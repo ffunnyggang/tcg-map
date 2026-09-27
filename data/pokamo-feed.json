@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-27T13:26:47.915556+00:00",
+  "updatedAt": "2026-09-27T14:26:26.564516+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "아이와 취미용으로",
+      "author": "몽실이",
+      "publishedAt": "2026-09-27T13:32:26.200861Z",
+      "excerpt": "아이와 취미용으로",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아이와-취미용으로-dpWWOYgP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "출첵!",
@@ -11,10 +24,10 @@
       "excerpt": "출석체크!?합니다 추석연휴도 끝나가네용 ㅠㅠ 어제 카드깡 망햇어요 올려봅니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179050900262080112294ebd8cf00953d8836592548e1ccb598bf630256d38ef7865db275fed00.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/출첵-PoVVV4GA",
-      "views": 6,
+      "views": 20,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.06
+      "popularityScore": 0.2
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "카드샵에서도 일판 등급있는 카드를 판매하는지 궁금하고 다른 분들은 인터넷에서 구매하시는지 아니면 카드샵 가서 구매하시는지 궁금합니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이제-카드-수집을-시작한-포린이인데-등급-있는-카드는-카드샵에서-구매하는게-안전한가요-j8rryqzP",
-      "views": 16,
-      "likes": 1,
+      "views": 22,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 3.16
+      "popularityScore": 6.22
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "30주년 리자몽 복각카드가 최애 입니다 !",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260927/5e81b657-ab4a-42ed-82cf-83256e8d0a89.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-리자몽-복각카드가-최애-입니다-Pwwg51ZP",
-      "views": 18,
+      "views": 19,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.18
+      "popularityScore": 13.19
     },
     {
       "category": "자유 게시판",
@@ -89,10 +102,10 @@
       "excerpt": "리자몽입니다 ㅠㅠㅠ",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽입니다-ㅠㅠㅠ-P21OqpvA",
-      "views": 2,
+      "views": 3,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.02
+      "popularityScore": 3.03
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "Psa10오리파고 2분의1확률인데 아쉽네요 꽝입니다 80링깃 26000원 오리파까지 구매하면 30주년 북미 팩도 같이 서비스로 줍니다 그래도 신기하고 재밌네요 뮤와 피카츄 하나는 다른곳에서 낱팩까고 이름까먹은 다람쥐는 야시장에서 얻었습니다 일본이 아니여도 다른나라 여행갈때 카드샵이 있으",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179043308596607fdcf08ab99b481cf694ff2769967d2dfc93c59cfe299ba932a40ffd4b847a40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/말레이시아-오리파-dXEqe18j",
-      "views": 42,
+      "views": 43,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.42
+      "popularityScore": 6.43
     },
     {
       "category": "자유 게시판",
@@ -132,19 +145,6 @@
       "likes": 2,
       "comments": 1,
       "popularityScore": 8.2
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이제 막 시작해서 아직 특별한게 없네요ㅠ",
-      "author": "고소한앙증",
-      "publishedAt": "2026-09-26T06:05:41.285267Z",
-      "excerpt": "이제 막 시작해서 아직 특별한게 없네요ㅠ",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이제-막-시작해서-아직-특별한게-없네요ㅠ-jvxqq2LP",
-      "views": 4,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.04
     },
     {
       "category": "정보 공유",
@@ -206,10 +206,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 100,
+      "views": 101,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 14.0
+      "popularityScore": 14.01
     },
     {
       "category": "카드거래",
@@ -219,10 +219,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 121,
+      "views": 122,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.21
+      "popularityScore": 55.22
     },
     {
       "category": "카드 자랑",
@@ -310,10 +310,10 @@
       "excerpt": "🤣 요즘 유행하는 포켓몬카드 키링 숲카츄 아니고... 대륙발 X카츄로 만들어봤습니다! 알리에서 다양한 패러디 일러스트로 판매 중인데, 생각보다 퀄리티는 괜찮지만 역시 센터링과 공정은 아쉽네요😂 그래도 저렴한 비용으로 재미있게 즐기기엔 만족!🔥 ※ 정품 포켓몬카드가 아닌 커스텀 제품입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/숲카츄-포켓몬카드-키링만들었어요✨-AeXZbkLj",
-      "views": 51,
+      "views": 52,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.51
+      "popularityScore": 5.52
     },
     {
       "category": "카드거래",
@@ -336,10 +336,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 148,
+      "views": 151,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.48
+      "popularityScore": 19.51
     },
     {
       "category": "카드 자랑",
@@ -505,10 +505,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 153,
+      "views": 154,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.53
+      "popularityScore": 7.54
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -583,10 +583,10 @@
       "excerpt": "🎣 잉어킹 프로모 brg 그레이딩 신청방법! 홈페이지에서 ‘그레이딩 신청’ 선택! ① 레귤러 / 익스프레스 중 서비스 선택 ② 카드 종류에서 ‘포켓몬카드’ 선택 ③ 결제하면 신청 완료! 👉 카드 종류 외 나머지 항목은 생략하셔도 됩니다 📢 잠깐! 8/7~8/31 잉어킹 프로모 카드 그레",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260828/aac9651a-c89c-4c15-88fa-d71f9d4eed4e.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎣-잉어킹-프로모-brg-그레이딩-신청방법-PBlDrwqj",
-      "views": 90,
+      "views": 91,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.9
+      "popularityScore": 5.91
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -713,10 +713,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 339,
+      "views": 340,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.39
+      "popularityScore": 10.4
     },
     {
       "category": "정보 공유",
@@ -726,10 +726,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 354,
+      "views": 356,
       "likes": 7,
       "comments": 6,
-      "popularityScore": 36.54
+      "popularityScore": 36.56
     },
     {
       "category": "정보 공유",

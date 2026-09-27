@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-27T09:27:04.837501+00:00",
+  "updatedAt": "2026-09-27T10:26:45.927048+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "이제 카드 수집을 시작한 포린이인데 등급 있는 카드는 카드샵에서 구매하는게 안전한가요?",
+      "author": "고소한앙증",
+      "publishedAt": "2026-09-27T09:31:07.385786Z",
+      "excerpt": "카드샵에서도 일판 등급있는 카드를 판매하는지 궁금하고 다른 분들은 인터넷에서 구매하시는지 아니면 카드샵 가서 구매하시는지 궁금합니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이제-카드-수집을-시작한-포린이인데-등급-있는-카드는-카드샵에서-구매하는게-안전한가요-j8rryqzP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "팬텀 좋아합니다.",
@@ -11,10 +24,10 @@
       "excerpt": "팬텀 좋아합니다.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-좋아합니다-dQMMabYd",
-      "views": 1,
-      "likes": 0,
+      "views": 9,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.09
     },
     {
       "category": "자유 게시판",
@@ -132,19 +145,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.02
-    },
-    {
-      "category": "자유 게시판",
-      "title": "크림에도 짭이 있나요?",
-      "author": "양심거래",
-      "publishedAt": "2026-09-25T12:54:16.163598Z",
-      "excerpt": "크림에서 PSA10등급 고라파덕 AR카드를 사려고 하는데 처음시켜봐서 짭이오면 어떡하나..해서요 아시는분 계실까요..?",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/크림에도-짭이-있나요-dXEo1kmj",
-      "views": 46,
-      "likes": 1,
-      "comments": 3,
-      "popularityScore": 9.46
     },
     {
       "category": "정보 공유",
@@ -479,10 +479,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 116,
+      "views": 117,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.16
+      "popularityScore": 9.17
     },
     {
       "category": "정보 공유",
@@ -505,10 +505,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 152,
+      "views": 153,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.52
+      "popularityScore": 7.53
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -609,10 +609,10 @@
       "excerpt": "급처합니다 택배비는 따로입니다 공식샵에서 구입하였고 슈링크 있습니다 구매시 어비스아이 1팩드려요 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/5071ae9f-9943-4cad-b138-293c66fe6f98.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메가드림급처합니다72-d7rDan4P",
-      "views": 30,
+      "views": 31,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.3
+      "popularityScore": 0.31
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -648,10 +648,10 @@
       "excerpt": "서울 용산 근처 어디쯤에서 10~15명 정도 규모로 포켓몬카드 트레이딩 오프라인 모임을 진행해보면 어떨까?하는 생각에 카페 멤버님들의 의견을 확인하고자 올려봅니다😁 그냥 편하고 자유롭게 수집 카드 자랑하고 트레이딩하는 자리로 참여 의사가 있으신 분들이 10~15명 정도 된다면 진행해볼게",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1015명-정도-규모로-포켓몬카드-트레이딩-모임을-진행한다면-AODMngDP",
-      "views": 132,
+      "views": 133,
       "likes": 5,
       "comments": 7,
-      "popularityScore": 30.32
+      "popularityScore": 30.33
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -713,10 +713,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 337,
+      "views": 338,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.370000000000001
+      "popularityScore": 10.379999999999999
     },
     {
       "category": "정보 공유",

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-27T08:28:01.603540+00:00",
+  "updatedAt": "2026-09-27T09:27:04.837501+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "팬텀 좋아합니다.",
+      "author": "포포카",
+      "publishedAt": "2026-09-27T09:08:30.001874Z",
+      "excerpt": "팬텀 좋아합니다.",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-좋아합니다-dQMMabYd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "아들과 함께 포켓몬카드를 뜯으면서 재미를 알게 되었습니다",
@@ -76,10 +89,10 @@
       "excerpt": "Psa10오리파고 2분의1확률인데 아쉽네요 꽝입니다 80링깃 26000원 오리파까지 구매하면 30주년 북미 팩도 같이 서비스로 줍니다 그래도 신기하고 재밌네요 뮤와 피카츄 하나는 다른곳에서 낱팩까고 이름까먹은 다람쥐는 야시장에서 얻었습니다 일본이 아니여도 다른나라 여행갈때 카드샵이 있으",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179043308596607fdcf08ab99b481cf694ff2769967d2dfc93c59cfe299ba932a40ffd4b847a40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/말레이시아-오리파-dXEqe18j",
-      "views": 39,
+      "views": 40,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.39
+      "popularityScore": 6.4
     },
     {
       "category": "자유 게시판",
@@ -132,19 +145,6 @@
       "likes": 1,
       "comments": 3,
       "popularityScore": 9.46
-    },
-    {
-      "category": "자유 게시판",
-      "title": "가격 궁금합니닷…",
-      "author": "당근을흔들어주세요",
-      "publishedAt": "2026-09-25T12:26:29.668329Z",
-      "excerpt": "피카츄만 모아서 이번에 30주년 피카츄 많이나온데서 2박스깟는데 피카츄는 30종중 27종 모았고 중복있어요 뮤랑 이런거 뽑았는데 가격어느정도예요? 잘안나와잇ㅇㅓ서욥.. 밑에 두장 가격궁금합니다 나머지도 알랴주시면 감사해욤!!",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179033911948764f1209f85f49a67697318c40cb1249299e027436277e53914255b1592e6060b0.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가격-궁금합니닷-dGGDYq3d",
-      "views": 87,
-      "likes": 2,
-      "comments": 17,
-      "popularityScore": 40.87
     },
     {
       "category": "정보 공유",
@@ -323,10 +323,10 @@
       "excerpt": "이거 45에 팔아요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1996-초판-리자몽-PVD3yyvj",
-      "views": 33,
+      "views": 34,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.33
+      "popularityScore": 0.34
     },
     {
       "category": "카드 자랑",
@@ -479,10 +479,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 115,
+      "views": 116,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.15
+      "popularityScore": 9.16
     },
     {
       "category": "정보 공유",
@@ -635,10 +635,10 @@
       "excerpt": "입구부터 PSA 10 카드가 가득🔥 판초츄·뭉크·마리오츄부터 최애 갸라도스까지👀 그리고 화제의 1억 원짜리 릴리에 카드도 영접했습니다😱 최근 관심이 생긴 원피스 등급카드도 다양하게 구경하고, 소문으로만 듣던 스니덩 오리파는 냄새만 킁킁🐽 결국 데려온 첫 원피스 등급카드는 바로 루피 매거",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178771770624496bfa3eb24839fff96c7576148e979c2baa56268ac402b139c641f81accb7f8f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🇯🇵-도쿄-도착하자마자-달려간-곳-아키하바라-스니덩-jvqy6VLd",
-      "views": 139,
+      "views": 140,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.39
+      "popularityScore": 9.4
     },
     {
       "category": "자유 게시판",
@@ -674,10 +674,10 @@
       "excerpt": "😮 방문했던 카드샵 중 가장 넓은 규모 매장에 들어가자마자 가장 먼저 느낀 점은 생각보다 규모가 정말 크고 쾌적하다는 점이었습니다 지금까지 방문했던 카드샵 중에서도 손에 꼽을 정도로 넓은 공간이었는데요 매장 내부는 오리파 / 싱글카드 / 등급카드 / 박스 제품 공간으로 나뉘어 있어 원하",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178754170555540308b27df7d1ee27046a0f3a9ab4fad6b4a417c9c6aa279c06bcd029100743f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/강남-카드노바-오픈-후기-dXq39l3j",
-      "views": 108,
+      "views": 109,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 6.08
+      "popularityScore": 6.09
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -726,10 +726,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 351,
+      "views": 353,
       "likes": 7,
       "comments": 6,
-      "popularityScore": 36.51
+      "popularityScore": 36.53
     },
     {
       "category": "정보 공유",

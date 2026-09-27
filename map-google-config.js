@@ -14,7 +14,7 @@ if (/\/admin(?:\.html)?$/.test(location.pathname)) {
   historyScript.defer=true;
   document.head.appendChild(historyScript);
   const attemptScript=document.createElement('script');
-  attemptScript.src='assets/admin/funymon-attempt-history.js?v=20260927-1';
+  attemptScript.src='assets/admin/funymon-attempt-history.js?v=20260927-2';
   attemptScript.defer=true;
   document.head.appendChild(attemptScript);
 }

@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-27T22:27:14.005188+00:00",
+  "updatedAt": "2026-09-27T23:25:47.373949+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "카드거래",
+      "title": "저는 일판 트레이너 카드 아니면 트레이너와 포켓몬이 같이 나온 카드만 모으고 있습니다.",
+      "author": "김철왕",
+      "publishedAt": "2026-09-27T23:21:12.438603Z",
+      "excerpt": "가격만 괜찮으면 바로 거래하고 싶어요. 서울에 살고 있고, 만약 멀리 계신다면 택배 거래도 괜찮습니 다.",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/2e89fbae-8115-40fc-9121-4021ae340f22.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-일판-트레이너-카드-아니면-트레이너와-포켓몬이-같이-나온-카드만-모으고-있습니다-d9XXOrOP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "지방이라 거의 크림에서 많이 사네요",
+      "author": "데지날다",
+      "publishedAt": "2026-09-27T22:46:57.127194Z",
+      "excerpt": "지방이라 거의 크림에서 많이 사네요",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/지방이라-거의-크림에서-많이-사네요-Px88G0QP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "싱글로 구해야지...",
@@ -11,10 +37,10 @@
       "excerpt": "역시 저는 카드팩에서 뽑는 것보다 싱글로 구하는 게 더 좋은 것 같네요...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/30feb54e-96fc-44cd-a204-195ef542f25f.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/싱글로-구해야지-PM00a42A",
-      "views": 4,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.04
+      "views": 16,
+      "likes": 1,
+      "comments": 2,
+      "popularityScore": 7.16
     },
     {
       "category": "자유 게시판",
@@ -24,10 +50,10 @@
       "excerpt": "30장 채우기 힘드시거나 직접하기 번거로우신분들의 수요 있을까요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/28f626ac-0d00-48ad-81de-e9c9661c5073.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/그레이딩대행-PwwwNNmP",
-      "views": 20,
+      "views": 22,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.2
+      "popularityScore": 0.22
     },
     {
       "category": "카드 자랑",
@@ -37,10 +63,10 @@
       "excerpt": "왕십리 모아카드샵에 잠시 들렀다가 결국 올드백 싱글카드 도전!🔥 과연 어떤 카드를 뽑았을지… 결과는 영상에서 확인해주세요! 👀 남은 연휴도 즐겁게 보내시고, 깽퐌커플 그리고 FUNY PIN도 많•관•부 💜 📍 모아카드샵 서울 성동구 마조로5길 3-3, 2층 📣 FUNY PIN에서 ‘모아",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17905205396633969123acbf8d7c4cc10597e838227e8da5201d9755195482723e154053e11a50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-싱글카드-오리파-도전🔥-PmVVLJxd",
-      "views": 18,
-      "likes": 0,
+      "views": 22,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 0.18
+      "popularityScore": 6.22
     },
     {
       "category": "자유 게시판",
@@ -76,10 +102,10 @@
       "excerpt": "카드샵에서도 일판 등급있는 카드를 판매하는지 궁금하고 다른 분들은 인터넷에서 구매하시는지 아니면 카드샵 가서 구매하시는지 궁금합니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이제-카드-수집을-시작한-포린이인데-등급-있는-카드는-카드샵에서-구매하는게-안전한가요-j8rryqzP",
-      "views": 25,
+      "views": 26,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.25
+      "popularityScore": 6.26
     },
     {
       "category": "자유 게시판",
@@ -145,19 +171,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.03
-    },
-    {
-      "category": "자유 게시판",
-      "title": "30주년 카드를 깠는데 피카츄 복각카드가 나와서 기뻤어요",
-      "author": "수달_riws",
-      "publishedAt": "2026-09-26T14:39:18.751861Z",
-      "excerpt": "30주년 카드를 깠는데 피카츄 복각카드가 나와서 기뻤어요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-카드를-깠는데-피카츄-복각카드가-나와서-기뻤어요-d7LrKm4j",
-      "views": 1,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.01
     },
     {
       "category": "정보 공유",
@@ -232,10 +245,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 124,
+      "views": 125,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.24
+      "popularityScore": 55.25
     },
     {
       "category": "카드 자랑",
@@ -271,10 +284,10 @@
       "excerpt": "겉에 비닐도 낡아버려져있는 뱅기프로모세투 ✈️ 이런 카드는 어떻게 보관해야 좋을까요.. 🤔 제가 모으고있던 애버라스도 있어서 피카츄 뒤에 애버라스 숨어있는거 바로 알아봤어요 🤓",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/6795c499-4987-4e4a-afef-ca43f2e4777a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/뱅기프로모세투-ArYM90Dj",
-      "views": 28,
+      "views": 29,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.28
+      "popularityScore": 6.29
     },
     {
       "category": "카드 자랑",
@@ -600,19 +613,6 @@
       "likes": 1,
       "comments": 1,
       "popularityScore": 5.86
-    },
-    {
-      "category": "카드거래",
-      "title": "메가드림급처합니다7.2",
-      "author": "oaoaoaoa",
-      "publishedAt": "2026-08-27T16:46:33.769706Z",
-      "excerpt": "급처합니다 택배비는 따로입니다 공식샵에서 구입하였고 슈링크 있습니다 구매시 어비스아이 1팩드려요 연락주세요",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/5071ae9f-9943-4cad-b138-293c66fe6f98.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메가드림급처합니다72-d7rDan4P",
-      "views": 32,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.32
     },
     {
       "category": "카드깡/카드샵 후기",

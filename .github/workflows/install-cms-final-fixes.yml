@@ -1,0 +1,32 @@
+name: Install CMS final fixes
+on:
+  push:
+    paths:
+      - '.github/workflows/install-cms-final-fixes.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject final CMS script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="/cms-final-fixes.js?v=20260928-0641"></script>'
+          if tag not in s:
+              if '</body>' not in s: raise SystemExit('admin.html has no </body>')
+              s=s.replace('</body>',tag+'</body>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          if git diff --quiet; then exit 0; fi
+          git add admin.html
+          git commit -m "load final CMS stabilization script"
+          git push

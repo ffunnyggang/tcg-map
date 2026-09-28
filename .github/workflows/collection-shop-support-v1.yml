@@ -1,0 +1,69 @@
+name: Collection shop support v1
+on:
+  push:
+    paths:
+      - '.github/workflows/collection-shop-support-v1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add shop source support to collections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-collection-enhancements.js');s=p.read_text(encoding='utf-8')
+          s=s.replace("return openCollectionEditor(block,blockItems,contents,onDone,placement)","return openCollectionEditor(block,blockItems,contents,shops,onDone,placement)")
+          s=s.replace("function openCollectionEditor(block,blockItems,contents,onDone,placement){", "function openCollectionEditor(block,blockItems,contents,shops,onDone,placement){")
+          s=s.replace("let itemIds=(blockItems||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>x.content_id).filter(Boolean),", "let sourceType=(blockItems||[]).find(x=>x.item_type==='shop'||x.shop_id)?'shop':'content',activeTab=sourceType,itemIds=(blockItems||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>sourceType==='shop'?x.shop_id:x.content_id).filter(Boolean),shopImages={},")
+          # helpers and source-aware rows
+          marker="const thumb=x=>{const im=x?.image_url||x?.auto_image_url||'';return im?`<img src=\"${esc(im)}\" alt=\"\">`:'<span class=\"cms-collection-thumb\">↗</span>'};"
+          repl=marker+"const shopUrl=x=>'shops.html?shop='+encodeURIComponent(x.id),shopSub=x=>x.nearest_station&&x.walk_minutes!=null?x.nearest_station+'에서 도보 '+x.walk_minutes+'분':(x.nearest_station||'도보 정보 없음'),shopThumb=x=>shopImages[x.id]?.thumb||'',shopHero=x=>shopImages[x.id]?.hero||shopThumb(x);const rowData=id=>sourceType==='shop'?(shops||[]).find(x=>x.id===id):contents.find(x=>x.id===id);const rowTitle=x=>sourceType==='shop'?x?.name:x?.title;const rowUrl=x=>sourceType==='shop'?shopUrl(x):x?.target_url;const rowThumb=x=>sourceType==='shop'?shopThumb(x):(x?.image_url||x?.auto_image_url||'');"
+          if marker not in s: raise SystemExit('thumb marker missing')
+          s=s.replace(marker,repl,1)
+          a=s.index('const includedHtml=()=>');b=s.index('wrap.innerHTML=',a)
+          funcs="""const includedHtml=()=>itemIds.map(id=>{const x=rowData(id);if(!x)return '';const im=rowThumb(x);return `<div class=\"cms-collection-row\" draggable=\"true\" data-row-id=\"${esc(id)}\"><button class=\"cms-drag-handle\" type=\"button\">⋮⋮</button>${im?`<img src=\"${esc(im)}\" alt=\"\">`:'<span class=\"cms-collection-thumb\">↗</span>'}<span><b>${esc(rowTitle(x)||'제목 없음')}</b><small>${esc(sourceType==='shop'?shopSub(x):rowUrl(x)||'')}</small></span><span class=\"cms-collection-actions\"><button class=\"cms-item-title-toggle ${hiddenTitles[id]?'on':''}\" data-title-toggle=\"${esc(id)}\" type=\"button\">${hiddenTitles[id]?'제목 숨김':'제목 표시'}</button><button class=\"cms-collection-remove\" data-remove-item=\"${esc(id)}\" type=\"button\">×</button></span></div>`}).join('')||'<div class=\"cms-collection-empty\">아직 포함된 링크가 없습니다.</div>';const availableHtml=()=>{const list=activeTab==='shop'?(shops||[]).filter(x=>x.is_active!==false):contents.filter(x=>x.is_library!==false);return list.filter(x=>!itemIds.includes(x.id)).map(x=>{const im=activeTab==='shop'?shopThumb(x):(x.image_url||x.auto_image_url||'');const url=activeTab==='shop'?shopUrl(x):(x.target_url||'');return `<button class=\"cms-collection-pick\" type=\"button\" data-pick-${activeTab}=\"${esc(x.id)}\">${im?`<img src=\"${esc(im)}\" alt=\"\">`:'<span class=\"cms-collection-thumb\">↗</span>'}<span><b>${esc(activeTab==='shop'?x.name:(x.title||'제목 없음'))}</b><small>${esc(url)}</small></span></button>`}).join('')||'<div class=\"cms-collection-empty\">추가 가능한 항목이 없습니다.</div>'};"""
+          s=s[:a]+funcs+s[b:]
+          # add tabs to available area
+          s=s.replace('<div class="cms-collection-group-body"><div id="cmsCollectionAvailable"', '<div class="cms-source-tabs"><button type="button" data-source-tab="content">콘텐츠</button><button type="button" data-source-tab="shop">카드샵</button></div><div class="cms-collection-group-body"><div id="cmsCollectionAvailable"',1)
+          # source-aware preview
+          old="const cards=itemIds.map(id=>contents.find(c=>c.id===id)).filter(Boolean).map(x=>{const im=x.image_url||x.auto_image_url||'';return `<div class=\"collection-card\"><div class=\"collection-media\">${im?`<img src=\"${esc(im)}\" style=\"object-position:${Number(x.image_position_x??50)}% ${Number(x.image_position_y??50)}%;transform:scale(${Math.max(1,Number(x.image_zoom||1))})\" alt=\"\">`:'<span class=\"collection-ph\">이미지 없음</span>'}</div><b class=\"${hiddenTitles[x.id]?'hidden':''}\">${esc(x.title||'제목 없음')}</b></div>`}).join('');"
+          new="const cards=itemIds.map(id=>rowData(id)).filter(Boolean).map(x=>{const im=sourceType==='shop'?shopHero(x):(x.image_url||x.auto_image_url||'');const sub=sourceType==='shop'?`<small class=\"cms-shop-walk\">${esc(shopSub(x))}</small>`:'';return `<div class=\"collection-card\"><div class=\"collection-media\">${im?`<img src=\"${esc(im)}\" style=\"object-position:${sourceType==='shop'?'50% 50%':Number(x.image_position_x??50)+'% '+Number(x.image_position_y??50)+'%'};transform:scale(${sourceType==='shop'?1:Math.max(1,Number(x.image_zoom||1))})\" alt=\"\">`:'<span class=\"collection-ph\">이미지 없음</span>'}</div><b class=\"${hiddenTitles[x.id]?'hidden':''}\">${esc(sourceType==='shop'?x.name:(x.title||'제목 없음'))}${sub}</b></div>`}).join('');"
+          if old not in s: raise SystemExit('preview marker missing')
+          s=s.replace(old,new,1)
+          # bind source tabs and picks; enforce one source per collection
+          s=s.replace("wrap.querySelectorAll('[data-pick-content]').forEach(b=>b.onclick=()=>{if(!itemIds.includes(b.dataset.pickContent))itemIds.push(b.dataset.pickContent);redrawLists()});", "wrap.querySelectorAll('[data-pick-content]').forEach(b=>b.onclick=()=>{if(sourceType!=='content'&&itemIds.length)return alert('콘텐츠와 카드샵은 같은 컬렉션에 함께 등록할 수 없습니다.');sourceType='content';if(!itemIds.includes(b.dataset.pickContent))itemIds.push(b.dataset.pickContent);redrawLists()});wrap.querySelectorAll('[data-pick-shop]').forEach(b=>b.onclick=()=>{if(sourceType!=='shop'&&itemIds.length)return alert('콘텐츠와 카드샵은 같은 컬렉션에 함께 등록할 수 없습니다.');sourceType='shop';if(!itemIds.includes(b.dataset.pickShop))itemIds.push(b.dataset.pickShop);redrawLists()});wrap.querySelectorAll('[data-source-tab]').forEach(b=>{b.classList.toggle('on',b.dataset.sourceTab===activeTab);b.onclick=()=>{activeTab=b.dataset.sourceTab;$e('cmsCollectionAvailable').innerHTML=availableHtml();bindLists()}});")
+          # save item_type/shop_id/title_hidden in DB
+          import re
+          s=re.sub(r"itemIds\.map\(\(contentId,i\)=>\(\{block_id:blockId,content_id:contentId,sort_order:\(i\+1\)\*10,is_active:true\}\)\)", "itemIds.map((id,i)=>({block_id:blockId,item_type:sourceType,content_id:sourceType==='content'?id:null,shop_id:sourceType==='shop'?id:null,sort_order:(i+1)*10,is_active:true,title_hidden:!!hiddenTitles[id]}))", s, count=1)
+          # persist source-aware metadata and load images
+          s=s.replace("bindLists();render();if(block)", "wrap.querySelectorAll('[data-source-tab]').forEach(b=>{b.classList.toggle('on',b.dataset.sourceTab===activeTab);b.onclick=()=>{activeTab=b.dataset.sourceTab;$e('cmsCollectionAvailable').innerHTML=availableHtml();bindLists()}});api('/rest/v1/shop_images?select=shop_id,image_type,source_path,storage_path,sort_order,is_primary&is_active=eq.true&order=sort_order.asc').then(rows=>{(rows||[]).forEach(r=>{const o=shopImages[r.shop_id]||(shopImages[r.shop_id]={});const u=r.storage_path||r.source_path;if(!u)return;if(r.image_type==='thumbnail'&&!o.thumb)o.thumb=u;if(r.image_type==='gallery'&&!o.hero)o.hero=u});redrawLists()}).catch(()=>{});bindLists();render();if(block)",1)
+          # styles
+          s=s.replace('`;document.head.appendChild(collectionStyle);', '.cms-source-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 8px 0}.cms-source-tabs button{height:32px;border:1px solid #e4dfe8;border-radius:8px;background:#fff;color:#716a76;font-size:9px;font-weight:800}.cms-source-tabs button.on{border-color:#8062d8;background:#f3effc;color:#6749bd}.cms-shop-walk{display:block;margin-top:3px;color:#8f8794;font-size:8px;font-weight:600}`;document.head.appendChild(collectionStyle);',1)
+          p.write_text(s,encoding='utf-8')
+
+          # Mobile preview: hydrate shop items and render them inside collections.
+          p=Path('cms-builder-preview.html');s=p.read_text(encoding='utf-8')
+          old="cm=Object.fromEntries(cs.map(x=>[x.id,x]));const img="
+          new="cm=Object.fromEntries(cs.map(x=>[x.id,x])),shopIds=[...new Set(its.filter(i=>i.item_type==='shop'&&i.shop_id).map(i=>i.shop_id))],shopRows=shopIds.length?await get('/rest/v1/shops?select=id,name,nearest_station,walk_minutes&id=in.('+shopIds.join(',')+')'):[],shopImgs=shopIds.length?await get('/rest/v1/shop_images?select=shop_id,image_type,source_path,storage_path,sort_order&shop_id=in.('+shopIds.join(',')+')&is_active=eq.true&order=sort_order.asc'):[],sm=Object.fromEntries(shopRows.map(x=>[x.id,x]));shopImgs.forEach(r=>{const x=sm[r.shop_id];if(!x)return;const u=r.storage_path||r.source_path;if(r.image_type==='gallery'&&!x.image_url)x.image_url=u;else if(r.image_type==='thumbnail'&&!x.thumb_url)x.thumb_url=u});shopRows.forEach(x=>{x.image_url=x.image_url||x.thumb_url||'';x.title=x.name;x.target_url='shops.html?shop='+encodeURIComponent(x.id);x.shop_sub=x.nearest_station&&x.walk_minutes!=null?x.nearest_station+'에서 도보 '+x.walk_minutes+'분':(x.nearest_station||'')});const img="
+          if old not in s: raise SystemExit('preview hydrate marker missing')
+          s=s.replace(old,new,1)
+          old="const xs=its.filter(i=>i.block_id===b.id).map(i=>cm[i.content_id]).filter(Boolean),align="
+          new="const blockIts=its.filter(i=>i.block_id===b.id),xs=blockIts.map(i=>i.item_type==='shop'?sm[i.shop_id]:cm[i.content_id]).filter(Boolean),align="
+          if old not in s: raise SystemExit('preview xs marker missing')
+          s=s.replace(old,new,1)
+          # collection titles from DB item title_hidden, and shop walk info
+          old="+(hidden[x.id]?'':'<b>'+esc(x.title)+'</b>')+"
+          new="+((blockIts[xs.indexOf(x)]?.title_hidden||hidden[x.id])?'':'<b>'+esc(x.title)+(x.shop_sub?'<small style=\"display:block;margin-top:3px;color:#8f8794;font-size:8px\">'+esc(x.shop_sub)+'</small>':'')+'</b>')+"
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-collection-enhancements.js cms-builder-preview.html
+          git commit -m "add shops to CMS collections"
+          git push

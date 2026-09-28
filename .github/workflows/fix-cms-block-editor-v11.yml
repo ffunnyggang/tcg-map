@@ -1,0 +1,49 @@
+name: Fix CMS block editor v11
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-block-editor-v11.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch block editor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Mobile-size live preview; image picker thumbnail always square/centered.
+          s=s.replace('.cms-link-live{padding:12px!important;text-align:left!important}', '.cms-link-live{padding:12px!important;text-align:left!important;width:min(100%,390px);margin:0 auto;box-sizing:border-box}')
+          s=s.replace('.cms-crop-stage{width:160px;aspect-ratio:1;', '.cms-crop-stage{width:160px;height:160px;aspect-ratio:1;')
+          s=s.replace('.cms-crop-stage.card{width:100%;aspect-ratio:auto;min-height:130px}.cms-crop-stage.background{width:100%;aspect-ratio:3.6/1}', '.cms-crop-stage.card,.cms-crop-stage.background{width:160px;height:160px;aspect-ratio:1}')
+          s=s.replace('.cms-crop-stage img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:center}', '.cms-crop-stage img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;transform:none!important;transform-origin:center}')
+          # Background preview text must always render above background image.
+          s=s.replace('.cms-link-live .demo.background{min-height:82px;justify-content:center;color:#fff;background-size:cover;background-position:center}', '.cms-link-live .demo.background{min-height:82px;justify-content:center;color:#fff;background-size:cover;background-position:center;position:relative}.cms-link-live .demo.background .ttl{position:relative;z-index:2;color:#fff;text-shadow:0 1px 4px #0008}')
+          # Picker thumb ignores edited crop coordinates: center of original only.
+          s=s.replace("stage.innerHTML=im?`<img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${zoom})\"><button", "stage.innerHTML=im?`<img src=\"${esc(im)}\"><button")
+          # Replace crop modal with stable pan/zoom editor. Fixed viewport ratio follows style, card follows original image.
+          a=s.index('function openCropModal()')
+          b=s.index("$e('cmsCropStage').onclick",a)
+          fn=r'''function openCropModal(){const im=currentImage();if(!im||blockStyle==='simple')return;let scale=Math.max(1,Number(zoom)||1),tx=0,ty=0,drag=null,nw=0,nh=0;const m=document.createElement('div');m.className='cms-crop-modal';m.innerHTML=`<button class="cms-crop-close" type="button" aria-label="닫기">×</button><div class="cms-crop-work"><img src="${esc(im)}"><div class="cms-crop-frame"></div></div><div class="cms-crop-help">크기, 위치를 자유롭게 변경하여<br>표시 영역을 조정할 수 있습니다</div><div class="cms-desktop-zoom"><button type="button" data-zoom-out>−</button><input type="range" min="1" max="5" step="0.01" value="${scale}"><button type="button" data-zoom-in>＋</button></div><div class="cms-crop-actions"><button class="cms-crop-cancel" type="button">취소</button><button class="cms-crop-apply" type="button">선택</button></div>`;document.body.appendChild(m);const work=m.querySelector('.cms-crop-work'),img=m.querySelector('img'),frame=m.querySelector('.cms-crop-frame'),zr=m.querySelector('.cms-desktop-zoom input');frame.style.inset='0';frame.style.boxShadow='inset 0 0 0 2px #8062d8';frame.style.border='0';const setViewport=()=>{if(blockStyle==='thumbnail'){work.style.aspectRatio='1';work.style.height='auto'}else if(blockStyle==='background'){work.style.aspectRatio='3.6/1';work.style.height='auto'}else if(nw&&nh){work.style.aspectRatio=`${nw}/${nh}`;work.style.height='auto'}};const baseCover=()=>{const vw=work.clientWidth,vh=work.clientHeight;if(!nw||!nh||!vw||!vh)return 1;return Math.max(vw/nw,vh/nh)};const clamp=()=>{const base=baseCover(),dw=nw*base*scale,dh=nh*base*scale,maxX=Math.max(0,(dw-work.clientWidth)/2),maxY=Math.max(0,(dh-work.clientHeight)/2);tx=Math.max(-maxX,Math.min(maxX,tx));ty=Math.max(-maxY,Math.min(maxY,ty))};const paint=()=>{clamp();const base=baseCover();img.style.width=(nw*base)+'px';img.style.height=(nh*base)+'px';img.style.left='50%';img.style.top='50%';img.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale})`;zr.value=String(scale)};img.onload=()=>{nw=img.naturalWidth;nh=img.naturalHeight;setViewport();requestAnimationFrame(()=>{const base=baseCover(),dw=nw*base*scale,dh=nh*base*scale;tx=(50-px)/100*Math.max(0,dw-work.clientWidth)*2;ty=(50-py)/100*Math.max(0,dh-work.clientHeight)*2;paint()})};frame.onpointerdown=e=>{e.preventDefault();frame.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,tx,ty};frame.style.cursor='grabbing'};frame.onpointermove=e=>{if(!drag)return;tx=drag.tx+(e.clientX-drag.x);ty=drag.ty+(e.clientY-drag.y);paint()};frame.onpointerup=frame.onpointercancel=e=>{drag=null;frame.style.cursor='grab';try{frame.releasePointerCapture(e.pointerId)}catch(_){}};const setScale=v=>{scale=Math.max(1,Math.min(5,Number(v)||1));paint()};zr.oninput=()=>setScale(zr.value);m.querySelector('[data-zoom-out]').onclick=e=>{e.preventDefault();setScale(scale-.1)};m.querySelector('[data-zoom-in]').onclick=e=>{e.preventDefault();setScale(scale+.1)};work.onwheel=e=>{e.preventDefault();setScale(scale+(e.deltaY<0?.1:-.1))};let pinch=null;work.addEventListener('touchstart',e=>{if(e.touches.length===2){const[a,b]=e.touches;pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:scale}}},{passive:true});work.addEventListener('touchmove',e=>{if(pinch&&e.touches.length===2){e.preventDefault();const[a,b]=e.touches;setScale(pinch.s*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/pinch.d)}},{passive:false});work.addEventListener('touchend',()=>pinch=null);const close=()=>m.remove();m.querySelector('.cms-crop-close').onclick=close;m.querySelector('.cms-crop-cancel').onclick=close;m.querySelector('.cms-crop-apply').onclick=()=>{const base=baseCover(),dw=nw*base*scale,dh=nh*base*scale;px=Math.max(0,Math.min(100,50-tx/Math.max(1,(dw-work.clientWidth)*2)*100));py=Math.max(0,Math.min(100,50-ty/Math.max(1,(dh-work.clientHeight)*2)*100));zoom=scale;close();render()}}
+'''
+          s=s[:a]+fn+s[b:]
+          # File selection: wait for object image decode, then open editor; works for new and replacement images.
+          old="$e('cmsImageFile').onchange=e=>{const f=e.target.files?.[0];if(!f)return;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(f);imageUrl=objectUrl;autoImageUrl='';px=50;py=50;zoom=1;render();setTimeout(openCropModal,0)};"
+          new="$e('cmsImageFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(f);imageUrl=objectUrl;autoImageUrl='';px=50;py=50;zoom=1;render();const probe=new Image();probe.onload=()=>requestAnimationFrame(openCropModal);probe.onerror=()=>requestAnimationFrame(openCropModal);probe.src=objectUrl};"
+          if old in s:s=s.replace(old,new)
+          else:
+            import re
+            s=re.sub(r"\$e\('cmsImageFile'\)\.onchange=e=>\{.*?\};",new,s,count=1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js
+          git commit -m "fix CMS block preview image picker and crop controls"
+          git push

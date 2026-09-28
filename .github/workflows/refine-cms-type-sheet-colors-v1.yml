@@ -1,0 +1,31 @@
+name: Refine CMS type sheet colors v1
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-cms-type-sheet-colors-v1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Distinguish block chooser types
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          old='.cms-type-card span{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#f0e9ff;color:#7557c8;font-size:21px}'
+          new='.cms-type-card span{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:#f3f1f4;color:#8c8490;font-size:21px}.cms-type-card[data-type="link"] span{background:#f3f1f4;color:#8c8490}.cms-type-card[data-type="collection"] span{background:#eef8f3;color:#2f8a62}.cms-type-card[data-type="banner"] span{background:#fff3e8;color:#c56d20}.cms-type-card[data-type="divider"] span{background:#eef3fb;color:#5478b8}'
+          if old not in s: raise SystemExit('type card CSS marker missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          git commit -m "distinguish CMS block chooser type colors"
+          git push

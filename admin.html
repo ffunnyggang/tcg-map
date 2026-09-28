@@ -620,4 +620,5 @@ document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{adminTab
 $('loginBtn').onclick=login;$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('headerLogout').onclick=()=>{token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');location.reload()};token=sessionStorage.getItem('funypin_admin_token')||'';refreshToken=sessionStorage.getItem('funypin_admin_refresh')||'';if(token)verify();
 </script><script src="cms-link-enhancements.js"></script><script src="cms-collection-enhancements.js"></script><script src="cms-structure-enhancements.js"></script><script src="/cms-final-fixes.js?v=20260928-0641"></script><script src="cms-layout-fix.js?v=20260928-1839"></script>
 <script src="cms-content-library.js?v=20260928-1839"></script>
+<script src="cms-collection-list-extension.js?v=20260929-0120"></script>
 </body></html>

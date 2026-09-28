@@ -1,39 +1,42 @@
 (()=>{
   // Keep the content-manager page selector aligned with the current HOME/PICK CMS placements.
-  // Legacy HOME sections are no longer separate pages in Admin.
   try {
     if (typeof CMS_PLACEMENTS !== 'undefined') {
       delete CMS_PLACEMENTS.home_recommend;
       delete CMS_PLACEMENTS.home_news;
       delete CMS_PLACEMENTS.home_links;
-      CMS_PLACEMENTS.home = 'HOME';
+      const pickInfo=CMS_PLACEMENTS.pick_information||'PICK · 일정';
+      const pickCreator=CMS_PLACEMENTS.pick_creator||'PICK · CREATOR';
+      const pickReview=CMS_PLACEMENTS.pick_review||'PICK · 깽퐌커플 리뷰';
+      Object.keys(CMS_PLACEMENTS).forEach(k=>delete CMS_PLACEMENTS[k]);
+      CMS_PLACEMENTS.home='HOME';
+      CMS_PLACEMENTS.pick_information=pickInfo==='PICK · 정보'?'PICK · 일정':pickInfo;
+      CMS_PLACEMENTS.pick_creator=pickCreator;
+      CMS_PLACEMENTS.pick_review=pickReview;
     }
   } catch (_) {}
 
-  const STYLE_ID='cms-desktop-preview-layout-v2';
+  const STYLE_ID='cms-desktop-preview-layout-v2', STORAGE_KEY='funypin:cms:active-placement';
   function apply(){
     if(!document.getElementById(STYLE_ID)){
-      const s=document.createElement('style');
-      s.id=STYLE_ID;
-      s.textContent=`
-@media (min-width:900px){
-  .cms-builder{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(330px,380px)!important;column-gap:24px!important;row-gap:0!important;align-items:start!important;width:100%!important;max-width:none!important;min-width:0!important}
-  .cms-builder-main{grid-column:1!important;grid-row:1!important;min-width:0!important;width:100%!important}
-  .cms-phone-wrap{display:block!important;grid-column:2!important;grid-row:1!important;align-self:start!important;position:sticky!important;top:18px!important;min-width:0!important;width:100%!important;margin:0!important}
-  .cms-phone{width:100%!important;max-width:380px!important;height:610px!important;margin:0 auto!important;border:9px solid #d5d0d8!important;border-radius:38px!important;background:#fff!important;overflow:hidden!important;box-shadow:0 8px 26px rgba(41,31,50,.1)!important}
-  .cms-phone iframe{display:block!important;width:100%!important;height:100%!important;border:0!important;background:#fff!important}
-  .cms-phone-label{display:block!important;margin:0 0 8px!important;font-size:10px!important;color:#978f9b!important}
-}
+      const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`
+@media (min-width:900px){.cms-builder{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(330px,380px)!important;column-gap:24px!important;row-gap:0!important;align-items:start!important;width:100%!important;max-width:none!important;min-width:0!important}.cms-builder-main{grid-column:1!important;grid-row:1!important;min-width:0!important;width:100%!important}.cms-phone-wrap{display:block!important;grid-column:2!important;grid-row:1!important;align-self:start!important;position:sticky!important;top:18px!important;min-width:0!important;width:100%!important;margin:0!important}.cms-phone{width:100%!important;max-width:380px!important;height:610px!important;margin:0 auto!important;border:9px solid #d5d0d8!important;border-radius:38px!important;background:#fff!important;overflow:hidden!important;box-shadow:0 8px 26px rgba(41,31,50,.1)!important}.cms-phone iframe{display:block!important;width:100%!important;height:100%!important;border:0!important;background:#fff!important}.cms-phone-label{display:block!important;margin:0 0 8px!important;font-size:10px!important;color:#978f9b!important}}
 @media (max-width:899px){.cms-builder{display:block!important}.cms-phone-wrap{display:none!important}}
-`;
-      document.head.appendChild(s);
+.cms-title-size-row button{font-size:10px!important;font-weight:750!important;height:38px!important}
+`;document.head.appendChild(s);
     }
-    const builder=document.querySelector('.cms-builder');
-    if(!builder)return;
-    const main=builder.querySelector('.cms-builder-main');
-    const phone=builder.querySelector('.cms-phone-wrap');
-    if(main&&phone&&phone.parentElement===builder&&main.nextElementSibling!==phone){builder.insertBefore(phone,main.nextSibling)}
+    const builder=document.querySelector('.cms-builder');if(!builder)return;
+    const main=builder.querySelector('.cms-builder-main'),phone=builder.querySelector('.cms-phone-wrap');if(main&&phone&&phone.parentElement===builder&&main.nextElementSibling!==phone)builder.insertBefore(phone,main.nextSibling);
+    const sel=document.getElementById('cmsPage');
+    if(sel&&!sel.dataset.fpFixed){
+      sel.dataset.fpFixed='1';
+      const labels={home:'HOME',pick_information:'PICK · 일정',pick_creator:'PICK · CREATOR',pick_review:'PICK · 깽퐌커플 리뷰'};
+      sel.innerHTML=Object.entries(labels).map(([v,n])=>`<option value="${v}">${n}</option>`).join('');
+      const saved=sessionStorage.getItem(STORAGE_KEY);sel.value=labels[saved]?saved:'home';
+      sel.addEventListener('change',()=>sessionStorage.setItem(STORAGE_KEY,sel.value));
+      sel.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+    const legacy=document.getElementById('cmsLegacy');if(legacy)legacy.remove();
   }
-  apply();
-  new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
+  apply();new MutationObserver(()=>requestAnimationFrame(apply)).observe(document.documentElement,{childList:true,subtree:true});
 })();

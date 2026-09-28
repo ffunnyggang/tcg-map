@@ -1,0 +1,31 @@
+name: Install collection list extension v1
+on:
+  push:
+    paths:
+      - '.github/workflows/install-collection-list-extension-v1.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load collection extension in admin
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="cms-collection-list-extension.js?v=20260929-0120"></script>'
+          if tag not in s:
+              s=s.replace('</body>',tag+'\n</body>')
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "load collection list extension"
+          git push

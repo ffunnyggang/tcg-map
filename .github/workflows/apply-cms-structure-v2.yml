@@ -1,0 +1,79 @@
+name: Apply CMS structure v2
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-cms-structure-v2.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin and CMS editors
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html'); s=p.read_text(encoding='utf-8')
+          old="const label=b.block_type==='collection'?'컬렉션':'링크';"
+          new="const label=b.block_type==='collection'?'컬렉션':b.block_type==='banner'?'배너':b.block_type==='divider'?'구분선':'블록';"
+          if old in s: s=s.replace(old,new,1)
+          old2="(b.block_type==='collection'?'▦':'↗')"
+          new2="(b.block_type==='collection'?'▦':b.block_type==='banner'?'▤':b.block_type==='divider'?'—':'↗')"
+          if old2 in s: s=s.replace(old2,new2,1)
+          old3="+(b.block_type==='collection'?' · '+its.length+'개':'')+"
+          new3="+((b.block_type==='collection'||b.block_type==='banner')?' · '+its.length+'개':'')+"
+          if old3 in s: s=s.replace(old3,new3,1)
+          old4="<button class=\"cms-type-card\" data-type=\"link\"><span>↗</span>링크</button><button class=\"cms-type-card\" data-type=\"collection\"><span>▦</span>컬렉션</button>"
+          new4="<button class=\"cms-type-card\" data-type=\"link\"><span>↗</span>블록</button><button class=\"cms-type-card\" data-type=\"collection\"><span>▦</span>컬렉션</button><button class=\"cms-type-card\" data-type=\"banner\"><span>▤</span>배너</button><button class=\"cms-type-card\" data-type=\"divider\"><span>—</span>구분선</button>"
+          if old4 not in s: raise SystemExit('type sheet marker missing')
+          s=s.replace(old4,new4,1)
+          tag='<script src="cms-structure-enhancements.js"></script>'
+          if tag not in s:
+              anchor='<script src="cms-collection-enhancements.js"></script>'
+              if anchor in s: s=s.replace(anchor,anchor+tag,1)
+              elif '</body>' in s: s=s.replace('</body>',tag+'</body>',1)
+              else: raise SystemExit('script injection point missing')
+          p.write_text(s,encoding='utf-8')
+
+          # Make collection/banner pickers use only reusable library contents.
+          for fn in ['cms-collection-enhancements.js','cms-structure-enhancements.js']:
+              q=Path(fn); t=q.read_text(encoding='utf-8')
+              t=t.replace("contents.filter(x=>!itemIds.includes(x.id))","contents.filter(x=>x.is_library!==false&&!itemIds.includes(x.id))")
+              t=t.replace("contents.filter(x=>!ids.includes(x.id))","contents.filter(x=>x.is_library!==false&&!ids.includes(x.id))")
+              q.write_text(t,encoding='utf-8')
+          PY
+      - name: Patch link registration save behavior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js'); s=p.read_text(encoding='utf-8')
+          # Registration selector is inserted directly into the link editor.
+          needle='<div class="field wide"><label>공개 설정</label><select id="cmsBlockStatus"'
+          repl='<div class="field wide"><label>등록 유형</label><div id="cmsRegistrationType" class="cms-reg-row"><button type="button" data-reg="block">블록</button><button type="button" data-reg="content">콘텐츠 목록</button><button type="button" data-reg="both">블록 + 콘텐츠 목록</button></div><div class="cms-thumb-note">콘텐츠 목록에 등록하면 컬렉션과 배너에서 재사용할 수 있습니다.</div></div><div class="field wide"><label>공개 설정</label><select id="cmsBlockStatus"'
+          if needle not in s: raise SystemExit('link registration UI marker missing')
+          s=s.replace(needle,repl,1)
+          # Initialize and bind registration type.
+          needle2="wrap.querySelectorAll('[data-link-mode]').forEach(b=>b.onclick=()=>{linkMode=b.dataset.linkMode;render()});"
+          repl2=needle2+"let registrationType=block?.registration_type||'both';wrap.querySelectorAll('[data-reg]').forEach(b=>{b.classList.toggle('on',b.dataset.reg===registrationType);b.onclick=()=>{registrationType=b.dataset.reg;wrap.querySelectorAll('[data-reg]').forEach(x=>x.classList.toggle('on',x===b))}});"
+          if needle2 not in s: raise SystemExit('link bind marker missing')
+          s=s.replace(needle2,repl2,1)
+          # Persist real navigation mode and library membership on content.
+          s=s.replace("status:'published',updated_at:new Date().toISOString()","status:'published',link_mode:linkMode,is_library:registrationType!=='block',updated_at:new Date().toISOString()",1)
+          # Add registration type to block payload.
+          s=s.replace("title_align:align,sort_order:block?.sort_order??999","title_align:align,title_hidden:titleHidden,registration_type:registrationType,sort_order:block?.sort_order??999",1)
+          # Content-only: save content, remove existing block if converting, then finish without creating a block.
+          marker="const bp={placement,block_type:'link'"
+          idx=s.find(marker)
+          if idx<0: raise SystemExit('block payload marker missing')
+          insert="if(registrationType==='content'){if(block?.id)await api('/rest/v1/cms_blocks?id=eq.'+encodeURIComponent(block.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});close();await onDone();return}"
+          s=s[:idx]+insert+s[idx:]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html cms-link-enhancements.js cms-collection-enhancements.js cms-structure-enhancements.js
+          git commit -m "implement CMS block library banner and divider structure"
+          git push

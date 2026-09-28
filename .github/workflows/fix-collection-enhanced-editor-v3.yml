@@ -1,0 +1,43 @@
+name: Fix enhanced collection editor v3
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-collection-enhanced-editor-v3.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch actual enhanced collection editor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-collection-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace(".cms-collection-live .collection-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}", ".cms-collection-live .collection-grid.g1{grid-template-columns:1fr}.cms-collection-live .collection-grid.g1 .collection-card{display:grid;grid-template-columns:88px minmax(0,1fr);align-items:center}.cms-collection-live .collection-grid.g1 .collection-media{width:88px;aspect-ratio:1}.cms-collection-live .collection-grid.g1 .collection-card b{text-align:left;padding:10px}.cms-collection-live .collection-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}")
+          s=s.replace("shopImages={},blockStyle=block?.style==='grid_2'?'grid_2':'grid_3',align=block?.title_align||'left',titleSize='normal',hiddenTitles={};", "shopImages={},blockStyle=block?.style==='list'?'list':(block?.style==='grid_2'?'grid_2':'grid_3'),align=block?.title_align||'left',titleHidden=!!block?.title_hidden,titleSize='normal',hiddenTitles={};")
+          s=s.replace("<div class=\"cms-style-grid\"><button type=\"button\" class=\"cms-style-option ${blockStyle==='grid_2'?'on':''}\" data-collection-style=\"grid_2\">2열 그리드</button>", "<div class=\"cms-style-grid\"><button type=\"button\" class=\"cms-style-option ${blockStyle==='list'?'on':''}\" data-collection-style=\"list\">1열 리스트</button><button type=\"button\" class=\"cms-style-option ${blockStyle==='grid_2'?'on':''}\" data-collection-style=\"grid_2\">2열 그리드</button>")
+          needle='<textarea id="cmsCollectionTitle" class="textarea cms-collection-title-input" rows="2">${esc(block?.title||\'\')}</textarea>'
+          repl=needle+'<div style="margin-top:8px"><button id="cmsCollectionTitleHidden" type="button" class="cms-style-option ${titleHidden?\'on\':\'\'}">${titleHidden?\'제목 숨김\':\'제목 표시\'}</button></div>'
+          s=s.replace(needle,repl,1)
+          s=s.replace("${title?`<h3 class=\"collection-title ${titleSize}\" style=\"text-align:${align}\">${esc(title)}</h3>`:''}<div class=\"collection-grid ${blockStyle==='grid_2'?'g2':'g3'}\">", "${title&&!titleHidden?`<h3 class=\"collection-title ${titleSize}\" style=\"text-align:${align}\">${esc(title)}</h3>`:''}<div class=\"collection-grid ${blockStyle==='list'?'g1':(blockStyle==='grid_2'?'g2':'g3')}\">")
+          hook="wrap.querySelectorAll('[data-collection-align]').forEach(b=>b.onclick=()=>{align=b.dataset.collectionAlign;render()});"
+          s=s.replace(hook, hook+"const titleHideBtn=$e('cmsCollectionTitleHidden');if(titleHideBtn)titleHideBtn.onclick=()=>{titleHidden=!titleHidden;titleHideBtn.textContent=titleHidden?'제목 숨김':'제목 표시';titleHideBtn.classList.toggle('on',titleHidden);render()};",1)
+          s=s.replace("const payload={placement,block_type:'collection',title,style:blockStyle,title_align:align,sort_order:", "const payload={placement,block_type:'collection',title,style:blockStyle,title_align:align,title_hidden:titleHidden,sort_order:",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Verify patch
+        run: |
+          grep -q 'data-collection-style="list"' cms-collection-enhancements.js
+          grep -q 'cmsCollectionTitleHidden' cms-collection-enhancements.js
+          grep -q 'title_hidden:titleHidden' cms-collection-enhancements.js
+          grep -q "blockStyle==='list'?'g1'" cms-collection-enhancements.js
+      - name: Commit
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-collection-enhancements.js
+          git commit -m "fix list layout and title hiding in enhanced collection editor"
+          git push

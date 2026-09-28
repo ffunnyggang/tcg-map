@@ -1,0 +1,71 @@
+name: Apply CMS block UI v3
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-cms-block-ui-v3.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch block editor UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          reps=[
+            (".cms-link-live .demo{display:flex;align-items:center;gap:10px;padding:8px;", ".cms-link-live .demo{display:flex;align-items:center;gap:10px;padding:8px;min-height:82px;"),
+            (".cms-link-live .demo.card{display:block}", ".cms-link-live .demo.card{display:block;min-height:0}"),
+            (".cms-link-live .demo.background{min-height:64px;", ".cms-link-live .demo.background{min-height:82px;"),
+            (".cms-crop-work img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;", ".cms-crop-work img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;"),
+            ("const styles=['thumbnail','simple','card','background']", "const styles=['thumbnail','background','simple','card']"),
+            ("<b>링크 블록</b>", "<b>블록</b>"),
+            ("<h3>링크 정보</h3>", "<h3>블록 설정</h3>"),
+            ('<button type="button" data-align="left"><span class="cms-align-icon">☰</span><span class="cms-align-caption">좌측</span></button><button type="button" data-align="center"><span class="cms-align-icon">≡</span><span class="cms-align-caption">가운데</span></button><button type="button" data-align="right"><span class="cms-align-icon">☰</span><span class="cms-align-caption">우측</span></button>', '<button type="button" data-align="left">좌측</button><button type="button" data-align="center">가운데</button><button type="button" data-align="right">우측</button>'),
+            ('<div class="field wide"><label>연결 방식</label><div class="cms-segment-row two"><button type="button" data-link-mode="inapp">인앱</button><button type="button" data-link-mode="external">아웃링크</button></div><div class="cms-thumb-note">인앱은 FUNY PIN 내부에서 열고, 아웃링크는 외부 브라우저로 연결합니다.</div></div><div class="field wide"><label>연결할 주소 *</label><input id="cmsBlockUrl" class="input" value="${esc(primary?.target_url||\'\')}" placeholder="https://..."><div class="cms-thumb-note">직접 이미지를 첨부하지 않은 경우 URL의 대표 썸네일(og:image)을 자동으로 불러옵니다.</div></div>', '<div class="field wide"><label>연결할 주소 *</label><div class="cms-url-row"><input id="cmsBlockUrl" class="input" value="${esc(primary?.target_url||\'\')}" placeholder="https://..."><select id="cmsLinkMode" class="select cms-link-mode"><option value="inapp">인앱</option><option value="external">아웃링크</option></select></div><div class="cms-thumb-note">직접 이미지를 첨부하지 않은 경우 URL의 대표 썸네일(og:image)을 자동으로 불러옵니다.</div><div class="cms-thumb-note">인앱은 FUNY PIN 내부에서 열고, 아웃링크는 외부 브라우저로 연결합니다.</div></div>'),
+            ('<option value="published" ${block?.status===\'published\'?\'selected\':\'\'}>바로 공개</option><option value="draft" ${!block||block?.status===\'draft\'?\'selected\':\'\'}>임시저장</option><option value="hidden" ${block?.status===\'hidden\'?\'selected\':\'\'}>숨김</option>', '<option value="published" ${!block||block?.status===\'published\'?\'selected\':\'\'}>공개</option><option value="hidden" ${block?.status===\'hidden\'?\'selected\':\'\'}>비공개</option>'),
+            ("const title=$e('cmsBlockTitle').value||'타이틀을 입력해주세요',im=currentImage(),card=blockStyle==='card',media=im?`<span class=\"media\"><img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${card?1:zoom})\"></span>`:'<span class=\"media\"><span class=\"cms-crop-empty\">이미지 없음</span></span>';", "const title=$e('cmsBlockTitle').value||'타이틀을 입력해주세요',im=currentImage(),card=blockStyle==='card',media=im?`<span class=\"media\"><img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${card?1:zoom})\"></span>`:'';"),
+            ("stage.innerHTML=im?`<img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${zoom})\"><button id=\"cmsImageRemove\" class=\"cms-image-remove\" type=\"button\" aria-label=\"이미지 제거\">×</button>`:'<div class=\"cms-crop-empty\">이미지를 첨부하거나<br>URL 썸네일을 불러오세요.</div>';", "stage.innerHTML=im?`<img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${zoom})\"><button id=\"cmsImageRemove\" class=\"cms-image-remove\" type=\"button\" aria-label=\"이미지 제거\">×</button>`:'';"),
+            ("$e('cmsImageSource').textContent=imageUrl?'직접 첨부 이미지 사용 중 · 이미지를 누르면 크롭 화면이 열립니다.':autoImageUrl?'URL 대표 썸네일 사용 중 · 이미지를 누르면 크롭 화면이 열립니다.':'이미지 없음';", "$e('cmsImageSource').textContent=imageUrl?'직접 첨부 이미지 사용 중 · 이미지를 누르면 크롭 화면이 열립니다.':autoImageUrl?'URL 대표 썸네일 사용 중 · 이미지를 누르면 크롭 화면이 열립니다.':'';"),
+            ("let frame={x:18,y:18,w:64,h:64},drag=null,start=null;", "const cropSize=Math.max(15,Math.min(100,100/Math.max(1,zoom)));let frame={x:Math.max(0,Math.min(100-cropSize,px-cropSize/2)),y:Math.max(0,Math.min(100-cropSize,py-cropSize/2)),w:cropSize,h:cropSize},drag=null,start=null;"),
+            ("work.setPointerCapture?.(e.pointerId)", "fr.setPointerCapture?.(e.pointerId)"),
+          ]
+          for old,new in reps:
+              if old not in s:
+                  raise SystemExit('missing marker: '+old[:100])
+              s=s.replace(old,new,1)
+          # URL + dropdown row styling and direct link mode binding.
+          css=".cms-url-row{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:8px}.cms-link-mode{padding-right:28px}"
+          s=s.replace(".cms-check-row{",css+".cms-check-row{",1)
+          marker="wrap.querySelectorAll('[data-link-mode]').forEach(b=>b.onclick=()=>{linkMode=b.dataset.linkMode;render()});"
+          replacement="const modeSelect=$e('cmsLinkMode');modeSelect.value=linkMode;modeSelect.onchange=()=>{linkMode=modeSelect.value};"
+          if marker not in s: raise SystemExit('link mode bind marker missing')
+          s=s.replace(marker,replacement,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Patch block chooser icons
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html'); s=p.read_text(encoding='utf-8')
+          changes={
+            '<button class="cms-type-card" data-type="link"><span>↗</span>블록</button>':'<button class="cms-type-card" data-type="link"><span>▣</span>블록</button>',
+            '<button class="cms-type-card" data-type="collection"><span>▦</span>컬렉션</button>':'<button class="cms-type-card" data-type="collection"><span>▦</span>컬렉션</button>',
+            '<button class="cms-type-card" data-type="banner"><span>▤</span>배너</button>':'<button class="cms-type-card" data-type="banner"><span>▤</span>배너</button>'
+          }
+          for old,new in changes.items():
+              if old in s: s=s.replace(old,new,1)
+          # list icon for single block too
+          s=s.replace("b.block_type==='divider'?'—':'↗'", "b.block_type==='divider'?'—':'▣'",1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js admin.html
+          git commit -m "refine CMS block editor UI and crop behavior"
+          git push

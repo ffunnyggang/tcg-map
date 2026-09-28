@@ -1,0 +1,44 @@
+name: Fix CMS crop and mobile preview v8
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-crop-preview-v8.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch editor and mobile preview
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Replace percent-frame crop model with image pan/zoom model; style fixes viewport ratio.
+          a=s.index('function openCropModal()')
+          b=s.index("$e('cmsCropStage').onclick",a)
+          fn=r'''function openCropModal(){const im=currentImage();if(!im||blockStyle==='simple')return;const m=document.createElement('div');m.className='cms-crop-modal';const ratio=blockStyle==='background'?'3.6/1':blockStyle==='thumbnail'?'1/1':'auto';m.innerHTML=`<button class="cms-crop-close" type="button" aria-label="닫기">×</button><div class="cms-crop-work" style="${ratio==='auto'?'aspect-ratio:auto;height:min(62vh,650px)':`aspect-ratio:${ratio};height:auto`}"><img src="${esc(im)}"><div class="cms-crop-frame" style="inset:0;border:2px solid #8062d8;box-shadow:none;cursor:grab"></div></div><div class="cms-crop-help">크기, 위치를 자유롭게 변경하여<br>표시 영역을 조정할 수 있습니다</div><div class="cms-crop-actions"><button class="cms-crop-cancel" type="button">취소</button><button class="cms-crop-apply" type="button">선택</button></div>`;document.body.appendChild(m);const work=m.querySelector('.cms-crop-work'),img=m.querySelector('img'),frame=m.querySelector('.cms-crop-frame');let tx=0,ty=0,scale=Math.max(1,zoom),drag=null;const apply=()=>{img.style.left='50%';img.style.top='50%';img.style.width='100%';img.style.height='auto';img.style.maxWidth='none';img.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale})`;img.style.transformOrigin='center'};img.onload=()=>{if(blockStyle==='card'){work.style.aspectRatio=`${img.naturalWidth}/${img.naturalHeight}`;work.style.height='auto'}apply()};frame.onpointerdown=e=>{e.preventDefault();frame.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,tx,ty}};frame.onpointermove=e=>{if(!drag)return;tx=drag.tx+e.clientX-drag.x;ty=drag.ty+e.clientY-drag.y;apply()};frame.onpointerup=frame.onpointercancel=e=>{drag=null;try{frame.releasePointerCapture(e.pointerId)}catch(_){}};work.onwheel=e=>{e.preventDefault();scale=Math.max(1,Math.min(5,scale*(e.deltaY<0?1.08:.92)));apply()};let pinch=null;work.addEventListener('touchstart',e=>{if(e.touches.length===2){const [a,b]=e.touches;pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:scale}}},{passive:true});work.addEventListener('touchmove',e=>{if(pinch&&e.touches.length===2){e.preventDefault();const [a,b]=e.touches;scale=Math.max(1,Math.min(5,pinch.s*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/pinch.d));apply()}},{passive:false});work.addEventListener('touchend',()=>pinch=null);const close=()=>m.remove();m.querySelector('.cms-crop-close').onclick=close;m.querySelector('.cms-crop-cancel').onclick=close;m.querySelector('.cms-crop-apply').onclick=()=>{zoom=scale;px=Math.max(0,Math.min(100,50-tx/Math.max(1,work.clientWidth)*100));py=Math.max(0,Math.min(100,50-ty/Math.max(1,work.clientHeight)*100));close();render()}}
+'''
+          s=s[:a]+fn+s[b:]
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-builder-preview.html')
+          s=p.read_text(encoding='utf-8')
+          # Add renderer styles for new block types and correct style-specific image ratios.
+          s=s.replace('.link.card .thumb,.link.card .ph{width:100%;height:auto;aspect-ratio:16/9;margin-bottom:8px}', '.link.card .thumb,.link.card .ph{width:100%;height:auto;aspect-ratio:auto;margin-bottom:8px}.link.card .thumb img{width:100%;height:auto;object-fit:contain}.divider.line{height:9px;background:#f4f4f5;margin:16px -12px}.divider.space{background:transparent}.banner{overflow:hidden}.banner-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:15px}.banner-track::-webkit-scrollbar{display:none}.banner-slide{flex:0 0 100%;aspect-ratio:3/1;scroll-snap-align:start;overflow:hidden;position:relative;background:#f1eff2}.banner-slide img{width:100%;height:100%;object-fit:cover}.banner-dots{height:20px;display:flex;justify-content:center;align-items:center;gap:5px}.banner-dots i{width:6px;height:6px;border-radius:9px;background:#d8d3df}.banner-dots i.on{width:16px;background:#8062d8}')
+          old="if(b.block_type==='collection')return"
+          new="if(b.block_type==='divider'){const h=b.spacing_size==='small'?16:b.spacing_size==='large'?48:32;return '<section class=\"block divider '+(b.style==='line'?'line':'space')+'\" style=\"min-height:'+h+'px\"></section>'}if(b.block_type==='banner'){return '<section class=\"block banner\">'+(b.title?'<h3 class=\"title\" style=\"text-align:'+align+'\">'+esc(b.title)+'</h3>':'')+'<div class=\"banner-track\">'+xs.map(x=>'<a class=\"banner-slide\" href=\"'+esc(x.target_url||'#')+'\">'+(img(x)?'<img src=\"'+esc(img(x))+'\" alt=\"\">':'')+'</a>').join('')+'</div><div class=\"banner-dots\">'+xs.map((_,i)=>'<i class=\"'+(i===0?'on':'')+'\"></i>').join('')+'</div></section>'}if(b.block_type==='collection')return"
+          s=s.replace(old,new)
+          # Only render active published blocks in phone preview.
+          s=s.replace("&order=sort_order.asc');", "&status=eq.published&is_active=eq.true&order=sort_order.asc');")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js cms-builder-preview.html
+          git commit -m "fix CMS image editing and render banner divider preview"
+          git push

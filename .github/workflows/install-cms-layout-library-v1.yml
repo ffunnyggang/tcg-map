@@ -1,0 +1,29 @@
+name: Install CMS layout and content library v1
+on:
+  push:
+    paths:
+      - '.github/workflows/install-cms-layout-library-v1.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connect CMS layout and library scripts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html');s=p.read_text(encoding='utf-8')
+          tags='<script src="cms-layout-fix.js?v=20260928-1839"></script>\n<script src="cms-content-library.js?v=20260928-1839"></script>'
+          if 'cms-layout-fix.js?v=20260928-1839' not in s:
+              s=s.replace('</body>',tags+'\n</body>')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          git commit -m "enable CMS desktop layout and content library"
+          git push

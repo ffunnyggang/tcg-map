@@ -1,0 +1,47 @@
+name: Refine CMS list visuals v1
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-cms-list-visuals-v1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unify banner included-link UI and distinguish CMS list types
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Banner included-link rows: inherit the exact collection row geometry/typography.
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          old='.cms-banner-list{display:grid;gap:7px}.cms-banner-row{display:grid;grid-template-columns:24px 48px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px;border:1px solid #e8e3eb;border-radius:10px;background:#fff}.cms-banner-row img{width:48px;height:40px;object-fit:cover;border-radius:7px}.cms-banner-row.dragging{opacity:.45}.cms-banner-row.dragover{border-color:#8062d8;background:#f5f1ff}'
+          new='.cms-banner-list{display:grid;gap:7px}.cms-banner-row{width:100%;min-height:58px;display:grid;grid-template-columns:24px 44px minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px;border:1px solid #e8e3eb;border-radius:10px;background:#fff;text-align:left}.cms-banner-row img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#f0edf2}.cms-banner-row b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cms-banner-row small{display:block;margin-top:3px;color:#9a929e;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cms-banner-row.dragging{opacity:.45}.cms-banner-row.dragover{border-color:#8062d8;background:#f5f1ff}'
+          if old not in s: raise SystemExit('banner CSS marker missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # Content-manager list: link blocks show the actual applied thumbnail;
+          # structural block types keep icons but use distinct semantic colors.
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          css_old='.cms-block-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f0e9ff;color:#7557c8;font-size:18px}'
+          css_new='.cms-block-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f0e9ff;color:#7557c8;font-size:18px;overflow:hidden}.cms-block-icon img{width:100%;height:100%;display:block;object-fit:cover}.cms-block-icon.collection{background:#eef8f3;color:#2f8a62}.cms-block-icon.banner{background:#fff3e8;color:#c56d20}.cms-block-icon.divider{background:#eef3fb;color:#5478b8}.cms-block-icon.link-empty{background:#f3f1f4;color:#8c8490}'
+          if css_old not in s: raise SystemExit('block icon CSS marker missing')
+          s=s.replace(css_old,css_new,1)
+          old="return '<div class=\"cms-block-card\" draggable=\"true\" data-block-id=\"'+b.id+'\"><div class=\"cms-drag\">⠿</div><div class=\"cms-block-icon\">'+(b.block_type==='collection'?'▦':b.block_type==='banner'?'▤':b.block_type==='divider'?'—':'▣')+'</div><div class=\"cms-block-copy\"><b>'+esc(b.title||label)+'</b><span>'+label+((b.block_type==='collection'||b.block_type==='banner')?' · '+its.length+'개':'')+' · '+esc(b.style)+'</span></div>"
+          new="const first=its.length?cm[its[0].content_id]:null,thumb=first&&(first.image_url||first.auto_image_url)||'';const icon=b.block_type==='collection'?'<div class=\"cms-block-icon collection\">▦</div>':b.block_type==='banner'?'<div class=\"cms-block-icon banner\">▤</div>':b.block_type==='divider'?'<div class=\"cms-block-icon divider\">—</div>':thumb?'<div class=\"cms-block-icon\"><img src=\"'+esc(thumb)+'\" alt=\"\"></div>':'<div class=\"cms-block-icon link-empty\">▣</div>';return '<div class=\"cms-block-card\" draggable=\"true\" data-block-id=\"'+b.id+'\"><div class=\"cms-drag\">⠿</div>'+icon+'<div class=\"cms-block-copy\"><b>'+esc(b.title||label)+'</b><span>'+label+((b.block_type==='collection'||b.block_type==='banner')?' · '+its.length+'개':'')+' · '+esc(b.style)+'</span></div>"
+          if old not in s: raise SystemExit('render marker missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-structure-enhancements.js admin.html
+          git commit -m "refine CMS banner rows and list type visuals"
+          git push

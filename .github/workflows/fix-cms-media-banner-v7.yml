@@ -1,0 +1,41 @@
+name: Fix CMS media and banner v7
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-media-banner-v7.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch CMS media editor and banner preview
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('.cms-crop-stage img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:center}', '.cms-crop-stage img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:center}.cms-crop-stage.card{width:100%;aspect-ratio:auto;min-height:130px}.cms-crop-stage.background{width:100%;aspect-ratio:3.6/1}.cms-crop-stage.simple{display:none}')
+          s=s.replace("const stage=$e('cmsCropStage');const imageEditor=stage.closest('.field.wide');", "const stage=$e('cmsCropStage');stage.className='cms-crop-stage '+blockStyle;const imageEditor=stage.closest('.field.wide');")
+          # Make frame interaction deterministic: frame drag only starts on frame body, handles own resize.
+          s=s.replace("fr.onpointerdown=e=>begin(e,'move');m.querySelectorAll('.cms-crop-handle').forEach(h=>h.onpointerdown=e=>begin(e,h.dataset.h));", "fr.onpointerdown=e=>{if(e.target===fr)begin(e,'move')};m.querySelectorAll('.cms-crop-handle').forEach(h=>h.onpointerdown=e=>begin(e,h.dataset.h));")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          old='.cms-banner-preview{display:flex;gap:8px;overflow:hidden}.cms-banner-preview .bcard{min-width:78%;border-radius:13px;overflow:hidden;border:1px solid #eee8f0;background:#fff}.cms-banner-preview img{width:100%;aspect-ratio:2.1;object-fit:cover;display:block}.cms-banner-preview b{display:block;padding:8px;font-size:10px}'
+          new='.cms-banner-preview{display:flex;width:100%;overflow-x:auto;scroll-snap-type:x mandatory;gap:0;border-radius:15px;scrollbar-width:none}.cms-banner-preview::-webkit-scrollbar{display:none}.cms-banner-preview .bcard{position:relative;flex:0 0 100%;width:100%;aspect-ratio:3/1;scroll-snap-align:start;overflow:hidden;background:#fff}.cms-banner-preview img{width:100%;height:100%;object-fit:cover;display:block}.cms-banner-preview b{position:absolute;left:12px;right:12px;bottom:10px;color:#fff;text-shadow:0 1px 4px #0008;font-size:10px}.cms-banner-dots{display:flex;justify-content:center;gap:6px;height:22px;padding-top:8px}.cms-banner-dot{width:6px;height:6px;border-radius:999px;background:#d8d3df}.cms-banner-dot.on{width:16px;background:#8062d8}'
+          s=s.replace(old,new)
+          old2="w.querySelector('#bannerPreview').innerHTML=`${title?`<h3 style=\"text-align:${align};white-space:pre-wrap\">${esc(title)}</h3>`:''}<div class=\"cms-banner-preview\">${ids.map(id=>contents.find(x=>x.id===id)).filter(Boolean).map(x=>`<div class=\"bcard\">${thumb(x)?`<img src=\"${esc(thumb(x))}\">`:''}<b>${esc(x.title||'')}</b></div>`).join('')}</div>`;"
+          new2="w.querySelector('#bannerPreview').innerHTML=`${title?`<h3 style=\"text-align:${align};white-space:pre-wrap\">${esc(title)}</h3>`:''}<div class=\"cms-banner-preview\">${ids.map(id=>contents.find(x=>x.id===id)).filter(Boolean).map(x=>`<div class=\"bcard\">${thumb(x)?`<img src=\"${esc(thumb(x))}\">`:''}<b>${esc(x.title||'')}</b></div>`).join('')}</div><div class=\"cms-banner-dots\">${ids.map((_,i)=>`<i class=\"cms-banner-dot ${i===0?'on':''}\"></i>`).join('')}</div>`;const bp=w.querySelector('.cms-banner-preview');if(bp)bp.onscroll=()=>{const i=Math.round(bp.scrollLeft/Math.max(1,bp.clientWidth));w.querySelectorAll('.cms-banner-dot').forEach((d,n)=>d.classList.toggle('on',n===i))};"
+          s=s.replace(old2,new2)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js cms-structure-enhancements.js
+          git commit -m "fix CMS media editor and banner carousel"
+          git push

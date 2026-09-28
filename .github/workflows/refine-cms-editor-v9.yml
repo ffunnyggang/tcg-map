@@ -1,0 +1,62 @@
+name: Refine CMS editor v9
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-cms-editor-v9.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch CMS editor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # File input must remain usable after choosing/replacing an image.
+          s=s.replace("$e('cmsImagePick').onclick=()=>{if(blockStyle!=='simple')$e('cmsImageFile').click();};", "$e('cmsImagePick').onclick=e=>{e.preventDefault();e.stopPropagation();if(blockStyle==='simple')return;const input=$e('cmsImageFile');input.value='';input.click()};")
+          # Add desktop zoom controls under crop viewport.
+          s=s.replace('<div class="cms-crop-help">크기, 위치를 자유롭게 변경하여<br>표시 영역을 조정할 수 있습니다</div><div class="cms-crop-actions">', '<div class="cms-crop-help">크기, 위치를 자유롭게 변경하여<br>표시 영역을 조정할 수 있습니다</div><div class="cms-desktop-zoom"><button type="button" data-zoom-out>−</button><input type="range" min="1" max="5" step="0.01" value="${scale}"><button type="button" data-zoom-in>＋</button></div><div class="cms-crop-actions">')
+          s=s.replace('.cms-crop-help{margin:16px 0 4px;', '.cms-crop-help{margin:16px 0 4px;')
+          s=s.replace('.cms-crop-actions{width:min(690px,82vw);', '.cms-desktop-zoom{width:min(690px,82vw);display:grid;grid-template-columns:42px 1fr 42px;gap:10px;align-items:center;margin-top:12px}.cms-desktop-zoom button{height:36px;border:1px solid #6f6875;border-radius:9px;background:#2b282d;color:#fff;font-size:20px}.cms-desktop-zoom input{width:100%;accent-color:#8062d8}.cms-crop-actions{width:min(690px,82vw);')
+          # Wire zoom controls and clamp image pan so viewport can never expose outside-image area.
+          needle="const apply=()=>{img.style.left='50%';img.style.top='50%';img.style.width='100%';img.style.height='auto';img.style.maxWidth='none';img.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale})`;img.style.transformOrigin='center'};"
+          repl="const clamp=()=>{const iw=img.getBoundingClientRect().width/Math.max(scale,.001),ih=img.getBoundingClientRect().height/Math.max(scale,.001),vw=work.clientWidth,vh=work.clientHeight;const maxX=Math.max(0,(iw*scale-vw)/2),maxY=Math.max(0,(ih*scale-vh)/2);tx=Math.max(-maxX,Math.min(maxX,tx));ty=Math.max(-maxY,Math.min(maxY,ty))};const apply=()=>{img.style.left='50%';img.style.top='50%';img.style.width='100%';img.style.height='auto';img.style.maxWidth='none';img.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${scale})`;img.style.transformOrigin='center';requestAnimationFrame(clamp)};"
+          s=s.replace(needle,repl)
+          s=s.replace("work.onwheel=e=>{e.preventDefault();scale=Math.max(1,Math.min(5,scale*(e.deltaY<0?1.08:.92)));apply()};", "const zr=m.querySelector('.cms-desktop-zoom input');const syncZoom=()=>{zr.value=String(scale);apply()};zr.oninput=()=>{scale=Number(zr.value);syncZoom()};m.querySelector('[data-zoom-out]').onclick=()=>{scale=Math.max(1,scale-.1);syncZoom()};m.querySelector('[data-zoom-in]').onclick=()=>{scale=Math.min(5,scale+.1);syncZoom()};work.onwheel=e=>{e.preventDefault();scale=Math.max(1,Math.min(5,scale*(e.deltaY<0?1.08:.92)));syncZoom()};")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Divider preview: fixed 9px line, spacing is padding around it.
+          s=s.replace("w.querySelector('#dividerPreview').innerHTML=`<div class=\"cms-divider-preview ${style}\" style=\"height:${h}px\"></div>`;", "w.querySelector('#dividerPreview').innerHTML=`<div style=\"padding:${h/2}px 0\"><div class=\"cms-divider-preview ${style}\"></div></div>`;")
+          # Banner title hide + autoplay controls.
+          s=s.replace("let ids=(items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>x.content_id),align=block?.title_align||'left';", "let ids=(items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>x.content_id),align=block?.title_align||'left',titleHidden=!!block?.title_hidden,autoplay=Number(block?.autoplay_seconds??5),timer=null;")
+          s=s.replace('</textarea><div class="cms-align-row">', '</textarea><label class="cms-check-row"><input id="bannerTitleHidden" type="checkbox" ${titleHidden?\'checked\':\'\'}> 제목 숨기기</label><div class="cms-align-row">')
+          s=s.replace('<div class="field wide"><label>배너 링크 구성</label>', '<div class="field wide"><label>자동 롤링</label><select id="bannerAutoplay" class="select"><option value="0">사용 안 함</option><option value="3">3초</option><option value="5">5초</option><option value="7">7초</option><option value="10">10초</option></select></div><div class="field wide"><label>배너 링크 구성</label>')
+          s=s.replace("const title=w.querySelector('#bannerTitle').value;w.querySelector('#bannerPreview').innerHTML=`${title?", "const title=w.querySelector('#bannerTitle').value;titleHidden=w.querySelector('#bannerTitleHidden').checked;autoplay=Number(w.querySelector('#bannerAutoplay').value||0);if(timer){clearInterval(timer);timer=null}w.querySelector('#bannerPreview').innerHTML=`${title&&!titleHidden?")
+          s=s.replace("if(bp)bp.onscroll=()=>{const i=Math.round(bp.scrollLeft/Math.max(1,bp.clientWidth));w.querySelectorAll('.cms-banner-dot').forEach((d,n)=>d.classList.toggle('on',n===i))};", "if(bp){bp.onscroll=()=>{const i=Math.round(bp.scrollLeft/Math.max(1,bp.clientWidth));w.querySelectorAll('.cms-banner-dot').forEach((d,n)=>d.classList.toggle('on',n===i))};if(autoplay>0&&ids.length>1)timer=setInterval(()=>{const i=(Math.round(bp.scrollLeft/Math.max(1,bp.clientWidth))+1)%ids.length;bp.scrollTo({left:i*bp.clientWidth,behavior:'smooth'})},autoplay*1000)};")
+          s=s.replace("w.querySelector('#bannerTitle').oninput=()=>", "w.querySelector('#bannerTitleHidden').onchange=draw;w.querySelector('#bannerAutoplay').value=String(autoplay);w.querySelector('#bannerAutoplay').onchange=draw;w.querySelector('#bannerTitle').oninput=()=>")
+          s=s.replace("const p={placement,block_type:'banner',title,style:'carousel',title_align:align,status:", "const p={placement,block_type:'banner',title,style:'carousel',title_align:align,title_hidden:w.querySelector('#bannerTitleHidden').checked,autoplay_seconds:Number(w.querySelector('#bannerAutoplay').value||0),status:")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-builder-preview.html')
+          s=p.read_text(encoding='utf-8')
+          # Divider: fixed line height; spacing only controls vertical padding.
+          s=s.replace("return '<section class=\"block divider '+(b.style==='line'?'line':'space')+'\" style=\"min-height:'+h+'px\"></section>'", "return '<section style=\"padding:'+h/2+'px 0\"><div class=\"block divider '+(b.style==='line'?'line':'space')+'\"></div></section>'")
+          # Banner title hide and autoplay data attribute.
+          s=s.replace("return '<section class=\"block banner\">'+(b.title?", "return '<section class=\"block banner\" data-autoplay=\"'+Number(b.autoplay_seconds||0)+'\">'+(b.title&&!b.title_hidden?")
+          # Initialize autoplay after render.
+          s=s.replace("root.innerHTML=html||'<div class=\"empty\">공개된 블록이 없습니다.</div>';", "root.innerHTML=html||'<div class=\"empty\">공개된 블록이 없습니다.</div>';root.querySelectorAll('.banner[data-autoplay]').forEach(sec=>{const ms=Number(sec.dataset.autoplay||0)*1000,track=sec.querySelector('.banner-track'),slides=[...sec.querySelectorAll('.banner-slide')],dots=[...sec.querySelectorAll('.banner-dots i')];if(!track||slides.length<2)return;track.onscroll=()=>{const i=Math.round(track.scrollLeft/Math.max(1,track.clientWidth));dots.forEach((d,n)=>d.classList.toggle('on',n===i))};if(ms>0)setInterval(()=>{const i=(Math.round(track.scrollLeft/Math.max(1,track.clientWidth))+1)%slides.length;track.scrollTo({left:i*track.clientWidth,behavior:'smooth'})},ms)});")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js cms-structure-enhancements.js cms-builder-preview.html
+          git commit -m "refine CMS image editing divider spacing and banner autoplay"
+          git push

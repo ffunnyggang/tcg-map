@@ -1,0 +1,44 @@
+name: Refine CMS image editor v5
+on:
+  push:
+    paths:
+      - '.github/workflows/refine-cms-image-editor-v5.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refine image editor behavior
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('.cms-crop-close{position:absolute;left:22px;top:18px;', '.cms-crop-close{position:absolute;right:22px;top:18px;')
+          s=s.replace('.cms-align-row button,.cms-segment-row button{height:38px;', '.cms-align-row button,.cms-segment-row button{height:38px;font-size:10px;font-weight:750;')
+          s=s.replace('.cms-crop-work{width:min(690px,82vw);height:min(62vh,650px);', '.cms-crop-work{width:min(690px,82vw);height:min(62vh,650px);')
+          s=s.replace('.cms-crop-work img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;', '.cms-crop-work img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;')
+          # Style-aware crop frame: thumbnail square, background block ratio, simple no image editor, card freeform square default.
+          old="const cropSize=Math.max(15,Math.min(100,100/Math.max(1,zoom)));let frame={x:Math.max(0,Math.min(100-cropSize,px-cropSize/2)),y:Math.max(0,Math.min(100-cropSize,py-cropSize/2)),w:cropSize,h:cropSize},drag=null,start=null;"
+          new="const cropSize=Math.max(15,Math.min(100,100/Math.max(1,zoom)));const ratio=blockStyle==='background'?3.6:1;let fw=cropSize,fh=blockStyle==='background'?Math.max(15,cropSize/ratio):cropSize;let frame={x:Math.max(0,Math.min(100-fw,px-fw/2)),y:Math.max(0,Math.min(100-fh,py-fh/2)),w:fw,h:fh},drag=null,start=null;"
+          s=s.replace(old,new)
+          # Simple has no image area/editor.
+          s=s.replace("$e('cmsCropStage').onclick=()=>{if(currentImage())openCropModal()}", "$e('cmsCropStage').onclick=()=>{if(blockStyle!=='simple'&&currentImage())openCropModal()}")
+          s=s.replace("$e('cmsImagePick').onclick=()=>$e('cmsImageFile').click();", "$e('cmsImagePick').onclick=()=>{if(blockStyle!=='simple')$e('cmsImageFile').click();};")
+          # Enforce square resize for thumbnail, free resize for card, fixed block ratio for background.
+          marker="frame=n;paint()"
+          repl="if(blockStyle==='thumbnail'){const size=Math.max(15,Math.min(n.w,n.h,100-n.x,100-n.y));n.w=size;n.h=size}else if(blockStyle==='background'){const r=3.6;if(drag!=='move'){let w=Math.max(25,Math.min(n.w,100-n.x));let h=w/r;if(n.y+h>100){h=100-n.y;w=h*r}n.w=w;n.h=h}}frame=n;paint()"
+          s=s.replace(marker,repl)
+          # Hide image field entirely for simple style and restore it for other styles.
+          s=s.replace("const stage=$e('cmsCropStage');stage.innerHTML=im?", "const stage=$e('cmsCropStage');const imageEditor=stage.closest('.field.wide');if(imageEditor)imageEditor.style.display=blockStyle==='simple'?'none':'';stage.innerHTML=im?")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js
+          git commit -m "refine CMS style-aware image editing"
+          git push

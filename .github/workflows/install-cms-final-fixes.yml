@@ -10,23 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject final CMS script
+      - name: Connect frontend CMS scripts
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('admin.html')
-          s=p.read_text(encoding='utf-8')
-          tag='<script src="/cms-final-fixes.js?v=20260928-0641"></script>'
-          if tag not in s:
-              if '</body>' not in s: raise SystemExit('admin.html has no </body>')
-              s=s.replace('</body>',tag+'</body>',1)
-              p.write_text(s,encoding='utf-8')
+          tags='<script src="/cms-frontend-renderer.js?v=20260929-0218"></script><script src="/cms-frontend-mount.js?v=20260929-0218"></script>'
+          for name in ('index.html','reviews.html'):
+              p=Path(name)
+              s=p.read_text(encoding='utf-8')
+              if 'cms-frontend-renderer.js' not in s:
+                  if '</body>' not in s: raise SystemExit(name+' has no </body>')
+                  s=s.replace('</body>',tags+'</body>',1)
+                  p.write_text(s,encoding='utf-8')
           PY
+      - name: Verify
+        run: |
+          grep -q 'cms-frontend-renderer.js' index.html
+          grep -q 'cms-frontend-mount.js' index.html
+          grep -q 'cms-frontend-renderer.js' reviews.html
+          grep -q 'cms-frontend-mount.js' reviews.html
       - name: Commit
         run: |
           git config user.name "FUNY PIN"
           git config user.email "ffunnyggang@gmail.com"
           if git diff --quiet; then exit 0; fi
-          git add admin.html
-          git commit -m "load final CMS stabilization script"
+          git add index.html reviews.html
+          git commit -m "load CMS frontend on HOME and PICK"
           git push

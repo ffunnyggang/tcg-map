@@ -1,0 +1,61 @@
+name: CMS frontend pilot v1
+on:
+  push:
+    paths: ['.github/workflows/cms-frontend-pilot-v1.yml']
+permissions: {contents: write}
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply safe pilot mounts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          # HOME: mount CMS next to legacy content; legacy iframe remains for comparison.
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          if 'data-cms-placement="home"' not in s:
+              marker='<section class="home-content-flow"'
+              i=s.find(marker)
+              if i>=0:
+                  end=s.find('>',i)+1
+                  s=s[:end]+'<div class="fp-cms-pilot" data-cms-placement="home"></div>'+s[end:]
+          if 'cms-frontend-renderer.js?v=20260929-0200' not in s:
+              s=s.replace('</body>','<script src="cms-frontend-renderer.js?v=20260929-0200"></script></body>')
+          p.write_text(s,encoding='utf-8')
+
+          # PICK: mount one CMS area per requested tab; legacy embeds remain until visual verification.
+          p=Path('reviews.html'); s=p.read_text(encoding='utf-8')
+          placements={'schedule':'pick_schedule','creator':'pick_creator','review':'pick_review'}
+          # Current first tab may still be named information; treat it as schedule pilot too.
+          placements['information']='pick_schedule'
+          import re
+          for panel,placement in placements.items():
+              pat=r'(<[^>]+class="[^"]*info-panel[^"]*"[^>]+data-panel="'+re.escape(panel)+r'"[^>]*>)'
+              if f'data-cms-placement="{placement}"' not in s:
+                  s=re.sub(pat,lambda m:m.group(1)+f'<div class="fp-cms-pilot" data-cms-placement="{placement}"></div>',s,count=1)
+          if 'cms-frontend-renderer.js?v=20260929-0200' not in s:
+              s=s.replace('</body>','<script src="cms-frontend-renderer.js?v=20260929-0200"></script></body>')
+          p.write_text(s,encoding='utf-8')
+
+          # Remove only the obsolete admin shortcut label/button; no CMS data is deleted.
+          p=Path('admin.html'); s=p.read_text(encoding='utf-8')
+          s=re.sub(r'<(?:button|a)\b[^>]*>\s*\[?기존 콘텐츠 보기\]?\s*</(?:button|a)>','',s)
+          s=re.sub(r'<(?:button|a)\b[^>]*>\s*기존 콘텐츠 보기\s*</(?:button|a)>','',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Verify
+        run: |
+          grep -q 'data-cms-placement="home"' index.html
+          grep -q 'data-cms-placement="pick_creator"' reviews.html
+          grep -q 'data-cms-placement="pick_review"' reviews.html
+          grep -q 'cms-frontend-renderer.js' index.html
+          grep -q 'cms-frontend-renderer.js' reviews.html
+      - name: Commit
+        run: |
+          git config user.name 'FUNY PIN'
+          git config user.email 'ffunnyggang@gmail.com'
+          git add index.html reviews.html admin.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'mount CMS pilot on HOME and PICK tabs'
+          git push

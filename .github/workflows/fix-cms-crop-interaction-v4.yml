@@ -1,0 +1,46 @@
+name: Fix CMS crop interaction v4
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-crop-interaction-v4.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch CMS image preview and crop interaction
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+
+          # Keep the empty image slots visible, while removing only the text.
+          s=s.replace("media=im?`<span class=\"media\"><img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${card?1:zoom})\"></span>`:''", "media=im?`<span class=\"media\"><img src=\"${esc(im)}\" style=\"object-position:${px}% ${py}%;transform:scale(${card?1:zoom})\"></span>`:`<span class=\"media\"></span>`")
+
+          # FUNY PIN purple crop controls.
+          s=s.replace('#ff5a1f','#8062d8')
+
+          # Requested helper copy.
+          s=s.replace('가이드 영역을 드래그해 위치를 이동하고<br>8개의 핸들로 노출 범위를 조정하세요.','크기, 위치를 자유롭게 변경하여<br>표시 영역을 조정할 수 있습니다')
+
+          # Pointer capture belongs to the work surface because pointermove/up are bound there.
+          s=s.replace("fr.setPointerCapture?.(e.pointerId)", "work.setPointerCapture?.(e.pointerId)")
+
+          # Handle pointerdown must not bubble into the frame move handler.
+          s=s.replace("fr.querySelectorAll('[data-h]').forEach(h=>h.addEventListener('pointerdown',e=>begin(e,h.dataset.h)))", "fr.querySelectorAll('[data-h]').forEach(h=>h.addEventListener('pointerdown',e=>{e.stopPropagation();begin(e,h.dataset.h)}))")
+
+          # Make dragging robust even if pointerup occurs outside the work area.
+          s=s.replace("work.addEventListener('pointerup',()=>drag=null);work.addEventListener('pointercancel',()=>drag=null)", "const endDrag=e=>{drag=null;try{work.releasePointerCapture?.(e.pointerId)}catch(_){}};work.addEventListener('pointerup',endDrag);work.addEventListener('pointercancel',endDrag)")
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js
+          git commit -m "fix CMS image crop resizing and positioning"
+          git push

@@ -1,0 +1,46 @@
+name: Unify CMS title alignment UI v1
+on:
+  push:
+    paths:
+      - '.github/workflows/unify-cms-title-align-ui-v1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Match collection and banner title alignment UI to block editor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # Collection: use same label + three text-only buttons as block editor.
+          p=Path('cms-collection-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          old='<div class="cms-align-row cms-collection-align"><button type="button" data-collection-align="left"><span class="cms-align-icon">☰</span><span class="cms-align-caption">좌측</span></button><button type="button" data-collection-align="center"><span class="cms-align-icon">≡</span><span class="cms-align-caption">가운데</span></button><button type="button" data-collection-align="right"><span class="cms-align-icon">☰</span><span class="cms-align-caption">우측</span></button></div>'
+          new='<label class="cms-align-label">제목 정렬</label><div class="cms-final-align cms-collection-align"><button type="button" data-collection-align="left">좌측</button><button type="button" data-collection-align="center">가운데</button><button type="button" data-collection-align="right">우측</button></div>'
+          if old not in s: raise SystemExit('collection align markup missing')
+          s=s.replace(old,new,1)
+          css='.cms-align-label{display:block;margin-top:12px;margin-bottom:6px;font-size:10px;font-weight:700;color:#3c3640}.cms-collection-align{margin-top:0!important}.cms-collection-align button{height:38px!important;border:1px solid #e4dfe8!important;border-radius:9px!important;background:#fff!important;font-size:10px!important;font-weight:750!important;cursor:pointer!important}.cms-collection-align button.on{border-color:#8062d8!important;background:#f3effc!important;color:#6749bd!important;font-weight:800!important}'
+          s=s.replace('`;document.head.appendChild(collectionStyle);',css+'`;document.head.appendChild(collectionStyle);',1)
+          p.write_text(s,encoding='utf-8')
+
+          # Banner: separate title field and alignment field, matching block editor geometry.
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          old='<label class="cms-check-row"><input id="bannerTitleHidden" type="checkbox" ${titleHidden?\'checked\':\'\'}> 제목 숨기기</label><div class="cms-align-row"><button data-ba="left">좌측</button><button data-ba="center">가운데</button><button data-ba="right">우측</button></div>'
+          new='<label class="cms-check-row"><input id="bannerTitleHidden" type="checkbox" ${titleHidden?\'checked\':\'\'}> 제목 숨기기</label></div><div class="field wide"><label>제목 정렬</label><div class="cms-final-align cms-banner-align"><button type="button" data-ba="left">좌측</button><button type="button" data-ba="center">가운데</button><button type="button" data-ba="right">우측</button></div>'
+          if old not in s: raise SystemExit('banner align markup missing')
+          s=s.replace(old,new,1)
+          css='.cms-banner-align{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.cms-banner-align button{height:38px;border:1px solid #e4dfe8;border-radius:9px;background:#fff;font-size:10px;font-weight:750;cursor:pointer}.cms-banner-align button.on{border-color:#8062d8;background:#f3effc;color:#6749bd;font-weight:800}'
+          s=s.replace('`;document.head.appendChild(css);',css+'`;document.head.appendChild(css);',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-collection-enhancements.js cms-structure-enhancements.js
+          git commit -m "unify CMS title alignment controls"
+          git push

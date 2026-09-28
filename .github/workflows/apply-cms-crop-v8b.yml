@@ -1,0 +1,19 @@
+name: Apply CMS crop v8b
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-cms-crop-v8b.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/patch_cms_crop_v8.py
+      - run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js
+          git diff --cached --quiet || git commit -m "fix CMS image crop interaction v8"
+          git push

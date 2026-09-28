@@ -1,0 +1,42 @@
+name: Fix collection list and title hidden v2
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-collection-list-title-v2.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch collection editor against real CMS structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("const styles=type==='collection'?['grid_2','grid_3']:['thumbnail','simple','card','background'];let style=block?.style||(type==='collection'?'grid_3':'thumbnail');", "const styles=type==='collection'?['list','grid_2','grid_3']:['thumbnail','simple','card','background'];let style=block?.style||(type==='collection'?'grid_3':'thumbnail');let titleHidden=!!block?.title_hidden;")
+          s=s.replace("grid_2:'2열 그리드',grid_3:'3열 그리드'", "list:'1열 리스트',grid_2:'2열 그리드',grid_3:'3열 그리드'")
+          needle="<div class=\"field wide\"><label>블록 제목'+(type==='link'?' *':'')+'</label><input id=\"cmsBlockTitle\" class=\"input\" value=\"'+esc(block?.title||primary?.title||'')+'\"></div>"
+          repl=needle+"'+(type==='collection'?'<div class=\"field wide\"><label>제목 표시</label><button id=\"cmsCollectionTitleToggle\" class=\"cms-style-option '+(titleHidden?'':'on')+'\" type=\"button\">'+(titleHidden?'제목 숨김':'제목 표시')+'</button></div>':'')+'"
+          if needle in s: s=s.replace(needle,repl,1)
+          old="const updatePreview=()=>{const title=$('cmsBlockTitle').value.trim()||'타이틀을 입력해주세요';$('cmsEditPreview').innerHTML=type==='link'?'<div class=\"cms-block-card\"><div class=\"cms-block-icon\">↗</div><div class=\"cms-block-copy\"><b>'+esc(title)+'</b><span>'+esc(style)+'</span></div></div>':'<b>'+esc(title||'컬렉션')+'</b><div style=\"margin-top:10px;display:grid;grid-template-columns:repeat('+(style==='grid_2'?2:3)+',1fr);gap:6px\">'"
+          new="const updatePreview=()=>{const title=$('cmsBlockTitle').value.trim()||'타이틀을 입력해주세요';$('cmsEditPreview').innerHTML=type==='link'?'<div class=\"cms-block-card\"><div class=\"cms-block-icon\">↗</div><div class=\"cms-block-copy\"><b>'+esc(title)+'</b><span>'+esc(style)+'</span></div></div>':(titleHidden?'':'<b>'+esc(title||'컬렉션')+'</b>')+'<div style=\"margin-top:10px;display:grid;grid-template-columns:repeat('+(style==='list'?1:(style==='grid_2'?2:3))+',1fr);gap:6px\">'"
+          if old in s: s=s.replace(old,new,1)
+          bind="$('cmsBlockTitle').oninput=updatePreview;"
+          if bind in s: s=s.replace(bind,bind+"if(type==='collection'&&$('cmsCollectionTitleToggle'))$('cmsCollectionTitleToggle').onclick=()=>{titleHidden=!titleHidden;$('cmsCollectionTitleToggle').textContent=titleHidden?'제목 숨김':'제목 표시';$('cmsCollectionTitleToggle').classList.toggle('on',!titleHidden);updatePreview()};",1)
+          s=s.replace("const bp={placement,block_type:type,title:title||null,style,sort_order:block?.sort_order??999,is_active:true,status:$('cmsBlockStatus').value,updated_at:new Date().toISOString()};", "const bp={placement,block_type:type,title:title||null,style,title_hidden:type==='collection'?titleHidden:(block?.title_hidden||false),sort_order:block?.sort_order??999,is_active:true,status:$('cmsBlockStatus').value,updated_at:new Date().toISOString()};",1)
+          # remove obsolete localStorage extension loader
+          import re
+          s=re.sub(r'\s*<script src="cms-collection-list-extension\.js\?v=[^"]+"></script>','',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add admin.html
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "fix collection list and title hidden in CMS editor"
+          git push

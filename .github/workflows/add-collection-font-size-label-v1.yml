@@ -1,0 +1,32 @@
+name: Add collection font size label v1
+on:
+  push:
+    paths:
+      - '.github/workflows/add-collection-font-size-label-v1.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add font size label
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-collection-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          old='<div class="cms-title-size-row"><button type="button" data-title-size="large">크게</button><button type="button" data-title-size="normal">보통</button><button type="button" data-title-size="small">작게</button></div>'
+          new='<label class="cms-align-label cms-font-size-label">글꼴 크기</label><div class="cms-title-size-row"><button type="button" data-title-size="large">크게</button><button type="button" data-title-size="normal">보통</button><button type="button" data-title-size="small">작게</button></div>'
+          if old not in s: raise SystemExit('font size controls marker missing')
+          s=s.replace(old,new,1)
+          s=s.replace('.cms-title-size-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}', '.cms-title-size-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:0}.cms-font-size-label{margin-top:12px!important}',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-collection-enhancements.js
+          git commit -m "add collection font size label"
+          git push

@@ -1,0 +1,6 @@
+(()=>{const id='cms-preview-parity-style';function css(){if(document.getElementById(id))return;const s=document.createElement('style');s.id=id;s.textContent=`/* Collection preview parity: image area is square for 1/2/3 columns; text stays outside */
+.cms-collection-live .collection-grid img,.cms-collection-live .collection-grid .collection-card>img,.cms-collection-live .collection-grid .cms-collection-thumb,.cms-collection-preview .collection-grid img,.cms-collection-preview .collection-grid .cms-collection-thumb{aspect-ratio:1/1!important;object-fit:cover!important;height:auto!important}
+.cms-collection-live .collection-grid.grid-1 img,.cms-collection-live .collection-grid.g1 img,.cms-collection-preview .collection-grid.grid-1 img,.cms-collection-preview .collection-grid.g1 img{aspect-ratio:1/1!important;object-fit:cover!important}
+/* keep title/subtext outside the square image */
+.cms-collection-live .collection-card b,.cms-collection-preview .collection-card b{height:auto!important;min-height:0!important}
+`;document.head.appendChild(s)}css();new MutationObserver(css).observe(document.documentElement,{childList:true,subtree:true})})();

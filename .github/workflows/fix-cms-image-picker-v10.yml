@@ -1,0 +1,39 @@
+name: Fix CMS image picker v10
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-image-picker-v10.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix image picker and crop modal init
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Use a label tied directly to the native file input. This does not depend on JS click forwarding.
+          s=s.replace('<button id="cmsImagePick" type="button">+ 이미지 선택</button>', '<label id="cmsImagePick" for="cmsImageFile" role="button">+ 이미지 선택</label>')
+          s=s.replace('.cms-img-actions button{height:34px;padding:0 10px;border:1px solid #ded8e2;border-radius:9px;background:#fff;font-size:10px;font-weight:750;cursor:pointer}', '.cms-img-actions button,.cms-img-actions label{height:34px;padding:0 10px;border:1px solid #ded8e2;border-radius:9px;background:#fff;font-size:10px;font-weight:750;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}')
+          # Remove JS click forwarding because the native label handles both new and existing block editors reliably.
+          import re
+          s=re.sub(r"\$e\('cmsImagePick'\)\.onclick=.*?;(?=\$e\('cmsImageFile'\))", "", s, count=1)
+          # Ensure selecting the same file again still fires change.
+          s=s.replace("$e('cmsImageFile').onchange=async e=>{", "$e('cmsImageFile').onclick=e=>{e.currentTarget.value=''};$e('cmsImageFile').onchange=async e=>{")
+          # Fix crop modal template using scale before initialization.
+          s=s.replace("function openCropModal(){const im=currentImage();if(!im||blockStyle==='simple')return;const m=document.createElement('div');", "function openCropModal(){const im=currentImage();if(!im||blockStyle==='simple')return;let scale=Math.max(1,zoom);const m=document.createElement('div');")
+          s=s.replace("let scale=Math.max(1,zoom),tx=", "let tx=")
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check cms-link-enhancements.js
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js
+          git commit -m "fix CMS image picker for new and existing blocks"
+          git push

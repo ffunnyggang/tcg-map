@@ -1,4 +1,15 @@
 (()=>{
+  // Keep the content-manager page selector aligned with the current HOME/PICK CMS placements.
+  // Legacy HOME sections are no longer separate pages in Admin.
+  try {
+    if (typeof CMS_PLACEMENTS !== 'undefined') {
+      delete CMS_PLACEMENTS.home_recommend;
+      delete CMS_PLACEMENTS.home_news;
+      delete CMS_PLACEMENTS.home_links;
+      CMS_PLACEMENTS.home = 'HOME';
+    }
+  } catch (_) {}
+
   const STYLE_ID='cms-desktop-preview-layout-v2';
   function apply(){
     if(!document.getElementById(STYLE_ID)){

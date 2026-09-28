@@ -1,0 +1,52 @@
+name: Fix CMS collection/banner title visibility
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-collection-banner-title-visibility.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch CMS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          # 1) Mobile live preview: honor per-item hidden-title metadata saved by editors.
+          p=Path('cms-builder-preview.html')
+          s=p.read_text()
+          old="if(b.block_type==='banner'){const title=!b.title_hidden&&b.title?'<h3 class=\"title\" style=\"text-align:'+align+'\">'+esc(b.title)+'</h3>':'';return '<section class=\"block banner\" data-autoplay=\"'+Number(b.autoplay_seconds||0)+'\">'+title+'<div class=\"banner-track\">'+xs.map(x=>'<a class=\"banner-slide\" href=\"'+esc(x.target_url||'#')+'\"'+attrs(x)+'>'+(img(x)?'<img src=\"'+esc(img(x))+'\" alt=\"\">':'')+'</a>').join('')+'</div><div class=\"banner-dots\">'+xs.map((_,i)=>'<i class=\"'+(i===0?'on':'')+'\"></i>').join('')+'</div></section>'}if(b.block_type==='collection'){const title=!b.title_hidden&&b.title?'<h3 class=\"title\" style=\"text-align:'+align+'\">'+esc(b.title)+'</h3>':'';return '<section class=\"block\">'+title+'<div class=\"grid '+(b.style==='grid_2'?'g2':'g3')+'\">'+xs.map(x=>'<a href=\"'+esc(x.target_url||'#')+'\"'+attrs(x)+'>'+(img(x)?'<img src=\"'+esc(img(x))+'\" style=\"object-position:'+pos(x)+';transform:scale('+zm(x)+')\" alt=\"\">':'<span class=\"ph\"></span>')+'<b>'+esc(x.title)+'</b></a>').join('')+'</div></section>'}"
+          new="if(b.block_type==='banner'){let meta={};try{meta=JSON.parse(localStorage.getItem('funypin:cms:bannermeta:'+b.id)||'{}')}catch(_){}const hidden=meta.hiddenTitles||{};const title=!b.title_hidden&&b.title?'<h3 class=\"title\" style=\"text-align:'+align+'\">'+esc(b.title)+'</h3>':'';return '<section class=\"block banner\" data-autoplay=\"'+Number(b.autoplay_seconds||0)+'\">'+title+'<div class=\"banner-track\">'+xs.map(x=>'<a class=\"banner-slide\" href=\"'+esc(x.target_url||'#')+'\"'+attrs(x)+'>'+(img(x)?'<img src=\"'+esc(img(x))+'\" alt=\"\">':'')+(!hidden[x.id]&&x.title?'<b class=\"banner-item-title\">'+esc(x.title)+'</b>':'')+'</a>').join('')+'</div><div class=\"banner-dots\">'+xs.map((_,i)=>'<i class=\"'+(i===0?'on':'')+'\"></i>').join('')+'</div></section>'}if(b.block_type==='collection'){let meta={};try{meta=JSON.parse(localStorage.getItem('funypin:cms:collectionmeta:'+b.id)||'{}')}catch(_){}const hidden=meta.hiddenTitles||{};const title=!b.title_hidden&&b.title?'<h3 class=\"title\" style=\"text-align:'+align+'\">'+esc(b.title)+'</h3>':'';return '<section class=\"block\">'+title+'<div class=\"grid '+(b.style==='grid_2'?'g2':'g3')+'\">'+xs.map(x=>'<a href=\"'+esc(x.target_url||'#')+'\"'+attrs(x)+'>'+(img(x)?'<img src=\"'+esc(img(x))+'\" style=\"object-position:'+pos(x)+';transform:scale('+zm(x)+')\" alt=\"\">':'<span class=\"ph\"></span>')+(hidden[x.id]?'':'<b>'+esc(x.title)+'</b>')+'</a>').join('')+'</div></section>'}"
+          if old not in s: raise SystemExit('preview target not found')
+          s=s.replace(old,new)
+          s=s.replace('.banner-slide{flex:0 0 100%;aspect-ratio:3/1;scroll-snap-align:start;overflow:hidden;background:#f1eff2}', '.banner-slide{position:relative;flex:0 0 100%;aspect-ratio:3/1;scroll-snap-align:start;overflow:hidden;background:#f1eff2}.banner-item-title{position:absolute;left:10px;right:10px;bottom:8px;color:#fff;font-size:10px;text-shadow:0 1px 4px #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}')
+          p.write_text(s)
+
+          # 2) Banner editor: make included/available lists match collection UX and add per-item title visibility.
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text()
+          s=s.replace("autoplay=Number(block?.autoplay_seconds??5),timer=null;", "autoplay=Number(block?.autoplay_seconds??5),timer=null,hiddenTitles={};try{const m=JSON.parse(localStorage.getItem('funypin:cms:bannermeta:'+block?.id)||'{}');hiddenTitles=m.hiddenTitles||{}}catch(_){};")
+          s=s.replace("<b>${esc(x.title||'')}</b></div>", "${hiddenTitles[x.id]?'':`<b>${esc(x.title||'')}</b>`}</div>")
+          oldrow="<span><b>${esc(x.title||'')}</b></span><button class=\"cms-collection-remove\" data-brm=\"${id}\" type=\"button\">×</button>"
+          newrow="<span><b>${esc(x.title||'제목 없음')}</b><small>${esc(x.target_url||'')}</small></span><span class=\"cms-collection-actions\"><button class=\"cms-item-title-toggle ${hiddenTitles[id]?'on':''}\" data-btitle=\"${id}\" type=\"button\">${hiddenTitles[id]?'제목 숨김':'제목 표시'}</button><button class=\"cms-collection-remove\" data-brm=\"${id}\" type=\"button\">×</button></span>"
+          if oldrow not in s: raise SystemExit('banner row target not found')
+          s=s.replace(oldrow,newrow)
+          oldavail="<span><b>${esc(x.title||'')}</b></span></button>"
+          newavail="<span><b>${esc(x.title||'제목 없음')}</b><small>${esc(x.target_url||'')}</small></span></button>"
+          s=s.replace(oldavail,newavail)
+          bindneedle="w.querySelectorAll('[data-brm]').forEach(b=>b.onclick=()=>{ids=ids.filter(x=>x!==b.dataset.brm);draw()});"
+          s=s.replace(bindneedle, bindneedle+"w.querySelectorAll('[data-btitle]').forEach(b=>b.onclick=()=>{hiddenTitles[b.dataset.btitle]=!hiddenTitles[b.dataset.btitle];draw()});")
+          saveneedle="if(ids.length)await api('/rest/v1/cms_block_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(ids.map((id,i)=>({block_id:bid,content_id:id,sort_order:(i+1)*10,is_active:true})))});close();await onDone()"
+          s=s.replace(saveneedle, "if(ids.length)await api('/rest/v1/cms_block_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(ids.map((id,i)=>({block_id:bid,content_id:id,sort_order:(i+1)*10,is_active:true})))});try{localStorage.setItem('funypin:cms:bannermeta:'+bid,JSON.stringify({hiddenTitles}))}catch(_){}close();await onDone()")
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cms-builder-preview.html cms-structure-enhancements.js
+          git commit -m 'Fix collection and banner item title visibility'
+          git push

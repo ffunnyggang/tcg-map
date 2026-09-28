@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-28T14:32:36.578172+00:00",
+  "updatedAt": "2026-09-28T15:31:54.847047+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "안녕하세요 다크라이랑 루카리오 수집하는 포린이입니다. 정보랑 좋은 카드",
+      "author": "밤꽃향옥시싹싹",
+      "publishedAt": "2026-09-28T14:36:11.529618Z",
+      "excerpt": "안녕하세요 다크라이랑 루카리오 수집하는 포린이입니다. 정보랑 좋은 카드 많이 알려주세용",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-j8raQ9vP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "처음으로 뽑은 에브이sar",
@@ -24,10 +37,10 @@
       "excerpt": "FUNY PIN 지도에 포켓몬… 아니, 퍼니몬이 등장했다고?! 👀✨ 이제 카드샵만 찾는 지도가 아니라 귀엽고 매력적인 퍼니몬까지 만날 수 있는 지도라면? 💜 지도 위에 나타난 퍼니몬을 발견하고, 가까이 다가가면 포획까지?! FUNY PIN에서 펼쳐질 새로운 재미를 기대해주세요 🎮📍 지금",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179059677112030674c5150608c512a8ee94d136abdcbc34a7dfa55f73d072298b086ae6f4a280.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/퍼니몬-잡았어요-Px8qQroP",
-      "views": 3,
-      "likes": 0,
+      "views": 10,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.03
+      "popularityScore": 3.1
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "누가 옆에서 피카츄 보면서 노란뚱땡이전기쥐라고 하셨는데 순간 웃음이 나올뻔 했네요 ㅋㅋ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/9e42c7f5-522b-44c6-b5f8-59a6a84f516a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/전기쥐-P12XrY6d",
-      "views": 2,
+      "views": 3,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.02
+      "popularityScore": 0.03
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "5년 전 뽑은 25주년 리자몽 카드 자랑해봅니다 ,,! 물론 사진만 찍고 바로 기스 안나게 바로 슬리브행 😂",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790587471649e38f18b98b394d868bfdffb465b682b09187e2e68eef48bb319c75e7fc17c97a0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/좋은-카드는-많이-없지만-PV2pKXaP",
-      "views": 16,
+      "views": 17,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.16
+      "popularityScore": 0.17
     },
     {
       "category": "자유 게시판",
@@ -102,10 +115,10 @@
       "excerpt": "가격만 괜찮으면 바로 거래하고 싶어요. 서울에 살고 있고, 만약 멀리 계신다면 택배 거래도 괜찮습니 다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/2e89fbae-8115-40fc-9121-4021ae340f22.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-일판-트레이너-카드-아니면-트레이너와-포켓몬이-같이-나온-카드만-모으고-있습니다-d9XXOrOP",
-      "views": 4,
+      "views": 5,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.04
+      "popularityScore": 0.05
     },
     {
       "category": "자유 게시판",
@@ -128,10 +141,10 @@
       "excerpt": "역시 저는 카드팩에서 뽑는 것보다 싱글로 구하는 게 더 좋은 것 같네요...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/30feb54e-96fc-44cd-a204-195ef542f25f.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/싱글로-구해야지-PM00a42A",
-      "views": 31,
+      "views": 33,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.31
+      "popularityScore": 7.33
     },
     {
       "category": "자유 게시판",
@@ -171,19 +184,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "출첵!",
-      "author": "얀냥이",
-      "publishedAt": "2026-09-27T11:36:45.309835Z",
-      "excerpt": "출석체크!?합니다 추석연휴도 끝나가네용 ㅠㅠ 어제 카드깡 망햇어요 올려봅니다",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179050900262080112294ebd8cf00953d8836592548e1ccb598bf630256d38ef7865db275fed00.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/출첵-PoVVV4GA",
-      "views": 26,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.26
     },
     {
       "category": "정보 공유",
@@ -258,10 +258,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 126,
+      "views": 128,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.26
+      "popularityScore": 55.28
     },
     {
       "category": "카드 자랑",
@@ -284,10 +284,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 86,
+      "views": 88,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 17.86
+      "popularityScore": 17.88
     },
     {
       "category": "카드 자랑",
@@ -336,10 +336,10 @@
       "excerpt": "감사하게도 샤이니트레저 일판 박스를 받아서 카드노바에서 바로 박스깡 해봤습니다🔥 과연 우수후기 당첨자의 운은?! 👀 좋은 이벤트 열어주신 카드노바 감사합니다!❤️ 앞으로도 더더욱 번창하시길 응원하겠습니다!🙌 #카드노바 #후기이벤트당첨 #샤이니트레저 #포켓몬카드 #박스깡",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎉-카드노바-오픈후기-이벤트-우수후기-당첨-dY65a6mj",
-      "views": 26,
+      "views": 27,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.26
+      "popularityScore": 5.27
     },
     {
       "category": "카드 자랑",
@@ -648,10 +648,10 @@
       "excerpt": "서울 용산 근처 어디쯤에서 10~15명 정도 규모로 포켓몬카드 트레이딩 오프라인 모임을 진행해보면 어떨까?하는 생각에 카페 멤버님들의 의견을 확인하고자 올려봅니다😁 그냥 편하고 자유롭게 수집 카드 자랑하고 트레이딩하는 자리로 참여 의사가 있으신 분들이 10~15명 정도 된다면 진행해볼게",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1015명-정도-규모로-포켓몬카드-트레이딩-모임을-진행한다면-AODMngDP",
-      "views": 138,
+      "views": 139,
       "likes": 5,
       "comments": 7,
-      "popularityScore": 30.38
+      "popularityScore": 30.39
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -713,10 +713,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 375,
+      "views": 376,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 10.75
+      "popularityScore": 10.76
     },
     {
       "category": "정보 공유",

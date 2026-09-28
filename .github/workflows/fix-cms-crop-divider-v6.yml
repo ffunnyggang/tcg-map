@@ -1,0 +1,41 @@
+name: Fix CMS crop and divider v6
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-cms-crop-divider-v6.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch crop UX and divider style
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-link-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Fill editor horizontally while preserving aspect ratio; crop work itself clips overflow.
+          s=s.replace(".cms-crop-work img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;", ".cms-crop-work img{position:absolute;left:0;top:50%;width:100%;height:auto;min-height:0;transform:translateY(-50%);object-fit:contain;")
+          # Use document-level pointer tracking so resizing/moving stays smooth outside handles/frame.
+          s=s.replace("work.addEventListener('pointermove',e=>", "document.addEventListener('pointermove',e=>")
+          s=s.replace("work.addEventListener('pointerup',endDrag);work.addEventListener('pointercancel',endDrag)", "document.addEventListener('pointerup',endDrag);document.addEventListener('pointercancel',endDrag)")
+          # Avoid pointer-capture conflicts; document tracking owns the gesture lifecycle.
+          s=s.replace("work.setPointerCapture?.(e.pointerId)", "void 0")
+          s=s.replace("try{work.releasePointerCapture?.(e.pointerId)}catch(_){}", "")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-structure-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          # Match the existing FUNY PIN home section divider: full-width 9px #f4f4f5 bar.
+          s=s.replace('.cms-divider-preview.line:after{content:"";width:100%;height:1px;background:#e6e1e8}', '.cms-divider-preview.line:after{content:"";width:100%;height:9px;background:#f4f4f5}')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "FUNY PIN"
+          git config user.email "ffunnyggang@gmail.com"
+          git add cms-link-enhancements.js cms-structure-enhancements.js
+          git commit -m "fix CMS crop gestures and match home divider"
+          git push

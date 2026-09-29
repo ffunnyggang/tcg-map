@@ -1,0 +1,33 @@
+name: Fix PICK schedule native CMS placement v2
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-pick-schedule-native-v2.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add PICK schedule to native CMS placements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          old="pick_information:'PICK · 정보',pick_creator:'PICK · CREATOR'"
+          new="pick_information:'PICK · 정보',pick_schedule:'PICK · 스케줄',pick_creator:'PICK · CREATOR'"
+          if old not in s:
+              raise SystemExit('CMS_PLACEMENTS target not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit native placement fix
+        run: |
+          git config user.name 'FUNY PIN'
+          git config user.email 'ffunnyggang@gmail.com'
+          git add admin.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'add PICK schedule to native CMS placement list'
+          git push

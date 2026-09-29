@@ -66,7 +66,7 @@ if (/\/admin(?:\.html)?$/.test(location.pathname)) {
   attemptScript.defer=true;
   document.head.appendChild(attemptScript);
   const scheduleTargetScript=document.createElement('script');
-  scheduleTargetScript.src='assets/admin/funymon-schedule-target.js?v=20260929-1';
+  scheduleTargetScript.src='assets/admin/funymon-schedule-target.js?v=20260929-2';
   scheduleTargetScript.defer=true;
   document.head.appendChild(scheduleTargetScript);
 }

@@ -69,4 +69,8 @@ if (/\/admin(?:\.html)?$/.test(location.pathname)) {
   scheduleTargetScript.src='assets/admin/funymon-schedule-target.js?v=20260929-2';
   scheduleTargetScript.defer=true;
   document.head.appendChild(scheduleTargetScript);
+  const rewardPreviewScript=document.createElement('script');
+  rewardPreviewScript.src='assets/admin/funymon-reward-preview.js?v=20260929-1';
+  rewardPreviewScript.defer=true;
+  document.head.appendChild(rewardPreviewScript);
 }

@@ -620,4 +620,19 @@ document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{adminTab
 $('loginBtn').onclick=login;$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('headerLogout').onclick=()=>{token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');location.reload()};token=sessionStorage.getItem('funypin_admin_token')||'';refreshToken=sessionStorage.getItem('funypin_admin_refresh')||'';if(token)verify();
 </script><script src="cms-link-enhancements.js"></script><script src="cms-collection-enhancements.js"></script><script src="cms-structure-enhancements.js"></script><script src="/cms-final-fixes.js?v=20260928-0641"></script><script src="cms-layout-fix.js?v=20260928-1839"></script>
 <script src="cms-content-library.js?v=20260928-1839"></script>
+<script id="cms-default-home-v1">
+(()=>{
+  const HOME='home';
+  const KEEP_KEY='funypin:cms:keep-current-view';
+  const placementSelect=()=>document.querySelector('#cmsPlacement,.cms-placement-select,select[data-cms-placement],select[name="placement"]')||[...document.querySelectorAll('select')].find(el=>[...el.options].some(o=>o.value===HOME));
+  const applyHome=()=>{const sel=placementSelect();if(!sel)return false;if(sel.value!==HOME){sel.value=HOME;sel.dispatchEvent(new Event('change',{bubbles:true}));}return true;};
+  const keepCurrent=()=>sessionStorage.setItem(KEEP_KEY,'1');
+  document.addEventListener('click',e=>{if(e.target.closest('#cmsEditor button,.cms-new,.cms-add,[data-cms-new],[data-cms-add]'))keepCurrent();},true);
+  document.addEventListener('submit',e=>{if(e.target.closest('#cmsEditor')||e.target.matches('.cms-form'))keepCurrent();},true);
+  window.addEventListener('DOMContentLoaded',()=>{
+    if(sessionStorage.getItem(KEEP_KEY)==='1'){sessionStorage.removeItem(KEEP_KEY);return;}
+    let tries=0;const t=setInterval(()=>{tries++;if(applyHome()||tries>40)clearInterval(t);},100);
+  });
+})();
+</script>
 </body></html>

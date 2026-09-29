@@ -5,7 +5,7 @@
   const markers=[];
   const pinSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
   const clockSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-  const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function eventStart(e){return new Date(e.start?.dateTime||((e.start?.date||'')+'T00:00:00+09:00'))}
   function eventEnd(e){if(e.end?.date){const d=new Date(e.end.date+'T00:00:00+09:00');d.setDate(d.getDate()-1);d.setHours(23,59,59,999);return d}return new Date(e.end?.dateTime||e.start?.dateTime||Date.now())}
   function schedule(e){const s=eventStart(e),en=eventEnd(e),fmt=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',weekday:'short'});return fmt.format(s)+(s.toDateString()===en.toDateString()?'':' ~ '+fmt.format(en))}

@@ -1,42 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
-import { CmsPlacement, CmsResolvedBlock, CmsResolvedItem, getCmsPlacement } from '../lib/cms';
+import { useCallback,useEffect,useRef,useState } from 'react';
+import { ActivityIndicator,Dimensions,Image,Linking,Pressable,ScrollView,Text,View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { CmsPlacement,CmsResolvedBlock,CmsResolvedItem,cmsItemImage,cmsItemSource,cmsItemTitle,cmsItemUrl,getCmsPlacement } from '../lib/cms';
+const W=Dimensions.get('window').width-40;
+const align=(v?:string):'left'|'center'|'right'=>v==='center'?'center':v==='right'?'right':'left';
+const titleSize=(v?:string)=>v==='small'?16:v==='large'?22:18;
 
-const ROOT = 'https://funypin.kr/';
-const abs = (value?: string | null) => !value ? null : /^https?:\/\//i.test(value) ? value : ROOT + value.replace(/^\//, '');
-const first = (obj: any, keys: string[]) => keys.map(k => obj?.[k]).find(v => typeof v === 'string' && v.trim()) || '';
-
-function Item({ item }: { item: CmsResolvedItem }) {
-  const source: any = item.shop || item.content || item;
-  const title = first(source, ['title', 'name', 'shop_name']);
-  const body = first(source, ['summary', 'description', 'body', 'subtitle']);
-  const image = abs(first(source, ['image_url', 'thumbnail_url', 'image', 'storage_path']));
-  const url = first(source, ['link_url', 'url', 'external_url', 'instagram_url']);
-  const content = <View style={{backgroundColor:'#fff',borderRadius:16,borderWidth:1,borderColor:'#eee',overflow:'hidden'}}>
-    {image ? <Image source={{uri:image}} style={{width:'100%',aspectRatio:16/9,backgroundColor:'#f3f3f3'}} resizeMode="cover"/> : null}
-    <View style={{padding:14}}>
-      {title ? <Text style={{fontSize:16,fontWeight:'800',color:'#151515'}}>{title}</Text> : null}
-      {body ? <Text style={{marginTop:title?6:0,fontSize:14,lineHeight:20,color:'#666'}} numberOfLines={3}>{body}</Text> : null}
-    </View>
-  </View>;
-  return url ? <Pressable onPress={()=>Linking.openURL(url)}>{content}</Pressable> : content;
-}
-
-function Block({ block }: { block: CmsResolvedBlock }) {
-  const title = first(block, ['title', 'name']);
-  const horizontal = ['carousel','slider','banner','card_slider'].includes(String(block.block_type || '').toLowerCase());
-  return <View style={{marginBottom:26}}>
-    {title ? <Text style={{fontSize:20,fontWeight:'900',marginBottom:12,color:'#111'}}>{title}</Text> : null}
-    {horizontal ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:12}}>{block.items.map(item=><View key={item.id} style={{width:286}}><Item item={item}/></View>)}</ScrollView> : <View style={{gap:12}}>{block.items.map(item=><Item key={item.id} item={item}/>)}</View>}
-  </View>;
-}
-
-export default function CmsRenderer({ placement, emptyText='등록된 콘텐츠가 없습니다.' }: { placement: CmsPlacement; emptyText?: string }) {
-  const [blocks,setBlocks]=useState<CmsResolvedBlock[]>([]); const [loading,setLoading]=useState(true); const [error,setError]=useState('');
-  const load=useCallback(async()=>{setLoading(true);setError('');try{setBlocks(await getCmsPlacement(placement));}catch(e:any){setError(e?.message || '콘텐츠를 불러오지 못했습니다.');}finally{setLoading(false);}},[placement]);
-  useEffect(()=>{load();},[load]);
-  if(loading) return <View style={{padding:28,alignItems:'center'}}><ActivityIndicator/><Text style={{marginTop:10,color:'#777'}}>콘텐츠 불러오는 중...</Text></View>;
-  if(error) return <View style={{padding:20,backgroundColor:'#fff4f4',borderRadius:14}}><Text style={{color:'#a33'}}>{error}</Text><Pressable onPress={load} style={{marginTop:10}}><Text style={{fontWeight:'800'}}>다시 시도</Text></Pressable></View>;
-  if(!blocks.length) return <Text style={{paddingVertical:24,color:'#888'}}>{emptyText}</Text>;
-  return <View>{blocks.map(block=><Block key={block.id} block={block}/>)}</View>;
-}
+function Thumb({item,ratio=1}:{item:CmsResolvedItem;ratio?:number}){const x:any=cmsItemSource(item),uri=cmsItemImage(item);if(!uri)return <View style={{width:'100%',aspectRatio:ratio,backgroundColor:'#f1eff2'}}/>;return <View style={{width:'100%',aspectRatio:ratio,overflow:'hidden',backgroundColor:'#f1eff2'}}><Image source={{uri}} resizeMode="cover" style={{width:'100%',height:'100%',transform:[{scale:Math.max(1,Number(x?.image_zoom||1))}]}}/></View>}
+function Card({item,compact=false,textAlign='left'}:{item:CmsResolvedItem;compact?:boolean;textAlign?:'left'|'center'|'right'}){const router=useRouter(),x:any=cmsItemSource(item),title=cmsItemTitle(item),url=cmsItemUrl(item);const open=()=>{if(!url)return;if(url.startsWith('/shop/'))router.push(`/shop/${url.split('/').pop()}` as any);else Linking.openURL(url)};return <Pressable onPress={open} disabled={!url} style={{backgroundColor:'#fff',borderWidth:1,borderColor:'#eee8f0',borderRadius:13,overflow:'hidden'}}><Thumb item={item}/>{!item.title_hidden&&title?<View style={{padding:compact?7:10}}><Text style={{fontSize:compact?12:13,fontWeight:'800',textAlign,color:'#171717'}} numberOfLines={2}>{title}</Text>{item.shop?.nearest_station?<Text style={{marginTop:3,fontSize:10,color:'#8f8794',textAlign}} numberOfLines={1}>{item.shop.nearest_station}{item.shop.walk_minutes!=null?`에서 도보 ${item.shop.walk_minutes}분`:''}</Text>:null}</View>:null}</Pressable>}
+function Banner({block}:{block:CmsResolvedBlock}){const scroll=useRef<ScrollView>(null),[index,setIndex]=useState(0),items=block.items;useEffect(()=>{if(items.length<2)return;const ms=Math.max(1,Number(block.autoplay_seconds||5))*1000;const id=setInterval(()=>{setIndex(i=>{const n=(i+1)%items.length;scroll.current?.scrollTo({x:n*W,animated:true});return n})},ms);return()=>clearInterval(id)},[items.length,block.autoplay_seconds]);return <View><ScrollView ref={scroll} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={e=>setIndex(Math.round(e.nativeEvent.contentOffset.x/W))}>{items.map(item=><View key={item.id} style={{width:W}}><Card item={item}/></View>)}</ScrollView>{items.length>1?<View style={{height:20,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:5}}>{items.map((_,i)=><View key={i} style={{height:6,width:i===index?16:6,borderRadius:6,backgroundColor:i===index?'#8062d8':'#d8d3df'}}/>)}</View>:null}</View>}
+function Block({block}:{block:CmsResolvedBlock}){const ta=align(block.title_align);if(block.block_type==='divider')return block.style==='line'?<View style={{height:9,marginHorizontal:-20,marginVertical:12,backgroundColor:'#f4f4f5'}}/>:<View style={{height:block.spacing_size==='small'?8:block.spacing_size==='large'?24:16}}/>;const heading=!block.title_hidden&&block.title?<Text style={{fontSize:titleSize(block.title_size),fontWeight:'900',marginBottom:10,textAlign:ta,color:'#111'}}>{block.title}</Text>:null;if(block.block_type==='banner')return <View style={{marginBottom:16}}>{heading}<Banner block={block}/></View>;if(block.block_type==='collection'){const cols=block.style==='grid_3'?3:block.style==='grid_2'?2:1;if(cols===1)return <View style={{marginBottom:16}}>{heading}<View style={{gap:9}}>{block.items.map(i=><Card key={i.id} item={i} textAlign={ta}/>)}</View></View>;const gap=7,width=(W-gap*(cols-1))/cols;return <View style={{marginBottom:16}}>{heading}<View style={{flexDirection:'row',flexWrap:'wrap',gap}}>{block.items.map(i=><View key={i.id} style={{width}}><Card item={i} compact={cols===3} textAlign={ta}/></View>)}</View></View>}return <View style={{marginBottom:16}}>{heading}{block.items[0]?<Card item={block.items[0]} textAlign={ta}/>:null}</View>}
+export default function CmsRenderer({placement,emptyText='등록된 콘텐츠가 없습니다.'}:{placement:CmsPlacement;emptyText?:string}){const [blocks,setBlocks]=useState<CmsResolvedBlock[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState('');const load=useCallback(async()=>{setLoading(true);setError('');try{setBlocks(await getCmsPlacement(placement))}catch(e:any){setError(e?.message||'콘텐츠를 불러오지 못했습니다.')}finally{setLoading(false)}},[placement]);useEffect(()=>{load()},[load]);if(loading)return <View style={{padding:28,alignItems:'center'}}><ActivityIndicator/><Text style={{marginTop:10,color:'#777'}}>콘텐츠 불러오는 중...</Text></View>;if(error)return <View style={{padding:20,backgroundColor:'#fff4f4',borderRadius:14}}><Text style={{color:'#a33'}}>{error}</Text><Pressable onPress={load} style={{marginTop:10}}><Text style={{fontWeight:'800'}}>다시 시도</Text></Pressable></View>;if(!blocks.length)return <Text style={{paddingVertical:24,color:'#888'}}>{emptyText}</Text>;return <View>{blocks.map(b=><Block key={b.id} block={b}/>)}</View>}

@@ -1,0 +1,46 @@
+name: CMS image parity v1
+on:
+  push:
+    paths: ['.github/workflows/cms-image-parity-v1.yml']
+permissions: {contents: write}
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Align admin and frontend image rendering
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('cms-collection-enhancements.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('.cms-collection-live .collection-media{width:100%;aspect-ratio:1.1;', '.cms-collection-live .collection-media{width:100%;aspect-ratio:1;')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('cms-frontend-renderer.js')
+          s=p.read_text(encoding='utf-8')
+          old="let img=x=>x?.image_url||x?.auto_image_url||'';"
+          new="let img=x=>x?.image_url||x?.auto_image_url||'',ipos=x=>(Number(x?.image_position_x??50))+'% '+(Number(x?.image_position_y??50))+'%',iz=x=>Math.max(1,Number(x?.image_zoom||1)),imgStyle=x=>'object-position:'+ipos(x)+';transform:scale('+iz(x)+');transform-origin:center';"
+          if old not in s: raise SystemExit('renderer image helper marker not found')
+          s=s.replace(old,new,1)
+          s=s.replace("'<img src=\"'+esc(img(q.x))+'\">'", "'<img src=\"'+esc(img(q.x))+'\" style=\"'+imgStyle(q.x)+'\">'")
+          s=s.replace("'<img src=\"'+esc(im)+'\">'", "'<img src=\"'+esc(im)+'\" style=\"'+imgStyle(x)+'\">'")
+          s=s.replace("background-position:center", "background-position:center;overflow:hidden")
+          s=s.replace("style=\"background-image:linear-gradient(#0006,#0006),url('+esc(im)+')\"", "style=\"background-image:linear-gradient(#0006,#0006),url('+esc(im)+');background-position:'+ipos(x)+';background-size:'+Math.round(iz(x)*100)+'% auto\"")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Verify parity rules
+        run: |
+          grep -q 'collection-media{width:100%;aspect-ratio:1;' cms-collection-enhancements.js
+          grep -q 'image_position_x' cms-frontend-renderer.js
+          grep -q 'image_position_y' cms-frontend-renderer.js
+          grep -q 'image_zoom' cms-frontend-renderer.js
+          grep -q 'transform-origin:center' cms-frontend-renderer.js
+      - name: Commit and deploy
+        run: |
+          git config user.name 'FUNY PIN'
+          git config user.email 'ffunnyggang@gmail.com'
+          git add cms-collection-enhancements.js cms-frontend-renderer.js
+          git diff --cached --quiet && exit 0
+          git commit -m 'align CMS image crop and ratios across previews and frontend'
+          git push

@@ -1,4 +1,4 @@
-name: Install PICK schedule CMS v1
+name: Fix CMS banner interval and PICK schedule menu
 on:
   push:
     paths:
@@ -10,22 +10,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject admin script
+      - name: Patch frontend and admin
         run: |
           python - <<'PY'
           from pathlib import Path
+
+          # Banner: carry each block's saved autoplay_seconds into the rendered DOM,
+          # then use that value instead of a hard-coded interval.
+          p=Path('cms-frontend-renderer.js')
+          s=p.read_text(encoding='utf-8')
+          old="timer=setInterval(()=>go(idx+1),4000)"
+          new="timer=setInterval(()=>go(idx+1),Math.max(1,Number(block.dataset.autoplaySeconds||3))*1000)"
+          if old in s:
+              s=s.replace(old,new)
+          old2="if(b.block_type==='banner')return '<section class=\"fp-cms-block\">'"
+          new2="if(b.block_type==='banner')return '<section class=\"fp-cms-block\" data-autoplay-seconds=\"'+esc(b.autoplay_seconds||3)+'\">'"
+          if old2 in s:
+              s=s.replace(old2,new2)
+          p.write_text(s,encoding='utf-8')
+
+          # Admin: ensure the schedule helper is actually loaded. The previous
+          # helper file existed in the repo but admin.html did not load it.
           p=Path('admin.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script src="cms-pick-schedule-admin.js?v=20260929-1405"></script>'
-          if tag not in s:
-              s=s.replace('</body>',tag+'\n</body>')
+          import re
+          s=re.sub(r'<script src="cms-pick-schedule-admin\.js\?v=[^"]+"></script>\s*','',s)
+          tag='<script src="cms-pick-schedule-admin.js?v=20260929-1522"></script>'
+          s=s.replace('</body>',tag+'\n</body>')
           p.write_text(s,encoding='utf-8')
           PY
+      - name: Verify
+        run: |
+          grep -q 'data-autoplay-seconds' cms-frontend-renderer.js
+          grep -q 'block.dataset.autoplaySeconds' cms-frontend-renderer.js
+          grep -q 'cms-pick-schedule-admin.js?v=20260929-1522' admin.html
       - name: Commit
         run: |
           git config user.name 'FUNY PIN'
           git config user.email 'ffunnyggang@gmail.com'
-          git add admin.html
+          git add cms-frontend-renderer.js admin.html
           git diff --cached --quiet && exit 0
-          git commit -m 'wire PICK schedule placement into CMS admin'
+          git commit -m 'use CMS banner autoplay setting and restore PICK schedule menu'
           git push

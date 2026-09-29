@@ -1,0 +1,27 @@
+(()=>{
+'use strict';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function val(card,key){return card.querySelector('[data-k="'+key+'"]')?.value??''}
+function currentImage(card){
+  const file=card.querySelector('[data-k="image_file"]')?.files?.[0];
+  if(file){const old=card.dataset.previewObjectUrl;if(old)URL.revokeObjectURL(old);const u=URL.createObjectURL(file);card.dataset.previewObjectUrl=u;return u}
+  const remove=val(card,'remove_image')==='true';if(remove)return'';
+  return val(card,'image_url')||card.querySelector('.mon-image-current img')?.src||'';
+}
+function markup(card){
+  const type=val(card,'reward_type')||'win',win=type==='win',entry=type==='entry',lose=type==='lose';
+  const label=(val(card,'result_label')|| (entry?'응모권':win?'당첨!':'꽝')).trim();
+  const title=(val(card,'title')|| (entry?'OOOO 이벤트 응모하기':win?'당첨 상품':'꽝')).trim();
+  const desc=(val(card,'description')|| (lose?'아쉬워요! 다음 기회에 다시 도전해보세요!':'')).trim();
+  const img=currentImage(card),imageLabel=(val(card,'image_action_label')||'이미지 보기').trim(),url=val(card,'action_url').trim(),urlLabel=(val(card,'url_action_label')||'자세히보기').trim();
+  const opened=entry;
+  return '<div class="fmrp-preview '+(opened?'is-open':'is-covered')+' '+esc(type)+'"><div class="fmrp-phone"><div class="fmrp-kicker">FUNY MON · RESULT PREVIEW</div><div class="fmrp-catch">포획 성공!</div><div class="fmrp-reward"><div class="fmrp-content"><div class="fmrp-result '+(lose?'lose':'')+'">'+esc(label)+'</div>'+(!lose?'<strong>'+esc(title)+'</strong>':'')+(desc?'<p>'+esc(desc)+'</p>':'')+(!lose&&img?'<div class="fmrp-image"><img src="'+esc(img)+'" alt=""></div>':'')+(!lose&&img?'<span class="fmrp-action">'+esc(imageLabel)+'</span>':'')+(!lose&&url?'<span class="fmrp-action">'+esc(urlLabel)+'</span>':'')+(!lose&&opened?'<div class="fmrp-code"><small>'+(entry?'응모 코드':'당첨 코드')+'</small><b>FM-XXXXXXXXXX</b><button type="button" tabindex="-1">복사하기</button></div>':'')+'</div>'+(opened?'':'<div class="fmrp-cover"><span>REWARD</span><b>→ 오른쪽으로 밀어 결과 확인</b></div>')+'</div><div class="fmrp-mode">'+(entry?'응모형 · 처음부터 오픈':'포획 후 스와이프 오픈')+'</div></div></div>';
+}
+function render(card){let box=card.querySelector(':scope > .fmrp-wrap');if(!box){box=document.createElement('div');box.className='fmrp-wrap';box.innerHTML='<div class="fmrp-head"><b>결과 미리보기</b><span>현재 설정값 기준</span></div><div class="fmrp-body"></div>';card.appendChild(box)}box.querySelector('.fmrp-body').innerHTML=markup(card)}
+function bind(card){if(card.dataset.rewardPreviewBound)return;card.dataset.rewardPreviewBound='1';render(card);card.addEventListener('input',()=>render(card));card.addEventListener('change',()=>render(card))}
+function scan(){document.querySelectorAll('.mon-card[data-mon-id]').forEach(bind)}
+const style=document.createElement('style');style.textContent=`
+.fmrp-wrap{grid-column:1/-1;margin-top:14px;padding-top:14px;border-top:1px solid #eee8f1}.fmrp-head{display:flex;align-items:baseline;gap:7px;margin-bottom:9px}.fmrp-head b{font-size:11px;color:#4f4853}.fmrp-head span{font-size:9px;color:#9a929e}.fmrp-preview{display:flex;justify-content:center;padding:13px;border-radius:14px;background:#f6f3f8}.fmrp-phone{width:min(100%,310px);padding:18px 15px 15px;border:1px solid #e7e1ea;border-radius:22px;background:#fff;box-shadow:0 6px 18px rgba(55,43,63,.08);text-align:center}.fmrp-kicker{font-size:8px;font-weight:800;letter-spacing:.12em;color:#9a8ca5}.fmrp-catch{margin:7px 0 11px;font-size:17px;font-weight:900;color:#4c3d58}.fmrp-reward{position:relative;min-height:168px;border:2px solid #7253c7;border-radius:15px;overflow:hidden;background:#fff}.fmrp-content{padding:17px 13px}.fmrp-result{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:0 12px;border-radius:999px;background:#7657cc;color:#fff;font-size:12px;font-weight:900}.fmrp-result.lose{background:#8c8790}.fmrp-content strong{display:block;margin-top:10px;font-size:15px;color:#39323d}.fmrp-content p{margin:8px 0 0;color:#756e79;font-size:10px;line-height:1.45;white-space:pre-wrap}.fmrp-image{margin:10px auto 0;width:74px;height:74px;border-radius:11px;overflow:hidden;background:#f0edf2}.fmrp-image img{width:100%;height:100%;object-fit:cover}.fmrp-action{display:block;margin:8px auto 0;padding:8px 10px;border:1px solid #dfd8e5;border-radius:9px;color:#665771;font-size:9px;font-weight:750}.fmrp-code{display:grid;grid-template-columns:1fr auto;gap:2px 7px;align-items:center;margin-top:11px;padding:9px 10px;border-radius:10px;background:#f6f2ff;text-align:left}.fmrp-code small{grid-column:1/-1;color:#8b7ca0;font-size:8px}.fmrp-code b{font-size:11px;letter-spacing:.04em}.fmrp-code button{border:0;border-radius:7px;background:#8062d8;color:#fff;padding:6px 8px;font-size:8px;font-weight:800}.fmrp-cover{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:repeating-linear-gradient(135deg,#7657cc 0 12px,#6949bd 12px 24px);color:#fff}.fmrp-cover span{font:900 20px/1 Arial,sans-serif;letter-spacing:.08em}.fmrp-cover b{font-size:10px}.fmrp-mode{margin-top:9px;color:#8c8491;font-size:9px;font-weight:700}.fmrp-preview.is-open .fmrp-reward{border-color:#8a6bde;box-shadow:0 0 0 2px rgba(128,98,216,.08)}
+`;document.head.appendChild(style);
+const mo=new MutationObserver(scan);mo.observe(document.documentElement,{childList:true,subtree:true});scan();
+})();

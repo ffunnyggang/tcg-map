@@ -1,0 +1,49 @@
+name: CMS placement single source v1
+on:
+  push:
+    paths:
+      - '.github/workflows/cms-placement-single-source-v1.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize CMS placements in admin
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          start=s.find('const CMS_PLACEMENTS=')
+          if start < 0: raise SystemExit('CMS_PLACEMENTS not found')
+          end=s.find(';', start)
+          if end < 0: raise SystemExit('CMS_PLACEMENTS terminator not found')
+          new="const CMS_PLACEMENTS={home:'HOME',pick_information:'PICK · 일정',pick_schedule:'PICK · 스케줄',pick_creator:'PICK · CREATOR',pick_review:'PICK · 깽퐌커플 리뷰'}"
+          s=s[:start]+new+s[end:]
+          # Remove the temporary dynamic menu injector. Native CMS_PLACEMENTS is now the only source.
+          import re
+          s=re.sub(r'\s*<script src=["\']cms-pick-schedule-admin\.js[^"\']*["\']></script>', '', s)
+          p.write_text(s,encoding='utf-8')
+          print(new)
+          PY
+      - name: Verify placement source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('admin.html').read_text(encoding='utf-8')
+          expected="const CMS_PLACEMENTS={home:'HOME',pick_information:'PICK · 일정',pick_schedule:'PICK · 스케줄',pick_creator:'PICK · CREATOR',pick_review:'PICK · 깽퐌커플 리뷰'}"
+          assert s.count('const CMS_PLACEMENTS=') == 1
+          assert expected in s
+          assert 'cms-pick-schedule-admin.js' not in s
+          print('CMS placement source verified')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'FUNY PIN'
+          git config user.email 'ffunnyggang@gmail.com'
+          git add admin.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'normalize CMS placement menu to single source'
+          git push

@@ -1,8 +1,47 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-29T10:31:11.294881+00:00",
+  "updatedAt": "2026-09-29T11:29:10.702658+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "하.. 사기당했네요",
+      "author": "정봄",
+      "publishedAt": "2026-09-29T11:07:06.247856Z",
+      "excerpt": "포켓몬 30주년 거래중 사기당했습니다 다른분들도 조심하세요.. 당근페이로 금액 송금하더라도 거래자가 거래완료를 해버리면 사기피해 접수(분쟁신청)이 안되네요 다른분들은 조심하시고 혹시 내일 경찰서 가서 접수할려는데 필요한거 있을까요?",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790679944465235243de76f0d801d66f1976200c88623efa501b281b3e36c1893c33f7f7429b0.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/하-사기당했네요-Px8qJKXP",
+      "views": 2,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.02
+    },
+    {
+      "category": "자유 게시판",
+      "title": "비싸...",
+      "author": "김철왕",
+      "publishedAt": "2026-09-29T11:05:33.781871Z",
+      "excerpt": "진짜 가지고 싶은데...비싸네요....",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/d5f86655-e31d-4308-bc66-16b9cccf870a.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/비싸-d9XaV7nP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "유튜브에서 보다가 재테크가 되는 것을 보고 관심이 갔습니다!",
+      "author": "티토",
+      "publishedAt": "2026-09-29T10:56:25.029083Z",
+      "excerpt": "유튜브에서 보다가 재테크가 되는 것을 보고 관심이 갔습니다!",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/유튜브에서-보다가-재테크가-되는-것을-보고-관심이-갔습니다-PV2p0YMP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "정보 공유",
       "title": "포켓몬카드 30주년 퓨쳐리스틱추 응완!",
@@ -11,10 +50,10 @@
       "excerpt": "포켓몬카드 30주년 퓨쳐리스틱한글판 추첨 응모하세요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179064826009406147496a34c23e0fe34241ef2e24341dc346d1bba9894f90d4cebedec4305330.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-퓨쳐리스틱추-응완-PND2m10j",
-      "views": 34,
+      "views": 35,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.34
+      "popularityScore": 3.35
     },
     {
       "category": "카드거래",
@@ -37,10 +76,10 @@
       "excerpt": "처음 뽑았을때 부터 파란색점이 있었는데 이거 에러카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/0f1f1f0a-a2cf-423e-8d27-9b1f527c957c.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-에러카드인가요-AO63G3kj",
-      "views": 32,
+      "views": 33,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.32
+      "popularityScore": 3.33
     },
     {
       "category": "자유 게시판",
@@ -160,45 +199,6 @@
       "popularityScore": 0.05
     },
     {
-      "category": "자유 게시판",
-      "title": "지방이라 거의 크림에서 많이 사네요",
-      "author": "데지날다",
-      "publishedAt": "2026-09-27T22:46:57.127194Z",
-      "excerpt": "지방이라 거의 크림에서 많이 사네요",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/지방이라-거의-크림에서-많이-사네요-Px88G0QP",
-      "views": 3,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
-    },
-    {
-      "category": "자유 게시판",
-      "title": "싱글로 구해야지...",
-      "author": "김철왕",
-      "publishedAt": "2026-09-27T17:18:13.229066Z",
-      "excerpt": "역시 저는 카드팩에서 뽑는 것보다 싱글로 구하는 게 더 좋은 것 같네요...",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/30feb54e-96fc-44cd-a204-195ef542f25f.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/싱글로-구해야지-PM00a42A",
-      "views": 33,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.33
-    },
-    {
-      "category": "자유 게시판",
-      "title": "그레이딩대행",
-      "author": "콘치",
-      "publishedAt": "2026-09-27T17:13:57.006924Z",
-      "excerpt": "30장 채우기 힘드시거나 직접하기 번거로우신분들의 수요 있을까요",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/28f626ac-0d00-48ad-81de-e9c9661c5073.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/그레이딩대행-PwwwNNmP",
-      "views": 29,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.29
-    },
-    {
       "category": "카드 자랑",
       "title": "올드백 싱글카드 오리파 도전!🔥",
       "author": "퐌퐌퐌",
@@ -206,10 +206,10 @@
       "excerpt": "왕십리 모아카드샵에 잠시 들렀다가 결국 올드백 싱글카드 도전!🔥 과연 어떤 카드를 뽑았을지… 결과는 영상에서 확인해주세요! 👀 남은 연휴도 즐겁게 보내시고, 깽퐌커플 그리고 FUNY PIN도 많•관•부 💜 📍 모아카드샵 서울 성동구 마조로5길 3-3, 2층 📣 FUNY PIN에서 ‘모아",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17905205396633969123acbf8d7c4cc10597e838227e8da5201d9755195482723e154053e11a50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-싱글카드-오리파-도전🔥-PmVVLJxd",
-      "views": 26,
+      "views": 27,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.26
+      "popularityScore": 6.27
     },
     {
       "category": "정보 공유",
@@ -427,10 +427,10 @@
       "excerpt": "포켓몬 카드 게임 MEGA 확장팩 『30th CELEBRATION』 구매권 추첨 응모 이벤트 오픈🎉 #포켓몬카드30주년응모일정 • 응모 기간: 2026년 9월 8일(화) 10:00 ~ 9월 13일(일) 23:59 • 추첨 발표: 2026년 9월 14일(월) 당첨자 개별 연락 • 배송 기",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178883960090217f83cf23d9f1e10d0e67f24f672a697d98ce0ffd61045ec409f4132d3df73eb0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-MEGA-확장팩-추첨-응모-시작🎉-초간단-응모-방법-PMDXByWA",
-      "views": 110,
+      "views": 111,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 8.1
+      "popularityScore": 8.11
     },
     {
       "category": "카드거래",
@@ -609,10 +609,10 @@
       "excerpt": "🎣 잉어킹 프로모 brg 그레이딩 신청방법! 홈페이지에서 ‘그레이딩 신청’ 선택! ① 레귤러 / 익스프레스 중 서비스 선택 ② 카드 종류에서 ‘포켓몬카드’ 선택 ③ 결제하면 신청 완료! 👉 카드 종류 외 나머지 항목은 생략하셔도 됩니다 📢 잠깐! 8/7~8/31 잉어킹 프로모 카드 그레",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260828/aac9651a-c89c-4c15-88fa-d71f9d4eed4e.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎣-잉어킹-프로모-brg-그레이딩-신청방법-PBlDrwqj",
-      "views": 94,
+      "views": 95,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.9399999999999995
+      "popularityScore": 5.95
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -661,10 +661,10 @@
       "excerpt": "서울 용산 근처 어디쯤에서 10~15명 정도 규모로 포켓몬카드 트레이딩 오프라인 모임을 진행해보면 어떨까?하는 생각에 카페 멤버님들의 의견을 확인하고자 올려봅니다😁 그냥 편하고 자유롭게 수집 카드 자랑하고 트레이딩하는 자리로 참여 의사가 있으신 분들이 10~15명 정도 된다면 진행해볼게",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1015명-정도-규모로-포켓몬카드-트레이딩-모임을-진행한다면-AODMngDP",
-      "views": 139,
+      "views": 140,
       "likes": 5,
       "comments": 7,
-      "popularityScore": 30.39
+      "popularityScore": 30.4
     },
     {
       "category": "카드깡/카드샵 후기",

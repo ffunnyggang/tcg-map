@@ -1,0 +1,36 @@
+name: Bump calendar marker cache once 2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/bump-map-calendar-cache-once-2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update calendar script cache version
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('shops.html')
+          s = p.read_text()
+          old = '<script src="map-calendar-v1.js?v=20260929-1550"></script>'
+          new = '<script src="map-calendar-v1.js?v=20260929-1609"></script>'
+          if old not in s:
+              raise SystemExit('calendar script reference not found')
+          s = s.replace(old, new, 1)
+          s = s.replace("var v='20260929-1550'", "var v='20260929-1609'", 1)
+          p.write_text(s)
+          PY
+      - name: Commit cache bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add shops.html
+          git diff --cached --quiet || git commit -m "Bump calendar marker cache version [skip ci]"
+          git push

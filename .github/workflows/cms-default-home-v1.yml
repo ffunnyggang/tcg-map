@@ -1,64 +1,62 @@
 name: CMS default HOME v1
-on:
+
+'on':
   push:
-    paths: ['.github/workflows/cms-default-home-v1.yml']
-permissions: {contents: write}
+    paths:
+      - '.github/workflows/cms-default-home-v1.yml'
+
+permissions:
+  contents: write
+
 jobs:
   apply:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Apply CMS default HOME behavior
+        shell: bash
         run: |
-          python - <<'PY'
+          python3 <<'PY'
           from pathlib import Path
-          p=Path('admin.html')
-          s=p.read_text(encoding='utf-8')
-          marker='</body>'
-          code=r'''<script id="cms-default-home-v1">
-(()=>{
-  const HOME='home';
-  const KEEP_KEY='funypin:cms:keep-current-view';
-  const isCms=()=>{
-    const active=[...document.querySelectorAll('.admin-tabs button.on,.admin-tabs [aria-selected="true"]')];
-    return active.some(el=>(el.textContent||'').includes('콘텐츠')) || !!document.querySelector('[data-cms-placement],#cmsPlacement,.cms-placement-select');
-  };
-  const placementSelect=()=>document.querySelector('#cmsPlacement,.cms-placement-select,select[data-cms-placement],select[name="placement"]') || [...document.querySelectorAll('select')].find(el=>[...el.options].some(o=>o.value===HOME));
-  const applyHome=()=>{
-    const sel=placementSelect(); if(!sel) return false;
-    if(sel.value!==HOME){sel.value=HOME;sel.dispatchEvent(new Event('change',{bubbles:true}));}
-    return true;
-  };
-  const keepCurrent=()=>sessionStorage.setItem(KEEP_KEY,'1');
-  document.addEventListener('click',e=>{
-    if(e.target.closest('#cmsEditor .editor-save,#cmsEditor [id$="Save"],#cmsEditor [id$="Delete"],.cms-new,.cms-add,[data-cms-new],[data-cms-add]')) keepCurrent();
-  },true);
-  document.addEventListener('submit',e=>{if(e.target.closest('#cmsEditor')||e.target.matches('.cms-form')) keepCurrent();},true);
-  window.addEventListener('DOMContentLoaded',()=>{
-    const keep=sessionStorage.getItem(KEEP_KEY)==='1';
-    if(keep){sessionStorage.removeItem(KEEP_KEY);return;}
-    let tries=0;
-    const t=setInterval(()=>{
-      tries++;
-      if(isCms()&&applyHome() || tries>30) clearInterval(t);
-    },100);
-  });
-})();
-</script>'''
+          p = Path('admin.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '</body>'
+          code = '''<script id="cms-default-home-v1">
+          (()=>{
+            const HOME='home';
+            const KEEP_KEY='funypin:cms:keep-current-view';
+            const placementSelect=()=>document.querySelector('#cmsPlacement,.cms-placement-select,select[data-cms-placement],select[name="placement"]')||[...document.querySelectorAll('select')].find(el=>[...el.options].some(o=>o.value===HOME));
+            const applyHome=()=>{const sel=placementSelect();if(!sel)return false;if(sel.value!==HOME){sel.value=HOME;sel.dispatchEvent(new Event('change',{bubbles:true}));}return true;};
+            const keepCurrent=()=>sessionStorage.setItem(KEEP_KEY,'1');
+            document.addEventListener('click',e=>{if(e.target.closest('#cmsEditor button,.cms-new,.cms-add,[data-cms-new],[data-cms-add]'))keepCurrent();},true);
+            document.addEventListener('submit',e=>{if(e.target.closest('#cmsEditor')||e.target.matches('.cms-form'))keepCurrent();},true);
+            window.addEventListener('DOMContentLoaded',()=>{
+              if(sessionStorage.getItem(KEEP_KEY)==='1'){sessionStorage.removeItem(KEEP_KEY);return;}
+              let tries=0;const t=setInterval(()=>{tries++;if(applyHome()||tries>40)clearInterval(t);},100);
+            });
+          })();
+          </script>'''
           if 'id="cms-default-home-v1"' not in s:
-              s=s.replace(marker,code+'\n'+marker)
-          p.write_text(s,encoding='utf-8')
+              if marker not in s:
+                  raise SystemExit('admin.html closing body not found')
+              s = s.replace(marker, code + '\n' + marker, 1)
+              p.write_text(s, encoding='utf-8')
           PY
       - name: Verify
+        shell: bash
         run: |
           grep -q 'cms-default-home-v1' admin.html
           grep -q "const HOME='home'" admin.html
           grep -q 'keep-current-view' admin.html
-      - name: Commit
+      - name: Commit and push
+        shell: bash
         run: |
           git config user.name 'FUNY PIN'
           git config user.email 'ffunnyggang@gmail.com'
           git add admin.html
-          git diff --cached --quiet && exit 0
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
           git commit -m 'default CMS block management to HOME while preserving edit context'
           git push

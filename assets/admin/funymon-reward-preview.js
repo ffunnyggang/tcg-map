@@ -1,5 +1,14 @@
 (()=>{
 'use strict';
+/* Let the target-aware FUNY MON editor own event saves. The legacy history
+ * validator assumes a card shop is always selected and otherwise routes to
+ * the old shop-only save path, which blocks schedule-marker events. */
+window.addEventListener('click',e=>{
+  const btn=e.target?.closest?.('#monEventSave');
+  if(!btn||!document.getElementById('monTargetType'))return;
+  btn.dataset.fmhBypass='1';
+  setTimeout(()=>{try{delete btn.dataset.fmhBypass}catch(_){btn.removeAttribute('data-fmh-bypass')}},0);
+},true);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function val(card,key){return card.querySelector('[data-k="'+key+'"]')?.value??''}
 function currentImage(card){

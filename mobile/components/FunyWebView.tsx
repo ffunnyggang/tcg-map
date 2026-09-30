@@ -58,7 +58,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   return <View style={styles.container} accessibilityLabel={title}>
     <WebView
       ref={ref}
-      source={{html:'<!doctype html><html><body style="margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff"><div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column"><div style="font-size:28px;font-weight:800;color:#6749bd">FUNY PIN</div><div style="margin-top:10px;font-size:14px;color:#666">iOS WebView 테스트 화면</div><div style="margin-top:8px;font-size:12px;color:#999">REMOTE URL TEST BYPASS</div></div></body></html>'}}
+      source={{uri:'https://ffunnyggang.github.io/tcg-map/'}}
       style={styles.webview}
       javaScriptEnabled
       domStorageEnabled

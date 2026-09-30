@@ -4,7 +4,7 @@ import { useFocusEffect,useRouter } from 'expo-router';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
-const isFunyHost=(target:string)=>{try{const h=new URL(target).hostname.toLowerCase();return h==='funypin.kr'||h.endsWith('.funypin.kr')}catch{return false}};
+const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
 const APP_BOOTSTRAP="(function(){try{var s=document.getElementById('__funy_app_css__');if(!s){s=document.createElement('style');s.id='__funy_app_css__';s.textContent=\".portal-header{display:none!important}.portal-bottom-nav{display:none!important}.portal-main{padding-top:0!important}.filters{top:0!important}.popular-sort.show{top:58px!important}.header-more-menu{display:none!important}html,body{background:#fff!important;min-height:100%!important}\";(document.head||document.documentElement).appendChild(s);}document.documentElement.setAttribute('data-funy-app','1');}catch(e){}})();true;";
 
 type Props={url:string;title?:string};

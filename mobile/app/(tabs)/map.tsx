@@ -27,11 +27,13 @@ export default function MapScreen(){
       <Text style={{fontSize:10,fontWeight:'800',letterSpacing:2,color:'#9C92B5'}}>FIND YOUR CARD SHOP</Text>
       <Text style={{marginTop:4,fontSize:24,fontWeight:'900',letterSpacing:-.7,color:C.text}}>TCG MAP</Text>
       <TextInput value={q} onChangeText={setQ} placeholder="카드샵 이름 또는 지역으로 검색" placeholderTextColor="#A39DA8" style={{marginTop:12,height:46,borderWidth:1,borderColor:C.line,borderRadius:14,paddingHorizontal:14,backgroundColor:'#fff',color:C.text,...shadow}}/>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{height:56,flexGrow:0}} contentContainerStyle={{gap:7,alignItems:'center',paddingRight:4}}>
-        {(['KR','JP'] as const).map(c=><Pressable key={c} onPress={()=>changeCountry(c)} style={chip(country===c)}><Text style={{fontWeight:'800',fontSize:12,color:country===c?'#fff':'#6F6976'}}>{c==='KR'?'대한민국':'일본'}</Text></Pressable>)}
-        <Pressable onPress={()=>setFilterOpen(true)} style={chip(filters.length>0)}><Text style={{fontWeight:'800',fontSize:12,color:filters.length?'#fff':'#6F6976'}}>필터{filters.length?` ${filters.length}`:''}</Text></Pressable>
-        <Pressable onPress={locate} style={chip(false)}><Text style={{fontWeight:'800',fontSize:12,color:'#6F6976'}}>{locating?'확인 중…':'내 위치'}</Text></Pressable>
-      </ScrollView>
+      <View style={{height:60,justifyContent:'center',marginBottom:8}}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flexGrow:0}} contentContainerStyle={{gap:7,alignItems:'center',paddingRight:4}}>
+          {(['KR','JP'] as const).map(c=><Pressable key={c} onPress={()=>changeCountry(c)} style={chip(country===c)}><Text style={{fontWeight:'800',fontSize:12,color:country===c?'#fff':'#6F6976'}}>{c==='KR'?'대한민국':'일본'}</Text></Pressable>)}
+          <Pressable onPress={()=>setFilterOpen(true)} style={chip(filters.length>0)}><Text style={{fontWeight:'800',fontSize:12,color:filters.length?'#fff':'#6F6976'}}>필터{filters.length?` ${filters.length}`:''}</Text></Pressable>
+          <Pressable onPress={locate} style={chip(false)}><Text style={{fontWeight:'800',fontSize:12,color:'#6F6976'}}>{locating?'확인 중…':'내 위치'}</Text></Pressable>
+        </ScrollView>
+      </View>
       <View style={{height:255,borderRadius:18,overflow:'hidden',backgroundColor:'#EEEAF4',...shadow}}>
         <MapView ref={map} provider={Platform.OS==='android'?PROVIDER_GOOGLE:undefined} style={{flex:1}} initialRegion={REGIONS.KR} showsUserLocation showsMyLocationButton={false}>
           {list.map(s=>{const ev=eventByShop.get(s.id);return <Marker key={s.id} coordinate={{latitude:Number(s.latitude),longitude:Number(s.longitude)}} pinColor={ev?C.purple:selected===s.id?C.purpleDark:undefined} onPress={()=>setSelected(s.id)}><Callout onPress={()=>router.push(`/shop/${s.id}`)}><View style={{width:190,padding:4}}><Text style={{fontWeight:'900'}}>{s.name}</Text>{ev?<Text style={{marginTop:4,fontSize:12,fontWeight:'800'}}>✨ {ev.title}</Text>:null}<Text style={{marginTop:4,fontSize:11,color:'#666'}}>{s.area||s.address}</Text><Text style={{marginTop:7,fontSize:11,fontWeight:'800',color:C.purpleDark}}>상세보기 ›</Text></View></Callout></Marker>})}

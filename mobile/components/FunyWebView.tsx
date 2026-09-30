@@ -13,7 +13,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   const router=useRouter();
   const ref=useRef<WebView>(null);
   const [loading,setLoading]=useState(true);
-  const [error,setError]=useState(false);
+  const [error,setError]=useState(false),[canGoBack,setCanGoBack]=useState(false);
 
   const openExternal=useCallback((target:string)=>{Linking.openURL(target).catch(()=>{});},[]);
   const handleUrl=useCallback((target:string)=>{
@@ -33,11 +33,11 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   useFocusEffect(useCallback(()=>{
     if(Platform.OS!=='android') return;
     const sub=BackHandler.addEventListener('hardwareBackPress',()=>{
-      if(ref.current){ref.current.goBack();return true;}
+      if(canGoBack&&ref.current){ref.current.goBack();return true;}
       return false;
     });
     return()=>sub.remove();
-  },[]));
+  },[canGoBack]));
 
   useEffect(()=>{setLoading(true);setError(false)},[url]);
 
@@ -61,6 +61,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       domStorageEnabled
       sharedCookiesEnabled
       thirdPartyCookiesEnabled
+      geolocationEnabled
       cacheEnabled
       startInLoadingState
       allowsInlineMediaPlayback
@@ -69,6 +70,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       injectedJavaScript={APP_BOOTSTRAP}
       onShouldStartLoadWithRequest={({nativeEvent})=>handleUrl(String(nativeEvent.url||''))}
       onMessage={onMessage}
+      onNavigationStateChange={(state)=>setCanGoBack(!!state.canGoBack)}
       onLoadStart={()=>{setLoading(true);setError(false)}}
       onLoadEnd={()=>setLoading(false)}
       onError={()=>{setLoading(false);setError(true)}}

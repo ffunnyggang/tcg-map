@@ -68,7 +68,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       allowsBackForwardNavigationGestures
       injectedJavaScriptBeforeContentLoaded={APP_BOOTSTRAP}
       injectedJavaScript={APP_BOOTSTRAP}
-      onShouldStartLoadWithRequest={({nativeEvent})=>handleUrl(String(nativeEvent.url||''))}
+      onShouldStartLoadWithRequest={(request)=>handleUrl(String(request.url||''))}
       onMessage={onMessage}
       onNavigationStateChange={(state)=>setCanGoBack(!!state.canGoBack)}
       onLoadStart={()=>{setLoading(true);setError(false)}}

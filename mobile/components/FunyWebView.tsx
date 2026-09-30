@@ -58,15 +58,17 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   return <View style={styles.container} accessibilityLabel={title}>
     <WebView
       ref={ref}
-      source={{uri:'https://ffunnyggang.github.io/tcg-map/'}}
+      source={{uri:url}}
       style={styles.webview}
       javaScriptEnabled
       domStorageEnabled
       allowsInlineMediaPlayback
-      onLoadStart={()=>{console.log('[FUNY WEBVIEW] local load start');setLoading(true)}}
-      onLoad={()=>{console.log('[FUNY WEBVIEW] local load');setLoading(false)}}
-      onLoadEnd={()=>{console.log('[FUNY WEBVIEW] local load end');setLoading(false)}}
-      onError={(e)=>{console.warn('[FUNY WEBVIEW] local error',e.nativeEvent);setLoading(false);setError(true)}}
+      injectedJavaScriptBeforeContentLoaded={APP_BOOTSTRAP}
+      injectedJavaScript={APP_BOOTSTRAP}
+      onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
+      onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
+      onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
     />
     {loading?<View pointerEvents="none" style={styles.loadingOverlay}><ActivityIndicator color={C.purple}/></View>:null}
   </View>;

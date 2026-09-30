@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-30T02:28:05.311717+00:00",
+  "updatedAt": "2026-09-30T03:30:03.354634+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "30주년팩",
+      "author": "안녕녕",
+      "publishedAt": "2026-09-30T02:34:26.794039Z",
+      "excerpt": "문구점에서 30주년 팔길래 친구랑 가서 구매했어요! 피카츄 너무 이쁜데요ㅜㅜ",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907356077865581ca16b54ecf9a57810b2669640c51226e35a4033ce8039d1d270c6a50f5780.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년팩-AqrkVqEP",
+      "views": 4,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.04
+    },
     {
       "category": "자유 게시판",
       "title": "포켓몬카드 판매 ,트레이드 ,정보!",
@@ -24,10 +37,10 @@
       "excerpt": "이상해씨 입니다 ㅎ",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이상해씨-입니다-ㅎ-dGGJgaqd",
-      "views": 1,
-      "likes": 0,
+      "views": 9,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.09
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "포켓몬 30주년 거래중 사기당했습니다 다른분들도 조심하세요.. 당근페이로 금액 송금하더라도 거래자가 거래완료를 해버리면 사기피해 접수(분쟁신청)이 안되네요 다른분들은 조심하시고 혹시 내일 경찰서 가서 접수할려는데 필요한거 있을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790679944465235243de76f0d801d66f1976200c88623efa501b281b3e36c1893c33f7f7429b0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/하-사기당했네요-Px8qJKXP",
-      "views": 120,
+      "views": 124,
       "likes": 2,
       "comments": 4,
-      "popularityScore": 15.2
+      "popularityScore": 15.24
     },
     {
       "category": "자유 게시판",
@@ -154,19 +167,6 @@
       "excerpt": "안녕하세요 다크라이랑 루카리오 수집하는 포린이입니다. 정보랑 좋은 카드 많이 알려주세용",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-j8raQ9vP",
-      "views": 1,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.01
-    },
-    {
-      "category": "자유 게시판",
-      "title": "처음으로 뽑은 에브이sar",
-      "author": "둠칫두둠칫",
-      "publishedAt": "2026-09-28T12:19:00.155383Z",
-      "excerpt": "처음으로 뽑은 에브이sar",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/처음으로-뽑은-에브이sar-P21nO9WA",
       "views": 1,
       "likes": 1,
       "comments": 0,
@@ -388,10 +388,10 @@
       "excerpt": "이거 45에 팔아요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1996-초판-리자몽-PVD3yyvj",
-      "views": 40,
+      "views": 41,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.4
+      "popularityScore": 0.41
     },
     {
       "category": "카드 자랑",
@@ -726,10 +726,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 408,
+      "views": 410,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 11.08
+      "popularityScore": 11.1
     },
     {
       "category": "정보 공유",

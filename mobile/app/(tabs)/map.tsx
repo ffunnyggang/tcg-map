@@ -27,7 +27,7 @@ export default function MapScreen(){
       <Text style={{fontSize:10,fontWeight:'800',letterSpacing:2,color:'#9C92B5'}}>FIND YOUR CARD SHOP</Text>
       <Text style={{marginTop:4,fontSize:24,fontWeight:'900',letterSpacing:-.7,color:C.text}}>TCG MAP</Text>
       <TextInput value={q} onChangeText={setQ} placeholder="카드샵 이름 또는 지역으로 검색" placeholderTextColor="#A39DA8" style={{marginTop:12,height:46,borderWidth:1,borderColor:C.line,borderRadius:14,paddingHorizontal:14,backgroundColor:'#fff',color:C.text,...shadow}}/>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7,paddingVertical:10}}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flexGrow:0}} contentContainerStyle={{gap:7,paddingTop:10,paddingBottom:12}}>
         {(['KR','JP'] as const).map(c=><Pressable key={c} onPress={()=>changeCountry(c)} style={chip(country===c)}><Text style={{fontWeight:'800',fontSize:12,color:country===c?'#fff':'#6F6976'}}>{c==='KR'?'대한민국':'일본'}</Text></Pressable>)}
         <Pressable onPress={()=>setFilterOpen(true)} style={chip(filters.length>0)}><Text style={{fontWeight:'800',fontSize:12,color:filters.length?'#fff':'#6F6976'}}>필터{filters.length?` ${filters.length}`:''}</Text></Pressable>
         <Pressable onPress={locate} style={chip(false)}><Text style={{fontWeight:'800',fontSize:12,color:'#6F6976'}}>{locating?'확인 중…':'내 위치'}</Text></Pressable>

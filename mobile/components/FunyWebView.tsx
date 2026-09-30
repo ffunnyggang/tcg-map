@@ -58,30 +58,15 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   return <View style={styles.container} accessibilityLabel={title}>
     <WebView
       ref={ref}
-      source={{uri:url}}
+      source={{html:'<!doctype html><html><body style="margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#fff"><div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column"><div style="font-size:28px;font-weight:800;color:#6749bd">FUNY PIN</div><div style="margin-top:10px;font-size:14px;color:#666">iOS WebView 테스트 화면</div><div style="margin-top:8px;font-size:12px;color:#999">REMOTE URL TEST BYPASS</div></div></body></html>'}}
       style={styles.webview}
-      originWhitelist={['https://*/*','http://*/*','about:blank']}
       javaScriptEnabled
-      injectedJavaScriptBeforeContentLoaded={`(function(){try{window.open=function(u){if(u){window.location.href=u;}return null;};document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[target="_blank"]'):null;if(a){a.target='_self';}},true);}catch(e){}})();true;`}
       domStorageEnabled
-      sharedCookiesEnabled
-      thirdPartyCookiesEnabled
-      geolocationEnabled
-      cacheEnabled
       allowsInlineMediaPlayback
-      setSupportMultipleWindows={false}
-      allowsBackForwardNavigationGestures
-      onShouldStartLoadWithRequest={(request)=>{console.log('[FUNY WEBVIEW] shouldStart',request.url);return handleUrl(String(request.url||''));}}
-      onOpenWindow={(event)=>{const target=String(event.nativeEvent.targetUrl||'');console.log('[FUNY WEBVIEW] openWindow',target);if(target&&ref.current){ref.current.injectJavaScript(`window.location.href=${JSON.stringify(target)};true;`);}}}
-      onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true);setError(false)}}
-      onLoadProgress={({nativeEvent})=>console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}
-      onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
-      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
-      onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
-      onHttpError={(e)=>{console.warn('[FUNY WEBVIEW] http error',e.nativeEvent.statusCode,e.nativeEvent.url);if(e.nativeEvent.statusCode>=400)setError(true)}}
-      onNavigationStateChange={(state)=>{setCanGoBack(!!state.canGoBack);console.log('[FUNY WEBVIEW] nav',state.url)}}
-      showsVerticalScrollIndicator={false}
-      bounces
+      onLoadStart={()=>{console.log('[FUNY WEBVIEW] local load start');setLoading(true)}}
+      onLoad={()=>{console.log('[FUNY WEBVIEW] local load');setLoading(false)}}
+      onLoadEnd={()=>{console.log('[FUNY WEBVIEW] local load end');setLoading(false)}}
+      onError={(e)=>{console.warn('[FUNY WEBVIEW] local error',e.nativeEvent);setLoading(false);setError(true)}}
     />
     {loading?<View pointerEvents="none" style={styles.loadingOverlay}><ActivityIndicator color={C.purple}/></View>:null}
   </View>;

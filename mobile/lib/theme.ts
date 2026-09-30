@@ -1,20 +1,42 @@
 export const C={
-  bg:'#F8F6F2',
+  bg:'#FFFFFF',
   surface:'#FFFFFF',
-  text:'#1B1B1B',
-  muted:'#81798B',
-  line:'#E7E0F5',
-  purple:'#7557C8',
-  purpleDark:'#5F46AD',
-  purpleSoft:'#F3EFFC',
-  chip:'#F7F4FF',
+  surfaceSoft:'#FAF9FC',
+  text:'#181720',
+  textSoft:'#4D4852',
+  muted:'#8D8993',
+  muted2:'#AAA3AF',
+  line:'#E9E5ED',
+  divider:'#F4F4F5',
+  purple:'#8062D8',
+  purpleDark:'#6749BD',
+  purpleSoft:'#F0EBFB',
+  chip:'#FAF8FF',
   danger:'#C62828',
+  orange:'#F46F1B',
+};
+
+export const UI={
+  headerH:58,
+  screenPad:14,
+  cardRadius:13,
+  buttonRadius:12,
+  navH:68,
+  contentMax:420,
 };
 
 export const shadow={
-  shadowColor:'#2D2539',
-  shadowOpacity:0.06,
+  shadowColor:'#261F2F',
+  shadowOpacity:0.08,
   shadowRadius:14,
   shadowOffset:{width:0,height:5},
   elevation:2,
+};
+
+export const navShadow={
+  shadowColor:'#201C2A',
+  shadowOpacity:0.14,
+  shadowRadius:20,
+  shadowOffset:{width:0,height:8},
+  elevation:8,
 };

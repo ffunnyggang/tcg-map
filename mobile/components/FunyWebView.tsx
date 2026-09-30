@@ -1,6 +1,7 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,BackHandler,Platform,StyleSheet,Text,View } from 'react-native';
-import { useFocusEffect,useRouter,useIsFocused } from 'expo-router';
+import { useFocusEffect,useRouter } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 

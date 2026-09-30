@@ -1,5 +1,5 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
-import { ActivityIndicator,BackHandler,Linking,Platform,StyleSheet,Text,View } from 'react-native';
+import { ActivityIndicator,BackHandler,Platform,StyleSheet,Text,View } from 'react-native';
 import { useFocusEffect,useRouter } from 'expo-router';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
@@ -15,20 +15,19 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState(false),[canGoBack,setCanGoBack]=useState(false);
 
-  const openExternal=useCallback((target:string)=>{Linking.openURL(target).catch(()=>{});},[]);
-  const handleUrl=useCallback((target:string)=>{
+    const handleUrl=useCallback((target:string)=>{
     if(target.startsWith('funypin://')){
       const path=target.replace('funypin://','/');
       if(path.startsWith('/account')){router.push('/account');return false;}
       if(path.startsWith('/shop/')){router.push(path as any);return false;}
       return false;
     }
-    if(target==='about:blank'||isFunyHost(target)) return true;
-    if(target.startsWith('http://')||target.startsWith('https://')||target.startsWith('mailto:')||target.startsWith('tel:')){
-      openExternal(target); return false;
-    }
+    // Debug/launch mode: keep all web navigation inside the WebView.
+    // External-browser routing will be restored after the WebView path is verified.
+    if(target==='about:blank'||target.startsWith('http://')||target.startsWith('https://')) return true;
+    if(target.startsWith('mailto:')||target.startsWith('tel:')) return false;
     return true;
-  },[openExternal,router]);
+  },[router]);
 
   useFocusEffect(useCallback(()=>{
     if(Platform.OS!=='android') return;
@@ -50,9 +49,9 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
     try{
       const data=JSON.parse(event.nativeEvent.data);
       if(data?.type==='OPEN_NATIVE'&&data.route) router.push(String(data.route) as any);
-      else if(data?.type==='OPEN_EXTERNAL'&&data.url) openExternal(String(data.url));
+      else if(data?.type==='OPEN_EXTERNAL'&&data.url) { /* keep web content inside WebView during launch validation */ }
     }catch{}
-  },[openExternal,router]);
+  },[router]);
 
   if(error) return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 

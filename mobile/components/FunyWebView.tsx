@@ -62,14 +62,17 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       style={styles.webview}
       originWhitelist={['https://*/*','http://*/*','about:blank']}
       javaScriptEnabled
+      injectedJavaScriptBeforeContentLoaded={`(function(){try{window.open=function(u){if(u){window.location.href=u;}return null;};document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[target="_blank"]'):null;if(a){a.target='_self';}},true);}catch(e){}})();true;`}
       domStorageEnabled
       sharedCookiesEnabled
       thirdPartyCookiesEnabled
       geolocationEnabled
       cacheEnabled
       allowsInlineMediaPlayback
+      setSupportMultipleWindows={false}
       allowsBackForwardNavigationGestures
-      onShouldStartLoadWithRequest={(request)=>handleUrl(String(request.url||''))}
+      onShouldStartLoadWithRequest={(request)=>{console.log('[FUNY WEBVIEW] shouldStart',request.url);return handleUrl(String(request.url||''));}}
+      onOpenWindow={(event)=>{const target=String(event.nativeEvent.targetUrl||'');console.log('[FUNY WEBVIEW] openWindow',target);if(target&&ref.current){ref.current.injectJavaScript(`window.location.href=${JSON.stringify(target)};true;`);}}}
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true);setError(false)}}
       onLoadProgress={({nativeEvent})=>console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}

@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   Pressable,
   SafeAreaView,
   Text,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 import { getProfile, signOut } from '../lib/auth';
 import { signInSocial } from '../lib/socialAuth';
+import { signInWithApple } from '../lib/appleAuth';
 
 export default function Account() {
   const router = useRouter();
@@ -45,6 +48,24 @@ export default function Account() {
       }
     } catch (e: any) {
       Alert.alert('로그인 실패', String(e?.message || e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const apple = async () => {
+    setBusy('apple');
+
+    try {
+      await signInWithApple();
+      await refresh();
+    } catch (e: any) {
+      if (e?.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert(
+          'Apple 로그인 실패',
+          String(e?.message || e)
+        );
+      }
     } finally {
       setBusy(null);
     }
@@ -126,7 +147,9 @@ export default function Account() {
                 borderRadius: 12,
               }}
             >
-              <Text>{busy === 'out' ? '처리 중…' : '로그아웃'}</Text>
+              <Text>
+                {busy === 'out' ? '처리 중…' : '로그아웃'}
+              </Text>
             </Pressable>
           </>
         ) : (
@@ -140,79 +163,95 @@ export default function Account() {
               별도 회원가입 없이 사용 중인 계정으로 FUNY PIN을 시작하세요.
             </Text>
 
-            <Pressable
-              disabled={!!busy}
-              onPress={() => social('kakao')}
-              style={{
-                marginTop: 26,
-                padding: 16,
-                borderRadius: 12,
-                backgroundColor: '#FEE500',
-              }}
-            >
-              <Text
+            {Platform.OS === 'ios' ? (
+              <View
                 style={{
-                  textAlign: 'center',
-                  fontWeight: '800',
+                  marginTop: 26,
+                  opacity: busy ? 0.6 : 1,
                 }}
+                pointerEvents={busy ? 'none' : 'auto'}
               >
-                카카오로 시작하기
-              </Text>
-            </Pressable>
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={
+                    AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+                  }
+                  buttonStyle={
+                    AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+                  }
+                  cornerRadius={12}
+                  style={{
+                    width: '100%',
+                    height: 52,
+                  }}
+                  onPress={apple}
+                />
+              </View>
+            ) : (
+              <>
+                <Pressable
+                  disabled={!!busy}
+                  onPress={() => social('kakao')}
+                  style={{
+                    marginTop: 26,
+                    padding: 16,
+                    borderRadius: 12,
+                    backgroundColor: '#FEE500',
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '800',
+                    }}
+                  >
+                    카카오로 시작하기
+                  </Text>
+                </Pressable>
 
-            <Pressable
-              disabled={!!busy}
-              onPress={() => social('google')}
-              style={{
-                marginTop: 10,
-                padding: 16,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: '#ddd',
-                backgroundColor: '#fff',
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontWeight: '700',
-                }}
-              >
-                Google로 계속하기
-              </Text>
-            </Pressable>
+                <Pressable
+                  disabled={!!busy}
+                  onPress={() => social('google')}
+                  style={{
+                    marginTop: 10,
+                    padding: 16,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: '#ddd',
+                    backgroundColor: '#fff',
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '700',
+                    }}
+                  >
+                    Google로 계속하기
+                  </Text>
+                </Pressable>
 
-            <Pressable
-              disabled
-              style={{
-                marginTop: 10,
-                padding: 16,
-                borderRadius: 12,
-                backgroundColor: '#03C75A',
-                opacity: 0.45,
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontWeight: '800',
-                  color: '#fff',
-                }}
-              >
-                네이버로 시작하기 · 준비 중
-              </Text>
-            </Pressable>
-
-            <Text
-              style={{
-                marginTop: 18,
-                fontSize: 12,
-                lineHeight: 18,
-              }}
-            >
-              카카오와 Google은 OAuth 설정 완료 후 바로 활성화됩니다.
-              네이버는 별도 OAuth/OIDC 연결을 추가한 뒤 활성화합니다.
-            </Text>
+                <Pressable
+                  disabled
+                  style={{
+                    marginTop: 10,
+                    padding: 16,
+                    borderRadius: 12,
+                    backgroundColor: '#03C75A',
+                    opacity: 0.45,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '800',
+                      color: '#fff',
+                    }}
+                  >
+                    네이버로 시작하기 · 준비 중
+                  </Text>
+                </Pressable>
+              </>
+            )}
           </>
         )}
       </View>

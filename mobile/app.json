@@ -8,21 +8,47 @@
     "userInterfaceStyle": "light",
     "plugins": [
       "expo-router",
-      ["expo-secure-store", {}],
-      ["expo-location", {"locationWhenInUsePermission": "현재 위치 주변의 카드샵과 FUNYMON을 찾기 위해 위치 권한이 필요합니다."}],
-      ["expo-web-browser", {"experimentalLauncherActivity": false}]
+      [
+        "expo-secure-store",
+        {}
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "현재 위치 주변의 카드샵을 찾기 위해 위치 권한이 필요합니다."
+        }
+      ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": false
+        }
+      ],
+      "expo-apple-authentication"
     ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "kr.funypin.app",
-      "infoPlist": {"NSLocationWhenInUseUsageDescription": "현재 위치 주변의 카드샵과 FUNYMON을 찾기 위해 위치 권한이 필요합니다."}
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "현재 위치 주변의 카드샵을 찾기 위해 위치 권한이 필요합니다."
+      }
     },
     "android": {
       "package": "kr.funypin.app",
-      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
-    "experiments": {"typedRoutes": true},
+    "experiments": {
+      "typedRoutes": true
+    },
     "owner": "funy-pin",
-    "extra": {"eas": {"projectId": "777bf7d4-7850-48f4-8560-a04478afb878"}}
+    "extra": {
+      "eas": {
+        "projectId": "777bf7d4-7850-48f4-8560-a04478afb878"
+      }
+    }
   }
 }

@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-30T10:31:07.547449+00:00",
+  "updatedAt": "2026-09-30T11:28:27.055962+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "첫 용산 오픈런 후기!",
+      "author": "real",
+      "publishedAt": "2026-09-30T11:16:18.978445Z",
+      "excerpt": "처음 용산 오픈런 했는데 운좋게 22번으로 빠르게 들어가서 5박스 정가 구매했네요 기분 너무 좋은 것..... 아쉬운 건 왜 어제 샤이니 트레져가 나왔을까 ㅜㅜ",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/dbf24517-82d0-44e9-8df2-ba40aa51abb8.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/첫-용산-오픈런-후기-dGGJkRNd",
+      "views": 4,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.04
+    },
+    {
+      "category": "자유 게시판",
+      "title": "최애 포켓몬은 누구? 💖",
+      "author": "real",
+      "publishedAt": "2026-09-30T11:13:28.345355Z",
+      "excerpt": "리자몽이랑 레쿠쟈입니다 최근에 뽑았어요!!!",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/c1de4530-c8ee-49e8-bade-9a33a6144acf.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/최애-포켓몬은-누구-💖-d9X4z09P",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "사기당한사람 후기입니다.",
@@ -11,10 +37,10 @@
       "excerpt": "오늘 사건접수하고 돌아왔는데 사기꾼이 돈을 계좌로 보내주셨네요 그냥 넘어갈까 고민하고 있습니다. 따로 문자나 연락이 없는데 그냥 넘어가는게 좋을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179074506184236067642717ea9db4aede25143fccca98fda38d2fff07f8b2a09426d126c169d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사기당한사람-후기입니다-j8rnqYaP",
-      "views": 99,
+      "views": 145,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.99
+      "popularityScore": 4.45
     },
     {
       "category": "자유 게시판",
@@ -24,10 +50,10 @@
       "excerpt": "문구점에서 30주년 팔길래 친구랑 가서 구매했어요! 피카츄 너무 이쁜데요ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907356077865581ca16b54ecf9a57810b2669640c51226e35a4033ce8039d1d270c6a50f5780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년팩-AqrkVqEP",
-      "views": 27,
+      "views": 29,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.27
+      "popularityScore": 0.29
     },
     {
       "category": "자유 게시판",
@@ -37,10 +63,10 @@
       "excerpt": "[PHC_TCG] 네이버 카페로 초대합니다. https://naver.me/5l2knFxJ From PokeHodu",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907342906656d4165a5db1ff9979b33c06e21d93c772770bd68c28dd5ffba46533ee3ffb5e30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-판매-트레이드-정보-PV2E5xKP",
-      "views": 5,
+      "views": 6,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.05
+      "popularityScore": 3.06
     },
     {
       "category": "자유 게시판",
@@ -102,10 +128,10 @@
       "excerpt": "포켓몬 30주년 거래중 사기당했습니다 다른분들도 조심하세요.. 당근페이로 금액 송금하더라도 거래자가 거래완료를 해버리면 사기피해 접수(분쟁신청)이 안되네요 다른분들은 조심하시고 혹시 내일 경찰서 가서 접수할려는데 필요한거 있을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790679944465235243de76f0d801d66f1976200c88623efa501b281b3e36c1893c33f7f7429b0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/하-사기당했네요-Px8qJKXP",
-      "views": 133,
+      "views": 139,
       "likes": 2,
       "comments": 4,
-      "popularityScore": 15.33
+      "popularityScore": 15.39
     },
     {
       "category": "자유 게시판",
@@ -115,23 +141,10 @@
       "excerpt": "진짜 가지고 싶은데...비싸네요....",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/d5f86655-e31d-4308-bc66-16b9cccf870a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/비싸-d9XaV7nP",
-      "views": 32,
+      "views": 33,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.32
-    },
-    {
-      "category": "자유 게시판",
-      "title": "유튜브에서 보다가 재테크가 되는 것을 보고 관심이 갔습니다!",
-      "author": "티토",
-      "publishedAt": "2026-09-29T10:56:25.029083Z",
-      "excerpt": "유튜브에서 보다가 재테크가 되는 것을 보고 관심이 갔습니다!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/유튜브에서-보다가-재테크가-되는-것을-보고-관심이-갔습니다-PV2p0YMP",
-      "views": 18,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.18
+      "popularityScore": 0.33
     },
     {
       "category": "정보 공유",
@@ -158,19 +171,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.11
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이거 에러카드인가요?",
-      "author": "123",
-      "publishedAt": "2026-09-28T21:45:27.906489Z",
-      "excerpt": "처음 뽑았을때 부터 파란색점이 있었는데 이거 에러카드인가요?",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/0f1f1f0a-a2cf-423e-8d27-9b1f527c957c.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-에러카드인가요-AO63G3kj",
-      "views": 36,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.36
     },
     {
       "category": "카드 자랑",
@@ -245,10 +245,10 @@
       "excerpt": "초판 베이스셋 북미버전",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/704dcb36-428e-4f52-80a9-b7d284470827.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/가장-최애는-아니고-3번째로-아끼는-최애-ARoklvGP",
-      "views": 41,
+      "views": 42,
       "likes": 6,
       "comments": 1,
-      "popularityScore": 20.41
+      "popularityScore": 20.42
     },
     {
       "category": "카드거래",
@@ -401,10 +401,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 165,
+      "views": 166,
       "likes": 3,
       "comments": 6,
-      "popularityScore": 22.65
+      "popularityScore": 22.66
     },
     {
       "category": "카드 자랑",
@@ -726,10 +726,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 416,
+      "views": 417,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 11.16
+      "popularityScore": 11.17
     },
     {
       "category": "정보 공유",

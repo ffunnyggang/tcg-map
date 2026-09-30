@@ -14,6 +14,8 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   const ref=useRef<WebView>(null);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState(false),[canGoBack,setCanGoBack]=useState(false);
+  const [webViewKey,setWebViewKey]=useState(0);
+  const reloadAttempts=useRef(0);
 
     const handleUrl=useCallback((target:string)=>{
     if(target.startsWith('funypin://')){
@@ -41,6 +43,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   useEffect(()=>{
     setLoading(true);
     setError(false);
+    reloadAttempts.current=0;
     const timer=setTimeout(()=>setLoading(false),2500);
     return()=>clearTimeout(timer);
   },[url]);
@@ -60,6 +63,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
   return <View style={styles.container} accessibilityLabel={title}>
     <WebView
       ref={ref}
+      key={`${url}:${webViewKey}`}
       source={{uri:url}}
       style={styles.webview}
       javaScriptEnabled
@@ -68,8 +72,28 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
       onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);ref.current?.injectJavaScript(HIDE_WEB_CHROME);setLoading(false)}}
-      onContentProcessDidTerminate={()=>{console.warn('[FUNY WEBVIEW] content process terminated');setError(true);setLoading(false)}}
-      onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
+      onContentProcessDidTerminate={()=>{
+        console.warn('[FUNY WEBVIEW] content process terminated');
+        if(reloadAttempts.current<2){
+          reloadAttempts.current+=1;
+          setLoading(true);
+          setTimeout(()=>setWebViewKey(k=>k+1),350);
+        }else{
+          setLoading(false);
+          setError(true);
+        }
+      }}
+      onError={(e)=>{
+        console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);
+        if(reloadAttempts.current<2){
+          reloadAttempts.current+=1;
+          setLoading(true);
+          setTimeout(()=>setWebViewKey(k=>k+1),350);
+        }else{
+          setLoading(false);
+          setError(true);
+        }
+      }}
     />
   </View>;
 }

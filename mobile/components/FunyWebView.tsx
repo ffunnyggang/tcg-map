@@ -1,17 +1,15 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,BackHandler,Platform,StyleSheet,Text,View } from 'react-native';
-import { useFocusEffect,useRouter } from 'expo-router';
+import { useFocusEffect,useRouter,useIsFocused } from 'expo-router';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const APP_BOOTSTRAP="(function(){try{var css=\"header.portal-header, .portal-header, nav.portal-bottom-nav, .portal-bottom-nav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;pointer-events:none!important}.portal-main{padding-top:0!important}.filters{top:0!important}.popular-sort.show{top:58px!important}.header-more-menu{display:none!important}html,body{background:#fff!important;min-height:100%!important}\";var apply=function(){var s=document.getElementById('__funy_app_css__');if(!s){s=document.createElement('style');s.id='__funy_app_css__';(document.head||document.documentElement).appendChild(s);}s.textContent=css;document.querySelectorAll('header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav').forEach(function(el){el.style.setProperty('display','none','important');el.style.setProperty('visibility','hidden','important');el.style.setProperty('height','0','important');el.style.setProperty('pointer-events','none','important');});};apply();if(!window.__funyAppObserver){window.__funyAppObserver=new MutationObserver(apply);window.__funyAppObserver.observe(document.documentElement,{childList:true,subtree:true});}document.documentElement.setAttribute('data-funy-app','1');}catch(e){}})();true;";
-
-const HIDE_WEB_CHROME="(function(){try{var css='header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;overflow:hidden!important;pointer-events:none!important}';var s=document.getElementById('__funy_native_shell__');if(!s){s=document.createElement('style');s.id='__funy_native_shell__';document.head.appendChild(s);}s.textContent=css;var hide=function(){document.querySelectorAll('header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav').forEach(function(el){el.style.setProperty('display','none','important');el.style.setProperty('visibility','hidden','important');el.style.setProperty('opacity','0','important');el.style.setProperty('height','0','important');el.style.setProperty('pointer-events','none','important');});};hide();if(!window.__funyHideObserver){window.__funyHideObserver=new MutationObserver(hide);window.__funyHideObserver.observe(document.documentElement,{childList:true,subtree:true});}var n=0;var t=setInterval(function(){hide();if(++n>50)clearInterval(t);},100);}catch(e){}true;})();";
 type Props={url:string;title?:string};
 
 export default function FunyWebView({url,title='FUNY PIN'}:Props){
   const router=useRouter();
+  const isFocused=useIsFocused();
   const ref=useRef<WebView>(null);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState(false),[canGoBack,setCanGoBack]=useState(false);
@@ -54,6 +52,8 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
     }catch{}
   },[router]);
 
+  if(!isFocused) return null;
+
   if(error) return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={styles.container} accessibilityLabel={title}>
@@ -67,6 +67,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
       onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);ref.current?.injectJavaScript(HIDE_WEB_CHROME);setLoading(false)}}
+      onContentProcessDidTerminate={()=>{console.warn('[FUNY WEBVIEW] content process terminated');setError(true);setLoading(false)}}
       onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
     />
   </View>;

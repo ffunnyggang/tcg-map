@@ -68,7 +68,6 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       thirdPartyCookiesEnabled
       geolocationEnabled
       cacheEnabled
-      startInLoadingState
       allowsInlineMediaPlayback
       allowsBackForwardNavigationGestures
       injectedJavaScriptBeforeContentLoaded={APP_BOOTSTRAP}
@@ -80,7 +79,6 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       onLoadEnd={()=>setLoading(false)}
       onError={()=>{setLoading(false);setError(true)}}
       onHttpError={(e)=>{if(e.nativeEvent.statusCode>=400)setError(true)}}
-      renderLoading={()=> <View style={styles.loading}><ActivityIndicator color={C.purple}/></View>}
       showsVerticalScrollIndicator={false}
       bounces
     />

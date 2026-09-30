@@ -5,6 +5,6 @@ import FunyWebView from '../../components/FunyWebView';
 export default function Home(){
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <FunyHeader/>
-    <FunyWebView url="https://example.com/" title="FUNY PIN HOME"/>
+    <FunyWebView url="https://funypin.kr/" title="FUNY PIN HOME"/>
   </SafeAreaView>;
 }

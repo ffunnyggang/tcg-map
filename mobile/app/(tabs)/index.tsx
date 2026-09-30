@@ -1,23 +1,44 @@
-import { Pressable,SafeAreaView,ScrollView,Text,View } from 'react-native';
+import { useEffect,useRef,useState } from 'react';
+import { Dimensions,Image,Pressable,ScrollView,Text,View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import CmsRenderer from '../../components/CmsRenderer';
 import FunyHeader from '../../components/FunyHeader';
-import { C,shadow } from '../../lib/theme';
+import { C } from '../../lib/theme';
+
+const HERO=[
+  'https://funypin.kr/assets/banners/banner_hero_01.png',
+  'https://funypin.kr/assets/banners/banner_hero_02.png',
+  'https://funypin.kr/assets/banners/banner_hero_03.png',
+  'https://funypin.kr/assets/banners/banner_hero_04.jpg',
+];
+
+function Hero(){
+  const width=Dimensions.get('window').width;
+  const ref=useRef<ScrollView>(null);
+  const [index,setIndex]=useState(0);
+  useEffect(()=>{const id=setInterval(()=>setIndex(i=>{const n=(i+1)%HERO.length;ref.current?.scrollTo({x:n*width,animated:true});return n}),5000);return()=>clearInterval(id)},[width]);
+  return <View style={{backgroundColor:'#fff'}}>
+    <ScrollView ref={ref} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={e=>setIndex(Math.round(e.nativeEvent.contentOffset.x/width))}>
+      {HERO.map((uri,i)=><Image key={uri} source={{uri}} resizeMode="cover" style={{width,aspectRatio:2,backgroundColor:C.divider}}/>) }
+    </ScrollView>
+    <View style={{position:'absolute',left:0,right:0,bottom:12,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:6}}>
+      {HERO.map((_,i)=><View key={i} style={{width:i===index?16:6,height:6,borderRadius:999,backgroundColor:i===index?'#fff':'rgba(255,255,255,.58)'}}/>) }
+    </View>
+  </View>;
+}
 
 export default function Home(){
   const router=useRouter();
-  return <SafeAreaView style={{flex:1,backgroundColor:C.bg}}>
+  return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <FunyHeader/>
-    <ScrollView contentContainerStyle={{paddingBottom:34}} showsVerticalScrollIndicator={false}>
-      <View style={{paddingHorizontal:22,paddingTop:28,paddingBottom:26,backgroundColor:'#F7F4FF',borderBottomWidth:1,borderBottomColor:C.line,overflow:'hidden'}}>
-        <Text style={{fontSize:10,fontWeight:'800',letterSpacing:2.2,color:'#9C92B5'}}>SHOP · MAP · REVIEW · TALK</Text>
-        <Text style={{marginTop:12,fontSize:27,lineHeight:34,fontWeight:'900',letterSpacing:-1.1,color:C.text}}>내 취향의 카드샵을{`\n`}찾아보세요</Text>
-        <Text style={{marginTop:9,fontSize:13,lineHeight:20,color:C.muted}}>한국과 일본의 TCG 카드샵 정보부터{`\n`}추천 콘텐츠와 일정까지 한곳에서.</Text>
-        <View style={{position:'absolute',right:22,top:48,width:92,height:92,borderRadius:46,borderWidth:14,borderColor:'#EAE3F8',opacity:.8}}/>
-        <View style={{position:'absolute',right:51,top:78,width:34,height:34,borderRadius:17,backgroundColor:C.purple,alignItems:'center',justifyContent:'center',...shadow}}><View style={{width:10,height:10,borderRadius:5,backgroundColor:'#fff'}}/></View>
-        <Pressable onPress={()=>router.push('/(tabs)/map')} style={{marginTop:22,height:50,borderRadius:15,backgroundColor:C.purple,alignItems:'center',justifyContent:'center',...shadow}}><Text style={{color:'#fff',fontSize:14,fontWeight:'900'}}>TCG MAP에서 카드샵 찾아보기  ›</Text></Pressable>
-      </View>
-      <View style={{paddingHorizontal:14,paddingTop:16,backgroundColor:'#fff'}}>
+    <ScrollView contentContainerStyle={{paddingBottom:118,backgroundColor:'#fff'}} showsVerticalScrollIndicator={false}>
+      <Hero/>
+      <Pressable onPress={()=>router.push('/(tabs)/map')} style={{height:54,alignItems:'center',justifyContent:'center',backgroundColor:'#fff'}}>
+        <Text style={{fontSize:12,fontWeight:'800',color:C.textSoft}}>TCG MAP에서 카드샵 찾아보기 <Text style={{color:C.purpleDark}}>›</Text></Text>
+      </Pressable>
+      <View style={{height:9,backgroundColor:C.divider}}/>
+      <View style={{paddingHorizontal:14,paddingTop:12,backgroundColor:'#fff'}}>
         <CmsRenderer placement="home" />
       </View>
     </ScrollView>

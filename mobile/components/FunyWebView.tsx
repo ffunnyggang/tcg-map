@@ -39,7 +39,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
     return()=>sub.remove();
   },[canGoBack]));
 
-  useEffect(()=>{setLoading(true);setError(false)},[url]);
+  useEffect(()=>{\n    setLoading(true);\n    setError(false);\n    const timer=setTimeout(()=>setLoading(false),2500);\n    return()=>clearTimeout(timer);\n  },[url]);
 
   const onMessage=useCallback((event:WebViewMessageEvent)=>{
     try{

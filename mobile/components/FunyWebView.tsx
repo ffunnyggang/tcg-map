@@ -5,6 +5,7 @@ import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
+const HIDE_WEB_CHROME="(function(){try{var css='header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;overflow:hidden!important;pointer-events:none!important}';var s=document.getElementById('__funy_native_shell__');if(!s){s=document.createElement('style');s.id='__funy_native_shell__';document.head.appendChild(s);}s.textContent=css;document.querySelectorAll('header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav').forEach(function(el){el.style.setProperty('display','none','important');});}catch(e){}true;})();";
 type Props={url:string;title?:string};
 
 export default function FunyWebView({url,title='FUNY PIN'}:Props){

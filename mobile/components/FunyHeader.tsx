@@ -5,7 +5,7 @@ import { visualAssets } from '../lib/visualAssets';
 
 export default function FunyHeader({showAccount=true}:{showAccount?:boolean}){
   const router=useRouter();
-  return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'rgba(255,255,255,.98)'}}>
+  return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'#fff',position:'relative',zIndex:9999,elevation:9999}}>
     <Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36,marginRight:8}}/>
     <Text style={{fontSize:24,fontWeight:'800',letterSpacing:-0.6,color:C.text}}>FUNY PIN</Text>
     <Text style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>

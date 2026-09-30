@@ -5,7 +5,7 @@ import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const APP_BOOTSTRAP="(function(){try{var s=document.getElementById('__funy_app_css__');if(!s){s=document.createElement('style');s.id='__funy_app_css__';s.textContent=\".portal-header{display:none!important}.portal-bottom-nav{display:none!important}.portal-main{padding-top:0!important}.filters{top:0!important}.popular-sort.show{top:58px!important}.header-more-menu{display:none!important}html,body{background:#fff!important;min-height:100%!important}\";(document.head||document.documentElement).appendChild(s);}document.documentElement.setAttribute('data-funy-app','1');}catch(e){}})();true;";
+const APP_BOOTSTRAP="(function(){try{var css=\"header.portal-header, .portal-header, nav.portal-bottom-nav, .portal-bottom-nav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;pointer-events:none!important}.portal-main{padding-top:0!important}.filters{top:0!important}.popular-sort.show{top:58px!important}.header-more-menu{display:none!important}html,body{background:#fff!important;min-height:100%!important}\";var apply=function(){var s=document.getElementById('__funy_app_css__');if(!s){s=document.createElement('style');s.id='__funy_app_css__';(document.head||document.documentElement).appendChild(s);}s.textContent=css;document.querySelectorAll('header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav').forEach(function(el){el.style.setProperty('display','none','important');el.style.setProperty('visibility','hidden','important');el.style.setProperty('height','0','important');el.style.setProperty('pointer-events','none','important');});};apply();if(!window.__funyAppObserver){window.__funyAppObserver=new MutationObserver(apply);window.__funyAppObserver.observe(document.documentElement,{childList:true,subtree:true});}document.documentElement.setAttribute('data-funy-app','1');}catch(e){}})();true;";
 
 type Props={url:string;title?:string};
 
@@ -67,7 +67,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       injectedJavaScript={APP_BOOTSTRAP}
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
-      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);ref.current?.injectJavaScript(APP_BOOTSTRAP);setLoading(false)}}
       onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
     />
     {loading?<View pointerEvents="none" style={styles.loadingOverlay}><ActivityIndicator color={C.purple}/></View>:null}

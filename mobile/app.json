@@ -19,7 +19,6 @@
     },
     "android": {
       "package": "kr.funypin.app",
-      "versionCode": 1,
       "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
     },
     "experiments": {"typedRoutes": true},

@@ -10,7 +10,7 @@ const ROOT='https://funypin.kr/';
 export function cmsAssetUrl(value?:string|null){if(!value)return '';if(/^https?:\/\//i.test(value))return value;return ROOT+value.replace(/^\//,'')}
 export function cmsItemSource(item:CmsResolvedItem){return item.shop||item.content||item}
 export function cmsItemTitle(item:CmsResolvedItem){const x:any=cmsItemSource(item);return x?.title||x?.name||''}
-export function cmsItemImage(item:CmsResolvedItem){const x:any=cmsItemSource(item);return cmsAssetUrl(x?.image_url||x?.auto_image_url||x?.thumbnail_url||'')}
+export function cmsItemImage(item:CmsResolvedItem){const x:any=cmsItemSource(item);return cmsAssetUrl(x?.home_image_url||x?.image_url||x?.auto_image_url||x?.thumbnail_url||'')}
 export function cmsItemUrl(item:CmsResolvedItem){const x:any=cmsItemSource(item);if(item.shop?.id)return `/shop/${item.shop.id}`;return x?.target_url||''}
 
 export async function getCmsPlacement(placement:CmsPlacement):Promise<CmsResolvedBlock[]>{
@@ -29,7 +29,13 @@ export async function getCmsPlacement(placement:CmsPlacement):Promise<CmsResolve
   ]);
   if(cr.error)throw cr.error;if(sr.error)throw sr.error;if(ir.error)throw ir.error;
   const cm=new Map((cr.data||[]).map((x:any)=>[x.id,x]));const sm=new Map((sr.data||[]).map((x:any)=>[x.id,{...x}]));
-  for(const image of ir.data||[]){const shop:any=sm.get(image.shop_id);if(!shop)continue;const src=cmsAssetUrl(image.storage_path||image.source_path);if(image.image_type==='thumbnail'&&!shop.image_url)shop.image_url=src;else if(image.image_type==='gallery'&&!shop.image_url)shop.image_url=src}
+  for(const image of ir.data||[]){
+    const shop:any=sm.get(image.shop_id);if(!shop)continue;
+    const src=cmsAssetUrl(image.storage_path||image.source_path);if(!src)continue;
+    if(image.image_type==='thumbnail'&&!shop.image_url)shop.image_url=src;
+    else if(image.image_type==='gallery'&&!shop.image_url)shop.image_url=src;
+    if(placement==='home'&&image.image_type==='gallery'&&!shop.home_image_url)shop.home_image_url=src;
+  }
   const by=new Map<string,CmsResolvedItem[]>();for(const item of items||[]){const r:CmsResolvedItem={...item,content:item.item_type==='shop'?null:cm.get(item.content_id)||null,shop:item.item_type==='shop'?sm.get(item.shop_id)||null:null};const list=by.get(item.block_id)||[];list.push(r);by.set(item.block_id,list)}
   return blocks.map((b:any)=>({...b,items:by.get(b.id)||[]})) as CmsResolvedBlock[];
 }

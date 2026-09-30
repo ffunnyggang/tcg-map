@@ -63,14 +63,11 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       javaScriptEnabled
       domStorageEnabled
       allowsInlineMediaPlayback
-      injectedJavaScriptBeforeContentLoaded={APP_BOOTSTRAP}
-      injectedJavaScript={APP_BOOTSTRAP}
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
-      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);ref.current?.injectJavaScript(APP_BOOTSTRAP);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
       onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
     />
-    {loading?<View pointerEvents="none" style={styles.loadingOverlay}><ActivityIndicator color={C.purple}/></View>:null}
   </View>;
 }
 

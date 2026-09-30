@@ -21,7 +21,7 @@ export const UI={
   screenPad:14,
   cardRadius:13,
   buttonRadius:12,
-  navH:66,
+  navH:68,
   contentMax:420,
 };
 
@@ -35,8 +35,8 @@ export const shadow={
 
 export const navShadow={
   shadowColor:'#201C2A',
-  shadowOpacity:0.10,
-  shadowRadius:18,
-  shadowOffset:{width:0,height:7},
-  elevation:7,
+  shadowOpacity:0.16,
+  shadowRadius:28,
+  shadowOffset:{width:0,height:12},
+  elevation:10,
 };

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-29T23:26:30.206103+00:00",
+  "updatedAt": "2026-09-30T00:38:01.468634+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "팬텀 종류의 모든카드",
+      "author": "지환왕자",
+      "publishedAt": "2026-09-29T23:55:46.455993Z",
+      "excerpt": "팬텀 종류의 모든카드",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-종류의-모든카드-j8rnGxaP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "일본다녀오니 접하게됬네요",
@@ -37,10 +50,10 @@
       "excerpt": "포켓몬 30주년 거래중 사기당했습니다 다른분들도 조심하세요.. 당근페이로 금액 송금하더라도 거래자가 거래완료를 해버리면 사기피해 접수(분쟁신청)이 안되네요 다른분들은 조심하시고 혹시 내일 경찰서 가서 접수할려는데 필요한거 있을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790679944465235243de76f0d801d66f1976200c88623efa501b281b3e36c1893c33f7f7429b0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/하-사기당했네요-Px8qJKXP",
-      "views": 109,
-      "likes": 1,
+      "views": 117,
+      "likes": 2,
       "comments": 4,
-      "popularityScore": 12.09
+      "popularityScore": 15.17
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "진짜 가지고 싶은데...비싸네요....",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/d5f86655-e31d-4308-bc66-16b9cccf870a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/비싸-d9XaV7nP",
-      "views": 10,
+      "views": 23,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.1
+      "popularityScore": 0.23
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "포켓몬카드 30주년 퓨쳐리스틱한글판 추첨 응모하세요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179064826009406147496a34c23e0fe34241ef2e24341dc346d1bba9894f90d4cebedec4305330.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-퓨쳐리스틱추-응완-PND2m10j",
-      "views": 40,
+      "views": 42,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.4
+      "popularityScore": 3.42
     },
     {
       "category": "카드거래",
@@ -102,10 +115,10 @@
       "excerpt": "처음 뽑았을때 부터 파란색점이 있었는데 이거 에러카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/0f1f1f0a-a2cf-423e-8d27-9b1f527c957c.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-에러카드인가요-AO63G3kj",
-      "views": 35,
+      "views": 36,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.35
+      "popularityScore": 3.36
     },
     {
       "category": "자유 게시판",
@@ -160,19 +173,6 @@
       "popularityScore": 0.13
     },
     {
-      "category": "자유 게시판",
-      "title": "출석체크",
-      "author": "얀냥이",
-      "publishedAt": "2026-09-28T09:25:16.197336Z",
-      "excerpt": "당근 앱 키는겸 출석체크 저번주 충칭 여행갔을때 처음으로 만져본 30주년 팩 이였어요 워낙 습한지역이라 카드가 전부 휘어있더라구요 피카츄 귀여워..... 중국에서만 파는 피규어 낑카츄를 원했는데 나오진 안았어여",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179058745865286846bf5ebab9e75f95cbe055da8f3ed8096647b2c48e08de52d582897e1109c0.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/출석체크-P5naYGyd",
-      "views": 14,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.14
-    },
-    {
       "category": "카드 자랑",
       "title": "좋은 카드는 많이 없지만..",
       "author": "슈디",
@@ -193,10 +193,10 @@
       "excerpt": "가격만 괜찮으면 바로 거래하고 싶어요. 서울에 살고 있고, 만약 멀리 계신다면 택배 거래도 괜찮습니 다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/2e89fbae-8115-40fc-9121-4021ae340f22.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-일판-트레이너-카드-아니면-트레이너와-포켓몬이-같이-나온-카드만-모으고-있습니다-d9XXOrOP",
-      "views": 7,
+      "views": 8,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.07
+      "popularityScore": 0.08
     },
     {
       "category": "카드 자랑",
@@ -284,10 +284,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 134,
+      "views": 135,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.34
+      "popularityScore": 55.35
     },
     {
       "category": "카드 자랑",

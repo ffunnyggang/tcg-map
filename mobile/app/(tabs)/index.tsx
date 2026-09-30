@@ -16,6 +16,7 @@ const HERO=[
 function Hero(){
   const router=useRouter();
   const width=Dimensions.get('window').width;
+  const height=width/2;
   const ref=useRef<ScrollView>(null);
   const [index,setIndex]=useState(0);
   useEffect(()=>{const id=setInterval(()=>setIndex(i=>{const n=(i+1)%HERO.length;ref.current?.scrollTo({x:n*width,animated:true});return n}),4500);return()=>clearInterval(id)},[width]);
@@ -27,9 +28,9 @@ function Hero(){
       else router.push('/(tabs)/talk');
     }
   };
-  return <View style={{backgroundColor:'#fff'}}>
-    <ScrollView ref={ref} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={e=>setIndex(Math.round(e.nativeEvent.contentOffset.x/width))}>
-      {HERO.map(item=><Pressable key={item.image} onPress={()=>open(item)} style={{width}}><Image source={{uri:item.image}} resizeMode="cover" style={{width,aspectRatio:2,backgroundColor:C.divider}}/></Pressable>)}
+  return <View style={{width,height,backgroundColor:'#fff',overflow:'hidden'}}>
+    <ScrollView ref={ref} horizontal pagingEnabled snapToInterval={width} decelerationRate="fast" showsHorizontalScrollIndicator={false} style={{width,height}} onMomentumScrollEnd={e=>setIndex(Math.round(e.nativeEvent.contentOffset.x/width))}>
+      {HERO.map(item=><Pressable key={item.image} onPress={()=>open(item)} style={{width,height}}><Image source={{uri:item.image}} resizeMode="cover" style={{width,height,backgroundColor:C.divider}}/></Pressable>)}
     </ScrollView>
     <View pointerEvents="none" style={{position:'absolute',left:0,right:0,bottom:12,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:6}}>
       {HERO.map((_,i)=><View key={i} style={{width:i===index?16:6,height:6,borderRadius:999,backgroundColor:i===index?'#fff':'rgba(255,255,255,.58)'}}/>)}

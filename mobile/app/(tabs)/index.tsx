@@ -29,7 +29,7 @@ function Hero(){
   };
   return <View style={{backgroundColor:'#fff'}}>
     <ScrollView ref={ref} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={e=>setIndex(Math.round(e.nativeEvent.contentOffset.x/width))}>
-      {HERO.map((item,i)=><Pressable key={item.image} onPress={()=>open(item)} style={{width}}><Image source={{uri:item.image}} resizeMode="cover" style={{width,aspectRatio:2,backgroundColor:C.divider}}/></Pressable>)}
+      {HERO.map(item=><Pressable key={item.image} onPress={()=>open(item)} style={{width}}><Image source={{uri:item.image}} resizeMode="cover" style={{width,aspectRatio:2,backgroundColor:C.divider}}/></Pressable>)}
     </ScrollView>
     <View pointerEvents="none" style={{position:'absolute',left:0,right:0,bottom:12,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:6}}>
       {HERO.map((_,i)=><View key={i} style={{width:i===index?16:6,height:6,borderRadius:999,backgroundColor:i===index?'#fff':'rgba(255,255,255,.58)'}}/>)}
@@ -42,8 +42,7 @@ export default function Home(){
     <FunyHeader/>
     <ScrollView contentContainerStyle={{paddingBottom:112,backgroundColor:'#fff'}} showsVerticalScrollIndicator={false}>
       <Hero/>
-      <View style={{height:9,backgroundColor:C.divider}}/>
-      <View style={{paddingHorizontal:14,paddingTop:12,backgroundColor:'#fff'}}>
+      <View style={{paddingHorizontal:16,paddingTop:12,backgroundColor:'#fff'}}>
         <CmsRenderer placement="home" />
       </View>
     </ScrollView>

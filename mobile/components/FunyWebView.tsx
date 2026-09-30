@@ -61,7 +61,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       ref={ref}
       source={{uri:url}}
       style={styles.webview}
-      originWhitelist={['https://*/*','about:blank']}
+      originWhitelist={['https://*/*','http://*/*','about:blank']}
       javaScriptEnabled
       domStorageEnabled
       sharedCookiesEnabled
@@ -70,16 +70,13 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       cacheEnabled
       allowsInlineMediaPlayback
       allowsBackForwardNavigationGestures
-      injectedJavaScriptBeforeContentLoaded={APP_BOOTSTRAP}
-      injectedJavaScript={APP_BOOTSTRAP}
-      onShouldStartLoadWithRequest={(request)=>handleUrl(String(request.url||''))}
-      onMessage={onMessage}
-      onNavigationStateChange={(state)=>setCanGoBack(!!state.canGoBack)}
-      onLoadStart={()=>{setLoading(true);setError(false)}}
-      onLoadEnd={()=>setLoading(false)}
-      onLoadProgress={({nativeEvent})=>{if(nativeEvent.progress>0)console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}}
+      onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true);setError(false)}}
+      onLoadProgress={({nativeEvent})=>console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}
+      onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
       onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
       onHttpError={(e)=>{console.warn('[FUNY WEBVIEW] http error',e.nativeEvent.statusCode,e.nativeEvent.url);if(e.nativeEvent.statusCode>=400)setError(true)}}
+      onNavigationStateChange={(state)=>{setCanGoBack(!!state.canGoBack);console.log('[FUNY WEBVIEW] nav',state.url)}}
       showsVerticalScrollIndicator={false}
       bounces
     />

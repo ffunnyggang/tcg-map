@@ -19,7 +19,7 @@ export function SurfaceCard({children,padded=true}:{children:ReactNode;padded?:b
 }
 
 export function PrimaryButton({label,onPress,disabled=false}:{label:string;onPress:()=>void;disabled?:boolean}){
-  return <Pressable disabled={disabled} onPress={onPress} style={{height:48,paddingHorizontal:16,borderRadius:12,backgroundColor:C.purple,alignItems:'center',justifyContent:'center',opacity:disabled?.55:1,...shadow}}><Text style={{fontSize:13,fontWeight:'900',color:'#fff'}}>{label}</Text></Pressable>;
+  return <Pressable disabled={disabled} onPress={onPress} style={{height:48,paddingHorizontal:16,borderRadius:12,backgroundColor:C.purple,alignItems:'center',justifyContent:'center',opacity:disabled?0.55:1,...shadow}}><Text style={{fontSize:13,fontWeight:'900',color:'#fff'}}>{label}</Text></Pressable>;
 }
 
 export function EmptyState({title,body}:{title:string;body?:string}){

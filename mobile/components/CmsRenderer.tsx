@@ -19,11 +19,17 @@ function useOpenItem(){
   },[router]);
 }
 
-function CropImage({item,aspectRatio=1,fixedWidth,fixedHeight}:{item:CmsResolvedItem;aspectRatio?:number;fixedWidth?:number;fixedHeight?:number}){
-  const x:any=cmsItemSource(item),uri=cmsItemImage(item),zoom=Math.max(1,Number(x?.image_zoom||1)),px=Number(x?.image_position_x??50),py=Number(x?.image_position_y??50),[size,setSize]=useState({w:fixedWidth||0,h:fixedHeight||0});
-  const dx=size.w?((50-px)/50)*(size.w*(zoom-1)/2):0,dy=size.h?((50-py)/50)*(size.h*(zoom-1)/2):0;
-  const style:any=fixedWidth&&fixedHeight?{width:fixedWidth,height:fixedHeight}:{width:'100%',aspectRatio};
-  return <View onLayout={e=>setSize({w:e.nativeEvent.layout.width,h:e.nativeEvent.layout.height})} style={{...style,overflow:'hidden',backgroundColor:'#F1EFF2'}}>{uri?<Image source={{uri}} resizeMode="cover" style={{position:'absolute',left:0,top:0,width:'100%',height:'100%',transform:[{scale:zoom},{translateX:dx},{translateY:dy}]}}/>:null}</View>
+function CropImage({item,aspectRatio=1,fixedWidth,fixedHeight,applyAdminCrop=true}:{item:CmsResolvedItem;aspectRatio?:number;fixedWidth?:number;fixedHeight?:number;applyAdminCrop?:boolean}){
+  const x:any=cmsItemSource(item),uri=cmsItemImage(item),zoom=applyAdminCrop?Math.max(1,Number(x?.image_zoom||1)):1,px=applyAdminCrop?Number(x?.image_position_x??50):50,py=applyAdminCrop?Number(x?.image_position_y??50):50;
+  const [size,setSize]=useState({w:fixedWidth||0,h:fixedHeight||0}),[natural,setNatural]=useState<{w:number;h:number}|null>(null);
+  useEffect(()=>{let alive=true;if(!uri){setNatural(null);return()=>{alive=false}}Image.getSize(uri,(w,h)=>{if(alive)setNatural({w,h})},()=>{if(alive)setNatural(null)});return()=>{alive=false}},[uri]);
+  const frame:any=fixedWidth&&fixedHeight?{width:fixedWidth,height:fixedHeight}:{width:'100%',aspectRatio};
+  let imageStyle:any={position:'absolute',left:0,top:0,width:'100%',height:'100%'};
+  if(size.w&&size.h&&natural?.w&&natural?.h){
+    const cover=Math.max(size.w/natural.w,size.h/natural.h),dw=natural.w*cover,dh=natural.h*cover;
+    imageStyle={position:'absolute',width:dw,height:dh,left:(size.w-dw)*(px/100),top:(size.h-dh)*(py/100)};
+  }
+  return <View onLayout={e=>setSize({w:e.nativeEvent.layout.width,h:e.nativeEvent.layout.height})} style={{...frame,overflow:'hidden',backgroundColor:'#F1EFF2'}}>{uri?<View style={{position:'absolute',left:0,right:0,top:0,bottom:0,transform:[{scale:zoom}]}}><Image source={{uri}} resizeMode={natural?'stretch':'cover'} style={imageStyle}/></View>:null}</View>
 }
 
 function ShopSub({item,textAlign='left'}:{item:CmsResolvedItem;textAlign?:'left'|'center'|'right'}){
@@ -39,10 +45,10 @@ function CollectionCard({item,cols,textAlign}:{item:CmsResolvedItem;cols:number;
 function Banner({block}:{block:CmsResolvedBlock}){
   const open=useOpenItem(),scroll=useRef<ScrollView>(null),[index,setIndex]=useState(0),[width,setWidth]=useState(0),items=block.items;
   useEffect(()=>{if(items.length<2||!width)return;const seconds=Number(block.autoplay_seconds||0);if(seconds<=0)return;const id=setInterval(()=>setIndex(i=>{const n=(i+1)%items.length;scroll.current?.scrollTo({x:n*width,animated:true});return n}),seconds*1000);return()=>clearInterval(id)},[items.length,block.autoplay_seconds,width]);
-  return <View onLayout={e=>{const w=e.nativeEvent.layout.width;if(w>0&&w!==width)setWidth(w)}}>
+  return <View onLayout={e=>{const w=e.nativeEvent.layout.width;if(w>0&&Math.abs(w-width)>.5)setWidth(w)}}>
     <View style={{borderRadius:15,overflow:'hidden',backgroundColor:'#F1EFF2'}}>
       <ScrollView ref={scroll} horizontal pagingEnabled snapToInterval={width||undefined} decelerationRate="fast" showsHorizontalScrollIndicator={false} onMomentumScrollEnd={e=>width&&setIndex(Math.round(e.nativeEvent.contentOffset.x/width))}>
-        {items.map(item=><Pressable key={item.id} onPress={()=>open(item)} style={{width:width||1,aspectRatio:3}}><CropImage item={item} aspectRatio={3}/></Pressable>)}
+        {items.map(item=><Pressable key={item.id} onPress={()=>open(item)} style={{width:width||1,aspectRatio:3}}><CropImage item={item} aspectRatio={3} applyAdminCrop={false}/></Pressable>)}
       </ScrollView>
     </View>
     {items.length>1?<View style={{height:20,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:5}}>{items.map((_,i)=><View key={i} style={{height:6,width:i===index?16:6,borderRadius:99,backgroundColor:i===index?C.purple:'#D8D3DF'}}/>)}</View>:null}

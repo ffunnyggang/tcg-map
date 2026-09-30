@@ -70,6 +70,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       cacheEnabled
       allowsInlineMediaPlayback
       allowsBackForwardNavigationGestures
+      onShouldStartLoadWithRequest={(request)=>handleUrl(String(request.url||''))}
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true);setError(false)}}
       onLoadProgress={({nativeEvent})=>console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}

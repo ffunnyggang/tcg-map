@@ -4,7 +4,7 @@ import { useFocusEffect,useRouter } from 'expo-router';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
-const HOST='https://funypin.kr';
+const isFunyHost=(target:string)=>{try{const h=new URL(target).hostname.toLowerCase();return h==='funypin.kr'||h.endsWith('.funypin.kr')}catch{return false}};
 const APP_BOOTSTRAP="(function(){try{var s=document.getElementById('__funy_app_css__');if(!s){s=document.createElement('style');s.id='__funy_app_css__';s.textContent=\".portal-header{display:none!important}.portal-bottom-nav{display:none!important}.portal-main{padding-top:0!important}.filters{top:0!important}.popular-sort.show{top:58px!important}.header-more-menu{display:none!important}html,body{background:#fff!important;min-height:100%!important}\";(document.head||document.documentElement).appendChild(s);}document.documentElement.setAttribute('data-funy-app','1');}catch(e){}})();true;";
 
 type Props={url:string;title?:string};
@@ -23,7 +23,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       if(path.startsWith('/shop/')){router.push(path as any);return false;}
       return false;
     }
-    if(target.startsWith(HOST)||target==='about:blank') return true;
+    if(target==='about:blank'||isFunyHost(target)) return true;
     if(target.startsWith('http://')||target.startsWith('https://')||target.startsWith('mailto:')||target.startsWith('tel:')){
       openExternal(target); return false;
     }
@@ -61,7 +61,7 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       ref={ref}
       source={{uri:url}}
       style={styles.webview}
-      originWhitelist={['https://funypin.kr/*','https://*.funypin.kr/*','about:blank']}
+      originWhitelist={['https://*/*','about:blank']}
       javaScriptEnabled
       domStorageEnabled
       sharedCookiesEnabled
@@ -77,8 +77,9 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       onNavigationStateChange={(state)=>setCanGoBack(!!state.canGoBack)}
       onLoadStart={()=>{setLoading(true);setError(false)}}
       onLoadEnd={()=>setLoading(false)}
-      onError={()=>{setLoading(false);setError(true)}}
-      onHttpError={(e)=>{if(e.nativeEvent.statusCode>=400)setError(true)}}
+      onLoadProgress={({nativeEvent})=>{if(nativeEvent.progress>0)console.log('[FUNY WEBVIEW] progress',nativeEvent.progress,nativeEvent.url)}}
+      onError={(e)=>{console.warn('[FUNY WEBVIEW] load error',e.nativeEvent);setLoading(false);setError(true)}}
+      onHttpError={(e)=>{console.warn('[FUNY WEBVIEW] http error',e.nativeEvent.statusCode,e.nativeEvent.url);if(e.nativeEvent.statusCode>=400)setError(true)}}
       showsVerticalScrollIndicator={false}
       bounces
     />

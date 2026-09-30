@@ -12,6 +12,8 @@ export function cmsItemSource(item:CmsResolvedItem){return item.shop||item.conte
 export function cmsItemTitle(item:CmsResolvedItem){const x:any=cmsItemSource(item);return x?.title||x?.name||''}
 export function cmsItemImage(item:CmsResolvedItem){const x:any=cmsItemSource(item);return cmsAssetUrl(x?.home_image_url||x?.image_url||x?.auto_image_url||x?.thumbnail_url||'')}
 export function cmsItemUrl(item:CmsResolvedItem){const x:any=cmsItemSource(item);if(item.shop?.id)return `/shop/${item.shop.id}`;return x?.target_url||''}
+export function cmsItemLinkMode(item:CmsResolvedItem){const x:any=cmsItemSource(item);return String(x?.link_mode||'internal').toLowerCase()}
+export function cmsAbsoluteUrl(value?:string|null){if(!value)return '';if(/^https?:\/\//i.test(value))return value;return ROOT+String(value).replace(/^\//,'')}
 
 export async function getCmsPlacement(placement:CmsPlacement):Promise<CmsResolvedBlock[]>{
   const now=new Date().toISOString();

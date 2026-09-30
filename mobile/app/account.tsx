@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
-import { getProfile, signOut } from '../lib/auth';
+import { deleteAccount, getProfile, signOut } from '../lib/auth';
 import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 
@@ -82,6 +82,33 @@ export default function Account() {
     }
   };
 
+  const removeAccount = () => {
+    Alert.alert(
+      '계정을 삭제할까요?',
+      '계정과 프로필, 즐겨찾기 등 계정에 연결된 정보가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '계정 삭제',
+          style: 'destructive',
+          onPress: async () => {
+            setBusy('delete');
+            try {
+              await deleteAccount();
+              setUser(null);
+              setProfile(null);
+              Alert.alert('계정 삭제 완료', 'FUNY PIN 계정이 삭제되었습니다.');
+            } catch (e: any) {
+              Alert.alert('계정 삭제 실패', String(e?.message || e));
+            } finally {
+              setBusy(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <SafeAreaView
@@ -149,6 +176,28 @@ export default function Account() {
             >
               <Text>
                 {busy === 'out' ? '처리 중…' : '로그아웃'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={removeAccount}
+              disabled={!!busy}
+              style={{
+                marginTop: 12,
+                padding: 14,
+                borderWidth: 1,
+                borderColor: '#f1c7c7',
+                borderRadius: 12,
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#c62828',
+                  fontWeight: '700',
+                }}
+              >
+                {busy === 'delete' ? '삭제 중…' : '계정 삭제'}
               </Text>
             </Pressable>
           </>

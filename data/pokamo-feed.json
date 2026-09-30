@@ -1,8 +1,47 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-09-30T13:31:47.644103+00:00",
+  "updatedAt": "2026-09-30T14:33:45.111035+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "카드깡/카드샵 후기",
+      "title": "24시간 무인카드샵 오리파 첫 도전!",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-09-30T14:32:11.109125Z",
+      "excerpt": "홍대에 오픈한 24시간 무인 카드샵 TCG서울 다녀왔습니다! 👀 최근 저희 깽퐌커플은 오리파를 조금 자제하고 있었지만… 눈앞에 있으니 또 그냥 지나치기가 쉽지 않습니다 🤣 🔥 결국 저희도 못 참고 구매했습니다 결국 저희도 구경만 하고 나오지는 못했습니다 PSA 등급카드 오리파에 도전하고",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907786443179a011fa90178b7469093422c4a66a2b32b456d768dd4cb1553f8faf8dd362c310.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/24시간-무인카드샵-오리파-첫-도전-PV2Xz5aP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "카드깡/카드샵 후기",
+      "title": "홍대 TCG 서울 무인 카드샵",
+      "author": "김철왕",
+      "publishedAt": "2026-09-30T13:48:38.649501Z",
+      "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
+      "views": 4,
+      "likes": 1,
+      "comments": 2,
+      "popularityScore": 7.04
+    },
+    {
+      "category": "자유 게시판",
+      "title": "이 명희 얼마 정도 할까요?",
+      "author": "람비",
+      "publishedAt": "2026-09-30T13:44:06.097409Z",
+      "excerpt": "얼마나 할지를 모르겠어요. ㅠㅠ",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/3c407bb4-5089-4f0b-93b6-791cb45dde99.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이-명희-얼마-정도-할까요-d9X47KWP",
+      "views": 5,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.05
+    },
     {
       "category": "자유 게시판",
       "title": "일트 만에 뜬 기라티나 특일",
@@ -37,10 +76,10 @@
       "excerpt": "너 포켓몬 카드 중독이다!!!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/ef1fea79-00e6-4b23-a4dd-c48284578007.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/몇장-데려왔습니다-d7LyeJRj",
-      "views": 3,
+      "views": 4,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.03
+      "popularityScore": 0.04
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -63,10 +102,10 @@
       "excerpt": "처음 용산 오픈런 했는데 운좋게 22번으로 빠르게 들어가서 5박스 정가 구매했네요 기분 너무 좋은 것..... 아쉬운 건 왜 어제 샤이니 트레져가 나왔을까 ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/dbf24517-82d0-44e9-8df2-ba40aa51abb8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/첫-용산-오픈런-후기-dGGJkRNd",
-      "views": 13,
+      "views": 36,
       "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.13
+      "comments": 2,
+      "popularityScore": 10.36
     },
     {
       "category": "자유 게시판",
@@ -76,10 +115,10 @@
       "excerpt": "리자몽이랑 레쿠쟈입니다 최근에 뽑았어요!!!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/c1de4530-c8ee-49e8-bade-9a33a6144acf.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/최애-포켓몬은-누구-💖-d9X4z09P",
-      "views": 3,
+      "views": 4,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.03
+      "popularityScore": 0.04
     },
     {
       "category": "자유 게시판",
@@ -89,10 +128,10 @@
       "excerpt": "오늘 사건접수하고 돌아왔는데 사기꾼이 돈을 계좌로 보내주셨네요 그냥 넘어갈까 고민하고 있습니다. 따로 문자나 연락이 없는데 그냥 넘어가는게 좋을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179074506184236067642717ea9db4aede25143fccca98fda38d2fff07f8b2a09426d126c169d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사기당한사람-후기입니다-j8rnqYaP",
-      "views": 169,
+      "views": 173,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.69
+      "popularityScore": 9.73
     },
     {
       "category": "자유 게시판",
@@ -102,23 +141,10 @@
       "excerpt": "문구점에서 30주년 팔길래 친구랑 가서 구매했어요! 피카츄 너무 이쁜데요ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907356077865581ca16b54ecf9a57810b2669640c51226e35a4033ce8039d1d270c6a50f5780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년팩-AqrkVqEP",
-      "views": 34,
+      "views": 35,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.34
-    },
-    {
-      "category": "자유 게시판",
-      "title": "포켓몬카드 판매 ,트레이드 ,정보!",
-      "author": "호돌호듀듀",
-      "publishedAt": "2026-09-30T02:12:05.933672Z",
-      "excerpt": "[PHC_TCG] 네이버 카페로 초대합니다. https://naver.me/5l2knFxJ From PokeHodu",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907342906656d4165a5db1ff9979b33c06e21d93c772770bd68c28dd5ffba46533ee3ffb5e30.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-판매-트레이드-정보-PV2E5xKP",
-      "views": 6,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.06
+      "popularityScore": 0.35
     },
     {
       "category": "자유 게시판",
@@ -284,10 +310,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 124,
+      "views": 125,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 14.24
+      "popularityScore": 14.25
     },
     {
       "category": "카드거래",
@@ -414,10 +440,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 169,
+      "views": 170,
       "likes": 3,
       "comments": 7,
-      "popularityScore": 24.69
+      "popularityScore": 24.7
     },
     {
       "category": "카드 자랑",
@@ -492,10 +518,10 @@
       "excerpt": "30주년 판매해요! 일판 박스, 에브이블래키박스! 가격은 각각 38 43 입니다!! 아 참고로 교환도 가능해요 박스만.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드30주년-PwgV7nkP",
-      "views": 92,
+      "views": 93,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.92
+      "popularityScore": 0.93
     },
     {
       "category": "정보 공유",
@@ -505,10 +531,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 240,
+      "views": 241,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.4
+      "popularityScore": 14.41
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -622,10 +648,10 @@
       "excerpt": "🎣 잉어킹 프로모 brg 그레이딩 신청방법! 홈페이지에서 ‘그레이딩 신청’ 선택! ① 레귤러 / 익스프레스 중 서비스 선택 ② 카드 종류에서 ‘포켓몬카드’ 선택 ③ 결제하면 신청 완료! 👉 카드 종류 외 나머지 항목은 생략하셔도 됩니다 📢 잠깐! 8/7~8/31 잉어킹 프로모 카드 그레",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260828/aac9651a-c89c-4c15-88fa-d71f9d4eed4e.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎣-잉어킹-프로모-brg-그레이딩-신청방법-PBlDrwqj",
-      "views": 96,
+      "views": 97,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.96
+      "popularityScore": 5.97
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -661,10 +687,10 @@
       "excerpt": "입구부터 PSA 10 카드가 가득🔥 판초츄·뭉크·마리오츄부터 최애 갸라도스까지👀 그리고 화제의 1억 원짜리 릴리에 카드도 영접했습니다😱 최근 관심이 생긴 원피스 등급카드도 다양하게 구경하고, 소문으로만 듣던 스니덩 오리파는 냄새만 킁킁🐽 결국 데려온 첫 원피스 등급카드는 바로 루피 매거",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178771770624496bfa3eb24839fff96c7576148e979c2baa56268ac402b139c641f81accb7f8f0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🇯🇵-도쿄-도착하자마자-달려간-곳-아키하바라-스니덩-jvqy6VLd",
-      "views": 154,
+      "views": 155,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.54
+      "popularityScore": 9.55
     },
     {
       "category": "자유 게시판",
@@ -693,32 +719,6 @@
       "popularityScore": 5.36
     },
     {
-      "category": "카드깡/카드샵 후기",
-      "title": "강남 카드노바 오픈 후기!",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-08-24T03:23:48.797309Z",
-      "excerpt": "😮 방문했던 카드샵 중 가장 넓은 규모 매장에 들어가자마자 가장 먼저 느낀 점은 생각보다 규모가 정말 크고 쾌적하다는 점이었습니다 지금까지 방문했던 카드샵 중에서도 손에 꼽을 정도로 넓은 공간이었는데요 매장 내부는 오리파 / 싱글카드 / 등급카드 / 박스 제품 공간으로 나뉘어 있어 원하",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178754170555540308b27df7d1ee27046a0f3a9ab4fad6b4a417c9c6aa279c06bcd029100743f0.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/강남-카드노바-오픈-후기-dXq39l3j",
-      "views": 116,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 6.16
-    },
-    {
-      "category": "카드깡/카드샵 후기",
-      "title": "개취 듬뿍 담긴 콜렉트온 싱글카드 소개⚡",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-08-23T13:11:16.661864Z",
-      "excerpt": "개취 듬뿍 담긴 콜렉트온 싱글카드 소개⚡ #대림콜렉트온 #collecton #포켓몬카드 #개인취향존중",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787490642169efe46986046d85b65e208d26f5102411520c1eccdc871dbd7b2e9cb36fd076a10.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/개취-듬뿍-담긴-콜렉트온-싱글카드-소개⚡-dpDQz0zd",
-      "views": 22,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.22
-    },
-    {
       "category": "정보 공유",
       "title": "스폰지밥 × 원피스 × 맥도날드 콜라보!│역대급 해피밀 굿즈 등장",
       "author": "퐌퐌퐌",
@@ -726,10 +726,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 420,
+      "views": 424,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 11.2
+      "popularityScore": 11.24
     },
     {
       "category": "정보 공유",
@@ -739,10 +739,10 @@
       "excerpt": "포켓몬카드를 수집하시는 분들이라면 2026년 가장 기대하고 있는 제품 중 하나가 바로 포켓몬카드 30주년 기념 세트가 아닐까 싶습니다 ​ 포켓몬 TCG가 1996년 시작된 이후 어느덧 30주년을 맞이하면서 특별한 기념 세트가 출시될 예정인데요 이번 세트에서 특히 눈길을 끄는 부분은 무려",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/178680865379274b8a9ce607a57a179bc021d360cab369b9ac33f856fb757b60cef4bf65cb9780.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-기념-피카츄-카드-총정리30종-피카츄가-나온다고-PBlQRRzj",
-      "views": 362,
+      "views": 363,
       "likes": 7,
       "comments": 6,
-      "popularityScore": 36.62
+      "popularityScore": 36.63
     },
     {
       "category": "정보 공유",

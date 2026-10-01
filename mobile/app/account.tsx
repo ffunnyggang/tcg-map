@@ -49,17 +49,20 @@ export default function Account(){
     </View>
 
     <View style={styles.content}>
-      {user?<View style={[styles.profileCard,shadow]}>
-        {avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>}
+      <View style={styles.profileCard}>
+        {user ? (
+          avatar
+            ? <Image source={{uri:avatar}} style={styles.avatarImage}/>
+            : <View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>
+        ) : (
+          <View style={styles.guestAvatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34}}/></View>
+        )}
         <View style={styles.profileCopy}>
           <Text numberOfLines={1} style={styles.nickname}>{nickname}</Text>
+          {user?<Text style={styles.profileMeta}>FUNY PIN 회원</Text>:<Text style={styles.profileMeta}>로그인 후 회원 기능을 이용할 수 있어요.</Text>}
         </View>
-      </View>:<View style={[styles.profileCard,shadow]}>
-        <View style={styles.guestAvatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34}}/></View>
-        <View style={styles.profileCopy}>
-          <Text style={styles.nickname}>FUNY PIN 회원</Text>
-        </View>
-      </View>}
+        {user?<Pressable onPress={()=>Alert.alert('프로필 수정','프로필 수정 기능은 준비 중입니다.')} style={styles.profileEdit}><Text style={styles.profileEditText}>프로필 수정</Text></Pressable>:null}
+      </View>
 
       {!user?<>{Platform.OS==='ios'?<View style={{marginTop:14,opacity:busy?0.6:1}} pointerEvents={busy?'none':'auto'}><AppleAuthentication.AppleAuthenticationButton buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN} buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK} cornerRadius={14} style={{width:'100%',height:52}} onPress={apple}/></View>:<>
         <Pressable disabled={!!busy} onPress={()=>social('kakao')} style={styles.kakao}><Text style={styles.socialText}>카카오로 시작하기</Text></Pressable>
@@ -67,46 +70,61 @@ export default function Account(){
         <Pressable disabled style={styles.naver}><Text style={styles.naverText}>네이버로 시작하기 · 준비 중</Text></Pressable>
       </>}</>:null}
 
-      <View style={styles.menuSection}>
-        <Text style={styles.menuTitle}>서비스 메뉴</Text>
-        <View style={[styles.menuCard,shadow]}>
+      {user?<View style={styles.activitySection}>
+        <Text style={styles.sectionTitle}>내 활동</Text>
+        <View style={styles.menuCard}>
+          {['관심 매장','최근 본 매장','퍼니몬 도감'].map((label,i)=>
+            <Pressable key={label} onPress={()=>Alert.alert(label,'해당 기능은 준비 중입니다.')} style={[styles.menuRow,i<2&&styles.menuRowBorder]}>
+              <Text style={styles.menuLabel}>{label}</Text><Text style={styles.chevron}>›</Text>
+            </Pressable>
+          )}
+        </View>
+      </View>:null}
+
+      <View style={[styles.menuSection,user&&styles.menuSectionUser]}>
+        <Text style={styles.sectionTitle}>고객지원</Text>
+        <View style={styles.menuCard}>
           {WEB_MENU.map(([label,file],i)=><Pressable key={file} onPress={()=>openWebMenu(file,label)} style={[styles.menuRow,i<WEB_MENU.length-1&&styles.menuRowBorder]}>
             <Text style={styles.menuLabel}>{label}</Text><Text style={styles.chevron}>›</Text>
           </Pressable>)}
         </View>
-        {user?<View style={styles.accountActions}>
-          <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}>
-            <Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text>
-          </Pressable>
-          <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}>
-            <Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text>
-          </Pressable>
-        </View>:null}
       </View>
+
+      {user?<View style={styles.accountActions}>
+        <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}>
+          <Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text>
+        </Pressable>
+        <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}>
+          <Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text>
+        </Pressable>
+      </View>:null}
     </View>
   </SafeAreaView>;
-}
-
 const styles={
   header:{height:58,paddingHorizontal:14,flexDirection:'row' as const,alignItems:'center' as const,backgroundColor:'#fff',borderBottomWidth:1,borderBottomColor:C.line},
   back:{width:36,height:36,alignItems:'center' as const,justifyContent:'center' as const,marginRight:6},
   backText:{fontSize:30,lineHeight:32,color:C.text},
   headerTitle:{fontSize:22,fontWeight:'900' as const,letterSpacing:-.6,color:C.text},
   content:{padding:18,paddingBottom:36},
-  profileCard:{minHeight:88,padding:14,borderRadius:20,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,flexDirection:'row' as const,alignItems:'center' as const},
-  avatar:{width:54,height:54,borderRadius:29,backgroundColor:C.purpleSoft,alignItems:'center' as const,justifyContent:'center' as const,borderWidth:1,borderColor:'#E5DCF8'},
-  avatarImage:{width:54,height:54,borderRadius:29},
-  avatarText:{fontSize:20,fontWeight:'900' as const,color:C.purpleDark},
-  guestAvatar:{width:54,height:54,borderRadius:29,backgroundColor:C.purpleSoft,alignItems:'center' as const,justifyContent:'center' as const},
-  profileCopy:{flex:1,marginLeft:14,minWidth:0},
-  nickname:{fontSize:18,fontWeight:'900' as const,color:C.text},
+  profileCard:{minHeight:188,padding:18,borderRadius:20,backgroundColor:'#fff',borderWidth:1,borderColor:'#CFCAD4',alignItems:'center' as const,justifyContent:'center' as const},
+  avatar:{width:72,height:72,borderRadius:38,backgroundColor:C.purpleSoft,alignItems:'center' as const,justifyContent:'center' as const,borderWidth:1,borderColor:'#E5DCF8'},
+  avatarImage:{width:72,height:72,borderRadius:38},
+  avatarText:{fontSize:24,fontWeight:'900' as const,color:C.purpleDark},
+  guestAvatar:{width:72,height:72,borderRadius:38,backgroundColor:C.purpleSoft,alignItems:'center' as const,justifyContent:'center' as const},
+  profileCopy:{width:'100%',marginTop:10,alignItems:'center' as const,minWidth:0},
+  nickname:{fontSize:22,fontWeight:'900' as const,color:C.text,textAlign:'center' as const},
+  profileMeta:{marginTop:5,fontSize:12.5,color:C.textSoft,textAlign:'center' as const},
+  profileEdit:{marginTop:14,width:'100%',height:42,borderRadius:10,backgroundColor:'#C5C5C7',alignItems:'center' as const,justifyContent:'center' as const},
+  profileEditText:{fontSize:13,fontWeight:'800' as const,color:'#17151A'},
 
-  menuSection:{marginTop:22},
-  menuTitle:{fontSize:12,fontWeight:'900' as const,color:C.text,marginBottom:8},
+  activitySection:{marginTop:24},
+  menuSection:{marginTop:24},
+  menuSectionUser:{marginTop:28},
+  sectionTitle:{fontSize:20,fontWeight:'900' as const,color:C.text,marginBottom:9},
   menuCard:{borderRadius:18,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},
   menuRow:{minHeight:50,paddingHorizontal:16,flexDirection:'row' as const,alignItems:'center' as const,justifyContent:'space-between' as const},
   menuRowBorder:{borderBottomWidth:1,borderBottomColor:C.divider},
-  menuLabel:{fontSize:12.5,fontWeight:'700' as const,color:C.textSoft},
+  menuLabel:{fontSize:14,fontWeight:'700' as const,color:C.textSoft},
   deleteLabel:{fontSize:12.5,fontWeight:'700' as const,color:C.danger},
   chevron:{fontSize:20,fontWeight:'400' as const,color:C.muted2},
   chevronDanger:{fontSize:20,fontWeight:'400' as const,color:C.danger},
@@ -116,8 +134,8 @@ const styles={
   googleText:{fontWeight:'800' as const,color:C.text},
   naver:{marginTop:10,height:52,borderRadius:14,backgroundColor:'#03C75A',opacity:.45,alignItems:'center' as const,justifyContent:'center' as const},
   naverText:{fontWeight:'900' as const,color:'#fff'},
-  accountActions:{marginTop:12,alignItems:'center' as const},
-  logoutButton:{width:'100%',height:48,borderRadius:14,backgroundColor:C.purpleDark,alignItems:'center' as const,justifyContent:'center' as const},
+  accountActions:{marginTop:18,alignItems:'center' as const},
+  logoutButton:{width:'100%',height:54,borderRadius:15,backgroundColor:C.purpleDark,alignItems:'center' as const,justifyContent:'center' as const},
   logoutText:{fontSize:13,fontWeight:'900' as const,color:'#fff'},
   deleteButton:{marginTop:10,minHeight:32,paddingHorizontal:12,alignItems:'center' as const,justifyContent:'center' as const},
 } as const;

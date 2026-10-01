@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 const url='https://wdttzpbmqavaqfcbaywj.supabase.co';
 const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 
-const CHUNK_SIZE=700;
+const CHUNK_SIZE=350;
 const META_SUFFIX='__meta';
 const chunkKey=(key:string,index:number)=>key+'__chunk_'+index;
 

@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
-import { Image,View } from 'react-native';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { Image,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../../lib/theme';
-import { getTabBarStyle,TAB_BAR_ITEM_STYLE,TAB_ACTIVE_BG,TAB_INACTIVE } from '../../lib/tabBar';
+import { TAB_INACTIVE } from '../../lib/tabBar';
 
 type IconKind='home'|'map'|'pick'|'talk';
 
@@ -13,34 +14,147 @@ const ICONS={
   talk:{active:require('../../assets/nav-icons-v3/talk-active.png'),inactive:require('../../assets/nav-icons-v3/talk-inactive.png')}
 } as const;
 
-const NavIcon=({kind,focused}:{kind:IconKind;focused:boolean})=>{
-  const source=focused?ICONS[kind].active:ICONS[kind].inactive;
-  return <Image source={source} resizeMode="contain" style={{width:24,height:24}}/>;
+const ROUTE_KIND:Record<string,IconKind>={
+  index:'home',
+  map:'map',
+  pick:'pick',
+  talk:'talk'
 };
 
-const TabBarBackground=()=>(
-  <View pointerEvents="none" style={{
-    flex:1,marginHorizontal:13,borderRadius:33,
-    backgroundColor:'rgba(250,248,253,.88)',
-    borderWidth:1,borderColor:'rgba(255,255,255,.96)',
-    shadowColor:'#201C2A',shadowOpacity:.18,shadowRadius:22,
-    shadowOffset:{width:0,height:7},elevation:8
-  }}/>
-);
+const ROUTE_LABEL:Record<IconKind,string>={
+  home:'HOME',
+  map:'TCG MAP',
+  pick:'PICK',
+  talk:'TALK'
+};
+
+function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
+  const insets=useSafeAreaInsets();
+  const bottom=Math.max(insets.bottom,12);
+  const currentRoute=state.routes[state.index];
+  const currentOptions=descriptors[currentRoute.key]?.options;
+  const currentStyle=currentOptions?.tabBarStyle;
+  if(currentStyle && !Array.isArray(currentStyle) && currentStyle.display==='none')return null;
+
+  return (
+    <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
+      <View style={styles.glassBar}>
+        {state.routes.map((route,index)=>{
+          const kind=ROUTE_KIND[route.name];
+          if(!kind)return null;
+          const focused=state.index===index;
+          const options=descriptors[route.key]?.options;
+          const label=ROUTE_LABEL[kind];
+          const onPress=()=>{
+            const event=navigation.emit({
+              type:'tabPress',
+              target:route.key,
+              canPreventDefault:true
+            });
+            if(!focused&&!event.defaultPrevented){
+              navigation.navigate(route.name,route.params);
+            }
+          };
+          const onLongPress=()=>{
+            navigation.emit({type:'tabLongPress',target:route.key});
+          };
+          const source=focused?ICONS[kind].active:ICONS[kind].inactive;
+          return (
+            <Pressable
+              key={route.key}
+              testID={options?.tabBarButtonTestID}
+              accessibilityRole="tab"
+              accessibilityState={focused?{selected:true}:{}}
+              accessibilityLabel={options?.tabBarAccessibilityLabel||label}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              style={({pressed})=>[
+                styles.item,
+                focused&&styles.itemActive,
+                pressed&&styles.itemPressed
+              ]}
+            >
+              <Image source={source} resizeMode="contain" style={styles.icon}/>
+              <Text allowFontScaling maxFontSizeMultiplier={1.15} style={[styles.label,focused&&styles.labelActive]}>
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 export default function TabsLayout(){
-  const insets=useSafeAreaInsets();
-  const bottom=Math.max(insets.bottom,8);
-  return <Tabs screenOptions={{
-    headerShown:false,tabBarActiveTintColor:C.purpleDark,tabBarInactiveTintColor:TAB_INACTIVE,
-    tabBarActiveBackgroundColor:TAB_ACTIVE_BG,
-    tabBarStyle:{...getTabBarStyle(bottom),backgroundColor:'transparent',borderWidth:0,borderColor:'transparent',shadowOpacity:0,elevation:0},
-    tabBarBackground:TabBarBackground,tabBarItemStyle:TAB_BAR_ITEM_STYLE,
-    tabBarLabelStyle:{fontSize:9.5,fontWeight:'800',marginTop:1},tabBarHideOnKeyboard:true
-  }}>
-    <Tabs.Screen name="index" options={{title:'HOME',tabBarIcon:({focused})=><NavIcon kind="home" focused={focused}/>}}/>
-    <Tabs.Screen name="map" options={{title:'TCG MAP',tabBarIcon:({focused})=><NavIcon kind="map" focused={focused}/>}}/>
-    <Tabs.Screen name="pick" options={{title:'PICK',tabBarIcon:({focused})=><NavIcon kind="pick" focused={focused}/>}}/>
-    <Tabs.Screen name="talk" options={{title:'TALK',tabBarIcon:({focused})=><NavIcon kind="talk" focused={focused}/>}}/>
+  return <Tabs
+    tabBar={(props)=><FunyTabBar {...props}/>}
+    screenOptions={{
+      headerShown:false,
+      tabBarActiveTintColor:C.purpleDark,
+      tabBarInactiveTintColor:TAB_INACTIVE,
+      tabBarShowLabel:true
+    }}
+  >
+    <Tabs.Screen name="index" options={{title:'HOME'}}/>
+    <Tabs.Screen name="map" options={{title:'TCG MAP'}}/>
+    <Tabs.Screen name="pick" options={{title:'PICK'}}/>
+    <Tabs.Screen name="talk" options={{title:'TALK'}}/>
   </Tabs>;
 }
+
+const styles=StyleSheet.create({
+  outer:{
+    position:'absolute',
+    left:13,
+    right:13,
+    height:68,
+    zIndex:10000,
+    elevation:10000,
+  },
+  glassBar:{
+    flex:1,
+    flexDirection:'row',
+    alignItems:'center',
+    paddingHorizontal:4,
+    paddingVertical:4,
+    borderRadius:34,
+    backgroundColor:'rgba(250,248,253,0.90)',
+    borderWidth:1,
+    borderColor:'rgba(255,255,255,0.96)',
+    shadowColor:'#201C2A',
+    shadowOpacity:0.16,
+    shadowRadius:18,
+    shadowOffset:{width:0,height:6},
+    elevation:7,
+  },
+  item:{
+    flex:1,
+    height:58,
+    borderRadius:29,
+    alignItems:'center',
+    justifyContent:'center',
+    paddingTop:2,
+    gap:1,
+  },
+  itemActive:{
+    backgroundColor:'rgba(218,211,235,0.58)',
+  },
+  itemPressed:{
+    opacity:0.78,
+  },
+  icon:{
+    width:34,
+    height:34,
+  },
+  label:{
+    fontSize:9.5,
+    lineHeight:11,
+    fontWeight:'800',
+    color:TAB_INACTIVE,
+    letterSpacing:-0.1,
+  },
+  labelActive:{
+    color:C.purpleDark,
+  },
+});

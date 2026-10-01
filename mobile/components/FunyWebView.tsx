@@ -5,8 +5,9 @@ import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value))u.searchParams.set('app','1');return u.toString();}catch{return value}};
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const HIDE_WEB_CHROME="(function(){try{var css='header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;overflow:hidden!important;pointer-events:none!important}';var s=document.getElementById('__funy_native_shell__');if(!s){s=document.createElement('style');s.id='__funy_native_shell__';document.head.appendChild(s);}s.textContent=css;document.querySelectorAll('header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav').forEach(function(el){el.style.setProperty('display','none','important');});}catch(e){}true;})();";
+const APP_SHELL_BOOTSTRAP=`(function(){try{document.documentElement.classList.add('app-shell');var s=document.createElement('style');s.id='__funy_app_shell_critical__';s.textContent='header.portal-header,.portal-header,nav.portal-bottom-nav,.portal-bottom-nav,nav.shops-bottom-nav,.shops-bottom-nav,.live-pin-entry-wrap,.live-pin-detail-entry{display:none!important;visibility:hidden!important;pointer-events:none!important}';(document.head||document.documentElement).appendChild(s);document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;try{var u=new URL(a.href,location.href);if((u.protocol==='http:'||u.protocol==='https:')&&u.origin===location.origin&&!u.searchParams.has('app')){u.searchParams.set('app','1');a.href=u.toString();}}catch(_){}} ,true);}catch(_){}})();true;`;
 type Props={url:string;title?:string};
 
 export default function FunyWebView({url,title='FUNY PIN'}:Props){
@@ -65,14 +66,16 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
     <WebView
       ref={ref}
       key={`${url}:${webViewKey}`}
-      source={{uri:url}}
+      source={{uri:makeAppUrl(url)}}
       style={styles.webview}
       javaScriptEnabled
       domStorageEnabled
       allowsInlineMediaPlayback
+      injectedJavaScriptBeforeContentLoaded={APP_SHELL_BOOTSTRAP}
+      injectedJavaScriptBeforeContentLoadedForMainFrameOnly
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
-      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);ref.current?.injectJavaScript(HIDE_WEB_CHROME);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
       onContentProcessDidTerminate={()=>{
         console.warn('[FUNY WEBVIEW] content process terminated');
         if(reloadAttempts.current<2){

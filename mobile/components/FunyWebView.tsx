@@ -182,6 +182,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   return (
     <View style={styles.container} accessibilityLabel={title}>
+    {showBackHeader?<FunyHeader title={(backTitle||title) as 'FUNY PIN'|'PICK'|'TALK'|'MY'} showAccount={false} back onBack={goBack}/>:null}
     <WebView
       ref={ref}
       key={`${url}:${webViewKey}`}

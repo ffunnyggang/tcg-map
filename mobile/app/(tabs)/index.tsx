@@ -6,6 +6,6 @@ import FunyWebView from '../../components/FunyWebView';
 export default function Home(){
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>
-    <FunyWebView url="https://ffunnyggang.github.io/tcg-map/" title="FUNY PIN HOME"/>
+    <FunyWebView url="https://funypin.kr/" title="FUNY PIN HOME"/>
   </SafeAreaView>;
 }

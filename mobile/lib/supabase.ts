@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 const url='https://wdttzpbmqavaqfcbaywj.supabase.co';
 const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 
-const CHUNK_SIZE=1500;
+const CHUNK_SIZE=700;
 const META_SUFFIX='__meta';
 const chunkKey=(key:string,index:number)=>key+'__chunk_'+index;
 
@@ -27,11 +27,13 @@ const storage={
     const previous=await SecureStore.getItemAsync(k+META_SUFFIX).catch(()=>null);
     let previousCount=0;
     try{previousCount=Math.max(0,Number(JSON.parse(previous||'{}').count)||0);}catch{}
+    // Keep every SecureStore value comfortably below the historical iOS ~2048-byte limit.
+    // Remove the legacy unchunked value before writing chunks so an old large session cannot trigger warnings.
+    await SecureStore.deleteItemAsync(k).catch(()=>{});
     const chunks=[];
     for(let i=0;i<v.length;i+=CHUNK_SIZE)chunks.push(v.slice(i,i+CHUNK_SIZE));
     await Promise.all(chunks.map((chunk,i)=>SecureStore.setItemAsync(chunkKey(k,i),chunk)));
     await SecureStore.setItemAsync(k+META_SUFFIX,JSON.stringify({count:chunks.length}));
-    await SecureStore.deleteItemAsync(k).catch(()=>{});
     for(let i=chunks.length;i<previousCount;i++)await SecureStore.deleteItemAsync(chunkKey(k,i)).catch(()=>{});
   },
   async removeItem(k:string){

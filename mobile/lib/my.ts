@@ -18,7 +18,7 @@ export type FunyMonDef=typeof FUNYMON_DEFS[number];
 export async function getMyFunyMonIds(){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)return new Set<string>();
-  const {data,error}=await supabase.from('funy_mon_catches').select('monster_id,result').eq('user_id',user.id).in('result',['caught','winner','entry']);
+  const {data,error}=await supabase.from('funy_mon_catches').select('monster_id,result').eq('user_id',user.id).in('result',['caught','winner']);
   if(error)throw error;
   return new Set((data??[]).map(x=>String(x.monster_id)));
 }

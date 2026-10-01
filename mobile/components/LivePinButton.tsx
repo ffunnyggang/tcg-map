@@ -1,10 +1,13 @@
 import { Pressable,StyleSheet,Text,View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../lib/theme';
 
 export default function LivePinButton({withNav=true}:{withNav?:boolean}){
   const router=useRouter();
-  return <View pointerEvents="box-none" style={[styles.wrap,{bottom:withNav?96:24}]}>
+  const insets=useSafeAreaInsets();
+  const bottom=withNav?insets.bottom+78:insets.bottom+16;
+  return <View pointerEvents="box-none" style={[styles.wrap,{bottom}]}>
     <View style={styles.tip}><Text style={styles.tipText}>실시간으로 정보 공유해요!</Text></View>
     <Pressable accessibilityRole="button" accessibilityLabel="LIVE PIN 열기" onPress={()=>router.push('/live-pin')} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>
       <Text style={styles.icon}>⚡</Text>

@@ -5,6 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 import FunyHeader from './FunyHeader';
+import { supabase } from '../lib/supabase';
 
 const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261001-11');}return u.toString();}catch{return value}};
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
@@ -124,6 +125,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const [canGoBack,setCanGoBack]=useState(false);
   const [webViewKey,setWebViewKey]=useState(0);
   const [sheetUrl,setSheetUrl]=useState<string|null>(null);
+  const [accessToken,setAccessToken]=useState<string|null>(null);
+  const [authReady,setAuthReady]=useState(false);
   const [sheetOpen,setSheetOpen]=useState(false);
   const sheetY=useRef(new Animated.Value(1)).current;
   const backdropOpacity=useRef(new Animated.Value(0)).current;
@@ -131,6 +134,22 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const {height:windowHeight}=useWindowDimensions();
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
+  useEffect(()=>{
+    let alive=true;
+    supabase.auth.getSession().then(({data})=>{
+      if(!alive)return;
+      setAccessToken(data.session?.access_token||null);
+      setAuthReady(true);
+    }).catch(()=>{if(alive)setAuthReady(true)});
+    const sub=supabase.auth.onAuthStateChange((_event,session)=>{
+      if(!alive)return;
+      setAccessToken(session?.access_token||null);
+    });
+    return()=>{alive=false;sub.data.subscription.unsubscribe();};
+  },[]);
+  useEffect(()=>{
+    if(authReady)setWebViewKey(k=>k+1);
+  },[authReady]);
 
   const reportRoute=useCallback((target:string)=>{onWebRouteChange?.(target);},[onWebRouteChange]);
 
@@ -200,6 +219,9 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   },[onWebScrollChange,openSheet,reportRoute,router]);
 
   if(!isFocused)return null;
+  const authInjection=accessToken
+    ? String.raw`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`
+    : '';
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return (
@@ -221,7 +243,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
       overScrollMode="always"
       onShouldStartLoadWithRequest={(request)=>{reportRoute(request.url);return handleUrl(request.url)}}
       onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}}
-      injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE}
+      injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+authInjection}
       injectedJavaScriptBeforeContentLoadedForMainFrameOnly
       injectedJavaScript={APP_SHELL_AFTER}
       injectedJavaScriptForMainFrameOnly

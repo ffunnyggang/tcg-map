@@ -4,6 +4,7 @@ import { useFocusEffect,useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
+import FunyHeader from './FunyHeader';
 
 const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261001-9');}return u.toString();}catch{return value}};
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
@@ -89,9 +90,9 @@ try{
 }catch(e){}
 })(); true;`;
 
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;showBackHeader?:boolean;backTitle?:string};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,showBackHeader=false,backTitle}:Props){
   const router=useRouter();
   const isFocused=useIsFocused();
   const ref=useRef<WebView>(null);
@@ -105,6 +106,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const backdropOpacity=useRef(new Animated.Value(0)).current;
   const reloadAttempts=useRef(0);
   const {height:windowHeight}=useWindowDimensions();
+  const goBack=useCallback(()=>{if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,router]);
   const sheetHeight=windowHeight*0.82;
 
   const reportRoute=useCallback((target:string)=>{onWebRouteChange?.(target);},[onWebRouteChange]);

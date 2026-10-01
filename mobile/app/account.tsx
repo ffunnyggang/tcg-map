@@ -194,7 +194,7 @@ const styles=StyleSheet.create({
   googleText:{fontWeight:'800',color:C.text},
   section:{marginTop:25},
   sectionHead:{flexDirection:'row',alignItems:'baseline',paddingHorizontal:3,marginBottom:9},
-  sectionTitle:{fontSize:15,fontWeight:'850',letterSpacing:-.25,color:C.text},
+  sectionTitle:{fontSize:15,fontWeight:'800',letterSpacing:-.25,color:C.text},
   activityCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},
   activityRow:{minHeight:74,paddingHorizontal:14,flexDirection:'row',alignItems:'center'},
   activityIcon:{width:42,height:42,borderRadius:14,backgroundColor:'#F0EBF9',alignItems:'center',justifyContent:'center'},

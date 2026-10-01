@@ -1,11 +1,14 @@
+import { useCallback,useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import FunyHeader from '../../components/FunyHeader';
-import FunyWebView from '../../components/FunyWebView';
+import FunyWebView,{isWebBackPage} from '../../components/FunyWebView';
 
 export default function Pick(){
+  const [webBack,setWebBack]=useState(false);
+  const onRoute=useCallback((url:string)=>setWebBack(isWebBackPage(url)),[]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    <View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>
-    <FunyWebView url="https://funypin.kr/reviews.html" title="FUNY PIN PICK"/>
+    {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
+    <FunyWebView url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute}/>
   </SafeAreaView>;
 }

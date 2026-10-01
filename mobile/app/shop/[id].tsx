@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
 import { C,shadow } from '../../lib/theme';
+import LivePinButton from '../../components/LivePinButton';
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
 const TCG:Record<string,string>={pokemon:'포켓몬',onepiece:'원피스',dragonball:'드래곤볼',yugioh:'유희왕',lorcana:'로카나',riftbound:'리프트바운드',other:'기타 TCG'};
 const score=(r:ShopReview|null)=>{if(!r)return null;const a=[r.product_score,r.single_score,r.graded_score,r.box_score,r.oripa_score,r.price_score,r.scale_score,r.mood_score,r.access_score,r.staff_score].map(Number).filter(Number.isFinite);return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):null};
@@ -16,11 +17,6 @@ export default function ShopDetail(){
   const images=[...(shop.images||[])].sort((a,b)=>(Number(b.is_primary)-Number(a.is_primary))+(a.sort_order-b.sort_order)),features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true),tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true),avg=score(review),open=(url?:string|null)=>url&&Linking.openURL(url);
   const chip=(label:string)=><View key={label} style={{paddingHorizontal:10,paddingVertical:6,borderRadius:999,backgroundColor:'#F3EFF9'}}><Text style={{fontSize:11,fontWeight:'700',color:'#6F5E8D'}}>{label}</Text></View>;
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}><Stack.Screen options={{headerShown:false}}/><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:42,backgroundColor:'#fff'}}>
-    <View style={{height:58,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'#fff'}}>
-      <Pressable onPress={()=>router.back()} hitSlop={8} style={{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'}}><Text style={{fontSize:30,lineHeight:31,color:C.text}}>‹</Text></Pressable>
-      <Text numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:15,fontWeight:'900',color:C.text}}>{shop.name}</Text>
-      <Pressable disabled={busy} onPress={async()=>{setBusy(true);try{await toggleFavorite(shop.id,!fav);setFav(!fav)}catch(e:any){Alert.alert(e?.message==='LOGIN_REQUIRED'?'로그인이 필요해요':'처리 실패',e?.message==='LOGIN_REQUIRED'?'즐겨찾기는 로그인 후 사용할 수 있어요.':String(e?.message||e))}finally{setBusy(false)}}} hitSlop={8} style={{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'}}><Text style={{fontSize:23,color:fav?C.purpleDark:'#8D8792'}}>{fav?'★':'☆'}</Text></Pressable>
-    </View>
     {images.length?<ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>{images.map(x=><Image key={x.id} source={{uri:shopImageUrl(x.storage_path||x.source_path)}} style={{width:SW,height:270,backgroundColor:C.divider}} resizeMode="cover"/>)}</ScrollView>:<View style={{height:180,backgroundColor:C.purpleSoft,alignItems:'center',justifyContent:'center'}}><Text style={{color:C.purpleDark,fontWeight:'800'}}>FUNY PIN CARD SHOP</Text></View>}
     <View style={{paddingHorizontal:14,paddingTop:18}}>
       <Text style={{fontSize:25,fontWeight:'900',letterSpacing:-.8,color:C.text}}>{shop.name}</Text>
@@ -43,5 +39,5 @@ export default function ShopDetail(){
       {review&&(review.one_line_review||avg)?<View style={{paddingVertical:20}}><View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}><Text style={{fontSize:16,fontWeight:'900',color:C.text}}>깽퐌커플 리뷰</Text>{avg?<Text style={{fontWeight:'900',fontSize:12,color:C.purpleDark}}>★ {avg}</Text>:null}</View>{review.one_line_review?<Text style={{marginTop:11,lineHeight:20,fontWeight:'800',color:C.text}}>{review.one_line_review}</Text>:null}{review.visit_review?<Text style={{marginTop:8,lineHeight:20,fontSize:12.5,color:C.muted}}>{review.visit_review}</Text>:null}</View>:null}
       {contents.length?<><Divider/><View style={{paddingVertical:20}}><Text style={{fontSize:16,fontWeight:'900',color:C.text}}>관련 콘텐츠</Text>{contents.map(c=><Pressable key={c.content_id} onPress={()=>open(c.url)} style={{paddingVertical:13,borderBottomWidth:1,borderBottomColor:C.line}}><Text style={{fontWeight:'800',fontSize:13,color:C.text}}>{c.title}</Text><Text style={{marginTop:4,fontSize:10.5,color:C.muted}}>{[c.platform,c.content_type,c.published_at].filter(Boolean).join(' · ')}</Text></Pressable>)}</View></>:null}
     </View>
-  </ScrollView></SafeAreaView>;
+  </ScrollView><LivePinButton withNav={false}/></SafeAreaView>;
 }

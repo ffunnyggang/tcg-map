@@ -17,7 +17,7 @@ export default function FunyMonCollection(){
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
           <View><Text style={styles.kicker}>FUNY MON COLLECTION</Text><Text style={styles.heroTitle}>나만의 퍼니몬 도감</Text><Text style={styles.heroText}>{caught.size} / {FUNYMON_DEFS.length}종 포획 완료</Text></View>
-          <View style={styles.progress}><View style={[styles.progressFill,{width:(caught.size/FUNYMON_DEFS.length)*100+'%'}]}/></View>
+          <View style={styles.progress}><View style={[styles.progressFill,{width:((caught.size/FUNYMON_DEFS.length)*100)+'%' as any}]}/></View>
         </View>
         <View style={styles.grid}>
           {FUNYMON_DEFS.map(mon=>{

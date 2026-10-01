@@ -1,7 +1,7 @@
-import { useEffect,useState } from 'react';
+import { useCallback,useState } from 'react';
 import { ActivityIndicator,Alert,Image,Platform,Pressable,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect,useRouter } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { deleteAccount,getProfile,signOut } from '../lib/auth';
 import { signInSocial } from '../lib/socialAuth';
@@ -38,15 +38,15 @@ export default function Account(){
   const [profile,setProfile]=useState<any>(null);
   const [busy,setBusy]=useState<string|null>(null);
 
-  const refresh=async()=>{
+  const refresh=useCallback(async()=>{
     try{
       const x=await getProfile();
       setUser(x.user);
       setProfile(x.profile);
     }finally{setLoading(false);}
-  };
+  },[]);
 
-  useEffect(()=>{refresh();},[]);
+  useFocusEffect(useCallback(()=>{refresh();},[refresh]));
 
   const social=async(provider:'google'|'kakao')=>{
     setBusy(provider);
@@ -62,10 +62,19 @@ export default function Account(){
     finally{setBusy(null);}
   };
 
-  const logout=async()=>{
+  const runLogout=async()=>{
     setBusy('out');
     try{await signOut();await refresh();}
+    catch(e:any){Alert.alert('로그아웃 실패',String(e?.message||e));}
     finally{setBusy(null);}
+  };
+
+  const logout=()=>{
+    if(busy)return;
+    Alert.alert('로그아웃할까요?','로그아웃해도 저장된 관심 매장과 활동 내역은 계정에 유지됩니다.',[
+      {text:'취소',style:'cancel'},
+      {text:'로그아웃',style:'destructive',onPress:runLogout}
+    ]);
   };
 
   const removeAccount=()=>{
@@ -86,7 +95,8 @@ export default function Account(){
 
   if(loading)return <SafeAreaView style={styles.loading}><ActivityIndicator color={C.purple}/></SafeAreaView>;
 
-  const nickname=profile?.nickname||user?.user_metadata?.nickname||user?.user_metadata?.name||user?.user_metadata?.full_name||'FUNY PIN 회원';
+  const generatedNickname=user?`FUNY회원${String(user.id||'').replace(/-/g,'').slice(-4).toUpperCase()}`:'FUNY PIN 회원';
+  const nickname=profile?.nickname||user?.user_metadata?.nickname||user?.user_metadata?.name||user?.user_metadata?.full_name||generatedNickname;
   const avatar=profile?.avatar_url||user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null;
   const joinDate=profile?.created_at||user?.created_at||null;
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
@@ -94,7 +104,7 @@ export default function Account(){
   return <SafeAreaView style={styles.root}>
     <View style={styles.header}>
       <Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable>
-      <Text style={styles.headerTitle}>MY</Text>
+      <Text allowFontScaling maxFontSizeMultiplier={1.15} style={styles.headerTitle}>MY</Text>
     </View>
 
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
@@ -123,7 +133,7 @@ export default function Account(){
       </View>:null}
 
       {user?<View style={styles.section}>
-        <View style={styles.sectionHead}><Text style={styles.sectionTitle}>내 활동</Text><Text style={styles.sectionHint}>MY ACTIVITY</Text></View>
+        <View style={styles.sectionHead}><Text style={styles.sectionTitle}>내 활동</Text></View>
         <View style={styles.activityCard}>
           {ACTIVITY.map((item,i)=><Pressable key={item.route} onPress={()=>router.push(item.route as any)} style={[styles.activityRow,i<ACTIVITY.length-1&&styles.rowBorder]}>
             <View style={styles.activityIcon}><Text style={styles.activityIconText}>{item.icon}</Text></View>
@@ -134,7 +144,7 @@ export default function Account(){
       </View>:null}
 
       <View style={[styles.section,!user&&{marginTop:24}]}>
-        <View style={styles.sectionHead}><Text style={styles.sectionTitle}>고객지원</Text><Text style={styles.sectionHint}>SUPPORT</Text></View>
+        <View style={styles.sectionHead}><Text style={styles.sectionTitle}>고객지원</Text></View>
         <View style={styles.supportCard}>
           {WEB_MENU.map(([label,file],i)=><Pressable key={file} onPress={()=>openWebMenu(file,label)} style={[styles.supportRow,i<WEB_MENU.length-1&&styles.rowBorder]}>
             <Text style={styles.supportLabel}>{label}</Text><Text style={styles.chevron}>›</Text>
@@ -154,7 +164,6 @@ export default function Account(){
         <Text style={styles.legalDivider}>·</Text>
         <Pressable onPress={()=>openWebMenu('community-guidelines.html','커뮤니티 운영정책')}><Text style={styles.legalText}>커뮤니티 운영정책</Text></Pressable>
       </View>
-
     </ScrollView>
   </SafeAreaView>;
 }
@@ -162,10 +171,10 @@ export default function Account(){
 const styles=StyleSheet.create({
   root:{flex:1,backgroundColor:'#F7F4FC'},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#F7F4FC'},
-  header:{height:58,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'#fff',borderBottomWidth:1,borderBottomColor:C.line},
+  header:{height:58,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'#fff'},
   back:{width:36,height:36,alignItems:'center',justifyContent:'center',marginRight:5},
-  backText:{fontSize:30,lineHeight:32,color:C.text},
-  headerTitle:{fontSize:22,fontWeight:'900',letterSpacing:-.7,color:C.text},
+  backText:{fontSize:28,lineHeight:30,color:C.text},
+  headerTitle:{fontSize:20,lineHeight:26,fontWeight:'800',letterSpacing:-.45,color:C.text},
   content:{padding:16,paddingBottom:40},
   profileCard:{padding:18,borderRadius:22,backgroundColor:'#fff',borderWidth:1,borderColor:'#E3DDED',alignItems:'center'},
   avatar:{width:78,height:78,borderRadius:39,backgroundColor:'#EEE8FA',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#E0D5F1'},
@@ -184,9 +193,8 @@ const styles=StyleSheet.create({
   google:{height:50,borderRadius:13,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},
   googleText:{fontWeight:'800',color:C.text},
   section:{marginTop:25},
-  sectionHead:{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',paddingHorizontal:3,marginBottom:9},
-  sectionTitle:{fontSize:19,fontWeight:'900',color:C.text},
-  sectionHint:{fontSize:8.5,fontWeight:'900',letterSpacing:1,color:'#A49AAE'},
+  sectionHead:{flexDirection:'row',alignItems:'baseline',paddingHorizontal:3,marginBottom:9},
+  sectionTitle:{fontSize:15,fontWeight:'850',letterSpacing:-.25,color:C.text},
   activityCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},
   activityRow:{minHeight:74,paddingHorizontal:14,flexDirection:'row',alignItems:'center'},
   activityIcon:{width:42,height:42,borderRadius:14,backgroundColor:'#F0EBF9',alignItems:'center',justifyContent:'center'},

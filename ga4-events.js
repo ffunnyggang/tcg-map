@@ -1,5 +1,10 @@
-/* FUNY PIN GA4 interaction events */
+/* FUNY PIN shared portal bootstrap + GA4 interaction events */
 (function(){
+  /* Keep HOME / MAP / PICK / TALK navigation on one shared visual source. Loaded last to override legacy inline nav geometry. */
+  if(!document.querySelector('link[data-funy-nav-v4]')){
+    const nav=document.createElement('link');nav.rel='stylesheet';nav.href='nav-v4.css?v=20261002-01';nav.dataset.funyNavV4='1';document.head.appendChild(nav);
+  }
+
   const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,params)}catch(e){}};
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim().slice(0,100);
   const fileName=src=>{try{return decodeURIComponent(new URL(src,location.href).pathname.split('/').pop()||'')}catch(e){return clean(src)}};
@@ -34,12 +39,9 @@
   const input=document.getElementById('map-shop-search');
   if(input){let timer=null,last='';const record=()=>{const term=clean(input.value);if(!term||term===last)return;last=term;send('map_search',{search_term:term})};input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(record,900)});input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(timer);record()}});input.addEventListener('search',()=>{clearTimeout(timer);record()});}
 
-  /* PICK schedule landing URLs stay inside the app as a bottom sheet. Dynamic CMS rows are decorated too. */
   if(/\/reviews\.html$/.test(location.pathname)){
     const decorate=()=>document.querySelectorAll('a.review-schedule-card[href]').forEach(a=>{const href=a.getAttribute('href')||'';if(!href||href==='#'||href.startsWith('javascript:'))return;a.setAttribute('data-funy-link-mode','inapp');a.setAttribute('data-funy-inapp-presentation','bottom_sheet');a.removeAttribute('target')});
-    decorate();
-    const root=document.querySelector('.review-schedule-list')||document.body;
-    new MutationObserver(decorate).observe(root,{childList:true,subtree:true});
+    decorate();const root=document.querySelector('.review-schedule-list')||document.body;new MutationObserver(decorate).observe(root,{childList:true,subtree:true});
   }
 
   if(/\/talk\.html$/.test(location.pathname)&&!document.querySelector('script[data-funy-talk-community]')){const s=document.createElement('script');s.src='talk-community-v1.js?v=20261002-01';s.async=false;s.dataset.funyTalkCommunity='1';document.body.appendChild(s);}

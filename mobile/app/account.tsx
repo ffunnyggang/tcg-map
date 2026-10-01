@@ -53,13 +53,11 @@ export default function Account(){
         {avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>}
         <View style={styles.profileCopy}>
           <Text numberOfLines={1} style={styles.nickname}>{nickname}</Text>
-          <Text style={styles.profileHint}>FUNY PIN 회원</Text>
         </View>
       </View>:<View style={[styles.profileCard,shadow]}>
         <View style={styles.guestAvatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34}}/></View>
         <View style={styles.profileCopy}>
           <Text style={styles.nickname}>FUNY PIN 회원</Text>
-          <Text style={styles.profileHint}>로그인 후 회원 기능을 이용할 수 있어요.</Text>
         </View>
       </View>}
 

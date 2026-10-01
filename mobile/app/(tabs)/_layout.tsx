@@ -34,7 +34,8 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const currentRoute=state.routes[state.index];
   const currentOptions=descriptors[currentRoute.key]?.options;
   const currentStyle=currentOptions?.tabBarStyle;
-  if(currentStyle && !Array.isArray(currentStyle) && currentStyle.display==='none')return null;
+  const isHidden=!!currentStyle && !Array.isArray(currentStyle) && typeof currentStyle==='object' && 'display' in currentStyle && currentStyle.display==='none';
+  if(isHidden)return null;
 
   return (
     <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>

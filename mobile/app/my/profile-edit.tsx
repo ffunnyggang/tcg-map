@@ -25,6 +25,7 @@ export default function ProfileEdit(){
     const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:true,aspect:[1,1],quality:.85});
     if(result.canceled||!result.assets?.[0])return;
     setPickedUri(result.assets[0].uri);
+    setPickedMimeType(result.assets[0].mimeType||'image/jpeg');
     setAvatar(result.assets[0].uri);
   };
 
@@ -35,8 +36,7 @@ export default function ProfileEdit(){
     try{
       let avatarUrl=avatar;
       if(pickedUri){
-        const asset=await ImagePicker.getPendingResultAsync().catch(()=>null);
-        avatarUrl=await uploadProfileAvatar(pickedUri,asset&&'assets' in asset&&asset.assets?.[0]?.mimeType?asset.assets[0].mimeType:'image/jpeg');
+        avatarUrl=await uploadProfileAvatar(pickedUri,pickedMimeType||'image/jpeg');
       }
       await updateProfile({nickname:next,avatar_url:avatarUrl||null});
       Alert.alert('저장 완료','프로필이 변경되었습니다.',[{text:'확인',onPress:()=>router.back()}]);
@@ -60,8 +60,8 @@ export default function ProfileEdit(){
           <TextInput
             value={nickname}
             onChangeText={setNickname}
-            maxLength={20}
-            placeholder="닉네임을 입력해주세요"
+            maxLength={12}
+            placeholder="2~12자 · 한글/영문/숫자"
             placeholderTextColor={C.muted2}
             style={styles.input}
           />
@@ -91,6 +91,7 @@ const styles=StyleSheet.create({
   label:{fontSize:13,fontWeight:'900',color:C.text,marginBottom:8},
   input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},
   count:{marginTop:6,textAlign:'right',fontSize:11,color:C.muted},
+  policy:{marginTop:6,fontSize:10.5,lineHeight:17,color:C.muted},
   saveButton:{marginTop:28,height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},
   saveText:{fontSize:14,fontWeight:'900',color:'#fff'}
 });

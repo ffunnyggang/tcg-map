@@ -5,13 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { C } from '../lib/theme';
 
-export default function LivePinButton({withNav=true,scrolling=false}:{withNav?:boolean;scrolling?:boolean}){
+export default function LivePinButton({withNav=true,scrolling=false,bottomOffset=0}:{withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const [showTip,setShowTip]=useState(false);
   const progress=useRef(new Animated.Value(0)).current;
   const navBottom=Math.max(insets.bottom,12);
-  const bottom=withNav?navBottom+68+8:insets.bottom+16;
+  const bottom=withNav?navBottom+68+8+bottomOffset:insets.bottom+16+bottomOffset;
 
   useEffect(()=>{
     let mounted=true;

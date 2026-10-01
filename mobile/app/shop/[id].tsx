@@ -2,7 +2,7 @@ import { useEffect,useState } from 'react';
 import { ActivityIndicator,Alert,Dimensions,Image,Linking,Pressable,ScrollView,Text,View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams } from 'expo-router';
-import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl } from '../../lib/shops';
+import { AppShop,ShopContent,ShopReview,getShop,getShopContents,getShopReview,shopImageUrl } from '../../lib/shops';
 import { C,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};

@@ -100,6 +100,8 @@ export default function Account(){
       </View>:null}
     </View>
   </SafeAreaView>;
+}
+
 const styles=StyleSheet.create({
   header:{height:58,paddingHorizontal:14,flexDirection:'row' as const,alignItems:'center' as const,backgroundColor:'#fff',borderBottomWidth:1,borderBottomColor:C.line},
   back:{width:36,height:36,alignItems:'center' as const,justifyContent:'center' as const,marginRight:6},

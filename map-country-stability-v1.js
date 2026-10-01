@@ -9,9 +9,7 @@
     if(country()!=='JP')return;
     const api=window.FUNY_GOOGLE_MAP_API,map=api?.getMap?.(),markers=api?.getMarkers?.();
     if(!map||!markers)return;
-    markers.forEach(marker=>{
-      try{marker.setMap(isVisible(marker.shop)?map:null)}catch(_){}
-    });
+    markers.forEach(marker=>{try{marker.setMap(isVisible(marker.shop)?map:null)}catch(_){}});
     window.FUNY_MAP_CLUSTER?.refresh?.();
   }
 
@@ -22,16 +20,19 @@
 
   function schedule(delay=80){
     clearTimeout(timer);
-    timer=setTimeout(()=>{
-      syncJapanVisibility();
-      syncListCount();
-      window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country:country()}}));
-    },delay);
+    timer=setTimeout(()=>{syncJapanVisibility();syncListCount();window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country:country()}}));},delay);
   }
 
-  /* Search and filter controls stay above both map engines and remain touchable. */
+  /* Controls stay above both map engines. App-only sheets are physically lifted above the native tab bar. */
   const style=document.createElement('style');
-  style.textContent='.map-search-float,.map-filter-bar{z-index:220!important}.map-search-box,.map-search-input,.map-search-clear,.map-filter-bar .filter-track,.map-filter-bar .filter-chip,.map-filter-bar .country-filter-wrap,.map-filter-bar .country-filter-select{pointer-events:auto!important;touch-action:manipulation}.funy-google-marker{pointer-events:auto!important;touch-action:manipulation}.funy-google-popup{pointer-events:auto!important}';
+  style.textContent=[
+    '.map-search-float,.map-filter-bar{z-index:220!important}',
+    '.map-search-box,.map-search-input,.map-search-clear,.map-filter-bar .filter-track,.map-filter-bar .filter-chip,.map-filter-bar .country-filter-wrap,.map-filter-bar .country-filter-select{pointer-events:auto!important;touch-action:manipulation}',
+    '.funy-google-marker{pointer-events:auto!important;touch-action:manipulation}.funy-google-popup{pointer-events:auto!important}',
+    'html.app-shell .map-location-avatar-card{margin-bottom:78px!important;border-radius:24px!important}',
+    'html.app-shell #funyMonModal .funy-mon-sheet{margin-bottom:78px!important;border-radius:24px!important;max-height:calc(100dvh - 92px)!important}',
+    'html.app-shell .funy-mon-outcome-box{margin-bottom:78px!important}'
+  ].join('');
   document.head.appendChild(style);
 
   const input=document.getElementById('map-shop-search');
@@ -40,15 +41,8 @@
   document.getElementById('map-shop-search-clear')?.addEventListener('click',()=>schedule(120));
 
   const filters=document.getElementById('filters');
-  filters?.addEventListener('click',e=>{
-    if(e.target.closest?.('.filter-chip'))schedule(140);
-  },true);
-  filters?.addEventListener('change',e=>{
-    if(e.target.closest?.('.country-filter-select')){
-      /* Let the country module finish rebuilding its map/list before syncing. */
-      schedule(420);
-    }
-  },true);
+  filters?.addEventListener('click',e=>{if(e.target.closest?.('.filter-chip'))schedule(140);},true);
+  filters?.addEventListener('change',e=>{if(e.target.closest?.('.country-filter-select'))schedule(420);},true);
 
   window.addEventListener('funy:googlemapready',()=>schedule(80));
   window.addEventListener('funy:sheetchange',()=>schedule(80));

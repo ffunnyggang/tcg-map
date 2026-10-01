@@ -20,10 +20,10 @@ export default function Pick(){
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
+    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
     <View style={{flex:1}}>
-      <FunyWebView url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute}/>
-      {!webBack?<LivePinButton/>:null}
+      <FunyWebView url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
+      {!webBack?<LivePinButton scrolling={scrolling}/>:null}
     </View>
   </SafeAreaView>;
 }

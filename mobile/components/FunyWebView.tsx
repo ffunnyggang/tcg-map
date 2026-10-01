@@ -64,6 +64,10 @@ var align=function(){
 };
 requestAnimationFrame(function(){align()});
 setTimeout(align,180);
+var reportRoute=function(){try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'WEB_ROUTE',url:location.href}))}catch(_){}};
+window.addEventListener('hashchange',reportRoute);
+window.addEventListener('pageshow',reportRoute);
+reportRoute();
 }catch(_){} })(); true;`;
 
 type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void};
@@ -116,6 +120,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange}:Prop
   const onMessage=useCallback((event:WebViewMessageEvent)=>{
     try{
       const data=JSON.parse(event.nativeEvent.data);
+      if(data?.type==='WEB_ROUTE'&&data.url){reportRoute(String(data.url));return;}
       if(data?.type==='OPEN_NATIVE'&&data.route){router.push(String(data.route) as any);return;}
       if(data?.type==='OPEN_EXTERNAL'&&data.url){return;}
     }catch{}

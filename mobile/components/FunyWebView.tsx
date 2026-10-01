@@ -124,7 +124,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange}:Prop
       if(data?.type==='OPEN_NATIVE'&&data.route){router.push(String(data.route) as any);return;}
       if(data?.type==='OPEN_EXTERNAL'&&data.url){return;}
     }catch{}
-  },[router]);
+  },[router,reportRoute]);
 
   if(!isFocused) return null;
   if(error) return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;

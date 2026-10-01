@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-01T07:32:30.044208+00:00",
+  "updatedAt": "2026-10-01T08:33:50.207179+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "추억삼아 보이는대로 사서 모은건데 좋은게 있나용? 순서대로 sar , s",
+      "author": "벼랑위에당뇨",
+      "publishedAt": "2026-10-01T07:54:41.461212Z",
+      "excerpt": "추억삼아 보이는대로 사서 모은건데 좋은게 있나용? 순서대로 sar , sr , ar , rr 그리고 일판 입니다. 사서 깔줄만알지 시세나 가치등은 아예 몰라서 여쭤봅니다ㅜㅜ",
+      "image": "https://img.kr.gcp-karroter.net/community/community/20261001/45833a91-2300-4c07-87ec-af5884412513.png?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/추억삼아-보이는대로-사서-모은건데-좋은게-있나용-dpWpygzP",
+      "views": 1,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.01
+    },
     {
       "category": "자유 게시판",
       "title": "강동카드타운 이사 가고 오늘 개업 했습니다.",
@@ -37,10 +50,10 @@
       "excerpt": "카드깡으로 직접 뽑은 MUR",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261001/f8db0097-9504-4009-9cdf-064c6cad0a5c.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드깡으로-직접-뽑은-MUR-d7L2neqj",
-      "views": 3,
+      "views": 4,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.03
+      "popularityScore": 8.04
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "출석체크합니다 :-) 카드깡 계속 하고싶은데 아껴 까고있어요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/출석체크겸-카드깡-영상-투척-AO6y82Dj",
-      "views": 7,
-      "likes": 1,
+      "views": 8,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 3.07
+      "popularityScore": 6.08
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -63,10 +76,10 @@
       "excerpt": "홍대에 오픈한 24시간 무인 카드샵 TCG서울 다녀왔습니다! 👀 최근 저희 깽퐌커플은 오리파를 조금 자제하고 있었지만… 눈앞에 있으니 또 그냥 지나치기가 쉽지 않습니다 🤣 🔥 결국 저희도 못 참고 구매했습니다 결국 저희도 구경만 하고 나오지는 못했습니다 PSA 등급카드 오리파에 도전하고",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907788217833cd5eddc813e76dbbaa258eef7b242f64294b641c2cc50d76646202a09e7b9470.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/24시간-무인카드샵-오리파-첫-도전-PV2Xz5aP",
-      "views": 7,
+      "views": 16,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.07
+      "popularityScore": 0.16
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -180,23 +193,10 @@
       "excerpt": "오늘 사건접수하고 돌아왔는데 사기꾼이 돈을 계좌로 보내주셨네요 그냥 넘어갈까 고민하고 있습니다. 따로 문자나 연락이 없는데 그냥 넘어가는게 좋을까요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179074506184236067642717ea9db4aede25143fccca98fda38d2fff07f8b2a09426d126c169d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/사기당한사람-후기입니다-j8rnqYaP",
-      "views": 191,
+      "views": 192,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.91
-    },
-    {
-      "category": "자유 게시판",
-      "title": "30주년팩",
-      "author": "안녕녕",
-      "publishedAt": "2026-09-30T02:34:26.794039Z",
-      "excerpt": "문구점에서 30주년 팔길래 친구랑 가서 구매했어요! 피카츄 너무 이쁜데요ㅜㅜ",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907356077865581ca16b54ecf9a57810b2669640c51226e35a4033ce8039d1d270c6a50f5780.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년팩-AqrkVqEP",
-      "views": 45,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.45
+      "popularityScore": 9.92
     },
     {
       "category": "정보 공유",
@@ -362,10 +362,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 93,
+      "views": 94,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 17.93
+      "popularityScore": 17.94
     },
     {
       "category": "카드 자랑",
@@ -427,10 +427,10 @@
       "excerpt": "🤣 요즘 유행하는 포켓몬카드 키링 숲카츄 아니고... 대륙발 X카츄로 만들어봤습니다! 알리에서 다양한 패러디 일러스트로 판매 중인데, 생각보다 퀄리티는 괜찮지만 역시 센터링과 공정은 아쉽네요😂 그래도 저렴한 비용으로 재미있게 즐기기엔 만족!🔥 ※ 정품 포켓몬카드가 아닌 커스텀 제품입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/숲카츄-포켓몬카드-키링만들었어요✨-AeXZbkLj",
-      "views": 55,
+      "views": 56,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.55
+      "popularityScore": 5.5600000000000005
     },
     {
       "category": "카드거래",
@@ -492,10 +492,10 @@
       "excerpt": "제 눈으로 봤을때 하자는 없습니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178879677188447c59eecd8ab68b2111f4f4f9a7275106f9a844243e7755916fdd0467a6851070.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-5만원에-구매하실분-계실까요-dgWb28od",
-      "views": 29,
+      "views": 30,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.29
+      "popularityScore": 0.3
     },
     {
       "category": "카드거래",
@@ -505,10 +505,10 @@
       "excerpt": "관심있으신분들 연락주세용",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-판매합니당-P54B7RvA",
-      "views": 45,
+      "views": 46,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.45
+      "popularityScore": 3.46
     },
     {
       "category": "카드거래",
@@ -596,10 +596,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 165,
+      "views": 166,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.65
+      "popularityScore": 7.66
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -661,10 +661,10 @@
       "excerpt": "낱팩말고 드디어 박스 만져봄.. 첫봉 뜯자마자 사려고 찜해놨던 ㅋㅋㅋ 요염한 켈리몬 뜸 👽 더 뜯어말어 하다 다 뜯어봄 ㅎㅎㅎㅎㅎ 다음엔 귀여운거 없어서... 안남김.... 에메랄다는... 켈리몬만 내스탈...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/474017a4-f111-4adb-9e79-c2d37047f93d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스톰에메랄다-👽-AOD5GwDP",
-      "views": 87,
+      "views": 88,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.87
+      "popularityScore": 5.88
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -726,10 +726,10 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 473,
+      "views": 474,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 11.73
+      "popularityScore": 11.74
     },
     {
       "category": "정보 공유",

@@ -24,7 +24,7 @@ export default function MapScreen(){
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} onScrollChange={setScrolling}>
-      <FunyWebView url="https://funypin.kr/shops.html" title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
+      <FunyWebView url="https://funypin.kr/shops.html" title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling}/>
     </ViewWithLivePin>
   </SafeAreaView>;
 }

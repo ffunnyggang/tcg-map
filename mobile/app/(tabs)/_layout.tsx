@@ -51,7 +51,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint="light" intensity={Platform.OS==='ios'?78:65} style={StyleSheet.absoluteFill}/>
+      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemThinMaterialLight':'light'} intensity={Platform.OS==='ios'?82:65} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
       <View pointerEvents="none" style={styles.glassHighlight}/>
       {state.routes.map((route,index)=>{
@@ -105,11 +105,11 @@ const styles=StyleSheet.create({
     flex:1,position:'relative',flexDirection:'row',alignItems:'center',
     paddingHorizontal:5,paddingVertical:4,borderRadius:38,overflow:'hidden',
     borderWidth:1,borderColor:'rgba(255,255,255,0.72)',
-    backgroundColor:'rgba(255,255,255,0.20)',
+    backgroundColor:'rgba(255,255,255,0.14)',
     shadowColor:'#4D3A70',shadowOpacity:0.18,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:12
   },
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,0.22)'},
-  glassHighlight:{position:'absolute',left:1,right:1,top:1,height:24,borderRadius:36,backgroundColor:'rgba(255,255,255,0.28)'},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,0.10)'},
+  glassHighlight:{position:'absolute',left:1,right:1,top:1,height:24,borderRadius:36,backgroundColor:'rgba(255,255,255,0.20)'},
   item:{flex:1,height:62,borderRadius:31,alignItems:'center',justifyContent:'center',paddingTop:1,gap:3},
   itemActive:{backgroundColor:'rgba(139,92,246,0.16)'},
   itemPressed:{opacity:0.72},

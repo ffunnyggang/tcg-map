@@ -15,7 +15,7 @@ export default function ShopDetail(){
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const navBottom=Math.max(insets.bottom,12);
-  const tcgMapBottom=navBottom+68+8+46;
+  const tcgMapBottom=navBottom+70+8+46;
   useEffect(()=>{if(!id)return;Promise.all([getShop(id),getShopReview(id),getShopContents(id),getFavoriteIds()]).then(([s,r,c,f])=>{setShop(s);setReview(r);setContents(c);setFavorite(f.has(id))}).catch(e=>Alert.alert('불러오기 실패',String(e.message||e)))},[id]);
   const onToggleFavorite=async()=>{if(!id||favoriteBusy)return;setFavoriteBusy(true);try{await toggleFavorite(id,!favorite);setFavorite(v=>!v)}catch(e:any){if(e?.message==='LOGIN_REQUIRED')Alert.alert('로그인이 필요해요','관심 매장을 저장하려면 MY에서 로그인해주세요.');else Alert.alert('처리 실패',String(e?.message||e));}finally{setFavoriteBusy(false)}};
   if(!shop)return <SafeAreaView edges={['top']} style={{flex:1,justifyContent:'center',backgroundColor:'#fff'}}><ActivityIndicator color={C.purple}/></SafeAreaView>;

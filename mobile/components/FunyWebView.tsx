@@ -257,7 +257,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
         </View>
       </View>
     </Modal>
-  </View>;
+  </View>);
 }
 
 const styles=StyleSheet.create({

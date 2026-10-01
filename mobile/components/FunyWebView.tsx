@@ -1,5 +1,5 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
-import { BackHandler,Linking,Platform,StyleSheet,Text,View } from 'react-native';
+import { BackHandler,Linking,Modal,Platform,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useFocusEffect,useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
@@ -58,12 +58,19 @@ try{
     var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;
     if(!link)return;
     var mode=link.getAttribute('data-funy-link-mode')||'inapp';
+    var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';
     var href=link.href||link.getAttribute('href');
     if(!href)return;
     if(mode==='external'){
       event.preventDefault();
       event.stopPropagation();
       post({type:'OPEN_EXTERNAL',url:href});
+      return false;
+    }
+    if(mode==='inapp'&&presentation==='bottom_sheet'){
+      event.preventDefault();
+      event.stopPropagation();
+      post({type:'OPEN_INAPP_SHEET',url:href});
       return false;
     }
     if(mode==='inapp'&&link.getAttribute('target')==='_blank'){
@@ -90,6 +97,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange}:Prop
   const [error,setError]=useState(false);
   const [canGoBack,setCanGoBack]=useState(false);
   const [webViewKey,setWebViewKey]=useState(0);
+  const [sheetUrl,setSheetUrl]=useState<string|null>(null);
   const reloadAttempts=useRef(0);
 
   const reportRoute=useCallback((target:string)=>{onWebRouteChange?.(target);},[onWebRouteChange]);
@@ -132,6 +140,10 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange}:Prop
       if(data?.type==='OPEN_NATIVE'&&data.route){router.push(String(data.route) as any);return;}
       if(data?.type==='OPEN_EXTERNAL'&&data.url){
         Linking.openURL(String(data.url)).catch(()=>{});
+        return;
+      }
+      if(data?.type==='OPEN_INAPP_SHEET'&&data.url){
+        setSheetUrl(makeAppUrl(String(data.url)));
         return;
       }
     }catch{}
@@ -186,6 +198,34 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange}:Prop
         }
       }}
     />
+    <Modal visible={!!sheetUrl} transparent animationType="slide" onRequestClose={()=>setSheetUrl(null)}>
+      <View style={styles.sheetBackdrop}>
+        <Pressable style={styles.sheetDismissArea} onPress={()=>setSheetUrl(null)} />
+        <View style={styles.sheetPanel}>
+          <View style={styles.sheetHandle} />
+          <View style={styles.sheetHeader}>
+            <Text numberOfLines={1} style={styles.sheetTitle}>FUNY PIN</Text>
+            <Pressable hitSlop={10} onPress={()=>setSheetUrl(null)}><Text style={styles.sheetClose}>×</Text></Pressable>
+          </View>
+          {sheetUrl?<WebView
+            source={{uri:sheetUrl}}
+            style={styles.sheetWebview}
+            javaScriptEnabled
+            domStorageEnabled
+            allowsInlineMediaPlayback
+            automaticallyAdjustContentInsets={false}
+            decelerationRate="normal"
+            bounces
+            onShouldStartLoadWithRequest={(request)=>{
+              const target=request.url;
+              if(target.startsWith('http://')||target.startsWith('https://'))return true;
+              if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}
+              return false;
+            }}
+          />:null}
+        </View>
+      </View>
+    </Modal>
   </View>;
 }
 
@@ -195,4 +235,12 @@ const styles=StyleSheet.create({
   error:{flex:1,alignItems:'center',justifyContent:'center',padding:28,backgroundColor:'#fff'},
   errorTitle:{fontSize:16,fontWeight:'800',color:C.text},
   errorText:{marginTop:8,fontSize:12,color:C.muted,textAlign:'center'},
+  sheetBackdrop:{flex:1,backgroundColor:'rgba(20,16,24,.38)',justifyContent:'flex-end'},
+  sheetDismissArea:{flex:1},
+  sheetPanel:{height:'82%',backgroundColor:'#fff',borderTopLeftRadius:24,borderTopRightRadius:24,overflow:'hidden'},
+  sheetHandle:{width:42,height:5,borderRadius:99,backgroundColor:'#d6d0dc',alignSelf:'center',marginTop:8,marginBottom:6},
+  sheetHeader:{height:44,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:16,borderBottomWidth:1,borderBottomColor:'#eee'},
+  sheetTitle:{fontSize:14,fontWeight:'800',color:C.text},
+  sheetClose:{fontSize:28,lineHeight:28,color:C.muted},
+  sheetWebview:{flex:1,backgroundColor:'#fff'},
 });

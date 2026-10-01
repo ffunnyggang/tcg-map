@@ -73,7 +73,7 @@ export default function Account(){
       {user?<View style={styles.activitySection}>
         <Text style={styles.sectionTitle}>내 활동</Text>
         <View style={styles.menuCard}>
-          {['관심 매장','최근 본 매장','퍼니몬 도감'].map((label,i)=>
+          {['관심 매장','퍼니몬 도감','응모 내역'].map((label,i)=>
             <Pressable key={label} onPress={()=>Alert.alert(label,'해당 기능은 준비 중입니다.')} style={[styles.menuRow,i<2&&styles.menuRowBorder]}>
               <Text style={styles.menuLabel}>{label}</Text><Text style={styles.chevron}>›</Text>
             </Pressable>

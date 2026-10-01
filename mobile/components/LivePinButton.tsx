@@ -11,7 +11,7 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   const [showTip,setShowTip]=useState(false);
   const progress=useRef(new Animated.Value(0)).current;
   const navBottom=Math.max(insets.bottom,12);
-  const bottom=withNav?navBottom+68+8+bottomOffset:insets.bottom+16+bottomOffset;
+  const bottom=withNav?navBottom+70+8+bottomOffset:insets.bottom+16+bottomOffset;
 
   useEffect(()=>{
     let mounted=true;

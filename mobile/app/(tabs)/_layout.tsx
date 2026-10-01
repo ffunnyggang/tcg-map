@@ -29,7 +29,8 @@ const SPRITE_INDEX:Record<IconKind,{active:number;inactive:number}>={
 };
 
 const SPRITE=require('../../assets/nav-icons-v4/nav-sprite-32.png');
-const ICON_SIZE=24;
+const ICON_CELL_SIZE=32;
+const ICON_VIEWPORT_SIZE=30;
 
 function SpriteIcon({kind,focused}:{kind:IconKind;focused:boolean}){
   const index=focused?SPRITE_INDEX[kind].active:SPRITE_INDEX[kind].inactive;
@@ -38,7 +39,7 @@ function SpriteIcon({kind,focused}:{kind:IconKind;focused:boolean}){
       <Image
         source={SPRITE}
         resizeMode="stretch"
-        style={[styles.iconSprite,{width:ICON_SIZE*8,height:ICON_SIZE,left:-index*ICON_SIZE}]}
+        style={[styles.iconSprite,{width:ICON_CELL_SIZE*8,height:ICON_CELL_SIZE,left:-index*ICON_CELL_SIZE}]}
       />
     </View>
   );
@@ -122,9 +123,14 @@ const styles=StyleSheet.create({
     position:'absolute',
     left:13,
     right:13,
-    height:70,
+    height:72,
     zIndex:10000,
     elevation:10000,
+    borderRadius:36,
+    shadowColor:'#5B4A77',
+    shadowOpacity:0.13,
+    shadowRadius:16,
+    shadowOffset:{width:0,height:7},
   },
   glassBar:{
     flex:1,
@@ -132,15 +138,10 @@ const styles=StyleSheet.create({
     alignItems:'center',
     paddingHorizontal:5,
     paddingVertical:4,
-    borderRadius:35,
-    backgroundColor:'rgba(255,255,255,0.72)',
-    borderWidth:1,
-    borderColor:'rgba(255,255,255,0.82)',
-    shadowColor:'#5B4A77',
-    shadowOpacity:0.16,
-    shadowRadius:18,
-    shadowOffset:{width:0,height:6},
-    elevation:7,
+    borderRadius:36,
+    backgroundColor:'rgba(250,248,255,0.76)',
+    borderWidth:1.25,
+    borderColor:'rgba(255,255,255,0.92)',
     overflow:'hidden',
   },
   glassHighlight:{
@@ -148,33 +149,33 @@ const styles=StyleSheet.create({
     left:1,
     right:1,
     top:1,
-    height:24,
-    borderRadius:30,
-    backgroundColor:'rgba(255,255,255,0.38)',
+    height:26,
+    borderRadius:35,
+    backgroundColor:'rgba(255,255,255,0.34)',
   },
   item:{
     flex:1,
-    height:58,
-    borderRadius:29,
+    height:60,
+    borderRadius:30,
     alignItems:'center',
     justifyContent:'center',
     paddingTop:1,
     gap:2,
   },
   itemActive:{
-    backgroundColor:'rgba(139,92,246,0.13)',
+    backgroundColor:'rgba(139,92,246,0.14)',
   },
   itemPressed:{
     opacity:0.72,
   },
   iconViewport:{
-    width:ICON_SIZE,
-    height:ICON_SIZE,
+    width:ICON_VIEWPORT_SIZE,
+    height:ICON_VIEWPORT_SIZE,
     overflow:'hidden',
   },
   iconSprite:{
     position:'absolute',
-    top:0,
+    top:-1,
   },
   label:{
     fontSize:9.5,

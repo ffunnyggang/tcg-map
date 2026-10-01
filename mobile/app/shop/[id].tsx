@@ -1,8 +1,8 @@
 import { useEffect,useState } from 'react';
 import { ActivityIndicator,Alert,Dimensions,Image,Linking,Pressable,ScrollView,Text,View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
-import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
+import { Stack,useLocalSearchParams } from 'expo-router';
+import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl } from '../../lib/shops';
 import { C,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
@@ -11,8 +11,8 @@ const score=(r:ShopReview|null)=>{if(!r)return null;const a=[r.product_score,r.s
 const SW=Dimensions.get('window').width;
 const Divider=()=> <View style={{height:9,backgroundColor:C.divider,marginHorizontal:-14}}/>;
 export default function ShopDetail(){
-  const {id}=useLocalSearchParams<{id:string}>(),router=useRouter(),[shop,setShop]=useState<AppShop|null>(null),[review,setReview]=useState<ShopReview|null>(null),[contents,setContents]=useState<ShopContent[]>([]),[fav,setFav]=useState(false),[busy,setBusy]=useState(false);
-  useEffect(()=>{if(!id)return;Promise.all([getShop(id),getFavoriteIds(),getShopReview(id),getShopContents(id)]).then(([s,f,r,c])=>{setShop(s);setFav(f.has(id));setReview(r);setContents(c)}).catch(e=>Alert.alert('불러오기 실패',String(e.message||e)))},[id]);
+  const {id}=useLocalSearchParams<{id:string}>(),[shop,setShop]=useState<AppShop|null>(null),[review,setReview]=useState<ShopReview|null>(null),[contents,setContents]=useState<ShopContent[]>([]);
+  useEffect(()=>{if(!id)return;Promise.all([getShop(id),getShopReview(id),getShopContents(id)]).then(([s,r,c])=>{setShop(s);setReview(r);setContents(c)}).catch(e=>Alert.alert('불러오기 실패',String(e.message||e)))},[id]);
   if(!shop)return <SafeAreaView edges={['top']} style={{flex:1,justifyContent:'center',backgroundColor:'#fff'}}><ActivityIndicator color={C.purple}/></SafeAreaView>;
   const images=[...(shop.images||[])].sort((a,b)=>(Number(b.is_primary)-Number(a.is_primary))+(a.sort_order-b.sort_order)),features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true),tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true),avg=score(review),open=(url?:string|null)=>url&&Linking.openURL(url);
   const chip=(label:string)=><View key={label} style={{paddingHorizontal:10,paddingVertical:6,borderRadius:999,backgroundColor:'#F3EFF9'}}><Text style={{fontSize:11,fontWeight:'700',color:'#6F5E8D'}}>{label}</Text></View>;

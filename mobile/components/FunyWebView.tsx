@@ -23,7 +23,7 @@ export const isShopDetail=(target:string)=>{
   }catch{return false}
 };
 
-const APP_SHELL_BOOTSTRAP=`(function(){try{
+const APP_SHELL_BOOTSTRAP=String.raw`(function(){try{
 document.documentElement.classList.add('app-shell');
 var s=document.getElementById('__funy_app_shell_critical__')||document.createElement('style');
 s.id='__funy_app_shell_critical__';
@@ -38,18 +38,21 @@ s.textContent=[
 ].join('');
 (document.head||document.documentElement).appendChild(s);
 
-var path=(location.pathname||'').toLowerCase();
-var keepWebHeader=/\/(notice|shop-request|partner|faq|feedback|privacy|promo)\.html$/.test(path);
+var path=String(location.pathname||'').toLowerCase();
+var backPages=['/notice.html','/shop-request.html','/partner.html','/faq.html','/feedback.html','/privacy.html','/promo.html'];
+var keepWebHeader=backPages.some(function(p){return path===p;});
 if(!keepWebHeader){
-  ['header.portal-header','.portal-header','.app-header'].forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){
-    el.style.setProperty('display','none','important');
-    el.style.setProperty('visibility','hidden','important');
-    el.style.setProperty('height','0','important');
-    el.style.setProperty('min-height','0','important');
-    el.style.setProperty('max-height','0','important');
-    el.style.setProperty('margin','0','important');
-    el.style.setProperty('padding','0','important');
-  })});
+  ['header.portal-header','.portal-header','.app-header'].forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(el){
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('height','0','important');
+      el.style.setProperty('min-height','0','important');
+      el.style.setProperty('max-height','0','important');
+      el.style.setProperty('margin','0','important');
+      el.style.setProperty('padding','0','important');
+    });
+  });
 }
 
 var align=function(){
@@ -60,15 +63,23 @@ var align=function(){
     if(!parent)return;
     var top=target.getBoundingClientRect().top;
     if(Math.abs(top)>1)parent.style.setProperty('margin-top',(-top)+'px','important');
-  }catch(_){}
+  }catch(e){}
 };
-requestAnimationFrame(function(){align()});
+requestAnimationFrame(function(){align();});
 setTimeout(align,180);
-var reportRoute=function(){try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'WEB_ROUTE',url:location.href}))}catch(_){}};
+
+var reportRoute=function(){
+  try{
+    if(window.ReactNativeWebView){
+      window.ReactNativeWebView.postMessage(JSON.stringify({type:'WEB_ROUTE',url:location.href}));
+    }
+  }catch(e){}
+};
 window.addEventListener('hashchange',reportRoute);
 window.addEventListener('pageshow',reportRoute);
 reportRoute();
-}catch(_){} })(); true;`;
+}catch(e){}
+})(); true;`
 
 type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void};
 

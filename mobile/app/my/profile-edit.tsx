@@ -13,6 +13,7 @@ export default function ProfileEdit(){
   const [nickname,setNickname]=useState('');
   const [avatar,setAvatar]=useState<string|null>(null);
   const [pickedUri,setPickedUri]=useState<string|null>(null);
+  const [pickedMimeType,setPickedMimeType]=useState<string|null>(null);
   useEffect(()=>{getProfile().then(({profile,user})=>{
     setNickname(profile?.nickname||user?.user_metadata?.nickname||user?.user_metadata?.name||'');
     setAvatar(profile?.avatar_url||user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null);

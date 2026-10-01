@@ -254,7 +254,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
               return false;
             }}
           />:null}
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   </View>);

@@ -9,3 +9,15 @@
 /* FUNY TALK hero art: use only the requested right-side graphic area */
 .talk-hero::after{content:"";display:block;width:100%;height:238px;margin-top:18px;border-radius:18px;background-image:url("assets/talk/funy-talk-hero.png");background-repeat:no-repeat;background-size:140% auto;background-position:right center;overflow:hidden}
 @media(max-width:430px){.talk-hero::after{height:228px;background-size:142% auto}}
+
+/* FUNY PIN image navigation icons */
+.portal-bottom-nav a,.shops-bottom-nav a{background-repeat:no-repeat!important;background-position:center 8px!important;background-size:24px 24px!important;padding-top:23px!important}
+.portal-bottom-nav a:nth-child(1),.shops-bottom-nav a:nth-child(1){background-image:url('/mobile/assets/nav-icons/home-inactive.png')!important}
+.portal-bottom-nav a:nth-child(2),.shops-bottom-nav a:nth-child(2){background-image:url('/mobile/assets/nav-icons/map-inactive.png')!important}
+.portal-bottom-nav a:nth-child(3),.shops-bottom-nav a:nth-child(3){background-image:url('/mobile/assets/nav-icons/pick-inactive.png')!important}
+.portal-bottom-nav a:nth-child(4),.shops-bottom-nav a:nth-child(4){background-image:url('/mobile/assets/nav-icons/talk-inactive.png')!important}
+.portal-bottom-nav a.active:nth-child(1),.shops-bottom-nav a.active:nth-child(1){background-image:url('/mobile/assets/nav-icons/home-active.png')!important}
+.portal-bottom-nav a.active:nth-child(2),.shops-bottom-nav a.active:nth-child(2){background-image:url('/mobile/assets/nav-icons/map-active.png')!important}
+.portal-bottom-nav a.active:nth-child(3),.shops-bottom-nav a.active:nth-child(3){background-image:url('/mobile/assets/nav-icons/pick-active.png')!important}
+.portal-bottom-nav a.active:nth-child(4),.shops-bottom-nav a.active:nth-child(4){background-image:url('/mobile/assets/nav-icons/talk-active.png')!important}
+.portal-bottom-nav svg,.shops-bottom-nav svg{display:none!important}

@@ -73,9 +73,11 @@ export default function FunyWebView({url,title='FUNY PIN'}:Props){
       allowsInlineMediaPlayback
       injectedJavaScriptBeforeContentLoaded={APP_SHELL_BOOTSTRAP}
       injectedJavaScriptBeforeContentLoadedForMainFrameOnly
+      injectedJavaScript={APP_SHELL_BOOTSTRAP}
+      injectedJavaScriptForMainFrameOnly
       onLoadStart={(e)=>{console.log('[FUNY WEBVIEW] load start',e.nativeEvent.url);setLoading(true)}}
       onLoad={(e)=>{console.log('[FUNY WEBVIEW] load',e.nativeEvent.url);setLoading(false)}}
-      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false)}}
+      onLoadEnd={(e)=>{console.log('[FUNY WEBVIEW] load end',e.nativeEvent.url);setLoading(false);setTimeout(()=>ref.current?.injectJavaScript(APP_SHELL_BOOTSTRAP),0)}}
       onContentProcessDidTerminate={()=>{
         console.warn('[FUNY WEBVIEW] content process terminated');
         if(reloadAttempts.current<2){

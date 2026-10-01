@@ -7,13 +7,6 @@ import { TAB_INACTIVE } from '../../lib/tabBar';
 
 type IconKind='home'|'map'|'pick'|'talk';
 
-const ICONS={
-  home:{active:require('../../assets/nav-icons-v3/home-active.png'),inactive:require('../../assets/nav-icons-v3/home-inactive.png')},
-  map:{active:require('../../assets/nav-icons-v3/map-active.png'),inactive:require('../../assets/nav-icons-v3/map-inactive.png')},
-  pick:{active:require('../../assets/nav-icons-v3/pick-active.png'),inactive:require('../../assets/nav-icons-v3/pick-inactive.png')},
-  talk:{active:require('../../assets/nav-icons-v3/talk-active.png'),inactive:require('../../assets/nav-icons-v3/talk-inactive.png')}
-} as const;
-
 const ROUTE_KIND:Record<string,IconKind>={
   index:'home',
   map:'map',
@@ -27,6 +20,29 @@ const ROUTE_LABEL:Record<IconKind,string>={
   pick:'PICK',
   talk:'TALK'
 };
+
+const SPRITE_INDEX:Record<IconKind,{active:number;inactive:number}>={
+  home:{active:0,inactive:1},
+  map:{active:2,inactive:3},
+  pick:{active:4,inactive:5},
+  talk:{active:6,inactive:7}
+};
+
+const SPRITE=require('../../assets/nav-icons-v4/nav-sprite-32.png');
+const ICON_SIZE=24;
+
+function SpriteIcon({kind,focused}:{kind:IconKind;focused:boolean}){
+  const index=focused?SPRITE_INDEX[kind].active:SPRITE_INDEX[kind].inactive;
+  return (
+    <View style={styles.iconViewport} pointerEvents="none">
+      <Image
+        source={SPRITE}
+        resizeMode="stretch"
+        style={[styles.iconSprite,{width:ICON_SIZE*8,height:ICON_SIZE,left:-index*ICON_SIZE}]}
+      />
+    </View>
+  );
+}
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const insets=useSafeAreaInsets();
@@ -48,11 +64,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
           const options=descriptors[route.key]?.options;
           const label=ROUTE_LABEL[kind];
           const onPress=()=>{
-            const event=navigation.emit({
-              type:'tabPress',
-              target:route.key,
-              canPreventDefault:true
-            });
+            const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});
             if(event.defaultPrevented)return;
             if(focused){
               navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});
@@ -60,10 +72,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
             }
             navigation.navigate(route.name,route.params);
           };
-          const onLongPress=()=>{
-            navigation.emit({type:'tabLongPress',target:route.key});
-          };
-          const source=focused?ICONS[kind].active:ICONS[kind].inactive;
+          const onLongPress=()=>navigation.emit({type:'tabLongPress',target:route.key});
           return (
             <Pressable
               key={route.key}
@@ -79,7 +88,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
                 pressed&&styles.itemPressed
               ]}
             >
-              <Image source={source} resizeMode="contain" style={styles.icon}/>
+              <SpriteIcon kind={kind} focused={focused}/>
               <Text allowFontScaling maxFontSizeMultiplier={1.15} style={[styles.label,focused&&styles.labelActive]}>
                 {label}
               </Text>
@@ -121,16 +130,16 @@ const styles=StyleSheet.create({
     flex:1,
     flexDirection:'row',
     alignItems:'center',
-    paddingHorizontal:4,
+    paddingHorizontal:5,
     paddingVertical:4,
-    borderRadius:34,
-    backgroundColor:'rgba(248,246,253,0.86)',
+    borderRadius:35,
+    backgroundColor:'rgba(255,255,255,0.72)',
     borderWidth:1,
-    borderColor:'rgba(255,255,255,0.92)',
-    shadowColor:'#201C2A',
-    shadowOpacity:0.18,
-    shadowRadius:14,
-    shadowOffset:{width:0,height:4},
+    borderColor:'rgba(255,255,255,0.82)',
+    shadowColor:'#5B4A77',
+    shadowOpacity:0.16,
+    shadowRadius:18,
+    shadowOffset:{width:0,height:6},
     elevation:7,
     overflow:'hidden',
   },
@@ -139,9 +148,9 @@ const styles=StyleSheet.create({
     left:1,
     right:1,
     top:1,
-    height:26,
-    borderRadius:28,
-    backgroundColor:'rgba(255,255,255,0.42)',
+    height:24,
+    borderRadius:30,
+    backgroundColor:'rgba(255,255,255,0.38)',
   },
   item:{
     flex:1,
@@ -149,18 +158,23 @@ const styles=StyleSheet.create({
     borderRadius:29,
     alignItems:'center',
     justifyContent:'center',
-    paddingTop:2,
-    gap:1,
+    paddingTop:1,
+    gap:2,
   },
   itemActive:{
-    backgroundColor:'rgba(218,211,235,0.70)',
+    backgroundColor:'rgba(139,92,246,0.13)',
   },
   itemPressed:{
-    opacity:0.78,
+    opacity:0.72,
   },
-  icon:{
-    width:26,
-    height:26,
+  iconViewport:{
+    width:ICON_SIZE,
+    height:ICON_SIZE,
+    overflow:'hidden',
+  },
+  iconSprite:{
+    position:'absolute',
+    top:0,
   },
   label:{
     fontSize:9.5,

@@ -51,7 +51,7 @@ try{
   style.textContent+= 'html.app-shell.web-back-page .header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   if(/\/live-pin-test\.html$/.test(path))style.textContent+= 'html.app-shell.live-pin-page .shell{padding-top:58px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:58px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:58px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(env(safe-area-inset-bottom, 0px) + 110px)!important}';
   document.documentElement.appendChild(style);
-  if(/\\/talk\\.html$/.test(path)){
+  if(/\/talk\.html$/.test(path)){
     var syncPokamoFab=function(){
       try{
         document.querySelectorAll('.pokamo-fab').forEach(function(el){

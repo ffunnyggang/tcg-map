@@ -12,3 +12,12 @@ export async function getShopReview(id:string){const {data,error}=await supabase
 export async function getActiveFunyMonEvents(){const now=new Date().toISOString();const {data,error}=await supabase.from('funy_mon_events').select('id,shop_id,title,starts_at,ends_at,is_force_paused,is_archived,target_type,schedule_event_id,target_latitude,target_longitude,target_name_snapshot,target_location_snapshot').eq('is_archived',false).eq('is_force_paused',false).lte('starts_at',now).gte('ends_at',now);if(error)throw error;return(data??[]) as FunyMonEvent[]}
 export async function getFavoriteIds(){const {data:{user}}=await supabase.auth.getUser();if(!user)return new Set<string>();const {data,error}=await supabase.from('shop_favorites').select('shop_id').eq('user_id',user.id);if(error)throw error;return new Set((data??[]).map(x=>x.shop_id))}
 export async function toggleFavorite(shopId:string,on:boolean){const {data:{user}}=await supabase.auth.getUser();if(!user)throw new Error('LOGIN_REQUIRED');if(on){const {error}=await supabase.from('shop_favorites').upsert({user_id:user.id,shop_id:shopId},{onConflict:'user_id,shop_id'});if(error)throw error}else{const {error}=await supabase.from('shop_favorites').delete().eq('user_id',user.id).eq('shop_id',shopId);if(error)throw error}}
+
+export async function getFavoriteShops(){
+  const ids=Array.from(await getFavoriteIds());
+  if(!ids.length)return [] as AppShop[];
+  const {data,error}=await supabase.from('v_app_shops').select('*').in('id',ids).order('name');
+  if(error)throw error;
+  const order=new Map(ids.map((id,i)=>[id,i]));
+  return ((data??[]) as AppShop[]).sort((a,b)=>(order.get(a.id)??999)-(order.get(b.id)??999));
+}

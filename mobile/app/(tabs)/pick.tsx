@@ -6,6 +6,6 @@ import FunyWebView from '../../components/FunyWebView';
 export default function Pick(){
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>
-    <FunyWebView url="https://funypin.kr/reviews.htmlreviews.html" title="FUNY PIN PICK"/>
+    <FunyWebView url="https://funypin.kr/reviews.html" title="FUNY PIN PICK"/>
   </SafeAreaView>;
 }

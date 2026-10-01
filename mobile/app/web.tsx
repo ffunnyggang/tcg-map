@@ -3,7 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import FunyWebView from '../components/FunyWebView';
 
 export default function WebPage(){
-  const params=useLocalSearchParams<{url?:string}>();
+  const params=useLocalSearchParams<{url?:string;title?:string}>();
   const raw=Array.isArray(params.url)?params.url[0]:params.url;
   let url='https://funypin.kr/';
   try{if(raw)url=decodeURIComponent(raw);}catch{if(raw)url=raw;}

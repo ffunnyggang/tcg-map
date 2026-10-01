@@ -6,7 +6,7 @@ import { WebView,WebViewMessageEvent } from 'react-native-webview';
 import { C } from '../lib/theme';
 import FunyHeader from './FunyHeader';
 
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261001-10');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261001-11');}return u.toString();}catch{return value}};
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
 
 export const isWebBackPage=(target:string)=>{
@@ -40,7 +40,7 @@ try{
     'html.app-shell.live-pin-page .filters{top:58px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important}'
+    'html.app-shell .pokamo-fab{bottom:calc(env(safe-area-inset-bottom, 0px) + 110px)!important;right:16px!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
@@ -49,8 +49,22 @@ try{
   if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
   style.textContent+= 'html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   style.textContent+= 'html.app-shell.web-back-page .header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
-  if(/\/live-pin-test\.html$/.test(path))style.textContent+= 'html.app-shell.live-pin-page .shell{padding-top:58px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:58px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:58px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important}';
+  if(/\/live-pin-test\.html$/.test(path))style.textContent+= 'html.app-shell.live-pin-page .shell{padding-top:58px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:58px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:58px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(env(safe-area-inset-bottom, 0px) + 110px)!important}';
   document.documentElement.appendChild(style);
+  if(/\\/talk\\.html$/.test(path)){
+    var syncPokamoFab=function(){
+      try{
+        document.querySelectorAll('.pokamo-fab').forEach(function(el){
+          el.style.setProperty('bottom','calc(env(safe-area-inset-bottom, 0px) + 110px)','important');
+          el.style.setProperty('right','16px','important');
+        });
+      }catch(e){}
+    };
+    syncPokamoFab();
+    var pokamoObserver=new MutationObserver(syncPokamoFab);
+    pokamoObserver.observe(document.documentElement,{childList:true,subtree:true});
+    setTimeout(function(){try{pokamoObserver.disconnect();}catch(e){}},8000);
+  }
 }catch(e){}
 })(); true;`;
 

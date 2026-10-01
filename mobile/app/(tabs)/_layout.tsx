@@ -100,18 +100,18 @@ export default function TabsLayout(){
 }
 
 const styles=StyleSheet.create({
-  outer:{position:'absolute',left:13,right:13,height:76,zIndex:10000,elevation:10000},
+  outer:{position:'absolute',left:13,right:13,height:70,zIndex:10000,elevation:10000},
   glassBar:{
     flex:1,position:'relative',flexDirection:'row',alignItems:'center',
-    paddingHorizontal:5,paddingVertical:4,borderRadius:38,overflow:'hidden',
+    paddingHorizontal:5,paddingVertical:3,borderRadius:35,overflow:'hidden',
     borderWidth:1,borderColor:'rgba(255,255,255,0.72)',
-    backgroundColor:'rgba(255,255,255,0.14)',
-    shadowColor:'#4D3A70',shadowOpacity:0.18,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:12
+    backgroundColor:'rgba(255,255,255,0.07)',
+    shadowColor:'#4D3A70',shadowOpacity:0.16,shadowRadius:16,shadowOffset:{width:0,height:7},elevation:10
   },
   glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,0.10)'},
-  glassHighlight:{position:'absolute',left:1,right:1,top:1,height:24,borderRadius:36,backgroundColor:'rgba(255,255,255,0.20)'},
-  item:{flex:1,height:62,borderRadius:31,alignItems:'center',justifyContent:'center',paddingTop:1,gap:3},
-  itemActive:{backgroundColor:'rgba(139,92,246,0.16)'},
+  glassHighlight:{position:'absolute',left:1,right:1,top:1,height:22,borderRadius:33,backgroundColor:'rgba(255,255,255,0.20)'},
+  item:{flex:1,height:58,borderRadius:29,alignItems:'center',justifyContent:'center',paddingTop:1,gap:3},
+  itemActive:{backgroundColor:'rgba(139,92,246,0.14)'},
   itemPressed:{opacity:0.72},
   icon:{width:ICON_SIZE,height:ICON_SIZE},
   label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:TAB_INACTIVE,letterSpacing:-0.1},

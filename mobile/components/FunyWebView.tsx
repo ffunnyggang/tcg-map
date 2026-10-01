@@ -12,14 +12,14 @@ export const isWebBackPage=(target:string)=>{
   try{
     const u=new URL(target);
     const p=u.pathname.toLowerCase();
-    return /\\/(notice|shop-request|partner|faq|feedback|privacy|promo)\\.html$/.test(p);
+    return /\/(notice|shop-request|partner|faq|feedback|privacy|promo)\.html$/.test(p);
   }catch{return false}
 };
 
 export const isShopDetail=(target:string)=>{
   try{
     const u=new URL(target);
-    return /\\/shops\\.html$/.test(u.pathname.toLowerCase())&&u.hash.toLowerCase().startsWith('#/shop/');
+    return /\/shops\.html$/.test(u.pathname.toLowerCase())&&u.hash.toLowerCase().startsWith('#/shop/');
   }catch{return false}
 };
 
@@ -39,7 +39,7 @@ s.textContent=[
 (document.head||document.documentElement).appendChild(s);
 
 var path=(location.pathname||'').toLowerCase();
-var keepWebHeader=/\\/(notice|shop-request|partner|faq|feedback|privacy|promo)\\.html$/.test(path);
+var keepWebHeader=/\/(notice|shop-request|partner|faq|feedback|privacy|promo)\.html$/.test(path);
 if(!keepWebHeader){
   ['header.portal-header','.portal-header','.app-header'].forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){
     el.style.setProperty('display','none','important');

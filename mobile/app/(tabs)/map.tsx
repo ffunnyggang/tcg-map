@@ -12,6 +12,8 @@ export default function MapScreen(){
   const insets=useSafeAreaInsets();
   const [webBack,setWebBack]=useState(false);
   const [shopDetail,setShopDetail]=useState(false);
+  const [scrolling,setScrolling]=useState(false);
+  const [scrolling,setScrolling]=useState(false);
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
     const detail=isShopDetail(url);
@@ -23,11 +25,11 @@ export default function MapScreen(){
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithLivePin webBack={webBack} shopDetail={shopDetail}>
-      <FunyWebView url="https://funypin.kr/shops.html" title="FUNY PIN TCG MAP" onWebRouteChange={onRoute}/>
+      <FunyWebView url="https://funypin.kr/shops.html" title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
     </ViewWithLivePin>
   </SafeAreaView>;
 }
 
 function ViewWithLivePin({children,webBack,shopDetail}:{children:ReactNode;webBack:boolean;shopDetail:boolean}){
-  return <View style={{flex:1}}>{children}{!webBack?<LivePinButton withNav={!shopDetail}/>:null}</View>;
+  return <View style={{flex:1}}>{children}{!webBack?<LivePinButton withNav={!shopDetail} scrolling={scrolling}/>:null}</View>;
 }

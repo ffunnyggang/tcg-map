@@ -100,7 +100,7 @@ export default function Account(){
       </View>:null}
     </View>
   </SafeAreaView>;
-const styles={
+const styles=StyleSheet.create({
   header:{height:58,paddingHorizontal:14,flexDirection:'row' as const,alignItems:'center' as const,backgroundColor:'#fff',borderBottomWidth:1,borderBottomColor:C.line},
   back:{width:36,height:36,alignItems:'center' as const,justifyContent:'center' as const,marginRight:6},
   backText:{fontSize:30,lineHeight:32,color:C.text},
@@ -138,4 +138,4 @@ const styles={
   logoutButton:{width:'100%',height:54,borderRadius:15,backgroundColor:C.purpleDark,alignItems:'center' as const,justifyContent:'center' as const},
   logoutText:{fontSize:13,fontWeight:'900' as const,color:'#fff'},
   deleteButton:{marginTop:10,minHeight:32,paddingHorizontal:12,alignItems:'center' as const,justifyContent:'center' as const},
-} as const;
+});

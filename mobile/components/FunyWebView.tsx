@@ -33,9 +33,10 @@ try{
   style.id='__funy_app_shell_critical__';
   style.textContent=[
     'html{--funy-app-shell:1}',
-    'html.app-shell,html.app-shell body,html.app-shell .shell,html.app-shell .page{background:#fff!important}',
+    'html.app-shell,html.app-shell body,html.app-shell .shell,html.app-shell .page,html.app-shell .portal-body,html.app-shell .portal-shell,html.app-shell .home-content-flow,html.app-shell .home-links-block{background:#fff!important}',
     'html.app-shell nav.portal-bottom-nav,html.app-shell nav.shops-bottom-nav,html.app-shell .portal-bottom-nav,html.app-shell .shops-bottom-nav,html.app-shell .funy-lang-switch{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
     'html.app-shell .info-tabs{top:0!important}',
+    'html.app-shell.talk-page .filters{top:0!important}',
     'html.app-shell.live-pin-page .filters{top:58px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
@@ -43,6 +44,7 @@ try{
   ].join('');
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
+  if(/\/talk\.html$/.test(path))document.documentElement.classList.add('talk-page');
   if(/\/(notice|shop-request|partner|faq|feedback|privacy|promo)\.html$/.test(path))document.documentElement.classList.add('web-back-page');
   if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
   style.textContent+= 'html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';

@@ -37,9 +37,10 @@ try{
     'html.app-shell .info-tabs,html.app-shell .filters{top:0!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:78px!important}'
+    'html.app-shell .pokamo-fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
+  if(/\\/live-pin-test\\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
   style.textContent+= 'html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   document.documentElement.appendChild(style);
 }catch(e){}

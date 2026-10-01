@@ -65,6 +65,5 @@ export async function uploadProfileAvatar(uri:string,mimeType?:string|null){
   if(uploadError)throw uploadError;
   const {data}=supabase.storage.from('profile-images').getPublicUrl(path);
   const url=`${data.publicUrl}?v=${Date.now()}`;
-  await updateProfile({nickname:(await getProfile()).profile?.nickname||user.user_metadata?.nickname||'FUNY PIN 회원',avatar_url:url});
   return url;
 }

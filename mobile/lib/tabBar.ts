@@ -8,10 +8,10 @@ export const getTabBarStyle=(bottom:number):ViewStyle=>({
   paddingTop:4,
   marginHorizontal:13,
   borderTopWidth:0,
-  borderWidth:1,
-  borderColor:'rgba(255,255,255,.88)',
+  borderWidth:0,
+  borderColor:'transparent',
   borderRadius:33,
-  backgroundColor:'rgba(255,255,255,.52)',
+  backgroundColor:'transparent',
   position:'absolute',
   bottom,
   shadowColor:'#201C2A',
@@ -19,7 +19,7 @@ export const getTabBarStyle=(bottom:number):ViewStyle=>({
   shadowRadius:12,
   shadowOffset:{width:0,height:4},
   elevation:4,
-  overflow:'hidden',
+  overflow:'visible',
 });
 
 export const TAB_BAR_ITEM_STYLE:ViewStyle={

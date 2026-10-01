@@ -39,5 +39,5 @@ export default function ShopDetail(){
       {review&&(review.one_line_review||avg)?<View style={{paddingVertical:20}}><View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}><Text style={{fontSize:16,fontWeight:'900',color:C.text}}>깽퐌커플 리뷰</Text>{avg?<Text style={{fontWeight:'900',fontSize:12,color:C.purpleDark}}>★ {avg}</Text>:null}</View>{review.one_line_review?<Text style={{marginTop:11,lineHeight:20,fontWeight:'800',color:C.text}}>{review.one_line_review}</Text>:null}{review.visit_review?<Text style={{marginTop:8,lineHeight:20,fontSize:12.5,color:C.muted}}>{review.visit_review}</Text>:null}</View>:null}
       {contents.length?<><Divider/><View style={{paddingVertical:20}}><Text style={{fontSize:16,fontWeight:'900',color:C.text}}>관련 콘텐츠</Text>{contents.map(c=><Pressable key={c.content_id} onPress={()=>open(c.url)} style={{paddingVertical:13,borderBottomWidth:1,borderBottomColor:C.line}}><Text style={{fontWeight:'800',fontSize:13,color:C.text}}>{c.title}</Text><Text style={{marginTop:4,fontSize:10.5,color:C.muted}}>{[c.platform,c.content_type,c.published_at].filter(Boolean).join(' · ')}</Text></Pressable>)}</View></>:null}
     </View>
-  </ScrollView><LivePinButton withNav={false}/></SafeAreaView>;
+  </ScrollView><LivePinButton withNav/></SafeAreaView>;
 }

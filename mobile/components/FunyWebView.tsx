@@ -19,7 +19,8 @@ export const isWebBackPage=(target:string)=>{
 export const isShopDetail=(target:string)=>{
   try{
     const u=new URL(target);
-    return /\/shops\.html$/.test(u.pathname.toLowerCase())&&u.hash.toLowerCase().startsWith('#/shop/');
+    if(!/\/shops\.html$/.test(u.pathname.toLowerCase()))return false;
+    return u.hash.toLowerCase().startsWith('#/shop/')||u.searchParams.has('shop');
   }catch{return false}
 };
 
@@ -33,8 +34,8 @@ try{
   style.textContent=[
     'html{--funy-app-shell:1}',
     'html.app-shell nav.portal-bottom-nav,html.app-shell nav.shops-bottom-nav,html.app-shell .portal-bottom-nav,html.app-shell .shops-bottom-nav,html.app-shell .funy-lang-switch{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
-    'html.app-shell .live-pin-entry-wrap{bottom:132px!important}',
-    'html.app-shell .live-pin-detail-entry{bottom:132px!important}',
+    'html.app-shell .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;bottom:132px!important}',
+    'html.app-shell .live-pin-detail-entry{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;bottom:132px!important}',
     'html.app-shell .pokamo-fab{bottom:132px!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');

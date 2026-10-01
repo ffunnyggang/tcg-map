@@ -19,7 +19,7 @@ export default function Talk(){
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
-    <FunyWebView url="https://funypin.kr/talk.html" title="FUNY PIN TALK" onWebRouteChange={onRoute}/>
+    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
+    <FunyWebView url="https://funypin.kr/talk.html" title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
   </SafeAreaView>;
 }

@@ -46,7 +46,8 @@ export default function LivePinButton({withNav=true,scrolling=false}:{withNav?:b
     {showTip&&!scrolling?<View style={styles.tip}><Text style={styles.tipText}>실시간으로 정보 공유해요!</Text></View>:null}
     <Animated.View style={{width}}>
       <Pressable accessibilityRole="button" accessibilityLabel="LIVE PIN 열기" onPress={open} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>
-        <Animated.Text style={[styles.icon,{opacity:iconOpacity}]}>⚡</Animated.Text>\n        <Animated.Text style={[styles.collapsedIcon,{opacity:collapsedIconOpacity}]}>⚡</Animated.Text>
+        <Animated.Text style={[styles.icon,{opacity:iconOpacity}]}>⚡</Animated.Text>
+        <Animated.Text style={[styles.collapsedIcon,{opacity:collapsedIconOpacity}]}>⚡</Animated.Text>
         <Animated.Text style={[styles.label,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>LIVE PIN</Animated.Text>
         <Animated.Text style={[styles.arrow,{opacity:arrowOpacity,transform:[{scale:labelScale}]}]}>›</Animated.Text>
       </Pressable>

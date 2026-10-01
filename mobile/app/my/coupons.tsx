@@ -10,7 +10,7 @@ const date=(value:string)=>new Date(value).toLocaleDateString('ko-KR',{year:'num
 export default function Coupons(){
   const [loading,setLoading]=useState(true);
   const [items,setItems]=useState<MyCoupon[]>([]);
-  const load=async()=>{setLoading(true);try{setItems(await getMyCoupons())catch{}finally{setLoading(false)}};
+  const load=async()=>{setLoading(true);try{setItems(await getMyCoupons())}catch{}finally{setLoading(false)}};
   useFocusEffect(useCallback(()=>{load()},[]));
 
   return <View style={styles.root}>

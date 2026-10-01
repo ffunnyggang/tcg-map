@@ -220,7 +220,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   if(!isFocused)return null;
   const authInjection=accessToken
-    ? String.raw`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`
+    ? `\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`
     : '';
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 

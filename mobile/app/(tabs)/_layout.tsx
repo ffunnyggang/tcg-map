@@ -40,6 +40,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   return (
     <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
       <View style={styles.glassBar}>
+        <View pointerEvents="none" style={styles.glassHighlight}/>
         {state.routes.map((route,index)=>{
           const kind=ROUTE_KIND[route.name];
           if(!kind)return null;
@@ -52,9 +53,12 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
               target:route.key,
               canPreventDefault:true
             });
-            if(!focused&&!event.defaultPrevented){
-              navigation.navigate(route.name,route.params);
+            if(event.defaultPrevented)return;
+            if(focused){
+              navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});
+              return;
             }
+            navigation.navigate(route.name,route.params);
           };
           const onLongPress=()=>{
             navigation.emit({type:'tabLongPress',target:route.key});
@@ -120,14 +124,24 @@ const styles=StyleSheet.create({
     paddingHorizontal:4,
     paddingVertical:4,
     borderRadius:34,
-    backgroundColor:'rgba(250,248,253,0.90)',
+    backgroundColor:'rgba(255,255,255,0.74)',
     borderWidth:1,
-    borderColor:'rgba(255,255,255,0.96)',
+    borderColor:'rgba(255,255,255,0.92)',
     shadowColor:'#201C2A',
-    shadowOpacity:0.16,
-    shadowRadius:18,
-    shadowOffset:{width:0,height:6},
-    elevation:7,
+    shadowOpacity:0.13,
+    shadowRadius:16,
+    shadowOffset:{width:0,height:5},
+    elevation:6,
+    overflow:'hidden',
+  },
+  glassHighlight:{
+    position:'absolute',
+    left:1,
+    right:1,
+    top:1,
+    height:26,
+    borderRadius:28,
+    backgroundColor:'rgba(255,255,255,0.30)',
   },
   item:{
     flex:1,
@@ -145,8 +159,8 @@ const styles=StyleSheet.create({
     opacity:0.78,
   },
   icon:{
-    width:34,
-    height:34,
+    width:32,
+    height:32,
   },
   label:{
     fontSize:9.5,

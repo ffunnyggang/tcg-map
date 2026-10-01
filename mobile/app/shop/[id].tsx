@@ -15,7 +15,7 @@ export default function ShopDetail(){
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const navBottom=Math.max(insets.bottom,12);
-  const tcgMapBottom=navBottom+68+8;
+  const tcgMapBottom=navBottom+68+8+46;
   useEffect(()=>{if(!id)return;Promise.all([getShop(id),getShopReview(id),getShopContents(id)]).then(([s,r,c])=>{setShop(s);setReview(r);setContents(c)}).catch(e=>Alert.alert('불러오기 실패',String(e.message||e)))},[id]);
   if(!shop)return <SafeAreaView edges={['top']} style={{flex:1,justifyContent:'center',backgroundColor:'#fff'}}><ActivityIndicator color={C.purple}/></SafeAreaView>;
   const images=[...(shop.images||[])].sort((a,b)=>(Number(b.is_primary)-Number(a.is_primary))+(a.sort_order-b.sort_order)),features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true),tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true),avg=score(review),open=(url?:string|null)=>url&&Linking.openURL(url);

@@ -142,6 +142,14 @@ export default function Account(){
         </View>
       </View>
 
+      <View style={styles.legalLinks}>
+        <Pressable onPress={()=>openWebMenu('terms.html','이용약관')}><Text style={styles.legalText}>이용약관</Text></Pressable>
+        <Text style={styles.legalDivider}>·</Text>
+        <Pressable onPress={()=>openWebMenu('privacy.html','개인정보처리방침')}><Text style={styles.legalText}>개인정보처리방침</Text></Pressable>
+        <Text style={styles.legalDivider}>·</Text>
+        <Pressable onPress={()=>openWebMenu('community-guidelines.html','커뮤니티 운영정책')}><Text style={styles.legalText}>커뮤니티 운영정책</Text></Pressable>
+      </View>
+
       {user?<View style={styles.accountActions}>
         <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}><Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text></Pressable>
         <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}><Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text></Pressable>
@@ -190,6 +198,9 @@ const styles=StyleSheet.create({
   supportLabel:{fontSize:13,fontWeight:'700',color:C.textSoft},
   rowBorder:{borderBottomWidth:1,borderBottomColor:C.divider},
   chevron:{fontSize:21,color:'#B0A9B5'},
+  legalLinks:{marginTop:22,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:7,flexWrap:'wrap'},
+  legalText:{fontSize:10.5,fontWeight:'700',color:C.muted},
+  legalDivider:{fontSize:10,color:'#C5BDC9'},
   accountActions:{marginTop:18,alignItems:'center'},
   logoutButton:{width:'100%',height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},
   logoutText:{fontSize:13,fontWeight:'900',color:'#fff'},

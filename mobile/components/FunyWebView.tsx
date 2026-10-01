@@ -40,7 +40,7 @@ try{
     'html.app-shell.live-pin-page .filters{top:58px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:calc(env(safe-area-inset-bottom, 0px) + 110px)!important;right:16px!important}'
+    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom, 0px), 12px) + 76px)!important;right:16px!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
@@ -49,13 +49,13 @@ try{
   if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
   style.textContent+= 'html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   style.textContent+= 'html.app-shell.web-back-page .header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
-  if(/\/live-pin-test\.html$/.test(path))style.textContent+= 'html.app-shell.live-pin-page .shell{padding-top:58px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:58px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:58px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(env(safe-area-inset-bottom, 0px) + 110px)!important}';
+  if(/\/live-pin-test\.html$/.test(path))style.textContent+= 'html.app-shell.live-pin-page .shell{padding-top:58px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:58px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:58px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(max(env(safe-area-inset-bottom, 0px), 12px) + 76px)!important}';
   document.documentElement.appendChild(style);
   if(/\/talk\.html$/.test(path)){
     var syncPokamoFab=function(){
       try{
         document.querySelectorAll('.pokamo-fab').forEach(function(el){
-          el.style.setProperty('bottom','calc(env(safe-area-inset-bottom, 0px) + 110px)','important');
+          el.style.setProperty('bottom','calc(max(env(safe-area-inset-bottom, 0px), 12px) + 76px)','important');
           el.style.setProperty('right','16px','important');
         });
       }catch(e){}

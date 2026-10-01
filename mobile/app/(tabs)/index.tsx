@@ -12,7 +12,6 @@ export default function Home(){
   const [webBack,setWebBack]=useState(false);
   const [shopDetail,setShopDetail]=useState(false);
   const [scrolling,setScrolling]=useState(false);
-  const [scrolling,setScrolling]=useState(false);
   const navigation=useNavigation();
   const insets=useSafeAreaInsets();
   const bottom=Math.max(insets.bottom,12);
@@ -25,7 +24,7 @@ export default function Home(){
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
+    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
     <View style={{flex:1}}>
       <FunyWebView url="https://funypin.kr/" title="FUNY PIN HOME" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
       {!webBack?<LivePinButton withNav={!shopDetail} scrolling={scrolling}/>:null}

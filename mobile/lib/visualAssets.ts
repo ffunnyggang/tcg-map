@@ -14,7 +14,7 @@ const A='#g';
 const INACTIVE='#g';
 
 export const visualAssets={
-  logo:'https://funypin.kr/assets/logo.png',
+  logo:svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40"><defs><linearGradient id="lg" x1="8" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse"><stop stop-color="#B093F4"/><stop offset=".48" stop-color="#8062D8"/><stop offset="1" stop-color="#6749BD"/></linearGradient><radialGradient id="lb" cx="35%" cy="25%" r="75%"><stop stop-color="#fff"/><stop offset="1" stop-color="#eee9fb"/></radialGradient></defs><ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="rgba(117,87,200,.10)"/><ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="rgba(117,87,200,.16)"/><path fill="url(#lg)" d="M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z"/><path fill="#fff" d="M7.75 13.05h6.38a4.2 4.2 0 0 1 7.74 0h6.38v1.15h-6.08a4.2 4.2 0 0 1-8.34 0H7.75Z"/><circle cx="18" cy="13.65" r="3.15" fill="url(#lb)"/></svg>'),
   home:icon(homeBody(A),true),
   homeInactive:icon(homeBody(INACTIVE),false),
   map:icon(mapBody(A),true),

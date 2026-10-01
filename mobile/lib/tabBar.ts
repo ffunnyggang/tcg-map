@@ -15,10 +15,10 @@ export const getTabBarStyle=(bottom:number):ViewStyle=>({
   position:'absolute',
   bottom,
   shadowColor:'#201C2A',
-  shadowOpacity:.16,
-  shadowRadius:28,
-  shadowOffset:{width:0,height:12},
-  elevation:12,
+  shadowOpacity:.08,
+  shadowRadius:12,
+  shadowOffset:{width:0,height:4},
+  elevation:4,
   overflow:'hidden',
 });
 

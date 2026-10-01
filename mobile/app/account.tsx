@@ -73,9 +73,15 @@ export default function Account(){
           {WEB_MENU.map(([label,file],i)=><Pressable key={file} onPress={()=>openWebMenu(file,label)} style={[styles.menuRow,i<WEB_MENU.length-1&&styles.menuRowBorder]}>
             <Text style={styles.menuLabel}>{label}</Text><Text style={styles.chevron}>›</Text>
           </Pressable>)}
-          {user?<><Pressable onPress={logout} disabled={!!busy} style={[styles.menuRow,styles.menuRowBorder]}><Text style={styles.menuLabel}>{busy==='out'?'처리 중…':'로그아웃'}</Text><Text style={styles.chevron}>›</Text></Pressable>
-          <Pressable onPress={removeAccount} disabled={!!busy} style={styles.menuRow}><Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text><Text style={styles.chevronDanger}>›</Text></Pressable></>:null}
         </View>
+        {user?<View style={styles.accountActions}>
+          <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}>
+            <Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text>
+          </Pressable>
+          <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}>
+            <Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text>
+          </Pressable>
+        </View>:null}
       </View>
     </View>
   </SafeAreaView>;
@@ -110,4 +116,8 @@ const styles={
   googleText:{fontWeight:'800' as const,color:C.text},
   naver:{marginTop:10,height:52,borderRadius:14,backgroundColor:'#03C75A',opacity:.45,alignItems:'center' as const,justifyContent:'center' as const},
   naverText:{fontWeight:'900' as const,color:'#fff'},
+  accountActions:{marginTop:12,alignItems:'center' as const},
+  logoutButton:{width:'100%',height:48,borderRadius:14,backgroundColor:C.purpleDark,alignItems:'center' as const,justifyContent:'center' as const},
+  logoutText:{fontSize:13,fontWeight:'900' as const,color:'#fff'},
+  deleteButton:{marginTop:10,minHeight:32,paddingHorizontal:12,alignItems:'center' as const,justifyContent:'center' as const},
 } as const;

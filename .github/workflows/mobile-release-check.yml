@@ -6,6 +6,13 @@ on:
     branches: [app-mvp]
     paths:
       - 'mobile/**'
+      - 'talk-community-v1.js'
+      - 'talk-safety-v1.js'
+      - 'map-country-stability-v1.js'
+      - 'map-cluster-v1.js'
+      - 'map-country-v1.js'
+      - 'ga4-events.js'
+      - 'admin-community-v1.js'
       - '.github/workflows/mobile-release-check.yml'
 
 jobs:
@@ -21,6 +28,15 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: mobile/package-lock.json
+      - name: Launch-critical web JavaScript syntax
+        run: |
+          node --check ../talk-community-v1.js
+          node --check ../talk-safety-v1.js
+          node --check ../map-country-stability-v1.js
+          node --check ../map-cluster-v1.js
+          node --check ../map-country-v1.js
+          node --check ../ga4-events.js
+          node --check ../admin-community-v1.js
       - run: npm ci
       - name: TypeScript
         run: npx tsc --noEmit

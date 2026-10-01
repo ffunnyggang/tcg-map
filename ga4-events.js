@@ -21,7 +21,7 @@
     const infoBanner=target.closest('.review-banner-slide a');if(infoBanner){const slide=infoBanner.closest('.review-banner-slide');send('info_banner_click',bannerParams(slide,'info_top'));return}
 
     const talkTab=target.closest('.filters .filter');if(talkTab){send('talk_tab_click',{tab_name:clean(talkTab.dataset.cat||talkTab.textContent)});return}
-    const write=target.closest('#pokamoFab');if(write){send('pokamo_write_click',{link_url:clean(write.getAttribute('href'))});return}
+    const write=target.closest('#pokamoFab');if(write){send('talk_write_click',{source:'funypin'});return}
 
     const detailEl=target.closest('#detail-view a,#detail-view button');if(detailEl){
       const s=shop(),href=detailEl.getAttribute('href')||'';
@@ -49,5 +49,9 @@
     input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(record,900)});
     input.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(timer);record()}});
     input.addEventListener('search',()=>{clearTimeout(timer);record()});
+  }
+
+  if(/\/talk\.html$/.test(location.pathname)&&!document.querySelector('script[data-funy-talk-community]')){
+    const s=document.createElement('script');s.src='talk-community-v1.js?v=20261002-01';s.async=false;s.dataset.funyTalkCommunity='1';document.body.appendChild(s);
   }
 })();

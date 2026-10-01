@@ -113,7 +113,7 @@ const styles=StyleSheet.create({
   cameraText:{fontSize:14,color:'#fff'},
   helper:{marginTop:10,textAlign:'center',fontSize:12,color:C.muted},
   avatarDelete:{alignSelf:'center',marginTop:9,paddingHorizontal:10,paddingVertical:6},
-  avatarDeleteText:{fontSize:11.5,fontWeight:'750',color:C.danger},
+  avatarDeleteText:{fontSize:11.5,fontWeight:'700',color:C.danger},
   field:{marginTop:30},
   label:{fontSize:13,fontWeight:'900',color:C.text,marginBottom:8},
   input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},

@@ -35,19 +35,33 @@ export async function getProfile(){
   return {user,profile};
 }
 
+const NICKNAME_RE=/^[가-힣A-Za-z0-9]{2,12}$/;
+
+export function validateNickname(value:string){
+  const nickname=value.trim();
+  if(!nickname)return '닉네임을 입력해주세요.';
+  if(nickname.length<2||nickname.length>12)return '닉네임은 2~12자로 입력해주세요.';
+  if(!NICKNAME_RE.test(nickname))return '닉네임은 한글, 영문, 숫자만 사용할 수 있어요.';
+  return null;
+}
+
 export async function updateProfile(input:{nickname:string;avatar_url?:string|null}){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)throw new Error('LOGIN_REQUIRED');
   const nickname=input.nickname.trim();
-  if(!nickname)throw new Error('닉네임을 입력해주세요.');
-  if(nickname.length>20)throw new Error('닉네임은 20자 이내로 입력해주세요.');
+  const nicknameError=validateNickname(nickname);
+  if(nicknameError)throw new Error(nicknameError);
   const {data,error}=await supabase.from('profiles').upsert({
     user_id:user.id,
     nickname,
     ...(input.avatar_url!==undefined?{avatar_url:input.avatar_url}:{}),
     updated_at:new Date().toISOString()
   }).select('*').single();
-  if(error)throw error;
+  if(error){
+    if(error.code==='23505')throw new Error('이미 사용 중인 닉네임이에요.');
+    if(error.code==='23514')throw new Error('닉네임은 한글, 영문, 숫자만 사용할 수 있어요.');
+    throw error;
+  }
   return data;
 }
 

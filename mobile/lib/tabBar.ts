@@ -2,22 +2,23 @@ import { ViewStyle } from 'react-native';
 import { C,UI } from './theme';
 
 export const getTabBarStyle=(bottom:number):ViewStyle=>({
-  height:UI.navH,
-  paddingBottom:4,
-  paddingTop:4,
-  marginHorizontal:17,
+  height:UI.navH+4,
+  paddingBottom:5,
+  paddingTop:5,
+  marginHorizontal:14,
   borderTopWidth:0,
   borderWidth:1,
-  borderColor:'rgba(255,255,255,.88)',
+  borderColor:'rgba(255,255,255,.82)',
   borderRadius:34,
-  backgroundColor:'transparent',
+  backgroundColor:'rgba(255,255,255,.52)',
   position:'absolute',
   bottom,
   shadowColor:'#201C2A',
-  shadowOpacity:.16,
-  shadowRadius:38,
-  shadowOffset:{width:0,height:14},
-  elevation:10,
+  shadowOpacity:.14,
+  shadowRadius:30,
+  shadowOffset:{width:0,height:12},
+  elevation:12,
+  overflow:'hidden',
 });
 
 export const TAB_BAR_ITEM_STYLE:ViewStyle={

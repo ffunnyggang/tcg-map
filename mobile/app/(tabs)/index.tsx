@@ -13,8 +13,9 @@ export default function Home(){
   const insets=useSafeAreaInsets();
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
-    setWebBack(isWebBackPage(url));
-    navigation.setOptions({tabBarStyle:isShopDetail(url)?{display:'none'}:getTabBarStyle(bottom)});
+    const shopDetail=isShopDetail(url);
+    setWebBack(isWebBackPage(url)||shopDetail);
+    navigation.setOptions({tabBarStyle:shopDetail?{display:'none'}:getTabBarStyle(bottom)});
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>

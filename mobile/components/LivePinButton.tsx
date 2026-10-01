@@ -37,6 +37,8 @@ export default function LivePinButton({withNav=true,scrolling=false}:{withNav?:b
 
   const width=progress.interpolate({inputRange:[0,1],outputRange:[132,46]});
   const labelOpacity=progress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
+  const iconOpacity=progress.interpolate({inputRange:[0,.55,1],outputRange:[1,0,0]});
+  const collapsedIconOpacity=progress.interpolate({inputRange:[0,.55,1],outputRange:[0,0,1]});
   const labelScale=progress.interpolate({inputRange:[0,1],outputRange:[1,.72]});
   const arrowOpacity=labelOpacity;
 
@@ -44,7 +46,7 @@ export default function LivePinButton({withNav=true,scrolling=false}:{withNav?:b
     {showTip&&!scrolling?<View style={styles.tip}><Text style={styles.tipText}>실시간으로 정보 공유해요!</Text></View>:null}
     <Animated.View style={{width}}>
       <Pressable accessibilityRole="button" accessibilityLabel="LIVE PIN 열기" onPress={open} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>
-        <Text style={styles.icon}>⚡</Text>
+        <Animated.Text style={[styles.icon,{opacity:iconOpacity}]}>⚡</Animated.Text>\n        <Animated.Text style={[styles.collapsedIcon,{opacity:collapsedIconOpacity}]}>⚡</Animated.Text>
         <Animated.Text style={[styles.label,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>LIVE PIN</Animated.Text>
         <Animated.Text style={[styles.arrow,{opacity:arrowOpacity,transform:[{scale:labelScale}]}]}>›</Animated.Text>
       </Pressable>
@@ -59,6 +61,7 @@ const styles=StyleSheet.create({
   button:{height:46,width:'100%',paddingHorizontal:16,borderRadius:23,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7,backgroundColor:C.purpleDark,borderWidth:1,borderColor:'rgba(255,255,255,.45)',shadowColor:'#6749BD',shadowOpacity:.30,shadowRadius:12,shadowOffset:{width:0,height:6},elevation:8},
   pressed:{opacity:.82,transform:[{scale:.98}]},
   icon:{fontSize:18,lineHeight:20,color:'#fff'},
+  collapsedIcon:{position:'absolute',left:0,right:0,textAlign:'center',fontSize:18,lineHeight:20,color:'#fff'},
   label:{fontSize:12,fontWeight:'900',color:'#fff'},
   arrow:{fontSize:19,fontWeight:'500',lineHeight:20,color:'#fff',marginLeft:-1},
 });

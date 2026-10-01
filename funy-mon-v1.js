@@ -177,6 +177,8 @@
     if(busy)return;busy=true;
     try{
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
+      const captureHeaders={'Content-Type':'application/json'};
+      try{if(window.__FUNY_ACCESS_TOKEN)captureHeaders.Authorization='Bearer '+window.__FUNY_ACCESS_TOKEN}catch(_){}
       const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){

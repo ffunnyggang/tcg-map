@@ -21,6 +21,6 @@ export default function Talk(){
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="TALK"/></View>:null}
-    <FunyWebView url="https://funypin.kr/talk.html" title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
+    <FunyWebView url="https://funypin.kr/talk.html" title="FUNY PIN TALK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TALK" onWebScrollChange={setScrolling}/>
   </SafeAreaView>;
 }

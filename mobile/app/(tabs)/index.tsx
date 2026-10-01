@@ -26,7 +26,7 @@ export default function Home(){
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
     <View style={{flex:1}}>
-      <FunyWebView url="https://funypin.kr/" title="FUNY PIN HOME" onWebRouteChange={onRoute} onWebScrollChange={setScrolling}/>
+      <FunyWebView url="https://funypin.kr/" title="FUNY PIN HOME" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="FUNY PIN" onWebScrollChange={setScrolling}/>
       {!webBack?<LivePinButton withNav={!shopDetail} scrolling={scrolling}/>:null}
     </View>
   </SafeAreaView>;

@@ -34,13 +34,15 @@ try{
   style.textContent=[
     'html{--funy-app-shell:1}',
     'html.app-shell nav.portal-bottom-nav,html.app-shell nav.shops-bottom-nav,html.app-shell .portal-bottom-nav,html.app-shell .shops-bottom-nav,html.app-shell .funy-lang-switch{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
-    'html.app-shell .info-tabs,html.app-shell .filters{top:0!important}',
+    'html.app-shell .info-tabs{top:0!important}',
+    'html.app-shell.live-pin-page .filters{top:58px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell .pokamo-fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
-  if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 78px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
+  if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
+  if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell .fab{bottom:calc(env(safe-area-inset-bottom) + 16px)!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important}';
   style.textContent+= 'html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   document.documentElement.appendChild(style);
 }catch(e){}
@@ -91,9 +93,9 @@ try{
 }catch(e){}
 })(); true;`;
 
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;showBackHeader?:boolean;backTitle?:string};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;showBackHeader?:boolean;backTitle?:string;onNativeBack?:()=>void};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,showBackHeader=false,backTitle}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,showBackHeader=false,backTitle,onNativeBack}:Props){
   const router=useRouter();
   const isFocused=useIsFocused();
   const ref=useRef<WebView>(null);
@@ -107,7 +109,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const backdropOpacity=useRef(new Animated.Value(0)).current;
   const reloadAttempts=useRef(0);
   const {height:windowHeight}=useWindowDimensions();
-  const goBack=useCallback(()=>{if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,router]);
+  const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
 
   const reportRoute=useCallback((target:string)=>{onWebRouteChange?.(target);},[onWebRouteChange]);

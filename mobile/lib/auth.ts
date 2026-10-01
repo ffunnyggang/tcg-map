@@ -45,6 +45,14 @@ export function validateNickname(value:string){
   return null;
 }
 
+export function nicknameNextChangeAt(changedAt?:string|null){
+  if(!changedAt)return null;
+  const t=new Date(changedAt).getTime();
+  if(!Number.isFinite(t))return null;
+  const next=t+30*24*60*60*1000;
+  return next>Date.now()?new Date(next):null;
+}
+
 export async function updateProfile(input:{nickname:string;avatar_url?:string|null}){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)throw new Error('LOGIN_REQUIRED');
@@ -60,6 +68,7 @@ export async function updateProfile(input:{nickname:string;avatar_url?:string|nu
   if(error){
     if(error.code==='23505')throw new Error('이미 사용 중인 닉네임이에요.');
     if(error.code==='23514')throw new Error('닉네임은 한글, 영문, 숫자만 사용할 수 있어요.');
+    if(error.code==='P0001'&&String(error.message||'').includes('NICKNAME_CHANGE_COOLDOWN'))throw new Error('닉네임은 변경 후 30일 동안 다시 변경할 수 없어요.');
     throw error;
   }
   return data;
@@ -78,6 +87,19 @@ export async function uploadProfileAvatar(uri:string,mimeType?:string|null){
   });
   if(uploadError)throw uploadError;
   const {data}=supabase.storage.from('profile-images').getPublicUrl(path);
-  const url=`${data.publicUrl}?v=${Date.now()}`;
-  return url;
+  return `${data.publicUrl}?v=${Date.now()}`;
+}
+
+export async function removeProfileAvatar(){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)throw new Error('LOGIN_REQUIRED');
+  const {data:files,error:listError}=await supabase.storage.from('profile-images').list(user.id,{limit:20});
+  if(listError)throw listError;
+  const paths=(files||[]).filter(x=>String(x.name||'').startsWith('avatar.')).map(x=>`${user.id}/${x.name}`);
+  if(paths.length){
+    const {error:removeError}=await supabase.storage.from('profile-images').remove(paths);
+    if(removeError)throw removeError;
+  }
+  const {error}=await supabase.from('profiles').upsert({user_id:user.id,avatar_url:null,updated_at:new Date().toISOString()});
+  if(error)throw error;
 }

@@ -142,6 +142,11 @@ export default function Account(){
         </View>
       </View>
 
+      {user?<View style={styles.accountActions}>
+        <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}><Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text></Pressable>
+        <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}><Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text></Pressable>
+      </View>:null}
+
       <View style={styles.legalLinks}>
         <Pressable onPress={()=>openWebMenu('terms.html','이용약관')}><Text style={styles.legalText}>이용약관</Text></Pressable>
         <Text style={styles.legalDivider}>·</Text>
@@ -150,10 +155,6 @@ export default function Account(){
         <Pressable onPress={()=>openWebMenu('community-guidelines.html','커뮤니티 운영정책')}><Text style={styles.legalText}>커뮤니티 운영정책</Text></Pressable>
       </View>
 
-      {user?<View style={styles.accountActions}>
-        <Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}><Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text></Pressable>
-        <Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}><Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text></Pressable>
-      </View>:null}
     </ScrollView>
   </SafeAreaView>;
 }

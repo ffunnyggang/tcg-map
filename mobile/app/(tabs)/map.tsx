@@ -1,5 +1,6 @@
 import { useCallback,useEffect,useState } from 'react';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useNavigation } from 'expo-router';
 import FunyWebView,{isShopDetail,isWebBackPage} from '../../components/FunyWebView';
 import LivePinButton from '../../components/LivePinButton';
@@ -27,5 +28,5 @@ export default function MapScreen(){
 }
 
 function ViewWithLivePin({children,webBack,shopDetail}:{children:React.ReactNode;webBack:boolean;shopDetail:boolean}){
-  return <div style={{flex:1}}>{children}{!webBack?<LivePinButton withNav={!shopDetail}/>:null}</div>;
+  return <View style={{flex:1}}>{children}{!webBack?<LivePinButton withNav={!shopDetail}/>:null}</View>;
 }

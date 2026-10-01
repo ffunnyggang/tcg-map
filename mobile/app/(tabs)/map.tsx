@@ -30,5 +30,5 @@ export default function MapScreen(){
 }
 
 function ViewWithLivePin({children,webBack,shopDetail,scrolling,onScrollChange}:{children:ReactNode;webBack:boolean;shopDetail:boolean;scrolling:boolean;onScrollChange:(value:boolean)=>void}){
-  return <View style={{flex:1}}>{children}{!webBack?<LivePinButton withNav={!shopDetail} scrolling={scrolling}/>:null}</View>;
+  return <View style={{flex:1}}>{children}{!webBack?<LivePinButton withNav scrolling={scrolling}/>:null}</View>;
 }

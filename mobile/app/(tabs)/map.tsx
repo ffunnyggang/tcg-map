@@ -1,13 +1,11 @@
-import { useCallback,useEffect,useState } from 'react';
+import { useCallback,useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from 'expo-router';
-import FunyWebView,{isShopDetail,isWebBackPage} from '../../components/FunyWebView';
+import FunyWebView,{isShopDetail} from '../../components/FunyWebView';
 
 export default function MapScreen(){
   const navigation=useNavigation();
-  const [webBack,setWebBack]=useState(false);
   const onRoute=useCallback((url:string)=>{
-    setWebBack(isWebBackPage(url));
     navigation.setOptions({tabBarStyle:isShopDetail(url)?{display:'none'}:undefined});
   },[navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:undefined});},[navigation]);

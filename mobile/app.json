@@ -32,8 +32,9 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "현재 위치 주변의 카드샵을 찾기 위해 위치 권한이 필요합니다.",
-"ITSAppUsesNonExemptEncryption": false
-      }
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon": "./assets/app-icon.png"
     },
     "android": {
       "package": "kr.funypin.app",
@@ -50,6 +51,7 @@
       "eas": {
         "projectId": "777bf7d4-7850-48f4-8560-a04478afb878"
       }
-    }
+    },
+    "icon": "./assets/app-icon.png"
   }
 }

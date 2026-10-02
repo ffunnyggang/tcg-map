@@ -103,3 +103,32 @@ export async function removeProfileAvatar(){
   const {error}=await supabase.from('profiles').upsert({user_id:user.id,avatar_url:null,updated_at:new Date().toISOString()});
   if(error)throw error;
 }
+
+
+function decodeBase64Bytes(value:string){
+  const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const clean=value.replace(/[^A-Za-z0-9+/=]/g,'');
+  const out:number[]=[];let buffer=0,bits=0;
+  for(const ch of clean){
+    if(ch==='=')break;
+    const v=alphabet.indexOf(ch);if(v<0)continue;
+    buffer=(buffer<<6)|v;bits+=6;
+    if(bits>=8){bits-=8;out.push((buffer>>bits)&255);buffer&=(1<<bits)-1;}
+  }
+  return new Uint8Array(out);
+}
+export async function uploadProfileAvatarDataUrl(dataUrl:string){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)throw new Error('LOGIN_REQUIRED');
+  const m=String(dataUrl||'').match(/^data:(image\/[A-Za-z0-9.+-]+);base64,(.+)$/s);
+  if(!m)throw new Error('INVALID_IMAGE_DATA');
+  const mimeType=m[1]||'image/jpeg',ext=mimeType.includes('png')?'png':mimeType.includes('webp')?'webp':'jpg';
+  const path=`${user.id}/avatar.${ext}`;
+  const bytes=decodeBase64Bytes(m[2]);
+  const {error:uploadError}=await supabase.storage.from('profile-images').upload(path,bytes.buffer,{
+    contentType:mimeType,cacheControl:'3600',upsert:true
+  });
+  if(uploadError)throw uploadError;
+  const {data}=supabase.storage.from('profile-images').getPublicUrl(path);
+  return `${data.publicUrl}?v=${Date.now()}`;
+}

@@ -42,3 +42,22 @@
 
 /* PNG-only nav icon guard: remove every legacy pseudo/mask icon layer */
 .portal-bottom-nav a:nth-child(1):before,.portal-bottom-nav a:nth-child(2):before,.portal-bottom-nav a:nth-child(3):before,.portal-bottom-nav a:nth-child(4):before,.shops-bottom-nav a:nth-child(1):before,.shops-bottom-nav a:nth-child(2):before,.shops-bottom-nav a:nth-child(3):before,.shops-bottom-nav a:nth-child(4):before{display:none!important;content:none!important;background:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+
+
+/* HOME uses one shared silhouette for both states: line when inactive, filled when active. */
+.portal-bottom-nav .nav-icon-home,.shops-bottom-nav .nav-icon-home{
+  overflow:visible!important;
+}
+.portal-bottom-nav .nav-icon-home path,.shops-bottom-nav .nav-icon-home path{
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  vector-effect:non-scaling-stroke;
+}
+.portal-bottom-nav a.active .nav-icon-home path,.shops-bottom-nav a.active .nav-icon-home path{
+  fill:currentColor!important;
+  stroke:currentColor!important;
+  stroke-width:0!important;
+}

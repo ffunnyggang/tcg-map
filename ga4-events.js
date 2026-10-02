@@ -94,3 +94,22 @@
     }catch(_){return nativeToBlob.call(source,callback,type,quality)}
   };
 })();
+
+/* 2026-10-02 release bootstrap: shared nav, FUNY TALK, PICK in-app links. */
+(function(){
+  try{
+    if(!document.querySelector('link[data-funy-nav-release]')){
+      const nav=document.createElement('link');nav.rel='stylesheet';nav.href='nav-v4.css?v=20261002-01';nav.dataset.funyNavRelease='1';document.head.appendChild(nav);
+    }
+    const path=String(location.pathname||'').toLowerCase();
+    if(/\/talk\.html$/.test(path)&&!document.querySelector('script[data-funy-talk-community]')){
+      const community=document.createElement('script');community.src='talk-community-v1.js?v=20261002-01';community.async=false;community.dataset.funyTalkCommunity='1';
+      community.onload=()=>{if(document.querySelector('script[data-funy-talk-safety]'))return;const safety=document.createElement('script');safety.src='talk-safety-v1.js?v=20261002-01';safety.async=false;safety.dataset.funyTalkSafety='1';document.body.appendChild(safety)};
+      document.body.appendChild(community);
+    }
+    if(/\/reviews\.html$/.test(path)){
+      const decorate=()=>document.querySelectorAll('a.review-schedule-card[href]').forEach(a=>{const href=a.getAttribute('href')||'';if(!href||href==='#'||href.startsWith('javascript:'))return;a.setAttribute('data-funy-link-mode','inapp');a.setAttribute('data-funy-inapp-presentation','bottom_sheet');a.removeAttribute('target')});
+      decorate();const root=document.querySelector('.review-schedule-list')||document.body;new MutationObserver(decorate).observe(root,{childList:true,subtree:true});
+    }
+  }catch(_){}
+})();

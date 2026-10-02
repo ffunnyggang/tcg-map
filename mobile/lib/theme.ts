@@ -10,7 +10,7 @@ export const UI={
 
 /** Native type scale mirrors the mobile web hierarchy while keeping sub-page headers compact. */
 export const T:Record<'header'|'pageTitle'|'section'|'body'|'caption'|'button'|'nav',TextStyle>={
-  header:{fontSize:17,lineHeight:22,fontWeight:'800',letterSpacing:-.3},
+  header:{fontSize:19,lineHeight:24,fontWeight:'800',letterSpacing:-.35},
   pageTitle:{fontSize:23,lineHeight:30,fontWeight:'900',letterSpacing:-.6},
   section:{fontSize:16,lineHeight:20,fontWeight:'800',letterSpacing:-.25},
   body:{fontSize:13,lineHeight:20,fontWeight:'500'},

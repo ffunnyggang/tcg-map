@@ -1,7 +1,7 @@
-import { useCallback,useState } from 'react';
+import { useCallback,useEffect,useState } from 'react';
 import { ActivityIndicator,Alert,Image,Platform,Pressable,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect,useRouter } from 'expo-router';
+import { useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { deleteAccount,getProfile,signOut } from '../lib/auth';
 import { signInSocial } from '../lib/socialAuth';
@@ -25,13 +25,15 @@ const formatJoinDate=(value?:string|null)=>{if(!value)return '-';const d=new Dat
 
 export default function Account(){
   const router=useRouter();
+  const params=useLocalSearchParams<{refresh?:string}>();
   const [loading,setLoading]=useState(true),[user,setUser]=useState<any>(null),[profile,setProfile]=useState<any>(null),[busy,setBusy]=useState<string|null>(null);
   const refresh=useCallback(async()=>{try{const x=await getProfile();setUser(x.user);setProfile(x.profile);}finally{setLoading(false);}},[]);
   useFocusEffect(useCallback(()=>{refresh();},[refresh]));
+  useEffect(()=>{if(params.refresh)refresh();},[params.refresh,refresh]);
   const social=async(provider:'google'|'kakao')=>{setBusy(provider);try{const ok=await signInSocial(provider);if(ok)await refresh();}catch(e:any){Alert.alert('로그인 실패',String(e?.message||e));}finally{setBusy(null);}};
   const apple=async()=>{setBusy('apple');try{await signInWithApple();await refresh();}catch(e:any){if(e?.code!=='ERR_REQUEST_CANCELED')Alert.alert('Apple 로그인 실패',String(e?.message||e));}finally{setBusy(null);}};
   const runLogout=async()=>{setBusy('out');try{await signOut();await refresh();}catch(e:any){Alert.alert('로그아웃 실패',String(e?.message||e));}finally{setBusy(null);}};
-  const logout=()=>{if(busy)return;Alert.alert('로그아웃할까요?','로그아웃해도 저장된 관심 매장과 활동 내역은 계정에 유지됩니다.',[{text:'취소',style:'cancel'},{text:'로그아웃',style:'destructive',onPress:runLogout}]);};
+  const logout=()=>{if(busy)return;Alert.alert('로그아웃할까요?','로그아웃해도 저장된 관심 매장과 활동 내역은 계정에 유지돼요.',[{text:'취소',style:'cancel'},{text:'로그아웃',style:'destructive',onPress:runLogout}]);};
   const removeAccount=()=>Alert.alert('계정을 삭제할까요?','계정과 프로필, 관심 매장 등 계정에 연결된 정보가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',[{text:'취소',style:'cancel'},{text:'계정 삭제',style:'destructive',onPress:async()=>{setBusy('delete');try{await deleteAccount();setUser(null);setProfile(null);Alert.alert('계정 삭제 완료','FUNY PIN 계정이 삭제되었습니다.');}catch(e:any){Alert.alert('계정 삭제 실패',String(e?.message||e));}finally{setBusy(null);}}}]);
   const openWebMenu=(file:string,title:string)=>router.push({pathname:'/web',params:{url:encodeURIComponent('https://funypin.kr/'+file),title}});
 
@@ -43,7 +45,7 @@ export default function Account(){
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
 
   return <SafeAreaView style={styles.root}>
-    <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1.15} style={styles.headerTitle}>MY</Text></View>
+    <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1.1} style={styles.headerTitle}>MY</Text></View>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}
@@ -65,9 +67,9 @@ export default function Account(){
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#F7F4FC'},loading:{flex:1,justifyContent:'center',backgroundColor:'#F7F4FC'},header:{height:UI.headerH,paddingHorizontal:UI.screenPad,flexDirection:'row',alignItems:'center',backgroundColor:'#fff'},back:{width:36,height:36,alignItems:'center',justifyContent:'center',marginRight:5},backText:{fontSize:28,lineHeight:30,color:C.text},headerTitle:{...T.header,color:C.text},content:{padding:16,paddingBottom:40},
+  root:{flex:1,backgroundColor:'#F7F4FC'},loading:{flex:1,justifyContent:'center',backgroundColor:'#F7F4FC'},header:{height:UI.headerH,paddingHorizontal:UI.screenPad,flexDirection:'row',alignItems:'center',backgroundColor:'#fff'},back:{width:34,height:34,alignItems:'center',justifyContent:'center',marginRight:4},backText:{fontSize:27,lineHeight:29,color:C.text},headerTitle:{...T.header,color:C.text},content:{padding:16,paddingBottom:40},
   profileCard:{padding:18,borderRadius:22,backgroundColor:'#fff',borderWidth:1,borderColor:'#E3DDED',alignItems:'center'},avatar:{width:78,height:78,borderRadius:39,backgroundColor:'#EEE8FA',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#E0D5F1'},avatarImage:{width:78,height:78,borderRadius:39,backgroundColor:'#eee'},avatarText:{fontSize:26,fontWeight:'900',color:C.purpleDark},profileCopy:{marginTop:11,alignItems:'center',width:'100%'},nickname:{fontSize:21,fontWeight:'900',color:C.text},joinDate:{marginTop:5,fontSize:11.5,color:C.muted},profileEdit:{marginTop:14,width:'100%',height:42,borderRadius:12,backgroundColor:'#F0EBF9',alignItems:'center',justifyContent:'center'},profileEditText:{fontSize:12.5,fontWeight:'900',color:C.purpleDark},
   loginCard:{marginTop:14,padding:18,borderRadius:20,backgroundColor:'#fff',borderWidth:1,borderColor:C.line},loginTitle:{fontSize:16,fontWeight:'900',color:C.text},loginText:{marginTop:6,fontSize:11.5,lineHeight:18,color:C.muted},kakao:{height:50,borderRadius:13,backgroundColor:'#FEE500',alignItems:'center',justifyContent:'center'},socialText:{fontWeight:'900',color:'#191600'},google:{height:50,borderRadius:13,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},googleText:{fontWeight:'800',color:C.text},
-  section:{marginTop:25},sectionHead:{flexDirection:'row',alignItems:'baseline',paddingHorizontal:3,marginBottom:9},sectionTitle:{...T.section,color:C.text},activityCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},activityRow:{minHeight:74,paddingHorizontal:14,flexDirection:'row',alignItems:'center'},activityIcon:{width:42,height:42,borderRadius:14,backgroundColor:'#F0EBF9',alignItems:'center',justifyContent:'center'},activityIconText:{fontSize:18,color:C.purpleDark},activityCopy:{flex:1,marginLeft:12},activityLabel:{fontSize:14,fontWeight:'900',color:C.text},activitySub:{marginTop:4,fontSize:10.5,color:C.muted},supportCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},supportRow:{minHeight:54,paddingHorizontal:16,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},supportLabel:{fontSize:13,fontWeight:'700',color:C.textSoft},rowBorder:{borderBottomWidth:1,borderBottomColor:C.divider},chevron:{fontSize:21,color:'#B0A9B5'},
+  section:{marginTop:23},sectionHead:{flexDirection:'row',alignItems:'baseline',paddingHorizontal:3,marginBottom:8},sectionTitle:{fontSize:15,lineHeight:19,fontWeight:'800',letterSpacing:-.2,color:C.text},activityCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},activityRow:{minHeight:72,paddingHorizontal:14,flexDirection:'row',alignItems:'center'},activityIcon:{width:42,height:42,borderRadius:14,backgroundColor:'#F0EBF9',alignItems:'center',justifyContent:'center'},activityIconText:{fontSize:18,color:C.purpleDark},activityCopy:{flex:1,marginLeft:12},activityLabel:{fontSize:14,fontWeight:'900',color:C.text},activitySub:{marginTop:4,fontSize:10.5,color:C.muted},supportCard:{borderRadius:19,backgroundColor:'#fff',borderWidth:1,borderColor:C.line,overflow:'hidden'},supportRow:{minHeight:52,paddingHorizontal:16,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},supportLabel:{fontSize:13.5,fontWeight:'700',color:C.textSoft},rowBorder:{borderBottomWidth:1,borderBottomColor:C.divider},chevron:{fontSize:21,color:'#B0A9B5'},
   legalLinks:{marginTop:22,flexDirection:'row',justifyContent:'center',alignItems:'center',gap:7,flexWrap:'wrap'},legalText:{fontSize:10.5,fontWeight:'700',color:C.muted},legalDivider:{fontSize:10,color:'#C5BDC9'},accountActions:{marginTop:18,alignItems:'center'},logoutButton:{width:'100%',height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},logoutText:{fontSize:13,fontWeight:'900',color:'#fff'},deleteButton:{marginTop:8,minHeight:34,paddingHorizontal:12,alignItems:'center',justifyContent:'center'},deleteLabel:{fontSize:12,fontWeight:'800',color:C.danger}
 });

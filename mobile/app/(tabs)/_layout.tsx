@@ -1,3 +1,4 @@
+import { useEffect,useState } from 'react';
 import { Tabs } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
@@ -5,6 +6,7 @@ import { Platform,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C,UI } from '../../lib/theme';
 import { TAB_INACTIVE } from '../../lib/tabBar';
+import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
 
 type IconKind='home'|'map'|'pick'|'talk';
 
@@ -51,12 +53,14 @@ function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const insets=useSafeAreaInsets();
+  const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
+  useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
   const bottom=Math.max(insets.bottom,UI.navBottomGap);
   const currentRoute=state.routes[state.index];
   const currentOptions=descriptors[currentRoute.key]?.options;
   const currentStyle=currentOptions?.tabBarStyle;
   const isHidden=!!currentStyle&&!Array.isArray(currentStyle)&&typeof currentStyle==='object'&&'display' in currentStyle&&currentStyle.display==='none';
-  if(isHidden)return null;
+  if(isHidden||overlayOpen)return null;
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>

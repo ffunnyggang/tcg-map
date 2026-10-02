@@ -96,6 +96,15 @@
     const fx=document.getElementById('funyMonFx');
     if(fx)fx.innerHTML=state==='is-fail'?'<i>💔</i><i>·</i><i>·</i>':state==='is-prize'?'<i>✦</i><i>✦</i><i>★</i><i>✦</i><i>✦</i>':'<i>♡</i><i>✦</i><i>♡</i>';
   }
+  function ensureCatchLoading(){
+    if(document.getElementById('funyMonCatchLoading'))return;
+    const el=document.createElement('div');el.id='funyMonCatchLoading';el.className='funy-mon-catch-loading';el.hidden=true;
+    el.innerHTML='<div class="funy-mon-catch-loading-card"><span class="funy-mon-catch-spinner" aria-hidden="true"></span><strong>퍼니몬 포획 중...</strong><small>잠시만 기다려주세요</small></div>';
+    document.body.appendChild(el);
+  }
+  function showCatchLoading(){ensureCatchLoading();const el=document.getElementById('funyMonCatchLoading');if(el)el.hidden=false}
+  function hideCatchLoading(){const el=document.getElementById('funyMonCatchLoading');if(el)el.hidden=true}
+
   function ensureCatchOutcome(){
     if(document.getElementById('funyMonOutcome'))return;
     const el=document.createElement('div');
@@ -174,7 +183,7 @@
   }
   function getPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('unsupported'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
   async function catchMonster(meta){
-    if(busy)return;busy=true;
+    if(busy)return;busy=true;showCatchLoading();try{window.gtag?.('event','funymon_catch_start',{shop_id:meta.shop.id,monster_id:meta.def.id})}catch(_){}
     try{
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
       const captureHeaders={'Content-Type':'application/json'};
@@ -192,8 +201,8 @@
         else showMessage('포획 처리 중 오류가 발생했어요','잠시 후 다시 시도해주세요.');return;
       }
       saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);try{meta.marker.setMap(null)}catch(_){}syncVisibility();
-      if(data.result==='failed'){showCatchOutcome(false,'아쉽게 놓쳤어요! 다른 퍼니몬을 포획해보세요.');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
-    }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else if(code===2)showMessage('현재 위치를 확인하지 못했어요','GPS 또는 위치 서비스를 켠 뒤 다시 시도해주세요.');else if(code===3)showMessage('위치 확인 시간이 초과됐어요','잠시 후 다시 시도해주세요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false}
+      try{window.gtag?.('event','funymon_catch_result',{shop_id:meta.shop.id,monster_id:meta.def.id,result:data.result,reward_type:data.reward?.reward_type||''})}catch(_){}if(data.result==='failed'){showCatchOutcome(false,'아쉽게 놓쳤어요! 다른 퍼니몬을 포획해보세요.');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
+    }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else if(code===2)showMessage('현재 위치를 확인하지 못했어요','GPS 또는 위치 서비스를 켠 뒤 다시 시도해주세요.');else if(code===3)showMessage('위치 확인 시간이 초과됐어요','잠시 후 다시 시도해주세요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false;hideCatchLoading()}
   }
 
   function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}

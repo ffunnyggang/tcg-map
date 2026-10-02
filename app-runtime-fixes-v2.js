@@ -98,19 +98,20 @@
 
   function returnToMapFromDetail(){
     const currentCountry=window.FUNY_MAP_COUNTRY?.get?.()||'KR';
-    try{if(typeof closeDetail==='function')closeDetail();else{document.getElementById('detail-view')?.setAttribute('hidden','');document.getElementById('home-view')?.removeAttribute('hidden')}}catch(_){}
-    try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(_){location.hash=''}
-    setTimeout(()=>{
-      try{
-        if(currentCountry==='JP'){
-          document.body.classList.add('country-japan');
-          const gm=window.FUNY_GOOGLE_MAP_API?.getMap?.();
-          if(gm&&window.google?.maps){google.maps.event.trigger(gm,'resize')}
-        }
-        window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:currentCountry}}));
-        window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country:currentCountry}}));
-      }catch(_){}
-    },120);
+    try{
+      if(typeof closeDetail==='function')closeDetail();
+      else{
+        document.getElementById('detail-view')?.setAttribute('hidden','');
+        document.getElementById('home-view')?.removeAttribute('hidden');
+      }
+    }catch(_){}
+    try{
+      if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+    }catch(_){location.hash=''}
+    const refresh=()=>{try{window.FUNY_MAP_COUNTRY?.refresh?.();window.FUNY_MAP_CLUSTER?.refresh?.();window.dispatchEvent(new CustomEvent('funy:list-refresh'));}catch(_){}};
+    requestAnimationFrame(()=>requestAnimationFrame(refresh));
+    setTimeout(refresh,180);
+    setTimeout(refresh,420);
   }
 
   function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}

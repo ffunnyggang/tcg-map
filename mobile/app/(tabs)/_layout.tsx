@@ -34,7 +34,7 @@ const NAV_ICONS:Record<IconKind,{active:any;inactive:any}>={
 };
 
 function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
-  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={styles.icon}/>;
+  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,kind==='pick'&&styles.iconPick]}/>;
 }
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
@@ -72,9 +72,10 @@ const styles=StyleSheet.create({
   glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:25,overflow:'hidden',borderWidth:.6,borderColor:'rgba(255,255,255,.72)',backgroundColor:'rgba(248,246,252,.08)',shadowColor:'#372B4A',shadowOpacity:.08,shadowRadius:12,shadowOffset:{width:0,height:4},elevation:6},
   glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.06)'},
   item:{flex:1,height:42,borderRadius:21,alignItems:'center',justifyContent:'center',gap:0},
-  itemActive:{backgroundColor:'rgba(117,87,199,.10)',borderWidth:.5,borderColor:'rgba(117,87,199,.16)'},
+  itemActive:{backgroundColor:'rgba(117,87,199,.055)'},
   itemPressed:{opacity:.7},
   icon:{width:24,height:24},
+  iconPick:{width:26,height:26,marginVertical:-1},
   label:{fontSize:9,lineHeight:10.5,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
   labelActive:{fontWeight:'800',color:C.purpleDark}
 });

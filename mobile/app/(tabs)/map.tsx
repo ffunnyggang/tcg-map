@@ -23,7 +23,7 @@ export default function MapScreen(){
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
     const detail=isShopDetail(url);
-    const back=isWebBackPage(url);
+    const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();
     setShopDetail(detail);
     setWebBack(back);
     navigation.setOptions({tabBarStyle:(detail||back)?{display:'none'}:getTabBarStyle(bottom)});

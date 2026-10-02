@@ -338,3 +338,13 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-entry-apply button{grid-column:2;margin:0;width:88px;height:46px}
 .funy-mon-entry-message{grid-column:1/-1;margin-top:0}
 @media(max-width:360px){.funy-mon-entry-apply{grid-template-columns:minmax(0,1fr) 76px}.funy-mon-entry-apply button{width:76px}}
+
+/* Entry reward coupon fit */
+.funy-mon-reward-kuji:has(.funy-mon-entry-apply){height:224px!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply){justify-content:flex-start!important;padding:16px 22px 13px!important;overflow:hidden!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-reward-retro{font-size:25px!important;line-height:1!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-reward-title{margin-top:7px!important;font-size:14px!important;line-height:1.2!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-post-guide{margin-top:6px!important;padding-top:6px!important;font-size:9.5px!important;line-height:1.3!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-reward-detail{margin-top:5px!important}
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-entry-apply{width:100%;margin-top:9px;padding-top:9px}
+@media(max-width:360px){.funy-mon-reward-kuji:has(.funy-mon-entry-apply){height:230px!important}.funy-mon-reward-result:has(.funy-mon-entry-apply){padding-left:18px!important;padding-right:18px!important}}

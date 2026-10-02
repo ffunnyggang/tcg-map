@@ -35,12 +35,11 @@ export default function ProfileEdit(){
 
   const cropperHtml=(src:string)=>`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><style>
   *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111015;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;-webkit-user-select:none;user-select:none}
-  .top{height:64px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}.top button{border:0;background:transparent;color:#fff;font-size:15px;font-weight:800;padding:10px}.top .save{color:#bca6ff}
-  .wrap{height:calc(100% - 128px);display:grid;place-items:center}.stage{position:relative;width:300px;height:300px;border-radius:50%;overflow:hidden;background:#222;touch-action:none;box-shadow:0 0 0 9999px rgba(0,0,0,.52),0 0 0 2px rgba(255,255,255,.9)}
+  .top{height:54px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-size:15px}.wrap{height:calc(100% - 164px);display:grid;place-items:center}.stage{position:relative;width:300px;height:300px;border-radius:50%;overflow:hidden;background:#222;touch-action:none;box-shadow:0 0 0 9999px rgba(0,0,0,.52),0 0 0 2px rgba(255,255,255,.9)}
   .stage img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;will-change:transform}
   .guide{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}
-  .bottom{height:64px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px}
-  </style></head><body><div class="top"><button id="cancel">취소</button><strong>프로필 이미지 조정</strong><button id="save" class="save">완료</button></div><div class="wrap"><div id="stage" class="stage"><img id="img" src=${JSON.stringify(src)}><div class="guide"></div></div></div><div class="bottom">한 손가락으로 이동 · 두 손가락으로 확대/축소</div><script>
+  .bottom{height:110px;padding:10px 18px 14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#aaa;font-size:12px;gap:12px}.actions{width:min(100%,320px);display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions button{height:44px;border-radius:12px;font-size:14px;font-weight:850}.cancel{border:1px solid #45414b;background:#242128;color:#fff}.save{border:0;background:#8062d8;color:#fff}
+  </style></head><body><div class="top"><strong>프로필 이미지 조정</strong></div><div class="wrap"><div id="stage" class="stage"><img id="img" src=${JSON.stringify(src)}><div class="guide"></div></div></div><div class="bottom"><div>한 손가락으로 이동 · 두 손가락으로 확대/축소</div><div class="actions"><button id="cancel" class="cancel">취소</button><button id="save" class="save">완료</button></div></div><script>
   (function(){
     var V=300,img=document.getElementById('img'),stage=document.getElementById('stage'),x=0,y=0,scale=1,minScale=1,start=null,pinch=null;
     function clamp(){var w=img.naturalWidth*scale,h=img.naturalHeight*scale;x=Math.min(0,Math.max(V-w,x));y=Math.min(0,Math.max(V-h,y));}

@@ -33,3 +33,6 @@ html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;
 .funy-lang-icon{display:block}
 .funy-lang-switch button span{display:flex;align-items:center;height:15px;line-height:15px}
 @media(max-width:430px){.funy-lang-switch{top:0;height:58px}.funy-lang-switch button{height:32px}}
+
+/* QA floating action polish */
+.live-pin-entry{background:#17151B!important;box-shadow:0 8px 24px rgba(17,16,21,.24)!important}

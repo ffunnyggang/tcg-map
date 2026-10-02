@@ -1,3 +1,4 @@
+// FUNY PIN final release verification
 import { useEffect,useState } from 'react';
 import { Tabs } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';

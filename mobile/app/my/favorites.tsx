@@ -20,7 +20,7 @@ export default function Favorites(){
         {shops.length?shops.map(shop=>{
           const image=shop.images?.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0];
           const station=shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?' 도보 '+shop.walk_minutes+'분':'')):'카드샵';
-          return <Pressable key={shop.id} onPress={()=>router.push({pathname:'/(tabs)/map',params:{country:shop.country_code,shop:shop.id}} as any)} style={styles.card}>
+          return <Pressable key={shop.id} onPress={()=>router.push({pathname:'/(tabs)/map',params:{country:shop.country_code,shop:shop.id,from:'favorites'}} as any)} style={styles.card}>
             {image?<Image source={{uri:shopImageUrl(image.storage_path||image.source_path)}} style={styles.image}/>:<View style={styles.imageFallback}><Text style={styles.imageFallbackText}>FUNY PIN</Text></View>}
             <View style={styles.copy}>
               <View style={styles.titleRow}><Text numberOfLines={1} style={styles.name}>{shop.name}</Text></View>

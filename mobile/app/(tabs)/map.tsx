@@ -13,12 +13,13 @@ export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
   const [shopDetail,setShopDetail]=useState(false);
   const [scrolling,setScrolling]=useState(false);
-  const {__tabRefresh,country,shop}=useLocalSearchParams<{__tabRefresh?:string;country?:string;shop?:string}>();
+  const {__tabRefresh,country,shop,from}=useLocalSearchParams<{__tabRefresh?:string;country?:string;shop?:string;from?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const [mapCountry,setMapCountry]=useState<'KR'|'JP'>(initialCountry);
   useEffect(()=>{setMapCountry(initialCountry)},[initialCountry]);
   const shopHash=shop?`#/shop/${encodeURIComponent(shop)}`:'';
-  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${shopHash}`;
+  const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
+  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${shopHash}`;
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
     const detail=isShopDetail(url);

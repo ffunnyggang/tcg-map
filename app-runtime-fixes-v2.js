@@ -75,6 +75,20 @@
     btn.onclick=async e=>{e.preventDefault();e.stopPropagation();if(btn.disabled)return;btn.disabled=true;try{const on=btn.dataset.on==='1';if(on){const r=await fetch(`${SB}/rest/v1/shop_favorites?user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}`,{method:'DELETE',headers:{...headers,Prefer:'return=minimal'}});if(!r.ok)throw Error();draw(false)}else{const r=await fetch(`${SB}/rest/v1/shop_favorites`,{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify({user_id:user,shop_id:shopId})});if(!r.ok&&r.status!==409)throw Error();draw(true)}}catch(_){alert('관심 매장 저장에 실패했습니다. 잠시 후 다시 시도해주세요.')}finally{btn.disabled=false}};
   }
 
+  function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}
+  function findNearbySortAction(target){
+    const menu=target.closest('.popular-sort');
+    if(!menu)return null;
+    let node=target;
+    while(node&&node!==menu){
+      const label=normalizeLabel(node.getAttribute?.('aria-label')||node.getAttribute?.('data-label')||node.textContent);
+      const value=String(node.getAttribute?.('data-sort')||node.getAttribute?.('data-value')||node.getAttribute?.('value')||'').trim().toLowerCase();
+      if(/^가까운\s*순$/.test(label)||/^(nearby|distance)$/.test(value))return node;
+      node=node.parentElement;
+    }
+    return null;
+  }
+
   decorateLinks();ensureFavorite();
   new MutationObserver(m=>{m.forEach(x=>x.addedNodes.forEach(n=>{if(n.nodeType===1)decorateLinks(n)}));ensureFavorite();reportOverlay()}).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('hashchange',()=>setTimeout(ensureFavorite,20));
@@ -87,16 +101,13 @@
       if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell)post({type:'OPEN_NATIVE',route:'/(tabs)/map'});else location.href='shops.html';return;}
       if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return;}}
     }
-    const action=target.closest('button,a,[role="button"],select,option');
-    const label=((action?.getAttribute('aria-label')||action?.getAttribute('data-label')||action?.textContent||'')).replace(/\s+/g,' ').trim();
-    const sortValue=String(action?.getAttribute('data-sort')||action?.getAttribute('value')||'').trim().toLowerCase();
-    const isNearbyAction=/^가까운\s*순$/.test(label)||/^(nearby|distance)$/.test(sortValue);
-    if(appShell&&isNearbyAction&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION&&action){
+    const action=appShell?findNearbySortAction(target):null;
+    if(appShell&&action&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION){
       if(action.dataset.funyLocationRetry==='ready'){delete action.dataset.funyLocationRetry;return;}
       e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
       if(action.dataset.funyLocationRetry==='loading')return;
       action.dataset.funyLocationRetry='loading';
-      try{navigator.geolocation.getCurrentPosition(pos=>{const c=pos.coords||{};window.FUNY_CURRENT_LOCATION={lat:Number(c.latitude),lng:Number(c.longitude),accuracy:Number(c.accuracy)||0,heading:Number.isFinite(c.heading)?c.heading:null,ts:Date.now()};window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:window.FUNY_CURRENT_LOCATION}));action.dataset.funyLocationRetry='ready';setTimeout(()=>action.click(),0)},()=>{delete action.dataset.funyLocationRetry},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){delete action.dataset.funyLocationRetry}
+      try{navigator.geolocation.getCurrentPosition(pos=>{const c=pos.coords||{};window.FUNY_CURRENT_LOCATION={lat:Number(c.latitude),lng:Number(c.longitude),accuracy:Number(c.accuracy)||0,heading:Number.isFinite(c.heading)?c.heading:null,ts:Date.now()};window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:window.FUNY_CURRENT_LOCATION}));action.dataset.funyLocationRetry='ready';setTimeout(()=>{try{if(typeof action.click==='function')action.click();else action.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}))}catch(_){delete action.dataset.funyLocationRetry}},0)},()=>{delete action.dataset.funyLocationRetry},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){delete action.dataset.funyLocationRetry}
       return;
     }
   },true);

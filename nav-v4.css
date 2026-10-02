@@ -1,32 +1,4 @@
-/* FUNY PIN bottom navigation · shared thin Liquid Glass direction */
-.portal-bottom-nav,.shops-bottom-nav{
-  grid-template-columns:repeat(4,1fr)!important;
-  bottom:max(10px,env(safe-area-inset-bottom))!important;
-  width:min(calc(100% - 32px),388px)!important;
-  height:58px!important;min-height:58px!important;max-height:58px!important;
-  padding:3px 4px!important;gap:2px!important;
-  border:1px solid rgba(255,255,255,.68)!important;
-  border-radius:29px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,.24))!important;
-  -webkit-backdrop-filter:blur(22px) saturate(145%)!important;
-  backdrop-filter:blur(22px) saturate(145%)!important;
-  box-shadow:0 6px 18px rgba(55,43,74,.13),inset 0 1px 0 rgba(255,255,255,.48)!important;
-  overflow:hidden!important;
-}
-.portal-bottom-nav a,.shops-bottom-nav a{
-  position:relative!important;height:50px!important;min-height:50px!important;max-height:50px!important;
-  padding:0!important;margin:0!important;border:1px solid transparent!important;border-radius:25px!important;
-  box-sizing:border-box!important;gap:1px!important;background:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
-  color:#77717d!important;font:700 9px/11px 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif!important;
-  white-space:nowrap!important;transition:background .16s ease,border-color .16s ease,color .16s ease,transform .12s ease!important;
-}
-.portal-bottom-nav a:active,.shops-bottom-nav a:active{transform:scale(.96)}
-.portal-bottom-nav a.active,.shops-bottom-nav a.active{color:#6c4dc4!important;background:rgba(255,255,255,.34)!important;border-color:rgba(255,255,255,.52)!important}
-.portal-bottom-nav a span,.shops-bottom-nav a span{display:block!important;height:11px!important;line-height:11px!important;margin:0!important;padding:0!important;font-size:9px!important;font-weight:inherit!important}
-.portal-bottom-nav svg,.shops-bottom-nav svg{display:none!important}
-.portal-bottom-nav a.active::after,.shops-bottom-nav a.active::after{display:none!important;content:none!important}
-.portal-bottom-nav a::before,.shops-bottom-nav a::before{display:none!important;content:none!important}
-
+/* FUNY PIN TALK page extras only; bottom navigation is owned by nav-liquid-v2.css */
 /* FUNY TALK hero art: use only the requested right-side graphic area */
 .talk-hero::after{content:"";display:block;width:100%;height:238px;margin-top:18px;border-radius:18px;background-image:url("assets/talk/funy-talk-hero.png");background-repeat:no-repeat;background-size:140% auto;background-position:right center;overflow:hidden}
 @media(max-width:430px){.talk-hero::after{height:228px;background-size:142% auto}}

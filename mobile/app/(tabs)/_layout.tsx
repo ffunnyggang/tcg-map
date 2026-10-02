@@ -13,7 +13,7 @@ type IconKind='home'|'map'|'pick'|'talk';
 
 const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk'};
 const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK'};
-const NAV_HEIGHT=48;
+const NAV_HEIGHT=58;
 const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSourcePropType}>={
   home:{
     active:require('../../assets/nav-icons-final/funypin_nav_home_on.png'),
@@ -50,7 +50,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?82:58} style={StyleSheet.absoluteFill}/>
+      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?76:56} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
       <View pointerEvents="none" style={styles.glassHighlight}/>
       {state.routes.map((route,index)=>{
@@ -70,13 +70,13 @@ export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:24,overflow:'hidden',borderWidth:.8,borderColor:'rgba(255,255,255,.58)',backgroundColor:'rgba(255,255,255,.14)',shadowColor:'#2B2440',shadowOpacity:.07,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:6},
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.08)'},
-  glassHighlight:{position:'absolute',left:10,right:10,top:1,height:12,borderRadius:10,backgroundColor:'rgba(255,255,255,.17)',opacity:.78},
-  item:{flex:1,height:40,borderRadius:20,alignItems:'center',justifyContent:'center',gap:0},
-  itemActive:{backgroundColor:'rgba(126,92,226,.075)',borderWidth:.5,borderColor:'rgba(126,92,226,.10)'},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:.9,borderColor:'rgba(255,255,255,.68)',backgroundColor:'rgba(255,255,255,.18)',shadowColor:'#2B2440',shadowOpacity:.10,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:8},elevation:6},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.07)'},
+  glassHighlight:{position:'absolute',left:12,right:12,top:1,height:18,borderRadius:14,backgroundColor:'rgba(255,255,255,.20)',opacity:.72},
+  item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:1},
+  itemActive:{backgroundColor:'rgba(126,92,226,.09)',borderWidth:.6,borderColor:'rgba(126,92,226,.13)'},
   itemPressed:{opacity:.7},
   icon:{width:24,height:24},
-  label:{fontSize:9,lineHeight:10,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
+  label:{fontSize:9.5,lineHeight:11,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
   labelActive:{fontWeight:'800',color:C.purpleDark}
 });

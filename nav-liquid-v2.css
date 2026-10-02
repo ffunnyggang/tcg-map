@@ -23,5 +23,5 @@
 .portal-bottom-nav a.active:before,.shops-bottom-nav a.active:before{background:linear-gradient(130deg,rgba(255,255,255,.25),transparent 50%,rgba(117,87,200,.045))!important}
 .portal-bottom-nav a.active:after,.shops-bottom-nav a.active:after{display:none!important;content:none!important}
 .portal-bottom-nav .nav-icon,.shops-bottom-nav .nav-icon{
-  display:block!important;width:22px!important;height:22px!important;min-width:22px!important;min-height:22px!important;max-width:22px!important;max-height:22px!important;flex:0 0 22px!important;object-fit:contain!important;margin:0!important;
+  display:block!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;max-width:24px!important;max-height:24px!important;flex:0 0 24px!important;object-fit:contain!important;margin:0!important;
 }

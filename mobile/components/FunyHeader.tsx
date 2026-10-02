@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { C,T,UI } from '../lib/theme';
 import { visualAssets } from '../lib/visualAssets';
 
-type Props={showAccount?:boolean;title?:'FUNY PIN'|'PICK'|'TALK'|'MY';back?:boolean;onBack?:()=>void};
+type Props={showAccount?:boolean;title?:string;back?:boolean;onBack?:()=>void};
 
 export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false,onBack}:Props){
   const router=useRouter();
@@ -11,8 +11,8 @@ export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false
   const goBack=()=>{if(onBack){onBack();return;}router.back();};
   return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'rgba(255,255,255,.96)',position:'relative',zIndex:9999,elevation:9999}}>
     {back?<Pressable onPress={goBack} hitSlop={10} style={{width:34,height:34,alignItems:'center',justifyContent:'center',marginRight:4}}><Text style={{fontSize:27,lineHeight:29,fontWeight:'400',color:C.text}}>‹</Text></Pressable>:<Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34,marginRight:8}}/>}
-    <Text allowFontScaling maxFontSizeMultiplier={1.1} style={{...T.header,color:C.text}}>{title}</Text>
-    {!back&&isHome?<Text allowFontScaling maxFontSizeMultiplier={1.1} style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>:null}
+    <Text allowFontScaling maxFontSizeMultiplier={1} style={{...T.header,color:C.text}}>{title}</Text>
+    {!back&&isHome?<Text allowFontScaling maxFontSizeMultiplier={1} style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>:null}
     {!back&&showAccount?<Pressable onPress={()=>router.push('/account')} hitSlop={8} style={{marginLeft:'auto',height:34,minWidth:34,paddingHorizontal:10,borderRadius:17,alignItems:'center',justifyContent:'center',backgroundColor:'rgba(255,255,255,.72)',borderWidth:1,borderColor:'rgba(233,229,237,.9)'}}><Text style={{fontSize:12,fontWeight:'800',color:C.purpleDark}}>MY</Text></Pressable>:null}
   </View>;
 }

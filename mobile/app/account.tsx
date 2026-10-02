@@ -46,7 +46,7 @@ export default function Account(){
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
 
   return <SafeAreaView style={styles.root}>
-    <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1.1} style={styles.headerTitle}>MY</Text></View>
+    <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}

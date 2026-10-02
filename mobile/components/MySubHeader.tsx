@@ -8,7 +8,7 @@ export default function MySubHeader({title}:{title:string}){
   return <SafeAreaView edges={['top']} style={styles.safe}>
     <View style={styles.header}>
       <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable>
-      <Text allowFontScaling maxFontSizeMultiplier={1.15} style={styles.title}>{title}</Text>
+      <Text allowFontScaling maxFontSizeMultiplier={1} style={styles.title}>{title}</Text>
     </View>
   </SafeAreaView>;
 }

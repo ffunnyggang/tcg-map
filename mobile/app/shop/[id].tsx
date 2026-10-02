@@ -48,7 +48,7 @@ export default function ShopDetail(){
     </View>
   </ScrollView>
   <View pointerEvents="box-none" style={{position:'absolute',left:0,right:0,top:0,bottom:0,zIndex:100000,elevation:100000}}>
-    <Pressable accessibilityRole="button" accessibilityLabel="TCG MAP으로 이동" onPress={()=>router.replace('/(tabs)/map')} style={{position:'absolute',right:16,bottom:tcgMapBottom,height:46,paddingHorizontal:18,borderRadius:23,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7,backgroundColor:'#6E6C74',borderWidth:1,borderColor:'rgba(255,255,255,.35)',shadowColor:'#201C2A',shadowOpacity:.22,shadowRadius:12,shadowOffset:{width:0,height:6},elevation:8}}>
+    <Pressable accessibilityRole="button" accessibilityLabel="TCG MAP으로 이동" onPress={()=>router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)} style={{position:'absolute',right:16,bottom:tcgMapBottom,height:46,paddingHorizontal:18,borderRadius:23,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7,backgroundColor:'#6E6C74',borderWidth:1,borderColor:'rgba(255,255,255,.35)',shadowColor:'#201C2A',shadowOpacity:.22,shadowRadius:12,shadowOffset:{width:0,height:6},elevation:8}}>
       <Text style={{fontSize:15,color:'#fff'}}>⌾</Text><Text style={{fontSize:12,fontWeight:'900',color:'#fff'}}>TCG MAP</Text><Text style={{fontSize:19,fontWeight:'500',lineHeight:20,color:'#fff'}}>›</Text>
     </Pressable>
     <LivePinButton withNav bottomOffset={46+10}/>

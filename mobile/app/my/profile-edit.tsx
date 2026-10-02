@@ -30,6 +30,7 @@ export default function ProfileEdit(){
   }).catch(e=>Alert.alert('불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[]);
 
   const nicknameLocked=!!nextNicknameChange;
+  const onNicknameChange=(value:string)=>setNickname(value.replace(/[^가-힣A-Za-z0-9]/g,'').slice(0,12));
 
   const pickAvatar=async()=>{
     const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -90,9 +91,9 @@ export default function ProfileEdit(){
 
         <View style={styles.field}>
           <Text style={styles.label}>닉네임</Text>
-          <TextInput value={nickname} onChangeText={setNickname} editable={!nicknameLocked} maxLength={12} placeholder="2~12자 · 한글/영문/숫자" placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
+          <TextInput value={nickname} onChangeText={onNicknameChange} editable={!nicknameLocked} maxLength={12} placeholder="2~12자 · 한글/영문/숫자" placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
           <Text style={styles.count}>{nickname.length}/12</Text>
-          <Text style={styles.policy}>{nicknameLocked?`지금은 닉네임을 변경할 수 없어요. ${dateLabel(nextNicknameChange!)}부터 다시 바꿀 수 있어요.`:'닉네임을 변경하면 30일 동안 다시 바꿀 수 없어요. 처음 정할 때는 바로 변경할 수 있어요.'}</Text>
+          <Text style={styles.policy}>{nicknameLocked?`지금은 닉네임을 변경할 수 없어요. ${dateLabel(nextNicknameChange!)}부터 다시 바꿀 수 있어요.`:'한글·영문·숫자 2~12자만 사용할 수 있어요. 공백·특수문자·이모지는 입력되지 않으며, 다른 사용자와 같은 닉네임은 사용할 수 없어요. 변경 후 30일 동안 다시 변경할 수 있어요.'}</Text>
         </View>
 
         <Pressable disabled={saving} onPress={save} style={[styles.saveButton,saving&&{opacity:.55}]}><Text style={styles.saveText}>{saving?'저장 중…':'저장하기'}</Text></Pressable>

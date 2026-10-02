@@ -34,7 +34,7 @@
     html.app-shell .funy-google-marker{pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;border:0!important;background:transparent!important;padding:0!important}
     html.app-shell .funy-google-marker svg{pointer-events:none!important}
     html.app-shell.funy-talk-scrolling .pokamo-fab{width:46px!important;min-width:46px!important;max-width:46px!important;padding:0!important;border-radius:23px!important;font-size:0!important;overflow:hidden!important;transition:width .3s cubic-bezier(.22,1,.36,1),padding .3s cubic-bezier(.22,1,.36,1),border-radius .3s ease!important}
-    html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}html.app-shell.funy-talk-scrolling .pokamo-fab::before{content:"📝";font-size:18px;line-height:46px;color:#fff}
+    html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}html.app-shell.funy-talk-scrolling .pokamo-fab::before{display:none!important;content:none!important}
     #detail-view .funy-app-favorite{position:absolute;right:16px;top:17px;transform:none;width:36px;height:36px;border:1px solid #e5dfeb;border-radius:18px;background:#fff;color:#8d8492;font-size:22px;line-height:34px;text-align:center;padding:0;z-index:3;box-shadow:0 3px 10px rgba(45,36,55,.06)}
     #detail-view .funy-app-favorite.is-on{color:#7454c7;background:#f2edfb;border-color:#d9cef0}
     #detail-view .d-name{padding-right:58px!important}

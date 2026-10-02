@@ -12,7 +12,7 @@ type IconKind='home'|'map'|'pick'|'talk';
 
 const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk'};
 const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK'};
-const NAV_HEIGHT=50;
+const NAV_HEIGHT=48;
 const ACTIVE='#6C4DC4';
 const INACTIVE='#77717D';
 
@@ -31,7 +31,8 @@ function MapIcon({focused}:{focused:boolean}){
   return <View style={icon.box}>
     <View style={[icon.pinTail,focused?{backgroundColor:color}:{borderColor:color}]}/>
     <View style={[icon.pinHead,focused?{backgroundColor:color,borderColor:color}:{borderColor:color}]}> 
-      <View style={[icon.pinHole,focused?{backgroundColor:'#fff'}:{borderColor:color}]}/>
+      <View style={[icon.pinLine,{backgroundColor:focused?'#fff':color}]}/>
+      <View style={[icon.pinHole,focused?{backgroundColor:'#fff',borderColor:'#fff'}:{backgroundColor:'#fff',borderColor:color}]}/>
     </View>
   </View>;
 }
@@ -70,8 +71,9 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?76:54} style={StyleSheet.absoluteFill}/>
+      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?82:58} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
+      <View pointerEvents="none" style={styles.glassHighlight}/>
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
@@ -88,13 +90,14 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {...props}/>} screenOptions={{headerShown:false,tabBarActiveTintColor:C.purpleDark,tabBarInactiveTintColor:TAB_INACTIVE,tabBarShowLabel:true}}><Tabs.Screen name="index" options={{title:'HOME'}}/><Tabs.Screen name="map" options={{title:'TCG MAP'}}/><Tabs.Screen name="pick" options={{title:'PICK'}}/><Tabs.Screen name="talk" options={{title:'TALK'}}/></Tabs>}
 
 const styles=StyleSheet.create({
-  outer:{position:'absolute',left:17,right:17,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:25,overflow:'hidden',borderWidth:.6,borderColor:'rgba(255,255,255,.72)',backgroundColor:'rgba(248,246,252,.08)',shadowColor:'#372B4A',shadowOpacity:.08,shadowRadius:12,shadowOffset:{width:0,height:4},elevation:6},
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.06)'},
-  item:{flex:1,height:42,borderRadius:21,alignItems:'center',justifyContent:'center',gap:0},
-  itemActive:{backgroundColor:'rgba(117,87,199,.055)'},
+  outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:24,overflow:'hidden',borderWidth:.8,borderColor:'rgba(255,255,255,.58)',backgroundColor:'rgba(255,255,255,.16)',shadowColor:'#2B2440',shadowOpacity:.08,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:6},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.10)'},
+  glassHighlight:{position:'absolute',left:10,right:10,top:1,height:12,borderRadius:10,backgroundColor:'rgba(255,255,255,.18)',opacity:.8},
+  item:{flex:1,height:40,borderRadius:20,alignItems:'center',justifyContent:'center',gap:0},
+  itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.6,borderColor:'rgba(126,92,226,.16)'},
   itemPressed:{opacity:.7},
-  label:{fontSize:9,lineHeight:10.5,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
+  label:{fontSize:9,lineHeight:10,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
   labelActive:{fontWeight:'800',color:C.purpleDark}
 });
 
@@ -107,8 +110,9 @@ const icon=StyleSheet.create({
   homeDoorCut:{position:'absolute',left:10,top:15,width:4,height:5,backgroundColor:'#fff',borderTopLeftRadius:1.5,borderTopRightRadius:1.5},
 
   pinTail:{position:'absolute',top:12.7,width:9,height:9,borderWidth:1.8,borderRadius:2,transform:[{rotate:'45deg'}]},
-  pinHead:{position:'absolute',top:2.4,width:16,height:16,borderWidth:1.8,borderRadius:8,zIndex:2,alignItems:'center',justifyContent:'center'},
-  pinHole:{width:5,height:5,borderWidth:1.6,borderRadius:2.5},
+  pinHead:{position:'absolute',top:2.4,width:16,height:16,borderWidth:1.8,borderRadius:8,zIndex:2,alignItems:'center',justifyContent:'center',overflow:'hidden'},
+  pinLine:{position:'absolute',left:0,right:0,height:1.6,top:7.2},
+  pinHole:{width:5,height:5,borderWidth:1.6,borderRadius:2.5,zIndex:2},
 
   star:{fontSize:22,lineHeight:24,fontWeight:'700',textAlign:'center',marginTop:-1},
 

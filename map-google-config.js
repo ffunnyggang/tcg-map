@@ -73,4 +73,8 @@ if (/\/admin(?:\.html)?$/.test(location.pathname)) {
   rewardPreviewScript.src='assets/admin/funymon-reward-preview.js?v=20260929-1';
   rewardPreviewScript.defer=true;
   document.head.appendChild(rewardPreviewScript);
+  const communityScript=document.createElement('script');
+  communityScript.src='admin-community-v1.js?v=20261002-01';
+  communityScript.defer=true;
+  document.head.appendChild(communityScript);
 }

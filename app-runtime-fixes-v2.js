@@ -75,7 +75,25 @@
     if(!user){draw(false);btn.onclick=e=>{e.preventDefault();e.stopPropagation();post({type:'OPEN_NATIVE',route:'/account'})};return;}
     const headers={apikey:KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'};
     try{const r=await fetch(`${SB}/rest/v1/shop_favorites?select=shop_id&user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}&limit=1`,{headers});draw(r.ok&&(await r.json()).length>0)}catch(_){draw(false)}
-    btn.onclick=async e=>{e.preventDefault();e.stopPropagation();if(btn.disabled)return;btn.disabled=true;try{const on=btn.dataset.on==='1';if(on){const r=await fetch(`${SB}/rest/v1/shop_favorites?user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}`,{method:'DELETE',headers:{...headers,Prefer:'return=minimal'}});if(!r.ok)throw Error();draw(false);showFavoriteToast('관심 매장에서 해제했어요');try{window.gtag?.('event','favorite_toggle',{shop_id:shopId,favorite_state:'off'})}catch(_){}}else{const r=await fetch(`${SB}/rest/v1/shop_favorites`,{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify({user_id:user,shop_id:shopId})});if(!r.ok&&r.status!==409)throw Error();draw(true);showFavoriteToast('관심 매장에 등록했어요');try{window.gtag?.('event','favorite_toggle',{shop_id:shopId,favorite_state:'on'})}catch(_){}}catch(_){alert('관심 매장 저장에 실패했습니다. 잠시 후 다시 시도해주세요.')}finally{btn.disabled=false}};
+    btn.onclick=async e=>{
+      e.preventDefault();e.stopPropagation();if(btn.disabled)return;btn.disabled=true;
+      try{
+        const on=btn.dataset.on==='1';
+        if(on){
+          const r=await fetch(`${SB}/rest/v1/shop_favorites?user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}`,{method:'DELETE',headers:{...headers,Prefer:'return=minimal'}});
+          if(!r.ok)throw Error();
+          draw(false);showFavoriteToast('관심 매장에서 해제했어요');
+          try{(window.FUNY_TRACK||((n,p)=>window.gtag?.('event',n,p)))('favorite_toggle',{shop_id:shopId,favorite_state:'off'})}catch(_){}
+        }else{
+          const r=await fetch(`${SB}/rest/v1/shop_favorites`,{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify({user_id:user,shop_id:shopId})});
+          if(!r.ok&&r.status!==409)throw Error();
+          draw(true);showFavoriteToast('관심 매장에 등록했어요');
+          try{(window.FUNY_TRACK||((n,p)=>window.gtag?.('event',n,p)))('favorite_toggle',{shop_id:shopId,favorite_state:'on'})}catch(_){}
+        }
+      }catch(_){
+        alert('관심 매장 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      }finally{btn.disabled=false}
+    };
   }
 
   function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}

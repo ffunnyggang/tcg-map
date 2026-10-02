@@ -119,8 +119,8 @@
     const detailTarget=target.closest('#detail-view a,#detail-view button');
     if(detailTarget){
       const label=(detailTarget.getAttribute('aria-label')||detailTarget.textContent||'').replace(/\s+/g,' ').trim();
-      if(appShell&&detailTarget.matches('#hero-back,#sticky-back')){e.preventDefault();e.stopPropagation();location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140);return;}
-      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell){location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140)}else location.href='shops.html';return;}
+      if(appShell&&detailTarget.matches('#hero-back,#sticky-back')){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140);return;}
+      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();if(appShell){location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140)}else location.href='shops.html';return;}
       if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a,a.content-card')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();const external=detailTarget.dataset.funyLinkMode==='external';post({type:external?'OPEN_EXTERNAL':'OPEN_INAPP_SHEET',url:href});return;}}
     }
     const action=appShell?findNearbySortAction(target):null;

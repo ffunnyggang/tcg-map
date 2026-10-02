@@ -5,14 +5,14 @@ export const C={
 };
 
 export const UI={
-  headerH:58,screenPad:14,cardRadius:13,buttonRadius:12,navH:58,navBottomGap:12,contentMax:420,
+  headerH:54,screenPad:14,cardRadius:13,buttonRadius:12,navH:54,navBottomGap:10,contentMax:420,
 };
 
-/** Native type scale mirrors the web Pretendard sizing as closely as system fonts allow. */
+/** Native type scale mirrors the mobile web hierarchy while keeping sub-page headers compact. */
 export const T:Record<'header'|'pageTitle'|'section'|'body'|'caption'|'button'|'nav',TextStyle>={
-  header:{fontSize:20,lineHeight:26,fontWeight:'800',letterSpacing:-.45},
-  pageTitle:{fontSize:24,lineHeight:31,fontWeight:'900',letterSpacing:-.65},
-  section:{fontSize:15,lineHeight:20,fontWeight:'800',letterSpacing:-.25},
+  header:{fontSize:17,lineHeight:22,fontWeight:'800',letterSpacing:-.3},
+  pageTitle:{fontSize:23,lineHeight:30,fontWeight:'900',letterSpacing:-.6},
+  section:{fontSize:16,lineHeight:20,fontWeight:'800',letterSpacing:-.25},
   body:{fontSize:13,lineHeight:20,fontWeight:'500'},
   caption:{fontSize:11,lineHeight:16,fontWeight:'500'},
   button:{fontSize:13,lineHeight:17,fontWeight:'800'},
@@ -20,4 +20,4 @@ export const T:Record<'header'|'pageTitle'|'section'|'body'|'caption'|'button'|'
 };
 
 export const shadow={shadowColor:'#261F2F',shadowOpacity:0.08,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2};
-export const navShadow={shadowColor:'#201C2A',shadowOpacity:0.13,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:8};
+export const navShadow={shadowColor:'#201C2A',shadowOpacity:0.11,shadowRadius:16,shadowOffset:{width:0,height:5},elevation:7};

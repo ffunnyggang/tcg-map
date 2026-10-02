@@ -11,6 +11,19 @@
   const token=()=>String(window.__FUNY_ACCESS_TOKEN||'');
   const uid=()=>{try{const raw=token().split('.')[1];if(!raw)return'';const n=raw.replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(Array.from(atob(n.padEnd(Math.ceil(n.length/4)*4,'='))).map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''))).sub||''}catch(_){return''}};
 
+  /* In the native app, never let WKWebView own location permission. Route every
+     geolocation request through Expo Location so iOS shows one permission flow only. */
+  if(appShell&&navigator.geolocation&&!window.__FUNY_RUNTIME_GEO_BRIDGED){
+    window.__FUNY_RUNTIME_GEO_BRIDGED=true;
+    const pending=new Map();let geoSeq=0;
+    const request=(once,success,error,options)=>{const id=++geoSeq;pending.set(id,{once,success,error});post({type:'REQUEST_NATIVE_LOCATION',watchId:id,options:options||{}});return id};
+    navigator.geolocation.getCurrentPosition=(success,error,options)=>{request(true,success,error,options)};
+    navigator.geolocation.watchPosition=(success,error,options)=>request(false,success,error,options);
+    navigator.geolocation.clearWatch=id=>{pending.delete(Number(id));post({type:'STOP_NATIVE_LOCATION',watchId:Number(id)})};
+    window.addEventListener('funy:nativelocation',ev=>{const d=ev.detail||{};const position={coords:{latitude:Number(d.latitude),longitude:Number(d.longitude),accuracy:Number(d.accuracy)||0,altitude:d.altitude==null?null:Number(d.altitude),altitudeAccuracy:d.altitudeAccuracy==null?null:Number(d.altitudeAccuracy),heading:d.heading==null?null:Number(d.heading),speed:d.speed==null?null:Number(d.speed)},timestamp:Number(d.timestamp)||Date.now()};pending.forEach((item,id)=>{try{item.success?.(position)}catch(_){}if(item.once)pending.delete(id)})});
+    window.addEventListener('funy:nativelocationerror',ev=>{const d=ev.detail||{};const err={code:Number(d.code)||2,message:String(d.message||'현재 위치를 확인하지 못했습니다.')};pending.forEach((item,id)=>{try{item.error?.(err)}catch(_){}pending.delete(id)})});
+  }
+
   const style=document.createElement('style');
   style.textContent=`
     html.app-shell.funy-web-overlay-open::before{content:"";position:fixed;inset:0;z-index:2147482000;background:rgba(22,18,28,.42);pointer-events:none}
@@ -74,8 +87,17 @@
       if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell)post({type:'OPEN_NATIVE',route:'/(tabs)/map'});else location.href='shops.html';return;}
       if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return;}}
     }
-    const label=(target.closest('button,a,select')?.textContent||'').replace(/\s+/g,' ').trim();
-    if(appShell&&(/내 위치/.test(label)||/가까운 순/.test(label))&&navigator.geolocation){try{navigator.geolocation.getCurrentPosition(()=>{},()=>{},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){}}
+    const action=target.closest('button,a,select');
+    const label=(action?.textContent||'').replace(/\s+/g,' ').trim();
+    if(appShell&&/가까운 순/.test(label)&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION&&action){
+      if(action.dataset.funyLocationRetry==='ready'){delete action.dataset.funyLocationRetry;return;}
+      e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
+      if(action.dataset.funyLocationRetry==='loading')return;
+      action.dataset.funyLocationRetry='loading';
+      try{navigator.geolocation.getCurrentPosition(pos=>{const c=pos.coords||{};window.FUNY_CURRENT_LOCATION={lat:Number(c.latitude),lng:Number(c.longitude),accuracy:Number(c.accuracy)||0,heading:Number.isFinite(c.heading)?c.heading:null,ts:Date.now()};window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:window.FUNY_CURRENT_LOCATION}));action.dataset.funyLocationRetry='ready';setTimeout(()=>action.click(),0)},()=>{delete action.dataset.funyLocationRetry},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){delete action.dataset.funyLocationRetry}
+      return;
+    }
+    if(appShell&&/내 위치/.test(label)&&navigator.geolocation){try{navigator.geolocation.getCurrentPosition(()=>{},()=>{},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){}}
   },true);
 
   if(/\/talk\.html$/.test(location.pathname)){let scrollTimer=0;window.addEventListener('scroll',()=>{document.documentElement.classList.add('funy-talk-scrolling');clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>document.documentElement.classList.remove('funy-talk-scrolling'),650)},{passive:true});}

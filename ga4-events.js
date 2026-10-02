@@ -1,10 +1,11 @@
 /* FUNY PIN GA4 interaction events */
 (function(){
-  const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,params)}catch(e){}};
+  const context=()=>{const c=window.__FUNY_APP_CONTEXT||{};return{client_surface:c.surface||'web',app_platform:c.platform||'web',app_version:c.appVersion||'',app_build:c.buildVersion||'',login_state:c.loggedIn?'logged_in':'logged_out'}};const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,{...context(),...params})}catch(e){}};
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim().slice(0,100);
   const fileName=src=>{try{return decodeURIComponent(new URL(src,location.href).pathname.split('/').pop()||'')}catch(e){return clean(src)}};
   const shop=()=>{const id=(window.state&&state.current)||location.hash.match(/^#\/shop\/([^/?#]+)/)?.[1]||'';const s=window.SHOPS&&SHOPS.find(x=>x.id===id);return{id, name:s?.name||document.querySelector('#detail-view .d-name')?.textContent||''}};
   const actionLabel=el=>clean(el.getAttribute('aria-label')||el.dataset.action||el.querySelector('span:last-child')?.textContent||el.textContent||el.getAttribute('href')||el.id||el.className);
+  send('funy_page_view',{page_path:location.pathname});
   const bannerParams=(el,placement)=>{const img=el.querySelector('img'),all=[...el.parentElement.children].filter(x=>x.matches('a,article,.fp-carousel-slide,.home-hero-slide,.review-banner-slide'));return{banner_placement:placement,banner_id:fileName(img?.getAttribute('src')||''),banner_name:clean(img?.alt||''),banner_position:Math.max(1,all.indexOf(el)+1),link_url:clean(el.getAttribute('href')||el.querySelector('a')?.getAttribute('href')||'')}};
 
   document.addEventListener('click',e=>{

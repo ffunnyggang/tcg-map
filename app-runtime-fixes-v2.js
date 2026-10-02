@@ -53,8 +53,9 @@
   if(document.body)startObserver();else document.addEventListener('DOMContentLoaded',startObserver,{once:true});
 
   function decorateLinks(root=document){
+    if(!appShell)return;
     root.querySelectorAll?.('a.review-schedule-card[href]').forEach(a=>{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')});
-    root.querySelectorAll?.('#detail-view a[data-review-card][href],#detail-view .related-content a[href],#detail-view .detail-related a[href]').forEach(a=>{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')});
+    root.querySelectorAll?.('#detail-view a[data-review-card][href],#detail-view .related-content a[href],#detail-view .detail-related a[href],#detail-view a.content-card[href]').forEach(a=>{let external=false;try{external=/(^|\.)instagram\.com$/i.test(new URL(a.href,location.href).hostname)}catch(_){}if(external){a.dataset.funyLinkMode='external';delete a.dataset.funyInappPresentation}else{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')}});
   }
 
   async function ensureFavorite(){
@@ -98,8 +99,8 @@
     const detailTarget=target.closest('#detail-view a,#detail-view button');
     if(detailTarget){
       const label=(detailTarget.getAttribute('aria-label')||detailTarget.textContent||'').replace(/\s+/g,' ').trim();
-      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell)post({type:'OPEN_NATIVE',route:'/(tabs)/map'});else location.href='shops.html';return;}
-      if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return;}}
+      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell){const c=(document.body.classList.contains('country-japan')||/\/JP-/.test(location.hash))?'JP':'KR';post({type:'OPEN_NATIVE',route:'/(tabs)/map?country='+c})}else location.href='shops.html';return;}
+      if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a,a.content-card')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();const external=detailTarget.dataset.funyLinkMode==='external'||/instagram\.com/i.test(href);post({type:external?'OPEN_EXTERNAL':'OPEN_INAPP_SHEET',url:href});return;}}
     }
     const action=appShell?findNearbySortAction(target):null;
     if(appShell&&action&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION){

@@ -56,7 +56,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
-        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(focused){navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}navigation.navigate(route.name,route.params);};
+        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(kind==='map'){navigation.navigate(route.name,{country:'KR',shop:'',__tabRefresh:String(Date.now())});return;}if(focused){navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}navigation.navigate(route.name,route.params);};
         return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||label} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,focused&&styles.itemActive,pressed&&styles.itemPressed]}>
           <NavIcon kind={kind} focused={focused}/>
           <Text allowFontScaling maxFontSizeMultiplier={1.1} style={[styles.label,focused&&styles.labelActive]}>{label}</Text>

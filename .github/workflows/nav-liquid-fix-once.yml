@@ -1,0 +1,54 @@
+name: Apply final navigation cache bust
+
+on:
+  push:
+    paths:
+      - '.github/workflows/nav-liquid-fix-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch navigation assets and final CSS order
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          version = '20261002-0546'
+          pages = ['index.html','shops.html','reviews.html','talk.html']
+          final_link = f'<link rel="stylesheet" href="/nav-liquid-v2.css?v={version}">'
+
+          for name in pages:
+              p = Path(name)
+              text = p.read_text(encoding='utf-8')
+
+              text = re.sub(r'<link rel="stylesheet" href="/nav-liquid-v2\.css\?v=[^"]+">', '', text)
+              text = text.replace('</head>', final_link + '</head>', 1)
+
+              text = re.sub(
+                  r'(/assets/nav-icons/(?:home|map|pick|talk)-(?:active|inactive)\.svg)(?:\?v=[^"\']+)?',
+                  rf'\1?v={version}',
+                  text,
+              )
+              text = re.sub(r'funy-i18n\.css\?v=[^"\']+', f'funy-i18n.css?v={version}', text)
+              text = re.sub(r'funy-i18n\.js\?v=[^"\']+', f'funy-i18n.js?v={version}', text)
+              if name == 'shops.html':
+                  text = re.sub(r"var v='[^']+'", f"var v='{version}'", text, count=1)
+
+              p.write_text(text, encoding='utf-8')
+          PY
+      - name: Commit patched pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html shops.html reviews.html talk.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Force final navigation assets and cache bust"
+          git push origin HEAD:main

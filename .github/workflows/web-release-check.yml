@@ -1,0 +1,35 @@
+name: Web release check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ga4-events.js'
+      - 'talk-community-v1.js'
+      - 'talk-safety-v1.js'
+      - 'map-country-v1.js'
+      - 'map-country-stability-v1.js'
+      - 'map-cluster-v1.js'
+      - 'admin-community-v1.js'
+      - 'map-google-config.js'
+      - '.github/workflows/web-release-check.yml'
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check launch-critical JavaScript
+        run: |
+          node --check ga4-events.js
+          node --check talk-community-v1.js
+          node --check talk-safety-v1.js
+          node --check map-country-v1.js
+          node --check map-country-stability-v1.js
+          node --check map-cluster-v1.js
+          node --check admin-community-v1.js
+          node --check map-google-config.js

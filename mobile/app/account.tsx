@@ -1,6 +1,6 @@
 import { useCallback,useEffect,useState } from 'react';
 import { ActivityIndicator,Alert,Image,Platform,Pressable,ScrollView,StyleSheet,Text,View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { deleteAccount,getProfile,signOut } from '../lib/auth';
@@ -26,6 +26,7 @@ const defaultNickname=(user:any)=>user?`FUNY회원${String(user.id||'').replace(
 
 export default function Account(){
   const router=useRouter();
+  const insets=useSafeAreaInsets();
   const params=useLocalSearchParams<{refresh?:string}>();
   const [loading,setLoading]=useState(true),[user,setUser]=useState<any>(null),[profile,setProfile]=useState<any>(null),[busy,setBusy]=useState<string|null>(null);
   const refresh=useCallback(async()=>{try{const x=await getProfile();setUser(x.user);setProfile(x.profile);}finally{setLoading(false);}},[]);
@@ -47,7 +48,7 @@ export default function Account(){
 
   return <SafeAreaView style={styles.root}>
     <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.content,{paddingBottom:Math.max(96,insets.bottom+72)}]}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}
         <View style={styles.profileCopy}><Text numberOfLines={1} style={styles.nickname}>{nickname}</Text>{user?<Text style={styles.joinDate}>가입일 {formatJoinDate(joinDate)}</Text>:<Text style={styles.joinDate}>로그인하면 MY 기능을 이용할 수 있어요.</Text>}</View>

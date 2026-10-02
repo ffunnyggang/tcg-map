@@ -42,13 +42,3 @@
 
 /* PNG-only nav icon guard: remove every legacy pseudo/mask icon layer */
 .portal-bottom-nav a:nth-child(1):before,.portal-bottom-nav a:nth-child(2):before,.portal-bottom-nav a:nth-child(3):before,.portal-bottom-nav a:nth-child(4):before,.shops-bottom-nav a:nth-child(1):before,.shops-bottom-nav a:nth-child(2):before,.shops-bottom-nav a:nth-child(3):before,.shops-bottom-nav a:nth-child(4):before{display:none!important;content:none!important;background:none!important;-webkit-mask-image:none!important;mask-image:none!important}
-
-/* HOME uses one shared PNG silhouette in every state. */
-.portal-bottom-nav .nav-icon-home,.shops-bottom-nav .nav-icon-home{
-  filter:grayscale(1) saturate(0) brightness(.72)!important;
-  opacity:.82!important;
-}
-.portal-bottom-nav a.active .nav-icon-home,.shops-bottom-nav a.active .nav-icon-home{
-  filter:none!important;
-  opacity:1!important;
-}

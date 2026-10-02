@@ -1,0 +1,58 @@
+name: Darken nav icons once
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  darken:
+    if: "!contains(github.event.head_commit.message, 'Apply darker nav icons')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Darken web nav PNGs
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          import re, hashlib
+          root=Path('assets/nav-icons-final-v2')
+          files=sorted(root.glob('funypin_nav_*.png'))
+          assert len(files)==8, files
+          versions={}
+          for p in files:
+              im=Image.open(p).convert('RGBA')
+              before=im.getbbox()
+              px=im.load()
+              factor=.85 if p.stem.endswith('_on') else .80
+              for y in range(im.height):
+                  for x in range(im.width):
+                      r,g,b,a=px[x,y]
+                      if a:
+                          px[x,y]=(round(r*factor),round(g*factor),round(b*factor),a)
+              assert im.size==(512,512)
+              assert im.getbbox()==before
+              im.save(p,optimize=True)
+              versions[p.name]=hashlib.sha256(p.read_bytes()).hexdigest()[:12]
+          for page in ['index.html','shops.html','reviews.html','talk.html']:
+              path=Path(page); s=path.read_text()
+              for name,v in versions.items():
+                  s=re.sub(r'(/assets/nav-icons-final-v2/'+re.escape(name)+r')\?v=[^"\' ]+',r'\1?v='+v,s)
+              path.write_text(s)
+          print(versions)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "ffunnyggang"
+          git config user.email "ffunnyggang@gmail.com"
+          git add assets/nav-icons-final-v2 index.html shops.html reviews.html talk.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Apply darker nav icons"
+          git push origin main

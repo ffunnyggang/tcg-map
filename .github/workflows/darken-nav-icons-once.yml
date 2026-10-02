@@ -1,0 +1,49 @@
+name: Darken app nav icons once
+on:
+  push:
+    branches: [app-mvp]
+permissions:
+  contents: write
+jobs:
+  darken:
+    if: "!contains(github.event.head_commit.message, 'Apply darker nav icons')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: app-mvp
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Darken app nav PNGs
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          root=Path('mobile/assets/nav-icons-final')
+          files=sorted(root.glob('funypin_nav_*.png'))
+          assert len(files)==8, files
+          for p in files:
+              im=Image.open(p).convert('RGBA')
+              before=im.getbbox()
+              px=im.load()
+              factor=.85 if p.stem.endswith('_on') else .80
+              for y in range(im.height):
+                  for x in range(im.width):
+                      r,g,b,a=px[x,y]
+                      if a:
+                          px[x,y]=(round(r*factor),round(g*factor),round(b*factor),a)
+              assert im.size==(512,512)
+              assert im.getbbox()==before
+              im.save(p,optimize=True)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "ffunnyggang"
+          git config user.email "ffunnyggang@gmail.com"
+          git add mobile/assets/nav-icons-final
+          git diff --cached --quiet && exit 0
+          git commit -m "Apply darker nav icons"
+          git push origin app-mvp

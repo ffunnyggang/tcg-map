@@ -10,7 +10,7 @@ import { C,T,UI } from '../lib/theme';
 import { visualAssets } from '../lib/visualAssets';
 
 const WEB_MENU=[
-  ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['고객지원','support.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
+  ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['온라인 문의','support.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
 ] as const;
 
 const ACTIVITY=[
@@ -48,7 +48,7 @@ export default function Account(){
 
   return <SafeAreaView style={styles.root}>
     <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.content,{paddingBottom:Math.max(96,insets.bottom+72)}]}>
+    <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="always" contentContainerStyle={[styles.content,{paddingBottom:Math.max(180,insets.bottom+150)}]}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}
         <View style={styles.profileCopy}><Text numberOfLines={1} style={styles.nickname}>{nickname}</Text>{user?<Text style={styles.joinDate}>가입일 {formatJoinDate(joinDate)}</Text>:<Text style={styles.joinDate}>로그인하면 MY 기능을 이용할 수 있어요.</Text>}</View>

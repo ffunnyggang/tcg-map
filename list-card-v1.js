@@ -30,7 +30,7 @@
     }
     const events=window.FUNY_ACTIVE_EVENT_SHOPS instanceof Set?window.FUNY_ACTIVE_EVENT_SHOPS:null,ae=events?.has(a.id)?1:0,be=events?.has(b.id)?1:0;if(ae!==be)return be-ae;
     const ar=RECOMMEND_SCORE[a.id],br=RECOMMEND_SCORE[b.id];if(ar!=null||br!=null){const d=(br??-Infinity)-(ar??-Infinity);if(d)return d}
-    return koCompare(a,b);
+    const ai=SHOPS.indexOf(a),bi=SHOPS.indexOf(b);if(ai!==bi)return ai-bi;return koCompare(a,b);
   }
 
   function cardHTMLv3(s){

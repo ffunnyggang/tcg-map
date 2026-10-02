@@ -50,7 +50,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?52:42} style={StyleSheet.absoluteFill}/>
+      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?66:50} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
       <View pointerEvents="none" style={styles.glassHighlight}/>
       {state.routes.map((route,index)=>{
@@ -70,11 +70,11 @@ export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:.8,borderColor:'rgba(255,255,255,.58)',backgroundColor:'rgba(255,255,255,.08)',shadowColor:'#211A2E',shadowOpacity:.11,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:8},
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.025)'},
-  glassHighlight:{position:'absolute',left:10,right:10,top:1,height:17,borderRadius:14,backgroundColor:'rgba(255,255,255,.11)',opacity:.85},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:.9,borderColor:'rgba(255,255,255,.72)',backgroundColor:'rgba(255,255,255,.16)',shadowColor:'#211A2E',shadowOpacity:.14,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:9},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.055)'},
+  glassHighlight:{position:'absolute',left:10,right:10,top:1,height:17,borderRadius:14,backgroundColor:'rgba(255,255,255,.20)',opacity:.90},
   item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:1},
-  itemActive:{backgroundColor:'rgba(255,255,255,.15)',borderWidth:.7,borderColor:'rgba(255,255,255,.36)',shadowColor:'#2B2440',shadowOpacity:.08,shadowRadius:8,shadowOffset:{width:0,height:2}},
+  itemActive:{backgroundColor:'rgba(126,92,226,.16)',borderWidth:.8,borderColor:'rgba(126,92,226,.24)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:9,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.7},
   icon:{width:24,height:24},
   label:{fontSize:9.5,lineHeight:11,fontWeight:'700',color:'#6F6976',letterSpacing:-.05},

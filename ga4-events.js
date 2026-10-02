@@ -42,10 +42,10 @@
 (function(){
   try{
     if(!document.querySelector('link[data-funy-nav-release]')){const nav=document.createElement('link');nav.rel='stylesheet';nav.href='nav-v4.css?v=20261002-1805';nav.dataset.funyNavRelease='1';document.head.appendChild(nav);}
-    if(!document.querySelector('script[data-funy-runtime-fixes]')){const runtime=document.createElement('script');runtime.src='app-runtime-fixes-v2.js?v=20261002-1806';runtime.async=false;runtime.dataset.funyRuntimeFixes='1';document.body.appendChild(runtime);}
+    if(!document.querySelector('script[data-funy-runtime-fixes]')){const runtime=document.createElement('script');runtime.src='app-runtime-fixes-v2.js?v=20261002-1935';runtime.async=false;runtime.dataset.funyRuntimeFixes='1';document.body.appendChild(runtime);}
     const path=String(location.pathname||'').toLowerCase();
     if(/\/talk\.html$/.test(path)&&!document.querySelector('script[data-funy-talk-community]')){
-      const community=document.createElement('script');community.src='talk-community-v1.js?v=20261002-1805';community.async=false;community.dataset.funyTalkCommunity='1';community.onload=()=>{if(document.querySelector('script[data-funy-talk-safety]'))return;const safety=document.createElement('script');safety.src='talk-safety-v1.js?v=20261002-1805';safety.async=false;safety.dataset.funyTalkSafety='1';document.body.appendChild(safety)};document.body.appendChild(community);
+      const community=document.createElement('script');community.src='talk-community-v1.js?v=20261002-1935';community.async=false;community.dataset.funyTalkCommunity='1';community.onload=()=>{if(document.querySelector('script[data-funy-talk-safety]'))return;const safety=document.createElement('script');safety.src='talk-safety-v1.js?v=20261002-1935';safety.async=false;safety.dataset.funyTalkSafety='1';document.body.appendChild(safety)};document.body.appendChild(community);
     }
     if(/\/reviews\.html$/.test(path)){const decorate=()=>document.querySelectorAll('a.review-schedule-card[href]').forEach(a=>{const href=a.getAttribute('href')||'';if(!href||href==='#'||href.startsWith('javascript:'))return;a.setAttribute('data-funy-link-mode','inapp');a.setAttribute('data-funy-inapp-presentation','bottom_sheet');a.removeAttribute('target')});decorate();const root=document.querySelector('.review-schedule-list')||document.body;new MutationObserver(decorate).observe(root,{childList:true,subtree:true});}
   }catch(_){}

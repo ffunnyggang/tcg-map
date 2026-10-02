@@ -3,19 +3,22 @@ import { Animated,Easing,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
-import { C } from '../lib/theme';
+import { C,UI } from '../lib/theme';
+import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 
-const NAV_HEIGHT=58;
-const NAV_GAP=12;
+const NAV_HEIGHT=54;
+const NAV_GAP=10;
 
 export default function LivePinButton({withNav=true,scrolling=false,bottomOffset=0}:{withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const [showTip,setShowTip]=useState(false);
+  const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
   const progress=useRef(new Animated.Value(0)).current;
-  const navBottom=Math.max(insets.bottom,10);
+  const navBottom=Math.max(insets.bottom,UI.navBottomGap);
   const bottom=withNav?navBottom+NAV_HEIGHT+NAV_GAP+bottomOffset:insets.bottom+16+bottomOffset;
 
+  useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
   useEffect(()=>{
     let mounted=true;
     SecureStore.getItemAsync('funypin_live_entry_clicked').then(value=>{if(mounted)setShowTip(!value);}).catch(()=>{if(mounted)setShowTip(true);});
@@ -31,6 +34,7 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   const collapsedIconOpacity=progress.interpolate({inputRange:[0,.55,1],outputRange:[0,0,1]});
   const labelScale=progress.interpolate({inputRange:[0,1],outputRange:[1,.72]});
 
+  if(overlayOpen)return null;
   return <View pointerEvents="box-none" style={[styles.wrap,{bottom}]}>
     {showTip&&!scrolling?<View style={styles.tip}><Text style={styles.tipText}>실시간으로 정보 공유해요!</Text></View>:null}
     <Animated.View style={{width}}><Pressable accessibilityRole="button" accessibilityLabel="LIVE PIN 열기" onPress={open} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>

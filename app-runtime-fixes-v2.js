@@ -96,6 +96,23 @@
     };
   }
 
+  function returnToMapFromDetail(){
+    const currentCountry=window.FUNY_MAP_COUNTRY?.get?.()||'KR';
+    try{if(typeof closeDetail==='function')closeDetail();else{document.getElementById('detail-view')?.setAttribute('hidden','');document.getElementById('home-view')?.removeAttribute('hidden')}}catch(_){}
+    try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(_){location.hash=''}
+    setTimeout(()=>{
+      try{
+        if(currentCountry==='JP'){
+          document.body.classList.add('country-japan');
+          const gm=window.FUNY_GOOGLE_MAP_API?.getMap?.();
+          if(gm&&window.google?.maps){google.maps.event.trigger(gm,'resize')}
+        }
+        window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:currentCountry}}));
+        window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country:currentCountry}}));
+      }catch(_){}
+    },120);
+  }
+
   function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}
   function findNearbySortAction(target){
     const menu=target.closest('.popular-sort');
@@ -119,8 +136,8 @@
     const detailTarget=target.closest('#detail-view a,#detail-view button');
     if(detailTarget){
       const label=(detailTarget.getAttribute('aria-label')||detailTarget.textContent||'').replace(/\s+/g,' ').trim();
-      if(appShell&&detailTarget.matches('#hero-back,#sticky-back')){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();if(params.get('from')==='favorites'){post({type:'NATIVE_BACK'});return;}location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140);return;}
-      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();if(appShell){if(params.has('from')){params.delete('from');try{const u=new URL(location.href);u.searchParams.delete('from');history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash)}catch(_){}}location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140)}else location.href='shops.html';return;}
+      if(appShell&&detailTarget.matches('#hero-back,#sticky-back')){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();if(params.get('from')==='favorites'){post({type:'NATIVE_BACK'});return;}returnToMapFromDetail();return;}
+      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();if(appShell){if(params.has('from')){params.delete('from');try{const u=new URL(location.href);u.searchParams.delete('from');history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash)}catch(_){}}returnToMapFromDetail()}else location.href='shops.html';return;}
       if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a,a.content-card')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();const external=detailTarget.dataset.funyLinkMode==='external';post({type:external?'OPEN_EXTERNAL':'OPEN_INAPP_SHEET',url:href});return;}}
     }
     const action=appShell?findNearbySortAction(target):null;

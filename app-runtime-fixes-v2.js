@@ -26,7 +26,7 @@
 
   const style=document.createElement('style');
   style.textContent=`
-    html.app-shell.funy-web-overlay-open::before{content:"";position:fixed;inset:0;z-index:2147482000;background:rgba(22,18,28,.42);pointer-events:none}
+    html.app-shell.funy-web-overlay-open::before{content:"";position:fixed;inset:0;z-index:2147482000;background:rgba(22,18,28,.42);pointer-events:none}html.app-shell.funy-web-overlay-open.funy-talk-form-open::before{display:none!important;content:none!important}
     html.app-shell .talk-community-modal,html.app-shell #funyMonModal,html.app-shell .map-location-avatar-sheet,html.app-shell .sheetbg.open,html.app-shell .shop-filter-bg.open,html.app-shell .flag-sheet.open,html.app-shell .lightbox.open{z-index:2147483000!important}
     html.app-shell .talk-community-modal{inset:0!important;background:rgba(22,18,28,.42)!important}
     html.app-shell .talk-community-sheet{margin-bottom:0!important;max-height:92dvh!important}

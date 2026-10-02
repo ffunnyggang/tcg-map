@@ -70,7 +70,7 @@ export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:.8,borderColor:'rgba(255,255,255,.58)',backgroundColor:'rgba(255,255,255,.08)',shadowColor:'#211A2E',shadowOpacity:.11,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:8},elevation:9},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:.8,borderColor:'rgba(255,255,255,.58)',backgroundColor:'rgba(255,255,255,.08)',shadowColor:'#211A2E',shadowOpacity:.11,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:8},
   glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.025)'},
   glassHighlight:{position:'absolute',left:10,right:10,top:1,height:17,borderRadius:14,backgroundColor:'rgba(255,255,255,.11)',opacity:.85},
   item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:1},

@@ -30,7 +30,7 @@ export default function MapScreen(){
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} country={mapCountry}>
-      <FunyWebView key={`map-${mapCountry}-${__tabRefresh||'0'}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling} onMapCountryChange={value=>setMapCountry(value==='JP'?'JP':'KR')}/>
+      <FunyWebView key={`map-${initialCountry}-${shop||'list'}-${__tabRefresh||'0'}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling} onMapCountryChange={value=>setMapCountry(value==='JP'?'JP':'KR')}/>
     </ViewWithLivePin>
   </SafeAreaView>;
 }

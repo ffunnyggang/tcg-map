@@ -6,7 +6,7 @@ window.__FUNY_TALK_COMMUNITY=true;
 
 const SB='https://wdttzpbmqavaqfcbaywj.supabase.co';
 const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
-const CATS=['자유 게시판','카드 자랑','카드샵 후기','정보 공유'];
+const CATS=['자유 게시판','카드 자랑','카드깡/카드샵 후기','정보 공유'];
 const feed=document.getElementById('feed'),fab=document.getElementById('pokamoFab'),popularSort=document.getElementById('popularSort');
 let mixed=[],current='전체',popularMode='popular';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

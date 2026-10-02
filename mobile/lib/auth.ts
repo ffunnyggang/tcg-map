@@ -22,8 +22,9 @@ export async function signOut(){
 }
 
 export async function deleteAccount(){
-  const {error}=await supabase.rpc('delete_my_account');
+  const {data,error}=await supabase.functions.invoke('delete-account',{body:{}});
   if(error)throw error;
+  if(!data?.ok)throw new Error(data?.message||'계정 삭제 처리에 실패했습니다.');
   await supabase.auth.signOut({scope:'local'});
 }
 

@@ -10,9 +10,11 @@
 .portal-bottom-nav:before,.shops-bottom-nav:before{background:linear-gradient(105deg,rgba(255,255,255,.50),rgba(255,255,255,.06) 40%,rgba(149,116,228,.10) 72%,rgba(255,255,255,.24))!important}
 .portal-bottom-nav:after,.shops-bottom-nav:after{left:7%!important;right:7%!important;top:1px!important;height:30%!important;background:linear-gradient(180deg,rgba(255,255,255,.48),transparent)!important;filter:blur(5px)!important}
 .portal-bottom-nav a,.shops-bottom-nav a{
-  height:48px!important;min-height:48px!important;max-height:48px!important;padding:0!important;margin:0!important;
-  border-radius:24px!important;gap:1px!important;border:1px solid transparent!important;
+  height:48px!important;min-height:48px!important;max-height:48px!important;
+  padding:0!important;margin:0!important;border-radius:24px!important;gap:1px!important;border:1px solid transparent!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
   color:#77717d!important;font-size:9.5px!important;line-height:12px!important;font-weight:700!important;
+  box-sizing:border-box!important;
 }
 .portal-bottom-nav a span,.shops-bottom-nav a span{font-size:9.5px!important;line-height:12px!important;height:12px!important}
 .portal-bottom-nav a.active,.shops-bottom-nav a.active{
@@ -23,7 +25,10 @@
 .portal-bottom-nav a:before,.shops-bottom-nav a:before{display:none!important;content:none!important;background:none!important;-webkit-mask-image:none!important;mask-image:none!important}
 .portal-bottom-nav a.active:after,.shops-bottom-nav a.active:after{display:none!important;content:none!important}
 .portal-bottom-nav .nav-icon,.shops-bottom-nav .nav-icon{
-  display:block!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;max-width:24px!important;max-height:24px!important;flex:0 0 24px!important;object-fit:contain!important;margin:0!important;
+  display:block!important;position:static!important;inset:auto!important;transform:none!important;
+  width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;
+  max-width:24px!important;max-height:24px!important;flex:0 0 24px!important;
+  object-fit:contain!important;object-position:center center!important;align-self:center!important;margin:0!important;padding:0!important;
 }
 
 /* PNG-only nav icon guard: remove every legacy pseudo/mask icon layer */

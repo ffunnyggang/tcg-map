@@ -87,9 +87,11 @@
       if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell)post({type:'OPEN_NATIVE',route:'/(tabs)/map'});else location.href='shops.html';return;}
       if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return;}}
     }
-    const action=target.closest('button,a,select');
-    const label=(action?.textContent||'').replace(/\s+/g,' ').trim();
-    if(appShell&&/가까운 순/.test(label)&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION&&action){
+    const action=target.closest('button,a,[role="button"],select,option');
+    const label=((action?.getAttribute('aria-label')||action?.getAttribute('data-label')||action?.textContent||'')).replace(/\s+/g,' ').trim();
+    const sortValue=String(action?.getAttribute('data-sort')||action?.getAttribute('value')||'').trim().toLowerCase();
+    const isNearbyAction=/^가까운\s*순$/.test(label)||/^(nearby|distance)$/.test(sortValue);
+    if(appShell&&isNearbyAction&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION&&action){
       if(action.dataset.funyLocationRetry==='ready'){delete action.dataset.funyLocationRetry;return;}
       e.preventDefault();e.stopPropagation();if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
       if(action.dataset.funyLocationRetry==='loading')return;
@@ -97,7 +99,6 @@
       try{navigator.geolocation.getCurrentPosition(pos=>{const c=pos.coords||{};window.FUNY_CURRENT_LOCATION={lat:Number(c.latitude),lng:Number(c.longitude),accuracy:Number(c.accuracy)||0,heading:Number.isFinite(c.heading)?c.heading:null,ts:Date.now()};window.dispatchEvent(new CustomEvent('funy:locationchange',{detail:window.FUNY_CURRENT_LOCATION}));action.dataset.funyLocationRetry='ready';setTimeout(()=>action.click(),0)},()=>{delete action.dataset.funyLocationRetry},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){delete action.dataset.funyLocationRetry}
       return;
     }
-    if(appShell&&/내 위치/.test(label)&&navigator.geolocation){try{navigator.geolocation.getCurrentPosition(()=>{},()=>{},{enableHighAccuracy:true,timeout:12000,maximumAge:1000})}catch(_){}}
   },true);
 
   if(/\/talk\.html$/.test(location.pathname)){let scrollTimer=0;window.addEventListener('scroll',()=>{document.documentElement.classList.add('funy-talk-scrolling');clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>document.documentElement.classList.remove('funy-talk-scrolling'),650)},{passive:true});}

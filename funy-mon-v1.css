@@ -322,3 +322,12 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 
 /* Catch request loading */
 .funy-mon-catch-loading[hidden]{display:none!important}.funy-mon-catch-loading{position:fixed;inset:0;z-index:2147483600;display:grid;place-items:center;background:rgba(20,16,28,.28);backdrop-filter:blur(2px);pointer-events:auto}.funy-mon-catch-loading-card{min-width:190px;padding:20px 22px;border-radius:18px;background:rgba(255,255,255,.97);box-shadow:0 14px 38px rgba(31,24,42,.2);display:flex;flex-direction:column;align-items:center;text-align:center}.funy-mon-catch-spinner{width:34px;height:34px;border:4px solid #e7e0f5;border-top-color:#7657c8;border-radius:50%;animation:funyMonCatchSpin .75s linear infinite}.funy-mon-catch-loading-card strong{margin-top:12px;font-size:14px;color:#302936}.funy-mon-catch-loading-card small{margin-top:5px;font-size:10px;color:#928b97}@keyframes funyMonCatchSpin{to{transform:rotate(360deg)}}
+
+/* FUNY MON event entry application */
+.funy-mon-entry-apply{margin-top:12px;padding-top:12px;border-top:1px solid rgba(128,98,216,.16)}
+.funy-mon-entry-apply input{display:block;width:100%;height:46px;padding:0 13px;border:1px solid #ded8e8;border-radius:12px;background:#fff;color:#2d2832;font:600 13px/1 'Pretendard Variable',Pretendard,sans-serif;outline:none}
+.funy-mon-entry-apply input:focus{border-color:#8062d8;box-shadow:0 0 0 3px rgba(128,98,216,.09)}
+.funy-mon-entry-apply button{display:block;width:100%;height:48px;margin-top:9px;border:0;border-radius:12px;background:#8062d8;color:#fff;font:850 13px/1 'Pretendard Variable',Pretendard,sans-serif}
+.funy-mon-entry-apply button:disabled{background:#d8d3df;color:#918a96}
+.funy-mon-entry-message{min-height:16px;margin-top:7px;color:#8b8490;font-size:10px;line-height:1.5;text-align:center}
+.funy-mon-entry-message.done{color:#3b8b59;font-weight:800}

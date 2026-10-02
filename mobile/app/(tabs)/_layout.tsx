@@ -3,14 +3,14 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { Platform,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { C } from '../../lib/theme';
+import { C,UI } from '../../lib/theme';
 import { TAB_INACTIVE } from '../../lib/tabBar';
 
 type IconKind='home'|'map'|'pick'|'talk';
 
 const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk'};
 const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK'};
-const NAV_HEIGHT=58;
+const NAV_HEIGHT=54;
 const ICON_COLOR_ACTIVE='#6C4DC4';
 const ICON_COLOR_INACTIVE='#77717D';
 
@@ -51,7 +51,7 @@ function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const insets=useSafeAreaInsets();
-  const bottom=Math.max(insets.bottom,10);
+  const bottom=Math.max(insets.bottom,UI.navBottomGap);
   const currentRoute=state.routes[state.index];
   const currentOptions=descriptors[currentRoute.key]?.options;
   const currentStyle=currentOptions?.tabBarStyle;
@@ -60,7 +60,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 
   return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
     <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?68:52} style={StyleSheet.absoluteFill}/>
+      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?82:58} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
@@ -78,11 +78,11 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
 export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {...props}/>} screenOptions={{headerShown:false,tabBarActiveTintColor:C.purpleDark,tabBarInactiveTintColor:TAB_INACTIVE,tabBarShowLabel:true}}><Tabs.Screen name="index" options={{title:'HOME'}}/><Tabs.Screen name="map" options={{title:'TCG MAP'}}/><Tabs.Screen name="pick" options={{title:'PICK'}}/><Tabs.Screen name="talk" options={{title:'TALK'}}/></Tabs>}
 
 const styles=StyleSheet.create({
-  outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:29,overflow:'hidden',borderWidth:0.8,borderColor:'rgba(255,255,255,.68)',backgroundColor:'rgba(255,255,255,.08)',shadowColor:'#372B4A',shadowOpacity:.13,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:8},
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.10)'},
-  item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:2},
-  itemActive:{backgroundColor:'rgba(255,255,255,.30)',borderWidth:.7,borderColor:'rgba(255,255,255,.46)'},
+  outer:{position:'absolute',left:17,right:17,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:27,overflow:'hidden',borderWidth:0.75,borderColor:'rgba(255,255,255,.78)',backgroundColor:'rgba(248,246,252,.10)',shadowColor:'#372B4A',shadowOpacity:.11,shadowRadius:16,shadowOffset:{width:0,height:5},elevation:7},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.08)'},
+  item:{flex:1,height:46,borderRadius:23,alignItems:'center',justifyContent:'center',gap:1},
+  itemActive:{backgroundColor:'rgba(255,255,255,.26)',borderWidth:.6,borderColor:'rgba(255,255,255,.54)'},
   itemPressed:{opacity:.68},
   label:{fontSize:9,lineHeight:11,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
   labelActive:{fontWeight:'800',color:C.purpleDark}
@@ -90,8 +90,8 @@ const styles=StyleSheet.create({
 
 const icon=StyleSheet.create({
   homeBox:{width:22,height:21,position:'relative'},
-  roofLeft:{position:'absolute',left:2.5,top:5.2,width:10.4,height:1.8,borderRadius:.9,transform:[{rotate:'-40deg'}]},
-  roofRight:{position:'absolute',right:2.5,top:5.2,width:10.4,height:1.8,borderRadius:.9,transform:[{rotate:'40deg'}]},
+  roofLeft:{position:'absolute',left:2.55,top:5.1,width:10.35,height:1.8,borderRadius:.9,transform:[{rotate:'-40deg'}]},
+  roofRight:{position:'absolute',right:2.55,top:5.1,width:10.35,height:1.8,borderRadius:.9,transform:[{rotate:'40deg'}]},
   homeBody:{position:'absolute',left:4,top:9.5,width:14,height:10,borderWidth:1.7,borderTopWidth:0,borderRadius:2},
   homeDoor:{position:'absolute',left:10,top:14.5,width:2,height:5,borderRadius:1},
   pinBox:{width:22,height:22,position:'relative',alignItems:'center'},

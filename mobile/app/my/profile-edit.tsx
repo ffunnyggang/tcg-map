@@ -31,7 +31,11 @@ export default function ProfileEdit(){
   }).catch(e=>Alert.alert('불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[]);
 
   const nicknameLocked=!!nextNicknameChange;
-  const onNicknameChange=(value:string)=>setNickname(value.replace(/[^가-힣A-Za-z0-9]/g,'').slice(0,12));
+  // Keep Hangul Jamo while the iOS IME is composing. Final validation still
+  // requires a completed 2-12 character Korean/English/number nickname.
+  const onNicknameChange=(value:string)=>setNickname(
+    value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣᄀ-ᇿA-Za-z0-9]/g,'')
+  );
 
   const cropperHtml=(src:string)=>`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><style>
   *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#18161d;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;-webkit-user-select:none;user-select:none}
@@ -109,7 +113,7 @@ export default function ProfileEdit(){
 
         <View style={styles.field}>
           <View style={styles.labelRow}><Text style={styles.label}>닉네임</Text>{nicknameLocked?<Text style={styles.nicknameAvailable}>{dateLabel(nextNicknameChange!)}부터 닉네임 변경 가능</Text>:null}</View>
-          <TextInput value={nickname} onChangeText={onNicknameChange} editable={!nicknameLocked} maxLength={12} placeholder="2~12자 · 한글/영문/숫자" placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
+          <TextInput value={nickname} onChangeText={onNicknameChange} editable={!nicknameLocked} placeholder="2~12자 · 한글/영문/숫자" placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
           <Text style={styles.count}>{nickname.length}/12</Text>
           {!nicknameLocked?<Text style={styles.policy}>한글·영문·숫자 2~12자만 사용할 수 있어요. 공백·특수문자·이모지는 입력되지 않으며, 다른 사용자와 같은 닉네임은 사용할 수 없어요. 변경 후 30일 동안 다시 변경할 수 있어요.</Text>:null}
         </View>

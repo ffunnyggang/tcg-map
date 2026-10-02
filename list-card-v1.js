@@ -65,51 +65,51 @@
   const heading=document.querySelector('.list-heading');
   if(heading){heading.classList.add('list-heading-v2');heading.innerHTML='<div class="list-title"><span class="list-title-label">CARD SHOP</span><span class="list-count" id="count"></span></div><label class="list-sort"><span class="sr-only">카드샵 정렬</span><select id="list-sort-select" class="list-sort-select" aria-label="카드샵 정렬"><option value="recommend">추천 순</option><option value="near">가까운 순</option><option value="alpha">가나다 순</option></select><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></label>'}
 
-  const style=document.createElement('style');style.textContent='.list-sort,.list-sort-select{position:relative!important;z-index:20!important;pointer-events:auto!important;touch-action:manipulation!important}.map-filter-bar,.map-filter-bar .filter-track,.map-filter-bar .filter-chip,.country-filter-wrap,.country-filter-select{pointer-events:auto!important;touch-action:manipulation!important}';document.head.appendChild(style);
+  const style=document.createElement('style');style.textContent='.list-sort{position:relative!important;z-index:100!important;pointer-events:auto!important}.list-sort-select{position:relative!important;z-index:101!important;pointer-events:auto!important;touch-action:manipulation!important}.map-filter-bar,.map-filter-bar .filter-track,.map-filter-bar .filter-chip,.country-filter-wrap,.country-filter-select{pointer-events:auto!important;touch-action:manipulation!important}';document.head.appendChild(style);
 
   function requestNear(){
     if(window.FUNY_CURRENT_LOCATION){refresh('near-ready');return}
-    const btn=document.getElementById('map-location-btn');if(btn){btn.click();return}
+    const btn=document.getElementById('map-location-btn');
+    if(btn){btn.click();return}
     sortMode='recommend';const s=document.getElementById('list-sort-select');if(s)s.value='recommend';refresh('near-fallback');
   }
-
-  document.addEventListener('change',e=>{
-    const el=e.target;
-    if(!(el instanceof Element))return;
-    if(el.id==='list-sort-select'){
-      e.stopImmediatePropagation();sortMode=el.value||'recommend';window.FUNY_LIST_SORT_MODE=sortMode;if(sortMode==='near')requestNear();else refresh('sort-change');return;
+  function bindSort(){
+    const select=document.getElementById('list-sort-select');if(!select)return;
+    select.value=sortMode;
+    select.onchange=e=>{e.stopPropagation();sortMode=select.value||'recommend';window.FUNY_LIST_SORT_MODE=sortMode;if(sortMode==='near')requestNear();else refresh('sort-change')};
+    select.oninput=select.onchange;
+  }
+  function bindFilters(){
+    document.querySelectorAll('#filters .filter-chip').forEach(chip=>{
+      chip.onclick=e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const id=chip.dataset.filter;if(id==='all')state.filters.clear();else if(id){state.filters.has(id)?state.filters.delete(id):state.filters.add(id)};renderFilterUI();refresh('filter-change')};
+    });
+    const countrySelect=document.querySelector('#filters .country-filter-select');
+    if(countrySelect){
+      countrySelect.onchange=e=>{e.stopPropagation();e.stopImmediatePropagation();const next=countrySelect.value==='JP'?'JP':'KR';window.FUNY_MAP_COUNTRY?.set?.(next);setTimeout(()=>{bindFilters();refresh('country-change')},40)};
+      countrySelect.oninput=countrySelect.onchange;
     }
-    if(el.matches('.country-filter-select')){
-      e.stopImmediatePropagation();window.FUNY_MAP_COUNTRY?.set?.(el.value==='JP'?'JP':'KR');setTimeout(()=>refresh('country-change'),20);return;
-    }
-  },true);
-
-  document.addEventListener('click',e=>{
-    const target=e.target instanceof Element?e.target:null;if(!target)return;
-    const chip=target.closest('#filters .filter-chip');
-    if(chip){
-      e.preventDefault();e.stopImmediatePropagation();
-      const id=chip.dataset.filter;
-      if(id==='all')state.filters.clear();else if(id){state.filters.has(id)?state.filters.delete(id):state.filters.add(id)}
-      try{renderFilters()}catch(_){}
-      setTimeout(()=>refresh('filter-change'),0);return;
-    }
-    const card=target.closest('#shop-list .shop-card');
-    if(card){
-      e.preventDefault();e.stopImmediatePropagation();
-      try{const visits=Number(localStorage.getItem(FEEDBACK_VISITS_KEY)||0);localStorage.setItem(FEEDBACK_VISITS_KEY,String(Math.min(visits+1,99)))}catch(_){}
-      state.scrollY=window.scrollY||0;location.hash='#/shop/'+card.dataset.id;return;
-    }
-  },true);
+  }
+  function renderFilterUI(){
+    const root=document.getElementById('filters');if(!root)return;
+    root.querySelectorAll('.filter-chip').forEach(chip=>{const id=chip.dataset.filter;chip.classList.toggle('active',id==='all'?state.filters.size===0:state.filters.has(id))});
+  }
+  const originalRenderFilters=window.renderFilters;
+  if(typeof originalRenderFilters==='function'){
+    window.renderFilters=function(){originalRenderFilters();queueMicrotask(()=>{renderFilterUI();bindFilters()})};
+  }
 
   const search=document.getElementById('map-shop-search'),clear=document.getElementById('map-shop-search-clear');
-  search?.addEventListener('input',()=>{if(clear)clear.hidden=!search.value.trim();refresh('search-input')},true);
-  search?.addEventListener('search',()=>refresh('search-submit'),true);
-  clear?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();if(search){search.value='';clear.hidden=true;search.focus()}refresh('search-clear')},true);
+  if(search){search.oninput=()=>{if(clear)clear.hidden=!search.value.trim();refresh('search-input')};search.onsearch=()=>refresh('search-submit')}
+  if(clear){clear.onclick=e=>{e.preventDefault();e.stopPropagation();if(search){search.value='';clear.hidden=true;search.focus()}refresh('search-clear')}}
+
+  const list=document.getElementById('shop-list');
+  if(list){list.onclick=e=>{const card=e.target.closest?.('.shop-card');if(!card)return;e.preventDefault();e.stopPropagation();try{const visits=Number(localStorage.getItem(FEEDBACK_VISITS_KEY)||0);localStorage.setItem(FEEDBACK_VISITS_KEY,String(Math.min(visits+1,99)))}catch(_){}state.scrollY=window.scrollY||0;location.hash='#/shop/'+card.dataset.id}}
 
   window.addEventListener('funy:locationchange',()=>{if(sortMode==='near')refresh('location-change')});
-  window.addEventListener('funy:locationerror',()=>{if(sortMode==='near'){sortMode='recommend';const s=document.getElementById('list-sort-select');if(s)s.value='recommend';refresh('location-error')}});
+  window.addEventListener('funy:locationerror',()=>{if(sortMode==='near'){sortMode='recommend';bindSort();refresh('location-error')}});
   window.addEventListener('funy:shops-source',()=>refresh('shops-source'));
   window.addEventListener('funy:list-refresh',()=>refresh('external-refresh'));
+  window.addEventListener('funy:mapdatachange',()=>{bindFilters();refresh('mapdatachange')});
+  bindSort();renderFilterUI();bindFilters();
   setTimeout(()=>refresh('boot'),0);
 })();

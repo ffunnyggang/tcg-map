@@ -81,28 +81,13 @@ Deno.serve(async (req: Request) => {
   });
 
   try {
-    const [profilePaths, communityPathsFromStorage, communityRows] =
-      await Promise.all([
-        listUserStoragePaths(admin, "profile-images", user.id, false),
-        listUserStoragePaths(admin, "community-posts", user.id, true),
-        admin
-          .from("community_post_images")
-          .select("storage_path")
-          .eq("user_id", user.id),
-      ]);
-
-    if (communityRows.error) throw communityRows.error;
-
-    const communityPathsFromDb = (communityRows.data ?? [])
-      .map((row: { storage_path?: string | null }) => String(row.storage_path ?? ""))
-      .filter(Boolean);
+    const [profilePaths, communityPaths] = await Promise.all([
+      listUserStoragePaths(admin, "profile-images", user.id, false),
+      listUserStoragePaths(admin, "community-posts", user.id, true),
+    ]);
 
     await removePaths(admin, "profile-images", profilePaths);
-    await removePaths(
-      admin,
-      "community-posts",
-      [...communityPathsFromStorage, ...communityPathsFromDb],
-    );
+    await removePaths(admin, "community-posts", communityPaths);
 
     const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
     if (deleteError) throw deleteError;

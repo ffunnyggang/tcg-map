@@ -10,7 +10,7 @@ import { C,T,UI } from '../lib/theme';
 import { visualAssets } from '../lib/visualAssets';
 
 const WEB_MENU=[
-  ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
+  ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['고객지원','support.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
 ] as const;
 
 const ACTIVITY=[

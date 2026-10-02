@@ -14,5 +14,5 @@ export const setWebOverlayOpen=(next:boolean)=>{
 export const subscribeWebOverlay=(listener:Listener)=>{
   listeners.add(listener);
   listener(open);
-  return()=>listeners.delete(listener);
+  return()=>{listeners.delete(listener);};
 };

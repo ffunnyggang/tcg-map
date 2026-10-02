@@ -11,7 +11,7 @@ import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261002-04');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261002-05');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'고객지원','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
@@ -31,7 +31,7 @@ try{
     'html.app-shell.live-pin-page .filters{top:54px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 78px)!important;right:16px!important}'
+    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
@@ -39,7 +39,7 @@ try{
   if(/\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(path))document.documentElement.classList.add('web-back-page');
   style.textContent+='html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
   style.textContent+='html.app-shell.web-back-page .header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
-  if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell.live-pin-page .shell{padding-top:54px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:54px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:54px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 78px)!important}';
+  if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell.live-pin-page .shell{padding-top:54px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:54px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:54px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important}html.app-shell.live-pin-page .sheetbg.open,html.app-shell.live-pin-page .shop-filter-bg.open,html.app-shell.live-pin-page .flag-sheet.open{z-index:2147483000!important}html.app-shell .map-location-avatar-sheet{z-index:2147483000!important}';
   document.documentElement.appendChild(style);
 
   /* Install geolocation bridge before page scripts can cache WKWebView geolocation methods. */

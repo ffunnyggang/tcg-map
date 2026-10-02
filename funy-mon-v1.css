@@ -331,3 +331,10 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-entry-apply button:disabled{background:#d8d3df;color:#918a96}
 .funy-mon-entry-message{min-height:16px;margin-top:7px;color:#8b8490;font-size:10px;line-height:1.5;text-align:center}
 .funy-mon-entry-message.done{color:#3b8b59;font-weight:800}
+
+/* Compact event application row */
+.funy-mon-entry-apply{display:grid;grid-template-columns:minmax(0,1fr) 88px;gap:8px;align-items:center}
+.funy-mon-entry-apply input{grid-column:1;margin:0;min-width:0}
+.funy-mon-entry-apply button{grid-column:2;margin:0;width:88px;height:46px}
+.funy-mon-entry-message{grid-column:1/-1;margin-top:0}
+@media(max-width:360px){.funy-mon-entry-apply{grid-template-columns:minmax(0,1fr) 76px}.funy-mon-entry-apply button{width:76px}}

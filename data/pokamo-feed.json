@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-02T06:36:01.711542+00:00",
+  "updatedAt": "2026-10-02T07:31:26.139878+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "성수 다녀왔습니다",
+      "author": "김철왕",
+      "publishedAt": "2026-10-02T07:13:40.318423Z",
+      "excerpt": "성수에서 나름 저렴하게 상태 좋은걸로 대려왔습니다~",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/decf83c7-0d25-4c62-93cc-97e328399066.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/성수-다녀왔습니다-A04bpVVA",
+      "views": 4,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.04
+    },
     {
       "category": "자유 게시판",
       "title": "출석체크",
@@ -11,10 +24,10 @@
       "excerpt": "어제는 집근처 샵가서 데려오고 깡 해봤네용 출첵 합니당",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179092166929836c4af7483e302835e9a67dac9e08b7ae73e32aec027ab4aef7016907b73409e0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/출석체크-dXEakxGj",
-      "views": 5,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.05
+      "views": 7,
+      "likes": 1,
+      "comments": 1,
+      "popularityScore": 5.07
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "사람 많습니다 ㄷㄷ 성수 오셨나요???",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/2e8e70d5-fd72-40c6-bc2e-16e47b2bb87e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/성수-오신분-ALExzB0P",
-      "views": 8,
+      "views": 10,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.08
+      "popularityScore": 0.1
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "직접 뽑은 MUR카드 그레이팅 보냅니다 신체검사 잘 받고 10점 받고 오길 기원🙏 님들 보기엔 10점 받을거 같나요? 뒤쪽은 눈으로 봣을땐 깨끗한데 센터링은 눈이 삐꾸라 괜찮은지 모르겠네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/f43a6bb6-5e64-4007-aea4-a37cfc93e54c.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/그레이팅-보내는날-P21bGaWA",
-      "views": 22,
+      "views": 23,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.22
+      "popularityScore": 5.23
     },
     {
       "category": "자유 게시판",
@@ -173,19 +186,6 @@
       "popularityScore": 6.4
     },
     {
-      "category": "자유 게시판",
-      "title": "일트 만에 뜬 기라티나 특일",
-      "author": "쿠니아빠",
-      "publishedAt": "2026-09-30T12:12:59.730439Z",
-      "excerpt": "일트 만에 뜬 기라티나 특일",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일트-만에-뜬-기라티나-특일-dDOnBXKP",
-      "views": 3,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
-    },
-    {
       "category": "카드깡/카드샵 후기",
       "title": "오모차랜드",
       "author": "깽깽깽",
@@ -245,10 +245,10 @@
       "excerpt": "가격만 괜찮으면 바로 거래하고 싶어요. 서울에 살고 있고, 만약 멀리 계신다면 택배 거래도 괜찮습니 다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/2e89fbae-8115-40fc-9121-4021ae340f22.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-일판-트레이너-카드-아니면-트레이너와-포켓몬이-같이-나온-카드만-모으고-있습니다-d9XXOrOP",
-      "views": 10,
+      "views": 11,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.1
+      "popularityScore": 0.11
     },
     {
       "category": "카드 자랑",
@@ -336,10 +336,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 142,
+      "views": 143,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.42
+      "popularityScore": 55.43
     },
     {
       "category": "카드 자랑",
@@ -531,10 +531,10 @@
       "excerpt": "30주년 판매해요! 일판 박스, 에브이블래키박스! 가격은 각각 38 43 입니다!! 아 참고로 교환도 가능해요 박스만.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드30주년-PwgV7nkP",
-      "views": 96,
+      "views": 97,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.96
+      "popularityScore": 0.97
     },
     {
       "category": "정보 공유",
@@ -596,10 +596,10 @@
       "excerpt": "151박스 팝니다 슈링크 있어요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/6309039f-5182-4579-a221-07374a3e0360.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-151박스-일판-팝니다-dGzpeWBP",
-      "views": 168,
+      "views": 169,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 7.68
+      "popularityScore": 7.6899999999999995
     },
     {
       "category": "카드깡/카드샵 후기",

@@ -16,8 +16,10 @@ const ICON_COLOR_INACTIVE='#77717D';
 
 function HomeIcon({color}:{color:string}){
   return <View style={icon.homeBox}>
-    <View style={[icon.roofLeft,{borderColor:color}]}/><View style={[icon.roofRight,{borderColor:color}]}/>
-    <View style={[icon.homeBody,{borderColor:color}]}/><View style={[icon.homeDoor,{backgroundColor:color}]}/>
+    <View style={[icon.roofLeft,{backgroundColor:color}]}/>
+    <View style={[icon.roofRight,{backgroundColor:color}]}/>
+    <View style={[icon.homeBody,{borderColor:color}]}/>
+    <View style={[icon.homeDoor,{backgroundColor:color}]}/>
   </View>;
 }
 function MapIcon({color}:{color:string}){
@@ -60,7 +62,6 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
     <View style={styles.glassBar}>
       <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?68:52} style={StyleSheet.absoluteFill}/>
       <View pointerEvents="none" style={styles.glassTint}/>
-      <View pointerEvents="none" style={styles.glassHighlight}/>
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
@@ -78,11 +79,10 @@ export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
-  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:29,overflow:'hidden',borderWidth:0.8,borderColor:'rgba(255,255,255,.68)',backgroundColor:'rgba(255,255,255,.05)',shadowColor:'#372B4A',shadowOpacity:.13,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:8},
-  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.13)'},
-  glassHighlight:{position:'absolute',left:3,right:3,top:2,height:16,borderRadius:24,backgroundColor:'rgba(255,255,255,.20)'},
+  glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:3,borderRadius:29,overflow:'hidden',borderWidth:0.8,borderColor:'rgba(255,255,255,.68)',backgroundColor:'rgba(255,255,255,.08)',shadowColor:'#372B4A',shadowOpacity:.13,shadowRadius:14,shadowOffset:{width:0,height:6},elevation:8},
+  glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.10)'},
   item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:2},
-  itemActive:{backgroundColor:'rgba(255,255,255,.34)',borderWidth:.7,borderColor:'rgba(255,255,255,.52)'},
+  itemActive:{backgroundColor:'rgba(255,255,255,.30)',borderWidth:.7,borderColor:'rgba(255,255,255,.46)'},
   itemPressed:{opacity:.68},
   label:{fontSize:9,lineHeight:11,fontWeight:'700',color:TAB_INACTIVE,letterSpacing:-.05},
   labelActive:{fontWeight:'800',color:C.purpleDark}
@@ -90,10 +90,10 @@ const styles=StyleSheet.create({
 
 const icon=StyleSheet.create({
   homeBox:{width:22,height:21,position:'relative'},
-  roofLeft:{position:'absolute',left:3,top:5,width:10,height:10,borderTopWidth:1.8,transform:[{rotate:'-42deg'}]},
-  roofRight:{position:'absolute',right:3,top:5,width:10,height:10,borderTopWidth:1.8,transform:[{rotate:'42deg'}]},
-  homeBody:{position:'absolute',left:5,top:9,width:12,height:10,borderWidth:1.7,borderTopWidth:0,borderRadius:2},
-  homeDoor:{position:'absolute',left:10,top:14,width:2,height:5,borderRadius:1},
+  roofLeft:{position:'absolute',left:2.5,top:5.2,width:10.4,height:1.8,borderRadius:.9,transform:[{rotate:'-40deg'}]},
+  roofRight:{position:'absolute',right:2.5,top:5.2,width:10.4,height:1.8,borderRadius:.9,transform:[{rotate:'40deg'}]},
+  homeBody:{position:'absolute',left:4,top:9.5,width:14,height:10,borderWidth:1.7,borderTopWidth:0,borderRadius:2},
+  homeDoor:{position:'absolute',left:10,top:14.5,width:2,height:5,borderRadius:1},
   pinBox:{width:22,height:22,position:'relative',alignItems:'center'},
   pinHead:{position:'absolute',top:1,width:15,height:15,borderRadius:8,borderWidth:1.8,alignItems:'center',justifyContent:'center'},
   pinDot:{width:4,height:4,borderRadius:2},

@@ -5,7 +5,7 @@
   const fileName=src=>{try{return decodeURIComponent(new URL(src,location.href).pathname.split('/').pop()||'')}catch(e){return clean(src)}};
   const shop=()=>{const id=(window.state&&state.current)||location.hash.match(/^#\/shop\/([^/?#]+)/)?.[1]||'';const s=window.SHOPS&&SHOPS.find(x=>x.id===id);return{id, name:s?.name||document.querySelector('#detail-view .d-name')?.textContent||''}};
   const actionLabel=el=>clean(el.getAttribute('aria-label')||el.dataset.action||el.querySelector('span:last-child')?.textContent||el.textContent||el.getAttribute('href')||el.id||el.className);
-  send('funy_page_view',{page_path:location.pathname});
+  send('funy_page_view',{page_path:location.pathname});const routeView=()=>send('funy_route_view',{page_path:location.pathname,route_hash:clean(location.hash),screen_type:/\/shops\.html$/.test(location.pathname)?(location.hash.includes('/shop/')?'shop_detail':'tcg_map'):/\/talk\.html$/.test(location.pathname)?(location.hash.includes('/post/')?'talk_post':'talk'):/\/reviews\.html$/.test(location.pathname)?'pick':location.pathname==='/'||/\/index\.html$/.test(location.pathname)?'home':'other'});routeView();window.addEventListener('hashchange',routeView);
   const bannerParams=(el,placement)=>{const img=el.querySelector('img'),all=[...el.parentElement.children].filter(x=>x.matches('a,article,.fp-carousel-slide,.home-hero-slide,.review-banner-slide'));return{banner_placement:placement,banner_id:fileName(img?.getAttribute('src')||''),banner_name:clean(img?.alt||''),banner_position:Math.max(1,all.indexOf(el)+1),link_url:clean(el.getAttribute('href')||el.querySelector('a')?.getAttribute('href')||'')}};
 
   document.addEventListener('click',e=>{

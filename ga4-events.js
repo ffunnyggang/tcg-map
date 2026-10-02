@@ -1,6 +1,6 @@
 /* FUNY PIN GA4 interaction events */
 (function(){
-  const context=()=>{const c=window.__FUNY_APP_CONTEXT||{};return{client_surface:c.surface||'web',app_platform:c.platform||'web',app_version:c.appVersion||'',app_build:c.buildVersion||'',login_state:c.loggedIn?'logged_in':'logged_out'}};const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,{...context(),...params})}catch(e){}};
+  const context=()=>{const c=window.__FUNY_APP_CONTEXT||{};return{client_surface:c.surface||'web',app_platform:c.platform||'web',app_version:c.appVersion||'',app_build:c.buildVersion||'',login_state:c.loggedIn?'logged_in':'logged_out'}};const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,{...context(),...params})}catch(e){}};window.FUNY_TRACK=send;try{if(typeof window.gtag==='function')window.gtag('set',context())}catch(e){};
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim().slice(0,100);
   const fileName=src=>{try{return decodeURIComponent(new URL(src,location.href).pathname.split('/').pop()||'')}catch(e){return clean(src)}};
   const shop=()=>{const id=(window.state&&state.current)||location.hash.match(/^#\/shop\/([^/?#]+)/)?.[1]||'';const s=window.SHOPS&&SHOPS.find(x=>x.id===id);return{id, name:s?.name||document.querySelector('#detail-view .d-name')?.textContent||''}};
@@ -10,6 +10,7 @@
 
   document.addEventListener('click',e=>{
     const target=e.target instanceof Element?e.target:null;if(!target)return;
+    const cmsLink=target.closest('[data-funy-link-mode]');if(cmsLink){send('cms_link_click',{link_mode:clean(cmsLink.dataset.funyLinkMode||'inapp'),inapp_presentation:clean(cmsLink.dataset.funyInappPresentation||'page'),link_url:clean(cmsLink.getAttribute('href')||''),link_text:clean(cmsLink.getAttribute('aria-label')||cmsLink.textContent||'')});}
     const hero=target.closest('.home-hero-slide');if(hero){send('hero_banner_click',bannerParams(hero,'home_hero'));return}
     const homeBanner=target.closest('.fp-home-carousel a,.fp-carousel-slide a');if(homeBanner){const slide=homeBanner.closest('.fp-carousel-slide')||homeBanner;send('home_banner_click',bannerParams(slide,'home_middle'));return}
     const card=target.closest('#shop-list .shop-card');if(card){const id=card.dataset.id||'',s=window.SHOPS&&SHOPS.find(x=>x.id===id);send('shop_list_click',{shop_id:id,shop_name:clean(s?.name||card.querySelector('.shop-name')?.textContent||'')});return}

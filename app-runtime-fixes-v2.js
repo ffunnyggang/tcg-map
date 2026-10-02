@@ -98,6 +98,16 @@
 
   function returnToMapFromDetail(){
     const currentCountry=window.FUNY_MAP_COUNTRY?.get?.()||'KR';
+    if(currentCountry==='JP'){
+      try{
+        const u=new URL(location.href);
+        u.hash='';
+        u.searchParams.set('country','JP');
+        u.searchParams.delete('from');
+        location.replace(u.toString());
+        return;
+      }catch(_){}
+    }
     try{
       if(typeof closeDetail==='function')closeDetail();
       else{
@@ -105,13 +115,8 @@
         document.getElementById('home-view')?.removeAttribute('hidden');
       }
     }catch(_){}
-    try{
-      if(location.hash)history.replaceState(null,'',location.pathname+location.search);
-    }catch(_){location.hash=''}
-    const refresh=()=>{try{window.FUNY_MAP_COUNTRY?.refresh?.();window.FUNY_MAP_CLUSTER?.refresh?.();window.dispatchEvent(new CustomEvent('funy:list-refresh'));}catch(_){}};
-    requestAnimationFrame(()=>requestAnimationFrame(refresh));
-    setTimeout(refresh,180);
-    setTimeout(refresh,420);
+    try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(_){location.hash=''}
+    requestAnimationFrame(()=>{try{window.FUNY_MAP_COUNTRY?.refresh?.();window.FUNY_MAP_CLUSTER?.refresh?.();window.dispatchEvent(new CustomEvent('funy:list-refresh'))}catch(_){}});
   }
 
   function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}

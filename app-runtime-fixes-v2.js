@@ -27,23 +27,23 @@
   const style=document.createElement('style');
   style.textContent=`
     html.app-shell.funy-web-overlay-open::before{content:"";position:fixed;inset:0;z-index:2147482000;background:rgba(22,18,28,.42);pointer-events:none}
-    html.app-shell .talk-community-modal,html.app-shell #funyMonModal,html.app-shell .map-location-avatar-card,html.app-shell .sheetbg.open,html.app-shell .flag-sheet.open,html.app-shell .lightbox.open{z-index:2147483000!important}
+    html.app-shell .talk-community-modal,html.app-shell #funyMonModal,html.app-shell .map-location-avatar-sheet,html.app-shell .sheetbg.open,html.app-shell .shop-filter-bg.open,html.app-shell .flag-sheet.open,html.app-shell .lightbox.open{z-index:2147483000!important}
     html.app-shell .talk-community-modal{inset:0!important;background:rgba(22,18,28,.42)!important}
     html.app-shell .talk-community-sheet{margin-bottom:0!important;max-height:92dvh!important}
     html.app-shell #funyMonModal .funy-mon-sheet,html.app-shell .funy-mon-outcome-box,html.app-shell .map-location-avatar-card{margin-bottom:0!important}
     html.app-shell .funy-google-marker{pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;border:0!important;background:transparent!important;padding:0!important}
     html.app-shell .funy-google-marker svg{pointer-events:none!important}
     html.app-shell.funy-talk-scrolling .pokamo-fab{width:46px!important;min-width:46px!important;max-width:46px!important;padding:0!important;border-radius:23px!important;font-size:0!important;overflow:hidden!important;transition:width .3s cubic-bezier(.22,1,.36,1),padding .3s cubic-bezier(.22,1,.36,1),border-radius .3s ease!important}
-    html.app-shell.funy-talk-scrolling .pokamo-fab::before{content:"＋";font-size:21px;font-weight:700;line-height:46px;color:#fff}
-    #detail-view .funy-app-favorite{position:absolute;right:0;top:50%;transform:translateY(-50%);width:36px;height:36px;border:1px solid #e5dfeb;border-radius:18px;background:#fff;color:#8d8492;font-size:22px;line-height:34px;text-align:center;padding:0;z-index:3;box-shadow:0 3px 10px rgba(45,36,55,.06)}
+    html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}html.app-shell.funy-talk-scrolling .pokamo-fab::before{content:"📝";font-size:18px;line-height:46px;color:#fff}
+    #detail-view .funy-app-favorite{position:absolute;right:16px;top:17px;transform:none;width:36px;height:36px;border:1px solid #e5dfeb;border-radius:18px;background:#fff;color:#8d8492;font-size:22px;line-height:34px;text-align:center;padding:0;z-index:3;box-shadow:0 3px 10px rgba(45,36,55,.06)}
     #detail-view .funy-app-favorite.is-on{color:#7454c7;background:#f2edfb;border-color:#d9cef0}
-    #detail-view .d-name{padding-right:42px!important}
+    #detail-view .d-name{padding-right:58px!important}
     .home-links-block[data-funy-hardcoded-bottom]{display:none!important}
   `;
   document.head.appendChild(style);
 
   function isOverlayOpen(){
-    const selectors=['.talk-community-modal','#funyMonModal','.map-location-avatar-card','.sheetbg.open','.flag-sheet.open','.lightbox.open','[data-funy-bottom-sheet].is-open','[role="dialog"].is-open'];
+    const selectors=['.talk-community-modal','#funyMonModal','.map-location-avatar-sheet','.sheetbg.open','.shop-filter-bg.open','.flag-sheet.open','.lightbox.open','[data-funy-bottom-sheet].is-open','[role="dialog"].is-open'];
     return selectors.some(sel=>[...document.querySelectorAll(sel)].some(visible));
   }
   let lastOverlay=null,overlayTimer=0;
@@ -54,9 +54,11 @@
 
   function decorateLinks(root=document){
     if(!appShell)return;
-    root.querySelectorAll?.('a.review-schedule-card[href]').forEach(a=>{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')});
-    root.querySelectorAll?.('#detail-view a[data-review-card][href],#detail-view .related-content a[href],#detail-view .detail-related a[href],#detail-view a.content-card[href]').forEach(a=>{let external=false;try{external=/(^|\.)instagram\.com$/i.test(new URL(a.href,location.href).hostname)}catch(_){}if(external){a.dataset.funyLinkMode='external';delete a.dataset.funyInappPresentation}else{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')}});
+    root.querySelectorAll?.('a.review-schedule-card[href],#detail-view a[data-review-card][href],#detail-view .related-content a[href],#detail-view .detail-related a[href],#detail-view a.content-card[href],#detail-view a.instagram-feed-item[href]').forEach(a=>{a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='bottom_sheet';a.removeAttribute('target')});
+    root.querySelectorAll?.('#detail-view a.instagram-feed-more[href]').forEach(a=>{a.dataset.funyLinkMode='external';delete a.dataset.funyInappPresentation});
   }
+
+  function showFavoriteToast(message){let el=document.getElementById('funy-favorite-toast');if(!el){el=document.createElement('div');el.id='funy-favorite-toast';el.style.cssText='position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(8px);z-index:2147483500;padding:10px 14px;border-radius:999px;background:rgba(28,25,32,.92);color:#fff;font:750 11px/1.2 Pretendard,sans-serif;opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none;white-space:nowrap';document.body.appendChild(el)}el.textContent=message;requestAnimationFrame(()=>{el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)'});clearTimeout(window.__FUNY_FAVORITE_TOAST_TIMER);window.__FUNY_FAVORITE_TOAST_TIMER=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(8px)'},1500)}
 
   async function ensureFavorite(){
     if(!appShell)return;
@@ -73,7 +75,7 @@
     if(!user){draw(false);btn.onclick=e=>{e.preventDefault();e.stopPropagation();post({type:'OPEN_NATIVE',route:'/account'})};return;}
     const headers={apikey:KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'};
     try{const r=await fetch(`${SB}/rest/v1/shop_favorites?select=shop_id&user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}&limit=1`,{headers});draw(r.ok&&(await r.json()).length>0)}catch(_){draw(false)}
-    btn.onclick=async e=>{e.preventDefault();e.stopPropagation();if(btn.disabled)return;btn.disabled=true;try{const on=btn.dataset.on==='1';if(on){const r=await fetch(`${SB}/rest/v1/shop_favorites?user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}`,{method:'DELETE',headers:{...headers,Prefer:'return=minimal'}});if(!r.ok)throw Error();draw(false)}else{const r=await fetch(`${SB}/rest/v1/shop_favorites`,{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify({user_id:user,shop_id:shopId})});if(!r.ok&&r.status!==409)throw Error();draw(true)}}catch(_){alert('관심 매장 저장에 실패했습니다. 잠시 후 다시 시도해주세요.')}finally{btn.disabled=false}};
+    btn.onclick=async e=>{e.preventDefault();e.stopPropagation();if(btn.disabled)return;btn.disabled=true;try{const on=btn.dataset.on==='1';if(on){const r=await fetch(`${SB}/rest/v1/shop_favorites?user_id=eq.${encodeURIComponent(user)}&shop_id=eq.${encodeURIComponent(shopId)}`,{method:'DELETE',headers:{...headers,Prefer:'return=minimal'}});if(!r.ok)throw Error();draw(false);showFavoriteToast('관심 매장에서 해제했어요');try{window.gtag?.('event','favorite_toggle',{shop_id:shopId,favorite_state:'off'})}catch(_){}}else{const r=await fetch(`${SB}/rest/v1/shop_favorites`,{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify({user_id:user,shop_id:shopId})});if(!r.ok&&r.status!==409)throw Error();draw(true);showFavoriteToast('관심 매장에 등록했어요');try{window.gtag?.('event','favorite_toggle',{shop_id:shopId,favorite_state:'on'})}catch(_){}}catch(_){alert('관심 매장 저장에 실패했습니다. 잠시 후 다시 시도해주세요.')}finally{btn.disabled=false}};
   }
 
   function normalizeLabel(value){return String(value||'').replace(/\s+/g,' ').trim()}
@@ -99,8 +101,9 @@
     const detailTarget=target.closest('#detail-view a,#detail-view button');
     if(detailTarget){
       const label=(detailTarget.getAttribute('aria-label')||detailTarget.textContent||'').replace(/\s+/g,' ').trim();
-      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell){const c=(document.body.classList.contains('country-japan')||/\/JP-/.test(location.hash))?'JP':'KR';post({type:'OPEN_NATIVE',route:'/(tabs)/map?country='+c})}else location.href='shops.html';return;}
-      if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a,a.content-card')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();const external=detailTarget.dataset.funyLinkMode==='external'||/instagram\.com/i.test(href);post({type:external?'OPEN_EXTERNAL':'OPEN_INAPP_SHEET',url:href});return;}}
+      if(appShell&&detailTarget.matches('#hero-back,#sticky-back')){e.preventDefault();e.stopPropagation();location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140);return;}
+      if(/TCG\s*MAP|다른 카드샵/.test(label)){e.preventDefault();e.stopPropagation();if(appShell){location.hash='';setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country:window.FUNY_MAP_COUNTRY?.get?.()||'KR'}})),140)}else location.href='shops.html';return;}
+      if(detailTarget.matches('a[data-review-card],.related-content a,.detail-related a,a.content-card')){const href=detailTarget.href||detailTarget.getAttribute('href');if(href&&appShell){e.preventDefault();e.stopPropagation();const external=detailTarget.dataset.funyLinkMode==='external';post({type:external?'OPEN_EXTERNAL':'OPEN_INAPP_SHEET',url:href});return;}}
     }
     const action=appShell?findNearbySortAction(target):null;
     if(appShell&&action&&navigator.geolocation&&!window.FUNY_CURRENT_LOCATION){
@@ -114,6 +117,6 @@
   },true);
 
   if(/\/talk\.html$/.test(location.pathname)){let scrollTimer=0;window.addEventListener('scroll',()=>{document.documentElement.classList.add('funy-talk-scrolling');clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>document.documentElement.classList.remove('funy-talk-scrolling'),650)},{passive:true});}
-  if(location.pathname==='/'||/\/index\.html$/.test(location.pathname)){const removeBottom=()=>{const block=document.querySelector('.home-links-block');if(block){block.dataset.funyHardcodedBottom='1';block.remove()}};removeBottom();document.addEventListener('DOMContentLoaded',removeBottom,{once:true});setTimeout(removeBottom,400);}
+  if(location.pathname==='/'||/\/index\.html$/.test(location.pathname)){const removeBottom=()=>{document.querySelectorAll('.fp-home-carousel,.home-banner').forEach(x=>x.remove());const block=document.querySelector('.home-links-block');if(block){block.dataset.funyHardcodedBottom='1';block.remove()}};removeBottom();document.addEventListener('DOMContentLoaded',removeBottom,{once:true});setTimeout(removeBottom,400);}
   window.addEventListener('pagehide',()=>{if(appShell)post({type:'FUNY_WEB_OVERLAY_STATE',open:false})});
 })();

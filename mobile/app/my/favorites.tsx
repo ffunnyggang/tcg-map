@@ -19,7 +19,7 @@ export default function Favorites(){
         {shops.length?shops.map(shop=>{
           const image=shop.images?.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0];
           const station=shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?' 도보 '+shop.walk_minutes+'분':'')):'카드샵';
-          return <Pressable key={shop.id} onPress={()=>router.push(('/shop/'+shop.id) as any)} style={styles.card}>
+          return <Pressable key={shop.id} onPress={()=>router.push({pathname:'/(tabs)/map',params:{country:shop.country_code,shop:shop.id}} as any)} style={styles.card}>
             {image?<Image source={{uri:shopImageUrl(image.storage_path||image.source_path)}} style={styles.image}/>:<View style={styles.imageFallback}><Text style={styles.imageFallbackText}>FUNY PIN</Text></View>}
             <View style={styles.copy}>
               <View style={styles.titleRow}><Text numberOfLines={1} style={styles.name}>{shop.name}</Text><Text style={styles.heart}>♥</Text></View>
@@ -27,7 +27,7 @@ export default function Favorites(){
               <Text numberOfLines={1} style={styles.address}>{shop.address}</Text>
             </View>
           </Pressable>
-        }):<View style={styles.empty}><View style={styles.emptyIcon}><Text style={styles.emptyIconText}>♡</Text></View><Text style={styles.emptyTitle}>아직 관심 매장이 없어요</Text><Text style={styles.emptyText}>카드샵 상세에서 ♡ 관심 매장을 등록해보세요.</Text><Pressable onPress={()=>router.replace('/(tabs)/map' as any)} style={styles.emptyButton}><Text style={styles.emptyButtonText}>TCG MAP 둘러보기</Text></Pressable></View>}
+        }):<View style={styles.empty}><View style={styles.emptyIcon}><Text style={styles.emptyIconText}>♡</Text></View><Text style={styles.emptyTitle}>아직 관심 매장이 없어요</Text><Text style={styles.emptyText}>카드샵 상세에서 ♡ 관심 매장을 등록해보세요.</Text><Pressable onPress={()=>router.replace({pathname:'/(tabs)/map',params:{country:'KR',shop:''}} as any)} style={styles.emptyButton}><Text style={styles.emptyButtonText}>TCG MAP 둘러보기</Text></Pressable></View>}
       </ScrollView>}
   </View>;
 }

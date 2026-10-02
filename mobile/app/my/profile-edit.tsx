@@ -1,9 +1,10 @@
 import { useEffect,useState } from 'react';
-import { ActivityIndicator,Alert,Image,KeyboardAvoidingView,Platform,Pressable,ScrollView,StyleSheet,Text,TextInput,View } from 'react-native';
+import { ActivityIndicator,Alert,Image,KeyboardAvoidingView,Modal,Platform,Pressable,ScrollView,StyleSheet,Text,TextInput,View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { WebView } from 'react-native-webview';
 import { useRouter } from 'expo-router';
 import MySubHeader from '../../components/MySubHeader';
-import { getProfile,nicknameNextChangeAt,removeProfileAvatar,updateProfile,uploadProfileAvatar } from '../../lib/auth';
+import { getProfile,nicknameNextChangeAt,removeProfileAvatar,updateProfile,uploadProfileAvatar,uploadProfileAvatarDataUrl } from '../../lib/auth';
 import { C } from '../../lib/theme';
 
 const dateLabel=(d:Date)=>`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
@@ -18,6 +19,8 @@ export default function ProfileEdit(){
   const [avatar,setAvatar]=useState<string|null>(null);
   const [pickedUri,setPickedUri]=useState<string|null>(null);
   const [pickedMimeType,setPickedMimeType]=useState<string|null>(null);
+  const [pickedDataUrl,setPickedDataUrl]=useState<string|null>(null);
+  const [cropSource,setCropSource]=useState<string|null>(null);
   const [nextNicknameChange,setNextNicknameChange]=useState<Date|null>(null);
 
   useEffect(()=>{getProfile().then(({profile,user})=>{
@@ -30,14 +33,39 @@ export default function ProfileEdit(){
   const nicknameLocked=!!nextNicknameChange;
   const onNicknameChange=(value:string)=>setNickname(value.replace(/[^가-힣A-Za-z0-9]/g,'').slice(0,12));
 
+  const cropperHtml=(src:string)=>`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><style>
+  *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111015;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;-webkit-user-select:none;user-select:none}
+  .top{height:64px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}.top button{border:0;background:transparent;color:#fff;font-size:15px;font-weight:800;padding:10px}.top .save{color:#bca6ff}
+  .wrap{height:calc(100% - 128px);display:grid;place-items:center}.stage{position:relative;width:300px;height:300px;border-radius:50%;overflow:hidden;background:#222;touch-action:none;box-shadow:0 0 0 9999px rgba(0,0,0,.52),0 0 0 2px rgba(255,255,255,.9)}
+  .stage img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;will-change:transform}
+  .guide{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}
+  .bottom{height:64px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px}
+  </style></head><body><div class="top"><button id="cancel">취소</button><strong>프로필 이미지 조정</strong><button id="save" class="save">완료</button></div><div class="wrap"><div id="stage" class="stage"><img id="img" src=${JSON.stringify(src)}><div class="guide"></div></div></div><div class="bottom">한 손가락으로 이동 · 두 손가락으로 확대/축소</div><script>
+  (function(){
+    var V=300,img=document.getElementById('img'),stage=document.getElementById('stage'),x=0,y=0,scale=1,minScale=1,start=null,pinch=null;
+    function clamp(){var w=img.naturalWidth*scale,h=img.naturalHeight*scale;x=Math.min(0,Math.max(V-w,x));y=Math.min(0,Math.max(V-h,y));}
+    function draw(){clamp();img.style.transform='translate('+x+'px,'+y+'px) scale('+scale+')';}
+    img.onload=function(){minScale=Math.max(V/img.naturalWidth,V/img.naturalHeight);scale=minScale;x=(V-img.naturalWidth*scale)/2;y=(V-img.naturalHeight*scale)/2;draw();};
+    function dist(a,b){var dx=a.clientX-b.clientX,dy=a.clientY-b.clientY;return Math.sqrt(dx*dx+dy*dy)}
+    stage.addEventListener('touchstart',function(e){e.preventDefault();if(e.touches.length===1){start={px:e.touches[0].clientX,py:e.touches[0].clientY,x:x,y:y}}else if(e.touches.length===2){var d=dist(e.touches[0],e.touches[1]);pinch={d:d,scale:scale,cx:(e.touches[0].clientX+e.touches[1].clientX)/2-stage.getBoundingClientRect().left,cy:(e.touches[0].clientY+e.touches[1].clientY)/2-stage.getBoundingClientRect().top,x:x,y:y}}},{passive:false});
+    stage.addEventListener('touchmove',function(e){e.preventDefault();if(e.touches.length===1&&start){x=start.x+(e.touches[0].clientX-start.px);y=start.y+(e.touches[0].clientY-start.py);draw()}else if(e.touches.length===2&&pinch){var ns=Math.max(minScale,Math.min(minScale*5,pinch.scale*(dist(e.touches[0],e.touches[1])/Math.max(1,pinch.d))));var ratio=ns/pinch.scale;x=pinch.cx-(pinch.cx-pinch.x)*ratio;y=pinch.cy-(pinch.cy-pinch.y)*ratio;scale=ns;draw()}},{passive:false});
+    stage.addEventListener('touchend',function(e){if(e.touches.length===0){start=null;pinch=null}else if(e.touches.length===1){start={px:e.touches[0].clientX,py:e.touches[0].clientY,x:x,y:y};pinch=null}});
+    document.getElementById('cancel').onclick=function(){window.ReactNativeWebView.postMessage(JSON.stringify({type:'cancel'}))};
+    document.getElementById('save').onclick=function(){var out=document.createElement('canvas'),S=800,r=S/V;out.width=S;out.height=S;var c=out.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,S,S);c.drawImage(img,x*r,y*r,img.naturalWidth*scale*r,img.naturalHeight*scale*r);window.ReactNativeWebView.postMessage(JSON.stringify({type:'save',data:out.toDataURL('image/jpeg',.88)}))};
+  })();
+  </script></body></html>`;
+
   const pickAvatar=async()=>{
     const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
     if(!permission.granted){Alert.alert('사진 권한 필요','프로필 이미지를 변경하려면 사진 접근 권한이 필요해요.');return;}
-    const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:true,aspect:[1,1],quality:.85});
+    const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:false,quality:.85,base64:true});
     if(result.canceled||!result.assets?.[0])return;
-    setPickedUri(result.assets[0].uri);
-    setPickedMimeType(result.assets[0].mimeType||'image/jpeg');
-    setAvatar(result.assets[0].uri);
+    const asset=result.assets[0];
+    if(asset.base64){
+      setCropSource(`data:${asset.mimeType||'image/jpeg'};base64,${asset.base64}`);
+      return;
+    }
+    setPickedUri(asset.uri);setPickedMimeType(asset.mimeType||'image/jpeg');setPickedDataUrl(null);setAvatar(asset.uri);
   };
 
   const deleteAvatar=()=>{
@@ -46,7 +74,7 @@ export default function ProfileEdit(){
       {text:'취소',style:'cancel'},
       {text:'삭제',style:'destructive',onPress:async()=>{
         setSaving(true);
-        try{await removeProfileAvatar();setAvatar(null);setPickedUri(null);setPickedMimeType(null);Alert.alert('삭제 완료','프로필 이미지가 삭제되었습니다.');}
+        try{await removeProfileAvatar();setAvatar(null);setPickedUri(null);setPickedMimeType(null);setPickedDataUrl(null);setCropSource(null);Alert.alert('삭제 완료','프로필 이미지가 삭제되었습니다.');}
         catch(e:any){Alert.alert('삭제 실패',String(e?.message||e));}
         finally{setSaving(false);}
       }}
@@ -60,7 +88,7 @@ export default function ProfileEdit(){
     setSaving(true);
     try{
       let avatarUrl=avatar;
-      if(pickedUri)avatarUrl=await uploadProfileAvatar(pickedUri,pickedMimeType||'image/jpeg');
+      if(pickedDataUrl)avatarUrl=await uploadProfileAvatarDataUrl(pickedDataUrl);else if(pickedUri)avatarUrl=await uploadProfileAvatar(pickedUri,pickedMimeType||'image/jpeg');
       const profile=await updateProfile({nickname:next,avatar_url:avatarUrl||null});
       setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
       Alert.alert('저장 완료','프로필이 변경되었습니다.',[{text:'확인',onPress:()=>router.replace({pathname:'/account',params:{refresh:String(Date.now())}})}]);
@@ -90,9 +118,15 @@ export default function ProfileEdit(){
         <Pressable disabled={saving} onPress={save} style={[styles.saveButton,saving&&{opacity:.55}]}><Text style={styles.saveText}>{saving?'저장 중…':'저장하기'}</Text></Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
+      <Modal visible={!!cropSource} animationType="slide" presentationStyle="fullScreen" onRequestClose={()=>setCropSource(null)}>
+        <View style={styles.cropRoot}>
+          {cropSource?<WebView originWhitelist={['*']} source={{html:cropperHtml(cropSource)}} style={styles.cropWeb} scrollEnabled={false} bounces={false} onMessage={e=>{try{const data=JSON.parse(e.nativeEvent.data);if(data.type==='cancel'){setCropSource(null);return;}if(data.type==='save'&&data.data){setPickedDataUrl(String(data.data));setPickedUri(null);setPickedMimeType('image/jpeg');setAvatar(String(data.data));setCropSource(null);}}catch{}}}/>:null}
+        </View>
+      </Modal>
+
   </View>;
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#F7F4FC'},loading:{flex:1,backgroundColor:'#F7F4FC',alignItems:'center',justifyContent:'center'},content:{padding:22,paddingBottom:40},avatarWrap:{width:112,height:112,alignSelf:'center',position:'relative',marginTop:12},avatarTap:{width:112,height:112,borderRadius:56,overflow:'hidden'},avatar:{width:112,height:112,borderRadius:56,backgroundColor:'#eee'},avatarPlaceholder:{width:112,height:112,borderRadius:56,backgroundColor:'#EEE8FA',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#DDD3F1'},avatarPlaceholderText:{fontSize:14,fontWeight:'800',color:C.purpleDark},avatarAdd:{position:'absolute',right:-3,bottom:-3,width:30,height:30,borderRadius:15,backgroundColor:'#fff',borderWidth:1.5,borderColor:C.purpleDark,alignItems:'center',justifyContent:'center',zIndex:3},avatarAddText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.purpleDark},avatarDelete:{position:'absolute',right:-5,top:-5,width:28,height:28,borderRadius:14,backgroundColor:'#fff',borderWidth:1,borderColor:'#E0DAE5',alignItems:'center',justifyContent:'center',shadowColor:'#211A2E',shadowOpacity:.12,shadowRadius:5,shadowOffset:{width:0,height:2},elevation:3},avatarDeleteText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.textSoft},field:{marginTop:30},labelRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:8,gap:10},label:{fontSize:13,fontWeight:'900',color:C.text},nicknameAvailable:{flexShrink:1,textAlign:'right',fontSize:10.5,fontWeight:'700',color:C.purpleDark},input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},inputLocked:{backgroundColor:'#F1EEF4',color:C.muted},count:{marginTop:6,textAlign:'right',fontSize:11,color:C.muted},policy:{marginTop:5,fontSize:10.5,lineHeight:17,color:C.muted},saveButton:{marginTop:28,height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},saveText:{fontSize:14,fontWeight:'900',color:'#fff'}
+  root:{flex:1,backgroundColor:'#F7F4FC'},cropRoot:{flex:1,backgroundColor:'#111015'},cropWeb:{flex:1,backgroundColor:'#111015'},loading:{flex:1,backgroundColor:'#F7F4FC',alignItems:'center',justifyContent:'center'},content:{padding:22,paddingBottom:40},avatarWrap:{width:112,height:112,alignSelf:'center',position:'relative',marginTop:12},avatarTap:{width:112,height:112,borderRadius:56,overflow:'hidden'},avatar:{width:112,height:112,borderRadius:56,backgroundColor:'#eee'},avatarPlaceholder:{width:112,height:112,borderRadius:56,backgroundColor:'#EEE8FA',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#DDD3F1'},avatarPlaceholderText:{fontSize:14,fontWeight:'800',color:C.purpleDark},avatarAdd:{position:'absolute',right:-3,bottom:-3,width:30,height:30,borderRadius:15,backgroundColor:'#fff',borderWidth:1.5,borderColor:C.purpleDark,alignItems:'center',justifyContent:'center',zIndex:3},avatarAddText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.purpleDark},avatarDelete:{position:'absolute',right:-5,top:-5,width:28,height:28,borderRadius:14,backgroundColor:'#fff',borderWidth:1,borderColor:'#E0DAE5',alignItems:'center',justifyContent:'center',shadowColor:'#211A2E',shadowOpacity:.12,shadowRadius:5,shadowOffset:{width:0,height:2},elevation:3},avatarDeleteText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.textSoft},field:{marginTop:30},labelRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:8,gap:10},label:{fontSize:13,fontWeight:'900',color:C.text},nicknameAvailable:{flexShrink:1,textAlign:'right',fontSize:10.5,fontWeight:'700',color:C.purpleDark},input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},inputLocked:{backgroundColor:'#F1EEF4',color:C.muted},count:{marginTop:6,textAlign:'right',fontSize:11,color:C.muted},policy:{marginTop:5,fontSize:10.5,lineHeight:17,color:C.muted},saveButton:{marginTop:28,height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},saveText:{fontSize:14,fontWeight:'900',color:'#fff'}
 });

@@ -3,12 +3,12 @@
   if(window.__FUNY_COUNTRY_LOADER)return;
   window.__FUNY_COUNTRY_LOADER=true;
   const core=document.createElement('script');
-  core.src='map-country-core-v1.js?v=20261002-2045';
+  core.src='map-country-core-v1.js?v=20261002-2238';
   core.async=false;
   core.onload=()=>{
     if(document.querySelector('script[data-funy-country-stability]'))return;
     const stability=document.createElement('script');
-    stability.src='map-country-stability-v1.js?v=20261002-2045';
+    stability.src='map-country-stability-v1.js?v=20261002-2238';
     stability.async=false;
     stability.dataset.funyCountryStability='1';
     stability.onerror=()=>console.error('[FUNY PIN] country stability module load failed');

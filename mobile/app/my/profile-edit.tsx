@@ -6,7 +6,7 @@ import MySubHeader from '../../components/MySubHeader';
 import { getProfile,nicknameNextChangeAt,removeProfileAvatar,updateProfile,uploadProfileAvatar } from '../../lib/auth';
 import { C } from '../../lib/theme';
 
-const dateLabel=(d:Date)=>d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+const dateLabel=(d:Date)=>`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
 const defaultNickname=(user:any)=>user?`FUNY회원${String(user.id||'').replace(/-/g,'').slice(-4).toUpperCase()}`:'';
 
 export default function ProfileEdit(){

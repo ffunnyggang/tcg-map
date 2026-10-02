@@ -149,7 +149,7 @@
       const q=new URLSearchParams({select:'id',shop_id:'eq.'+campaign,status:'eq.EVENT_ENTRY',content:'eq.'+id,limit:'1'});
       const check=await fetch(SUPABASE_URL+'/rest/v1/live_reports?'+q.toString(),{headers,cache:'no-store'});if(!check.ok)throw new Error('응모 확인 실패');const rows=await check.json();
       if(rows.length){if(msg)msg.textContent='이미 응모한 Instagram 아이디입니다.';return}
-      const body={shop_id:campaign,shop_name:'FUNY MON EVENT',post_type:'report',category:'store',status:'EVENT_ENTRY',content:id,client_id:getAnonId()};
+      const body={shop_id:campaign,shop_name:'FUNY MON EVENT',post_type:'report',category:'store',status:'EVENT_ENTRY',content:id,client_id:anonId()};
       const saved=await fetch(SUPABASE_URL+'/rest/v1/live_reports',{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify(body)});if(!saved.ok)throw new Error('응모 저장 실패');
       input.disabled=true;btn.textContent='응모 완료';if(msg){msg.classList.add('done');msg.textContent='이벤트 응모가 완료됐어요!'}
     }catch(e){if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'}finally{if(!input.disabled)btn.disabled=false}

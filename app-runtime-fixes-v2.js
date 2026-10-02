@@ -98,15 +98,9 @@
 
   function returnToMapFromDetail(){
     const currentCountry=window.FUNY_MAP_COUNTRY?.get?.()||'KR';
+    if(currentCountry==='JP'&&appShell){post({type:'RESET_MAP',country:'JP'});return}
     if(currentCountry==='JP'){
-      try{
-        const u=new URL(location.href);
-        u.hash='';
-        u.searchParams.set('country','JP');
-        u.searchParams.delete('from');
-        location.replace(u.toString());
-        return;
-      }catch(_){}
+      try{const u=new URL(location.href);u.hash='';u.searchParams.set('country','JP');u.searchParams.delete('from');location.replace(u.toString());return}catch(_){}
     }
     try{
       if(typeof closeDetail==='function')closeDetail();

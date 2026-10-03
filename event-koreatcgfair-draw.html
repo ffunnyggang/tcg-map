@@ -24,22 +24,47 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.17;ba
 .num{width:54px;height:54px;display:grid;place-items:center;background:#7657dc;border:3px solid #fff;box-shadow:4px 4px 0 #4a2a9c;font-size:22px;font-weight:950}.winner-id{font-size:21px;font-weight:950;word-break:break-all}.winner-prize{margin-top:5px;color:#bfb2cc;font-size:12px;line-height:1.35}.footer{margin-top:25px;color:#a99db8;font-size:12px;line-height:1.6}.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:99;pointer-events:none;animation:fall 1.7s linear forwards}@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2}}
 @media(max-width:820px){.wrap{padding-top:24px}.top{align-items:flex-start;flex-direction:column}.meta{text-align:left}.board{grid-template-columns:1fr}.machine{min-height:520px}.results{margin-top:4px}}
 
-/* live-show arcade enhancements — original FUNY PIN graphics */
-.arcade-sign{position:absolute;left:50%;top:-23px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:12px;padding:8px 18px;border:4px solid #20162e;background:#0d0917;color:#fff;box-shadow:5px 5px 0 #ff55b7,-5px -5px 0 #56e7ff;font-weight:950;white-space:nowrap}.arcade-sign span:first-child{color:#ffe35b}.arcade-sign span:last-child{color:#76eaff}.arcade-sign b{color:#ff68c2}
-.pixel-mascot{position:absolute;z-index:7;width:74px;height:74px;display:grid;place-items:center;border:5px solid #21162f;background:#7657dc;color:#fff;font-size:35px;box-shadow:7px 7px 0 #ff5fbd;transform:rotate(-8deg);image-rendering:pixelated}.pixel-mascot i{position:absolute;right:-14px;top:-18px;color:#ffe35b;font-style:normal;font-size:25px;text-shadow:3px 3px 0 #20162e}.pm-left{left:-22px;top:65px}.pm-right{right:-20px;bottom:78px;transform:rotate(8deg);background:#20b9db;box-shadow:-7px 7px 0 #ffe35b}
-.slot{min-height:340px!important}.slot-id{font-size:clamp(38px,5.6vw,78px)!important}.slot-burst{position:absolute;width:90px;height:90px;border:8px solid #ffe35b;opacity:0;transform:rotate(45deg)}.slot.charging .slot-burst{animation:charge 1s steps(5,end) infinite}.slot.charging{animation:machineShake .18s steps(2,end) infinite}.slot.lock{animation:winnerPulse .55s steps(4,end) 2}.scanline{position:absolute;left:0;right:0;height:5px;top:-8px;background:linear-gradient(90deg,transparent,#67ecff,#ff5ec1,#ffe45d,transparent);opacity:0}.slot.charging .scanline{opacity:1;animation:scan .72s linear infinite}
-@keyframes charge{0%{opacity:.15;transform:rotate(0) scale(.5)}50%{opacity:.9;transform:rotate(180deg) scale(1.8)}100%{opacity:.1;transform:rotate(360deg) scale(.55)}}@keyframes scan{to{top:100%}}@keyframes machineShake{0%{transform:translate(0)}50%{transform:translate(2px,-1px)}100%{transform:translate(-2px,1px)}}@keyframes winnerPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8)}}
-body.draw-hype:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;background:radial-gradient(circle,transparent 30%,rgba(125,75,255,.22) 70%,rgba(255,64,173,.24));animation:hype .35s steps(2,end) infinite}@keyframes hype{50%{opacity:.35}}
-@media(max-width:900px){.arcade-sign{font-size:11px}.pixel-mascot{display:none}.slot{min-height:290px!important}}
+
+/* premium live-event refinement */
+body{background:
+ radial-gradient(circle at 18% 12%,rgba(50,224,255,.15),transparent 26%),
+ radial-gradient(circle at 84% 18%,rgba(255,55,187,.16),transparent 27%),
+ radial-gradient(circle at 50% 88%,rgba(121,72,255,.20),transparent 35%),
+ linear-gradient(145deg,#090711,#151026 55%,#080610)!important}
+body:before{opacity:.22!important;background-image:
+ linear-gradient(120deg,transparent 0 47%,rgba(83,231,255,.12) 48% 49%,transparent 50%),
+ linear-gradient(60deg,transparent 0 47%,rgba(255,77,190,.10) 48% 49%,transparent 50%)!important;background-size:42px 42px!important}
+.kicker{display:inline-block;padding:7px 12px;border:1px solid rgba(111,231,255,.48);background:rgba(8,9,20,.6);color:#7cecff!important;box-shadow:0 0 22px rgba(57,224,255,.13)}
+.title{text-shadow:3px 3px 0 #5335a7,0 0 30px rgba(142,91,255,.22)!important}
+.machine{border:1px solid rgba(177,151,255,.5)!important;border-radius:26px!important;background:linear-gradient(145deg,rgba(253,250,255,.98),rgba(245,239,255,.97))!important;box-shadow:0 28px 80px rgba(0,0,0,.38),0 0 45px rgba(119,78,230,.18)!important;overflow:hidden}
+.machine:before{content:"";position:absolute;inset:0;width:auto;height:auto;background:
+ linear-gradient(90deg,#63e8ff,#8e6bff 32%,#ff58bc 68%,#ffe45e);box-shadow:none;opacity:.9;clip-path:polygon(0 0,100% 0,100% 5px,0 5px)}
+.machine:after{content:"";position:absolute;right:-90px;top:-90px;width:220px;height:220px;border:1px solid rgba(123,88,220,.14);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.8),rgba(151,112,240,.09) 46%,transparent 70%);box-shadow:none}
+.slot{min-height:355px!important;border:1px solid rgba(144,110,232,.52)!important;border-radius:24px!important;background:
+ radial-gradient(circle at 50% 50%,rgba(115,73,218,.22),transparent 36%),
+ linear-gradient(135deg,#100b1d,#1b1130 55%,#0d0a17)!important;
+ box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 0 55px rgba(109,67,218,.24),0 16px 35px rgba(60,38,92,.16)!important}
+.slot:before{inset:20px!important;border:1px solid rgba(144,118,205,.28)!important;border-radius:18px!important}
+.slot:after{content:"✦  ·  ✦"!important;top:24px!important;color:#a98cff!important;letter-spacing:22px!important;text-shadow:0 0 15px #8c6aff}
+.slot-id{font-size:clamp(42px,6vw,86px)!important;text-shadow:0 0 14px rgba(132,94,255,.65),4px 4px 0 #4d3196!important}
+.slot.running{animation:slotGlow .42s ease-in-out infinite alternate}
+.slot.running .slot-id{animation:shuffleId .1s steps(2,end) infinite!important}
+.slot.lock{animation:winnerGlow .65s ease 2}
+.draw{border-radius:16px!important;background:linear-gradient(90deg,#6544d3,#8a5de8 48%,#c04fca)!important;box-shadow:0 9px 0 #39237d,0 15px 35px rgba(105,65,205,.3)!important}
+.results{border:1px solid rgba(174,145,255,.36)!important;border-radius:24px!important;background:linear-gradient(160deg,rgba(27,18,42,.96),rgba(14,10,24,.98))!important;box-shadow:0 28px 70px rgba(0,0,0,.32)!important}
+.winner{border:1px solid rgba(153,129,181,.34)!important;border-radius:15px!important;background:rgba(255,255,255,.045)!important}.winner.on{border-color:rgba(153,119,255,.8)!important;background:linear-gradient(100deg,rgba(112,78,205,.28),rgba(255,83,188,.08))!important;box-shadow:0 0 25px rgba(120,82,220,.12)}
+.num{border:0!important;border-radius:13px!important;background:linear-gradient(145deg,#7251d8,#9a69ef)!important;box-shadow:0 6px 16px rgba(80,50,160,.3)!important}
+@keyframes shuffleId{0%{transform:translateY(-2px);filter:blur(.15px)}50%{transform:translateY(2px)}100%{transform:translateY(0)}}@keyframes slotGlow{from{box-shadow:inset 0 0 40px rgba(94,61,196,.2),0 0 0 rgba(135,84,255,0)!important}to{box-shadow:inset 0 0 70px rgba(94,61,196,.35),0 0 45px rgba(135,84,255,.25)!important}}@keyframes winnerGlow{50%{filter:brightness(1.45);transform:scale(1.012)}}
+@media(max-width:820px){.slot{min-height:300px!important}}
 </style>
 </head>
 <body><main class="wrap">
 <header class="top"><div><div class="kicker">KOREA TCG FAIR × FUNY PIN</div><h1 class="title">코티페에서 퍼니몬 포획 이벤트<br>당첨자 추첨</h1></div><div class="meta">EVENT ID <b>EV-20261002-08AC9B</b><br><span id="entrantMeta">응모자 불러오는 중...</span></div></header>
 <section class="board">
-<div class="machine"><div class="pixel-mascot pm-left" aria-hidden="true">◆<i>✦</i></div><div class="pixel-mascot pm-right" aria-hidden="true">●<i>★</i></div><div class="arcade-sign" aria-hidden="true"><span>FUNY PIN</span><b>×</b><span>KOREA TCG FAIR</span></div>
+<div class="machine">
  <div class="round"><b id="roundText">ROUND 1 / 4</b><span class="badge" id="prizeBadge">100덱 BOX</span></div>
  <div class="prize" id="prizeText">포켓몬카드 일본판 100덱 1BOX</div>
- <div class="slot" id="slot"><div class="slot-burst" aria-hidden="true"></div><div class="slot-id" id="slotId">PRESS START!</div><div class="scanline" aria-hidden="true"></div></div>
+ <div class="slot" id="slot"><div class="slot-id" id="slotId">PRESS START!</div></div>
  <div class="status" id="status">현장 추첨을 시작해 주세요</div>
  <button class="draw" id="draw" type="button" disabled>응모자 불러오는 중...</button>
 </div>
@@ -66,23 +91,26 @@ async function loadEntries(){
  }catch(e){$('entrantMeta').textContent='응모자 조회 실패';$('status').textContent='네트워크를 확인한 뒤 새로고침해 주세요';$('draw').textContent='조회 실패'}
 }
 function confetti(){const cs=['#ffe35b','#ff5fb8','#62e8ff','#9f7cff','#fff'];for(let n=0;n<55;n++){const x=document.createElement('i');x.className='confetti';x.style.left=rnd(100)+'vw';x.style.background=cs[rnd(cs.length)];x.style.animationDelay=(rnd(500)/1000)+'s';document.body.appendChild(x);setTimeout(()=>x.remove(),2400)}}
-function prep(){if(round>=4)return;$('roundText').textContent='ROUND '+(round+1)+' / 4';$('prizeText').textContent=prizes[round];$('prizeBadge').textContent=round<3?'100덱 BOX':'테라스탈페스트';$('draw').textContent='ROUND '+(round+1)+' 추첨 시작';$('slotId').textContent='???';$('slot').classList.remove('lock');$('status').textContent=round<3?'100덱 BOX 당첨자를 선정합니다':'마지막 경품! 테라스탈페스트 당첨자를 선정합니다'}
+function prep(){if(round>=4)return;$('roundText').textContent='ROUND '+(round+1)+' / 4';$('prizeText').textContent=prizes[round];$('prizeBadge').textContent=round<3?'100덱 BOX':'테라스탈페스트';$('draw').textContent='ROUND '+(round+1)+' 추첨 시작';$('slotId').textContent='READY?';$('slot').classList.remove('lock');$('status').textContent=round<3?'100덱 BOX 당첨자를 선정합니다':'마지막 경품! 테라스탈페스트 당첨자를 선정합니다'}
 async function drawOne(){
  if(busy||round>=4||pool.length===0)return;busy=true;$('draw').disabled=true;
- const slot=$('slot');slot.classList.remove('lock','running');slot.classList.add('charging');document.body.classList.add('draw-hype');
- const phases=['ENTRY LOCK','RANDOM SEED','SHUFFLE','MIXING','FINALIZING','LOCK ON'];
- for(let i=0;i<phases.length;i++){
-   $('slotId').textContent=phases[i];$('status').textContent='■ '+String(i+1).padStart(2,'0')+' / '+String(phases.length).padStart(2,'0')+'  '+['응모 데이터 확인','무작위 값 생성','후보 순서 섞는 중','추첨 풀 혼합 중','최종 후보 계산','당첨자를 확정합니다'][i];
-   await wait(i<3?520:700);
+ const slot=$('slot');slot.classList.remove('lock');slot.classList.add('running');$('status').textContent='응모자 셔플 중...';
+ let delay=58,last='';
+ for(let i=0;i<48;i++){
+   let candidate=pool[rnd(pool.length)];
+   if(pool.length>1&&candidate===last){candidate=pool[(pool.indexOf(candidate)+1+rnd(pool.length-1))%pool.length]}
+   last=candidate;$('slotId').textContent='@'+candidate;
+   await wait(delay);
+   if(i>30)delay+=3;
+   if(i>40)delay+=5;
  }
- $('slotId').textContent='3';$('status').textContent='READY...';await wait(700);
- $('slotId').textContent='2';await wait(700);
- $('slotId').textContent='1';await wait(800);
- $('slotId').textContent='★';$('status').textContent='WINNER LOCKED!';await wait(500);
+ // 마지막 미당첨 ID를 오래 고정하지 않고 즉시 카운트다운 오버레이로 전환
+ slot.classList.remove('running');$('slotId').textContent='3';$('status').textContent='당첨자 확정 중...';await wait(420);
+ $('slotId').textContent='2';await wait(420);$('slotId').textContent='1';await wait(460);
  const idx=rnd(pool.length),winner=pool.splice(idx,1)[0];
- slot.classList.remove('charging');document.body.classList.remove('draw-hype');slot.classList.add('lock');$('slotId').textContent='@'+winner;$('status').textContent='🎉 당첨자 확정!';confetti();confetti();
+ $('slotId').textContent='@'+winner;slot.classList.add('lock');$('status').textContent='🎉 당첨자 확정!';confetti();confetti();
  const card=$('w'+(round+1));card.querySelector('.winner-id').textContent='@'+winner;card.classList.add('on');round++;
- await wait(2200);busy=false;
+ await wait(1900);busy=false;
  if(round>=4){$('draw').disabled=true;$('draw').textContent='추첨 완료 🎉';$('roundText').textContent='ALL CLEAR';$('status').textContent='모든 당첨자 추첨이 완료되었습니다';}
  else{$('draw').disabled=false;prep()}
 }

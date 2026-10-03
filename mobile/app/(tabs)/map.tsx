@@ -15,8 +15,7 @@ export default function MapScreen(){
   const [mapCountry,setMapCountry]=useState<'KR'|'JP'>(initialCountry);
   useEffect(()=>{setMapCountry(initialCountry)},[initialCountry]);
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
-  const shopQuery=shop?`&appShop=${encodeURIComponent(shop)}`:'';
-  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${shopQuery}`;
+  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}`;
   const onRoute=useCallback((url:string)=>{
     const detail=isShopDetail(url);
     const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();
@@ -25,7 +24,7 @@ export default function MapScreen(){
   },[]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} country={mapCountry}>
-      <FunyWebView key={`map-${initialCountry}-${shop||'list'}-${__tabRefresh||'0'}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling} onMapCountryChange={value=>setMapCountry(value==='JP'?'JP':'KR')}/>
+      <FunyWebView key={`map-${initialCountry}-${__tabRefresh||'0'}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling} onMapCountryChange={value=>setMapCountry(value==='JP'?'JP':'KR')}/>
     </ViewWithLivePin>
   </SafeAreaView>;
 }

@@ -12,7 +12,7 @@ const score=(r:ShopReview|null)=>{if(!r)return null;const a=[r.product_score,r.s
 const SW=Dimensions.get('window').width;
 const Divider=()=> <View style={{height:9,backgroundColor:C.divider,marginHorizontal:-14}}/>;
 export default function ShopDetail(){
-  const {id}=useLocalSearchParams<{id:string}>(),[shop,setShop]=useState<AppShop|null>(null),[review,setReview]=useState<ShopReview|null>(null),[contents,setContents]=useState<ShopContent[]>([]),[favorite,setFavorite]=useState(false),[favoriteBusy,setFavoriteBusy]=useState(false),[sheetUrl,setSheetUrl]=useState<string|null>(null),[sheetTitle,setSheetTitle]=useState('FUNY PIN');
+  const {id}=useLocalSearchParams<{id:string;from?:string}>(),[shop,setShop]=useState<AppShop|null>(null),[review,setReview]=useState<ShopReview|null>(null),[contents,setContents]=useState<ShopContent[]>([]),[favorite,setFavorite]=useState(false),[favoriteBusy,setFavoriteBusy]=useState(false),[sheetUrl,setSheetUrl]=useState<string|null>(null),[sheetTitle,setSheetTitle]=useState('FUNY PIN');
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const navBottom=Math.max(insets.bottom,10);
@@ -23,7 +23,9 @@ export default function ShopDetail(){
   const images=[...(shop.images||[])].sort((a,b)=>(Number(b.is_primary)-Number(a.is_primary))+(a.sort_order-b.sort_order)),features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true),tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true),avg=score(review),open=(url?:string|null)=>url&&Linking.openURL(url);
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(content.title||'관련 콘텐츠');setSheetUrl(content.url)};
   const chip=(label:string)=><View key={label} style={{paddingHorizontal:10,paddingVertical:6,borderRadius:999,backgroundColor:'#F3EFF9'}}><Text style={{fontSize:11,fontWeight:'700',color:'#6F5E8D'}}>{label}</Text></View>;
-  return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}><Stack.Screen options={{headerShown:false}}/><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:42,backgroundColor:'#fff'}}>
+  return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}><Stack.Screen options={{headerShown:false}}/>
+  <Pressable onPress={()=>router.back()} hitSlop={10} style={{position:'absolute',left:14,top:14,zIndex:200000,elevation:200000,width:40,height:40,borderRadius:20,backgroundColor:'rgba(255,255,255,.92)',borderWidth:1,borderColor:'rgba(225,220,230,.9)',alignItems:'center',justifyContent:'center',shadowColor:'#211A2E',shadowOpacity:.12,shadowRadius:8,shadowOffset:{width:0,height:3}}}><Text style={{fontSize:28,lineHeight:29,color:C.text}}>‹</Text></Pressable>
+  <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:42,backgroundColor:'#fff'}}>
     {images.length?<ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>{images.map(x=><Image key={x.id} source={{uri:shopImageUrl(x.storage_path||x.source_path)}} style={{width:SW,height:270,backgroundColor:C.divider}} resizeMode="cover"/>)}</ScrollView>:<View style={{height:180,backgroundColor:C.purpleSoft,alignItems:'center',justifyContent:'center'}}><Text style={{color:C.purpleDark,fontWeight:'800'}}>FUNY PIN CARD SHOP</Text></View>}
     <View style={{paddingHorizontal:14,paddingTop:18}}>
       <View style={{flexDirection:'row',alignItems:'center'}}><Text numberOfLines={1} style={{flex:1,fontSize:25,fontWeight:'900',letterSpacing:-.8,color:C.text}}>{shop.name}</Text><Pressable onPress={onToggleFavorite} disabled={favoriteBusy} hitSlop={8} style={{width:42,height:42,borderRadius:21,backgroundColor:favorite?'#EEE8FA':'#F7F4FC',borderWidth:1,borderColor:favorite?'#D9C9F2':C.line,alignItems:'center',justifyContent:'center',opacity:favoriteBusy?.55:1}}><Text style={{fontSize:22,color:favorite?C.purpleDark:'#9A92A0'}}>{favorite?'♥':'♡'}</Text></Pressable></View>

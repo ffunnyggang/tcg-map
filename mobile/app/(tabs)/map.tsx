@@ -13,6 +13,7 @@ export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
   const [shopDetail,setShopDetail]=useState(false);
   const [scrolling,setScrolling]=useState(false);
+  const [routeUi,setRouteUi]=useState({detail:false,back:false});
   const {__tabRefresh,country,shop,from}=useLocalSearchParams<{__tabRefresh?:string;country?:string;shop?:string;from?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const [mapCountry,setMapCountry]=useState<'KR'|'JP'>(initialCountry);
@@ -26,8 +27,9 @@ export default function MapScreen(){
     const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();
     setShopDetail(detail);
     setWebBack(back);
-    navigation.setOptions({tabBarStyle:(detail||back)?{display:'none'}:getTabBarStyle(bottom)});
-  },[bottom,navigation]);
+    setRouteUi(prev=>prev.detail===detail&&prev.back===back?prev:{detail,back});
+  },[]);
+  useEffect(()=>{navigation.setOptions({tabBarStyle:(routeUi.detail||routeUi.back)?{display:'none'}:getTabBarStyle(bottom)});},[bottom,navigation,routeUi]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} country={mapCountry}>
@@ -37,6 +39,6 @@ export default function MapScreen(){
 }
 
 function ViewWithLivePin({children,webBack,shopDetail,scrolling,country}:{children:ReactNode;webBack:boolean;shopDetail:boolean;scrolling:boolean;country:'KR'|'JP'}){
-  const hideLivePin=webBack||country==='JP';
+  const hideLivePin=webBack||shopDetail||country==='JP';
   return <View style={{flex:1}}>{children}{!hideLivePin?<LivePinButton withNav scrolling={scrolling}/>:null}</View>;
 }

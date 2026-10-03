@@ -8,6 +8,7 @@ import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
 import { useAppLanguage } from '../../lib/i18n';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { BlurView } from 'expo-blur';
 
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
 const TCG:Record<string,string>={pokemon:'포켓몬',one_piece:'원피스',onepiece:'원피스',dragon_ball:'드래곤볼',dragonball:'드래곤볼',yugioh:'유희왕',lorcana:'로카나',riftbound:'리프트바운드',other:'기타 TCG'};
@@ -29,7 +30,37 @@ function InfoRow({label,value,icon}:{label:string;value?:string|null;icon:keyof 
 function ScoreBar({label,value,progress}:{label:string;value:number|null|undefined;progress:Animated.Value}){
   const v=Math.max(0,Math.min(5,Number(value)||0));
   const width=progress.interpolate({inputRange:[0,1],outputRange:['0%',`${v/5*100}%`]});
-  return <View style={styles.barRow}><Text style={styles.barLabel}>{label}</Text><View style={styles.barTrack}><Animated.View style={[styles.barFill,{width}]} /></View><Text style={styles.barValue}>{v? v.toFixed(1):'-'}</Text></View>;
+  return <View style={styles.barRow}><Text style={styles.barLabel}>{label}</Text><View style={styles.barTrack}><Animated.View style={[styles.barFill,{width}]} /></View></View>;
+}
+
+const RADAR_SIZE=156,RADAR_C=78,RADAR_R=48;
+const radarPoint=(index:number,ratio:number)=>{
+  const a=-Math.PI/2+index*2*Math.PI/5;
+  return {x:RADAR_C+RADAR_R*ratio*Math.cos(a),y:RADAR_C+RADAR_R*ratio*Math.sin(a)};
+};
+const segmentStyle=(a:{x:number;y:number},b:{x:number;y:number},color:string,width=1)=>{
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx);
+  return {position:'absolute' as const,left:(a.x+b.x)/2-len/2,top:(a.y+b.y)/2-width/2,width:len,height:width,backgroundColor:color,transform:[{rotate:`${angle}rad`}],borderRadius:width};
+};
+function RadarPentagon({review,progress}:{review:ShopReview;progress:Animated.Value}){
+  const comp=([review.single_score,review.graded_score,review.box_score,review.oripa_score].reduce((sum,v)=>sum+(Number(v)||0),0))/4;
+  const values=[comp,Number(review.price_score)||0,Number(review.scale_score)||0,Number(review.mood_score)||0,Number(review.access_score)||0];
+  const labels=['상품구성','가격','매장규모','매장분위기','접근성'];
+  const scorePts=values.map((v,i)=>radarPoint(i,Math.max(0,Math.min(5,v))/5));
+  const scale=progress.interpolate({inputRange:[0,1],outputRange:[.05,1]});
+  const opacity=progress.interpolate({inputRange:[0,.2,1],outputRange:[0,.55,1]});
+  return <View style={styles.radarCanvas}>
+    {[1,2,3,4,5].flatMap(level=>{
+      const pts=Array.from({length:5},(_,i)=>radarPoint(i,level/5));
+      return pts.map((p,i)=><View key={`g-${level}-${i}`} style={segmentStyle(p,pts[(i+1)%5],'#E8E2DA',1)}/>);
+    })}
+    {Array.from({length:5},(_,i)=>{const p=radarPoint(i,1);return <View key={`a-${i}`} style={segmentStyle({x:RADAR_C,y:RADAR_C},p,'#EEE8E0',1)}/>})}
+    {labels.map((label,i)=>{const p=radarPoint(i,1.33);return <Text key={label} style={[styles.radarLabel,{left:p.x-27,top:p.y-8}]}>{label}</Text>})}
+    <Animated.View style={[StyleSheet.absoluteFill,{opacity,transform:[{scale}]}]}>
+      {scorePts.map((p,i)=><View key={`s-${i}`} style={segmentStyle(p,scorePts[(i+1)%5],'#8A5BE2',2)}/>)}
+      {scorePts.map((p,i)=><View key={`d-${i}`} style={[styles.radarDot,{left:p.x-3,top:p.y-3}]}/>)}
+    </Animated.View>
+  </View>;
 }
 
 export default function ShopDetail(){
@@ -52,10 +83,13 @@ export default function ShopDetail(){
   const [instaRatios,setInstaRatios]=useState<Record<string,number>>({});
   const [reviewRatios,setReviewRatios]=useState<Record<string,number>>({});
   const [scrolling,setScrolling]=useState(false);
+  const [stickyHeader,setStickyHeader]=useState(false);
   const galleryRef=useRef<ScrollView>(null);
   const scrollTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const chartProgress=useRef(new Animated.Value(0)).current;
   const fabProgress=useRef(new Animated.Value(0)).current;
+  const analysisY=useRef(Number.POSITIVE_INFINITY);
+  const chartStarted=useRef(false);
 
   const navBottom=Math.max(insets.bottom,10);
   const tcgMapBottom=navBottom+58+12;
@@ -88,10 +122,10 @@ export default function ShopDetail(){
       if(item.cover_image_url)return [item.content_id,webAsset(item.cover_image_url)] as const;
       try{
         const target=/^https:\/\/blog\.naver\.com\//i.test(item.url||'')?String(item.url).replace('https://blog.naver.com/','https://m.blog.naver.com/'):String(item.url||'');
-        const res=await fetch('https://api.microlink.io/?meta=true&url='+encodeURIComponent(target));
+        const res=await fetch('https://api.microlink.io/?meta=true&screenshot=true&url='+encodeURIComponent(target));
         if(!res.ok)return [item.content_id,''] as const;
         const json=await res.json();
-        const img=json?.data?.image?.url||json?.data?.image||'';
+        const img=json?.data?.image?.url||json?.data?.image||json?.data?.screenshot?.url||json?.data?.screenshot||'';
         return [item.content_id,String(img||'')] as const;
       }catch{return [item.content_id,''] as const}
     })).then(rows=>{if(!cancelled)setReviewThumbs(Object.fromEntries(rows.filter(([,url])=>url)))});
@@ -100,7 +134,7 @@ export default function ShopDetail(){
 
   useEffect(()=>{
     chartProgress.setValue(0);
-    Animated.timing(chartProgress,{toValue:1,duration:680,easing:Easing.out(Easing.cubic),useNativeDriver:false}).start();
+    chartStarted.current=false;
   },[review?.review_id,chartProgress]);
 
   useEffect(()=>{
@@ -123,7 +157,14 @@ export default function ShopDetail(){
   },[reviewThumbs]);
 
   const onDetailScroll=(e:any)=>{
+    const y=Number(e?.nativeEvent?.contentOffset?.y||0);
+    setStickyHeader(y>236);
     setScrolling(true);
+    if(!chartStarted.current&&y+Dimensions.get('window').height*.78>=analysisY.current){
+      chartStarted.current=true;
+      chartProgress.setValue(0);
+      Animated.timing(chartProgress,{toValue:1,duration:680,easing:Easing.out(Easing.cubic),useNativeDriver:false}).start();
+    }
     if(scrollTimer.current)clearTimeout(scrollTimer.current);
     scrollTimer.current=setTimeout(()=>setScrolling(false),180);
   };
@@ -154,8 +195,6 @@ export default function ShopDetail(){
   instaPosts.forEach((p,i)=>{const key=String(p.permalink||i),ratio=instaRatios[key]||1;const col=instaHeights[0]<=instaHeights[1]?0:1;instaColumns[col].push(p);instaHeights[col]+=1/ratio;});
   const fabWidth=fabProgress.interpolate({inputRange:[0,1],outputRange:[132,46]});
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
-  const radarScale=chartProgress.interpolate({inputRange:[0,1],outputRange:[.15,1]});
-  const radarOpacity=chartProgress.interpolate({inputRange:[0,.15,1],outputRange:[0,.35,1]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(content.title||'관련 콘텐츠');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
@@ -172,8 +211,8 @@ export default function ShopDetail(){
           </ScrollView>
           :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
         <View style={styles.heroTop}>
-          <Pressable onPress={()=>router.back()} style={styles.heroIcon}><Text style={styles.backText}>‹</Text></Pressable>
-          <Pressable onPress={share} style={styles.heroIcon}><Text style={styles.shareText}>↗</Text></Pressable>
+          <Pressable onPress={()=>router.back()} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+          <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
         </View>
         <View style={styles.heroCount}><Text style={styles.heroCountText}>▧ {images.length?galleryIndex+1:1} / {Math.max(images.length,1)}</Text></View>
       </View>
@@ -183,7 +222,7 @@ export default function ShopDetail(){
           <View style={styles.titleLine}><View style={{flex:1}}><Text style={styles.shopName}>{shop.name}</Text>{shop.name_en?<Text style={styles.shopNameEn}>{shop.name_en}</Text>:null}</View>
             <Pressable onPress={onToggleFavorite} disabled={favoriteBusy} style={[styles.favorite,favorite&&styles.favoriteOn]}><Text style={[styles.favoriteText,favorite&&styles.favoriteTextOn]}>{favorite?'♥':'♡'}</Text></Pressable>
           </View>
-          {!!location&&<Text style={styles.location}>⌖ {location}</Text>}
+          {!!location&&<View style={styles.locationRow}><Ionicons name="location-outline" size={15} color="#8A5BE2"/><Text style={styles.location}>{location}</Text></View>}
           <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={styles.tag}><Text style={styles.tagText}>{FEATURE[k]||k}</Text></View>)}</View>
           {activeEvent?<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent}</Text><Text style={styles.eventArrow}>›</Text></View>:null}
           <View style={styles.actionGrid}>
@@ -213,20 +252,11 @@ export default function ShopDetail(){
           </View>
         </View>:null}
 
-        {review?<View style={styles.section}>
+        {review?<View style={styles.section} onLayout={e=>{analysisY.current=e.nativeEvent.layout.y+280}}>
           <SectionTitle icon="analytics-outline" title={en?'Store analysis':'한눈에 보는 매장 분석'}/>
           <Text style={styles.note}>※ 깽퐌커플 방문 평점으로 단순 참고용으로 활용해주세요.</Text>
           <View style={styles.analysisCombo}>
-            <View style={styles.radarPane}>
-              <Text style={[styles.radarLabel,{top:10,left:'35%'}]}>상품구성</Text>
-              <Text style={[styles.radarLabel,{top:62,right:2}]}>가격</Text>
-              <Text style={[styles.radarLabel,{bottom:8,right:8}]}>매장규모</Text>
-              <Text style={[styles.radarLabel,{bottom:8,left:2}]}>매장분위기</Text>
-              <Text style={[styles.radarLabel,{top:62,left:2}]}>접근성</Text>
-              <View style={styles.radarDiamondOuter}><View style={styles.radarDiamondMid}><View style={styles.radarDiamondInner}/></View></View>
-              <View style={[styles.radarAxis,{transform:[{rotate:'0deg'}]}]}/><View style={[styles.radarAxis,{transform:[{rotate:'72deg'}]}]}/><View style={[styles.radarAxis,{transform:[{rotate:'144deg'}]}]}/>
-              <Animated.View style={[styles.radarCore,{opacity:radarOpacity,transform:[{rotate:'45deg'},{scale:radarScale}]}]}/>
-            </View>
+            <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress}/></View>
             <View style={styles.compPane}>
               <Text style={styles.subTitle}>상품 구성 상세</Text>
               {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
@@ -245,14 +275,20 @@ export default function ShopDetail(){
         {reviewPicks.length?<View style={styles.section}>
           <SectionTitle icon="chatbox-ellipses-outline" title="깽퐌커플 리뷰"/>
           <View style={styles.reviewGrid}>{reviewPicks.map(c=><Pressable key={c.content_id} onPress={()=>openContent(c)} style={styles.contentCard}>
-            {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:reviewRatios[c.content_id]||1}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
-            <View style={styles.contentBody}><Text numberOfLines={2} style={styles.contentTitle}>{c.title}</Text><Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View>
+            {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
+            <View style={styles.contentBody}><Text numberOfLines={2} style={styles.contentTitle}>{c.title}</Text><View style={styles.contentPlatformRow}>{c.platform==='Instagram'?<Ionicons name="logo-instagram" size={13} color={C.purpleDark}/>:<Ionicons name="globe-outline" size={13} color={C.purpleDark}/>}<Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View></View>
           </Pressable>)}</View>
         </View>:null}
 
 
       </View>
     </ScrollView>
+
+    {stickyHeader?<BlurView intensity={72} tint="light" style={styles.stickyHeader}>
+      <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+      <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
+      <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
+    </BlurView>:null}
 
     <View pointerEvents="box-none" style={styles.floatingLayer}>
       <Animated.View style={[styles.mapFabWrap,{bottom:tcgMapBottom,width:fabWidth}]}>
@@ -270,85 +306,86 @@ export default function ShopDetail(){
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#fff'},
+  root:{flex:1,backgroundColor:'#F8F6F2'},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
-  scrollContent:{paddingBottom:120,backgroundColor:'#fff'},
+  scrollContent:{paddingBottom:120,backgroundColor:'#F8F6F2'},
 
-  hero:{height:280,backgroundColor:'#F0EDF5',position:'relative'},
+  hero:{height:280,backgroundColor:'#ECE8E1',position:'relative'},
   heroImage:{width:SW,height:280,backgroundColor:'#EEEAF2'},
-  heroEmpty:{height:280,alignItems:'center',justifyContent:'center',backgroundColor:'#F1EEF5'},
-  heroEmptyText:{fontSize:13,fontWeight:'800',color:C.muted},
+  heroEmpty:{height:280,alignItems:'center',justifyContent:'center',backgroundColor:'#ECE8E1'},
+  heroEmptyText:{fontSize:11,fontWeight:'600',color:'#958D84'},
   heroTop:{position:'absolute',left:14,right:14,top:14,flexDirection:'row',justifyContent:'space-between'},
-  heroIcon:{width:40,height:40,borderRadius:20,backgroundColor:'rgba(255,255,255,.92)',borderWidth:1,borderColor:'rgba(225,220,230,.9)',alignItems:'center',justifyContent:'center',...shadow},
+  heroIcon:{width:36,height:36,borderRadius:18,backgroundColor:'rgba(255,253,250,.95)',borderWidth:1,borderColor:'rgba(226,219,210,.9)',alignItems:'center',justifyContent:'center',...shadow},
   backText:{fontSize:29,lineHeight:30,color:C.text},
   shareText:{fontSize:19,fontWeight:'800',color:C.text},
-  heroCount:{position:'absolute',right:14,bottom:12,height:28,paddingHorizontal:10,borderRadius:14,backgroundColor:'rgba(20,18,24,.55)',alignItems:'center',justifyContent:'center'},
-  heroCountText:{fontSize:10.5,fontWeight:'800',color:'#fff'},
+  heroCount:{position:'absolute',right:14,bottom:14,height:26,paddingHorizontal:9,borderRadius:13,backgroundColor:'rgba(34,30,26,.62)',alignItems:'center',justifyContent:'center'},
+  heroCountText:{fontSize:10,fontWeight:'700',color:'#fff'},
 
-  detailContent:{paddingHorizontal:14},
-  summaryCard:{paddingTop:20,paddingBottom:18,borderBottomWidth:8,borderBottomColor:C.divider},
+  stickyHeader:{position:'absolute',left:0,right:0,top:0,height:56,zIndex:300000,elevation:300000,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:14,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
+  stickyAction:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},
+  stickyTitle:{position:'absolute',left:56,right:56,textAlign:'center',fontSize:14.5,fontWeight:'800',letterSpacing:-.3,color:'#28231F'},
+
+  detailContent:{paddingHorizontal:16,paddingBottom:64},
+  summaryCard:{marginTop:-18,paddingHorizontal:16,paddingTop:22,paddingBottom:18,zIndex:3,backgroundColor:'rgba(255,253,250,.98)',borderWidth:1,borderColor:'#E6DFD6',borderRadius:20,...shadow},
   titleLine:{flexDirection:'row',alignItems:'center',gap:8},
-  shopName:{fontSize:25,fontWeight:'900',letterSpacing:-.8,color:C.text},
-  shopNameEn:{marginTop:3,fontSize:11.5,color:C.muted},
-  favorite:{width:42,height:42,borderRadius:21,backgroundColor:'#F7F4FC',borderWidth:1,borderColor:C.line,alignItems:'center',justifyContent:'center'},
+  shopName:{fontSize:23,fontWeight:'900',letterSpacing:-.8,color:'#28231F'},
+  shopNameEn:{marginTop:2,fontSize:10.5,fontWeight:'600',letterSpacing:.5,color:'#9E9386'},
+  favorite:{width:40,height:40,borderRadius:20,backgroundColor:'#F7F4FC',borderWidth:1,borderColor:C.line,alignItems:'center',justifyContent:'center'},
   favoriteOn:{backgroundColor:'#EEE8FA',borderColor:'#D9C9F2'},
-  favoriteText:{fontSize:22,color:'#99909F'},
+  favoriteText:{fontSize:21,color:'#99909F'},
   favoriteTextOn:{color:C.purpleDark},
-  location:{marginTop:12,fontSize:12.5,fontWeight:'700',color:C.textSoft},
+  locationRow:{marginTop:10,flexDirection:'row',alignItems:'center',gap:6},
+  location:{fontSize:11.8,fontWeight:'600',color:'#716A62'},
 
-  tags:{marginTop:12,flexDirection:'row',flexWrap:'wrap',gap:6},
-  tag:{paddingHorizontal:10,paddingVertical:6,borderRadius:999,backgroundColor:'#F3EFF9'},
-  tagText:{fontSize:10.5,fontWeight:'800',color:'#6F5E8D'},
+  tags:{marginTop:12,flexDirection:'row',flexWrap:'wrap',gap:5},
+  tag:{paddingHorizontal:8,paddingVertical:5,borderRadius:999,backgroundColor:'#F1EBE3'},
+  tagText:{fontSize:10,fontWeight:'600',color:'#695B4C'},
 
   eventCard:{marginTop:14,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
   eventBadge:{fontSize:9,fontWeight:'900',color:'#fff',backgroundColor:'#EE7847',paddingHorizontal:8,paddingVertical:5,borderRadius:10},
   eventText:{flex:1,fontSize:12,fontWeight:'800',color:C.textSoft},
   eventArrow:{fontSize:22,color:C.muted},
 
-  actionGrid:{marginTop:16,flexDirection:'row',gap:7},
-  actionMini:{flex:1,height:68,borderRadius:13,borderWidth:1,borderColor:'#ECE7F1',backgroundColor:'#fff',alignItems:'center',justifyContent:'center',paddingHorizontal:3},
+  actionGrid:{marginTop:16,flexDirection:'row',gap:8},
+  actionMini:{flex:1,minHeight:67,borderRadius:14,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',alignItems:'center',justifyContent:'center',paddingHorizontal:3,paddingVertical:8},
   actionMiniIcon:{width:29,height:29,borderRadius:15,backgroundColor:'#F0E8FF',alignItems:'center',justifyContent:'center'},
-  actionMiniText:{marginTop:6,fontSize:8.5,fontWeight:'800',color:C.text},
+  actionMiniText:{marginTop:6,fontSize:9.8,fontWeight:'600',color:'#5E5750'},
 
-  section:{paddingVertical:20,borderBottomWidth:8,borderBottomColor:C.divider},
-  sectionTitleRow:{flexDirection:'row',alignItems:'center',gap:8},
+  section:{marginTop:30},
+  sectionTitleRow:{flexDirection:'row',alignItems:'center',gap:8,marginBottom:13},
   sectionIcon:{width:25,height:25,borderRadius:8,backgroundColor:C.purpleSoft,alignItems:'center',justifyContent:'center'},
   sectionIconText:{fontSize:12,fontWeight:'900',color:C.purpleDark},
-  sectionTitle:{fontSize:16,fontWeight:'900',color:C.text},
+  sectionTitle:{fontSize:16,fontWeight:'900',letterSpacing:-.4,color:'#28231F'},
 
-  infoCard:{marginTop:12,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden'},
-  infoRow:{minHeight:58,paddingHorizontal:12,flexDirection:'row',alignItems:'center',borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:C.divider},
+  infoCard:{borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',paddingHorizontal:15,...shadow},
+  infoRow:{minHeight:54,flexDirection:'row',alignItems:'center'},
   infoLead:{width:92,flexDirection:'row',alignItems:'center',gap:8},
   infoIcon:{width:28,height:28,borderRadius:14,backgroundColor:'#F0E8FF',alignItems:'center',justifyContent:'center'},
   infoIconText:{fontSize:11,fontWeight:'900',color:'#8A5BE2'},
-  infoLabel:{fontSize:10.5,fontWeight:'700',color:C.muted},
-  infoValue:{flex:1,fontSize:11.5,lineHeight:18,color:C.textSoft},
+  infoLabel:{fontSize:11.2,fontWeight:'600',color:'#948B81'},
+  infoValue:{flex:1,fontSize:11.8,lineHeight:18,color:'#4E4841'},
 
-  googleCard:{marginTop:12,padding:15,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff'},
+  googleCard:{padding:15,borderRadius:17,borderWidth:1,borderColor:C.line,backgroundColor:'#fff'},
   googleTitle:{fontSize:14,fontWeight:'900',color:C.text},
   googleSub:{marginTop:6,fontSize:11,lineHeight:17,color:C.muted},
   googleButton:{marginTop:12,height:42,borderRadius:11,backgroundColor:'#F5F2F8',alignItems:'center',justifyContent:'center'},
   googleButtonText:{fontSize:11.5,fontWeight:'800',color:C.purpleDark},
 
-  note:{marginTop:6,fontSize:10.5,lineHeight:16,color:C.muted},
-  analysisCombo:{marginTop:12,minHeight:190,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden',flexDirection:'row'},
-  radarPane:{width:'46%',position:'relative',alignItems:'center',justifyContent:'center',borderRightWidth:1,borderRightColor:C.divider},
-  compPane:{flex:1,padding:12},
-  radarLabel:{position:'absolute',fontSize:8.5,fontWeight:'700',color:C.muted,zIndex:3},
-  radarDiamondOuter:{width:86,height:86,borderWidth:1,borderColor:'#E6DDF5',transform:[{rotate:'45deg'}],alignItems:'center',justifyContent:'center'},
-  radarDiamondMid:{width:58,height:58,borderWidth:1,borderColor:'#E6DDF5',alignItems:'center',justifyContent:'center'},
-  radarDiamondInner:{width:29,height:29,borderWidth:1,borderColor:'#E6DDF5'},
-  radarAxis:{position:'absolute',width:1,height:88,backgroundColor:'#E6DDF5',top:51,left:'50%'},
-  radarCore:{position:'absolute',width:50,height:50,backgroundColor:'rgba(138,91,226,.13)',borderWidth:1,borderColor:'rgba(138,91,226,.35)'},
+  note:{marginTop:-5,marginBottom:11,fontSize:10,lineHeight:16,color:'#9D958C'},
+  analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',flexDirection:'row',...shadow},
+  radarPane:{width:'48%',alignItems:'center',justifyContent:'center',paddingVertical:12},
+  compPane:{flex:1,padding:13,borderLeftWidth:1,borderLeftColor:'#EEE8E0'},
+  radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
+  radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:8.5,fontWeight:'600',color:'#8D857D'},
+  radarDot:{position:'absolute',width:6,height:6,borderRadius:3,backgroundColor:'#8A5BE2'},
   subTitle:{fontSize:12,fontWeight:'900',color:C.text},
-  tcgLine:{marginTop:11,paddingVertical:9,borderBottomWidth:1,borderBottomColor:C.divider,flexDirection:'row'},
+  tcgLine:{marginTop:11,paddingVertical:9,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:C.divider,flexDirection:'row'},
   tcgLabel:{width:70,fontSize:10.5,fontWeight:'800',color:C.muted},
   tcgValue:{flex:1,fontSize:11.5,fontWeight:'700',color:C.textSoft},
-  barRow:{marginTop:11,flexDirection:'row',alignItems:'center',gap:8},
-  barLabel:{width:60,fontSize:10.5,fontWeight:'700',color:C.textSoft},
+  barRow:{marginTop:13,flexDirection:'row',alignItems:'center',gap:8},
+  barLabel:{width:58,fontSize:10.5,fontWeight:'700',color:C.textSoft},
   barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EDE8F4',overflow:'hidden'},
   barFill:{height:7,borderRadius:4,backgroundColor:C.purple},
-  barValue:{width:25,textAlign:'right',fontSize:10.5,fontWeight:'800',color:C.purpleDark},
 
   recommendCard:{marginTop:12,padding:14,borderRadius:15,backgroundColor:'#F8F5FC'},
   recommendTitle:{fontSize:10.5,fontWeight:'900',color:C.purpleDark},
@@ -356,23 +393,24 @@ const styles=StyleSheet.create({
   visitText:{marginTop:8,fontSize:11.5,lineHeight:18,color:C.muted},
 
   instagramHead:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
-  moreText:{fontSize:10.5,fontWeight:'800',color:C.purpleDark},
-  instagramGuide:{marginTop:5,fontSize:10.5,color:C.muted},
-  instagramGrid:{marginTop:12,flexDirection:'row',gap:6,alignItems:'flex-start'},
+  moreText:{fontSize:10.5,fontWeight:'700',color:C.purpleDark},
+  instagramGuide:{marginTop:-8,marginBottom:11,fontSize:10.5,fontWeight:'600',color:'#938C9E'},
+  instagramGrid:{flexDirection:'row',gap:6,alignItems:'flex-start'},
   instagramColumn:{flex:1,gap:6},
-  instagramItem:{width:'100%',borderRadius:13,overflow:'hidden',backgroundColor:'#eee'},
-  instagramImage:{width:'100%',backgroundColor:'#eee'},
+  instagramItem:{width:'100%',borderRadius:11,overflow:'hidden',backgroundColor:'#EEEAF4'},
+  instagramImage:{width:'100%',backgroundColor:'#EEEAF4'},
 
-  reviewGrid:{marginTop:12,flexDirection:'row',gap:9},
-  contentCard:{flex:1,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden'},
-  contentImage:{width:'100%',backgroundColor:'#eee'},
-  contentPlaceholder:{height:110,alignItems:'center',justifyContent:'center',backgroundColor:'#F2EEF7'},
-  contentPlaceholderText:{fontSize:12,fontWeight:'900',color:C.purpleDark},
+  reviewGrid:{flexDirection:'row',gap:10,alignItems:'flex-start'},
+  contentCard:{flex:1,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden',...shadow},
+  contentImage:{width:'100%',backgroundColor:'#EEEAF4'},
+  contentPlaceholder:{aspectRatio:1,alignItems:'center',justifyContent:'center',backgroundColor:'#F2EEF7'},
+  contentPlaceholderText:{fontSize:11,fontWeight:'800',color:C.purpleDark},
   contentBody:{padding:10},
-  contentTitle:{fontSize:11.5,lineHeight:17,fontWeight:'800',color:C.text},
-  contentMeta:{marginTop:5,fontSize:10,color:C.muted},
+  contentTitle:{height:32,fontSize:11.5,lineHeight:15.5,fontWeight:'700',color:C.text},
+  contentPlatformRow:{marginTop:4,flexDirection:'row',alignItems:'center',gap:4},
+  contentMeta:{fontSize:10,color:'#9690A2'},
 
-  relatedRow:{minHeight:58,flexDirection:'row',alignItems:'center',paddingVertical:10,borderBottomWidth:1,borderBottomColor:C.divider},
+  relatedRow:{minHeight:58,flexDirection:'row',alignItems:'center',paddingVertical:10},
   relatedTitle:{fontSize:12.5,lineHeight:18,fontWeight:'800',color:C.text},
   relatedMeta:{marginTop:4,fontSize:10,color:C.muted},
   relatedArrow:{fontSize:21,color:C.muted,marginLeft:8},

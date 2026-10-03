@@ -1,2 +1,10 @@
 import { Stack } from 'expo-router';
-export default function RootLayout(){return <Stack screenOptions={{headerShown:false}}><Stack.Screen name="(tabs)"/></Stack>}
+import { LanguageProvider } from '../lib/i18n';
+
+export default function RootLayout(){
+  return <LanguageProvider>
+    <Stack screenOptions={{headerShown:false}}>
+      <Stack.Screen name="(tabs)"/>
+    </Stack>
+  </LanguageProvider>;
+}

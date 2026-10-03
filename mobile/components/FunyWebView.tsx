@@ -9,6 +9,7 @@ import { C } from '../lib/theme';
 import FunyHeader from './FunyHeader';
 import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
+import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
 const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-02');}return u.toString();}catch{return value}};
@@ -196,6 +197,7 @@ type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onW
 
 export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab'}:Props){
   const router=useRouter();
+  const {language}=useAppLanguage();
   const isFocused=useIsFocused();
   const ref=useRef<WebView>(null);
   const locationSub=useRef<Location.LocationSubscription|null>(null);
@@ -229,6 +231,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useEffect(()=>{if(!isFocused)setWebOverlayOpen(false);},[isFocused]);
   useEffect(()=>{let alive=true;supabase.auth.getSession().then(({data})=>{if(!alive)return;setAccessToken(data.session?.access_token||null);setAuthReady(true);}).catch(()=>{if(alive)setAuthReady(true)});const sub=supabase.auth.onAuthStateChange((_event,session)=>{if(!alive)return;setAccessToken(session?.access_token||null);});return()=>{alive=false;sub.data.subscription.unsubscribe();};},[]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[authReady]);
+  useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
 
   const reportRoute=useCallback((target:string)=>{const next=String(target||'');if(!next||lastReportedRoute.current===next)return;lastReportedRoute.current=next;setCurrentTarget(next);onWebRouteChange?.(next);},[onWebRouteChange]);
   useEffect(()=>{reportRoute(url);},[url,reportRoute]);
@@ -244,8 +247,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   if(!isFocused)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
-  const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken};
-  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};}catch(e){}})(); true;`;
+  const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language};
+  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});}catch(e){}})(); true;`;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={styles.container} accessibilityLabel={title}>

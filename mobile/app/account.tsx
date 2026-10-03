@@ -8,6 +8,7 @@ import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 import { C,T,UI } from '../lib/theme';
 import { visualAssets } from '../lib/visualAssets';
+import { useAppLanguage } from '../lib/i18n';
 
 const WEB_MENU=[
   ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['온라인 문의','support.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
@@ -26,6 +27,8 @@ const defaultNickname=(user:any)=>user?`FUNY회원${String(user.id||'').replace(
 
 export default function Account(){
   const router=useRouter();
+  const {language}=useAppLanguage();
+  const en=language==='en';
   const insets=useSafeAreaInsets();
   const params=useLocalSearchParams<{refresh?:string}>();
   const [loading,setLoading]=useState(true),[user,setUser]=useState<any>(null),[profile,setProfile]=useState<any>(null),[busy,setBusy]=useState<string|null>(null);
@@ -57,9 +60,11 @@ export default function Account(){
 
       {!user?<View style={styles.loginCard}><Text style={styles.loginTitle}>FUNY PIN과 더 가까워지기</Text><Text style={styles.loginText}>관심 매장, 퍼니몬 도감, 응모 내역 등을 저장할 수 있어요.</Text>{Platform.OS==='ios'?<View style={{marginTop:15,opacity:busy?0.6:1}} pointerEvents={busy?'none':'auto'}><AppleAuthentication.AppleAuthenticationButton buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN} buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK} cornerRadius={14} style={{width:'100%',height:50}} onPress={apple}/></View>:<View style={{marginTop:15,gap:9}}><Pressable disabled={!!busy} onPress={()=>social('kakao')} style={styles.kakao}><Text style={styles.socialText}>카카오로 시작하기</Text></Pressable><Pressable disabled={!!busy} onPress={()=>social('google')} style={styles.google}><Text style={styles.googleText}>Google로 계속하기</Text></Pressable></View>}</View>:null}
 
-      {user?<View style={styles.section}><View style={styles.sectionHead}><Text style={styles.sectionTitle}>내 활동</Text></View><View style={styles.activityCard}>{ACTIVITY.map((item,i)=><Pressable key={item.route} onPress={()=>router.push(item.route as any)} style={[styles.activityRow,i<ACTIVITY.length-1&&styles.rowBorder]}><View style={styles.activityIcon}><Text style={styles.activityIconText}>{item.icon}</Text></View><View style={styles.activityCopy}><Text style={styles.activityLabel}>{item.label}</Text><Text style={styles.activitySub}>{item.sub}</Text></View><Text style={styles.chevron}>›</Text></Pressable>)}</View></View>:null}
+      {user?<View style={styles.section}><View style={styles.sectionHead}><Text style={styles.sectionTitle}>{en?'My activity':'내 활동'}</Text></View><View style={styles.activityCard}>{ACTIVITY.map((item,i)=><Pressable key={item.route} onPress={()=>router.push(item.route as any)} style={[styles.activityRow,i<ACTIVITY.length-1&&styles.rowBorder]}><View style={styles.activityIcon}><Text style={styles.activityIconText}>{item.icon}</Text></View><View style={styles.activityCopy}><Text style={styles.activityLabel}>{item.label}</Text><Text style={styles.activitySub}>{item.sub}</Text></View><Text style={styles.chevron}>›</Text></Pressable>)}</View></View>:null}
 
-      <View style={[styles.section,!user&&{marginTop:24}]}><View style={styles.sectionHead}><Text style={styles.sectionTitle}>고객지원</Text></View><View style={styles.supportCard}>{WEB_MENU.map(([label,file],i)=><Pressable key={file} onPress={()=>openWebMenu(file,label)} style={[styles.supportRow,i<WEB_MENU.length-1&&styles.rowBorder]}><Text style={styles.supportLabel}>{label}</Text><Text style={styles.chevron}>›</Text></Pressable>)}</View></View>
+      <View style={styles.section}><View style={styles.sectionHead}><Text style={styles.sectionTitle}>{en?'Settings':'설정'}</Text></View><View style={styles.supportCard}><Pressable onPress={()=>router.push('/my/settings')} style={styles.supportRow}><Text style={styles.supportLabel}>{en?'Settings':'설정'}</Text><Text style={styles.chevron}>›</Text></Pressable></View></View>
+
+      <View style={[styles.section,!user&&{marginTop:24}]}><View style={styles.sectionHead}><Text style={styles.sectionTitle}>{en?'Support':'고객지원'}</Text></View><View style={styles.supportCard}>{WEB_MENU.map(([label,file],i)=><Pressable key={file} onPress={()=>openWebMenu(file,label)} style={[styles.supportRow,i<WEB_MENU.length-1&&styles.rowBorder]}><Text style={styles.supportLabel}>{label}</Text><Text style={styles.chevron}>›</Text></Pressable>)}</View></View>
 
       {user?<View style={styles.accountActions}><Pressable onPress={logout} disabled={!!busy} style={styles.logoutButton}><Text style={styles.logoutText}>{busy==='out'?'처리 중…':'로그아웃'}</Text></Pressable><Pressable onPress={removeAccount} disabled={!!busy} style={styles.deleteButton}><Text style={styles.deleteLabel}>{busy==='delete'?'삭제 중…':'계정 삭제'}</Text></Pressable></View>:null}
 

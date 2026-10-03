@@ -1,26 +1,23 @@
-const base = require('./app.json');
-
-module.exports = () => {
+module.exports = ({ config }) => {
   const isDev = process.env.APP_VARIANT === 'development';
-  const expo = {
-    ...base.expo,
-    name: isDev ? 'FUNY PIN DEV' : base.expo.name,
-    scheme: isDev ? 'funypin-dev' : base.expo.scheme,
-    icon: isDev ? './assets/app-icon-dark.png' : base.expo.icon,
+
+  return {
+    ...config,
+    name: isDev ? 'FUNY PIN DEV' : config.name,
+    scheme: isDev ? 'funypin-dev' : config.scheme,
+    icon: isDev ? './assets/app-icon-dark.png' : config.icon,
     ios: {
-      ...base.expo.ios,
-      bundleIdentifier: isDev ? 'kr.funypin.app.dev' : base.expo.ios.bundleIdentifier,
-      icon: isDev ? './assets/app-icon-dark.png' : base.expo.ios.icon,
+      ...config.ios,
+      bundleIdentifier: isDev ? 'kr.funypin.app.dev' : config.ios?.bundleIdentifier,
+      icon: isDev ? './assets/app-icon-dark.png' : config.ios?.icon,
     },
     android: {
-      ...base.expo.android,
-      package: isDev ? 'kr.funypin.app.dev' : base.expo.android.package,
-      icon: isDev ? './assets/app-icon-dark.png' : base.expo.android?.icon,
+      ...config.android,
+      package: isDev ? 'kr.funypin.app.dev' : config.android?.package,
     },
     extra: {
-      ...base.expo.extra,
+      ...config.extra,
       appVariant: isDev ? 'development' : 'production',
     },
   };
-  return { expo };
 };

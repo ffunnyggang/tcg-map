@@ -1,13 +1,20 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
+import Constants from 'expo-constants';
 import { supabase } from './supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export type SocialProvider = 'google' | 'kakao';
 
+const configuredScheme=(()=>{
+  const value=Constants.expoConfig?.scheme;
+  if(Array.isArray(value))return value[0]||'funypin';
+  return typeof value==='string'&&value?value:'funypin';
+})();
+
 export const OAUTH_REDIRECT = Linking.createURL('auth/callback', {
-  scheme: 'funypin',
+  scheme: configuredScheme,
 });
 
 function getFragmentParams(url: string) {

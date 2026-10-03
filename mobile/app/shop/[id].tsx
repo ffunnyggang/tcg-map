@@ -1,4 +1,4 @@
-import { useEffect,useMemo,useRef,useState } from 'react';
+import { useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,Alert,Dimensions,Image,Linking,Pressable,ScrollView,Share,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
@@ -85,11 +85,9 @@ export default function ShopDetail(){
   const tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true);
   const mapUrl=shop.country_code==='KR'?(shop.naver_map_url||shop.google_map_url):shop.google_map_url;
   const location=[shop.area,shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?` 도보 ${shop.walk_minutes}분`:'')):null].filter(Boolean).join(' · ');
-  const reviewPicks=useMemo(()=>{
-    const reel=contents.find(c=>/reel/i.test(c.content_type||''));
-    const blog=contents.find(c=>/blog/i.test(c.content_type||''));
-    return [reel,blog].filter(Boolean) as ShopContent[];
-  },[contents]);
+  const reel=contents.find(c=>/reel/i.test(c.content_type||''));
+  const blog=contents.find(c=>/blog/i.test(c.content_type||''));
+  const reviewPicks=[reel,blog].filter(Boolean) as ShopContent[];
   const related=contents.filter(c=>!reviewPicks.some(x=>x.content_id===c.content_id));
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(content.title||'관련 콘텐츠');setSheetUrl(content.url)};

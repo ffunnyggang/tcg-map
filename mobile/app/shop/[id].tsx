@@ -43,7 +43,8 @@ const segmentStyle=(a:{x:number;y:number},b:{x:number;y:number},color:string,wid
   return {position:'absolute' as const,left:(a.x+b.x)/2-len/2,top:(a.y+b.y)/2-width/2,width:len,height:width,backgroundColor:color,transform:[{rotate:`${angle}rad`}],borderRadius:width};
 };
 function RadarPentagon({review,progress}:{review:ShopReview;progress:Animated.Value}){
-  const comp=([review.single_score,review.graded_score,review.box_score,review.oripa_score].reduce((sum,v)=>sum+(Number(v)||0),0))/4;
+  const compValues=[review.single_score,review.graded_score,review.box_score,review.oripa_score].map(v=>Number(v)||0);
+  const comp=compValues.reduce((sum:number,v:number)=>sum+v,0)/4;
   const values=[comp,Number(review.price_score)||0,Number(review.scale_score)||0,Number(review.mood_score)||0,Number(review.access_score)||0];
   const labels=['상품구성','가격','매장규모','매장분위기','접근성'];
   const scorePts=values.map((v,i)=>radarPoint(i,Math.max(0,Math.min(5,v))/5));

@@ -128,7 +128,7 @@
   clear?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(search){search.value='';clear.hidden=true;search.focus()}refresh('search-clear')},true);
 
   const list=document.getElementById('shop-list');
-  list?.addEventListener('click',e=>{const a=e.target.closest?.('.shop-card');if(!a)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{const n=+localStorage.getItem(FEEDBACK_VISITS_KEY)||0;localStorage.setItem(FEEDBACK_VISITS_KEY,String(Math.min(n+1,99)))}catch(_){}if(typeof state!=='undefined')state.scrollY=window.scrollY||0;const appShell=document.documentElement.classList.contains('app-shell')||new URLSearchParams(location.search).get('app')==='1'||!!window.ReactNativeWebView;if(appShell&&typeof openDetail==='function'){openDetail(a.dataset.id);return}location.hash='#/shop/'+a.dataset.id},true);
+  list?.addEventListener('click',e=>{const a=e.target.closest?.('.shop-card');if(!a)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{const n=+localStorage.getItem(FEEDBACK_VISITS_KEY)||0;localStorage.setItem(FEEDBACK_VISITS_KEY,String(Math.min(n+1,99)))}catch(_){}if(typeof state!=='undefined')state.scrollY=window.scrollY||0;const appShell=document.documentElement.classList.contains('app-shell')||new URLSearchParams(location.search).get('app')==='1'||!!window.ReactNativeWebView;if(appShell&&typeof window.FUNY_OPEN_SHOP_DETAIL==='function'){window.FUNY_OPEN_SHOP_DETAIL(a.dataset.id);return}location.hash='#/shop/'+a.dataset.id},true);
 
   window.addEventListener('funy:locationchange',()=>{if(sortMode==='near')refresh('location-change')});
   window.addEventListener('funy:shops-source',()=>refresh('shops-source'));

@@ -31,6 +31,6 @@ export default function MapScreen(){
 }
 
 function ViewWithLivePin({children,webBack,shopDetail,scrolling,country}:{children:ReactNode;webBack:boolean;shopDetail:boolean;scrolling:boolean;country:'KR'|'JP'}){
-  const hideLivePin=webBack||shopDetail||country==='JP';
+  const hideLivePin=webBack||country==='JP';
   return <View style={{flex:1}}>{children}{!hideLivePin?<LivePinButton withNav scrolling={scrolling}/>:null}</View>;
 }

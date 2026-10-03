@@ -46,6 +46,7 @@ export default function ShopDetail(){
   const [galleryIndex,setGalleryIndex]=useState(0);
   const [instaPosts,setInstaPosts]=useState<InstaPost[]>([]);
   const [activeEvent,setActiveEvent]=useState<string|null>(null);
+  const [reviewThumbs,setReviewThumbs]=useState<Record<string,string>>({});
   const galleryRef=useRef<ScrollView>(null);
 
   const navBottom=Math.max(insets.bottom,10);
@@ -71,6 +72,24 @@ export default function ShopDetail(){
       .catch(e=>Alert.alert('불러오기 실패',String(e.message||e)));
   },[id]);
 
+  useEffect(()=>{
+    const picks=contents.filter(x=>/reel|blog/i.test(x.content_type||'')).slice(0,2);
+    if(!picks.length)return;
+    let cancelled=false;
+    Promise.all(picks.map(async item=>{
+      if(item.cover_image_url)return [item.content_id,webAsset(item.cover_image_url)] as const;
+      try{
+        const target=/^https:\/\/blog\.naver\.com\//i.test(item.url||'')?String(item.url).replace('https://blog.naver.com/','https://m.blog.naver.com/'):String(item.url||'');
+        const res=await fetch('https://api.microlink.io/?meta=true&url='+encodeURIComponent(target));
+        if(!res.ok)return [item.content_id,''] as const;
+        const json=await res.json();
+        const img=json?.data?.image?.url||json?.data?.image||'';
+        return [item.content_id,String(img||'')] as const;
+      }catch{return [item.content_id,''] as const}
+    })).then(rows=>{if(!cancelled)setReviewThumbs(Object.fromEntries(rows.filter(([,url])=>url)))});
+    return()=>{cancelled=true};
+  },[contents]);
+
   const onToggleFavorite=async()=>{
     if(!id||favoriteBusy)return;
     setFavoriteBusy(true);
@@ -84,7 +103,8 @@ export default function ShopDetail(){
   const allImages=[...(shop.images||[])].sort((a,b)=>(Number(b.is_primary)-Number(a.is_primary))+(a.sort_order-b.sort_order)).filter(x=>x.storage_path||x.source_path);
   const galleryImages=allImages.filter(x=>(x.type||x.image_type)==='gallery');
   const images=galleryImages.length?galleryImages:allImages.filter(x=>(x.type||x.image_type)!=='logo');
-  const features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true);
+  const featureOrder=['single','graded','vintage','oripa','box','pack','supplies','buy','consignment','grading','play_space','unmanned','tax_free'];
+  const features=Object.entries(shop.features||{}).filter(([,v])=>v?.value===true).sort(([a],[b])=>featureOrder.indexOf(a)-featureOrder.indexOf(b));
   const tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true);
   const mapUrl=shop.country_code==='KR'?(shop.naver_map_url||shop.google_map_url):shop.google_map_url;
   const location=[shop.area,shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?` 도보 ${shop.walk_minutes}분`:'')):null].filter(Boolean).join(' · ');
@@ -125,7 +145,7 @@ export default function ShopDetail(){
             {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Text style={styles.actionMiniIconText}>N</Text></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
             {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Text style={styles.actionMiniIconText}>⌖</Text></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
             {shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Text style={styles.actionMiniIconText}>◎</Text></View><Text numberOfLines={1} style={styles.actionMiniText}>Instagram</Text></Pressable>:null}
-            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Text style={styles.actionMiniIconText}>⌕</Text></View><Text numberOfLines={1} style={styles.actionMiniText}>전화하기</Text></Pressable>:null}
+            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Text style={styles.actionMiniIconText}>☎</Text></View><Text numberOfLines={1} style={styles.actionMiniText}>전화하기</Text></Pressable>:null}
           </View>
         </View>
 
@@ -158,7 +178,7 @@ export default function ShopDetail(){
               <Text style={[styles.radarLabel,{bottom:8,right:8}]}>매장규모</Text>
               <Text style={[styles.radarLabel,{bottom:8,left:2}]}>매장분위기</Text>
               <Text style={[styles.radarLabel,{top:62,left:2}]}>접근성</Text>
-              <View style={styles.radarRingOuter}><View style={styles.radarRingMid}><View style={styles.radarRingInner}/></View></View>
+              <View style={styles.radarDiamondOuter}><View style={styles.radarDiamondMid}><View style={styles.radarDiamondInner}/></View></View>
               <View style={[styles.radarAxis,{transform:[{rotate:'0deg'}]}]}/><View style={[styles.radarAxis,{transform:[{rotate:'72deg'}]}]}/><View style={[styles.radarAxis,{transform:[{rotate:'144deg'}]}]}/>
               <View style={styles.radarCore}/>
             </View>
@@ -180,7 +200,7 @@ export default function ShopDetail(){
         {reviewPicks.length?<View style={styles.section}>
           <SectionTitle icon="▣" title="깽퐌커플 리뷰"/>
           <View style={styles.reviewGrid}>{reviewPicks.map(c=><Pressable key={c.content_id} onPress={()=>openContent(c)} style={styles.contentCard}>
-            {c.cover_image_url?<Image source={{uri:webAsset(c.cover_image_url)}} style={styles.contentImage}/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
+            {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={styles.contentImage}/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
             <View style={styles.contentBody}><Text numberOfLines={2} style={styles.contentTitle}>{c.title}</Text><Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View>
           </Pressable>)}</View>
         </View>:null}
@@ -212,7 +232,7 @@ const styles=StyleSheet.create({
   section:{paddingVertical:20,borderBottomWidth:8,borderBottomColor:C.divider},sectionTitleRow:{flexDirection:'row',alignItems:'center',gap:8},sectionIcon:{width:25,height:25,borderRadius:8,backgroundColor:C.purpleSoft,alignItems:'center',justifyContent:'center'},sectionIconText:{fontSize:12,fontWeight:'900',color:C.purpleDark},sectionTitle:{fontSize:16,fontWeight:'900',color:C.text},
   infoCard:{marginTop:12,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden'},infoRow:{minHeight:58,paddingHorizontal:12,flexDirection:'row',alignItems:'center',borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:C.divider},infoLead:{width:92,flexDirection:'row',alignItems:'center',gap:8},infoIcon:{width:28,height:28,borderRadius:14,backgroundColor:'#F0E8FF',alignItems:'center',justifyContent:'center'},infoIconText:{fontSize:11,fontWeight:'900',color:'#8A5BE2'},infoLabel:{fontSize:10.5,fontWeight:'700',color:C.muted},infoValue:{flex:1,fontSize:11.5,lineHeight:18,color:C.textSoft},
   googleCard:{marginTop:12,padding:15,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff'},googleTitle:{fontSize:14,fontWeight:'900',color:C.text},googleSub:{marginTop:6,fontSize:11,lineHeight:17,color:C.muted},googleButton:{marginTop:12,height:42,borderRadius:11,backgroundColor:'#F5F2F8',alignItems:'center',justifyContent:'center'},googleButtonText:{fontSize:11.5,fontWeight:'800',color:C.purpleDark},
-  note:{marginTop:6,fontSize:10.5,lineHeight:16,color:C.muted},analysisCombo:{marginTop:12,minHeight:190,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden',flexDirection:'row'},radarPane:{width:'46%',position:'relative',alignItems:'center',justifyContent:'center',borderRightWidth:1,borderRightColor:C.divider},compPane:{flex:1,padding:12},radarLabel:{position:'absolute',fontSize:8.5,fontWeight:'700',color:C.muted,zIndex:3},radarRingOuter:{width:88,height:88,borderWidth:1,borderColor:'#E6DDF5',borderRadius:44,alignItems:'center',justifyContent:'center'},radarRingMid:{width:60,height:60,borderWidth:1,borderColor:'#E6DDF5',borderRadius:30,alignItems:'center',justifyContent:'center'},radarRingInner:{width:30,height:30,borderWidth:1,borderColor:'#E6DDF5',borderRadius:15},radarAxis:{position:'absolute',width:1,height:88,backgroundColor:'#E6DDF5',top:51,left:'50%'},radarCore:{position:'absolute',width:54,height:54,borderRadius:27,backgroundColor:'rgba(138,91,226,.13)',borderWidth:1,borderColor:'rgba(138,91,226,.35)'},subTitle:{fontSize:12,fontWeight:'900',color:C.text},tcgLine:{marginTop:11,paddingVertical:9,borderBottomWidth:1,borderBottomColor:C.divider,flexDirection:'row'},tcgLabel:{width:70,fontSize:10.5,fontWeight:'800',color:C.muted},tcgValue:{flex:1,fontSize:11.5,fontWeight:'700',color:C.textSoft},barRow:{marginTop:11,flexDirection:'row',alignItems:'center',gap:8},barLabel:{width:60,fontSize:10.5,fontWeight:'700',color:C.textSoft},barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EDE8F4',overflow:'hidden'},barFill:{height:7,borderRadius:4,backgroundColor:C.purple},barValue:{width:25,textAlign:'right',fontSize:10.5,fontWeight:'800',color:C.purpleDark},
+  note:{marginTop:6,fontSize:10.5,lineHeight:16,color:C.muted},analysisCombo:{marginTop:12,minHeight:190,borderRadius:15,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden',flexDirection:'row'},radarPane:{width:'46%',position:'relative',alignItems:'center',justifyContent:'center',borderRightWidth:1,borderRightColor:C.divider},compPane:{flex:1,padding:12},radarLabel:{position:'absolute',fontSize:8.5,fontWeight:'700',color:C.muted,zIndex:3},radarDiamondOuter:{width:86,height:86,borderWidth:1,borderColor:'#E6DDF5',transform:[{rotate:'45deg'}],alignItems:'center',justifyContent:'center'},radarDiamondMid:{width:58,height:58,borderWidth:1,borderColor:'#E6DDF5',alignItems:'center',justifyContent:'center'},radarDiamondInner:{width:29,height:29,borderWidth:1,borderColor:'#E6DDF5'},radarAxis:{position:'absolute',width:1,height:88,backgroundColor:'#E6DDF5',top:51,left:'50%'},radarCore:{position:'absolute',width:50,height:50,backgroundColor:'rgba(138,91,226,.13)',borderWidth:1,borderColor:'rgba(138,91,226,.35)',transform:[{rotate:'45deg'}]},subTitle:{fontSize:12,fontWeight:'900',color:C.text},tcgLine:{marginTop:11,paddingVertical:9,borderBottomWidth:1,borderBottomColor:C.divider,flexDirection:'row'},tcgLabel:{width:70,fontSize:10.5,fontWeight:'800',color:C.muted},tcgValue:{flex:1,fontSize:11.5,fontWeight:'700',color:C.textSoft},barRow:{marginTop:11,flexDirection:'row',alignItems:'center',gap:8},barLabel:{width:60,fontSize:10.5,fontWeight:'700',color:C.textSoft},barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EDE8F4',overflow:'hidden'},barFill:{height:7,borderRadius:4,backgroundColor:C.purple},barValue:{width:25,textAlign:'right',fontSize:10.5,fontWeight:'800',color:C.purpleDark},
   recommendCard:{marginTop:12,padding:14,borderRadius:15,backgroundColor:'#F8F5FC'},recommendTitle:{fontSize:10.5,fontWeight:'900',color:C.purpleDark},recommendText:{marginTop:6,fontSize:13,lineHeight:20,fontWeight:'800',color:C.text},visitText:{marginTop:8,fontSize:11.5,lineHeight:18,color:C.muted},
   instagramHead:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},moreText:{fontSize:10.5,fontWeight:'800',color:C.purpleDark},instagramGuide:{marginTop:5,fontSize:10.5,color:C.muted},instagramGrid:{marginTop:12,flexDirection:'row',flexWrap:'wrap',gap:6},instagramItem:{width:(SW-40)/2,height:180,borderRadius:13,overflow:'hidden',backgroundColor:'#eee'},instagramImage:{width:'100%',height:'100%'},
   reviewGrid:{marginTop:12,flexDirection:'row',gap:9},contentCard:{flex:1,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',overflow:'hidden'},contentImage:{width:'100%',height:110,backgroundColor:'#eee'},contentPlaceholder:{height:110,alignItems:'center',justifyContent:'center',backgroundColor:'#F2EEF7'},contentPlaceholderText:{fontSize:12,fontWeight:'900',color:C.purpleDark},contentBody:{padding:10},contentTitle:{fontSize:11.5,lineHeight:17,fontWeight:'800',color:C.text},contentMeta:{marginTop:5,fontSize:10,color:C.muted},

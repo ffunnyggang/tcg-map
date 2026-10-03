@@ -12,7 +12,7 @@ import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-06');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-07');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
@@ -33,7 +33,11 @@ try{
     'html.app-shell.live-pin-page .filters{top:54px!important}',
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}'
+    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}',
+    'html.app-shell.app-shop-detail-open #home-view{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
+    'html.app-shell.app-shop-detail-open #naver-map,html.app-shell.app-shop-detail-open #google-map,html.app-shell.app-shop-detail-open .map-wrap-hero,html.app-shell.app-shop-detail-open .map-shop-sheet{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
+    'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
+    'html.app-shell.app-shop-detail-open body{overflow:auto!important;background:#fff!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
@@ -188,6 +192,14 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
         }catch(_){}
         try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection();}catch(_){}
         try{var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'click');}catch(_){}
+        try{
+          document.documentElement.classList.add('app-shop-detail-open');
+          var home=document.getElementById('home-view'),view=document.getElementById('detail-view');
+          if(home){home.style.setProperty('display','none','important');home.style.setProperty('visibility','hidden','important');home.style.setProperty('opacity','0','important');}
+          if(view){view.hidden=false;view.style.setProperty('display','block','important');view.style.setProperty('visibility','visible','important');view.style.setProperty('opacity','1','important');view.style.setProperty('background','#fff','important');view.style.setProperty('position','relative','important');view.style.setProperty('z-index','2147482000','important');void view.offsetHeight;view.style.setProperty('transform','translateZ(0)','important');}
+          document.body&&document.body.offsetHeight;
+          window.scrollTo(0,0);
+        }catch(_){}
         try{window.FUNY_INSTAGRAM_FEED&&window.FUNY_INSTAGRAM_FEED.refresh&&window.FUNY_INSTAGRAM_FEED.refresh();}catch(_){}
         try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'SHOP_DETAIL_STATE',open:true,shopId:id,source:source}));}catch(_){}
         post('DETAIL_OPEN');
@@ -241,6 +253,12 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const injectShopClose=useCallback((source='back')=>{
     console.log('[FUNY SHOP] INJECT_CLOSE',source);
     const js=`(function(){
+      try{document.documentElement.classList.remove('app-shop-detail-open');}catch(_){}
+      try{
+        var home=document.getElementById('home-view'),view=document.getElementById('detail-view');
+        if(home){home.style.removeProperty('display');home.style.removeProperty('visibility');home.style.removeProperty('opacity');}
+        if(view){view.style.removeProperty('display');view.style.removeProperty('visibility');view.style.removeProperty('opacity');view.style.removeProperty('background');view.style.removeProperty('position');view.style.removeProperty('z-index');view.style.removeProperty('transform');}
+      }catch(_){}
       try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection();}catch(_){}
       try{var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'click');}catch(_){}
       try{if(typeof window.closeDetail==='function')window.closeDetail();}catch(_){}

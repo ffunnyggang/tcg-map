@@ -12,7 +12,7 @@ import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-04');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-05');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
@@ -44,6 +44,53 @@ try{
   if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell.live-pin-page .shell{padding-top:54px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:54px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:54px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important}html.app-shell.live-pin-page .sheetbg.open,html.app-shell.live-pin-page .shop-filter-bg.open,html.app-shell.live-pin-page .flag-sheet.open{z-index:2147483000!important}html.app-shell .map-location-avatar-sheet{z-index:2147483000!important}';
   document.documentElement.appendChild(style);
 
+  /* Capture shop navigation before remote web handlers are registered.
+     This is intentionally installed in document-start injection. */
+  if(window.ReactNativeWebView&&!window.__FUNY_EARLY_SHOP_CAPTURE){
+    window.__FUNY_EARLY_SHOP_CAPTURE=true;
+    var earlyPost=function(data){try{window.ReactNativeWebView.postMessage(JSON.stringify(data));}catch(_){}};
+    var validEarlyShop=function(id){return /^(?:KR|JP)-[A-Z]{3}-\d{3}$/i.test(String(id||''));};
+    var earlyShopId=function(node){
+      try{
+        if(!node)return'';
+        var id=node.getAttribute&&(node.getAttribute('data-id')||node.getAttribute('data-jp-shop'));
+        if(validEarlyShop(id))return String(id).toUpperCase();
+        var href=node.href||node.getAttribute&&node.getAttribute('href')||'';
+        var hm=String(href).match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);
+        if(hm)return hm[1].toUpperCase();
+        var attr=node.getAttribute&&node.getAttribute('onclick')||'';
+        var om=String(attr).match(/openDetail\(['"]((?:KR|JP)-[A-Z]{3}-\d{3})['"]\)/i);
+        return om?om[1].toUpperCase():'';
+      }catch(_){return'';}
+    };
+    var earlyHandler=function(event){
+      try{
+        var target=event.target;
+        if(!target||!target.closest)return;
+        var back=target.closest('#hero-back,#sticky-back,.other-shops-fab');
+        if(back&&/\/shops\.html$/i.test(location.pathname)){
+          event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+          earlyPost({type:'EARLY_SHOP_BACK',page:location.pathname,url:location.href});
+          return false;
+        }
+        var card=target.closest('.shop-card[data-id]');
+        var popup=target.closest('.map-shop-popup');
+        var cms=target.closest('a[data-funy-link-mode]');
+        var node=card||popup||cms;
+        if(!node)return;
+        var id=earlyShopId(node);
+        if(!id)return;
+        var isShopPage=/\/shops\.html$/i.test(location.pathname);
+        if(!isShopPage&&!cms)return;
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        earlyPost({type:'EARLY_SHOP_CLICK',shopId:id,page:location.pathname,url:location.href,source:card?'list':popup?'map-popup':'cms'});
+        return false;
+      }catch(_){}
+    };
+    document.addEventListener('click',earlyHandler,true);
+    document.addEventListener('touchend',earlyHandler,{capture:true,passive:false});
+  }
+
   /* Install geolocation bridge before page scripts can cache WKWebView geolocation methods. */
   if(window.ReactNativeWebView&&navigator.geolocation&&!window.__FUNY_NATIVE_GEO_BRIDGED){
     window.__FUNY_NATIVE_GEO_BRIDGED=true;
@@ -72,128 +119,7 @@ try{
   var handleCMSLink=function(event){var node=event.target;var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;if(!link)return;var mode=link.getAttribute('data-funy-link-mode')||'inapp';var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';var href=link.href||link.getAttribute('href');if(!href)return;try{var u=new URL(href,location.href),m=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);if(/\/shops\.html$/i.test(u.pathname)&&m){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_SHOP_DETAIL',shopId:m[1].toUpperCase(),country:m[1].toUpperCase().startsWith('JP-')?'JP':'KR'});return false;}}catch(_){}if(mode==='external'){event.preventDefault();event.stopPropagation();post({type:'OPEN_EXTERNAL',url:href});return false;}if(mode==='inapp'&&presentation==='bottom_sheet'){event.preventDefault();event.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return false;}if(mode==='inapp'&&presentation==='page'){event.preventDefault();event.stopPropagation();post({type:'OPEN_INAPP_PAGE',url:href,title:(link.getAttribute('aria-label')||link.textContent||'').replace(/\s+/g,' ').trim()});return false;}if(mode==='inapp'&&link.getAttribute('target')==='_blank'){event.preventDefault();event.stopPropagation();location.href=href;return false;}};
   document.addEventListener('click',handleCMSLink,true);
 
-  /* Unified app shop-detail controller.
-     Every entry path (list, KR/JP map popup, HOME/PICK CMS) ends here.
-     The URL hash is updated with history.replaceState only for web modules that read it;
-     no hashchange navigation is triggered in WKWebView. */
-  var isShopPage=function(){return /\/shops\.html$/i.test(String(location.pathname||''));};
-  var appSurface=function(){try{return window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.surface||'tab';}catch(_){return'tab';}};
-  var validShopId=function(id){return /^(?:KR|JP)-[A-Z]{3}-\d{3}$/i.test(String(id||''));};
-  var shopIdFromNode=function(node){
-    try{
-      if(!node)return'';
-      var id=node.getAttribute&&(node.getAttribute('data-id')||node.getAttribute('data-jp-shop'));
-      if(validShopId(id))return String(id).toUpperCase();
-      var href=node.getAttribute&&node.getAttribute('href')||'';
-      var hm=href.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);
-      if(hm)return hm[1].toUpperCase();
-      var attr=node.getAttribute&&node.getAttribute('onclick')||'';
-      var om=attr.match(/openDetail\(['"]((?:KR|JP)-[A-Z]{3}-\d{3})['"]\)/i);
-      return om?om[1].toUpperCase():'';
-    }catch(_){return'';}
-  };
-  var setShopState=function(open,id,source){
-    post({type:'SHOP_DETAIL_STATE',open:!!open,shopId:id||'',source:source||''});
-  };
-  var clearMapSelection=function(){
-    try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection();}catch(_){}
-    try{
-      var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
-      if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'click');
-    }catch(_){}
-  };
-  var syncVirtualShopUrl=function(id){
-    try{
-      var oldUrl=location.href;
-      var u=new URL(oldUrl);
-      u.searchParams.delete('appShop');
-      if(id)u.hash='#/shop/'+id;
-      else u.hash='';
-      var nextUrl=u.toString();
-      history.replaceState(history.state,'',nextUrl);
-      try{
-        window.dispatchEvent(new HashChangeEvent('hashchange',{oldURL:oldUrl,newURL:nextUrl}));
-      }catch(_){
-        try{window.dispatchEvent(new Event('hashchange'));}catch(__){}
-      }
-    }catch(_){}
-  };
-  var controller={
-    current:'',
-    pending:'',
-    attempts:0,
-    timer:0,
-    open:function(id,source){
-      id=String(id||'').toUpperCase();
-      if(!validShopId(id))return false;
-      controller.pending=id;
-      controller.attempts=0;
-      clearTimeout(controller.timer);
-      var run=function(){
-        controller.attempts++;
-        try{
-          if(controller.attempts===1){
-            clearMapSelection();
-            try{if(typeof state!=='undefined')state.scrollY=window.scrollY||0;}catch(_){}
-          }
-          syncVirtualShopUrl(id);
-          var view=document.getElementById('detail-view');
-          var detail=document.getElementById('detail');
-          var opened=!!view&&!view.hidden&&!!detail&&detail.childElementCount>0;
-          if(opened){
-            controller.current=id;
-            controller.pending='';
-            setShopState(true,id,source||'');
-            return;
-          }
-        }catch(_){}
-        if(controller.attempts<240)controller.timer=setTimeout(run,50);
-      };
-      run();
-      return false;
-    },
-    close:function(source){
-      clearTimeout(controller.timer);
-      controller.pending='';
-      clearMapSelection();
-      syncVirtualShopUrl('');
-      controller.current='';
-      setShopState(false,'',source||'');
-      return false;
-    }
-  };
-  window.__FUNY_APP_SHOP=controller;
-
-  var interceptShop=function(event){
-    try{
-      if(!isShopPage())return;
-      var target=event.target;
-      var back=target&&target.closest?target.closest('#hero-back,#sticky-back,.other-shops-fab'):null;
-      if(back){
-        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-        return controller.close('back');
-      }
-      var card=target&&target.closest?target.closest('.shop-card[data-id]'):null;
-      var popup=target&&target.closest?target.closest('.map-shop-popup'):null;
-      var node=card||popup;
-      if(!node)return;
-      var id=shopIdFromNode(node);
-      if(!id)return;
-      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
-      return controller.open(id,card?'list':'map-popup');
-    }catch(_){}
-  };
-  document.addEventListener('click',interceptShop,true);
-  document.addEventListener('touchend',interceptShop,{capture:true,passive:false});
-
-  /* CMS/native requests also land on the same controller after SHOPS is ready. */
-  try{
-    var initialId=new URL(location.href).searchParams.get('appShop')||'';
-    if(validShopId(initialId))controller.open(initialId,'native-route');
-  }catch(_){}
-  window.addEventListener('funy:shops-source',function(){
-    try{if(controller.pending)controller.open(controller.pending,'shops-source');}catch(_){}
-  });
+  /* Shop clicks are captured at document-start and handled natively. */
   window.addEventListener('hashchange',reportRoute);window.addEventListener('pageshow',reportRoute);reportRoute();
   var scrollTimer=null;var reportScroll=function(){post({type:'WEB_SCROLL',scrolling:true});clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){post({type:'WEB_SCROLL',scrolling:false});},650);};window.addEventListener('scroll',reportScroll,{passive:true});
 }catch(e){}
@@ -249,7 +175,57 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&ref.current){ref.current.goBack();return true;}return false;});return()=>sub.remove();},[canGoBack,closeSheet,sheetOpen]));
   useEffect(()=>{setLoading(true);setError(false);reloadAttempts.current=0;const timer=setTimeout(()=>setLoading(false),2500);return()=>clearTimeout(timer);},[url]);
 
-  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);if(surface==='tab'&&detail!==lastShopDetail.current){lastShopDetail.current=detail;setWebOverlayOpen(detail);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.navigate({pathname:'/(tabs)/map',params:{country:id.startsWith('JP-')?'JP':'KR',shop:id,from:'cms',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){setWebOverlayOpen(false);router.push(String(data.route) as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){Linking.openURL(String(data.url)).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){openSheet(String(data.url));return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation();return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,stopNativeLocation]);
+  const injectShopOpen=useCallback((shopId:string,source='native')=>{
+    const id=String(shopId||'').toUpperCase();
+    if(!/^(?:KR|JP)-[A-Z]{3}-\d{3}$/.test(id))return;
+    console.log('[FUNY SHOP] INJECT_OPEN',source,id);
+    const js=`(function(){
+      var id=${JSON.stringify(id)},source=${JSON.stringify(source)},tries=0;
+      var post=function(stage,extra){try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify(Object.assign({type:'SHOP_DEBUG',stage:stage,shopId:id,source:source},extra||{})));}catch(_){}};
+      var finish=function(){
+        try{
+          var oldUrl=location.href,u=new URL(oldUrl);u.searchParams.delete('appShop');u.hash='#/shop/'+id;history.replaceState(history.state,'',u.toString());
+        }catch(_){}
+        try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection();}catch(_){}
+        try{var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'click');}catch(_){}
+        try{window.FUNY_INSTAGRAM_FEED&&window.FUNY_INSTAGRAM_FEED.refresh&&window.FUNY_INSTAGRAM_FEED.refresh();}catch(_){}
+        try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'SHOP_DETAIL_STATE',open:true,shopId:id,source:source}));}catch(_){}
+        post('DETAIL_OPEN');
+      };
+      var run=function(){
+        tries++;
+        try{
+          post(tries===1?'PAGE_RECEIVED':'RETRY',{tries:tries,openDetailType:typeof window.openDetail});
+          if(typeof window.openDetail==='function'){
+            window.openDetail(id);
+            var view=document.getElementById('detail-view'),detail=document.getElementById('detail');
+            if(view&&!view.hidden&&detail&&detail.childElementCount>0){finish();return;}
+          }
+        }catch(err){post('ERROR',{message:String(err&&err.message||err)});}
+        if(tries<200)setTimeout(run,50);else post('TIMEOUT',{openDetailType:typeof window.openDetail});
+      };
+      run();
+    })();true;`;
+    ref.current?.injectJavaScript(js);
+  },[]);
+
+  const injectShopClose=useCallback((source='back')=>{
+    console.log('[FUNY SHOP] INJECT_CLOSE',source);
+    const js=`(function(){
+      try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection();}catch(_){}
+      try{var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'click');}catch(_){}
+      try{if(typeof window.closeDetail==='function')window.closeDetail();}catch(_){}
+      try{var u=new URL(location.href);u.searchParams.delete('appShop');u.hash='';history.replaceState(history.state,'',u.toString());}catch(_){}
+      try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'SHOP_DETAIL_STATE',open:false,shopId:'',source:${JSON.stringify(source)}}));}catch(_){}
+    })();true;`;
+    ref.current?.injectJavaScript(js);
+  },[]);
+
+  const shopIdFromTarget=useCallback((target:string)=>{
+    try{const u=new URL(target);const id=u.searchParams.get('appShop')||'';return /^(?:KR|JP)-[A-Z]{3}-\d{3}$/i.test(id)?id.toUpperCase():'';}catch{return'';}
+  },[]);
+
+  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='SHOP_DEBUG'){console.log('[FUNY SHOP]',data.stage,data.shopId||'',data.source||'',data.tries||'',data.openDetailType||'',data.message||'');return;}if(data?.type==='EARLY_SHOP_CLICK'&&data.shopId){const id=String(data.shopId).toUpperCase();console.log('[FUNY SHOP] CLICK',data.source||'',id,data.page||'');if(/\/shops\.html$/i.test(String(data.page||''))){injectShopOpen(id,String(data.source||'map'));return;}setWebOverlayOpen(false);router.navigate({pathname:'/(tabs)/map',params:{country:id.startsWith('JP-')?'JP':'KR',shop:id,from:'cms',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='EARLY_SHOP_BACK'){console.log('[FUNY SHOP] BACK');injectShopClose('web-back');return;}if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);if(surface==='tab'&&detail!==lastShopDetail.current){lastShopDetail.current=detail;setWebOverlayOpen(detail);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.navigate({pathname:'/(tabs)/map',params:{country:id.startsWith('JP-')?'JP':'KR',shop:id,from:'cms',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){setWebOverlayOpen(false);router.push(String(data.route) as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){Linking.openURL(String(data.url)).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){openSheet(String(data.url));return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation();return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[injectShopClose,injectShopOpen,onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,stopNativeLocation]);
 
   if(!isFocused)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
@@ -259,7 +235,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   return <View style={styles.container} accessibilityLabel={title}>
     {showBackHeader?<FunyHeader title={backOnlyHeader?'':pageTitleFromUrl(currentTarget,backTitle||title)} showAccount={false} back onBack={goBack} right={isTalkPost?<View style={styles.headerMenuWrap}><Pressable onPress={()=>setTalkMenuOpen(v=>!v)} hitSlop={10} style={styles.headerMenuButton}><Text style={styles.headerMenuDots}>⋮</Text></Pressable>{talkMenuOpen?<View style={styles.headerDropdown}><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('share')}><Text style={styles.headerDropdownText}>공유하기</Text></Pressable>{talkPostMine?<><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('edit')}><Text style={styles.headerDropdownText}>수정하기</Text></Pressable><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('delete')}><Text style={styles.headerDropdownDanger}>삭제하기</Text></Pressable></>:<Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('report')}><Text style={styles.headerDropdownDanger}>신고하기</Text></Pressable>}</View>:null}</View>:null}/>:null}
-    <WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={styles.webview} javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true)}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>
+    <WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={styles.webview} javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true)}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{const target=e.nativeEvent.url;reportRoute(target);setLoading(false);const initialShop=shopIdFromTarget(target);if(initialShop){console.log('[FUNY SHOP] LOAD_WITH_SHOP',initialShop);setTimeout(()=>injectShopOpen(initialShop,'native-route'),80);}}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>
     <Modal visible={sheetOpen} transparent animationType="none" onRequestClose={closeSheet}><View style={styles.sheetModal}><Animated.View pointerEvents="none" style={[styles.sheetBackdrop,{opacity:backdropOpacity}]}/><Pressable style={styles.sheetDismissArea} onPress={closeSheet}/><Animated.View style={[styles.sheetPanel,{height:sheetHeight,transform:[{translateY:sheetY.interpolate({inputRange:[0,1],outputRange:[0,sheetHeight]})}]}]}><View style={styles.sheetHandle}/><View style={styles.sheetHeader}><Text numberOfLines={1} style={styles.sheetTitle}>FUNY PIN</Text><Pressable hitSlop={10} onPress={closeSheet}><Text style={styles.sheetClose}>×</Text></Pressable></View>{sheetUrl?<WebView source={{uri:sheetUrl}} style={styles.sheetWebview} javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces onShouldStartLoadWithRequest={(request)=>{const target=request.url;if(target.startsWith('http://')||target.startsWith('https://'))return true;if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}return false;}}/>:null}</Animated.View></View></Modal>
   </View>;
 }

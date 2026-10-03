@@ -36,7 +36,7 @@ const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSource
 };
 
 function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
-  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={styles.icon}/>;
+  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,{tintColor:focused?'#5C36B5':'#17151A'}]}/>;
 }
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
@@ -83,6 +83,6 @@ const styles=StyleSheet.create({
   itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.7,borderColor:'rgba(126,92,226,.22)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:8,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.72},
   icon:{width:25,height:25},
-  label:{fontSize:9.5,lineHeight:11,fontWeight:'700',color:'#625C69',letterSpacing:-.05},
-  labelActive:{fontWeight:'800',color:C.purpleDark}
+  label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:'#17151A',letterSpacing:-.05},
+  labelActive:{fontWeight:'900',color:'#5C36B5'}
 });

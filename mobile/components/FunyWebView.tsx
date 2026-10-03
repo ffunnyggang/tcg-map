@@ -12,7 +12,7 @@ import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-02');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-03');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
@@ -111,9 +111,6 @@ try{
       history.replaceState(history.state,'',u.toString());
     }catch(_){}
   };
-  var shopExists=function(id){
-    try{return Array.isArray(window.SHOPS||SHOPS)&&(window.SHOPS||SHOPS).some(function(x){return x&&x.id===id;});}catch(_){return false;}
-  };
   var controller={
     current:'',
     pending:'',
@@ -128,19 +125,27 @@ try{
       var run=function(){
         controller.attempts++;
         try{
-          if(typeof window.openDetail==='function'&&shopExists(id)){
-            clearMapSelection();
-            try{if(typeof state!=='undefined')state.scrollY=window.scrollY||0;}catch(_){}
-            syncVirtualShopUrl(id);
-            window.openDetail(id);
-            controller.current=id;
-            controller.pending='';
-            try{window.FUNY_INSTAGRAM_FEED&&window.FUNY_INSTAGRAM_FEED.refresh&&window.FUNY_INSTAGRAM_FEED.refresh();}catch(_){}
-            setShopState(true,id,source||'');
-            return;
+          var fn=(typeof openDetail==='function')?openDetail:null;
+          if(fn){
+            if(controller.attempts===1){
+              clearMapSelection();
+              try{if(typeof state!=='undefined')state.scrollY=window.scrollY||0;}catch(_){}
+              syncVirtualShopUrl(id);
+            }
+            fn(id);
+            var view=document.getElementById('detail-view');
+            var detail=document.getElementById('detail');
+            var opened=!!view&&!view.hidden&&!!detail&&detail.childElementCount>0;
+            if(opened){
+              controller.current=id;
+              controller.pending='';
+              try{window.FUNY_INSTAGRAM_FEED&&window.FUNY_INSTAGRAM_FEED.refresh&&window.FUNY_INSTAGRAM_FEED.refresh();}catch(_){}
+              setShopState(true,id,source||'');
+              return;
+            }
           }
         }catch(_){}
-        if(controller.attempts<400)controller.timer=setTimeout(run,25);
+        if(controller.attempts<600)controller.timer=setTimeout(run,25);
       };
       run();
       return false;
@@ -150,7 +155,7 @@ try{
       controller.pending='';
       clearMapSelection();
       syncVirtualShopUrl('');
-      try{if(typeof window.closeDetail==='function')window.closeDetail();}catch(_){}
+      try{if(typeof closeDetail==='function')closeDetail();}catch(_){}
       controller.current='';
       setShopState(false,'',source||'');
       return false;

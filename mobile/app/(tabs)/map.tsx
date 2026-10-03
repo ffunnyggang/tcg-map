@@ -14,9 +14,9 @@ export default function MapScreen(){
   const initialCountry=country==='JP'?'JP':'KR';
   const [mapCountry,setMapCountry]=useState<'KR'|'JP'>(initialCountry);
   useEffect(()=>{setMapCountry(initialCountry)},[initialCountry]);
-  const shopHash=shop?`#/shop/${encodeURIComponent(shop)}`:'';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
-  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${shopHash}`;
+  const shopQuery=shop?`&appShop=${encodeURIComponent(shop)}`:'';
+  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${shopQuery}`;
   const onRoute=useCallback((url:string)=>{
     const detail=isShopDetail(url);
     const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();

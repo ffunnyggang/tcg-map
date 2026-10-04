@@ -223,45 +223,7 @@ export default function ShopDetail(){
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
   const goToMap=()=>{if(from==='list'||from==='map-popup'||from==='map'||from==='native-map'){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
-  const googleBridgeJS=`(function(){
-    var tries=0;
-    var shopName=${JSON.stringify(shop.name_en||shop.name)};
-    var shopAddress=${JSON.stringify(shop.address||'')};
-    function post(data){try{window.ReactNativeWebView.postMessage(JSON.stringify(data))}catch(_){}}
-    function run(){
-      try{
-        if(!(window.google&&google.maps&&google.maps.places)){
-          if(++tries<120)setTimeout(run,250);
-          return;
-        }
-        var host=document.createElement('div');
-        var service=new google.maps.places.PlacesService(host);
-        var query=[shopName,shopAddress,'Japan'].filter(Boolean).join(' ');
-        service.findPlaceFromQuery({query:query,fields:['place_id','name','formatted_address']},function(results,status){
-          if(status!==google.maps.places.PlacesServiceStatus.OK||!results||!results[0]){post({type:'GOOGLE_PLACE_ERROR',stage:'find'});return}
-          service.getDetails({placeId:results[0].place_id,fields:['place_id','name','rating','user_ratings_total','reviews','url']},function(place,detailStatus){
-            if(detailStatus!==google.maps.places.PlacesServiceStatus.OK||!place){post({type:'GOOGLE_PLACE_ERROR',stage:'details'});return}
-            var reviews=(place.reviews||[]).slice(0,3).map(function(r){return{
-              author:String(r.author_name||'Google 사용자'),
-              rating:r.rating?'★ '+r.rating:'',
-              time:String(r.relative_time_description||''),
-              text:String(r.text||'')
-            }});
-            post({
-              type:'GOOGLE_PLACE_DATA',
-              rating:Number(place.rating||0).toFixed(1),
-              count:'Google 평점 · 리뷰 '+Number(place.user_ratings_total||0).toLocaleString()+'개',
-              url:String(place.url||''),
-              reviews:reviews
-            });
-          });
-        });
-      }catch(e){
-        if(++tries<120)setTimeout(run,250); else post({type:'GOOGLE_PLACE_ERROR',stage:'exception'});
-      }
-    }
-    setTimeout(run,500);
-  })();true;`;
+  const googleBridgeUrl='https://funypin.kr/google-place-bridge.html?name='+encodeURIComponent(shop.name_en||shop.name)+'&address='+encodeURIComponent(shop.address||'');
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
@@ -326,6 +288,7 @@ export default function ShopDetail(){
           <View style={[styles.analysisCombo,{borderColor:accentBorder}]}>
             <View style={styles.analysisMainRow}>
               <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis}/></View>
+              <View style={[styles.analysisDivider,{borderColor:isJapan?'#E8CDD2':'#D8D0E8'}]}/>
               <View style={styles.compPane}>
                 <Text style={styles.subTitle}>상품 구성 상세</Text>
                 {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
@@ -374,7 +337,7 @@ export default function ShopDetail(){
       {shop.country_code==='KR'?<LivePinButton withNav scrolling={scrolling}/>:null}
     </View>
 
-    {isJapan?<View pointerEvents="none" style={styles.googleBridge}><WebView source={{uri:'https://funypin.kr/shops.html?country=JP'}} injectedJavaScript={googleBridgeJS} javaScriptEnabled domStorageEnabled originWhitelist={['https://*']} onMessage={e=>{try{const d=JSON.parse(e.nativeEvent.data);if(d?.type==='GOOGLE_PLACE_DATA')setGooglePlace({rating:String(d.rating||''),count:String(d.count||''),url:String(d.url||''),reviews:Array.isArray(d.reviews)?d.reviews.slice(0,3):[]})}catch{}}}/></View>:null}
+    {isJapan?<View pointerEvents="none" style={styles.googleBridge}><WebView source={{uri:googleBridgeUrl}} javaScriptEnabled domStorageEnabled originWhitelist={['https://*']} onMessage={e=>{try{const d=JSON.parse(e.nativeEvent.data);if(d?.type==='GOOGLE_PLACE_DATA')setGooglePlace({rating:String(d.rating||''),count:String(d.count||''),url:String(d.url||''),reviews:Array.isArray(d.reviews)?d.reviews.slice(0,3):[]})}catch{}}}/></View>:null}
     <InAppWebSheet visible={!!sheetUrl} url={sheetUrl} title={sheetTitle} onClose={()=>setSheetUrl(null)}/>
   </SafeAreaView>;
 }
@@ -464,7 +427,8 @@ const styles=StyleSheet.create({
   analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',...shadow},
   analysisMainRow:{height:180,flexDirection:'row',alignItems:'stretch'},
   radarPane:{width:'48%',height:180,alignItems:'center',justifyContent:'center'},
-  compPane:{flex:1,height:152,marginVertical:14,paddingLeft:14,paddingRight:12,borderLeftWidth:StyleSheet.hairlineWidth,borderLeftColor:'#EEEAF7',justifyContent:'center'},
+  analysisDivider:{height:152,marginVertical:14,borderLeftWidth:2,borderStyle:'dotted'},
+  compPane:{flex:1,height:152,marginVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
   radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
   radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:10.5,fontWeight:'700',color:'#504A59'},
   radarDot:{position:'absolute',width:6,height:6,borderRadius:3,backgroundColor:'#8A5BE2'},

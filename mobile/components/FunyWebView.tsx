@@ -12,7 +12,7 @@ import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-08');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261004-09');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
@@ -184,7 +184,31 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&ref.current){ref.current.goBack();return true;}return false;});return()=>sub.remove();},[canGoBack,closeSheet,sheetOpen]));
   useEffect(()=>{setLoading(true);setError(false);reloadAttempts.current=0;const timer=setTimeout(()=>setLoading(false),2500);return()=>clearTimeout(timer);},[url]);
-  useEffect(()=>{if(!isFocused||!isMapWebView||!ref.current)return;const t=setTimeout(()=>ref.current?.injectJavaScript(`try{window.FUNY_MAP_POPUP&&window.FUNY_MAP_POPUP.clear&&window.FUNY_MAP_POPUP.clear();if(window.activeInfoWindow){window.activeInfoWindow.close();window.activeInfoWindow=null}}catch(_){};true;`),80);return()=>clearTimeout(t);},[isFocused,isMapWebView]);
+  useEffect(()=>{if(!isFocused||!isMapWebView||!ref.current)return;const t=setTimeout(()=>ref.current?.injectJavaScript(`
+    (function(){
+      try{
+        document.documentElement.classList.remove('app-shop-detail-open');
+        var home=document.getElementById('home-view'),detail=document.getElementById('detail-view');
+        if(home){home.hidden=false;home.style.removeProperty('display');home.style.removeProperty('visibility');home.style.removeProperty('opacity');home.style.removeProperty('pointer-events');}
+        if(detail){detail.hidden=true;detail.style.removeProperty('display');detail.style.removeProperty('visibility');detail.style.removeProperty('opacity');detail.style.removeProperty('z-index');}
+        try{window.FUNY_MAP_POPUP&&window.FUNY_MAP_POPUP.clear&&window.FUNY_MAP_POPUP.clear()}catch(_){}
+        try{window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.clearSelection&&window.FUNY_GOOGLE_MAP_API.clearSelection()}catch(_){}
+        try{if(window.activeInfoWindow){window.activeInfoWindow.close();window.activeInfoWindow=null}}catch(_){}
+        try{
+          var gm=window.FUNY_GOOGLE_MAP_API&&window.FUNY_GOOGLE_MAP_API.getMap&&window.FUNY_GOOGLE_MAP_API.getMap();
+          if(gm&&window.google&&google.maps){
+            var center=gm.getCenter&&gm.getCenter(),zoom=gm.getZoom&&gm.getZoom();
+            google.maps.event.trigger(gm,'resize');
+            if(center)gm.setCenter(center);if(zoom!=null)gm.setZoom(zoom);
+          }
+        }catch(_){}
+        try{
+          var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
+          if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'resize');
+        }catch(_){}
+        document.querySelectorAll('.map-search-float,.map-filter-bar,.country-filter-wrap,.country-filter-select,.filter-chip').forEach(function(el){el.style.pointerEvents='auto'});
+      }catch(_){}
+    })();true;`),100);return()=>clearTimeout(t);},[isFocused,isMapWebView]);
 
   const injectShopOpen=useCallback((shopId:string,source='native')=>{
     const id=String(shopId||'').toUpperCase();

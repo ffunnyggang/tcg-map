@@ -8,6 +8,7 @@ import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
 import { useAppLanguage } from '../../lib/i18n';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { supabase } from '../../lib/supabase';
 import { WebView } from 'react-native-webview';
 
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
@@ -133,16 +134,9 @@ export default function ShopDetail(){
     Promise.all(picks.map(async item=>{
       if(item.cover_image_url)return [item.content_id,webAsset(item.cover_image_url)] as const;
       try{
-        const target=/^https:\/\/blog\.naver\.com\//i.test(item.url||'')?String(item.url).replace('https://blog.naver.com/','https://m.blog.naver.com/'):String(item.url||'');
-        const isNaver=item.platform==='Naver'||/^https:\/\/(?:m\.)?blog\.naver\.com\//i.test(target);
-        const api='https://api.microlink.io/?meta=true'+(isNaver?'&screenshot=true':'')+'&url='+encodeURIComponent(target);
-        const res=await fetch(api);
-        if(!res.ok)return [item.content_id,''] as const;
-        const json=await res.json();
-        const screenshot=json?.data?.screenshot?.url||json?.data?.screenshot||'';
-        const metaImage=json?.data?.image?.url||json?.data?.image||'';
-        const img=metaImage||screenshot;
-        return [item.content_id,String(img||'')] as const;
+        const {data,error}=await supabase.functions.invoke('refresh-shop-content-thumbnail',{body:{content_id:item.content_id}});
+        if(error)return [item.content_id,''] as const;
+        return [item.content_id,String(data?.url||'')] as const;
       }catch{return [item.content_id,''] as const}
     })).then(rows=>{if(!cancelled)setReviewThumbs(Object.fromEntries(rows.filter(([,url])=>url)))});
     return()=>{cancelled=true};
@@ -228,7 +222,7 @@ export default function ShopDetail(){
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
-  const goToMap=()=>{if(from==='list'||from==='map-popup'){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
+  const goToMap=()=>{if(from==='list'||from==='map-popup'||from==='map'||from==='native-map'){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
   const googleBridgeJS=`(function(){var n=0;function send(){try{var root=document.querySelector('[data-google-place-content]');var rating=root&&root.querySelector('.google-rating-row strong');if(!rating){if(++n<80)setTimeout(send,250);return}var countEl=root.querySelector('.google-rating-row>span');var link=root.querySelector('.google-place-more');var reviews=[].slice.call(root.querySelectorAll('.google-review-item')).slice(0,3).map(function(el){return{author:(el.querySelector('.google-review-author')||{}).textContent||'',rating:(el.querySelector('.google-review-rating')||{}).textContent||'',time:(el.querySelector('.google-review-time')||{}).textContent||'',text:(el.querySelector('p')||{}).textContent||''}});window.ReactNativeWebView.postMessage(JSON.stringify({type:'GOOGLE_PLACE_DATA',rating:rating.textContent||'',count:countEl?countEl.textContent||'':'',url:link?link.href:'',reviews:reviews}))}catch(e){if(++n<80)setTimeout(send,250)}}setTimeout(send,500)})();true;`;
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
@@ -260,10 +254,10 @@ export default function ShopDetail(){
           <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{FEATURE[k]||k}</Text></View>)}</View>
           {activeEvent?<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent}</Text><Text style={styles.eventArrow}>›</Text></View>:null}
           <View style={styles.actionGrid}>
-            {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={styles.actionMiniIcon}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
-            {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
-            {shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Ionicons name="logo-instagram" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Instagram</Text></Pressable>:null}
-            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={styles.actionMiniIcon}><Ionicons name="call-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>전화하기</Text></Pressable>:null}
+            {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
+            {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
+            {shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="logo-instagram" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Instagram</Text></Pressable>:null}
+            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="call-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>전화하기</Text></Pressable>:null}
           </View>
         </View>
 
@@ -475,7 +469,7 @@ const styles=StyleSheet.create({
   relatedMeta:{marginTop:4,fontSize:10,color:C.muted},
   relatedArrow:{fontSize:21,color:C.muted,marginLeft:8},
 
-  googleBridge:{position:'absolute',left:-2,top:-2,width:1,height:1,opacity:.01,overflow:'hidden'},
+  googleBridge:{position:'absolute',left:-1200,top:0,width:390,height:640,opacity:.01,overflow:'hidden'},
   floatingLayer:{position:'absolute',left:0,right:0,top:0,bottom:0,zIndex:100000,elevation:100000},
   mapFabWrap:{position:'absolute',right:16,height:46},
   mapFab:{height:46,width:'100%',borderRadius:23,backgroundColor:'#6E6C74',borderWidth:1,borderColor:'rgba(255,255,255,.35)',flexDirection:'row',alignItems:'center',justifyContent:'center',...shadow},

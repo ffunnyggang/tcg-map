@@ -88,5 +88,6 @@
       refreshMarkerSizes();
     }catch(e){}
   }
+  window.FUNY_MAP_POPUP={clear:()=>clearSelected(true)};
   ensureMarkerStyles();loadLivePins();let tries=0;const timer=setInterval(()=>{tries++;try{SHOPS.forEach(s=>bindMarker(s,markerById.get(s.id)));bindMapEvents();if(markerById.size>=SHOPS.length||tries>60)clearInterval(timer)}catch(e){if(tries>60)clearInterval(timer)}},250)
 })();

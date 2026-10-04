@@ -24,16 +24,7 @@
           "experimentalLauncherActivity": false
         }
       ],
-      "expo-apple-authentication",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#A0A6F8",
-          "image": "./assets/android-adaptive-light.png",
-          "imageWidth": 120,
-          "resizeMode": "contain"
-        }
-      ]
+      "expo-apple-authentication"
     ],
     "ios": {
       "supportsTablet": false,

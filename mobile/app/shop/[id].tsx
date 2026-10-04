@@ -128,7 +128,9 @@ export default function ShopDetail(){
   },[id]);
 
   useEffect(()=>{
-    const picks=contents.filter(x=>/reel|blog/i.test(x.content_type||'')).slice(0,2);
+    const reelPick=contents.find(x=>/reel/i.test(x.content_type||''));
+    const blogPick=contents.find(x=>/blog/i.test(x.content_type||''));
+    const picks=[reelPick,blogPick].filter(Boolean) as ShopContent[];
     if(!picks.length)return;
     let cancelled=false;
     Promise.all(picks.map(async item=>{
@@ -217,7 +219,7 @@ export default function ShopDetail(){
   const reviewPicks=[reel,blog].filter(Boolean) as ShopContent[];
   const instaColumns:[InstaPost[],InstaPost[]]=[[],[]];
   const instaHeights=[0,0];
-  instaPosts.forEach((p,i)=>{const key=String(p.permalink||i),ratio=instaRatios[key]||1;const col=instaHeights[0]<=instaHeights[1]?0:1;instaColumns[col].push(p);instaHeights[col]+=1/ratio;});
+  instaPosts.forEach((p,i)=>{const ratio=3/4;const col=instaHeights[0]<=instaHeights[1]?0:1;instaColumns[col].push(p);instaHeights[col]+=1/ratio;});
   const fabWidth=fabProgress.interpolate({inputRange:[0,1],outputRange:[132,46]});
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
@@ -302,7 +304,7 @@ export default function ShopDetail(){
         {instaPosts.length?<View style={styles.section}>
           <View style={styles.instagramHead}><SectionTitle icon="logo-instagram" title="Instagram" color={accent}/>{shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)}><Text style={styles.moreText}>전체보기 →</Text></Pressable>:null}</View>
           <Text style={styles.instagramGuide}>ⓘ 카드샵에서 직접 전하는 최신 소식이에요.</Text>
-          <View style={styles.instagramGrid}>{instaColumns.map((col,colIndex)=><View key={colIndex} style={styles.instagramColumn}>{col.map((p,i)=>{const key=String(p.permalink||i),ratio=instaRatios[key]||1;return <Pressable key={key} onPress={()=>{if(p.permalink){setSheetTitle('Instagram');setSheetUrl(String(p.permalink))}}} style={styles.instagramItem}><Image source={{uri:webAsset(String(p.image||p.thumbnail_url||p.media_url))}} style={[styles.instagramImage,{aspectRatio:ratio}]} resizeMode="cover"/></Pressable>})}</View>)}</View>
+          <View style={styles.instagramGrid}>{instaColumns.map((col,colIndex)=><View key={colIndex} style={styles.instagramColumn}>{col.map((p,i)=>{const key=String(p.permalink||i),ratio=3/4;return <Pressable key={key} onPress={()=>{if(p.permalink){setSheetTitle('Instagram');setSheetUrl(String(p.permalink))}}} style={styles.instagramItem}><Image source={{uri:webAsset(String(p.image||p.thumbnail_url||p.media_url))}} style={[styles.instagramImage,{aspectRatio:ratio}]} resizeMode="cover"/></Pressable>})}</View>)}</View>
         </View>:null}
 
         {reviewPicks.length?<View style={styles.section}>

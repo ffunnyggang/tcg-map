@@ -23,7 +23,7 @@ function SectionTitle({icon,title,color=C.purpleDark}:{icon:keyof typeof Ionicon
   return <View style={styles.sectionTitleRow}><View style={styles.sectionIcon}><Ionicons name={icon} size={22} color={color}/></View><Text style={styles.sectionTitle}>{title}</Text></View>;
 }
 function NaverMapIcon({color='#8062D8'}:{color?:string}){
-  return <View style={[styles.naverBadge,{backgroundColor:color}]}><Text style={styles.naverBadgeText}>N</Text></View>;
+  return <Text style={[styles.naverMark,{color}]}>N</Text>;
 }
 function InfoRow({label,value,icon,color=C.purpleDark,soft='#F3EFF9',border='#F0EDF6',last=false}:{label:string;value?:string|null;icon:keyof typeof Ionicons.glyphMap;color?:string;soft?:string;border?:string;last?:boolean}){
   if(!value)return null;
@@ -98,7 +98,7 @@ export default function ShopDetail(){
 
   const navBottom=Math.max(insets.bottom,10);
   const homeLivePinBottom=navBottom+54+10;
-  const tcgMapBottom=homeLivePinBottom;
+  const tcgMapBottom=Math.max(navBottom,10);
 
   useEffect(()=>{
     if(!id)return;
@@ -205,6 +205,7 @@ export default function ShopDetail(){
   const radarGrid=isJapan?'#F0DFE2':'#E7E1F2';
   const radarAxis=isJapan?'#F4E8EA':'#EEEAF7';
   const location=[shop.area,shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?` 도보 ${shop.walk_minutes}분`:'')):null].filter(Boolean).join(' · ');
+  const visitDate=shop.verified_at?String(shop.verified_at).replace(/^(\d{4})-(\d{2})-(\d{2}).*$/,'$1. $2. $3'):'';
   const reel=contents.find(c=>/reel/i.test(c.content_type||''));
   const blog=contents.find(c=>/blog/i.test(c.content_type||''));
   const reviewPicks=[reel,blog].filter(Boolean) as ShopContent[];
@@ -282,6 +283,7 @@ export default function ShopDetail(){
               {SCORE_LABELS.slice(0,4).map(([key,label],index)=><ScoreBar key={String(key)} label={label} value={review[key] as number|null} progress={chartProgress} index={index} color={accent} track={isJapan?'#F2E4E7':'#EEEAF7'}/>)}
             </View>
           </View>
+          {visitDate?<View style={styles.analysisVisitDate}><Ionicons name="calendar-outline" size={13} color="#9B96A0"/><Text style={styles.analysisVisitDateText}>매장 방문일 {visitDate}</Text></View>:null}
         </View>:null}
 
         {instaPosts.length?<View style={styles.section}>
@@ -302,7 +304,7 @@ export default function ShopDetail(){
       </View>
     </ScrollView>
 
-    {stickyHeader?<View style={[styles.stickyHeaderShell,{backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
+    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
         <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
         <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
@@ -311,7 +313,7 @@ export default function ShopDetail(){
     </View>:null}
 
     <View pointerEvents="box-none" style={styles.floatingLayer}>
-      <Animated.View style={[styles.mapFabWrap,{bottom:homeLivePinBottom,width:fabWidth}]}>
+      <Animated.View style={[styles.mapFabWrap,{bottom:tcgMapBottom,width:fabWidth}]}>
         <Pressable accessibilityRole="button" onPress={()=>router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)} style={styles.mapFab}>
           <Animated.View style={[styles.mapFabIconWrap,{left:fabProgress.interpolate({inputRange:[0,1],outputRange:[15,14]})}]}><Ionicons name="location-outline" size={18} color="#fff"/></Animated.View>
           <Animated.View style={[styles.mapFabLabelGroup,{width:fabLabelWidth,opacity:fabLabelOpacity}]}>
@@ -319,7 +321,7 @@ export default function ShopDetail(){
           </Animated.View>
         </Pressable>
       </Animated.View>
-      {shop.country_code==='KR'?<LivePinButton withNav scrolling={scrolling} bottomOffset={56}/>:null}
+      {shop.country_code==='KR'?<LivePinButton withNav scrolling={scrolling}/>:null}
     </View>
 
     <InAppWebSheet visible={!!sheetUrl} url={sheetUrl} title={sheetTitle} onClose={()=>setSheetUrl(null)}/>
@@ -342,7 +344,7 @@ const styles=StyleSheet.create({
   heroCount:{position:'absolute',right:14,bottom:36,height:26,paddingHorizontal:9,borderRadius:13,backgroundColor:'rgba(34,30,26,.62)',flexDirection:'row',gap:5,alignItems:'center',justifyContent:'center'},
   heroCountText:{fontSize:10,fontWeight:'700',color:'#fff'},
 
-  stickyHeaderShell:{position:'absolute',left:0,right:0,top:0,height:56,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
+  stickyHeaderShell:{position:'absolute',left:0,right:0,height:56,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
   stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:14,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
   stickyAction:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},
   stickyTitle:{position:'absolute',left:56,right:56,textAlign:'center',fontSize:14.5,fontWeight:'800',letterSpacing:-.3,color:'#28231F'},
@@ -371,8 +373,7 @@ const styles=StyleSheet.create({
   actionGrid:{marginTop:16,flexDirection:'row',gap:8},
   actionMini:{flex:1,minHeight:67,borderRadius:14,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',alignItems:'center',justifyContent:'center',paddingHorizontal:3,paddingVertical:8},
   actionMiniIcon:{width:35,height:35,borderRadius:18,backgroundColor:'#F0E8FF',alignItems:'center',justifyContent:'center'},
-  naverBadge:{width:29,height:29,borderRadius:15,alignItems:'center',justifyContent:'center'},
-  naverBadgeText:{fontSize:14,lineHeight:17,fontWeight:'900',color:'#fff'},
+  naverMark:{fontSize:17,lineHeight:20,fontWeight:'900'},
   actionMiniText:{marginTop:6,fontSize:9.8,fontWeight:'600',color:'#5E5750'},
 
   section:{marginTop:30},
@@ -411,6 +412,8 @@ const styles=StyleSheet.create({
   barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EEEAF7',overflow:'hidden'},
   barFill:{height:7,borderRadius:4,backgroundColor:C.purple},
 
+  analysisVisitDate:{marginTop:13,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5},
+  analysisVisitDateText:{fontSize:9,lineHeight:13,fontWeight:'600',color:'#8F8A95'},
   recommendCard:{marginTop:12,padding:14,borderRadius:15,backgroundColor:'#F8F5FC'},
   recommendTitle:{fontSize:10.5,fontWeight:'900',color:C.purpleDark},
   recommendText:{marginTop:6,fontSize:13,lineHeight:20,fontWeight:'800',color:C.text},

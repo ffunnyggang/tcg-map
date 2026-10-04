@@ -452,6 +452,6 @@ const styles=StyleSheet.create({
   mapFabWrap:{position:'absolute',right:16,height:46},
   mapFab:{height:46,width:'100%',paddingHorizontal:14,borderRadius:23,backgroundColor:'#6E6C74',borderWidth:1,borderColor:'rgba(255,255,255,.35)',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6,...shadow},
   mapFabLabelGroup:{height:24,overflow:'hidden',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5},
-  mapFabText:{fontSize:12,fontWeight:'900',color:'#fff',whiteSpace:'nowrap' as any},
+  mapFabText:{fontSize:12,fontWeight:'900',color:'#fff'},
   mapFabArrow:{fontSize:19,fontWeight:'500',lineHeight:20,color:'#fff'}
 });

@@ -8,7 +8,6 @@ import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
 import { useAppLanguage } from '../../lib/i18n';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { BlurView } from 'expo-blur';
 
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
 const TCG:Record<string,string>={pokemon:'포켓몬',one_piece:'원피스',onepiece:'원피스',dragon_ball:'드래곤볼',dragonball:'드래곤볼',yugioh:'유희왕',lorcana:'로카나',riftbound:'리프트바운드',other:'기타 TCG'};
@@ -24,7 +23,7 @@ function SectionTitle({icon,title,color=C.purpleDark}:{icon:keyof typeof Ionicon
   return <View style={styles.sectionTitleRow}><View style={styles.sectionIcon}><Ionicons name={icon} size={22} color={color}/></View><Text style={styles.sectionTitle}>{title}</Text></View>;
 }
 function NaverMapIcon({color='#8062D8'}:{color?:string}){
-  return <View style={styles.naverPinWrap}><Ionicons name="location" size={30} color={color}/><Text style={styles.naverPinText}>N</Text></View>;
+  return <View style={[styles.naverBadge,{backgroundColor:color}]}><Text style={styles.naverBadgeText}>N</Text></View>;
 }
 function InfoRow({label,value,icon,color=C.purpleDark,soft='#F3EFF9',border='#F0EDF6',last=false}:{label:string;value?:string|null;icon:keyof typeof Ionicons.glyphMap;color?:string;soft?:string;border?:string;last?:boolean}){
   if(!value)return null;
@@ -93,7 +92,6 @@ export default function ShopDetail(){
   const scrollTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const chartProgress=useRef(new Animated.Value(0)).current;
   const fabProgress=useRef(new Animated.Value(0)).current;
-  const scrollY=useRef(new Animated.Value(0)).current;
   const analysisY=useRef(Number.POSITIVE_INFINITY);
   const chartStarted=useRef(false);
   const lastScrollY=useRef(0);
@@ -130,17 +128,10 @@ export default function ShopDetail(){
       if(item.cover_image_url)return [item.content_id,webAsset(item.cover_image_url)] as const;
       try{
         const target=/^https:\/\/blog\.naver\.com\//i.test(item.url||'')?String(item.url).replace('https://blog.naver.com/','https://m.blog.naver.com/'):String(item.url||'');
-        if(item.platform==='Naver'||/^https:\/\/(?:m\.)?blog\.naver\.com\//i.test(target)){
-          try{
-            const page=await fetch(target,{headers:{'Accept':'text/html'}}).then(r=>r.ok?r.text():'');
-            const match=page.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)||page.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-            if(match?.[1])return [item.content_id,String(match[1]).replace(/&amp;/g,'&')] as const;
-          }catch{}
-        }
-        const res=await fetch('https://api.microlink.io/?meta=true&screenshot=true&url='+encodeURIComponent(target));
+        const res=await fetch('https://api.microlink.io/?meta=true&url='+encodeURIComponent(target));
         if(!res.ok)return [item.content_id,''] as const;
         const json=await res.json();
-        const img=json?.data?.image?.url||json?.data?.image||json?.data?.screenshot?.url||json?.data?.screenshot||'';
+        const img=json?.data?.image?.url||json?.data?.image||'';
         return [item.content_id,String(img||'')] as const;
       }catch{return [item.content_id,''] as const}
     })).then(rows=>{if(!cancelled)setReviewThumbs(Object.fromEntries(rows.filter(([,url])=>url)))});
@@ -223,8 +214,6 @@ export default function ShopDetail(){
   const fabWidth=fabProgress.interpolate({inputRange:[0,1],outputRange:[132,46]});
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
-  const stickyOpacity=scrollY.interpolate({inputRange:[0,18,42],outputRange:[0,.55,1],extrapolate:'clamp'});
-  const stickyTranslate=scrollY.interpolate({inputRange:[0,42],outputRange:[-12,0],extrapolate:'clamp'});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(content.title||'관련 콘텐츠');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
@@ -232,7 +221,7 @@ export default function ShopDetail(){
   return <SafeAreaView edges={['top']} style={[styles.root,{backgroundColor:pageBg}]}>
     <Stack.Screen options={{headerShown:false}}/>
 
-    <Animated.ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={Animated.event([{nativeEvent:{contentOffset:{y:scrollY}}}],{useNativeDriver:false,listener:onDetailScroll})} scrollEventThrottle={16}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
       <View style={styles.hero}>
         {images.length?
           <ScrollView ref={galleryRef} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
@@ -298,26 +287,28 @@ export default function ShopDetail(){
         {instaPosts.length?<View style={styles.section}>
           <View style={styles.instagramHead}><SectionTitle icon="logo-instagram" title="Instagram" color={accent}/>{shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)}><Text style={styles.moreText}>전체보기 →</Text></Pressable>:null}</View>
           <Text style={styles.instagramGuide}>ⓘ 카드샵에서 직접 전하는 최신 소식이에요.</Text>
-          <View style={styles.instagramGrid}>{instaColumns.map((col,colIndex)=><View key={colIndex} style={styles.instagramColumn}>{col.map((p,i)=>{const key=String(p.permalink||i),ratio=instaRatios[key]||1;return <Pressable key={key} onPress={()=>open(p.permalink)} style={styles.instagramItem}><Image source={{uri:webAsset(String(p.image||p.thumbnail_url||p.media_url))}} style={[styles.instagramImage,{aspectRatio:ratio}]} resizeMode="cover"/></Pressable>})}</View>)}</View>
+          <View style={styles.instagramGrid}>{instaColumns.map((col,colIndex)=><View key={colIndex} style={styles.instagramColumn}>{col.map((p,i)=>{const key=String(p.permalink||i),ratio=instaRatios[key]||1;return <Pressable key={key} onPress={()=>{if(p.permalink){setSheetTitle('Instagram');setSheetUrl(String(p.permalink))}}} style={styles.instagramItem}><Image source={{uri:webAsset(String(p.image||p.thumbnail_url||p.media_url))}} style={[styles.instagramImage,{aspectRatio:ratio}]} resizeMode="cover"/></Pressable>})}</View>)}</View>
         </View>:null}
 
         {reviewPicks.length?<View style={styles.section}>
           <SectionTitle icon="chatbox-ellipses-outline" title="깽퐌커플 리뷰" color={accent}/>
           <View style={styles.reviewGrid}>{reviewPicks.map(c=><Pressable key={c.content_id} onPress={()=>openContent(c)} style={[styles.contentCard,{borderColor:accentBorder}]}>
-            {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
+            {reviewThumbs[c.content_id]?<Image source={c.platform==='Naver'?{uri:reviewThumbs[c.content_id],headers:{Referer:'https://blog.naver.com/'}}:{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
             <View style={styles.contentBody}><View style={styles.contentPlatformRow}>{c.platform==='Instagram'?<Ionicons name="logo-instagram" size={13} color={accentDark}/>:<Ionicons name="globe-outline" size={13} color={accentDark}/>}<Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View></View>
           </Pressable>)}</View>
         </View>:null}
 
 
       </View>
-    </Animated.ScrollView>
+    </ScrollView>
 
-    <Animated.View pointerEvents={stickyHeader?'auto':'none'} style={[styles.stickyHeaderShell,{opacity:stickyOpacity,transform:[{translateY:stickyTranslate}]}]}><BlurView intensity={72} tint="light" style={styles.stickyHeader}>
-      <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
-      <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
-      <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
-    </BlurView></Animated.View>
+    {stickyHeader?<View style={[styles.stickyHeaderShell,{backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
+      <View style={styles.stickyHeader}>
+        <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+        <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
+        <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
+      </View>
+    </View>:null}
 
     <View pointerEvents="box-none" style={styles.floatingLayer}>
       <Animated.View style={[styles.mapFabWrap,{bottom:homeLivePinBottom,width:fabWidth}]}>
@@ -351,7 +342,7 @@ const styles=StyleSheet.create({
   heroCount:{position:'absolute',right:14,bottom:36,height:26,paddingHorizontal:9,borderRadius:13,backgroundColor:'rgba(34,30,26,.62)',flexDirection:'row',gap:5,alignItems:'center',justifyContent:'center'},
   heroCountText:{fontSize:10,fontWeight:'700',color:'#fff'},
 
-  stickyHeaderShell:{position:'absolute',left:0,right:0,top:0,height:56,zIndex:300000,elevation:300000,backgroundColor:'rgba(251,250,255,.92)'},
+  stickyHeaderShell:{position:'absolute',left:0,right:0,top:0,height:56,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
   stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:14,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
   stickyAction:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},
   stickyTitle:{position:'absolute',left:56,right:56,textAlign:'center',fontSize:14.5,fontWeight:'800',letterSpacing:-.3,color:'#28231F'},
@@ -380,8 +371,8 @@ const styles=StyleSheet.create({
   actionGrid:{marginTop:16,flexDirection:'row',gap:8},
   actionMini:{flex:1,minHeight:67,borderRadius:14,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',alignItems:'center',justifyContent:'center',paddingHorizontal:3,paddingVertical:8},
   actionMiniIcon:{width:35,height:35,borderRadius:18,backgroundColor:'#F0E8FF',alignItems:'center',justifyContent:'center'},
-  naverPinWrap:{width:29,height:29,alignItems:'center',justifyContent:'center'},
-  naverPinText:{position:'absolute',top:6,left:0,right:0,textAlign:'center',fontSize:10,fontWeight:'900',color:'#fff'},
+  naverBadge:{width:29,height:29,borderRadius:15,alignItems:'center',justifyContent:'center'},
+  naverBadgeText:{fontSize:14,lineHeight:17,fontWeight:'900',color:'#fff'},
   actionMiniText:{marginTop:6,fontSize:9.8,fontWeight:'600',color:'#5E5750'},
 
   section:{marginTop:30},
@@ -412,10 +403,10 @@ const styles=StyleSheet.create({
   radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:10.5,fontWeight:'700',color:'#504A59'},
   radarDot:{position:'absolute',width:6,height:6,borderRadius:3,backgroundColor:'#8A5BE2'},
   subTitle:{fontSize:14,fontWeight:'800',color:'#272331',marginBottom:1},
-  tcgLine:{marginTop:10,marginBottom:3,minHeight:30,flexDirection:'row',alignItems:'flex-start',gap:9},
+  tcgLine:{marginTop:10,marginBottom:0,minHeight:22,flexDirection:'row',alignItems:'center',gap:9},
   tcgLabel:{width:56,fontSize:10.5,lineHeight:15,fontWeight:'800',color:'#37313F'},
   tcgValue:{flex:1,fontSize:10.5,lineHeight:15,fontWeight:'600',color:'#837C8E',textAlign:'left'},
-  barRow:{marginTop:11,flexDirection:'row',alignItems:'center',gap:9},
+  barRow:{marginTop:10,flexDirection:'row',alignItems:'center',gap:9},
   barLabel:{width:56,fontSize:10.5,lineHeight:15,fontWeight:'700',color:'#494351'},
   barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EEEAF7',overflow:'hidden'},
   barFill:{height:7,borderRadius:4,backgroundColor:C.purple},

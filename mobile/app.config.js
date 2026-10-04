@@ -1,11 +1,13 @@
 module.exports = ({ config }) => {
   const isDev = process.env.APP_VARIANT === 'development';
+  const appIcon = isDev ? './assets/app-icon-dark.png' : './assets/app-icon-light.png';
+  const adaptiveBackground = isDev ? '#221662' : '#A0A6F8';
 
   return {
     ...config,
     name: isDev ? 'FUNY PIN DEV' : config.name,
     scheme: isDev ? 'funypin-dev' : config.scheme,
-    icon: isDev ? './assets/app-icon-dark.png' : config.icon,
+    icon: appIcon,
     ios: {
       ...config.ios,
       bundleIdentifier: isDev ? 'kr.funypin.app.dev' : config.ios?.bundleIdentifier,
@@ -14,6 +16,12 @@ module.exports = ({ config }) => {
     android: {
       ...config.android,
       package: isDev ? 'kr.funypin.app.dev' : config.android?.package,
+      icon: appIcon,
+      adaptiveIcon: {
+        ...(config.android?.adaptiveIcon || {}),
+        foregroundImage: appIcon,
+        backgroundColor: adaptiveBackground,
+      },
     },
     extra: {
       ...config.extra,

@@ -22,6 +22,11 @@ module.exports = ({ config }) => {
         foregroundImage: appIcon,
         backgroundColor: adaptiveBackground,
       },
+      splash: {
+        image: './assets/android-splash.png',
+        resizeMode: 'cover',
+        backgroundColor: '#A0A6F8',
+      },
     },
     extra: {
       ...config.extra,

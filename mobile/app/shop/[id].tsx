@@ -128,10 +128,14 @@ export default function ShopDetail(){
       if(item.cover_image_url)return [item.content_id,webAsset(item.cover_image_url)] as const;
       try{
         const target=/^https:\/\/blog\.naver\.com\//i.test(item.url||'')?String(item.url).replace('https://blog.naver.com/','https://m.blog.naver.com/'):String(item.url||'');
-        const res=await fetch('https://api.microlink.io/?meta=true&url='+encodeURIComponent(target));
+        const isNaver=item.platform==='Naver'||/^https:\/\/(?:m\.)?blog\.naver\.com\//i.test(target);
+        const api='https://api.microlink.io/?meta=true'+(isNaver?'&screenshot=true':'')+'&url='+encodeURIComponent(target);
+        const res=await fetch(api);
         if(!res.ok)return [item.content_id,''] as const;
         const json=await res.json();
-        const img=json?.data?.image?.url||json?.data?.image||'';
+        const screenshot=json?.data?.screenshot?.url||json?.data?.screenshot||'';
+        const metaImage=json?.data?.image?.url||json?.data?.image||'';
+        const img=isNaver?(screenshot||metaImage):(metaImage||screenshot);
         return [item.content_id,String(img||'')] as const;
       }catch{return [item.content_id,''] as const}
     })).then(rows=>{if(!cancelled)setReviewThumbs(Object.fromEntries(rows.filter(([,url])=>url)))});
@@ -216,7 +220,7 @@ export default function ShopDetail(){
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
-  const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(content.title||'관련 콘텐츠');setSheetUrl(content.url)};
+  const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
   return <SafeAreaView edges={['top']} style={[styles.root,{backgroundColor:pageBg}]}>
@@ -276,14 +280,16 @@ export default function ShopDetail(){
           <SectionTitle icon="analytics-outline" title={en?'Store analysis':'한눈에 보는 매장 분석'} color={accent}/>
           <Text style={styles.note}>※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</Text>
           <View style={[styles.analysisCombo,{borderColor:accentBorder}]}>
-            <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis}/></View>
-            <View style={styles.compPane}>
-              <Text style={styles.subTitle}>상품 구성 상세</Text>
-              {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
-              {SCORE_LABELS.slice(0,4).map(([key,label],index)=><ScoreBar key={String(key)} label={label} value={review[key] as number|null} progress={chartProgress} index={index} color={accent} track={isJapan?'#F2E4E7':'#EEEAF7'}/>)}
+            <View style={styles.analysisMainRow}>
+              <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis}/></View>
+              <View style={styles.compPane}>
+                <Text style={styles.subTitle}>상품 구성 상세</Text>
+                {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
+                {SCORE_LABELS.slice(0,4).map(([key,label],index)=><ScoreBar key={String(key)} label={label} value={review[key] as number|null} progress={chartProgress} index={index} color={accent} track={isJapan?'#F2E4E7':'#EEEAF7'}/>)}
+              </View>
             </View>
+            {visitDate?<View style={styles.analysisVisitDate}><Ionicons name="calendar-outline" size={13} color="#9B96A0"/><Text style={styles.analysisVisitDateText}>매장 방문일 {visitDate}</Text></View>:null}
           </View>
-          {visitDate?<View style={styles.analysisVisitDate}><Ionicons name="calendar-outline" size={13} color="#9B96A0"/><Text style={styles.analysisVisitDateText}>매장 방문일 {visitDate}</Text></View>:null}
         </View>:null}
 
         {instaPosts.length?<View style={styles.section}>
@@ -295,7 +301,7 @@ export default function ShopDetail(){
         {reviewPicks.length?<View style={styles.section}>
           <SectionTitle icon="chatbox-ellipses-outline" title="깽퐌커플 리뷰" color={accent}/>
           <View style={styles.reviewGrid}>{reviewPicks.map(c=><Pressable key={c.content_id} onPress={()=>openContent(c)} style={[styles.contentCard,{borderColor:accentBorder}]}>
-            {reviewThumbs[c.content_id]?<Image source={c.platform==='Naver'?{uri:reviewThumbs[c.content_id],headers:{Referer:'https://blog.naver.com/'}}:{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
+            {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
             <View style={styles.contentBody}><View style={styles.contentPlatformRow}>{c.platform==='Instagram'?<Ionicons name="logo-instagram" size={13} color={accentDark}/>:<Ionicons name="globe-outline" size={13} color={accentDark}/>}<Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View></View>
           </Pressable>)}</View>
         </View>:null}
@@ -353,7 +359,7 @@ const styles=StyleSheet.create({
   summaryCard:{marginTop:-18,paddingHorizontal:16,paddingTop:22,paddingBottom:18,zIndex:3,backgroundColor:'rgba(255,253,250,.98)',borderWidth:1,borderColor:'#E6DFD6',borderRadius:20,...shadow},
   titleLine:{flexDirection:'row',alignItems:'center',gap:8},
   shopName:{fontSize:23,fontWeight:'900',letterSpacing:-.8,color:'#28231F'},
-  shopNameEn:{marginTop:2,fontSize:10.5,fontWeight:'600',letterSpacing:.5,color:'#9E9386'},
+  shopNameEn:{marginTop:2,fontSize:10.5,fontWeight:'600',letterSpacing:.5,color:'#9690A3'},
   favorite:{width:34,height:34,alignItems:'center',justifyContent:'center'},
   favoriteOn:{},
   favoriteText:{fontSize:21,color:'#99909F'},
@@ -397,7 +403,8 @@ const styles=StyleSheet.create({
   googleButtonText:{fontSize:11.5,fontWeight:'800',color:C.purpleDark},
 
   note:{marginTop:-5,marginBottom:10,fontSize:10.5,lineHeight:16,color:'#9992A4'},
-  analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',flexDirection:'row',...shadow},
+  analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',...shadow},
+  analysisMainRow:{flexDirection:'row'},
   radarPane:{width:'48%',alignItems:'center',justifyContent:'center',paddingVertical:12},
   compPane:{flex:1,paddingVertical:14,paddingLeft:14,paddingRight:12,borderLeftWidth:1,borderLeftColor:'#EEE9F7'},
   radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
@@ -412,7 +419,7 @@ const styles=StyleSheet.create({
   barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EEEAF7',overflow:'hidden'},
   barFill:{height:7,borderRadius:4,backgroundColor:C.purple},
 
-  analysisVisitDate:{marginTop:13,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5},
+  analysisVisitDate:{height:30,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5},
   analysisVisitDateText:{fontSize:9,lineHeight:13,fontWeight:'600',color:'#8F8A95'},
   recommendCard:{marginTop:12,padding:14,borderRadius:15,backgroundColor:'#F8F5FC'},
   recommendTitle:{fontSize:10.5,fontWeight:'900',color:C.purpleDark},

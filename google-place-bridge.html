@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>FUNY PIN Google Place Bridge</title>
+<script src="/map-google-config.js"></script>
+</head>
+<body>
+<div id="service" style="width:1px;height:1px"></div>
+<script>
+(function(){
+  function post(data){try{window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify(data))}catch(_){}}
+  const q=new URLSearchParams(location.search);
+  const name=q.get('name')||'',address=q.get('address')||'';
+  const key=window.FUNY_GOOGLE_MAPS_API_KEY||'';
+  if(!key){post({type:'GOOGLE_PLACE_ERROR',stage:'key'});return}
+  const script=document.createElement('script');
+  script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&language=ko&region=JP&libraries=places';
+  script.async=true;script.defer=true;
+  script.onerror=()=>post({type:'GOOGLE_PLACE_ERROR',stage:'sdk'});
+  script.onload=()=>{
+    try{
+      const service=new google.maps.places.PlacesService(document.getElementById('service'));
+      const query=[name,address,'Japan'].filter(Boolean).join(' ');
+      service.findPlaceFromQuery({query,fields:['place_id','name','formatted_address']},(results,status)=>{
+        if(status!==google.maps.places.PlacesServiceStatus.OK||!results||!results[0]){post({type:'GOOGLE_PLACE_ERROR',stage:'find',status:String(status||'')});return}
+        service.getDetails({placeId:results[0].place_id,fields:['place_id','name','rating','user_ratings_total','reviews','url']},(place,detailStatus)=>{
+          if(detailStatus!==google.maps.places.PlacesServiceStatus.OK||!place){post({type:'GOOGLE_PLACE_ERROR',stage:'details',status:String(detailStatus||'')});return}
+          const reviews=(place.reviews||[]).slice(0,3).map(r=>({
+            author:String(r.author_name||'Google 사용자'),
+            rating:r.rating?'★ '+r.rating:'',
+            time:String(r.relative_time_description||''),
+            text:String(r.text||'')
+          }));
+          post({
+            type:'GOOGLE_PLACE_DATA',
+            rating:Number(place.rating||0).toFixed(1),
+            count:'Google 평점 · 리뷰 '+Number(place.user_ratings_total||0).toLocaleString()+'개',
+            url:String(place.url||''),
+            reviews
+          });
+        });
+      });
+    }catch(e){post({type:'GOOGLE_PLACE_ERROR',stage:'exception',message:String(e&&e.message||e)})}
+  };
+  document.head.appendChild(script);
+})();
+</script>
+</body>
+</html>

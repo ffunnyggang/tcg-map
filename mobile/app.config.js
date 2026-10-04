@@ -1,6 +1,7 @@
 module.exports = ({ config }) => {
   const isDev = process.env.APP_VARIANT === 'development';
   const appIcon = isDev ? './assets/app-icon-dark.png' : './assets/app-icon-light.png';
+  const adaptiveForeground = isDev ? './assets/android-adaptive-dark.png' : './assets/android-adaptive-light.png';
   const adaptiveBackground = isDev ? '#221662' : '#A0A6F8';
 
   return {
@@ -19,13 +20,8 @@ module.exports = ({ config }) => {
       icon: appIcon,
       adaptiveIcon: {
         ...(config.android?.adaptiveIcon || {}),
-        foregroundImage: appIcon,
+        foregroundImage: adaptiveForeground,
         backgroundColor: adaptiveBackground,
-      },
-      splash: {
-        image: './assets/android-splash.png',
-        resizeMode: 'cover',
-        backgroundColor: '#A0A6F8',
       },
     },
     extra: {

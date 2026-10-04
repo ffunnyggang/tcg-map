@@ -33,6 +33,13 @@ export async function signInSocial(provider: SocialProvider) {
     options: {
       redirectTo: OAUTH_REDIRECT,
       skipBrowserRedirect: true,
+      ...(provider === 'kakao'
+        ? {
+            queryParams: {
+              scope: 'profile_nickname profile_image',
+            },
+          }
+        : {}),
     },
   });
 

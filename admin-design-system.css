@@ -432,3 +432,490 @@ button:focus-visible,
     background:var(--admin-surface);
   }
 }
+
+
+/* =========================================================
+   FUNY PIN Admin Design System v1.1
+   Phase 2: Dashboard / Shops / TALK / Members / Statistics
+   ========================================================= */
+
+/* Shared operational summary cards */
+.shop-stats{
+  gap:10px;
+  margin-bottom:18px;
+}
+.shop-stat,
+.event-stat,
+.community-stat{
+  position:relative;
+  min-height:86px;
+  padding:15px 16px;
+  border:1px solid var(--admin-border);
+  background:var(--admin-surface);
+  border-radius:var(--admin-radius-md);
+  box-shadow:var(--admin-shadow-xs);
+}
+.shop-stat:before,
+.event-stat:before,
+.feed .community-stat:before{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:14px;
+  width:18px;
+  height:3px;
+  border-radius:var(--admin-radius-pill);
+  background:var(--admin-primary);
+  opacity:.7;
+}
+.shop-stat b,
+.event-stat b,
+.feed .community-stat b{
+  margin-top:10px;
+  font-size:24px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:-.035em;
+}
+.shop-stat span,
+.event-stat span,
+.feed .community-stat span{
+  margin-top:8px;
+  display:block;
+  color:var(--admin-text-muted);
+  font-size:10px;
+  font-weight:700;
+}
+
+/* Dashboard */
+.dashboard-wrap{
+  gap:20px;
+}
+.dashboard-hero{
+  padding:10px 2px 4px;
+}
+.dashboard-hero h2{
+  color:var(--admin-text);
+  font-size:25px;
+  font-weight:850;
+  letter-spacing:-.045em;
+}
+.dashboard-hero p{
+  max-width:680px;
+  margin-top:7px;
+  color:var(--admin-text-secondary);
+  font-size:11px;
+}
+.dashboard-updated{
+  padding:6px 9px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-pill);
+  background:var(--admin-surface-subtle);
+  color:var(--admin-text-muted);
+}
+.dashboard-kpis{
+  gap:12px;
+}
+.dashboard-kpi{
+  position:relative;
+  min-height:118px;
+  padding:18px;
+  overflow:hidden;
+  box-shadow:var(--admin-shadow-xs);
+}
+.dashboard-kpi:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:var(--admin-primary);
+  opacity:.55;
+}
+.dashboard-kpi:hover{
+  border-color:#dfd8e7;
+  box-shadow:var(--admin-shadow-sm);
+  transform:translateY(-2px);
+}
+.dashboard-kpi strong{
+  color:var(--admin-text);
+  font-size:30px;
+  font-weight:850;
+  letter-spacing:-.04em;
+}
+.dashboard-kpi span{
+  margin-top:12px;
+  color:var(--admin-text-secondary);
+  font-size:11px;
+  font-weight:800;
+}
+.dashboard-kpi small{
+  margin-top:6px;
+  color:var(--admin-text-muted);
+  font-size:9px;
+  line-height:1.4;
+}
+.dashboard-kpi.attn{
+  border-color:var(--admin-primary-border);
+  background:linear-gradient(180deg,#fff 0%,#fbf9ff 100%);
+}
+.dashboard-kpi.warn{
+  border-color:#f0dfc5;
+  background:linear-gradient(180deg,#fff 0%,#fffaf4 100%);
+}
+.dashboard-kpi.warn:before{
+  background:var(--admin-warning);
+}
+.dashboard-panel{
+  box-shadow:var(--admin-shadow-xs);
+}
+.dashboard-panel-head{
+  min-height:56px;
+  padding:0 17px;
+  background:var(--admin-surface-subtle);
+  border-bottom-color:var(--admin-border);
+}
+.dashboard-panel-head b{
+  color:var(--admin-text);
+  font-size:12px;
+  font-weight:850;
+}
+.dashboard-panel-head button{
+  color:var(--admin-primary);
+}
+.dashboard-row{
+  min-height:62px;
+  padding:11px 17px;
+  border-top-color:#f2eff4;
+}
+.dashboard-row b{
+  color:var(--admin-text);
+  font-size:11px;
+  font-weight:800;
+}
+.dashboard-row span{
+  color:var(--admin-text-muted);
+  font-size:9.5px;
+}
+.dashboard-row time{
+  color:var(--admin-text-faint);
+}
+.dashboard-row[data-dashboard-go]:hover{
+  background:#faf8fd;
+}
+
+/* Shop management */
+.shop-admin-tools{
+  margin-bottom:16px;
+  padding:12px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-md);
+  background:var(--admin-surface-subtle);
+}
+.shop-admin-tools .input,
+.shop-admin-tools .select{
+  background:var(--admin-surface);
+}
+.shop-admin-list{
+  border-radius:var(--admin-radius-lg);
+  box-shadow:var(--admin-shadow-xs);
+}
+.shop-admin-head{
+  min-height:40px;
+  padding:11px 14px;
+  background:#f8f7fa;
+  color:var(--admin-text-muted);
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.01em;
+}
+.shop-admin-row{
+  min-height:62px;
+  padding:13px 14px;
+  color:var(--admin-text-secondary);
+  transition:background-color .12s ease;
+}
+.shop-admin-row:hover{
+  background:#fbf9fd;
+}
+.shop-admin-id{
+  color:#796f81;
+  font-size:9.5px;
+}
+.shop-admin-name b{
+  color:var(--admin-text);
+  font-size:12px;
+  font-weight:850;
+}
+.shop-admin-name span,
+.shop-admin-address{
+  color:var(--admin-text-muted);
+}
+.shop-edit{
+  min-width:54px;
+  height:32px;
+  font-weight:800;
+}
+.shop-state{
+  padding:5px 8px;
+}
+
+/* TALK post management
+   Higher specificity intentionally overrides runtime-injected legacy styles. */
+.feed .community-tools{
+  gap:8px;
+  margin-bottom:14px;
+  padding:8px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-md);
+  background:var(--admin-surface-subtle);
+}
+.feed .community-tools button{
+  height:36px;
+  padding:0 13px;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:var(--admin-text-secondary);
+  font-size:10px;
+  font-weight:800;
+}
+.feed .community-tools button:hover{
+  background:var(--admin-surface);
+  border-color:var(--admin-border);
+  color:var(--admin-text);
+}
+.feed .community-tools button.on{
+  border-color:var(--admin-primary-border);
+  background:var(--admin-primary-soft);
+  color:var(--admin-primary);
+}
+.feed .community-stats{
+  gap:10px;
+  margin-bottom:16px;
+}
+.feed .community-stat{
+  min-height:86px;
+  padding:15px 16px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-md);
+  background:var(--admin-surface);
+  box-shadow:var(--admin-shadow-xs);
+}
+.feed .community-card,
+.feed .community-report{
+  padding:16px;
+  margin-bottom:10px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-lg);
+  background:var(--admin-surface);
+  box-shadow:var(--admin-shadow-xs);
+}
+.feed .community-card h3{
+  margin:11px 0 5px;
+  color:var(--admin-text);
+  font-size:14px;
+  font-weight:850;
+  letter-spacing:-.015em;
+}
+.feed .community-meta{
+  color:var(--admin-text-muted);
+  font-size:9.5px;
+}
+.feed .community-body{
+  margin-top:10px;
+  padding:12px;
+  border:1px solid #f0edf2;
+  border-radius:10px;
+  background:var(--admin-surface-subtle);
+  color:var(--admin-text-secondary);
+  line-height:1.6;
+}
+.feed .community-source{
+  background:var(--admin-primary-soft);
+  color:var(--admin-primary);
+}
+.feed .community-state{
+  background:var(--admin-success-bg);
+  color:var(--admin-success);
+}
+.feed .community-state.hidden{
+  background:#f2eff3;
+  color:#817987;
+}
+.feed .community-actions{
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid #f2eff4;
+}
+.feed .community-actions button{
+  height:32px;
+  padding:0 11px;
+  border:1px solid var(--admin-border);
+  border-radius:var(--admin-radius-sm);
+  background:var(--admin-surface);
+  color:var(--admin-text-secondary);
+  font-weight:800;
+}
+.feed .community-actions button:hover{
+  background:var(--admin-surface-subtle);
+  color:var(--admin-text);
+}
+.feed .community-actions .danger{
+  border-color:#efc7cc;
+  background:var(--admin-danger-bg);
+  color:var(--admin-danger);
+}
+.feed .community-report.open{
+  border-color:#eed9b7;
+  background:#fffcf7;
+}
+.feed .community-report strong{
+  color:var(--admin-text);
+  font-size:11px;
+  font-weight:850;
+}
+.feed .community-report p{
+  color:var(--admin-text-secondary);
+  line-height:1.55;
+}
+
+/* Member management */
+.member-admin-list{
+  border-radius:var(--admin-radius-lg);
+  box-shadow:var(--admin-shadow-xs);
+}
+.member-admin-row{
+  min-height:92px;
+  padding:15px 16px;
+  gap:7px 14px;
+  border-top-color:#f1eef3;
+  background:var(--admin-surface);
+}
+.member-admin-row:hover{
+  background:#fbf9fd;
+}
+.member-admin-row .shop-admin-name b{
+  font-size:12.5px;
+}
+.member-admin-row .shop-admin-name span{
+  margin-top:4px;
+  color:var(--admin-text-faint);
+  font-size:9px;
+}
+.member-email{
+  color:var(--admin-text-secondary);
+  font-weight:650;
+}
+.member-date{
+  justify-self:end;
+  color:var(--admin-text-muted);
+}
+.member-activity{
+  margin-top:3px;
+  padding:7px 9px;
+  border-radius:8px;
+  background:var(--admin-primary-soft);
+  color:#6654a6;
+  font-size:9.5px;
+  font-weight:750;
+  width:max-content;
+  max-width:100%;
+}
+.member-login{
+  color:var(--admin-text-muted);
+  font-size:9px;
+}
+
+/* Statistics */
+.stats-grid{
+  gap:10px!important;
+  margin-bottom:18px!important;
+}
+.stats-grid .shop-stat{
+  min-height:94px;
+}
+.stats-grid .shop-stat:nth-child(4n+2):before{
+  opacity:.52;
+}
+.stats-grid .shop-stat:nth-child(4n+3):before{
+  opacity:.38;
+}
+.stats-grid .shop-stat:nth-child(4n):before{
+  opacity:.28;
+}
+.stats-grid + .card{
+  padding:17px;
+  border-radius:var(--admin-radius-lg);
+}
+.stats-grid + .card .shop{
+  margin-top:0;
+  color:var(--admin-text);
+  font-size:13px;
+}
+.stats-grid + .card .body{
+  padding:13px;
+  line-height:1.65;
+}
+
+/* Phase 2 responsive refinements */
+@media(max-width:899px){
+  .dashboard-kpi{
+    min-height:104px;
+    padding:15px;
+  }
+  .dashboard-kpi strong{
+    font-size:27px;
+  }
+  .shop-admin-tools{
+    padding:10px;
+  }
+  .feed .community-actions{
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:699px){
+  .shop-stats,
+  .feed .community-stats{
+    gap:8px;
+  }
+  .shop-stat,
+  .event-stat,
+  .feed .community-stat{
+    min-height:78px;
+    padding:13px;
+  }
+  .shop-stat:before,
+  .event-stat:before,
+  .feed .community-stat:before{
+    left:13px;
+    top:12px;
+  }
+  .shop-stat b,
+  .event-stat b,
+  .feed .community-stat b{
+    font-size:22px;
+  }
+  .shop-admin-row{
+    padding:13px;
+    box-shadow:var(--admin-shadow-xs);
+  }
+  .member-admin-row{
+    min-height:0;
+    padding:14px;
+  }
+  .member-date{
+    justify-self:start;
+  }
+  .member-activity{
+    width:100%;
+  }
+  .feed .community-card,
+  .feed .community-report{
+    padding:14px;
+  }
+}

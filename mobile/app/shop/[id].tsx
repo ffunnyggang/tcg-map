@@ -288,7 +288,7 @@ export default function ShopDetail(){
           <View style={[styles.analysisCombo,{borderColor:accentBorder}]}>
             <View style={styles.analysisMainRow}>
               <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis}/></View>
-              <View style={[styles.analysisDivider,{borderColor:isJapan?'#E8CDD2':'#D8D0E8'}]}/>
+              <View style={[styles.analysisDivider,{borderColor:isJapan?'#F3E8EA':'#F0EDF6'}]}/>
               <View style={styles.compPane}>
                 <Text style={styles.subTitle}>상품 구성 상세</Text>
                 {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
@@ -427,7 +427,7 @@ const styles=StyleSheet.create({
   analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',...shadow},
   analysisMainRow:{height:180,flexDirection:'row',alignItems:'stretch'},
   radarPane:{width:'48%',height:180,alignItems:'center',justifyContent:'center'},
-  analysisDivider:{height:152,marginVertical:14,borderLeftWidth:2,borderStyle:'dotted'},
+  analysisDivider:{height:152,marginVertical:14,borderLeftWidth:StyleSheet.hairlineWidth},
   compPane:{flex:1,height:152,marginVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
   radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
   radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:10.5,fontWeight:'700',color:'#504A59'},

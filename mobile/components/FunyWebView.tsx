@@ -91,8 +91,11 @@ try{
         return false;
       }catch(_){}
     };
-    document.addEventListener('click',earlyHandler,true);
-    document.addEventListener('touchend',earlyHandler,{capture:true,passive:false});
+    var earlyStartX=0,earlyStartY=0,earlyMoved=false,earlySuppressClickUntil=0;
+    document.addEventListener('touchstart',function(event){try{var t=event.touches&&event.touches[0];if(!t)return;earlyStartX=t.clientX;earlyStartY=t.clientY;earlyMoved=false;}catch(_){}},{capture:true,passive:true});
+    document.addEventListener('touchmove',function(event){try{var t=event.touches&&event.touches[0];if(!t)return;if(Math.abs(t.clientX-earlyStartX)>10||Math.abs(t.clientY-earlyStartY)>10)earlyMoved=true;}catch(_){}},{capture:true,passive:true});
+    document.addEventListener('touchend',function(event){if(earlyMoved){earlySuppressClickUntil=Date.now()+650;return;}earlySuppressClickUntil=Date.now()+650;earlyHandler(event);},{capture:true,passive:false});
+    document.addEventListener('click',function(event){if(Date.now()<earlySuppressClickUntil){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();return false;}return earlyHandler(event);},true);
   }
 
   /* Install geolocation bridge before page scripts can cache WKWebView geolocation methods. */

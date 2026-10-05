@@ -3,6 +3,7 @@ import { ActivityIndicator,Alert,Image,KeyboardAvoidingView,Modal,Platform,Press
 import * as ImagePicker from 'expo-image-picker';
 import { WebView } from 'react-native-webview';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MySubHeader from '../../components/MySubHeader';
 import { getProfile,nicknameNextChangeAt,removeProfileAvatar,updateProfile,uploadProfileAvatar,uploadProfileAvatarDataUrl } from '../../lib/auth';
 import { C } from '../../lib/theme';
@@ -12,6 +13,7 @@ const defaultNickname=(user:any)=>user?`FUNY회원${String(user.id||'').replace(
 
 export default function ProfileEdit(){
   const router=useRouter();
+  const insets=useSafeAreaInsets();
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
   const [nickname,setNickname]=useState('');
@@ -122,7 +124,7 @@ export default function ProfileEdit(){
       </ScrollView>
     </KeyboardAvoidingView>
       <Modal visible={!!cropSource} animationType="slide" presentationStyle="fullScreen" onRequestClose={()=>setCropSource(null)}>
-        <View style={styles.cropRoot}>
+        <View style={[styles.cropRoot,Platform.OS==='android'&&{paddingBottom:Math.max(insets.bottom,16)}]}>
           {cropSource?<WebView originWhitelist={['*']} source={{html:cropperHtml(cropSource)}} style={styles.cropWeb} scrollEnabled={false} bounces={false} onMessage={e=>{try{const data=JSON.parse(e.nativeEvent.data);if(data.type==='cancel'){setCropSource(null);return;}if(data.type==='save'&&data.data){setPickedDataUrl(String(data.data));setPickedUri(null);setPickedMimeType('image/jpeg');setAvatar(String(data.data));setCropSource(null);}}catch{}}}/>:null}
         </View>
       </Modal>

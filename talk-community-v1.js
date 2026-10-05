@@ -137,6 +137,7 @@ function openCommentReport(commentId){
 window.addEventListener('funy:native-talk-edit',()=>openPostEdit());
 window.addEventListener('funy:native-talk-delete',()=>deleteCurrentPost());
 window.addEventListener('funy:native-talk-report',()=>{if(currentPost?.id)openReportSheet(currentPost.id)});
+window.addEventListener('funy:native-talk-block',()=>{if(currentPost?.id&&window.FUNY_TALK_BLOCK_POST)window.FUNY_TALK_BLOCK_POST(currentPost.id)});
 function openReportSheet(postId){
   if(!token()||!uid()){requestLogin('게시물 신고는 로그인 후 이용할 수 있어요.');return}
   const reasons=[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']];

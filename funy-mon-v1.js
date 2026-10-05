@@ -7,6 +7,9 @@
   const ANON_KEY='funypin_mon_anon_id';
   const HISTORY_KEY='funypin_mon_history_v1';
   const DAILY_KEY='funypin_mon_daily_catch_v2';
+  const PENDING_ENTRY_KEY='funypin_mon_pending_entries_v1';
+  window.FUNY_FUNYMON_ACTIVE_SHOPS=window.FUNY_FUNYMON_ACTIVE_SHOPS instanceof Set?window.FUNY_FUNYMON_ACTIVE_SHOPS:new Set();
+  window.FUNY_FUNYMON_ACTIVE_EVENTS=window.FUNY_FUNYMON_ACTIVE_EVENTS instanceof Map?window.FUNY_FUNYMON_ACTIVE_EVENTS:new Map();
   const defs=[
     {id:'ponanyang',no:'01',name:'포냐냥',type:'노말',tier:'COMMON',spawnable:true,cls:'mon-01',asset:'assets/funymon/01-ponanyang.png'},
     {id:'bubblelong',no:'02',name:'버블롱',type:'물',tier:'COMMON',spawnable:true,cls:'mon-02',asset:'assets/funymon/02-bubblelong.png'},
@@ -53,6 +56,67 @@
       arr.unshift(item);
       localStorage.setItem(HISTORY_KEY,JSON.stringify(arr.slice(0,100)));
     }catch(_){}
+  }
+  function historyItems(){
+    try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(_){return[]}
+  }
+  function wasCaughtBefore(monsterId){
+    return historyItems().some(x=>x&&x.monster_id===monsterId&&x.result!=='failed');
+  }
+  function pendingEntries(){
+    try{
+      const rows=JSON.parse(localStorage.getItem(PENDING_ENTRY_KEY)||'[]');
+      return Array.isArray(rows)?rows.filter(x=>x&&x.claim_code):[];
+    }catch(_){return[]}
+  }
+  function savePendingEntry(data,def){
+    const r=data?.reward||{};
+    if((r.reward_type||'')!=='entry'||!r.entry_apply_enabled||!r.entry_campaign_id||!r.claim_code)return;
+    try{
+      const rows=pendingEntries().filter(x=>x.claim_code!==r.claim_code);
+      rows.unshift({claim_code:r.claim_code,campaign_id:r.entry_campaign_id,monster_id:def.id,data,created_at:Date.now()});
+      localStorage.setItem(PENDING_ENTRY_KEY,JSON.stringify(rows.slice(0,20)));
+    }catch(_){}
+    renderPendingEntryButton();
+  }
+  function removePendingEntry(claim){
+    if(!claim)return;
+    try{localStorage.setItem(PENDING_ENTRY_KEY,JSON.stringify(pendingEntries().filter(x=>x.claim_code!==claim)))}catch(_){}
+    renderPendingEntryButton();
+  }
+  function ensurePendingEntryButton(){
+    let el=document.getElementById('funyMonPendingEntry');
+    if(el)return el;
+    el=document.createElement('button');
+    el.id='funyMonPendingEntry';el.className='funy-mon-pending-entry';el.type='button';el.hidden=true;
+    el.innerHTML='<span class="funy-mon-pending-dot" aria-hidden="true"></span><span><b>미완료 응모</b><small id="funyMonPendingEntryCount"></small></span><i>›</i>';
+    el.addEventListener('click',()=>{
+      const item=pendingEntries()[0];if(!item)return;
+      const def=defById(item.monster_id);if(!def)return;
+      const data=item.data||{};data._isNew=false;
+      openResult(data,def);
+    });
+    document.body.appendChild(el);return el;
+  }
+  function renderPendingEntryButton(){
+    const el=ensurePendingEntryButton(),rows=pendingEntries(),count=document.getElementById('funyMonPendingEntryCount');
+    el.hidden=!rows.length;if(count)count.textContent=rows.length+'건 · 이어서 응모하기';
+  }
+  function syncEventDetailBanner(){
+    document.querySelector('.funymon-detail-banner')?.remove();
+    const m=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!m)return;
+    const shopId=m[1].toUpperCase(),ev=window.FUNY_FUNYMON_ACTIVE_EVENTS.get(shopId);if(!ev)return;
+    const summary=document.querySelector('#detail .summary-card');if(!summary)return;
+    const box=document.createElement('div');box.className='funymon-detail-banner';
+    const end=ev.ends_at?new Date(ev.ends_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    box.innerHTML='<span class="funymon-detail-kicker">FUNY MON</span><div><b>퍼니몬 출현 중</b><small>'+String(ev.title||'매장 이벤트').replace(/[<>]/g,'')+(end?' · '+end+'까지':'')+'</small></div><i>›</i>';
+    summary.insertAdjacentElement('afterend',box);
+  }
+  function syncActiveEventShops(events){
+    const set=window.FUNY_FUNYMON_ACTIVE_SHOPS,map=window.FUNY_FUNYMON_ACTIVE_EVENTS;set.clear();map.clear();
+    (events||[]).forEach(ev=>{if(ev?.shop_id){set.add(ev.shop_id);if(!map.has(ev.shop_id))map.set(ev.shop_id,ev)}});
+    try{window.dispatchEvent(new CustomEvent('funy:list-refresh',{detail:{reason:'funymon-events'}}))}catch(_){}
+    setTimeout(syncEventDetailBanner,0);
   }
   function markCaughtToday(){
     try{localStorage.setItem(DAILY_KEY,JSON.stringify({shop_id:TARGET_SHOP_ID,date:todayKst()}))}catch(_){}
@@ -146,6 +210,7 @@
     btn.disabled=true;if(msg){msg.classList.remove('done');msg.textContent='응모 확인 중...'}
     try{
       const headers={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Accept':'application/json'};
+      try{if(window.__FUNY_ACCESS_TOKEN)headers.Authorization='Bearer '+window.__FUNY_ACCESS_TOKEN}catch(_){}
       const saved=await fetch(SUPABASE_URL+'/rest/v1/rpc/submit_funymon_event_entry',{
         method:'POST',
         headers,
@@ -170,6 +235,7 @@
       if(mode==='daily'&&result.limit)done='응모 완료! · 오늘 '+today+'/'+Number(result.limit)+'회 · 누적 '+total+'회';
       else if(mode==='total'&&result.limit)done='응모 완료! · 누적 '+total+'/'+Number(result.limit)+'회';
       if(msg){msg.classList.add('done');msg.textContent=done}
+      removePendingEntry(claim)
     }catch(e){
       if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'
     }finally{
@@ -211,7 +277,7 @@
     resultNeedsSave=true;ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
     [...sheet.classList].filter(x=>x.startsWith('mon-')).forEach(x=>sheet.classList.remove(x));sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
-    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span><span>'+def.tier+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
+    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">'+(data._isNew?'<span class="funy-mon-new-badge">NEW!</span>':'');title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span><span>'+def.tier+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
     const hasReward=!!data.reward;
     if(hasReward){
       rewardResult.innerHTML=rewardMarkup(data);reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';save.disabled=true;save.onclick=null;
@@ -219,7 +285,7 @@
       reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
     }
     document.getElementById('funyMonModal').hidden=false;document.body.classList.add('funy-mon-open');document.body.style.overflow='hidden';
-    if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry')revealReward(data,def);else bindRewardSwipe(data,def)}
+    if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
   }
   function getPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('unsupported'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
   async function catchMonster(meta){
@@ -240,7 +306,7 @@
         else if(data.error==='invalid_payload'||data.error==='invalid_anonymous_id')showMessage('포획 정보를 확인하지 못했어요','페이지를 새로고침한 뒤 다시 시도해주세요.');
         else showMessage('포획 처리 중 오류가 발생했어요','잠시 후 다시 시도해주세요.');return;
       }
-      saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);try{meta.marker.setMap(null)}catch(_){}syncVisibility();
+      data._isNew=data.result!=='failed'&&!wasCaughtBefore(meta.def.id);saveHistory({monster_id:meta.def.id,shop_id:meta.shop.id,shop_name:data.shop_name,caught_at:data.caught_at,result:data.result,reward:data.reward||null});hiddenMarkers.add(meta.marker);hiddenKeys.add(meta.key);try{meta.marker.setMap(null)}catch(_){}syncVisibility();
       try{window.gtag?.('event','funymon_catch_result',{shop_id:meta.shop.id,monster_id:meta.def.id,result:data.result,reward_type:data.reward?.reward_type||''})}catch(_){}if(data.result==='failed'){showCatchOutcome(false,'아쉽게 놓쳤어요! 다른 퍼니몬을 포획해보세요.');return}showCatchOutcome(true,'퍼니몬을 포획했어요!',()=>openResult(data,meta.def));
     }catch(err){const code=err&&typeof err==='object'&&'code' in err?err.code:null;if(code===1)showMessage('위치 권한이 필요해요','현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.');else if(code===2)showMessage('현재 위치를 확인하지 못했어요','GPS 또는 위치 서비스를 켠 뒤 다시 시도해주세요.');else if(code===3)showMessage('위치 확인 시간이 초과됐어요','잠시 후 다시 시도해주세요.');else showMessage('현재 위치를 확인하지 못했어요','위치 서비스를 켠 뒤 다시 시도해주세요.')}finally{busy=false;hideCatchLoading()}
   }
@@ -267,8 +333,8 @@
   function pageAnonKey(){return SUPABASE_KEY}
   async function spawn(){
     if(started)return;const key=pageAnonKey();if(!key){if(tries++<80)setTimeout(spawn,250);return}if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
-    let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,shop_id,selected_monsters,spawn_count&is_force_paused=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json()}catch(_){return}
-    if(!events.length){clear();return}const shops=typeof SHOPS!=='undefined'?SHOPS:[];const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
+    let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,title,shop_id,target_type,selected_monsters,spawn_count,ends_at,daily_catch_limit,distance_limit_enabled,distance_limit_m,capture_success_bp&is_force_paused=eq.false&is_archived=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json();syncActiveEventShops(events)}catch(_){return}
+    if(!events.length){clear();syncActiveEventShops([]);return}const shops=typeof SHOPS!=='undefined'?SHOPS:[];const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
     events.forEach((ev,eventIndex)=>{const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
       visible.forEach((d,i)=>{const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
         naver.maps.Event.addListener(marker,'click',()=>{if(busy)return;document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));const markerEl=marker.getElement?.()?.querySelector?.('.funy-mon-marker')||document.querySelector('[aria-label="'+d.name+' 포획"]');if(markerEl){markerEl.classList.add('is-selected');markerEl.querySelector('.funy-mon-surprise')?.remove();markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>')}catchMonster(meta)})
@@ -276,6 +342,7 @@
     });
     try{naver.maps.Event.addListener(naverMap,'zoom_changed',syncVisibility)}catch(_){}syncVisibility();
   }
-  window.addEventListener('hashchange',syncVisibility);window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(spawn,450);setTimeout(()=>{if(!started){tries=0;spawn()}},2500);setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
-  window.FUNY_MON_PROTO={respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:()=>{try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(_){return[]}},targetShop:()=>TARGET_SHOP_ID};
+  window.addEventListener('hashchange',()=>{syncVisibility();setTimeout(syncEventDetailBanner,0)});window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(spawn,450);setTimeout(()=>{if(!started){tries=0;spawn()}},2500);setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
+  renderPendingEntryButton();setTimeout(syncEventDetailBanner,300);
+  window.FUNY_MON_PROTO={respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
 })();

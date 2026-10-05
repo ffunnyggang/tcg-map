@@ -189,12 +189,12 @@ const styles=StyleSheet.create({
   page:{
     flex:1,
     paddingHorizontal:24,
-    paddingTop:6,
+    paddingTop:18,
     paddingBottom:14,
     justifyContent:'space-between',
   },
   pageCompact:{
-    paddingTop:0,
+    paddingTop:10,
     paddingBottom:8,
   },
   main:{
@@ -213,6 +213,7 @@ const styles=StyleSheet.create({
   heroImage:{
     width:'120%',
     height:'120%',
+    transform:[{translateY:12}],
   },
 
   intro:{
@@ -235,7 +236,7 @@ const styles=StyleSheet.create({
     lineHeight:24,
   },
   taglineBrand:{
-    color:C.purpleDark,
+    color:'#211D27',
   },
   featureList:{
     marginTop:14,

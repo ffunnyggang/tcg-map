@@ -120,12 +120,34 @@ const APP_SHELL_AFTER=String.raw`(function(){
 try{
   var post=function(data){try{if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify(data));}catch(e){}};
   var reportRoute=function(){post({type:'WEB_ROUTE',url:location.href});};
+  try{
+    var shellFix=document.getElementById('__funy_app_shell_after_fix__');
+    if(!shellFix){shellFix=document.createElement('style');shellFix.id='__funy_app_shell_after_fix__';document.head.appendChild(shellFix);}
+    shellFix.textContent=[
+      'html.app-shell body .portal-bottom-nav,html.app-shell body .shops-bottom-nav,html.app-shell body nav.portal-bottom-nav,html.app-shell body nav.shops-bottom-nav,html.app-shell body .mobile-bottom-nav,html.app-shell body .bottom-navigation,html.app-shell body #bottom-nav,html.app-shell body #bottomNav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
+      'html.app-shell body>.portal-shell>.portal-header,html.app-shell body .portal-header,html.app-shell body .app-header,html.app-shell body .site-header,html.app-shell body .main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}'
+    ].join('');
+  }catch(_){}
+  if(/\/shops\.html$/i.test(location.pathname)&&!window.__FUNY_MAP_BLUR_OUTSIDE){
+    window.__FUNY_MAP_BLUR_OUTSIDE=true;
+    var blurOutside=function(event){
+      try{
+        var target=event.target;
+        var editable=target&&target.closest&&target.closest('input,textarea,select,[contenteditable="true"]');
+        if(editable)return;
+        var active=document.activeElement;
+        if(active&&active!==document.body&&typeof active.blur==='function')active.blur();
+      }catch(_){}
+    };
+    document.addEventListener('touchstart',blurOutside,true);
+    document.addEventListener('pointerdown',blurOutside,true);
+  }
   if(window.ReactNativeWebView&&!window.__FUNY_AUTH_FETCH_BRIDGED&&typeof window.fetch==='function'){
     window.__FUNY_AUTH_FETCH_BRIDGED=true;
     var originalFetch=window.fetch.bind(window);
     window.fetch=function(input,init){try{var target=typeof input==='string'?input:(input&&input.url)||'';if(target.indexOf('/functions/v1/funy-mon-catch')>=0&&window.__FUNY_ACCESS_TOKEN){init=Object.assign({},init||{});var headers=new Headers(init.headers||{});headers.set('Authorization','Bearer '+window.__FUNY_ACCESS_TOKEN);init.headers=headers;}}catch(_){}return originalFetch(input,init);};
   }
-  var handleCMSLink=function(event){var node=event.target;var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;if(!link)return;var mode=link.getAttribute('data-funy-link-mode')||'inapp';var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';var href=link.href||link.getAttribute('href');if(!href)return;try{var u=new URL(href,location.href),m=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);if(/\/shops\.html$/i.test(u.pathname)&&m){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_SHOP_DETAIL',shopId:m[1].toUpperCase(),country:m[1].toUpperCase().startsWith('JP-')?'JP':'KR'});return false;}}catch(_){}if(mode==='external'){event.preventDefault();event.stopPropagation();post({type:'OPEN_EXTERNAL',url:href});return false;}if(mode==='inapp'&&presentation==='bottom_sheet'){event.preventDefault();event.stopPropagation();post({type:'OPEN_INAPP_SHEET',url:href});return false;}if(mode==='inapp'&&presentation==='page'){event.preventDefault();event.stopPropagation();post({type:'OPEN_INAPP_PAGE',url:href,title:(link.getAttribute('aria-label')||link.textContent||'').replace(/\s+/g,' ').trim()});return false;}if(mode==='inapp'&&link.getAttribute('target')==='_blank'){event.preventDefault();event.stopPropagation();location.href=href;return false;}};
+  var handleCMSLink=function(event){var node=event.target;var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;if(!link)return;var mode=link.getAttribute('data-funy-link-mode')||'inapp';var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';var href=link.href||link.getAttribute('href');if(!href)return;try{var u=new URL(href,location.href),m=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);if(/\/shops\.html$/i.test(u.pathname)&&m){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_SHOP_DETAIL',shopId:m[1].toUpperCase(),country:m[1].toUpperCase().startsWith('JP-')?'JP':'KR'});return false;}}catch(_){}if(mode==='external'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_EXTERNAL',url:href});return false;}if(mode==='inapp'&&presentation==='bottom_sheet'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_SHEET',url:href});return false;}if(mode==='inapp'&&presentation==='page'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_PAGE',url:href,title:(link.getAttribute('aria-label')||link.textContent||'').replace(/\s+/g,' ').trim()});return false;}if(mode==='inapp'&&link.getAttribute('target')==='_blank'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();location.href=href;return false;}};
   document.addEventListener('click',handleCMSLink,true);
 
   /* Shop clicks are captured at document-start and handled natively. */

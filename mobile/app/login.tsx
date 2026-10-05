@@ -98,7 +98,7 @@ export default function Login(){
 
         <View style={[styles.intro,compact&&styles.introCompact]}>
           <Text allowFontScaling maxFontSizeMultiplier={1.05} style={[styles.tagline,compact&&styles.taglineCompact]}>
-            내 취향의 카드샵을 찾아보세요
+            <Text style={styles.taglineBrand}>FUNY PIN에서</Text>{'\n'}내 취향의 카드샵을 찾아보세요
           </Text>
           <View style={[styles.featureList,compact&&styles.featureListCompact]}>
             <Text style={[styles.feature,compact&&styles.featureCompact]}>TCG MAP</Text>
@@ -211,8 +211,8 @@ const styles=StyleSheet.create({
     height:155,
   },
   heroImage:{
-    width:'100%',
-    height:'100%',
+    width:'120%',
+    height:'120%',
   },
 
   intro:{
@@ -233,6 +233,9 @@ const styles=StyleSheet.create({
   taglineCompact:{
     fontSize:19,
     lineHeight:24,
+  },
+  taglineBrand:{
+    color:C.purpleDark,
   },
   featureList:{
     marginTop:14,

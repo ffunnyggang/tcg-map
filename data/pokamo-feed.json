@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-05T12:38:18.941190+00:00",
+  "updatedAt": "2026-10-05T13:36:25.661924+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "FUNY PIN 안드로이드 앱 비공개 테스트 참여자 모집합니다 🙌",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-10-05T13:17:57.047663Z",
+      "excerpt": "현재 FUNY PIN 안드로이드 앱의 Google Play 정식 출시를 준비하고 있습니다. 출시 전 Google Play 정책에 따라 일정 기간 비공개 테스트를 진행해야 해서 테스트에 참여해주실 분들을 모집합니다. 테스트 참여 방법은 어렵지 않습니다. - Google 계정 이메일로 테스",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/FUNY-PIN-안드로이드-앱-비공개-테스트-참여자-모집합니다-🙌-jK2OBxod",
+      "views": 3,
+      "likes": 3,
+      "comments": 0,
+      "popularityScore": 9.03
+    },
     {
       "category": "자유 게시판",
       "title": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
@@ -11,10 +24,10 @@
       "excerpt": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-고리파덕-좋아해서-첫-입문했습니더-jK2O6aqd",
-      "views": 4,
-      "likes": 3,
+      "views": 6,
+      "likes": 5,
       "comments": 0,
-      "popularityScore": 9.04
+      "popularityScore": 15.06
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "이 카드는 좀 이뿐듯",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/20e65ce8-7f9c-43eb-b6a3-2f6962735541.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘은-SAR-한개-떴네요-j8rmBxRP",
-      "views": 31,
+      "views": 35,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.31
+      "popularityScore": 7.35
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "10월에 오사카로 여행 가는데 거기서 카드 구입 할려고 하는데 카드 매장을 찾기가 어렵네요.. 유명한 곳은 검색하면 나오지만 거기는 비싼 느낌이라 작은 카드샵도 찾아서 가보고 싶은데 일본 오사카 카드샵 찾는법 없을까요??",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e166fed7-5999-4ceb-9a28-f286f7deefd1.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/도움이-필요합니다-PV2yxX0P",
-      "views": 7,
-      "likes": 0,
+      "views": 19,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 0.07
+      "popularityScore": 6.19
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 9,
+      "views": 10,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.09
+      "popularityScore": 3.1
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "좋은건 없네요ㅠㅠ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/fce532a9-e503-4335-9581-ece15a96e903.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘-새로-영입된-아이들-dz9K9V7P",
-      "views": 38,
+      "views": 40,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.38
+      "popularityScore": 5.4
     },
     {
       "category": "자유 게시판",
@@ -102,10 +115,10 @@
       "excerpt": "실패 ㅋㅋㅋㅋㅋㅋ 그래도 싱글카드 많이 구경하고 재밌었어요👍🏻",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791105838881a749669174036339bdaf5e316166a663ad0cb66a0fedca54204ea5f5a1a179e10.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/부평-아드레날린코리아-올드백-오리파-PmVXZLld",
-      "views": 32,
+      "views": 33,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.32
+      "popularityScore": 3.33
     },
     {
       "category": "자유 게시판",
@@ -154,10 +167,10 @@
       "excerpt": "꽝카드로 자석 만들어요^^",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261004/3a383028-9924-4bd9-b719-6041b0455b23.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/꽝카드로-자석-만들어요-PWMJBEZj",
-      "views": 5,
+      "views": 6,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.05
+      "popularityScore": 3.06
     },
     {
       "category": "카드거래",
@@ -219,10 +232,10 @@
       "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
-      "views": 53,
+      "views": 54,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 12.53
+      "popularityScore": 12.54
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -297,10 +310,10 @@
       "excerpt": "왕십리 모아카드샵에 잠시 들렀다가 결국 올드백 싱글카드 도전!🔥 과연 어떤 카드를 뽑았을지… 결과는 영상에서 확인해주세요! 👀 남은 연휴도 즐겁게 보내시고, 깽퐌커플 그리고 FUNY PIN도 많•관•부 💜 📍 모아카드샵 서울 성동구 마조로5길 3-3, 2층 📣 FUNY PIN에서 ‘모아",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17905205396633969123acbf8d7c4cc10597e838227e8da5201d9755195482723e154053e11a50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-싱글카드-오리파-도전🔥-PmVVLJxd",
-      "views": 31,
+      "views": 32,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.31
+      "popularityScore": 6.32
     },
     {
       "category": "정보 공유",
@@ -362,10 +375,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 148,
+      "views": 150,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 14.48
+      "popularityScore": 14.5
     },
     {
       "category": "카드거래",
@@ -570,10 +583,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 253,
+      "views": 254,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.53
+      "popularityScore": 14.54
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -691,19 +704,6 @@
       "likes": 2,
       "comments": 1,
       "popularityScore": 9.74
-    },
-    {
-      "category": "자유 게시판",
-      "title": "10~15명 정도 규모로 포켓몬카드 트레이딩 모임을 진행한다면?",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-08-24T12:57:59.430821Z",
-      "excerpt": "서울 용산 근처 어디쯤에서 10~15명 정도 규모로 포켓몬카드 트레이딩 오프라인 모임을 진행해보면 어떨까?하는 생각에 카페 멤버님들의 의견을 확인하고자 올려봅니다😁 그냥 편하고 자유롭게 수집 카드 자랑하고 트레이딩하는 자리로 참여 의사가 있으신 분들이 10~15명 정도 된다면 진행해볼게",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1015명-정도-규모로-포켓몬카드-트레이딩-모임을-진행한다면-AODMngDP",
-      "views": 156,
-      "likes": 5,
-      "comments": 7,
-      "popularityScore": 30.56
     },
     {
       "category": "카드깡/카드샵 후기",

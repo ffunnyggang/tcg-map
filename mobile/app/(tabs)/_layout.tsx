@@ -44,25 +44,23 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const {language}=useAppLanguage();
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
   useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
-  const bottom=Math.max(insets.bottom,UI.navBottomGap);
+  const isAndroid=Platform.OS==='android';
+  const bottom=isAndroid?0:Math.max(insets.bottom,UI.navBottomGap);
   const currentRoute=state.routes[state.index];
   const currentOptions=descriptors[currentRoute.key]?.options;
   const currentStyle=currentOptions?.tabBarStyle;
   const isHidden=!!currentStyle&&!Array.isArray(currentStyle)&&typeof currentStyle==='object'&&'display' in currentStyle&&currentStyle.display==='none';
   if(isHidden||overlayOpen)return null;
 
-  return <View pointerEvents="box-none" style={[styles.outer,{bottom}]}>
-    <View style={styles.glassBar}>
-      <BlurView pointerEvents="none" tint={Platform.OS==='ios'?'systemUltraThinMaterialLight':'light'} intensity={Platform.OS==='ios'?64:48} style={StyleSheet.absoluteFill}/>
-      <View pointerEvents="none" style={styles.glassRefraction}/>
-      <View pointerEvents="none" style={styles.glassTint}/>
-      <View pointerEvents="none" style={styles.glassEdge}/>
+  return <View pointerEvents="box-none" style={[styles.outer,isAndroid&&styles.outerAndroid,{bottom,height:isAndroid?NAV_HEIGHT+insets.bottom:NAV_HEIGHT,paddingBottom:isAndroid?insets.bottom:0}]}>
+    <View style={[styles.glassBar,isAndroid&&styles.androidBar]}>
+      {!isAndroid?<><BlurView pointerEvents="none" tint="systemUltraThinMaterialLight" intensity={64} style={StyleSheet.absoluteFill}/><View pointerEvents="none" style={styles.glassRefraction}/><View pointerEvents="none" style={styles.glassTint}/><View pointerEvents="none" style={styles.glassEdge}/></>:null}
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
         const accessibilityLabel=language==='en'?label:({home:'홈',map:'TCG 지도',pick:'픽',talk:'톡'} as Record<IconKind,string>)[kind];
         const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(kind==='map'){navigation.navigate(route.name,{country:'KR',shop:'',__tabRefresh:String(Date.now())});return;}if(focused){navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}navigation.navigate(route.name,route.params);};
-        return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||accessibilityLabel} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,focused&&styles.itemActive,pressed&&styles.itemPressed]}>
+        return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||accessibilityLabel} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,!isAndroid&&focused&&styles.itemActive,isAndroid&&styles.androidItem,pressed&&styles.itemPressed]}>
           <NavIcon kind={kind} focused={focused}/>
           <Text allowFontScaling maxFontSizeMultiplier={1.1} style={[styles.label,focused&&styles.labelActive]}>{label}</Text>
         </Pressable>;
@@ -75,11 +73,14 @@ export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},
+  outerAndroid:{left:0,right:0,backgroundColor:'#fff',borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:'#DDD9E1',shadowColor:'#000',shadowOpacity:.08,shadowRadius:8,shadowOffset:{width:0,height:-2},elevation:24},
   glassBar:{flex:1,position:'relative',flexDirection:'row',alignItems:'center',paddingHorizontal:4,paddingVertical:4,borderRadius:29,overflow:'hidden',borderWidth:1,borderColor:'rgba(255,255,255,.78)',backgroundColor:'rgba(255,255,255,.018)',shadowColor:'#211A2E',shadowOpacity:.18,shadowRadius:20,shadowOffset:{width:0,height:8},elevation:10},
+  androidBar:{borderRadius:0,borderWidth:0,backgroundColor:'#fff',shadowOpacity:0,elevation:0,paddingHorizontal:8,paddingVertical:2,overflow:'visible'},
   glassRefraction:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(245,242,250,.075)',transform:[{scaleY:1.035}]},
   glassTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.012)'},
   glassEdge:{...StyleSheet.absoluteFillObject,borderRadius:29,borderWidth:.75,borderColor:'rgba(93,77,126,.16)',backgroundColor:'transparent'},
   item:{flex:1,height:50,borderRadius:25,alignItems:'center',justifyContent:'center',gap:1,overflow:'hidden'},
+  androidItem:{height:54,borderRadius:0,overflow:'visible'},
   itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.7,borderColor:'rgba(126,92,226,.22)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:8,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.72},
   icon:{width:25,height:25},

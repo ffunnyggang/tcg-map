@@ -36,7 +36,7 @@ async function blockOwner(postId,modal){
   if(!uid()||!token()){requestLogin('작성자 차단은 로그인 후 이용할 수 있어요.');return}
   let owner=postOwners.get(postId);
   if(!owner){try{const r=await fetch(SB+'/rest/v1/community_posts?select=user_id&id=eq.'+encodeURIComponent(postId)+'&limit=1',{headers:{apikey:KEY}});const rows=await r.json();owner=rows?.[0]?.user_id;postOwners.set(postId,String(owner||''))}catch(_){}}
-  if(!owner||owner===uid())return;
+  if(!owner){alert('작성자 정보를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.');return}if(owner===uid()){alert('내 게시물은 차단할 수 없어요.');return};
   if(blocked.has(owner)){alert('이미 차단한 사용자예요.');return}
   if(!confirm('이 작성자를 차단할까요?\n차단한 사용자의 FUNY PIN 게시물은 보이지 않아요.'))return;
   try{
@@ -51,7 +51,7 @@ function decorateDetail(){
   const modal=document.getElementById('funyTalkDetail');if(!modal||!lastPostId||modal.querySelector('.talk-block-user'))return;
   const owner=postOwners.get(lastPostId);if(!owner||owner===uid())return;
   const sheet=modal.querySelector('.talk-community-sheet');if(!sheet)return;
-  const btn=document.createElement('button');btn.type='button';btn.className='talk-block-user';btn.textContent=blocked.has(owner)?'차단한 사용자':'작성자 차단';btn.disabled=blocked.has(owner);btn.onclick=()=>blockOwner(lastPostId,modal);sheet.appendChild(btn);
+  const btn=document.createElement('button');btn.type='button';btn.className='talk-block-user';btn.textContent=blocked.has(owner)?'차단한 사용자':'차단하기';btn.disabled=blocked.has(owner);btn.onclick=()=>blockOwner(lastPostId,modal);sheet.appendChild(btn);
 }
 document.addEventListener('click',e=>{const card=e.target.closest?.('[data-funy-post]');if(card){lastPostId=String(card.dataset.funyPost||'');setTimeout(decorateDetail,0)}},true);
 const observer=new MutationObserver(()=>{applyHidden();decorateDetail()});observer.observe(document.body,{childList:true,subtree:true});

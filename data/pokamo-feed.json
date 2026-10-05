@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-05T08:34:45.099875+00:00",
+  "updatedAt": "2026-10-05T09:34:54.696357+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "오늘은 SAR 한개 떴네요",
+      "author": "그레이스",
+      "publishedAt": "2026-10-05T09:19:47.096424Z",
+      "excerpt": "이 카드는 좀 이뿐듯",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/20e65ce8-7f9c-43eb-b6a3-2f6962735541.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘은-SAR-한개-떴네요-j8rmBxRP",
+      "views": 5,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.05
+    },
+    {
+      "category": "자유 게시판",
+      "title": "도움이 필요합니다...",
+      "author": "김철왕",
+      "publishedAt": "2026-10-05T08:51:17.643695Z",
+      "excerpt": "10월에 오사카로 여행 가는데 거기서 카드 구입 할려고 하는데 카드 매장을 찾기가 어렵네요.. 유명한 곳은 검색하면 나오지만 거기는 비싼 느낌이라 작은 카드샵도 찾아서 가보고 싶은데 일본 오사카 카드샵 찾는법 없을까요??",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e166fed7-5999-4ceb-9a28-f286f7deefd1.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/도움이-필요합니다-PV2yxX0P",
+      "views": 5,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.05
+    },
     {
       "category": "자유 게시판",
       "title": "마리오피카츄 하프",
@@ -37,10 +63,10 @@
       "excerpt": "좋은건 없네요ㅠㅠ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/fce532a9-e503-4335-9581-ece15a96e903.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘-새로-영입된-아이들-dz9K9V7P",
-      "views": 11,
+      "views": 31,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.11
+      "popularityScore": 5.31
     },
     {
       "category": "자유 게시판",
@@ -50,10 +76,10 @@
       "excerpt": "너무 비싸다...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ebd1cc08-8f57-4aa0-826e-ac73d148cc2b.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아예쁘다-PnNYNbDP",
-      "views": 36,
+      "views": 41,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.36
+      "popularityScore": 6.41
     },
     {
       "category": "자유 게시판",
@@ -63,10 +89,10 @@
       "excerpt": "실패 ㅋㅋㅋㅋㅋㅋ 그래도 싱글카드 많이 구경하고 재밌었어요👍🏻",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791105838881a749669174036339bdaf5e316166a663ad0cb66a0fedca54204ea5f5a1a179e10.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/부평-아드레날린코리아-올드백-오리파-PmVXZLld",
-      "views": 30,
+      "views": 31,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.3
+      "popularityScore": 3.31
     },
     {
       "category": "자유 게시판",
@@ -134,19 +160,6 @@
       "popularityScore": 0.05
     },
     {
-      "category": "자유 게시판",
-      "title": "이브이즈 히어로즈",
-      "author": "Won_lee",
-      "publishedAt": "2026-10-03T19:42:45.422349Z",
-      "excerpt": "이브이즈 히어로즈",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이브이즈-히어로즈-d9X1w4YP",
-      "views": 3,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
-    },
-    {
       "category": "카드거래",
       "title": "🃏포켓몬카드 소규모 트레이딩 모임 참여자 모집!",
       "author": "퐌퐌퐌",
@@ -158,19 +171,6 @@
       "likes": 0,
       "comments": 0,
       "popularityScore": 0.0
-    },
-    {
-      "category": "자유 게시판",
-      "title": "오늘 처음으로 30주년 손에 얻었어요",
-      "author": "얀냥이",
-      "publishedAt": "2026-10-03T14:13:55.543341Z",
-      "excerpt": ">_< 정가 구매 ㅠㅠ 웨이팅 3시간",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791036797379e3119a8b760ca8f63ad5cd224af91e5760af618875f114373393316f07b95a8d0.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘-처음으로-30주년-손에-얻었어요-AraGmQxj",
-      "views": 30,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.3
     },
     {
       "category": "카드거래",
@@ -375,10 +375,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 162,
+      "views": 163,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.62
+      "popularityScore": 55.63
     },
     {
       "category": "카드 자랑",

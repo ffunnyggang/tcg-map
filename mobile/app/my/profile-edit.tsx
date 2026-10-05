@@ -61,8 +61,10 @@ export default function ProfileEdit(){
   </script></body></html>`;
 
   const pickAvatar=async()=>{
-    const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if(!permission.granted){Alert.alert('사진 권한 필요','프로필 이미지를 변경하려면 사진 접근 권한이 필요해요.');return;}
+    if(Platform.OS==='ios'){
+      const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if(!permission.granted){Alert.alert('사진 권한 필요','프로필 이미지를 변경하려면 사진 접근 권한이 필요해요.');return;}
+    }
     const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:false,quality:.85,base64:true});
     if(result.canceled||!result.assets?.[0])return;
     const asset=result.assets[0];

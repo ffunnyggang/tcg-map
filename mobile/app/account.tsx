@@ -7,6 +7,7 @@ import { deleteAccount,getProfile,signOut } from '../lib/auth';
 import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 import { C,T,UI } from '../lib/theme';
+import { supabase } from '../lib/supabase';
 import { visualAssets } from '../lib/visualAssets';
 import { useAppLanguage } from '../lib/i18n';
 
@@ -35,6 +36,10 @@ export default function Account(){
   const refresh=useCallback(async()=>{try{const x=await getProfile();setUser(x.user);setProfile(x.profile);}finally{setLoading(false);}},[]);
   useFocusEffect(useCallback(()=>{refresh();},[refresh]));
   useEffect(()=>{if(params.refresh)refresh();},[params.refresh,refresh]);
+  useEffect(()=>{
+    const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>refresh(),0);});
+    return()=>subscription.unsubscribe();
+  },[refresh]);
   const social=async(provider:'google'|'kakao')=>{setBusy(provider);try{const ok=await signInSocial(provider);if(ok)await refresh();}catch(e:any){Alert.alert('로그인 실패',String(e?.message||e));}finally{setBusy(null);}};
   const apple=async()=>{setBusy('apple');try{await signInWithApple();await refresh();}catch(e:any){if(e?.code!=='ERR_REQUEST_CANCELED')Alert.alert('Apple 로그인 실패',String(e?.message||e));}finally{setBusy(null);}};
   const runLogout=async()=>{setBusy('out');try{await signOut();await refresh();}catch(e:any){Alert.alert('로그아웃 실패',String(e?.message||e));}finally{setBusy(null);}};
@@ -50,7 +55,7 @@ export default function Account(){
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
 
   return <SafeAreaView style={styles.root}>
-    <View style={styles.header}><Pressable onPress={()=>router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
+    <View style={styles.header}><Pressable onPress={()=>Platform.OS==='android'?router.replace('/(tabs)'):router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
     <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="always" contentContainerStyle={[styles.content,{paddingBottom:Math.max(180,insets.bottom+150)}]}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}

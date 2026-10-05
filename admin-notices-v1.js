@@ -12,23 +12,9 @@ const localValue=v=>{if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTi
 async function getNotices(){
  return api('/rest/v1/notices?select=id,title,body,status,is_pinned,published_at,created_at,updated_at&order=is_pinned.desc,published_at.desc.nullslast,created_at.desc');
 }
-async function getHomeNoticeConfig(){
- const [settings,items]=await Promise.all([
-  api('/rest/v1/home_notice_settings?select=id,interval_seconds&limit=1'),
-  api('/rest/v1/home_notice_items?select=slot,notice_id&order=slot.asc')
- ]);
- return {interval:Number(settings?.[0]?.interval_seconds||3.5),items:Array.isArray(items)?items:[]};
-}
-function homeNoticePanel(rows,config){
- const published=rows.filter(x=>x.status==='published');
- const bySlot=Object.fromEntries((config.items||[]).map(x=>[Number(x.slot),x.notice_id]));
- const options=slot=>'<option value="">선택 안 함</option>'+published.map(x=>'<option value="'+h(x.id)+'"'+(bySlot[slot]===x.id?' selected':'')+'>'+h(x.title)+'</option>').join('');
- return '<section class="card" style="margin-bottom:16px"><div class="shop" style="margin-top:0">HOME 공지 롤링 설정</div><div class="meta">HOME 히어로 하단 공지 타이틀 영역 · 최대 5개</div>'+
-  '<div class="form-grid" style="margin-top:14px">'+
-   '<div class="field wide"><label>전환 간격 (초)</label><input id="homeNoticeInterval" class="input" type="number" min="1" max="30" step="0.5" value="'+h(config.interval)+'"><div class="editor-msg">1~30초 · 현재 기본값 3.5초</div></div>'+
-   [1,2,3,4,5].map(slot=>'<div class="field"><label>노출 '+slot+'순위</label><select class="select" data-home-notice-slot="'+slot+'">'+options(slot)+'</select></div>').join('')+
-   '<div class="field wide"><button id="homeNoticeSave" class="primary" type="button" style="max-width:220px">HOME 공지 설정 저장</button><p id="homeNoticeMsg" class="editor-msg"></p></div>'+
-  '</div></section>';
+async function getHomeNoticeItems(){
+ const items=await api('/rest/v1/home_notice_items?select=slot,notice_id&order=slot.asc');
+ return Array.isArray(items)?items:[];
 }
 
 async function renderNotices(){
@@ -36,36 +22,65 @@ async function renderNotices(){
  if(!f)return;
  f.innerHTML='<div class="empty">공지사항을 불러오는 중...</div>';
  try{
-  const [rows,homeConfig]=await Promise.all([getNotices(),getHomeNoticeConfig()]);
+  const [rows,homeItems]=await Promise.all([getNotices(),getHomeNoticeItems()]);
+  const homeIds=new Set(homeItems.map(x=>x.notice_id));
   const published=rows.filter(x=>x.status==='published').length;
   const drafts=rows.filter(x=>x.status==='draft').length;
   const pinned=rows.filter(x=>x.is_pinned).length;
   f.innerHTML=
-   '<div class="shop-admin-tools" style="grid-template-columns:1fr auto"><div><b style="display:block;font-size:13px">공지사항 관리</b><span style="display:block;margin-top:4px;color:#9a929e;font-size:10px">MY &gt; 공지사항 WebView와 HOME 공지 롤링을 함께 관리합니다.</span></div><button id="noticeNew" class="shop-new" type="button">+ 공지사항 등록</button></div>'+
-   homeNoticePanel(rows,homeConfig)+
-   '<div class="shop-stats"><div class="shop-stat"><b>'+rows.length+'</b><span>전체 공지</span></div><div class="shop-stat"><b>'+published+'</b><span>공개</span></div><div class="shop-stat"><b>'+drafts+'</b><span>임시저장</span></div><div class="shop-stat"><b>'+pinned+'</b><span>상단 고정</span></div></div>'+
-   '<div id="noticeAdminList">'+(rows.length?rows.map(noticeCard).join(''):'<div class="empty">등록된 공지사항이 없습니다.</div>')+'</div>';
+   '<div class="shop-admin-tools" style="grid-template-columns:1fr auto"><div><b style="display:block;font-size:13px">공지사항 관리</b><span style="display:block;margin-top:4px;color:#9a929e;font-size:10px">MY &gt; 공지사항과 HOME 히어로 하단 공지 노출을 함께 관리합니다. · HOME 최대 5개 / 3.5초 고정</span></div><button id="noticeNew" class="shop-new" type="button">+ 공지사항 등록</button></div>'+
+   '<div class="shop-stats"><div class="shop-stat"><b>'+rows.length+'</b><span>전체 공지</span></div><div class="shop-stat"><b>'+published+'</b><span>공개</span></div><div class="shop-stat"><b>'+drafts+'</b><span>임시저장</span></div><div class="shop-stat"><b>'+homeIds.size+'</b><span>HOME 노출</span></div></div>'+
+   '<div id="noticeAdminList">'+(rows.length?rows.map(x=>noticeCard(x,homeIds.has(x.id))).join(''):'<div class="empty">등록된 공지사항이 없습니다.</div>')+'</div>';
   document.getElementById('noticeNew').onclick=()=>openNoticeEditor(null);
-  document.getElementById('homeNoticeSave').onclick=()=>saveHomeNoticeConfig();
   f.querySelectorAll('[data-notice-edit]').forEach(b=>b.onclick=()=>openNoticeEditor(rows.find(x=>x.id===b.dataset.noticeEdit)));
   f.querySelectorAll('[data-notice-toggle]').forEach(b=>b.onclick=()=>toggleNotice(rows.find(x=>x.id===b.dataset.noticeToggle)));
+  f.querySelectorAll('[data-notice-home]').forEach(b=>b.onclick=()=>toggleHomeNotice(rows.find(x=>x.id===b.dataset.noticeHome),b.dataset.homeOn==='true'));
   f.querySelectorAll('[data-notice-delete]').forEach(b=>b.onclick=()=>deleteNotice(rows.find(x=>x.id===b.dataset.noticeDelete)));
  }catch(e){
   f.innerHTML='<div class="empty error">공지사항 조회 실패: '+h(e.message||e)+'</div>';
  }
 }
 
-function noticeCard(x){
+function noticeCard(x,homeOn){
  const published=x.status==='published';
  const body=String(x.body||'').replace(/\s+/g,' ').trim();
  return '<article class="card">'+
   '<div class="top">'+(x.is_pinned?'<span class="request-type">상단 고정</span>':'')+
+  (homeOn?'<span class="flag-count">HOME 노출</span>':'')+
   '<span class="status '+(published?'done':'')+'">'+h(statusLabel(x.status))+'</span>'+
   '<span class="time">'+h(x.published_at?'발행 '+dt(x.published_at):'발행일 미설정')+'</span></div>'+
   '<div class="shop">'+h(x.title)+'</div>'+
   '<div class="body">'+h(body.slice(0,220))+(body.length>220?'…':'')+'</div>'+
-  '<div class="actions"><button type="button" data-notice-edit="'+h(x.id)+'">수정</button><button type="button" data-notice-toggle="'+h(x.id)+'">'+(published?'숨김':'바로 공개')+'</button><button class="hide-post" type="button" data-notice-delete="'+h(x.id)+'">삭제</button></div>'+
+  '<div class="actions notice-actions"><button type="button" data-notice-edit="'+h(x.id)+'">수정</button><button type="button" data-notice-toggle="'+h(x.id)+'">'+(published?'숨김':'바로 공개')+'</button><button class="notice-home-toggle '+(homeOn?'on':'')+'" type="button" data-notice-home="'+h(x.id)+'" data-home-on="'+homeOn+'">HOME 노출'+(homeOn?' ON':'')+'</button><button class="hide-post" type="button" data-notice-delete="'+h(x.id)+'">삭제</button></div>'+
  '</article>';
+}
+
+async function toggleHomeNotice(item,isOn){
+ if(!item)return;
+ try{
+  if(isOn){
+   await api('/rest/v1/home_notice_items?notice_id=eq.'+encodeURIComponent(item.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});
+   await renderNotices();
+   return;
+  }
+  if(item.status!=='published'){
+   alert('공개 상태의 공지사항만 HOME에 노출할 수 있습니다.');
+   return;
+  }
+  const items=await getHomeNoticeItems();
+  if(items.some(x=>x.notice_id===item.id)){await renderNotices();return}
+  if(items.length>=5){
+   alert('HOME 공지는 최대 5개까지 노출할 수 있습니다.\n\n기존 HOME 노출 공지 중 하나를 해제한 뒤 다시 선택해주세요.');
+   return;
+  }
+  const used=new Set(items.map(x=>Number(x.slot)));
+  let slot=1;while(slot<=5&&used.has(slot))slot++;
+  if(slot>5)throw new Error('사용 가능한 HOME 공지 슬롯이 없습니다.');
+  await api('/rest/v1/home_notice_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({slot,notice_id:item.id,created_at:new Date().toISOString(),updated_at:new Date().toISOString()})});
+  await renderNotices();
+ }catch(e){
+  alert('HOME 노출 설정 실패: '+(e.message||e));
+ }
 }
 
 function openNoticeEditor(item){
@@ -103,7 +118,10 @@ function openNoticeEditor(item){
   const btn=document.getElementById('noticeSave');btn.disabled=true;btn.textContent='저장 중...';
   try{
    if(isNew)await api('/rest/v1/notices',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({...payload,created_at:new Date().toISOString()})});
-   else await api('/rest/v1/notices?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+   else{
+    await api('/rest/v1/notices?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+    if(nextStatus!=='published')await api('/rest/v1/home_notice_items?notice_id=eq.'+encodeURIComponent(item.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});
+   }
    close();await renderNotices();
   }catch(e){setEditorMessage('저장 실패: '+(e.message||e),true);btn.disabled=false;btn.textContent='저장'}
  };
@@ -115,7 +133,11 @@ async function toggleNotice(item){
  const toPublish=item.status!=='published';
  const payload={status:toPublish?'published':'hidden',updated_at:new Date().toISOString()};
  if(toPublish&&!item.published_at)payload.published_at=new Date().toISOString();
- try{await api('/rest/v1/notices?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});await renderNotices()}
+ try{
+  if(!toPublish)await api('/rest/v1/home_notice_items?notice_id=eq.'+encodeURIComponent(item.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});
+  await api('/rest/v1/notices?id=eq.'+encodeURIComponent(item.id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+  await renderNotices();
+ }
  catch(e){alert('상태 변경 실패: '+(e.message||e))}
 }
 
@@ -123,26 +145,6 @@ async function deleteNotice(item,onDone){
  if(!item||!confirm('“'+item.title+'” 공지사항을 삭제할까요?\n\n삭제 후 복구할 수 없습니다.'))return;
  try{await api('/rest/v1/notices?id=eq.'+encodeURIComponent(item.id),{method:'DELETE',headers:{Prefer:'return=minimal'}});if(onDone)onDone();await renderNotices()}
  catch(e){alert('공지사항 삭제 실패: '+(e.message||e))}
-}
-
-async function saveHomeNoticeConfig(){
- const interval=Math.max(1,Math.min(30,Number(document.getElementById('homeNoticeInterval')?.value||3.5)));
- const selects=[...document.querySelectorAll('[data-home-notice-slot]')];
- const picked=selects.map(x=>({slot:Number(x.dataset.homeNoticeSlot),notice_id:String(x.value||'')})).filter(x=>x.notice_id);
- const ids=picked.map(x=>x.notice_id);
- const msg=document.getElementById('homeNoticeMsg');
- if(new Set(ids).size!==ids.length){if(msg){msg.className='editor-msg error';msg.textContent='같은 공지사항을 중복 선택할 수 없습니다.'}return}
- const btn=document.getElementById('homeNoticeSave');if(btn){btn.disabled=true;btn.textContent='저장 중...'}
- try{
-  await api('/rest/v1/home_notice_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({interval_seconds:interval,updated_at:new Date().toISOString()})});
-  await api('/rest/v1/home_notice_items?slot=gte.1',{method:'DELETE',headers:{Prefer:'return=minimal'}});
-  if(picked.length)await api('/rest/v1/home_notice_items',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(picked.map(x=>({...x,created_at:new Date().toISOString(),updated_at:new Date().toISOString()})))});
-  if(msg){msg.className='editor-msg';msg.textContent='HOME 공지 롤링 설정이 저장되었습니다.'}
-  await renderNotices();
- }catch(e){
-  if(msg){msg.className='editor-msg error';msg.textContent='저장 실패: '+(e.message||e)}
-  if(btn){btn.disabled=false;btn.textContent='HOME 공지 설정 저장'}
- }
 }
 
 window.loadAdminNotices=renderNotices;

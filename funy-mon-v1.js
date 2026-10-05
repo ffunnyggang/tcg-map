@@ -33,7 +33,7 @@
   const hiddenMarkers=new Set();
   const hiddenKeys=new Set();
   const markerKeys=new Set();
-  let started=false,tries=0,busy=false,resultNeedsSave=false;
+  let started=false,tries=0,busy=false,resultNeedsSave=false,currentResultData=null;
 
   function todayKst(){
     const d=new Date(Date.now()+9*60*60*1000);
@@ -145,12 +145,12 @@
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
     el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
-    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획한 퍼니몬을 다시 볼 수 없어요.'))return;resultNeedsSave=false;closeModal()}));
+    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{},entryPending=(r.reward_type==='entry'&&r.entry_apply_enabled&&r.claim_code&&pendingEntries().some(x=>x.claim_code===r.claim_code));if(entryPending){if(!confirm('이벤트 응모가 아직 완료되지 않았어요.\n닫아도 지도에서 “미완료 응모”를 눌러 다시 이어서 참여할 수 있어요.'))return}else if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
   }
   function closeModal(){
     const el=document.getElementById('funyMonModal');
     if(!el)return;
-    el.hidden=true;document.body.style.overflow='';document.body.classList.remove('funy-mon-open');
+    el.hidden=true;document.body.style.overflow='';document.body.classList.remove('funy-mon-open');currentResultData=null;
   }
   function setResultState(state){
     const sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
@@ -221,12 +221,12 @@
       if(!saved.ok)throw new Error('응모 저장 실패');
       if(!result?.ok){
         const code=result?.error||'';
-        if(code==='daily_entry_limit'){if(msg)msg.textContent='오늘은 이미 '+Number(result.limit||1)+'회 응모했어요. 내일 다시 참여해주세요.';return}
-        if(code==='campaign_entry_limit'){if(msg)msg.textContent='이 이벤트는 최대 '+Number(result.limit||1)+'회까지 응모할 수 있어요.';return}
-        if(code==='already_submitted'){if(msg)msg.textContent='이미 사용한 응모권입니다.';return}
+        if(code==='daily_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='오늘은 이미 '+Number(result.limit||1)+'회 응모했어요. 내일 다시 참여해주세요.';return}
+        if(code==='campaign_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='이 이벤트는 최대 '+Number(result.limit||1)+'회까지 응모할 수 있어요.';return}
+        if(code==='already_submitted'){removePendingEntry(claim);if(msg)msg.textContent='이미 사용한 응모권입니다.';return}
         if(code==='campaign_not_started'){if(msg)msg.textContent='아직 이벤트 응모 기간이 시작되지 않았어요.';return}
-        if(code==='campaign_ended'||code==='campaign_unavailable'){if(msg)msg.textContent='이벤트 응모 기간이 종료되었거나 현재 참여할 수 없어요.';return}
-        if(code==='invalid_claim_code'||code==='missing_claim_code'){if(msg)msg.textContent='응모권 정보를 확인하지 못했어요. 퍼니몬을 다시 포획해주세요.';return}
+        if(code==='campaign_ended'||code==='campaign_unavailable'){removePendingEntry(claim);if(msg)msg.textContent='이벤트 응모 기간이 종료되었거나 현재 참여할 수 없어요.';return}
+        if(code==='invalid_claim_code'||code==='missing_claim_code'){removePendingEntry(claim);if(msg)msg.textContent='응모권 정보를 확인하지 못했어요. 퍼니몬을 다시 포획해주세요.';return}
         if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';return
       }
       input.disabled=true;btn.textContent='응모 완료';
@@ -274,7 +274,7 @@
     return (shapes[def.id]||shapes.ponanyang).map(x=>'<i>'+x+'</i>').join('');
   }
   function openResult(data,def){
-    resultNeedsSave=true;ensureModal();
+    resultNeedsSave=true;currentResultData=data;ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
     [...sheet.classList].filter(x=>x.startsWith('mon-')).forEach(x=>sheet.classList.remove(x));sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
     icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">'+(data._isNew?'<span class="funy-mon-new-badge">NEW!</span>':'');title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span><span>'+def.tier+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
@@ -334,8 +334,8 @@
   async function spawn(){
     if(started)return;const key=pageAnonKey();if(!key){if(tries++<80)setTimeout(spawn,250);return}if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
     let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,title,shop_id,target_type,selected_monsters,spawn_count,ends_at,daily_catch_limit,distance_limit_enabled,distance_limit_m,capture_success_bp&is_force_paused=eq.false&is_archived=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json();syncActiveEventShops(events)}catch(_){return}
-    if(!events.length){clear();syncActiveEventShops([]);return}const shops=typeof SHOPS!=='undefined'?SHOPS:[];const ready=events.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
-    events.forEach((ev,eventIndex)=>{const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
+    if(!events.length){clear();syncActiveEventShops([]);return}const shops=typeof SHOPS!=='undefined'?SHOPS:[],mapEvents=events.filter(ev=>ev?.shop_id&&ev.target_type!=='schedule');if(!mapEvents.length){clear();started=true;return}const ready=mapEvents.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
+    mapEvents.forEach((ev,eventIndex)=>{const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
       visible.forEach((d,i)=>{const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});const meta={marker,shop,def:d,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}
         naver.maps.Event.addListener(marker,'click',()=>{if(busy)return;document.querySelectorAll('.funy-mon-marker.is-selected').forEach(el=>el.classList.remove('is-selected'));const markerEl=marker.getElement?.()?.querySelector?.('.funy-mon-marker')||document.querySelector('[aria-label="'+d.name+' 포획"]');if(markerEl){markerEl.classList.add('is-selected');markerEl.querySelector('.funy-mon-surprise')?.remove();markerEl.insertAdjacentHTML('beforeend','<span class="funy-mon-surprise" aria-hidden="true"><i>!</i><i>!</i><i>!</i></span>')}catchMonster(meta)})
       })

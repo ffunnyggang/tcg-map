@@ -1455,3 +1455,16 @@ button:focus-visible,
     grid-template-columns:1fr auto;
   }
 }
+
+
+/* Notice management */
+.notice-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.notice-home-toggle.on{
+  border-color:var(--admin-primary-border)!important;
+  background:var(--admin-primary-soft)!important;
+  color:var(--admin-primary)!important;
+  font-weight:850!important;
+}
+@media(max-width:699px){
+  .notice-actions{grid-template-columns:1fr 1fr!important}
+}

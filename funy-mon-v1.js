@@ -235,7 +235,7 @@
       if(mode==='daily'&&result.limit)done='응모 완료! · 오늘 '+today+'/'+Number(result.limit)+'회 · 누적 '+total+'회';
       else if(mode==='total'&&result.limit)done='응모 완료! · 누적 '+total+'/'+Number(result.limit)+'회';
       if(msg){msg.classList.add('done');msg.textContent=done}
-      removePendingEntry(claim)
+      resultNeedsSave=false;removePendingEntry(claim)
     }catch(e){
       if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'
     }finally{

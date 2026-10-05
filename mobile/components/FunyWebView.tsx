@@ -125,7 +125,8 @@ try{
     if(!shellFix){shellFix=document.createElement('style');shellFix.id='__funy_app_shell_after_fix__';document.head.appendChild(shellFix);}
     shellFix.textContent=[
       'html.app-shell body .portal-bottom-nav,html.app-shell body .shops-bottom-nav,html.app-shell body nav.portal-bottom-nav,html.app-shell body nav.shops-bottom-nav,html.app-shell body .mobile-bottom-nav,html.app-shell body .bottom-navigation,html.app-shell body #bottom-nav,html.app-shell body #bottomNav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
-      'html.app-shell body>.portal-shell>.portal-header,html.app-shell body .portal-header,html.app-shell body .app-header,html.app-shell body .site-header,html.app-shell body .main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}'
+      'html.app-shell body>.portal-shell>.portal-header,html.app-shell body .portal-header,html.app-shell body .app-header,html.app-shell body .site-header,html.app-shell body .main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
+      'html.app-shell body .live-pin-entry-wrap,html.app-shell body .live-pin-detail-entry,html.app-shell body #livePinEntry,html.app-shell body [data-live-pin-entry]{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;pointer-events:none!important}'
     ].join('');
   }catch(_){}
   if(/\/shops\.html$/i.test(location.pathname)&&!window.__FUNY_MAP_BLUR_OUTSIDE){
@@ -245,8 +246,12 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
           try{
             var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
             if(nm&&window.naver&&naver.maps&&naver.maps.Event){
-              naver.maps.Event.trigger(nm,'resize');
-              if(window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android'&&typeof naver.maps.Event.clearListeners==='function'){
+              var isAndroidApp=window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android';
+              if(!isAndroidApp||!window.__FUNY_ANDROID_NAVER_RESIZED){
+                naver.maps.Event.trigger(nm,'resize');
+                if(isAndroidApp)window.__FUNY_ANDROID_NAVER_RESIZED=true;
+              }
+              if(isAndroidApp&&typeof naver.maps.Event.clearListeners==='function'){
                 naver.maps.Event.clearListeners(nm,'idle');
               }
             }

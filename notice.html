@@ -36,38 +36,47 @@ html,body{margin:0;background:#f5f4f7;color:#1d1b22;font-family:'Pretendard Vari
 <main class="page">
 <header class="header"><a class="back" href="javascript:history.back()" aria-label="뒤로가기">‹</a><h1>공지사항</h1></header>
 <div class="page-intro"><div class="intro-kicker">FUNY PIN · NOTICE</div><p>FUNY PIN의 새로운 소식과 안내를 확인해보세요.</p></div>
-<section class="notice-list" aria-label="공지사항">
-<article class="notice-item">
-<button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title">추석 연휴 카드샵 영업시간 안내</span><span class="notice-date">2026.09.23</span></span><span class="arrow">⌄</span></button>
-<div class="notice-body">
-<p>추석 연휴 기간에는 카드샵별 영업시간과 휴무 일정이 평소와 다를 수 있습니다.</p>
-<p>FUNY PIN에 등록된 영업정보도 연휴 기간의 임시 운영시간까지 실시간으로 반영되지 않을 수 있으니, 방문 전에는 꼭 해당 카드샵의 공식 SNS나 매장에 직접 확인해주세요.</p>
-<p>즐겁고 편안한 추석 연휴 보내시고, FUNY PIN도 앞으로 더 편리하고 좋은 서비스로 보답하겠습니다 💜</p>
-<p>by 깽퐌커플</p>
-</div>
-</article>
-<article class="notice-item">
-<button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title">FUNY PIN BETA 서비스 안내</span><span class="notice-date">2026.09.21</span></span><span class="arrow">⌄</span></button>
-<div class="notice-body">
-<p>FUNY PIN은 현재 BETA 서비스로 운영 중입니다.</p>
-<p>카드샵 데이터는 지속적으로 업데이트하고 있으며, 일부 정보는 실제 매장 정보와 다를 수 있습니다.</p>
-<p>이용 중 발견한 오류나 잘못된 정보, 개선 의견이 있다면 편하게 제보해주세요 :)</p>
-</div>
-</article>
-<article class="notice-item">
-<button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title">FUNY PIN 서비스 오픈🎉</span><span class="notice-date">2026.09.19</span></span><span class="arrow">⌄</span></button>
-<div class="notice-body">
-<p>포켓몬카드를 수집하면서 카드샵을 직접 다니다 보니 “카드샵 정보를 한곳에서 편하게 볼 수 있으면 좋겠다”는 생각으로 시작한 FUNY PIN!</p>
-<p>아직 부족한 부분도 많고 카드샵 데이터도 계속 업데이트 중이지만, 더 미루지 않고 그냥 오픈합니다 😂</p>
-<p class="emoji-lines">🗺️ TCG 카드샵 지도<br>🔍 카드샵 검색 &amp; 필터<br>📍 매장 상세정보<br>📝 TCG 소식 • 일정 • 방문 리뷰<br>💬 FUNY TALK</p>
-<p>여러분과 함께 하나씩 채워가는 TCG 서비스로 만들어보겠습니다 💜</p>
-<p>by 깽퐌커플</p>
-</div>
-</article>
-</section>
+<section id="noticeList" class="notice-list" aria-label="공지사항"></section>
 </main>
 <script>
-document.querySelectorAll('.notice-toggle').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.notice-item'),open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))}));
+const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
+const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const FALLBACK_NOTICES=[
+ {title:'추석 연휴 카드샵 영업시간 안내',published_at:'2026-09-23T00:00:00+09:00',body:'추석 연휴 기간에는 카드샵별 영업시간과 휴무 일정이 평소와 다를 수 있습니다.\n\nFUNY PIN에 등록된 영업정보도 연휴 기간의 임시 운영시간까지 실시간으로 반영되지 않을 수 있으니, 방문 전에는 꼭 해당 카드샵의 공식 SNS나 매장에 직접 확인해주세요.\n\n즐겁고 편안한 추석 연휴 보내시고, FUNY PIN도 앞으로 더 편리하고 좋은 서비스로 보답하겠습니다 💜\n\nby 깽퐌커플'},
+ {title:'FUNY PIN BETA 서비스 안내',published_at:'2026-09-21T00:00:00+09:00',body:'FUNY PIN은 현재 BETA 서비스로 운영 중입니다.\n\n카드샵 데이터는 지속적으로 업데이트하고 있으며, 일부 정보는 실제 매장 정보와 다를 수 있습니다.\n\n이용 중 발견한 오류나 잘못된 정보, 개선 의견이 있다면 편하게 제보해주세요 :)'},
+ {title:'FUNY PIN 서비스 오픈🎉',published_at:'2026-09-19T00:00:00+09:00',body:'포켓몬카드를 수집하면서 카드샵을 직접 다니다 보니 “카드샵 정보를 한곳에서 편하게 볼 수 있으면 좋겠다”는 생각으로 시작한 FUNY PIN!\n\n아직 부족한 부분도 많고 카드샵 데이터도 계속 업데이트 중이지만, 더 미루지 않고 그냥 오픈합니다 😂\n\n🗺️ TCG 카드샵 지도\n🔍 카드샵 검색 & 필터\n📍 매장 상세정보\n📝 TCG 소식 • 일정 • 방문 리뷰\n💬 FUNY TALK\n\n여러분과 함께 하나씩 채워가는 TCG 서비스로 만들어보겠습니다 💜\n\nby 깽퐌커플'}
+];
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateText=value=>{
+ const d=new Date(value);if(Number.isNaN(d.getTime()))return '';
+ const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+ return parts.year+'.'+parts.month+'.'+parts.day;
+};
+const bodyHtml=body=>String(body||'').split(/\n{2,}/).filter(Boolean).map(p=>{
+ const emoji=/^[🗺️🔍📍📝💬]/u.test(p.trim());
+ return '<p'+(emoji?' class="emoji-lines"':'')+'>'+esc(p).replace(/\n/g,'<br>')+'</p>';
+}).join('');
+
+function renderNotices(rows){
+ const list=document.getElementById('noticeList');
+ if(!rows.length){list.innerHTML='<div style="padding:42px 2px;text-align:center;color:#aaa3af;font-size:12px">등록된 공지사항이 없습니다.</div>';return}
+ list.innerHTML=rows.map(x=>'<article class="notice-item"><button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title">'+esc(x.title)+'</span><span class="notice-date">'+esc(dateText(x.published_at))+'</span></span><span class="arrow">⌄</span></button><div class="notice-body">'+bodyHtml(x.body)+'</div></article>').join('');
+ list.querySelectorAll('.notice-toggle').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.notice-item'),open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))}));
+}
+
+async function loadNotices(){
+ try{
+  const now=encodeURIComponent(new Date().toISOString());
+  const res=await fetch(BASE+'/rest/v1/notices?select=title,body,published_at,is_pinned&status=eq.published&published_at=lte.'+now+'&order=is_pinned.desc,published_at.desc',{headers:{apikey:KEY,Accept:'application/json'}});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const rows=await res.json();
+  renderNotices(Array.isArray(rows)?rows:[]);
+ }catch(_){
+  renderNotices(FALLBACK_NOTICES);
+ }
+}
+loadNotices();
 </script>
 </body>
 </html>

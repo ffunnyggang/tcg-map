@@ -25,11 +25,6 @@ module.exports = ({ config }) => {
           apiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY || config.android?.config?.googleMaps?.apiKey,
         },
       },
-      splash: {
-        image: './assets/transparent-splash.png',
-        resizeMode: 'contain',
-        backgroundColor: '#FFFFFF',
-      },
       adaptiveIcon: {
         ...(config.android?.adaptiveIcon || {}),
         foregroundImage: adaptiveForeground,

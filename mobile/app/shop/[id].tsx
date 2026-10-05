@@ -20,7 +20,8 @@ const SCORE_LABELS:[keyof ShopReview,string][]=[
 const SW=Dimensions.get('window').width;
 type InstaPost={image?:string;thumbnail_url?:string;media_url?:string;permalink?:string};
 type GoogleReview={author:string;rating:string;time:string;text:string};
-type GooglePlaceData={rating:string;count:string;url:string;reviews:GoogleReview[]};
+type GooglePlaceData={rating:string;count:string;url:string;reviews:GoogleReview[];photos:string[]};
+const GOOGLE_WEB_KEY='AIzaSyDBSPRs1jnfePKN9ZvZuyUWvlreMeAXYmw';
 const cleanInfo=(value?:string|null)=>{const v=String(value||'').trim();return !v||v==='-'||v==='–'||v==='—'?null:v};
 const formatHours=(value?:string|null)=>{const v=cleanInfo(value);return v?v.replace(/\s*\/\s*/g,'\n'):null};
 const webAsset=(x?:string|null)=>!x?'':/^https?:\/\//i.test(x)?x:`https://funypin.kr/${String(x).replace(/^\//,'')}`;
@@ -203,6 +204,8 @@ export default function ShopDetail(){
   const tcg=Object.entries(shop.tcg||{}).filter(([,v])=>v?.status===true);
   const mapUrl=shop.country_code==='KR'?(shop.naver_map_url||shop.google_map_url):shop.google_map_url;
   const isJapan=shop.country_code==='JP';
+  const googleFallbackPhotos=isJapan&&images.length===0?(googlePlace?.photos||[]):[];
+  const heroImages=images.length?images.map(x=>shopImageUrl(x.storage_path||x.source_path)):googleFallbackPhotos;
   const accent=isJapan?'#D93B55':'#8062D8';
   const accentDark=isJapan?'#B9002D':'#6847BF';
   const accentSoft=isJapan?'#FFF0F2':'#F3EFF9';
@@ -225,7 +228,24 @@ export default function ShopDetail(){
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
   const goToMap=()=>{if(from==='list'||from==='map-popup'||from==='map'||from==='native-map'){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
-  const googleBridgeUrl='https://funypin.kr/google-place-bridge.html?name='+encodeURIComponent(shop.name_en||shop.name)+'&address='+encodeURIComponent(shop.address||'');
+  const googleBridgeHtml=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="map" style="width:1px;height:1px"></div><script>
+  function send(data){try{window.ReactNativeWebView.postMessage(JSON.stringify(data));}catch(e){}}
+  function init(){
+    try{
+      var service=new google.maps.places.PlacesService(document.getElementById('map'));
+      var query=${JSON.stringify((shop.name_en||shop.name)+' '+(shop.address||''))};
+      service.findPlaceFromQuery({query:query,fields:['place_id']},function(found,status){
+        if(status!==google.maps.places.PlacesServiceStatus.OK||!found||!found[0]){send({type:'GOOGLE_PLACE_DATA',rating:'',count:'',url:'',reviews:[],photos:[]});return;}
+        service.getDetails({placeId:found[0].place_id,fields:['rating','user_ratings_total','url','reviews','photos']},function(place,detailStatus){
+          if(detailStatus!==google.maps.places.PlacesServiceStatus.OK||!place){send({type:'GOOGLE_PLACE_DATA',rating:'',count:'',url:'',reviews:[],photos:[]});return;}
+          var reviews=(place.reviews||[]).slice(0,3).map(function(r){return {author:r.author_name||'',rating:String(r.rating||''),time:r.relative_time_description||'',text:r.text||''};});
+          var photos=(place.photos||[]).slice(0,5).map(function(p){try{return p.getUrl({maxWidth:1200,maxHeight:1200});}catch(e){return'';}}).filter(Boolean);
+          send({type:'GOOGLE_PLACE_DATA',rating:String(place.rating||''),count:String(place.user_ratings_total||''),url:String(place.url||''),reviews:reviews,photos:photos});
+        });
+      });
+    }catch(e){send({type:'GOOGLE_PLACE_DATA',rating:'',count:'',url:'',reviews:[],photos:[]});}
+  }
+  </script><script async defer src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_WEB_KEY}&libraries=places&callback=init"></script></body></html>`;
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
@@ -234,17 +254,17 @@ export default function ShopDetail(){
 
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
       <View style={styles.hero}>
-        {images.length?
+        {heroImages.length?
           <ScrollView ref={galleryRef} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={e=>setGalleryIndex(Math.round(e.nativeEvent.contentOffset.x/SW))}>
-            {images.map(x=><Image key={x.id} source={{uri:shopImageUrl(x.storage_path||x.source_path)}} style={styles.heroImage} resizeMode="cover"/>)}
+            {heroImages.map((uri,i)=><Image key={uri||String(i)} source={{uri}} style={styles.heroImage} resizeMode="cover"/>)}
           </ScrollView>
           :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
         <View style={styles.heroTop}>
           <Pressable onPress={()=>router.back()} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
           <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
         </View>
-        <View style={styles.heroCount}><Ionicons name="images-outline" size={13} color="#fff"/><Text style={styles.heroCountText}>{images.length?galleryIndex+1:1} / {Math.max(images.length,1)}</Text></View>
+        <View style={styles.heroCount}><Ionicons name="images-outline" size={13} color="#fff"/><Text style={styles.heroCountText}>{heroImages.length?galleryIndex+1:1} / {Math.max(heroImages.length,1)}</Text></View>
       </View>
 
       <View style={styles.detailContent}>
@@ -339,7 +359,7 @@ export default function ShopDetail(){
       {shop.country_code==='KR'?<LivePinButton withNav scrolling={scrolling}/>:null}
     </View>
 
-    {isJapan?<View pointerEvents="none" style={styles.googleBridge}><WebView source={{uri:googleBridgeUrl}} javaScriptEnabled domStorageEnabled originWhitelist={['https://*']} onMessage={e=>{try{const d=JSON.parse(e.nativeEvent.data);if(d?.type==='GOOGLE_PLACE_DATA')setGooglePlace({rating:String(d.rating||''),count:String(d.count||''),url:String(d.url||''),reviews:Array.isArray(d.reviews)?d.reviews.slice(0,3):[]})}catch{}}}/></View>:null}
+    {isJapan?<View pointerEvents="none" style={styles.googleBridge}><WebView source={{html:googleBridgeHtml,baseUrl:'https://funypin.kr'}} javaScriptEnabled domStorageEnabled originWhitelist={['https://*']} onMessage={e=>{try{const d=JSON.parse(e.nativeEvent.data);if(d?.type==='GOOGLE_PLACE_DATA')setGooglePlace({rating:String(d.rating||''),count:String(d.count||''),url:String(d.url||''),reviews:Array.isArray(d.reviews)?d.reviews.slice(0,3):[],photos:Array.isArray(d.photos)?d.photos.slice(0,5).map(String):[]})}catch{}}}/></View>:null}
     <InAppWebSheet visible={!!sheetUrl} url={sheetUrl} title={sheetTitle} onClose={()=>setSheetUrl(null)}/>
   </SafeAreaView>;
 }

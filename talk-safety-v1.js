@@ -25,6 +25,12 @@ async function loadState(){
   }catch(_){}
 }
 function applyHidden(){document.querySelectorAll('[data-funy-post]').forEach(el=>{const owner=postOwners.get(String(el.dataset.funyPost||''));el.style.display=owner&&blocked.has(owner)?'none':''})}
+async function notifyModerator(postId){
+  try{
+    const r=await fetch(SB+'/rest/v1/community_post_reports',{method:'POST',headers:{...authHeaders(),Prefer:'return=minimal'},body:JSON.stringify({post_id:postId,reporter_user_id:uid(),reason:'abuse',detail:'사용자 차단과 함께 자동 접수된 신고입니다.'})});
+    return r.ok||r.status===409;
+  }catch(_){return false}
+}
 async function blockOwner(postId,modal){
   if(!uid()||!token()){alert('작성자 차단은 FUNY PIN 앱에서 로그인 후 이용할 수 있어요.');return}
   let owner=postOwners.get(postId);
@@ -35,7 +41,8 @@ async function blockOwner(postId,modal){
   try{
     const r=await fetch(SB+'/rest/v1/community_user_blocks',{method:'POST',headers:{...authHeaders(),Prefer:'return=minimal'},body:JSON.stringify({blocker_user_id:uid(),blocked_user_id:owner})});
     if(!r.ok){const e=await r.json().catch(()=>({}));throw Error(e.message||'차단 처리에 실패했습니다.')}
-    blocked.add(owner);applyHidden();modal?.remove();alert('작성자를 차단했습니다.\nMY에서 차단을 해제할 수 있어요.');
+    const notified=await notifyModerator(postId);
+    blocked.add(owner);applyHidden();modal?.remove();alert(notified?'작성자를 차단하고 운영팀에 신고를 접수했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.':'작성자를 차단했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.');
   }catch(e){alert(e.message||String(e))}
 }
 function decorateDetail(){

@@ -237,33 +237,17 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
       const u=new URL(currentTarget);
       postId=decodeURIComponent((u.hash.match(/^#\/post\/([^/?#]+)/)?.[1])||'');
     }catch{}
+
     if(!postId){
       Alert.alert('차단하기','게시물 정보를 확인하지 못했습니다. 다시 시도해주세요.');
       return;
     }
 
-    const {data:{user}}=await supabase.auth.getUser();
-    if(!user){
+    if(!accessToken){
       Alert.alert('로그인 필요','작성자 차단은 로그인 후 이용할 수 있어요.',[
         {text:'취소',style:'cancel'},
         {text:'로그인',onPress:()=>router.push('/login?next=talk' as any)},
       ]);
-      return;
-    }
-
-    const {data:post,error:postError}=await supabase
-      .from('community_posts')
-      .select('user_id')
-      .eq('id',postId)
-      .maybeSingle();
-
-    if(postError||!post?.user_id){
-      Alert.alert('차단하기','작성자 정보를 확인하지 못했습니다. 다시 시도해주세요.');
-      return;
-    }
-    const ownerId=String(post.user_id);
-    if(ownerId===user.id){
-      Alert.alert('차단하기','내 게시물의 작성자는 차단할 수 없어요.');
       return;
     }
 
@@ -273,35 +257,63 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
       [
         {text:'취소',style:'cancel'},
         {text:'차단하기',style:'destructive',onPress:async()=>{
-          const {error:blockError}=await supabase
-            .from('community_user_blocks')
-            .insert({blocker_user_id:user.id,blocked_user_id:ownerId});
-
-          if(blockError&&blockError.code!=='23505'){
-            Alert.alert('차단 실패',blockError.message||'차단 처리에 실패했습니다.');
-            return;
-          }
-
           try{
-            await supabase
-              .from('community_post_reports')
-              .insert({
-                post_id:postId,
-                reporter_user_id:user.id,
-                reason:'abuse',
-                detail:'사용자 차단과 함께 자동 접수된 신고입니다.',
-              });
-          }catch{}
+            const {data:{session}}=await supabase.auth.getSession();
+            const user=session?.user;
+            if(!user){
+              Alert.alert('로그인 필요','로그인 상태를 다시 확인해주세요.');
+              return;
+            }
 
-          setTalkPostMine(false);
-          setTalkMenuOpen(false);
-          setCurrentTarget(url);
-          setWebViewKey(k=>k+1);
-          Alert.alert('차단 완료','해당 사용자의 게시물을 내 TALK에서 숨겼습니다.');
+            const {data:post,error:postError}=await supabase
+              .from('community_posts')
+              .select('user_id')
+              .eq('id',postId)
+              .maybeSingle();
+
+            if(postError||!post?.user_id){
+              Alert.alert('차단하기','작성자 정보를 확인하지 못했습니다. 다시 시도해주세요.');
+              return;
+            }
+
+            const ownerId=String(post.user_id);
+            if(ownerId===user.id){
+              Alert.alert('차단하기','내 게시물의 작성자는 차단할 수 없어요.');
+              return;
+            }
+
+            const {error:blockError}=await supabase
+              .from('community_user_blocks')
+              .insert({blocker_user_id:user.id,blocked_user_id:ownerId});
+
+            if(blockError&&blockError.code!=='23505'){
+              Alert.alert('차단 실패',blockError.message||'차단 처리에 실패했습니다.');
+              return;
+            }
+
+            try{
+              await supabase
+                .from('community_post_reports')
+                .insert({
+                  post_id:postId,
+                  reporter_user_id:user.id,
+                  reason:'abuse',
+                  detail:'사용자 차단과 함께 자동 접수된 신고입니다.',
+                });
+            }catch{}
+
+            setTalkPostMine(false);
+            setTalkMenuOpen(false);
+            setCurrentTarget(url);
+            setWebViewKey(k=>k+1);
+            Alert.alert('차단 완료','해당 사용자의 게시물을 내 TALK에서 숨겼습니다.');
+          }catch(e:any){
+            Alert.alert('차단 실패',String(e?.message||'차단 처리 중 오류가 발생했습니다.'));
+          }
         }},
       ],
     );
-  },[currentTarget,router,url]);
+  },[accessToken,currentTarget,router,url]);
 
   const talkAction=(action:'share'|'edit'|'delete'|'report'|'block')=>{
     setTalkMenuOpen(false);

@@ -63,3 +63,15 @@
 
 .fmh-guard-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
 .fmh-guard-actions button{height:32px;padding:0 10px;border:1px solid #d8ccef;border-radius:8px;background:#fff;color:#684db2;font-size:8.5px;font-weight:850;cursor:pointer}
+
+@media(max-width:899px){
+  .mon-admin-head:has(.fmh-event-head){display:none!important}
+  .mon-admin-row:has(.fmh-event-cell){min-width:0!important;grid-template-columns:minmax(0,1fr) auto!important;gap:7px 10px!important}
+  .mon-admin-row:has(.fmh-event-cell)>.fmh-event-cell{grid-column:1;grid-row:1}
+  .mon-admin-row:has(.fmh-event-cell)>.shop-admin-id{grid-column:1;grid-row:2}
+  .mon-admin-row:has(.fmh-event-cell)>.shop-admin-name{grid-column:1/-1;grid-row:3}
+  .mon-admin-row:has(.fmh-event-cell)>.mon-admin-period{grid-column:1/-1;grid-row:4}
+  .mon-admin-row:has(.fmh-event-cell)>.mon-admin-meta{grid-column:1;grid-row:5}
+  .mon-admin-row:has(.fmh-event-cell)>div:has(.mon-event-status){grid-column:2;grid-row:1/3;align-self:start}
+  .mon-admin-row:has(.fmh-event-cell)>.fmh-event-actions{grid-column:1/-1;grid-row:6;justify-content:flex-start;flex-wrap:wrap;padding-top:4px}
+}

@@ -85,6 +85,27 @@ try{
         var node=card||popup||cms;
         if(!node)return;
         var id=earlyShopId(node);
+        if(cms&&!id){
+          var mode=String(cms.getAttribute('data-funy-link-mode')||'inapp').toLowerCase();
+          var presentation=String(cms.getAttribute('data-funy-inapp-presentation')||'page').toLowerCase();
+          var href=cms.href||cms.getAttribute('href')||'';
+          if(!href)return;
+          if(mode==='external'||mode==='outlink'){
+            event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+            earlyPost({type:'OPEN_EXTERNAL',url:href});
+            return false;
+          }
+          if(mode==='inapp'&&presentation==='bottom_sheet'){
+            event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+            earlyPost({type:'OPEN_INAPP_SHEET',url:href});
+            return false;
+          }
+          if(mode==='inapp'&&presentation==='page'){
+            event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+            earlyPost({type:'OPEN_INAPP_PAGE',url:href,title:String(cms.getAttribute('aria-label')||cms.textContent||'').replace(/\\s+/g,' ').trim()});
+            return false;
+          }
+        }
         if(!id)return;
         var isShopPage=/\/shops\.html$/i.test(location.pathname);
         if(!isShopPage&&!cms)return;

@@ -47,6 +47,7 @@ async function blockOwner(postId,modal){
   }catch(e){alert(e.message||String(e))}
 }
 window.FUNY_TALK_BLOCK_POST=(postId)=>blockOwner(String(postId||''),null);
+window.addEventListener('funy:native-talk-blocked',e=>{const owner=String(e?.detail?.ownerId||'');if(!owner)return;blocked.add(owner);applyHidden();setTimeout(applyHidden,0);setTimeout(applyHidden,120)});
 function decorateDetail(){
   const modal=document.getElementById('funyTalkDetail');if(!modal||!lastPostId||modal.querySelector('.talk-block-user'))return;
   const owner=postOwners.get(lastPostId);if(!owner||owner===uid())return;

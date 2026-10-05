@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-05T18:35:57.734430+00:00",
+  "updatedAt": "2026-10-05T21:32:27.248612+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "남자친구가 포켓몬카드를 엄청 좋아해요!",
+      "author": "도토리묵찌빠",
+      "publishedAt": "2026-10-05T19:05:20.211983Z",
+      "excerpt": "남자친구가 포켓몬카드를 엄청 좋아해요!",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/남자친구가-포켓몬카드를-엄청-좋아해요-ARognnWP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "카드거래",
       "title": "포켓몬 카드 박스, 등급카드 판매",
@@ -11,10 +24,10 @@
       "excerpt": "패러다임 트리거 18만 메타몽 프로모 brg10 26만 뮤츠 Vstar sar psa10 26만",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ae0141a5-c227-4863-a77d-bcb8a666286d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-박스-등급카드-판매-AO6gORgj",
-      "views": 6,
+      "views": 8,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.06
+      "popularityScore": 0.08
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "30주년 카드를 까서 뮤sar 루기아 복각이 나와서 좋았습니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-카드를-까서-뮤sar-루기아-복각이-나와서-좋았습니다-dagn5wlA",
-      "views": 4,
+      "views": 5,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.04
+      "popularityScore": 3.05
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "현재 FUNY PIN 안드로이드 앱의 Google Play 정식 출시를 준비하고 있습니다. 출시 전 Google Play 정책에 따라 일정 기간 비공개 테스트를 진행해야 해서 테스트에 참여해주실 분들을 모집합니다. 테스트 참여 방법은 어렵지 않습니다. - Google 계정 이메일로 테스",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791211680222b21bebb13eeb4e6b2f024cf3e98098437fe69f05fe42254fe4fb09c5a0796de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/FUNY-PIN-안드로이드-앱-비공개-테스트-참여자-모집합니다-🙌-jK2OBxod",
-      "views": 9,
+      "views": 10,
       "likes": 7,
       "comments": 0,
-      "popularityScore": 21.09
+      "popularityScore": 21.1
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "10월에 오사카로 여행 가는데 거기서 카드 구입 할려고 하는데 카드 매장을 찾기가 어렵네요.. 유명한 곳은 검색하면 나오지만 거기는 비싼 느낌이라 작은 카드샵도 찾아서 가보고 싶은데 일본 오사카 카드샵 찾는법 없을까요??",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e166fed7-5999-4ceb-9a28-f286f7deefd1.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/도움이-필요합니다-PV2yxX0P",
-      "views": 26,
+      "views": 27,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.26
+      "popularityScore": 6.27
     },
     {
       "category": "자유 게시판",
@@ -128,10 +141,10 @@
       "excerpt": "너무 비싸다...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ebd1cc08-8f57-4aa0-826e-ac73d148cc2b.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아예쁘다-PnNYNbDP",
-      "views": 44,
+      "views": 45,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.44
+      "popularityScore": 6.45
     },
     {
       "category": "자유 게시판",
@@ -171,19 +184,6 @@
       "likes": 2,
       "comments": 0,
       "popularityScore": 6.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "요즘 트렌드인 것 같아서 도전해보려고 합니다!",
-      "author": "댕근댕근",
-      "publishedAt": "2026-10-04T04:07:21.273989Z",
-      "excerpt": "요즘 트렌드인 것 같아서 도전해보려고 합니다!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/요즘-트렌드인-것-같아서-도전해보려고-합니다-ALEaJ8yP",
-      "views": 15,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.15
     },
     {
       "category": "카드거래",

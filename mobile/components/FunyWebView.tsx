@@ -1,5 +1,5 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
-import { Animated,BackHandler,Easing,Linking,Modal,Platform,Pressable,Share,StyleSheet,Text,View,useWindowDimensions } from 'react-native';
+import { Alert,Animated,BackHandler,Easing,Linking,Modal,Platform,Pressable,Share,StyleSheet,Text,View,useWindowDimensions } from 'react-native';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 import { useFocusEffect,useRouter } from 'expo-router';
@@ -230,7 +230,85 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
   const isTalkPost=(()=>{try{const u=new URL(currentTarget);return /\/talk\.html$/.test(u.pathname.toLowerCase())&&/^#\/post\//.test(u.hash)}catch{return false}})();
-  const talkAction=(action:'share'|'edit'|'delete'|'report'|'block')=>{setTalkMenuOpen(false);if(action==='share'){Share.share({message:currentTarget}).catch(()=>{});return;}if(action==='block'){let postId='';try{const u=new URL(currentTarget);postId=decodeURIComponent((u.hash.match(/^#\/post\/([^/?#]+)/)?.[1])||'');}catch{}const js=`(function(){var postId=${JSON.stringify(postId)};if(window.FUNY_TALK_BLOCK_POST){window.FUNY_TALK_BLOCK_POST(postId);}else{window.dispatchEvent(new CustomEvent('funy:native-talk-block',{detail:{postId:postId}}));}})();true;`;ref.current?.injectJavaScript(js);return;}ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-${action}'));true;`);};
+  const blockTalkAuthor=useCallback(async()=>{
+    setTalkMenuOpen(false);
+    let postId='';
+    try{
+      const u=new URL(currentTarget);
+      postId=decodeURIComponent((u.hash.match(/^#\/post\/([^/?#]+)/)?.[1])||'');
+    }catch{}
+    if(!postId){
+      Alert.alert('차단하기','게시물 정보를 확인하지 못했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    const {data:{user}}=await supabase.auth.getUser();
+    if(!user){
+      Alert.alert('로그인 필요','작성자 차단은 로그인 후 이용할 수 있어요.',[
+        {text:'취소',style:'cancel'},
+        {text:'로그인',onPress:()=>router.push('/login?next=talk' as any)},
+      ]);
+      return;
+    }
+
+    const {data:post,error:postError}=await supabase
+      .from('community_posts')
+      .select('user_id')
+      .eq('id',postId)
+      .maybeSingle();
+
+    if(postError||!post?.user_id){
+      Alert.alert('차단하기','작성자 정보를 확인하지 못했습니다. 다시 시도해주세요.');
+      return;
+    }
+    const ownerId=String(post.user_id);
+    if(ownerId===user.id){
+      Alert.alert('차단하기','내 게시물의 작성자는 차단할 수 없어요.');
+      return;
+    }
+
+    Alert.alert(
+      '사용자 차단',
+      '이 작성자를 차단할까요?\n차단한 사용자의 FUNY PIN 게시물은 내 TALK에서 보이지 않습니다.',
+      [
+        {text:'취소',style:'cancel'},
+        {text:'차단하기',style:'destructive',onPress:async()=>{
+          const {error:blockError}=await supabase
+            .from('community_user_blocks')
+            .insert({blocker_user_id:user.id,blocked_user_id:ownerId});
+
+          if(blockError&&blockError.code!=='23505'){
+            Alert.alert('차단 실패',blockError.message||'차단 처리에 실패했습니다.');
+            return;
+          }
+
+          await supabase
+            .from('community_post_reports')
+            .insert({
+              post_id:postId,
+              reporter_user_id:user.id,
+              reason:'abuse',
+              detail:'사용자 차단과 함께 자동 접수된 신고입니다.',
+            })
+            .then(()=>{})
+            .catch(()=>{});
+
+          setTalkPostMine(false);
+          setTalkMenuOpen(false);
+          setCurrentTarget(url);
+          setWebViewKey(k=>k+1);
+          Alert.alert('차단 완료','해당 사용자의 게시물을 내 TALK에서 숨겼습니다.');
+        }},
+      ],
+    );
+  },[currentTarget,router,url]);
+
+  const talkAction=(action:'share'|'edit'|'delete'|'report'|'block')=>{
+    setTalkMenuOpen(false);
+    if(action==='share'){Share.share({message:currentTarget}).catch(()=>{});return;}
+    if(action==='block'){void blockTalkAuthor();return;}
+    ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-${action}'));true;`);
+  };
 
   const injectEvent=useCallback((name:string,detail:Record<string,unknown>)=>{const js=`window.dispatchEvent(new CustomEvent(${JSON.stringify(name)},{detail:${JSON.stringify(detail)}}));true;`;ref.current?.injectJavaScript(js);},[]);
   const stopNativeLocation=useCallback(()=>{try{locationSub.current?.remove();}catch{}locationSub.current=null;},[]);

@@ -32,6 +32,7 @@
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "현재 위치 주변의 카드샵을 찾기 위해 위치 권한이 필요합니다.",
+        "NSPhotoLibraryUsageDescription": "FUNY PIN은 프로필 이미지 또는 TALK 게시물에 사용자가 선택한 사진을 첨부하기 위해 사진 보관함에 접근합니다. 예: 프로필 사진을 변경하거나 TALK 게시물에 카드 사진을 추가할 때 사용됩니다.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "icon": {

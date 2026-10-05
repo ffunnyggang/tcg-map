@@ -14,6 +14,7 @@ const ago=s=>{const d=new Date(s),m=Math.max(0,Math.floor((Date.now()-d.getTime(
 const token=()=>String(window.__FUNY_ACCESS_TOKEN||'');
 const uid=()=>{try{const t=token().split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(t)))).sub||''}catch(_){return''}};
 const headers=(auth=false)=>{const h={apikey:KEY,'Content-Type':'application/json'};if(auth&&token())h.Authorization='Bearer '+token();return h};
+const requestLogin=message=>{alert(message);try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/login?next=talk'}))}catch(_){}};
 const publicImage=path=>`${SB}/storage/v1/object/public/community-posts/${String(path||'').split('/').map(encodeURIComponent).join('/')}`;
 
 const style=document.createElement('style');
@@ -54,14 +55,14 @@ function bindFilters(){
 function openDetail(id){const x=mixed.find(v=>v.source==='funy'&&v.id===id);if(!x)return;const images=(x.images||[]).map(src=>`<img src="${esc(src)}" alt="게시물 첨부 이미지" loading="lazy">`).join('');const el=modalShell('funyTalkDetail',x.title,`<div><span class="funy-source funy">FUNY PIN</span><span class="funy-category">${esc(x.category)}</span></div><div class="talk-detail-meta">${esc(x.author)} · ${ago(x.publishedAt)}</div><div class="talk-detail-body">${esc(x.body)}</div>${images?`<div class="talk-detail-images">${images}</div>`:''}<button class="talk-report" type="button">게시물 신고하기</button>`);el.querySelector('.talk-report').onclick=()=>openReport(x.id,el);}
 
 function openReport(postId,parent){
-  if(!token()||!uid()){alert('게시물 신고는 FUNY PIN 앱에서 로그인 후 이용할 수 있어요.');return}
+  if(!token()||!uid()){requestLogin('게시물 신고는 로그인 후 이용할 수 있어요.');return}
   const reasons=[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']];
   const wrap=document.createElement('div');wrap.className='talk-report-options';wrap.innerHTML=reasons.map(([v,l])=>`<button type="button" data-reason="${v}">${l}</button>`).join('');const old=parent.querySelector('.talk-report-options');old?.remove();parent.querySelector('.talk-community-sheet').appendChild(wrap);
   wrap.querySelectorAll('button').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;try{const r=await fetch(SB+'/rest/v1/community_post_reports',{method:'POST',headers:{...headers(true),Prefer:'return=minimal'},body:JSON.stringify({post_id:postId,reporter_user_id:uid(),reason:btn.dataset.reason})});if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===409)throw Error('이미 신고한 게시물이에요.');throw Error(e.message||'신고 처리에 실패했습니다.')}alert('신고가 접수되었습니다.');wrap.remove()}catch(e){alert(e.message||String(e))}finally{btn.disabled=false}});
 }
 
 function openEditor(){
-  if(!token()||!uid()){alert('게시물 작성은 FUNY PIN 앱에서 로그인 후 이용할 수 있어요.');return}
+  if(!token()||!uid()){requestLogin('게시물 등록은 로그인 후 이용할 수 있어요.');return}
   const el=modalShell('funyTalkEditor','게시물 등록',`<div class="talk-field"><label>게시판</label><select id="funyPostCategory">${CATS.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="talk-field"><label>제목</label><input id="funyPostTitle" maxlength="80" placeholder="제목을 입력해주세요"></div><div class="talk-field"><label>내용</label><textarea id="funyPostBody" maxlength="3000" placeholder="함께 나누고 싶은 이야기를 적어주세요"></textarea></div><div class="talk-field"><label>사진 · 최대 3장, 장당 5MB</label><label class="talk-photo-btn" for="funyPostPhotos">+ 사진 첨부</label><input class="talk-photo-input" id="funyPostPhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple><div class="talk-photo-list" id="funyPhotoList"></div></div><div class="talk-policy">도배 방지를 위해 1분에 1개, 시간당 최대 5개까지 등록할 수 있어요. 카드 거래 게시물은 FUNY PIN 자체 게시판에서 지원하지 않습니다.</div><button class="talk-submit" id="funyPostSubmit" type="button">등록하기</button>`);
   const input=el.querySelector('#funyPostPhotos'),list=el.querySelector('#funyPhotoList');let files=[];
   const draw=()=>{list.innerHTML=files.map((f,i)=>`<div class="talk-photo-item"><img src="${URL.createObjectURL(f)}" alt=""><button type="button" data-i="${i}">×</button></div>`).join('');list.querySelectorAll('button').forEach(b=>b.onclick=()=>{files.splice(Number(b.dataset.i),1);draw()})};

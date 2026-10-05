@@ -18,6 +18,13 @@ module.exports = ({ config }) => {
       ...config.android,
       package: isDev ? 'kr.funypin.app.dev' : config.android?.package,
       icon: appIcon,
+      config: {
+        ...(config.android?.config || {}),
+        googleMaps: {
+          ...(config.android?.config?.googleMaps || {}),
+          apiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY || config.android?.config?.googleMaps?.apiKey,
+        },
+      },
       adaptiveIcon: {
         ...(config.android?.adaptiveIcon || {}),
         foregroundImage: adaptiveForeground,

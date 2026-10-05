@@ -255,6 +255,7 @@ async function enhanceEvents(){
   await enhanceEventRows();await renderEditorGuard();await enhanceRewardOverview();
 }
 document.addEventListener('click',e=>{
+  if(e.target.closest?.('[data-admin-tab="mon"]'))state.mode='events';
   const row=e.target.closest?.('[data-mon-event]');if(row)state.editingEventId=row.dataset.monEvent||null;
   const b=e.target.closest?.('button'),text=(b?.textContent||'').trim();if(text.includes('이벤트 만들기')||text.includes('이벤트 추가'))state.editingEventId='new';
   const evSave=e.target.closest?.('#monEventSave');if(evSave&&!evSave.dataset.fmhBypass){e.preventDefault();e.stopImmediatePropagation();validateEventSave(evSave)}

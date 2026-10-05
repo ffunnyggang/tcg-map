@@ -15,11 +15,7 @@
 <main class="page">
 <header class="header"><a class="back" href="javascript:history.back()" aria-label="뒤로가기">‹</a><div class="brand">FUNY PIN · PARTNERS</div><h1>광고 · 제휴 문의</h1><p>FUNY PIN과 함께할 브랜드와 카드샵의<br>다양한 제안을 기다리고 있어요.</p></header>
 <div class="page-intro"><div class="intro-kicker">FUNY PIN · PARTNERS</div><p>FUNY PIN과 함께할 브랜드와 카드샵의<br>다양한 제안을 기다리고 있어요.</p></div>
-<form action="https://formsubmit.co/donghwan86@naver.com" method="POST">
-<input type="hidden" name="_subject" value="[FUNY PIN] 새로운 광고·제휴 문의">
-<input type="hidden" name="_template" value="table">
-<input type="hidden" name="_next" value="https://www.funypin.kr/partner-thanks.html">
-<input type="hidden" name="_url" value="https://www.funypin.kr/partner.html">
+<form id="partnerForm">
 <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off">
 <section class="section"><h2>캠페인 정보 입력</h2>
 <div class="field"><span class="label">문의 유형 <span class="req">*</span></span><div class="types">
@@ -40,8 +36,49 @@
 </section>
 <section class="section"><h2>제안서 작성</h2><div class="field"><label class="label" for="message">제안 내용 <span class="req">*</span></label><textarea class="textarea" id="message" name="제안 내용" maxlength="2000" placeholder="캠페인 일정, 예산, 희망 광고 영역 등 제안 내용을 자유롭게 작성해 주세요." required></textarea><p class="help">최대 2,000자까지 작성할 수 있어요.</p></div></section>
 <section class="section"><label class="agree"><input type="checkbox" required><span><b>개인정보 수집 및 이용에 동의합니다. <span class="req">*</span></b><br>문의 확인 및 회신을 위해 담당자명, 이메일, 연락처를 수집하며 문의 처리 목적으로만 이용합니다.</span></label></section>
-<div class="submit-wrap"><button class="submit" type="submit">문의 보내기</button><p class="privacy">입력하신 정보는 광고·제휴 문의 확인 및 회신 목적으로 사용됩니다.</p></div>
+<div class="submit-wrap"><button class="submit" id="partnerSubmit" type="submit">문의 보내기</button><p id="partnerStatus" class="help" style="text-align:center"></p><p class="privacy">입력하신 정보는 광고·제휴 문의 확인 및 회신 목적으로 사용됩니다.</p></div>
 </form>
 </main>
+<script>
+function finishSubmission(message){alert(message);try{if(window.ReactNativeWebView&&window.__FUNY_APP_CONTEXT){window.ReactNativeWebView.postMessage(JSON.stringify({type:'FORM_COMPLETE_BACK'}));return}}catch(_){}if(history.length>1)history.back();else location.replace('./')}
+const SB='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const token=()=>String(window.__FUNY_ACCESS_TOKEN||'');
+const uid=()=>{try{const raw=token().split('.')[1];if(!raw)return null;const n=raw.replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(atob(n.padEnd(Math.ceil(n.length/4)*4,'='))).sub||null}catch(_){return null}};
+const form=document.getElementById('partnerForm'),btn=document.getElementById('partnerSubmit'),statusEl=document.getElementById('partnerStatus');
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!form.reportValidity())return;
+  const fd=new FormData(form);
+  if(String(fd.get('_honey')||''))return;
+  const inquiryType=String(fd.get('문의 유형')||'기타');
+  const brand=String(fd.get('브랜드 / 업체명')||'').trim();
+  const product=String(fd.get('상품 / 서비스명')||'').trim();
+  const manager=String(fd.get('담당자명')||'').trim();
+  const email=String(fd.get('email')||'').trim();
+  const contact=String(fd.get('연락처')||'').trim();
+  const message=String(fd.get('제안 내용')||'').trim();
+  if(!brand||!product||!manager||!email||!message)return;
+  btn.disabled=true;btn.textContent='접수 중...';statusEl.textContent='';
+  try{
+    const payload={
+      user_id:uid(),
+      category:'partner',
+      subject:'['+inquiryType+'] '+brand+' · '+product,
+      body:'문의 유형: '+inquiryType+'\n브랜드 / 업체명: '+brand+'\n상품 / 서비스명: '+product+'\n담당자명: '+manager+'\n연락처: '+(contact||'-')+'\n\n제안 내용\n'+message,
+      contact_email:email,
+      source:window.__FUNY_APP_CONTEXT?.surface||'web'
+    };
+    const auth=token()||KEY;
+    const r=await fetch(SB+'/rest/v1/support_inquiries',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+auth,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(payload)});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw Error(d.message||'접수 실패')}
+    form.reset();
+    try{window.gtag?.('event','partner_submit',{inquiry_type:inquiryType})}catch(_){}
+    finishSubmission('광고 · 제휴 문의가 접수되었습니다.');
+  }catch(err){
+    statusEl.textContent='문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.';
+    btn.disabled=false;btn.textContent='문의 보내기';
+  }
+});
+</script>
 </body>
 </html>

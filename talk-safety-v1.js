@@ -8,6 +8,7 @@ const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const token=()=>String(window.__FUNY_ACCESS_TOKEN||'');
 const uid=()=>{try{const raw=token().split('.')[1];if(!raw)return'';const normalized=raw.replace(/-/g,'+').replace(/_/g,'/');const json=decodeURIComponent(Array.from(atob(normalized.padEnd(Math.ceil(normalized.length/4)*4,'='))).map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''));return JSON.parse(json).sub||''}catch(_){return''}};
 const authHeaders=()=>({apikey:KEY,Authorization:'Bearer '+token(),'Content-Type':'application/json'});
+const requestLogin=message=>{alert(message);try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/login?next=talk'}))}catch(_){}};
 let blocked=new Set(),postOwners=new Map(),lastPostId='';
 
 const style=document.createElement('style');style.textContent='.talk-block-user{margin:9px auto 0;display:block;border:0;background:transparent;color:#a19aa6;font-size:11px;text-decoration:underline}.talk-blocked-note{padding:12px 14px;border-radius:12px;background:#f7f4fa;color:#7e7682;font-size:11px;text-align:center;margin-top:12px}';document.head.appendChild(style);
@@ -32,7 +33,7 @@ async function notifyModerator(postId){
   }catch(_){return false}
 }
 async function blockOwner(postId,modal){
-  if(!uid()||!token()){alert('작성자 차단은 FUNY PIN 앱에서 로그인 후 이용할 수 있어요.');return}
+  if(!uid()||!token()){requestLogin('작성자 차단은 로그인 후 이용할 수 있어요.');return}
   let owner=postOwners.get(postId);
   if(!owner){try{const r=await fetch(SB+'/rest/v1/community_posts?select=user_id&id=eq.'+encodeURIComponent(postId)+'&limit=1',{headers:{apikey:KEY}});const rows=await r.json();owner=rows?.[0]?.user_id;postOwners.set(postId,String(owner||''))}catch(_){}}
   if(!owner||owner===uid())return;

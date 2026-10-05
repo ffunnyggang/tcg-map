@@ -383,3 +383,7 @@ body.funy-mon-open .funy-mon-pending-entry{opacity:0;visibility:hidden;pointer-e
 @media(prefers-reduced-motion:reduce){
   .funy-mon-new-badge{animation:none!important}
 }
+
+.funy-mon-event-caption{margin:4px auto 0!important;color:#8062d8!important;font-size:9.5px!important;font-weight:800!important}
+.funy-mon-event-caption[hidden]{display:none!important}
+.funy-mon-entry-rule{width:100%;margin:7px auto 0;padding:7px 9px;border:1px solid #e2d8f3;border-radius:9px;background:#f7f3ff;color:#684db2;font-size:9px;font-weight:800;line-height:1.35;text-align:center}

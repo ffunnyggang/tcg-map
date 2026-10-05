@@ -46,6 +46,7 @@ async function blockOwner(postId,modal){
     blocked.add(owner);applyHidden();modal?.remove();alert(notified?'작성자를 차단하고 운영팀에 신고를 접수했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.':'작성자를 차단했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.');
   }catch(e){alert(e.message||String(e))}
 }
+window.FUNY_TALK_BLOCK_POST=(postId)=>blockOwner(String(postId||''),null);
 function decorateDetail(){
   const modal=document.getElementById('funyTalkDetail');if(!modal||!lastPostId||modal.querySelector('.talk-block-user'))return;
   const owner=postOwners.get(lastPostId);if(!owner||owner===uid())return;

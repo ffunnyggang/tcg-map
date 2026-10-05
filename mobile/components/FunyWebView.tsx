@@ -181,7 +181,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const lastReportedRoute=useRef<string>('');
   const lastShopDetail=useRef(false);
   const lastSheetRequest=useRef<{url:string;at:number}|null>(null);
-  const lastNativeRefreshToken=useRef<string|undefined>(undefined);
+  const lastNativeRefreshToken=useRef<string|undefined>(refreshToken);
   const lastNativeRefreshAt=useRef(0);
   const {height:windowHeight}=useWindowDimensions();
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
@@ -201,7 +201,6 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
   useEffect(()=>{
     if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
-    if(lastNativeRefreshToken.current===undefined){lastNativeRefreshToken.current=refreshToken;return;}
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;
     const now=Date.now();
@@ -247,15 +246,15 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
             var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
             if(nm&&window.naver&&naver.maps&&naver.maps.Event){
               naver.maps.Event.trigger(nm,'resize');
-              if(window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android'&&typeof naver.maps.Event.clearListeners==='function'&&!window.__FUNY_ANDROID_NAVER_IDLE_STABLE){
+              if(window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android'&&typeof naver.maps.Event.clearListeners==='function'){
                 naver.maps.Event.clearListeners(nm,'idle');
-                window.__FUNY_ANDROID_NAVER_IDLE_STABLE=true;
               }
             }
           }catch(_){}
         }catch(_){}
       })();true;`;
-    const timers=[80,320,760].map(ms=>setTimeout(()=>ref.current?.injectJavaScript(js),ms));
+    const retryMs=Platform.OS==='android'?[80,320,760,1600,3200,4800]:[80,320,760];
+    const timers=retryMs.map(ms=>setTimeout(()=>ref.current?.injectJavaScript(js),ms));
     return()=>timers.forEach(clearTimeout);
   },[isFocused,isMapWebView]);
 

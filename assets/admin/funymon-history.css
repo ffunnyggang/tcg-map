@@ -54,3 +54,9 @@
 @media(max-width:520px){
   .fmh-stats{grid-template-columns:1fr 1fr}
 }
+
+.mon-status-stats{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+.mon-event-status.paused{background:#fff4df!important;color:#9a6a13!important}
+.mon-event-status.archived{background:#efedf1!important;color:#77707c!important}
+@media(max-width:899px){.mon-status-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:520px){.mon-status-stats{grid-template-columns:1fr 1fr!important}}

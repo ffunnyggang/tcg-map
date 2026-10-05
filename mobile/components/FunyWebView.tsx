@@ -211,6 +211,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const [webViewKey,setWebViewKey]=useState(0);
   const [sheetUrl,setSheetUrl]=useState<string|null>(null);
   const [accessToken,setAccessToken]=useState<string|null>(null);
+  const previousAccessToken=useRef<string|null|undefined>(undefined);
   const [authReady,setAuthReady]=useState(false);
   const [sheetOpen,setSheetOpen]=useState(false);
   const [currentTarget,setCurrentTarget]=useState(url);
@@ -239,6 +240,11 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useEffect(()=>{if(!isFocused)setWebOverlayOpen(false);},[isFocused]);
   useEffect(()=>{let alive=true;supabase.auth.getSession().then(({data})=>{if(!alive)return;setAccessToken(data.session?.access_token||null);setAuthReady(true);}).catch(()=>{if(alive)setAuthReady(true)});const sub=supabase.auth.onAuthStateChange((_event,session)=>{if(!alive)return;setAccessToken(session?.access_token||null);});return()=>{alive=false;sub.data.subscription.unsubscribe();};},[]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[authReady]);
+  useEffect(()=>{
+    if(!authReady)return;
+    if(previousAccessToken.current===undefined){previousAccessToken.current=accessToken;return;}
+    if(previousAccessToken.current!==accessToken){previousAccessToken.current=accessToken;setWebViewKey(k=>k+1);}
+  },[accessToken,authReady]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
   useEffect(()=>{
     if(Platform.OS!=='android'||!refreshToken||!isFocused)return;

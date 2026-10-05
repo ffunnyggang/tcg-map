@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { ActivityIndicator,Alert,Image,Platform,Pressable,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams,useRouter } from 'expo-router';
-import * as AppleAuthentication from 'expo-apple-authentication';
 import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 import { C,T,UI } from '../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 const HERO='https://funypin.kr/assets/banners/banner_hero_01.png';
 
@@ -82,24 +82,22 @@ export default function Login(){
 
       <View style={[styles.providerCard,busy&&{opacity:.62}]} pointerEvents={busy?'none':'auto'}>
         <Pressable onPress={()=>social('kakao')} style={styles.kakao}>
-          <View style={styles.providerIcon}><Text style={styles.kakaoIcon}>●</Text></View>
-          <Text style={styles.kakaoText}>카카오로 계속하기</Text>
+          <View style={styles.providerIcon}><Ionicons name="chatbubble" size={21} color="#17120A"/></View>
+          <Text style={styles.kakaoText}>카카오로 시작하기</Text>
           <View style={styles.providerIcon}/>
         </Pressable>
 
         <Pressable onPress={()=>social('google')} style={styles.google}>
           <View style={styles.providerIcon}><Text style={styles.googleIcon}>G</Text></View>
-          <Text style={styles.googleText}>Google로 계속하기</Text>
+          <Text style={styles.googleText}>Google로 시작하기</Text>
           <View style={styles.providerIcon}/>
         </Pressable>
 
-        {Platform.OS==='ios'?<AppleAuthentication.AppleAuthenticationButton
-          buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
-          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-          cornerRadius={14}
-          style={{width:'100%',height:56}}
-          onPress={apple}
-        />:null}
+        {Platform.OS==='ios'?<Pressable onPress={apple} style={styles.apple}>
+          <View style={styles.providerIcon}><Ionicons name="logo-apple" size={23} color="#fff"/></View>
+          <Text style={styles.appleText}>Apple로 시작하기</Text>
+          <View style={styles.providerIcon}/>
+        </Pressable>:null}
       </View>
 
       <View style={styles.consentArea}>
@@ -233,15 +231,20 @@ const styles=StyleSheet.create({
     justifyContent:'space-between',
     paddingHorizontal:18
   },
+  apple:{
+    height:56,
+    borderRadius:15,
+    backgroundColor:'#050505',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+    paddingHorizontal:18
+  },
   providerIcon:{
     width:28,
     height:28,
     alignItems:'center',
     justifyContent:'center'
-  },
-  kakaoIcon:{
-    fontSize:18,
-    color:'#17120A'
   },
   googleIcon:{
     fontSize:20,
@@ -257,6 +260,11 @@ const styles=StyleSheet.create({
     fontSize:14,
     fontWeight:'900',
     color:C.text
+  },
+  appleText:{
+    fontSize:14,
+    fontWeight:'900',
+    color:'#fff'
   },
   consentArea:{
     paddingHorizontal:14,

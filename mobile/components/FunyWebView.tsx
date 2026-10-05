@@ -282,11 +282,24 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
               return;
             }
 
+            const {data:existingBlock}=await supabase
+              .from('community_user_blocks')
+              .select('blocked_user_id')
+              .eq('blocker_user_id',user.id)
+              .eq('blocked_user_id',ownerId)
+              .maybeSingle();
+
+            if(existingBlock){
+              ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));location.hash='';true;`);
+              Alert.alert('차단한 사용자','이미 차단한 사용자입니다.');
+              return;
+            }
+
             const {error:blockError}=await supabase
               .from('community_user_blocks')
               .insert({blocker_user_id:user.id,blocked_user_id:ownerId});
 
-            if(blockError&&blockError.code!=='23505'){
+            if(blockError){
               Alert.alert('차단 실패',blockError.message||'차단 처리에 실패했습니다.');
               return;
             }
@@ -302,10 +315,9 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
                 });
             }catch{}
 
+            ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));location.hash='';true;`);
             setTalkPostMine(false);
             setTalkMenuOpen(false);
-            setCurrentTarget(url);
-            setWebViewKey(k=>k+1);
             Alert.alert('차단 완료','해당 사용자의 게시물을 내 TALK에서 숨겼습니다.');
           }catch(e:any){
             Alert.alert('차단 실패',String(e?.message||'차단 처리 중 오류가 발생했습니다.'));

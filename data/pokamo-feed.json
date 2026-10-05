@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-05T10:33:00.299371+00:00",
+  "updatedAt": "2026-10-05T11:31:48.304792+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
+      "author": "한량TCG",
+      "publishedAt": "2026-10-05T11:28:11.629392Z",
+      "excerpt": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-고리파덕-좋아해서-첫-입문했습니더-jK2O6aqd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "오늘은 SAR 한개 떴네요",
@@ -11,10 +24,10 @@
       "excerpt": "이 카드는 좀 이뿐듯",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/20e65ce8-7f9c-43eb-b6a3-2f6962735541.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘은-SAR-한개-떴네요-j8rmBxRP",
-      "views": 7,
+      "views": 19,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.07
+      "popularityScore": 3.19
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "마리오피카츄 하프",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/마리오피카츄-하프-dZn5243d",
-      "views": 4,
+      "views": 5,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.04
+      "popularityScore": 3.05
     },
     {
       "category": "카드거래",
@@ -63,10 +76,10 @@
       "excerpt": "좋은건 없네요ㅠㅠ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/fce532a9-e503-4335-9581-ece15a96e903.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘-새로-영입된-아이들-dz9K9V7P",
-      "views": 36,
+      "views": 37,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.36
+      "popularityScore": 5.37
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.05
-    },
-    {
-      "category": "자유 게시판",
-      "title": "델타 트레이딩 카드",
-      "author": "쥬리",
-      "publishedAt": "2026-10-03T23:20:17.042366Z",
-      "excerpt": "한국에서 수요가 있을까요? 포켓몬카드로 교환이나 판매하고 싶은데요.",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/c30751d1-876a-4e04-958a-96d4837926ab.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/델타-트레이딩-카드-A4QLrMkP",
-      "views": 5,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.05
     },
     {
       "category": "카드거래",
@@ -258,10 +258,10 @@
       "excerpt": "하자 하나도 없어요 !! 보이는 그대로입니다 31.5에 팝니다 반택/ 직거래 원해요 직거래는 서울, 경기북부 가능합니다 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790641664868db64827ad9176a64c2a43e22d47674224926ed61f30250c90ac2654e943924810.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모카드-psa10-팝니다-Pk69rMMA",
-      "views": 23,
+      "views": 24,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.23
+      "popularityScore": 6.24
     },
     {
       "category": "카드 자랑",
@@ -349,10 +349,10 @@
       "excerpt": "메타몽 프로모 12에 팝니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/e6604502-43b2-46ca-be84-7e74014b5fa4.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모-팝니다미개봉-ARok1loP",
-      "views": 43,
+      "views": 44,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.43
+      "popularityScore": 9.44
     },
     {
       "category": "카드 자랑",
@@ -362,10 +362,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 146,
+      "views": 147,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 14.46
+      "popularityScore": 14.47
     },
     {
       "category": "카드거래",

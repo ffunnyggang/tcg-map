@@ -24,6 +24,17 @@
           "experimentalLauncherActivity": false
         }
       ],
+      [
+        "expo-splash-screen",
+        {
+          "android": {
+            "backgroundColor": "#FFFFFF",
+            "image": "./assets/transparent-splash.png",
+            "imageWidth": 1,
+            "resizeMode": "contain"
+          }
+        }
+      ],
       "expo-apple-authentication"
     ],
     "ios": {

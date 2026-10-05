@@ -348,3 +348,38 @@ body.funy-mon-open .live-pin-entry-wrap,body.funy-mon-open .live-pin-detail-entr
 .funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-reward-detail{margin-top:5px!important}
 .funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-entry-apply{width:100%;margin-top:9px;padding-top:9px}
 @media(max-width:360px){.funy-mon-reward-kuji:has(.funy-mon-entry-apply){height:230px!important}.funy-mon-reward-result:has(.funy-mon-entry-apply){padding-left:18px!important;padding-right:18px!important}}
+
+
+/* FUNY MON polish / event UX 20261005 */
+.funy-mon-marker.move-0,.funy-mon-marker.move-1,.funy-mon-marker.move-2{animation-timing-function:ease-in-out}
+.funy-mon-sprite{animation-duration:1.35s;animation-timing-function:ease-in-out}
+.funy-mon-shadow{animation-duration:1.35s;animation-timing-function:ease-in-out}
+.funy-mon-result-icon{position:relative}
+.funy-mon-new-badge{position:absolute;right:-3px;top:4px;z-index:5;display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:24px;padding:0 8px;border-radius:999px;background:#7657c8;color:#fff;font:900 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em;box-shadow:0 5px 14px rgba(94,69,157,.24);animation:funyNewPop .32s cubic-bezier(.2,.85,.25,1.15)}
+@keyframes funyNewPop{0%{opacity:0;transform:translateY(5px) scale(.82)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.funy-mon-pending-entry{position:fixed;right:max(14px,calc((100vw - 420px)/2 + 14px));bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 82px);z-index:2147482500;display:flex;align-items:center;gap:9px;min-width:178px;max-width:250px;padding:10px 11px;border:1px solid #ded4ef;border-radius:15px;background:rgba(255,255,255,.97);box-shadow:0 10px 26px rgba(42,31,65,.16);color:#302936;text-align:left;backdrop-filter:blur(10px)}
+.funy-mon-pending-entry[hidden]{display:none!important}
+.funy-mon-pending-entry>span:nth-child(2){display:flex;min-width:0;flex:1;flex-direction:column;gap:2px}
+.funy-mon-pending-entry b{font-size:11px;font-weight:900;color:#5f43b3}
+.funy-mon-pending-entry small{font-size:9px;font-weight:700;color:#8f8795;white-space:nowrap}
+.funy-mon-pending-entry>i{font-style:normal;font-size:20px;color:#8062d8}
+.funy-mon-pending-dot{width:9px;height:9px;border-radius:50%;background:#8062d8;box-shadow:0 0 0 5px rgba(128,98,216,.10);flex:0 0 auto}
+body.funy-mon-open .funy-mon-pending-entry{opacity:0;visibility:hidden;pointer-events:none}
+
+.funymon-thumb-badge{position:absolute;left:6px;bottom:6px;z-index:4;display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;background:rgba(73,50,126,.92);color:#fff;font:900 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em;box-shadow:0 3px 8px rgba(34,22,57,.22)}
+.shop-card.is-funymon-shop{border-color:#d9ccef;box-shadow:0 4px 14px rgba(104,77,171,.07)}
+
+.funymon-detail-banner{display:flex;align-items:center;gap:10px;margin:12px 0 0;padding:12px 13px;border:1px solid #ded3f0;border-radius:14px;background:linear-gradient(135deg,#f7f2ff,#fff);box-shadow:0 4px 14px rgba(85,62,145,.06)}
+.funymon-detail-kicker{flex:0 0 auto;display:inline-flex;align-items:center;height:25px;padding:0 8px;border-radius:999px;background:#7457c4;color:#fff;font:900 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em}
+.funymon-detail-banner>div{min-width:0;display:flex;flex:1;flex-direction:column;gap:2px}
+.funymon-detail-banner b{font-size:12px;color:#372e45}
+.funymon-detail-banner small{overflow:hidden;color:#81788a;font-size:9.5px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+.funymon-detail-banner>i{font-style:normal;font-size:20px;color:#8569cf}
+
+@media(max-width:420px){
+  .funy-mon-pending-entry{right:12px;bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 78px);min-width:164px}
+}
+@media(prefers-reduced-motion:reduce){
+  .funy-mon-new-badge{animation:none!important}
+}

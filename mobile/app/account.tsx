@@ -51,9 +51,9 @@ export default function Account(){
   const joinDate=profile?.created_at||user?.created_at||null;
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
 
-  return <SafeAreaView style={styles.root}>
+  return <SafeAreaView edges={['top']} style={styles.root}>
     <View style={styles.header}><Pressable onPress={()=>Platform.OS==='android'?router.replace('/(tabs)'):router.back()} hitSlop={8} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable><Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>MY</Text></View>
-    <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="always" contentContainerStyle={[styles.content,{paddingBottom:Math.max(180,insets.bottom+150)}]}>
+    <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="always" contentContainerStyle={[styles.content,{paddingBottom:Math.max(72,insets.bottom+48)}]}>
       <View style={styles.profileCard}>
         {user?(avatar?<Image source={{uri:avatar}} style={styles.avatarImage}/>:<View style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></View>):<View style={styles.avatar}><Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:32,height:36}}/></View>}
         <View style={styles.profileCopy}><Text numberOfLines={1} style={styles.nickname}>{nickname}</Text>{user?<Text style={styles.joinDate}>가입일 {formatJoinDate(joinDate)}</Text>:<Text style={styles.joinDate}>로그인하면 MY 기능을 이용할 수 있어요.</Text>}</View>

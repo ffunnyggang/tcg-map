@@ -282,16 +282,16 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
             return;
           }
 
-          await supabase
-            .from('community_post_reports')
-            .insert({
-              post_id:postId,
-              reporter_user_id:user.id,
-              reason:'abuse',
-              detail:'사용자 차단과 함께 자동 접수된 신고입니다.',
-            })
-            .then(()=>{})
-            .catch(()=>{});
+          try{
+            await supabase
+              .from('community_post_reports')
+              .insert({
+                post_id:postId,
+                reporter_user_id:user.id,
+                reason:'abuse',
+                detail:'사용자 차단과 함께 자동 접수된 신고입니다.',
+              });
+          }catch{}
 
           setTalkPostMine(false);
           setTalkMenuOpen(false);

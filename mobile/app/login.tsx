@@ -114,7 +114,7 @@ export default function Login(){
         <View style={[styles.providerGroup,compact&&styles.providerGroupCompact,busy&&styles.providerBusy]} pointerEvents={busy?'none':'auto'}>
           <SocialButton
             label="카카오로 시작하기"
-            icon={<Image source={KAKAO_LOGIN_SYMBOL} resizeMode="contain" style={styles.brandIcon}/>} 
+            icon={<Image source={KAKAO_LOGIN_SYMBOL} resizeMode="contain" style={styles.kakaoBrandIcon}/>} 
             backgroundColor="#FEE500"
             textColor="#191600"
             disabled={!!busy}
@@ -292,9 +292,9 @@ const styles=StyleSheet.create({
     alignItems:'flex-start',
     justifyContent:'center',
   },
-  brandIcon:{
-    width:22,
-    height:22,
+  kakaoBrandIcon:{
+    width:27,
+    height:27,
   },
   googleBrandIcon:{
     width:22,

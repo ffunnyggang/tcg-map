@@ -35,7 +35,7 @@ try{
     'html.app-shell input:not([type="checkbox"]):not([type="radio"]),html.app-shell textarea{font-size:16px!important;-webkit-text-size-adjust:100%!important}',
     'html.app-shell .country-filter-select{font-size:12px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}',
+    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}',
     'html.app-shell.app-shop-detail-open #home-view{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #naver-map,html.app-shell.app-shop-detail-open #google-map,html.app-shell.app-shop-detail-open .map-wrap-hero,html.app-shell.app-shop-detail-open .map-shop-sheet{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
@@ -156,9 +156,9 @@ try{
 }catch(e){}
 })(); true;`;
 
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page'};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab'}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken}:Props){
   const router=useRouter();
   const {language}=useAppLanguage();
   const isFocused=useIsFocused();
@@ -181,6 +181,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const lastReportedRoute=useRef<string>('');
   const lastShopDetail=useRef(false);
   const lastSheetRequest=useRef<{url:string;at:number}|null>(null);
+  const lastNativeRefreshToken=useRef<string|undefined>(undefined);
+  const lastNativeRefreshAt=useRef(0);
   const {height:windowHeight}=useWindowDimensions();
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
@@ -197,6 +199,16 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useEffect(()=>{let alive=true;supabase.auth.getSession().then(({data})=>{if(!alive)return;setAccessToken(data.session?.access_token||null);setAuthReady(true);}).catch(()=>{if(alive)setAuthReady(true)});const sub=supabase.auth.onAuthStateChange((_event,session)=>{if(!alive)return;setAccessToken(session?.access_token||null);});return()=>{alive=false;sub.data.subscription.unsubscribe();};},[]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[authReady]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
+  useEffect(()=>{
+    if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
+    if(lastNativeRefreshToken.current===undefined){lastNativeRefreshToken.current=refreshToken;return;}
+    if(lastNativeRefreshToken.current===refreshToken)return;
+    lastNativeRefreshToken.current=refreshToken;
+    const now=Date.now();
+    if(now-lastNativeRefreshAt.current<1600)return;
+    lastNativeRefreshAt.current=now;
+    ref.current?.reload();
+  },[refreshToken,isFocused]);
 
   const reportRoute=useCallback((target:string)=>{const next=String(target||'');if(!next||lastReportedRoute.current===next)return;lastReportedRoute.current=next;setCurrentTarget(next);onWebRouteChange?.(next);},[onWebRouteChange]);
   useEffect(()=>{reportRoute(url);},[url,reportRoute]);
@@ -233,7 +245,13 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
           }catch(_){}
           try{
             var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
-            if(nm&&window.naver&&naver.maps&&naver.maps.Event)naver.maps.Event.trigger(nm,'resize');
+            if(nm&&window.naver&&naver.maps&&naver.maps.Event){
+              naver.maps.Event.trigger(nm,'resize');
+              if(window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android'&&typeof naver.maps.Event.clearListeners==='function'&&!window.__FUNY_ANDROID_NAVER_IDLE_STABLE){
+                naver.maps.Event.clearListeners(nm,'idle');
+                window.__FUNY_ANDROID_NAVER_IDLE_STABLE=true;
+              }
+            }
           }catch(_){}
         }catch(_){}
       })();true;`;

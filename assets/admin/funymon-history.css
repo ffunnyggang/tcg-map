@@ -60,3 +60,6 @@
 .mon-event-status.archived{background:#efedf1!important;color:#77707c!important}
 @media(max-width:899px){.mon-status-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:520px){.mon-status-stats{grid-template-columns:1fr 1fr!important}}
+
+.fmh-guard-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.fmh-guard-actions button{height:32px;padding:0 10px;border:1px solid #d8ccef;border-radius:8px;background:#fff;color:#684db2;font-size:8.5px;font-weight:850;cursor:pointer}

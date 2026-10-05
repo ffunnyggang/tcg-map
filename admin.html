@@ -356,8 +356,53 @@ async function downloadRequestImages(id){
  if(!ok){alert('첨부이미지를 다운로드하지 못했습니다.');return}
  const blob=await zip.generateAsync({type:'blob'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='funypin-shop-request-'+id+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
-async function loadShopRequests(){const f=$('feed');f.innerHTML='<div class="empty">불러오는 중...</div>';try{const rows=await api('/rest/v1/shop_requests?select=*&order=created_at.desc&limit=100');if(!rows.length){f.innerHTML='<div class="empty">접수된 매장 요청이 없습니다.</div>';return}f.innerHTML='';for(const r of rows){const paths=[r.logo_path,...(r.photo_paths||[])].filter(Boolean),urls=[];requestDownloadPaths.set(String(r.id),paths);for(const p of paths){try{const u=await signedImage(p);if(u)urls.push(u)}catch(_){}}const c=document.createElement('article');c.className='card';const statusName={received:'접수',reviewing:'검토중',completed:'반영완료'}[r.status]||r.status;c.innerHTML='<div class="top"><span class="request-type">'+(r.request_type==='edit'?'정보 수정':'신규 등록')+'</span><span class="time">'+new Date(r.created_at).toLocaleString('ko-KR')+'</span><span class="status '+(r.status==='completed'?'done':'')+'">'+esc(statusName)+'</span></div><div class="shop">'+esc(r.shop_name)+(r.shop_name_en?' / '+esc(r.shop_name_en):'')+'</div><div class="request-grid"><div><b>주소</b> '+esc(r.address)+'</div>'+(r.naver_map_url?'<div><b>네이버지도</b> '+esc(r.naver_map_url)+'</div>':'')+(r.items?.length?'<div><b>취급</b> '+esc(r.items.join(', '))+'</div>':'')+(r.hours?'<div><b>영업시간</b> '+esc(r.hours)+'</div>':'')+(r.closed_display?'<div><b>정기휴무</b> '+esc(r.closed_display)+'</div>':'')+(r.instagram?'<div><b>Instagram</b> '+esc(r.instagram)+'</div>':'')+(r.website_url?'<div><b>공식 홈페이지</b> '+esc(r.website_url)+'</div>':'')+(r.phone?'<div><b>전화</b> '+esc(r.phone)+'</div>':'')+(r.parking_status?'<div><b>주차</b> '+esc(r.parking_status)+'</div>':'')+(r.contact?'<div><b>요청자 연락처</b> '+esc(r.contact)+'</div>':'')+(r.detail?'<div class="body">'+esc(r.detail)+'</div>':'')+'</div>'+(urls.length?'<div class="request-images">'+urls.map((u,i)=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="첨부 이미지 '+(i+1)+'"></a>').join('')+'</div>':'')+'<div class="request-action-panel"><div class="request-primary-row '+(paths.length?'has-download':'single')+'"><button class="request-import" data-request-import="'+r.id+'"'+(r.status==='completed'?' disabled':'')+'>'+(r.request_type==='edit'?'수정 화면으로 가져오기':'카드샵으로 가져오기')+'</button>'+(paths.length?'<button class="request-download" data-request-download="'+r.id+'">첨부이미지 '+paths.length+'개 ZIP 다운로드</button>':'')+'</div><div class="request-state-row"><span class="request-state-label">처리 상태</span><div class="request-status-actions"><button data-request-id="'+r.id+'" data-request-status="received" class="'+(r.status==='received'?'on':'')+'">접수</button><button data-request-id="'+r.id+'" data-request-status="reviewing" class="'+(r.status==='reviewing'?'on':'')+'">검토중</button><button data-request-id="'+r.id+'" data-request-status="completed" class="'+(r.status==='completed'?'on':'')+'">반영완료</button></div><button class="request-delete" data-request-delete="'+r.id+'" data-request-name="'+esc(r.shop_name)+'">요청 삭제</button></div></div>';f.appendChild(c)}document.querySelectorAll('[data-request-status]').forEach(b=>b.onclick=()=>setRequestStatus(b.dataset.requestId,b.dataset.requestStatus));document.querySelectorAll('[data-request-download]').forEach(b=>b.onclick=()=>downloadRequestImages(b.dataset.requestDownload));document.querySelectorAll('[data-request-import]').forEach(b=>b.onclick=()=>importShopRequest(b.dataset.requestImport));document.querySelectorAll('[data-request-delete]').forEach(b=>b.onclick=()=>deleteShopRequest(b.dataset.requestDelete,b.dataset.requestName))}catch(e){f.innerHTML='<div class="empty error">매장 요청 조회 실패: '+esc(e.message)+'</div>'}}
-
+async function loadShopRequests(){
+ const f=$('feed');f.innerHTML='<div class="empty">불러오는 중...</div>';
+ try{
+  const rows=await api('/rest/v1/shop_requests?select=*&order=created_at.desc&limit=100');
+  if(!rows.length){f.innerHTML='<div class="empty">접수된 매장 요청이 없습니다.</div>';return}
+  const count=s=>rows.filter(x=>x.status===s).length;
+  f.innerHTML='<div class="shop-stats request-summary-stats"><div class="shop-stat"><b>'+rows.length+'</b><span>전체 요청</span></div><div class="shop-stat"><b>'+count('received')+'</b><span>접수</span></div><div class="shop-stat"><b>'+count('reviewing')+'</b><span>검토중</span></div><div class="shop-stat"><b>'+count('completed')+'</b><span>반영완료</span></div></div><div id="shopRequestList" class="request-list"></div>';
+  const list=$('shopRequestList');
+  for(const r of rows){
+   const paths=[r.logo_path,...(r.photo_paths||[])].filter(Boolean),urls=[];
+   requestDownloadPaths.set(String(r.id),paths);
+   for(const p of paths){try{const u=await signedImage(p);if(u)urls.push(u)}catch(_){}}
+   const c=document.createElement('article');c.className='card request-card';
+   const statusName={received:'접수',reviewing:'검토중',completed:'반영완료'}[r.status]||r.status;
+   const info=[
+    ['주소',r.address,'wide'],
+    ...(r.items?.length?[['취급',r.items.join(', '),'wide']]:[]),
+    ...(r.hours?[['영업시간',r.hours,'']]:[]),
+    ...(r.closed_display?[['정기휴무',r.closed_display,'']]:[]),
+    ...(r.phone?[['전화',r.phone,'']]:[]),
+    ...(r.parking_status?[['주차',r.parking_status,'']]:[]),
+    ...(r.contact?[['요청자 연락처',r.contact,'']]:[])
+   ];
+   const links=[
+    ...(r.naver_map_url?[['네이버지도',r.naver_map_url]]:[]),
+    ...(r.instagram?[['Instagram',r.instagram]]:[]),
+    ...(r.website_url?[['공식 홈페이지',r.website_url]]:[])
+   ];
+   c.innerHTML=
+    '<div class="request-card-head"><div class="request-card-title-wrap"><div class="request-card-badges"><span class="request-type">'+(r.request_type==='edit'?'정보 수정':'신규 등록')+'</span><span class="status '+(r.status==='completed'?'done':'')+'">'+esc(statusName)+'</span></div><div class="request-card-title">'+esc(r.shop_name)+(r.shop_name_en?'<span>'+esc(r.shop_name_en)+'</span>':'')+'</div><div class="request-card-date">'+new Date(r.created_at).toLocaleString('ko-KR')+'</div></div></div>'+
+    '<div class="request-card-layout"><div class="request-card-content">'+
+      '<div class="request-info-grid">'+info.map(x=>'<div class="request-info-item '+(x[2]||'')+'"><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b></div>').join('')+'</div>'+
+      (links.length?'<div class="request-link-row">'+links.map(x=>'<a href="'+esc(x[1])+'" target="_blank" rel="noopener">'+esc(x[0])+' ↗</a>').join('')+'</div>':'')+
+      (r.detail?'<div class="request-note"><span>요청 내용</span><p>'+esc(r.detail)+'</p></div>':'')+
+      (urls.length?'<div class="request-attachment-section"><div class="request-attachment-head"><div><b>첨부 이미지</b><span>'+urls.length+'개</span></div>'+(paths.length?'<button class="request-download" data-request-download="'+r.id+'">ZIP 다운로드</button>':'')+'</div><div class="request-images">'+urls.map((u,i)=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="첨부 이미지 '+(i+1)+'"></a>').join('')+'</div></div>':'')+
+     '</div>'+
+     '<aside class="request-control-panel"><div class="request-control-block"><span class="request-control-label">반영 작업</span><button class="request-import" data-request-import="'+r.id+'"'+(r.status==='completed'?' disabled':'')+'>'+(r.request_type==='edit'?'수정 화면으로 가져오기':'카드샵으로 가져오기')+'</button><p>'+(r.status==='completed'?'이미 반영 완료된 요청입니다.':'요청 정보를 카드샵 관리 화면으로 가져옵니다.')+'</p></div>'+
+     '<div class="request-control-block"><span class="request-control-label">처리 상태</span><div class="request-status-actions"><button data-request-id="'+r.id+'" data-request-status="received" class="'+(r.status==='received'?'on':'')+'">접수</button><button data-request-id="'+r.id+'" data-request-status="reviewing" class="'+(r.status==='reviewing'?'on':'')+'">검토중</button><button data-request-id="'+r.id+'" data-request-status="completed" class="'+(r.status==='completed'?'on':'')+'">반영완료</button></div></div>'+
+     '<button class="request-delete" data-request-delete="'+r.id+'" data-request-name="'+esc(r.shop_name)+'">요청 삭제</button></aside></div>';
+   list.appendChild(c);
+  }
+  document.querySelectorAll('[data-request-status]').forEach(b=>b.onclick=()=>setRequestStatus(b.dataset.requestId,b.dataset.requestStatus));
+  document.querySelectorAll('[data-request-download]').forEach(b=>b.onclick=()=>downloadRequestImages(b.dataset.requestDownload));
+  document.querySelectorAll('[data-request-import]').forEach(b=>b.onclick=()=>importShopRequest(b.dataset.requestImport));
+  document.querySelectorAll('[data-request-delete]').forEach(b=>b.onclick=()=>deleteShopRequest(b.dataset.requestDelete,b.dataset.requestName));
+ }catch(e){f.innerHTML='<div class="empty error">매장 요청 조회 실패: '+esc(e.message)+'</div>'}
+}
 
 
 async function ensureShopReferenceData(){

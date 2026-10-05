@@ -139,20 +139,42 @@
     img.src=url;viewer.hidden=false;
   }
   async function submitEventEntry(data){
-    const r=data?.reward||{},campaign=String(r.entry_campaign_id||'').trim(),input=document.getElementById('funyMonEntryInstagram'),btn=document.getElementById('funyMonEntrySubmit'),msg=document.getElementById('funyMonEntryMessage');
-    if(!campaign||!input||!btn)return;
+    const r=data?.reward||{},campaign=String(r.entry_campaign_id||'').trim(),claim=String(r.claim_code||'').trim(),input=document.getElementById('funyMonEntryInstagram'),btn=document.getElementById('funyMonEntrySubmit'),msg=document.getElementById('funyMonEntryMessage');
+    if(!campaign||!claim||!input||!btn)return;
     const id=input.value.trim().replace(/^@/,'').toLowerCase();
     if(!/^[a-z0-9._]{1,30}$/.test(id)){if(msg)msg.textContent='Instagram 아이디를 정확히 입력해주세요.';return}
-    btn.disabled=true;if(msg)msg.textContent='응모 확인 중...';
+    btn.disabled=true;if(msg){msg.classList.remove('done');msg.textContent='응모 확인 중...'}
     try{
       const headers={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Accept':'application/json'};
-      const q=new URLSearchParams({select:'id',shop_id:'eq.'+campaign,status:'eq.EVENT_ENTRY',content:'eq.'+id,limit:'1'});
-      const check=await fetch(SUPABASE_URL+'/rest/v1/live_reports?'+q.toString(),{headers,cache:'no-store'});if(!check.ok)throw new Error('응모 확인 실패');const rows=await check.json();
-      if(rows.length){if(msg)msg.textContent='이미 응모한 Instagram 아이디입니다.';return}
-      const body={shop_id:campaign,shop_name:'FUNY MON EVENT',post_type:'report',category:'store',status:'EVENT_ENTRY',content:id,client_id:anonId()};
-      const saved=await fetch(SUPABASE_URL+'/rest/v1/live_reports',{method:'POST',headers:{...headers,Prefer:'return=minimal'},body:JSON.stringify(body)});if(!saved.ok)throw new Error('응모 저장 실패');
-      input.disabled=true;btn.textContent='응모 완료';if(msg){msg.classList.add('done');msg.textContent='이벤트 응모가 완료됐어요!'}
-    }catch(e){if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'}finally{if(!input.disabled)btn.disabled=false}
+      const saved=await fetch(SUPABASE_URL+'/rest/v1/rpc/submit_funymon_event_entry',{
+        method:'POST',
+        headers,
+        cache:'no-store',
+        body:JSON.stringify({p_campaign_id:campaign,p_instagram_id:id,p_client_id:anonId(),p_claim_code:claim})
+      });
+      const result=await saved.json().catch(()=>null);
+      if(!saved.ok)throw new Error('응모 저장 실패');
+      if(!result?.ok){
+        const code=result?.error||'';
+        if(code==='daily_entry_limit'){if(msg)msg.textContent='오늘은 이미 '+Number(result.limit||1)+'회 응모했어요. 내일 다시 참여해주세요.';return}
+        if(code==='campaign_entry_limit'){if(msg)msg.textContent='이 이벤트는 최대 '+Number(result.limit||1)+'회까지 응모할 수 있어요.';return}
+        if(code==='already_submitted'){if(msg)msg.textContent='이미 사용한 응모권입니다.';return}
+        if(code==='campaign_not_started'){if(msg)msg.textContent='아직 이벤트 응모 기간이 시작되지 않았어요.';return}
+        if(code==='campaign_ended'||code==='campaign_unavailable'){if(msg)msg.textContent='이벤트 응모 기간이 종료되었거나 현재 참여할 수 없어요.';return}
+        if(code==='invalid_claim_code'||code==='missing_claim_code'){if(msg)msg.textContent='응모권 정보를 확인하지 못했어요. 퍼니몬을 다시 포획해주세요.';return}
+        if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';return
+      }
+      input.disabled=true;btn.textContent='응모 완료';
+      const total=Number(result.entry_count_total||1),today=Number(result.entry_count_today||1),mode=String(result.limit_mode||'');
+      let done='이벤트 응모가 완료됐어요! · 누적 '+total+'회';
+      if(mode==='daily'&&result.limit)done='응모 완료! · 오늘 '+today+'/'+Number(result.limit)+'회 · 누적 '+total+'회';
+      else if(mode==='total'&&result.limit)done='응모 완료! · 누적 '+total+'/'+Number(result.limit)+'회';
+      if(msg){msg.classList.add('done');msg.textContent=done}
+    }catch(e){
+      if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'
+    }finally{
+      if(!input.disabled)btn.disabled=false
+    }
   }
   function rewardMarkup(data){
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
@@ -189,7 +211,7 @@
     resultNeedsSave=true;ensureModal();
     const icon=document.getElementById('funyMonIcon'),title=document.getElementById('funyMonTitle'),meta=document.getElementById('funyMonMeta'),copy=document.getElementById('funyMonCopy'),reward=document.getElementById('funyMonReward'),rewardResult=document.getElementById('funyMonRewardResult'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave'),sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
     [...sheet.classList].filter(x=>x.startsWith('mon-')).forEach(x=>sheet.classList.remove(x));sheet.classList.remove('is-fail','is-prize');sheet.classList.add('is-success','mon-'+def.id);document.getElementById('funyMonFx').innerHTML=funyMonFxMarkup(def);
-    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
+    icon.innerHTML='<img class="funy-mon-result-sprite" src="'+def.asset+'" alt="" draggable="false">';title.textContent=def.name;meta.innerHTML='<span>No.'+def.no+'</span><span class="type-'+def.id+'">'+def.type+'</span><span>'+def.tier+'</span>';meta.hidden=false;copy.textContent='📍 '+data.shop_name+'에서 포획했어요';
     const hasReward=!!data.reward;
     if(hasReward){
       rewardResult.innerHTML=rewardMarkup(data);reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';save.disabled=true;save.onclick=null;
@@ -206,7 +228,7 @@
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
       const captureHeaders={'Content-Type':'application/json'};
       try{if(window.__FUNY_ACCESS_TOKEN)captureHeaders.Authorization='Bearer '+window.__FUNY_ACCESS_TOKEN}catch(_){}
-      const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
+      const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:captureHeaders,body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){
         if(data.error==='too_far')showMessage('포획 가능 거리 밖이에요','현재 위치에서 '+meta.shop.name+'까지 약 '+data.distance_m+'m예요. 포획 가능 거리는 '+(data.required_m||100)+'m 이내예요.');

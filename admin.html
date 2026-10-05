@@ -110,7 +110,6 @@
 </div>
 
 <button data-admin-tab="content">콘텐츠 관리</button>
-<button data-admin-tab="notices">공지사항 관리</button>
 
 <div class="admin-group">
   <div class="admin-group-title">Community</div>
@@ -134,6 +133,7 @@
   <div class="admin-group-title">고객지원</div>
   <div class="admin-group-items">
     <button data-admin-tab="members">회원 관리</button>
+    <button data-admin-tab="notices">공지사항 관리</button>
     <button data-admin-tab="support">서비스 문의</button>
     <button data-admin-tab="partner">광고·제휴 문의</button>
     <button data-admin-tab="feedback">만족도 조사</button>
@@ -145,7 +145,7 @@
 <section class="main login-state">
 <section id="login" class="box"><h1>관리자 로그인</h1><p class="sub">Supabase에 등록한 FUNY PIN 관리자 계정으로 로그인하세요.</p><input id="email" class="input" type="email" autocomplete="username" placeholder="이메일"><input id="password" class="input" type="password" autocomplete="current-password" placeholder="비밀번호"><button id="loginBtn" class="primary">로그인</button><p id="loginMsg" class="sub" style="margin-top:10px"></p></section>
 <div id="toolbar" class="toolbar"><div><b id="toolbarTitle">대시보드</b><br><small id="toolbarSub">FUNY PIN 운영 현황</small></div></div>
-<nav id="mobileTabs" class="mobile-tabs"><button class="on" data-admin-tab="dashboard">대시보드</button><button data-admin-tab="stores">카드샵 관리</button><button data-admin-tab="shop">등록·수정 요청</button><button data-admin-tab="content">콘텐츠 관리</button><button data-admin-tab="notices">공지사항 관리</button><button data-admin-tab="community">게시물 관리</button><button data-admin-tab="talkreports">TALK 신고</button><button data-admin-tab="live">LIVE PIN 신고</button><button data-admin-tab="mon">FUNY MON</button><button data-admin-tab="event">응모 내역</button><button data-admin-tab="members">회원 관리</button><button data-admin-tab="support">서비스 문의</button><button data-admin-tab="partner">광고·제휴 문의</button><button data-admin-tab="feedback">만족도 조사</button><button data-admin-tab="stats">통계</button></nav>
+<nav id="mobileTabs" class="mobile-tabs"><button class="on" data-admin-tab="dashboard">대시보드</button><button data-admin-tab="stores">카드샵 관리</button><button data-admin-tab="shop">등록·수정 요청</button><button data-admin-tab="content">콘텐츠 관리</button><button data-admin-tab="community">게시물 관리</button><button data-admin-tab="talkreports">TALK 신고</button><button data-admin-tab="live">LIVE PIN 신고</button><button data-admin-tab="mon">FUNY MON</button><button data-admin-tab="event">응모 내역</button><button data-admin-tab="members">회원 관리</button><button data-admin-tab="notices">공지사항 관리</button><button data-admin-tab="support">서비스 문의</button><button data-admin-tab="partner">광고·제휴 문의</button><button data-admin-tab="feedback">만족도 조사</button><button data-admin-tab="stats">통계</button></nav>
 <section id="feed" class="feed"></section>
 </section></div></main>
 <div id="shopEditor" class="editor" aria-hidden="true"><div class="editor-panel"><div class="editor-head"><div><b id="editorTitle">카드샵 수정</b><br><span id="editorIdLabel"></span></div><button id="editorClose" class="editor-close" type="button" aria-label="닫기">×</button></div><nav id="editorTabs" class="editor-tabs"><button class="on" data-editor-tab="info" type="button">매장 정보</button><button data-editor-tab="review" type="button">방문 분석</button><button data-editor-tab="content" type="button">리뷰 콘텐츠</button><button data-editor-tab="settings" type="button">설정</button></nav><div id="editorBody" class="editor-body"></div><div class="editor-foot"><button id="editorDelete" class="editor-delete" type="button">삭제</button><button id="editorCancel" class="editor-cancel" type="button">취소</button><button id="editorSave" class="editor-save" type="button">저장</button></div></div></div>
@@ -788,7 +788,7 @@ async function hidePost(flagId,reportId,reason){if(!confirm('문제가 있는 �
 async function setStatus(id,status){try{const rows=await api('/rest/v1/live_report_flags?id=eq.'+encodeURIComponent(id)+'&select=report_id&limit=1');if(!rows.length)throw new Error('신고 정보를 찾지 못했습니다.');await api('/rest/v1/live_report_flags?report_id=eq.'+encodeURIComponent(rows[0].report_id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({admin_status:status,reviewed_at:new Date().toISOString()})});await load();alert('신고 상태 변경이 완료되었습니다.')}catch(e){alert('처리 실패: '+e.message)}}
 document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{adminTab=b.dataset.adminTab;document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('on',x.dataset.adminTab===adminTab));const meta={dashboard:['대시보드','FUNY PIN 운영 현황'],stores:['카드샵 관리','FUNY PIN 카드샵 마스터 DB'],shop:['매장 등록·수정 요청','사용자 접수 요청 검토'],content:['콘텐츠 관리','HOME · PICK 공용 콘텐츠 관리'],notices:['공지사항 관리','MY · 공지사항 콘텐츠 운영'],community:['게시물 관리','FUNY TALK 게시물 운영'],talkreports:['TALK 신고 관리','FUNY TALK 게시물 신고 내역'],live:['LIVE PIN 신고 관리','LIVE PIN 신고 및 게시물 조치'],mon:['FUNY MON','퍼니몬 이벤트·리워드·당첨 내역'],event:['이벤트 응모 내역','이벤트별 응모 내역 관리'],members:['회원 관리','회원 계정·활동 현황'],support:['서비스 문의','사용자 서비스 문의 접수 및 처리'],partner:['광고·제휴 문의','광고·제휴 문의 접수 및 처리'],feedback:['서비스 만족도 조사','Supabase 저장 응답 내역'],stats:['통계','회원·콘텐츠·퍼니몬 활동 지표']}[adminTab]||['관리자',''];$('toolbarTitle').textContent=meta[0];$('toolbarSub').textContent=meta[1];load()});
 $('loginBtn').onclick=login;$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('headerLogout').onclick=()=>{token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');location.reload()};token=sessionStorage.getItem('funypin_admin_token')||'';refreshToken=sessionStorage.getItem('funypin_admin_refresh')||'';if(token)verify();
-</script><script src="admin-notices-v1.js?v=20261005-v2"></script><script src="admin-community-v1.js?v=20261005-talk-posts-fix1"></script><script src="cms-link-enhancements.js"></script><script src="cms-collection-enhancements.js"></script><script src="cms-structure-enhancements.js"></script><script src="/cms-final-fixes.js?v=20260928-0641"></script><script src="cms-layout-fix.js?v=20260928-1839"></script>
+</script><script src="admin-notices-v1.js?v=20261005-v3"></script><script src="admin-community-v1.js?v=20261005-talk-posts-fix1"></script><script src="cms-link-enhancements.js"></script><script src="cms-collection-enhancements.js"></script><script src="cms-structure-enhancements.js"></script><script src="/cms-final-fixes.js?v=20260928-0641"></script><script src="cms-layout-fix.js?v=20260928-1839"></script>
 <script src="cms-content-library.js?v=20260928-1839"></script>
 <script id="cms-default-home-v1">
 (()=>{

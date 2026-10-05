@@ -10,6 +10,9 @@ import { C,T,UI } from '../lib/theme';
 
 const LOGIN_GRAPHIC=require('../assets/login_graphic.png');
 
+const KAKAO_LOGIN_SYMBOL={uri:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABAklEQVR42u3WsUpDMRSA4c/qJEXcddGtg5sKUnDQXRzEpxBH6dRV6OjgK4jgID6CIIK6CA66KAjt4Ogs1iWO1jQ3WtD8kCnnJn9uTk5CoVD474wNGb+AbSxjBlN4RRdXOMbdTwjMYw8bEbFn6OAxl8AmDjAxxMLesIvTqgIrOEnYKuhjC5dVBC4wVyHHntAcFFAb0NesOLnwfbJAI9NJa6QK9DMJ1FI77zMJPIwyCbtYSv49aFfcitZ3AeMRx+gF6wm1oJWjEH2yiEPMRsSeYx+3MQPHltcbPH8h8I5euIyOQt5kZzII9ELrYBr137q218LE11gdxbthJ6y6rlAo/DU+AGinKnRZ2dA0AAAAAElFTkSuQmCC'};
+const GOOGLE_LOGIN_SYMBOL={uri:'https://developers.google.com/static/identity/images/g-logo.png'};
+
 type SocialButtonProps={
   label:string;
   icon:ReactNode;
@@ -111,7 +114,7 @@ export default function Login(){
         <View style={[styles.providerGroup,compact&&styles.providerGroupCompact,busy&&styles.providerBusy]} pointerEvents={busy?'none':'auto'}>
           <SocialButton
             label="카카오로 시작하기"
-            icon={<Ionicons name="chatbubble" size={20} color="#191600"/>}
+            icon={<Image source={KAKAO_LOGIN_SYMBOL} resizeMode="contain" style={styles.brandIcon}/>} 
             backgroundColor="#FEE500"
             textColor="#191600"
             disabled={!!busy}
@@ -119,7 +122,7 @@ export default function Login(){
           />
           <SocialButton
             label="Google로 시작하기"
-            icon={<Ionicons name="logo-google" size={22} color="#4285F4"/>}
+            icon={<Image source={GOOGLE_LOGIN_SYMBOL} resizeMode="contain" style={styles.googleBrandIcon}/>} 
             backgroundColor="#FFFFFF"
             textColor="#27232C"
             borderColor="#DED9E3"
@@ -288,6 +291,15 @@ const styles=StyleSheet.create({
     height:28,
     alignItems:'flex-start',
     justifyContent:'center',
+  },
+  brandIcon:{
+    width:22,
+    height:22,
+  },
+  googleBrandIcon:{
+    width:22,
+    height:22,
+    backgroundColor:'#FFFFFF',
   },
   socialLabel:{
     flex:1,

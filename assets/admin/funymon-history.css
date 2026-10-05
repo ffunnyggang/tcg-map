@@ -1,1 +1,56 @@
 .fmh-tabs{display:flex;gap:7px;margin-bottom:14px}.fmh-tab{height:38px;padding:0 14px;border:1px solid #e4dfe8;border-radius:10px;background:#fff;color:#716b79;font-size:10px;font-weight:850;cursor:pointer}.fmh-tab.on{border-color:#8062d8;background:#f3effc;color:#6749bd}.fmh-filters{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:8px;margin-bottom:10px}.fmh-history-actions{display:flex;justify-content:flex-end;margin-bottom:10px}.fmh-download{height:36px;padding:0 12px;border:1px solid #ddd6e4;border-radius:9px;background:#fff;color:#62596a;font-size:10px;font-weight:850;cursor:pointer}.fmh-download:hover{background:#f8f5fb}.fmh-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:14px}.fmh-stat{padding:13px;border-radius:13px;background:#f7f4fb}.fmh-stat b{display:block;font-size:20px}.fmh-stat span{font-size:9px;color:#948c99}.fmh-list{border:1px solid #ece8ef;border-radius:15px;overflow:hidden}.fmh-head,.fmh-row{display:grid;grid-template-columns:108px 126px minmax(112px,1fr) 72px 74px 92px 104px 92px minmax(100px,.9fr);column-gap:14px;align-items:center}.fmh-head{padding:10px 16px;background:#faf9fb;color:#9a929e;font-size:9px;font-weight:800}.fmh-row{padding:11px 16px;border-top:1px solid #f0edf2;font-size:10px}.fmh-head>span,.fmh-row>div{min-width:0}.fmh-event-id,.fmh-event-cell{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fmh-result{justify-self:start;padding:4px 7px;border-radius:999px;background:#edf8f0;color:#4d8c60;font-size:9px;font-weight:800;white-space:nowrap}.fmh-result.failed{background:#fff0f1;color:#b84b58}.fmh-fail-reason{display:block;margin-top:3px;color:#9a929e;font-size:8px;line-height:1.25;white-space:nowrap}.fmh-attempt-row{background:#fffdfd}.fmh-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fmh-user{color:#777078;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fmh-claim-select{width:100%;height:30px;border:1px solid #e2dde5;border-radius:8px;background:#fff;color:#514b56;padding:0 6px;font-size:9px;font-weight:750}.fmh-claim-select:disabled{opacity:.55}.fmh-reward-overview{margin:0 0 14px;padding:13px;border:1px solid #e8e3eb;border-radius:13px;background:#fbfafc}.fmh-overview-head{display:flex;align-items:center;gap:8px;justify-content:space-between}.fmh-overview-head>b{font-size:12px}.fmh-overview-head>span{padding:4px 7px;border-radius:999px;background:#edf8f0;color:#4d8c60;font-size:9px;font-weight:850}.fmh-overview-head>span.warn{background:#fff7e8;color:#9b6d17}.fmh-overview-head>span.bad{background:#fff0f1;color:#b84b58}.fmh-reward-overview>p{margin:8px 0 0;color:#8a818e;font-size:9px}.fmh-reward-overview>p.bad{color:#b84b58}.fmh-stock-list{display:grid;gap:6px;margin-top:10px}.fmh-stock-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 9px;border:1px solid #eeeaf1;border-radius:9px;background:#fff}.fmh-stock-row>div:first-child{min-width:0}.fmh-stock-row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}.fmh-stock-row span{display:block;margin-top:2px;color:#938b97;font-size:8px}.fmh-stock-row>div:nth-child(2){font-size:9px;color:#8b838f}.fmh-stock-row strong{color:#403a45;font-size:11px}.fmh-stock-row em{font-style:normal;padding:4px 6px;border-radius:999px;background:#edf8f0;color:#4d8c60;font-size:8px;font-weight:850}.fmh-stock-row em.sold{background:#fff0f1;color:#b84b58}.fmh-stock-empty{padding:12px;text-align:center;color:#9a929e;font-size:9px}.mon-admin-head:has(.fmh-event-head),.mon-admin-row:has(.fmh-event-cell){grid-template-columns:112px 92px minmax(128px,1fr) minmax(145px,1.15fr) 92px 72px 52px 52px;column-gap:15px;padding-left:16px;padding-right:16px}.mon-admin-head:has(.fmh-event-head)>*,.mon-admin-row:has(.fmh-event-cell)>*{min-width:0}.fmh-event-head,.fmh-event-cell{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fmh-event-cell{font-size:9px;color:#6f6874}@media(max-width:899px){.fmh-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.fmh-filters{grid-template-columns:1fr 1fr}.fmh-list{overflow-x:auto}.fmh-head,.fmh-row{min-width:1210px}.mon-admin-list:has(.fmh-event-head){overflow-x:auto}.mon-admin-head:has(.fmh-event-head),.mon-admin-row:has(.fmh-event-cell){min-width:1000px}}@media(max-width:520px){.fmh-stats{grid-template-columns:1fr 1fr}.fmh-filters{grid-template-columns:1fr}.fmh-history-actions{justify-content:stretch}.fmh-download{width:100%}.fmh-tabs{position:sticky;top:0;background:#fff;z-index:2;padding-bottom:4px}.fmh-stock-row{grid-template-columns:minmax(0,1fr) auto}.fmh-stock-row em{grid-column:2}}
+
+/* FUNY MON admin operations v2 */
+.fmh-stats{grid-template-columns:repeat(7,minmax(0,1fr))}
+.fmh-user{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:2px}
+.fmh-user b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px;color:#4b4550}
+.fmh-user small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7.5px;color:#a099a3}
+.fmh-user-kind{display:inline-flex;height:17px;align-items:center;padding:0 5px;border-radius:999px;font-size:7px;font-weight:900}
+.fmh-user-kind.member{background:#eee8fb;color:#694db6}
+.fmh-user-kind.anon{background:#f1eff2;color:#827a86}
+.fmh-result.blocked{background:#fff7e8;color:#9a6a13}
+.fmh-result.blocked.distance{background:#eef6ff;color:#3974a7}
+.fmh-result.blocked.error{background:#fff0f1;color:#b84b58}
+.fmh-attempt-row{background:#fffdfb}
+
+.fmh-event-kpis{display:block!important;margin-top:4px!important;color:#7c7186!important;font-size:8.5px!important;font-weight:750!important;white-space:normal!important}
+.fmh-event-actions{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+.fmh-event-actions .shop-edit,.fmh-event-actions .mon-list-delete,.fmh-action{height:30px!important;padding:0 8px!important;border-radius:8px!important;font-size:8.5px!important;font-weight:850!important;white-space:nowrap}
+.fmh-action{border:1px solid #ddd7e3;background:#fff;color:#625a67;cursor:pointer}
+.fmh-action.secondary{border-color:#d8ccef;background:#f7f3ff;color:#6b4dba}
+.fmh-action.muted{background:#f5f3f6;color:#77707b}
+.fmh-action.danger,.fmh-event-actions .mon-list-delete{border-color:#f1d9dc!important;background:#fff7f8!important;color:#a54d58!important}
+.fmh-action:disabled{opacity:.48;cursor:default}
+.mon-event-status.fmh-paused{background:#fff4df!important;color:#9a6a13!important}
+.mon-event-status.fmh-archived{background:#efedf1!important;color:#77707c!important}
+
+.mon-admin-head:has(.fmh-event-head),.mon-admin-row:has(.fmh-event-cell){
+  grid-template-columns:104px 86px minmax(145px,1fr) minmax(145px,1.05fr) 90px 72px minmax(250px,auto)!important;
+  column-gap:12px!important;
+}
+.mon-admin-row:has(.fmh-event-cell)>.shop-admin-id{font-size:9px}
+.mon-admin-row:has(.fmh-event-cell)>.fmh-event-actions{align-self:center}
+
+.fmh-editor-guard{margin:14px 0 0;padding:14px;border:1px solid #e6e0eb;border-radius:13px;background:#fbfafc}
+.fmh-guard-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fmh-guard-title b{font-size:11px;color:#3e3745}
+.fmh-guard-title span{padding:4px 7px;border-radius:999px;background:#eee9f8;color:#684db0;font-size:8px;font-weight:850}
+.fmh-guard-info,.fmh-guard-warn{margin-top:9px;padding:9px 10px;border-radius:9px}
+.fmh-guard-info{background:#f5f2fa}
+.fmh-guard-warn{background:#fff7e8;border:1px solid #f1dfb8}
+.fmh-guard-info p,.fmh-guard-warn p,.fmh-guard-muted{margin:0;font-size:9px;line-height:1.5}
+.fmh-guard-info p+p,.fmh-guard-warn p+p{margin-top:4px}
+.fmh-guard-info p{color:#6e6576}.fmh-guard-warn p{color:#8d631d}
+.fmh-guard-muted{margin-top:9px;color:#958d99}
+.fmh-guard-ok{margin-top:9px;padding:8px 10px;border-radius:9px;background:#edf8f0;color:#4f825e;font-size:9px;font-weight:750}
+
+@media(max-width:1100px){
+  .mon-admin-list:has(.fmh-event-head){overflow-x:auto}
+  .mon-admin-head:has(.fmh-event-head),.mon-admin-row:has(.fmh-event-cell){min-width:1120px}
+}
+@media(max-width:899px){
+  .fmh-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .fmh-stats{grid-template-columns:1fr 1fr}
+}

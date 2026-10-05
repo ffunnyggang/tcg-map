@@ -1,20 +1,49 @@
 import { useState } from 'react';
-import { ActivityIndicator,Alert,Image,Platform,Pressable,ScrollView,StyleSheet,Text,View } from 'react-native';
-import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Alert,Image,Platform,Pressable,StyleSheet,Text,View,useWindowDimensions } from 'react-native';
+import type { ReactNode } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams,useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 import { C,T,UI } from '../lib/theme';
-import { Ionicons } from '@expo/vector-icons';
 
-const HERO='https://funypin.kr/assets/banners/banner_hero_01.png';
+const LOGIN_GRAPHIC=require('../assets/login_graphic.png');
+
+type SocialButtonProps={
+  label:string;
+  icon:ReactNode;
+  backgroundColor:string;
+  textColor:string;
+  borderColor?:string;
+  disabled?:boolean;
+  onPress:()=>void;
+};
+
+function SocialButton({label,icon,backgroundColor,textColor,borderColor,disabled,onPress}:SocialButtonProps){
+  return <Pressable
+    accessibilityRole="button"
+    disabled={disabled}
+    onPress={onPress}
+    style={({pressed})=>[
+      styles.socialButton,
+      {backgroundColor,borderColor:borderColor||backgroundColor},
+      pressed&&!disabled&&styles.socialButtonPressed,
+    ]}
+  >
+    <View style={styles.socialIconSlot}>{icon}</View>
+    <Text allowFontScaling maxFontSizeMultiplier={1.1} style={[styles.socialLabel,{color:textColor}]}>{label}</Text>
+    <View style={styles.socialIconSlot}/>
+  </Pressable>;
+}
 
 export default function Login(){
   const router=useRouter();
-  const insets=useSafeAreaInsets();
+  const {height}=useWindowDimensions();
   const {next}=useLocalSearchParams<{next?:string}>();
   const [accepted,setAccepted]=useState(false);
   const [busy,setBusy]=useState<string|null>(null);
+  const compact=height<760;
 
   const goHome=()=>router.replace('/(tabs)' as any);
   const finish=()=>{
@@ -61,279 +90,275 @@ export default function Login(){
       <Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>로그인</Text>
     </View>
 
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={[styles.content,{paddingBottom:Math.max(30,insets.bottom+20)}]}
-    >
-      <View style={styles.hero}>
-        <Image source={{uri:HERO}} resizeMode="cover" style={styles.heroImage}/>
-      </View>
-
-      <View style={styles.intro}>
-        <Text style={styles.tagline}>내 취향의 카드샵을 찾아보세요</Text>
-        <View style={styles.featureList}>
-          <Text style={styles.feature}>TCG MAP</Text>
-          <Text style={styles.feature}>INFORMATION</Text>
-          <Text style={styles.feature}>SCHEDULE</Text>
-          <Text style={styles.feature}>COMMUNITY</Text>
+    <View style={[styles.page,compact&&styles.pageCompact]}>
+      <View style={styles.main}>
+        <View style={[styles.hero,compact&&styles.heroCompact]}>
+          <Image source={LOGIN_GRAPHIC} resizeMode="contain" style={styles.heroImage}/>
         </View>
-        <Text style={styles.joinNote}>처음 이용하는 소셜 계정은 로그인과 동시에 회원가입됩니다.</Text>
-      </View>
 
-      <View style={[styles.providerCard,busy&&{opacity:.62}]} pointerEvents={busy?'none':'auto'}>
-        <Pressable onPress={()=>social('kakao')} style={styles.kakao}>
-          <View style={styles.providerIcon}><Ionicons name="chatbubble" size={21} color="#17120A"/></View>
-          <Text style={styles.kakaoText}>카카오로 시작하기</Text>
-          <View style={styles.providerIcon}/>
-        </Pressable>
-
-        <Pressable onPress={()=>social('google')} style={styles.google}>
-          <View style={styles.providerIcon}><Text style={styles.googleIcon}>G</Text></View>
-          <Text style={styles.googleText}>Google로 시작하기</Text>
-          <View style={styles.providerIcon}/>
-        </Pressable>
-
-        {Platform.OS==='ios'?<Pressable onPress={apple} style={styles.apple}>
-          <View style={styles.providerIcon}><Ionicons name="logo-apple" size={23} color="#fff"/></View>
-          <Text style={styles.appleText}>Apple로 시작하기</Text>
-          <View style={styles.providerIcon}/>
-        </Pressable>:null}
-      </View>
-
-      <View style={styles.consentArea}>
-        <Pressable onPress={()=>setAccepted(v=>!v)} style={styles.consentRow}>
-          <View style={[styles.checkBox,accepted&&styles.checkBoxOn]}>
-            {accepted?<Text style={styles.checkMark}>✓</Text>:null}
-          </View>
-          <Text style={styles.consentText}>
-            <Text style={styles.required}>[필수]</Text> 이용약관 및 커뮤니티 운영정책에 동의합니다.
+        <View style={[styles.intro,compact&&styles.introCompact]}>
+          <Text allowFontScaling maxFontSizeMultiplier={1.05} style={[styles.tagline,compact&&styles.taglineCompact]}>
+            내 취향의 카드샵을 찾아보세요
           </Text>
-        </Pressable>
+          <View style={[styles.featureList,compact&&styles.featureListCompact]}>
+            <Text style={[styles.feature,compact&&styles.featureCompact]}>TCG MAP</Text>
+            <Text style={[styles.feature,compact&&styles.featureCompact]}>INFORMATION</Text>
+            <Text style={[styles.feature,compact&&styles.featureCompact]}>SCHEDULE</Text>
+            <Text style={[styles.feature,compact&&styles.featureCompact]}>COMMUNITY</Text>
+          </View>
+        </View>
+
+        <View style={[styles.providerGroup,compact&&styles.providerGroupCompact,busy&&styles.providerBusy]} pointerEvents={busy?'none':'auto'}>
+          <SocialButton
+            label="카카오로 시작하기"
+            icon={<Ionicons name="chatbubble" size={20} color="#191600"/>}
+            backgroundColor="#FEE500"
+            textColor="#191600"
+            disabled={!!busy}
+            onPress={()=>social('kakao')}
+          />
+          <SocialButton
+            label="Google로 시작하기"
+            icon={<Ionicons name="logo-google" size={22} color="#4285F4"/>}
+            backgroundColor="#FFFFFF"
+            textColor="#27232C"
+            borderColor="#DED9E3"
+            disabled={!!busy}
+            onPress={()=>social('google')}
+          />
+          {Platform.OS==='ios'?<SocialButton
+            label="Apple로 시작하기"
+            icon={<Ionicons name="logo-apple" size={23} color="#FFFFFF"/>}
+            backgroundColor="#050505"
+            textColor="#FFFFFF"
+            disabled={!!busy}
+            onPress={apple}
+          />:null}
+        </View>
+
+        <View style={[styles.consentArea,compact&&styles.consentAreaCompact]}>
+          <Pressable onPress={()=>setAccepted(v=>!v)} style={styles.consentRow}>
+            <View style={[styles.checkBox,accepted&&styles.checkBoxOn]}>
+              {accepted?<Text style={styles.checkMark}>✓</Text>:null}
+            </View>
+            <Text allowFontScaling maxFontSizeMultiplier={1.05} style={styles.consentText}>
+              <Text style={styles.required}>[필수]</Text> 이용약관 및 커뮤니티 운영정책에 동의합니다.
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
-      {busy?<View style={styles.busy}>
-        <ActivityIndicator color={C.purpleDark}/>
-        <Text style={styles.busyText}>로그인 화면을 여는 중...</Text>
-      </View>:null}
-
-      <View style={styles.legalLinks}>
-        <Pressable onPress={()=>openLegal('terms.html','이용약관')}><Text style={styles.legalLink}>이용약관</Text></Pressable>
+      <View style={[styles.legalLinks,compact&&styles.legalLinksCompact]}>
+        <Pressable onPress={()=>openLegal('terms.html','이용약관')} hitSlop={6}><Text style={styles.legalLink}>이용약관</Text></Pressable>
         <Text style={styles.divider}>·</Text>
-        <Pressable onPress={()=>openLegal('privacy.html','개인정보처리방침')}><Text style={styles.legalLink}>개인정보처리방침</Text></Pressable>
+        <Pressable onPress={()=>openLegal('privacy.html','개인정보처리방침')} hitSlop={6}><Text style={styles.legalLink}>개인정보처리방침</Text></Pressable>
         <Text style={styles.divider}>·</Text>
-        <Pressable onPress={()=>openLegal('community-guidelines.html','커뮤니티 운영정책')}><Text style={styles.legalLink}>커뮤니티 운영정책</Text></Pressable>
+        <Pressable onPress={()=>openLegal('community-guidelines.html','커뮤니티 운영정책')} hitSlop={6}><Text style={styles.legalLink}>커뮤니티 운영정책</Text></Pressable>
       </View>
-    </ScrollView>
+    </View>
   </SafeAreaView>;
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#fff'},
+  root:{flex:1,backgroundColor:'#FFFFFF'},
   header:{
     height:UI.headerH,
     paddingHorizontal:14,
     flexDirection:'row',
     alignItems:'center',
-    backgroundColor:'#fff'
+    backgroundColor:'#FFFFFF',
   },
   back:{
     width:36,
     height:36,
     alignItems:'center',
     justifyContent:'center',
-    marginRight:4
+    marginRight:4,
   },
   backText:{
     fontSize:29,
     lineHeight:31,
     fontWeight:'400',
-    color:C.text
+    color:C.text,
   },
   headerTitle:{
     ...T.header,
-    color:C.text
+    color:C.text,
   },
-  content:{
-    paddingHorizontal:20,
-    paddingTop:10
+
+  page:{
+    flex:1,
+    paddingHorizontal:24,
+    paddingTop:6,
+    paddingBottom:14,
+    justifyContent:'space-between',
   },
+  pageCompact:{
+    paddingTop:0,
+    paddingBottom:8,
+  },
+  main:{
+    alignItems:'stretch',
+  },
+
   hero:{
-    width:'72%',
-    aspectRatio:1.30,
-    alignSelf:'center',
+    height:205,
+    alignItems:'center',
+    justifyContent:'center',
     overflow:'hidden',
-    backgroundColor:'#F2F0FF'
+  },
+  heroCompact:{
+    height:155,
   },
   heroImage:{
-    position:'absolute',
-    top:0,
-    bottom:0,
-    left:'-50%',
-    width:'150%',
-    height:'100%'
+    width:'100%',
+    height:'100%',
   },
+
   intro:{
     alignItems:'center',
-    marginTop:0
+    marginTop:2,
+  },
+  introCompact:{
+    marginTop:0,
   },
   tagline:{
-    marginTop:0,
     fontSize:21,
     lineHeight:28,
-    fontWeight:'900',
-    letterSpacing:-.65,
-    color:'#111015',
-    textAlign:'center'
+    fontWeight:'800',
+    letterSpacing:-.55,
+    color:'#211D27',
+    textAlign:'center',
+  },
+  taglineCompact:{
+    fontSize:19,
+    lineHeight:24,
   },
   featureList:{
-    marginTop:18,
+    marginTop:14,
     alignItems:'center',
-    gap:7
+    gap:4,
+  },
+  featureListCompact:{
+    marginTop:9,
+    gap:2,
   },
   feature:{
-    fontSize:15.5,
-    lineHeight:20,
-    fontWeight:'500',
-    letterSpacing:.1,
-    color:'#18151D'
+    fontSize:13.5,
+    lineHeight:18,
+    fontWeight:'600',
+    letterSpacing:.15,
+    color:'#756F83',
   },
-  joinNote:{
-    marginTop:13,
-    fontSize:10.5,
+  featureCompact:{
+    fontSize:12.5,
     lineHeight:16,
-    color:'#99919D',
-    textAlign:'center'
   },
-  providerCard:{
-    marginTop:26,
-    padding:5,
+
+  providerGroup:{
+    marginTop:22,
     gap:10,
-    borderRadius:0,
-    backgroundColor:'#F7F4FC'
   },
-  kakao:{
-    height:56,
-    borderRadius:15,
-    backgroundColor:'#FEE500',
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    paddingHorizontal:18
+  providerGroupCompact:{
+    marginTop:14,
+    gap:8,
   },
-  google:{
-    height:56,
-    borderRadius:15,
-    backgroundColor:'#fff',
+  providerBusy:{
+    opacity:.58,
+  },
+  socialButton:{
+    height:54,
+    borderRadius:14,
     borderWidth:1,
-    borderColor:'#DDD8E1',
+    paddingHorizontal:18,
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'space-between',
-    paddingHorizontal:18
   },
-  apple:{
-    height:56,
-    borderRadius:15,
-    backgroundColor:'#050505',
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    paddingHorizontal:18
+  socialButtonPressed:{
+    transform:[{scale:.995}],
+    opacity:.88,
   },
-  providerIcon:{
+  socialIconSlot:{
     width:28,
     height:28,
-    alignItems:'center',
-    justifyContent:'center'
+    alignItems:'flex-start',
+    justifyContent:'center',
   },
-  googleIcon:{
-    fontSize:20,
-    fontWeight:'900',
-    color:'#4285F4'
-  },
-  kakaoText:{
+  socialLabel:{
+    flex:1,
+    textAlign:'center',
     fontSize:14,
-    fontWeight:'900',
-    color:'#211A00'
+    lineHeight:19,
+    fontWeight:'800',
   },
-  googleText:{
-    fontSize:14,
-    fontWeight:'900',
-    color:C.text
-  },
-  appleText:{
-    fontSize:14,
-    fontWeight:'900',
-    color:'#fff'
-  },
+
   consentArea:{
-    paddingHorizontal:14,
-    marginTop:13
+    marginTop:12,
+    paddingHorizontal:2,
+  },
+  consentAreaCompact:{
+    marginTop:8,
   },
   consentRow:{
+    minHeight:28,
     flexDirection:'row',
-    alignItems:'center'
+    alignItems:'center',
   },
   checkBox:{
-    width:22,
-    height:22,
+    width:21,
+    height:21,
     borderRadius:6,
     borderWidth:1.5,
     borderColor:'#B8AEC2',
-    backgroundColor:'#fff',
+    backgroundColor:'#FFFFFF',
     alignItems:'center',
-    justifyContent:'center'
+    justifyContent:'center',
+    flexShrink:0,
   },
   checkBoxOn:{
     backgroundColor:C.purpleDark,
-    borderColor:C.purpleDark
+    borderColor:C.purpleDark,
   },
   checkMark:{
     fontSize:13,
-    lineHeight:16,
+    lineHeight:15,
     fontWeight:'900',
-    color:'#fff'
+    color:'#FFFFFF',
   },
   consentText:{
     flex:1,
     marginLeft:9,
-    fontSize:10.5,
+    fontSize:11,
     lineHeight:17,
-    fontWeight:'700',
-    color:'#6E6673'
+    fontWeight:'600',
+    color:'#716978',
   },
   required:{
     color:C.purpleDark,
-    fontWeight:'900'
+    fontWeight:'800',
   },
-  busy:{
-    marginTop:12,
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-    gap:8
-  },
-  busyText:{
-    fontSize:10.5,
-    color:C.muted
-  },
+
   legalLinks:{
-    marginTop:74,
+    minHeight:24,
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'center',
-    flexWrap:'wrap'
+    flexWrap:'nowrap',
+  },
+  legalLinksCompact:{
+    minHeight:20,
   },
   legalLink:{
     fontSize:10,
     lineHeight:16,
-    fontWeight:'700',
-    color:'#9A929E',
-    textDecorationLine:'underline'
+    fontWeight:'600',
+    color:'#99919D',
+    textDecorationLine:'underline',
   },
   divider:{
-    marginHorizontal:7,
+    marginHorizontal:6,
     fontSize:10,
-    color:'#C4BDC8'
-  }
+    color:'#C4BDC8',
+  },
 });

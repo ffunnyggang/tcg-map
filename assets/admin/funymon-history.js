@@ -118,12 +118,18 @@ async function renderEditorGuard(){
   const notes=[],warn=[];
   if(linked.length){
     linked.forEach(({campaign})=>{
-      notes.push('응모: '+campaign.title+' · '+entryLimitText(campaign.entry_limit_mode,campaign.entry_limit_count));
+      const total=state.entries.filter(x=>x.shop_id===campaign.id).length,today=state.entries.filter(x=>x.shop_id===campaign.id&&kstDay(x.created_at)===todayKst()).length;
+      notes.push('응모: '+campaign.title+' · '+entryLimitText(campaign.entry_limit_mode,campaign.entry_limit_count)+' · 누적 '+total+'회 · 오늘 '+today+'회');
       if(campaign.entry_limit_mode==='daily'&&daily>0&&Number(campaign.entry_limit_count||1)>daily)warn.push('응모 제한은 1일 '+campaign.entry_limit_count+'회지만 퍼니몬 포획은 1일 '+daily+'회라 실제 응모 가능 횟수가 더 적습니다.');
     });
     if(success<100)warn.push('응모형 리워드가 연결되어 있습니다. 포획 실패도 일일 포획 횟수에 포함되므로 포획 성공률 100%를 권장합니다.');
   }
-  box.innerHTML='<div class="fmh-guard-title"><b>운영 체크</b><span>'+eventState(ev)+'</span></div>'+(notes.length?'<div class="fmh-guard-info">'+notes.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div>':'<p class="fmh-guard-muted">연결된 응모형 리워드가 없습니다.</p>')+(warn.length?'<div class="fmh-guard-warn">'+warn.map(x=>'<p>⚠ '+esc(x)+'</p>').join('')+'</div>':'<div class="fmh-guard-ok">현재 설정에서 충돌하는 참여 제한이 없습니다.</div>');
+  box.innerHTML='<div class="fmh-guard-title"><b>운영 체크</b><span>'+eventState(ev)+'</span></div>'+(notes.length?'<div class="fmh-guard-info">'+notes.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div>':'<p class="fmh-guard-muted">연결된 응모형 리워드가 없습니다.</p>')+(warn.length?'<div class="fmh-guard-warn">'+warn.map(x=>'<p>⚠ '+esc(x)+'</p>').join('')+'</div>':'<div class="fmh-guard-ok">현재 설정에서 충돌하는 참여 제한이 없습니다.</div>')+(linked.length?'<div class="fmh-guard-actions">'+linked.map(({campaign})=>'<button type="button" data-fmh-open-campaign="'+esc(campaign.id)+'">'+esc(campaign.title)+' 응모 내역 보기</button>').join('')+'</div>':'');
+  box.querySelectorAll('[data-fmh-open-campaign]').forEach(btn=>btn.onclick=()=>{
+    const campaign=state.campaigns.find(x=>x.id===btn.dataset.fmhOpenCampaign);if(!campaign)return;
+    document.querySelector('[data-admin-tab="event"]')?.click();
+    setTimeout(()=>window.loadEventEntries?.({id:'campaign-'+campaign.id,title:campaign.title,shopId:campaign.id,period:dt(campaign.starts_at)+' ~ '+dt(campaign.ends_at),status:'진행중',managed:true,limitMode:campaign.entry_limit_mode,limitCount:campaign.entry_limit_count}),80);
+  });
   ['monDailyLimit','monCaptureSuccess'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.fmhGuard){el.dataset.fmhGuard='1';el.addEventListener('input',()=>renderEditorGuard())}});
 }
 async function enhanceRewardOverview(){

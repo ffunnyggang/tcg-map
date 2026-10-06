@@ -11,7 +11,7 @@
   const SCORE={'KR-SEO-001':4.4444444444,'KR-SEO-010':4.2222222222,'KR-SEO-002':3.8888888889,'KR-SEO-007':3.8888888889,'KR-SEO-009':3.7777777778,'KR-SEO-006':3.5555555556,'KR-SEO-015':3.3333333333,'KR-SEO-012':3.3333333333,'KR-SEO-013':3.2222222222,'KR-SEO-005':3.1111111111,'KR-SEO-011':3,'KR-SEO-003':3,'KR-SEO-004':2.8888888889,'KR-SEO-014':2.7777777778,'KR-SEO-008':2.7777777778};
   const FEEDBACK_VISITS_KEY='funypin_feedback_shop_visits',FEEDBACK_DONE_KEY='funypin_feedback_submitted_at',COOLDOWN=30*24*60*60*1000;
   const activeFilters=new Set();
-  let sortMode='recommend',sortOpen=false;
+  let sortMode='recommend',sortOpen=false,lastListHtml='';
 
   const normalize=v=>String(v??'').toLowerCase().replace(/\s+/g,'').trim();
   const currentCountry=()=>{try{return window.FUNY_MAP_COUNTRY?.get?.()||new URLSearchParams(location.search).get('country')||'KR'}catch(_){return'KR'}};
@@ -63,10 +63,12 @@
   function refresh(reason='manual'){
     const rows=result(),list=document.getElementById('shop-list'),empty=document.getElementById('empty'),count=document.getElementById('count');
     window.FUNY_VISIBLE_SHOPS=rows;window.FUNY_LIST_SORT_MODE=sortMode;
-    if(list)list.innerHTML=rows.map(card).join('');
+    const nextListHtml=rows.map(card).join('');
+    const listChanged=nextListHtml!==lastListHtml;
+    if(list&&listChanged){list.innerHTML=nextListHtml;lastListHtml=nextListHtml;feedback();}
     if(empty)empty.hidden=rows.length!==0;
     if(count)count.textContent=String(rows.length);
-    feedback();updateFilterVisual();updateSortVisual();
+    updateFilterVisual();updateSortVisual();
     try{syncMapMarkers(false)}catch(_){}
     try{window.FUNY_TRACK?.('shop_list_render',{country:currentCountry(),sort_type:sortMode,result_count:rows.length,search_active:!!document.getElementById('map-shop-search')?.value.trim(),filter_count:activeFilters.size,reason})}catch(_){}
   }

@@ -565,7 +565,7 @@ function openEditorWith(s){
  bindShopIdControls(s);
  setEditorTab('info');$('shopEditor').classList.add('show');$('shopEditor').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
 }
-const REGION_OPTIONS={KR:[['SEO','SEO · 서울'],['GGI','GGI · 경기'],['ICN','ICN · 인천'],['OTHER','기타']],JP:[['TYO','TYO · 도쿄'],['OSK','OSK · 오사카'],['OTHER','기타']]};
+const REGION_OPTIONS={KR:[['SEO','SEO · 서울'],['BSN','BSN · 부산'],['DGU','DGU · 대구'],['ICN','ICN · 인천'],['GJU','GJU · 광주'],['DJN','DJN · 대전'],['USN','USN · 울산'],['SJG','SJG · 세종'],['GGI','GGI · 경기'],['GWN','GWN · 강원'],['CBK','CBK · 충북'],['CNM','CNM · 충남'],['JBK','JBK · 전북'],['JNM','JNM · 전남'],['GBK','GBK · 경북'],['GNM','GNM · 경남'],['JJU','JJU · 제주'],['OTHER','기타']],JP:[['TYO','TYO · 도쿄'],['OSK','OSK · 오사카'],['OTHER','기타']]};
 function bindShopIdControls(shop){
  const country=$('country_code'),region=$('region_code'),custom=$('region_custom'),id=$('shop_id');if(!country||!region||!custom||!id)return;
  const originalCountry=String(shop.country_code||'KR').toUpperCase(),originalRegion=String(shop.region_code||'').toUpperCase();

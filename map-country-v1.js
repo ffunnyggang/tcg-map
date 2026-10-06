@@ -3,7 +3,7 @@
   if(window.__FUNY_COUNTRY_LOADER)return;
   window.__FUNY_COUNTRY_LOADER=true;
   const core=document.createElement('script');
-  core.src='map-country-core-v1.js?v=20261006-aos-jppopup4';
+  core.src='map-country-core-v1.js?v=20261006-route-unify2';
   core.async=false;
   core.onload=()=>{
     if(document.querySelector('script[data-funy-country-stability]'))return;

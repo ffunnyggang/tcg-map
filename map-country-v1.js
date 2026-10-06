@@ -1,7 +1,7 @@
 /* FUNY PIN country module loader */
 (function(){
   const core=document.createElement('script');
-  core.src='map-country-core-v1.js?v=20261006-route-unify3';
+  core.src='map-country-core-v1.js?v=20261006-engine-visibility1';
   core.async=false;
   core.onload=()=>{
     const stability=document.createElement('script');

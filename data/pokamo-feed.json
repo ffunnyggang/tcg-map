@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-06T13:32:26.689031+00:00",
+  "updatedAt": "2026-10-06T14:32:29.122333+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "테라스탈 깝니다",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-10-06T14:23:34.498265Z",
+      "excerpt": "블래키 후기 올릴게요",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791296563971bd1e6404d27df4f73fb6035ec342f29e7d8df8365ef45436c3aad589ee4bff730.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/테라스탈-깝니다-dz96KxpP",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.02
+    },
     {
       "category": "자유 게시판",
       "title": "포켓몬카드 입문자",
@@ -11,10 +24,10 @@
       "excerpt": "이런건 얼마나 하나요?? 좋은건가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179129062880362caa9fca9be9df7380afd8a58a281e8272795355691fb7946e19facf2b06bf90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-입문자-dGGrJlRd",
-      "views": 5,
+      "views": 16,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.05
+      "popularityScore": 7.16
     },
     {
       "category": "자유 게시판",
@@ -25,9 +38,9 @@
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/우리집-애들-때매-A34E2JpP",
       "views": 1,
-      "likes": 0,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.01
     },
     {
       "category": "카드 자랑",
@@ -37,10 +50,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 22,
+      "views": 24,
       "likes": 1,
       "comments": 3,
-      "popularityScore": 9.22
+      "popularityScore": 9.24
     },
     {
       "category": "자유 게시판",
@@ -102,10 +115,10 @@
       "excerpt": "바인더 구매 했습니다.. 필요성을 느끼네요 . 이러다가 등급 카드 케이스도 살거 같네요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/790a4e6f-ed9f-4d84-8aab-6aa32c273e34.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/결국-dEbWLZ0j",
-      "views": 31,
+      "views": 32,
       "likes": 2,
       "comments": 14,
-      "popularityScore": 34.31
+      "popularityScore": 34.32
     },
     {
       "category": "자유 게시판",
@@ -171,19 +184,6 @@
       "likes": 10,
       "comments": 0,
       "popularityScore": 30.27
-    },
-    {
-      "category": "자유 게시판",
-      "title": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
-      "author": "한량TCG",
-      "publishedAt": "2026-10-05T11:28:11.629392Z",
-      "excerpt": "팬텀 고리파덕 좋아해서 첫 입문했습니더",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀-고리파덕-좋아해서-첫-입문했습니더-jK2O6aqd",
-      "views": 8,
-      "likes": 5,
-      "comments": 0,
-      "popularityScore": 15.08
     },
     {
       "category": "카드거래",
@@ -583,10 +583,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 259,
+      "views": 260,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.59
+      "popularityScore": 14.6
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -726,7 +726,7 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 538,
+      "views": 540,
       "likes": 1,
       "comments": 2,
       "popularityScore": 12.0

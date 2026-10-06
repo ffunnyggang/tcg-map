@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-06T12:36:38.858775+00:00",
+  "updatedAt": "2026-10-06T13:32:26.689031+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "포켓몬카드 입문자",
+      "author": "나가놀고싶다",
+      "publishedAt": "2026-10-06T12:44:10.39895Z",
+      "excerpt": "이런건 얼마나 하나요?? 좋은건가요?",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179129062880362caa9fca9be9df7380afd8a58a281e8272795355691fb7946e19facf2b06bf90.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-입문자-dGGrJlRd",
+      "views": 5,
+      "likes": 1,
+      "comments": 2,
+      "popularityScore": 7.05
+    },
+    {
+      "category": "자유 게시판",
+      "title": "우리집 애들 때매",
+      "author": "나가놀고싶다",
+      "publishedAt": "2026-10-06T12:43:33.965786Z",
+      "excerpt": "우리집 애들 때매",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/우리집-애들-때매-A34E2JpP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "카드 자랑",
       "title": "이카드는 시세좀 알수있을까요? 알고싶습니다",
@@ -11,10 +37,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 1,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.01
+      "views": 22,
+      "likes": 1,
+      "comments": 3,
+      "popularityScore": 9.22
     },
     {
       "category": "자유 게시판",
@@ -24,10 +50,10 @@
       "excerpt": "이거는 무슨카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261006/88945a09-6806-4d3a-aa16-39720c4ba80b.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거는-무슨카드인가요-AO6XaxDj",
-      "views": 1,
+      "views": 3,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.01
+      "popularityScore": 3.03
     },
     {
       "category": "자유 게시판",
@@ -37,10 +63,10 @@
       "excerpt": "어제 홍대 오리파 다녀왔습니다. 기대는 안했지만, 지금 포켓몬 카드를 구하기 쉽지 않아서 일단 몇번 해봤습니다. 박스 3개랑 낱장 했는데, 낱장은 해루미 AR뽑았습니다 아쉬운 마음은 있지만 딱 절제하게 되어서 좋네요",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261006/486ec5db-bbfd-4673-8361-e44dd5cd8076.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/랜덤-후기-PM0rm86A",
-      "views": 25,
+      "views": 26,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.25
+      "popularityScore": 7.26
     },
     {
       "category": "자유 게시판",
@@ -76,10 +102,10 @@
       "excerpt": "바인더 구매 했습니다.. 필요성을 느끼네요 . 이러다가 등급 카드 케이스도 살거 같네요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/790a4e6f-ed9f-4d84-8aab-6aa32c273e34.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/결국-dEbWLZ0j",
-      "views": 25,
+      "views": 31,
       "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.25
+      "comments": 14,
+      "popularityScore": 34.31
     },
     {
       "category": "자유 게시판",
@@ -141,10 +167,10 @@
       "excerpt": "현재 FUNY PIN 안드로이드 앱의 Google Play 정식 출시를 준비하고 있습니다. 출시 전 Google Play 정책에 따라 일정 기간 비공개 테스트를 진행해야 해서 테스트에 참여해주실 분들을 모집합니다. 테스트 참여 방법은 어렵지 않습니다. - Google 계정 이메일로 테스",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791211680222b21bebb13eeb4e6b2f024cf3e98098437fe69f05fe42254fe4fb09c5a0796de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/FUNY-PIN-안드로이드-앱-비공개-테스트-참여자-모집합니다-🙌-jK2OBxod",
-      "views": 26,
+      "views": 27,
       "likes": 10,
       "comments": 0,
-      "popularityScore": 30.26
+      "popularityScore": 30.27
     },
     {
       "category": "자유 게시판",
@@ -160,32 +186,6 @@
       "popularityScore": 15.08
     },
     {
-      "category": "자유 게시판",
-      "title": "오늘은 SAR 한개 떴네요",
-      "author": "그레이스",
-      "publishedAt": "2026-10-05T09:19:47.096424Z",
-      "excerpt": "이 카드는 좀 이뿐듯",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/20e65ce8-7f9c-43eb-b6a3-2f6962735541.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘은-SAR-한개-떴네요-j8rmBxRP",
-      "views": 44,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.44
-    },
-    {
-      "category": "자유 게시판",
-      "title": "도움이 필요합니다...",
-      "author": "김철왕",
-      "publishedAt": "2026-10-05T08:51:17.643695Z",
-      "excerpt": "10월에 오사카로 여행 가는데 거기서 카드 구입 할려고 하는데 카드 매장을 찾기가 어렵네요.. 유명한 곳은 검색하면 나오지만 거기는 비싼 느낌이라 작은 카드샵도 찾아서 가보고 싶은데 일본 오사카 카드샵 찾는법 없을까요??",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e166fed7-5999-4ceb-9a28-f286f7deefd1.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/도움이-필요합니다-PV2yxX0P",
-      "views": 34,
-      "likes": 7,
-      "comments": 0,
-      "popularityScore": 21.34
-    },
-    {
       "category": "카드거래",
       "title": "psa10 포켓몬카드 블래키&다크라이 GX 태그팀",
       "author": "teamms",
@@ -193,10 +193,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 13,
-      "likes": 1,
+      "views": 15,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 3.13
+      "popularityScore": 6.15
     },
     {
       "category": "카드거래",
@@ -258,10 +258,10 @@
       "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
-      "views": 58,
+      "views": 59,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 12.58
+      "popularityScore": 12.59
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -414,10 +414,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 166,
+      "views": 167,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.66
+      "popularityScore": 55.67
     },
     {
       "category": "카드 자랑",
@@ -440,10 +440,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 112,
+      "views": 113,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 18.12
+      "popularityScore": 18.13
     },
     {
       "category": "카드 자랑",

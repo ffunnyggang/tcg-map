@@ -68,7 +68,6 @@
     if(count)count.textContent=String(rows.length);
     feedback();updateFilterVisual();updateSortVisual();
     try{syncMapMarkers(false)}catch(_){}
-    try{window.FUNY_MAP_CLUSTER?.refresh?.()}catch(_){}
     try{window.FUNY_TRACK?.('shop_list_render',{country:currentCountry(),sort_type:sortMode,result_count:rows.length,search_active:!!document.getElementById('map-shop-search')?.value.trim(),filter_count:activeFilters.size,reason})}catch(_){}
   }
   try{renderList=()=>refresh('renderList')}catch(_){}
@@ -136,6 +135,5 @@
   window.addEventListener('funy:locationchange',()=>{if(sortMode==='near')refresh('location-change')});
   window.addEventListener('funy:shops-source',()=>refresh('shops-source'));
   window.addEventListener('funy:list-refresh',()=>refresh('external-refresh'));
-  window.addEventListener('funy:mapdatachange',()=>refresh('mapdatachange'));
   updateFilterVisual();updateSortVisual();setTimeout(()=>refresh('boot'),0);
 })();

@@ -51,11 +51,8 @@
   }
   function restoreMapAfterDetail(){
     syncMapEngineVisibility();
-    const naverEl=document.getElementById('naver-map'),googleEl=document.getElementById('google-map');
     if(country==='JP'){
       try{document.body.classList.add('country-japan')}catch(_){}
-      if(naverEl)naverEl.style.visibility='hidden';
-      if(googleEl){googleEl.style.display='block';googleEl.style.visibility='visible';}
       const saved=savedMapView.JP;
       if(googleMap&&window.google?.maps){
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -68,8 +65,6 @@
       return;
     }
     try{document.body.classList.remove('country-japan')}catch(_){}
-    if(googleEl){googleEl.style.removeProperty('display');googleEl.style.removeProperty('visibility');}
-    if(naverEl)naverEl.style.removeProperty('visibility');
     const saved=savedMapView.KR;
     try{
       const nm=window.FUNY_NAVER_MAP_API?.getMap?.();

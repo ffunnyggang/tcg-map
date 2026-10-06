@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-06T16:33:15.718362+00:00",
+  "updatedAt": "2026-10-06T17:28:44.323280+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "이브이 리자몽 레쿠쟈 피카츄 위주로 모읍니다",
+      "author": "김양동",
+      "publishedAt": "2026-10-06T16:53:13.188604Z",
+      "excerpt": "이브이 리자몽 레쿠쟈 피카츄 위주로 모읍니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이브이-리자몽-레쿠쟈-피카츄-위주로-모읍니다-A4QeJyGP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "테라스탈 깝니다",
@@ -11,10 +24,10 @@
       "excerpt": "블래키 후기 올릴게요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791296563971bd1e6404d27df4f73fb6035ec342f29e7d8df8365ef45436c3aad589ee4bff730.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/테라스탈-깝니다-dz96KxpP",
-      "views": 3,
+      "views": 8,
       "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
+      "comments": 1,
+      "popularityScore": 5.08
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 27,
+      "views": 29,
       "likes": 1,
-      "comments": 3,
-      "popularityScore": 9.27
+      "comments": 4,
+      "popularityScore": 11.29
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "바인더 구매 했습니다.. 필요성을 느끼네요 . 이러다가 등급 카드 케이스도 살거 같네요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/790a4e6f-ed9f-4d84-8aab-6aa32c273e34.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/결국-dEbWLZ0j",
-      "views": 33,
+      "views": 34,
       "likes": 2,
       "comments": 14,
-      "popularityScore": 34.33
+      "popularityScore": 34.34
     },
     {
       "category": "자유 게시판",
@@ -154,23 +167,10 @@
       "excerpt": "패러다임 트리거 18만 메타몽 프로모 brg10 26만 뮤츠 Vstar sar psa10 26만",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ae0141a5-c227-4863-a77d-bcb8a666286d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-박스-등급카드-판매-AO6gORgj",
-      "views": 19,
+      "views": 20,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.19
-    },
-    {
-      "category": "자유 게시판",
-      "title": "30주년 카드를 까서 뮤sar 루기아 복각이 나와서 좋았습니다",
-      "author": "나나",
-      "publishedAt": "2026-10-05T15:03:06.257134Z",
-      "excerpt": "30주년 카드를 까서 뮤sar 루기아 복각이 나와서 좋았습니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-카드를-까서-뮤sar-루기아-복각이-나와서-좋았습니다-dagn5wlA",
-      "views": 5,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.05
+      "popularityScore": 0.2
     },
     {
       "category": "자유 게시판",
@@ -193,10 +193,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 15,
+      "views": 16,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.15
+      "popularityScore": 6.16
     },
     {
       "category": "카드거래",
@@ -297,10 +297,10 @@
       "excerpt": "하자 하나도 없어요 !! 보이는 그대로입니다 31.5에 팝니다 반택/ 직거래 원해요 직거래는 서울, 경기북부 가능합니다 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790641664868db64827ad9176a64c2a43e22d47674224926ed61f30250c90ac2654e943924810.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모카드-psa10-팝니다-Pk69rMMA",
-      "views": 27,
+      "views": 28,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.27
+      "popularityScore": 6.28
     },
     {
       "category": "카드 자랑",
@@ -440,10 +440,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 113,
+      "views": 114,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 18.13
+      "popularityScore": 18.14
     },
     {
       "category": "카드 자랑",
@@ -466,10 +466,10 @@
       "excerpt": "어제 미니카드쇼끝나고 지하가서 위탁함 구경하다가 겟했숩니당 ✌️찬란한 홀로 좋아하는 1인😁",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/05cf3ed4-2514-4879-809f-62b77c11ea6a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/찬란한이브이-PxQRa33d",
-      "views": 47,
+      "views": 48,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.47
+      "popularityScore": 8.48
     },
     {
       "category": "카드 자랑",
@@ -531,10 +531,10 @@
       "excerpt": "파이리 리자드 리자몽 결국 세마리도 모였습니다ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1788868598488cc160c757271c0e70ae0831a14f44865408cf01304c9c4d8900c50231539e8060.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-일본-구판-왔습니다ㅜㅜ-j8B7mWWP",
-      "views": 184,
+      "views": 185,
       "likes": 3,
       "comments": 7,
-      "popularityScore": 24.84
+      "popularityScore": 24.85
     },
     {
       "category": "정보 공유",

@@ -261,7 +261,7 @@ export default function ShopDetail(){
           </ScrollView>
           :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
         <View style={styles.heroTop}>
-          <Pressable onPress={()=>router.back()} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+          <Pressable onPress={goToMap} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
           <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
         </View>
         <View style={styles.heroCount}><Ionicons name="images-outline" size={13} color="#fff"/><Text style={styles.heroCountText}>{heroImages.length?galleryIndex+1:1} / {Math.max(heroImages.length,1)}</Text></View>
@@ -341,7 +341,7 @@ export default function ShopDetail(){
 
     {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
-        <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+        <Pressable onPress={goToMap} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
         <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
         <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
       </View>

@@ -72,6 +72,8 @@
     try{syncMapMarkers(false)}catch(_){}
     try{window.FUNY_TRACK?.('shop_list_render',{country:currentCountry(),sort_type:sortMode,result_count:rows.length,search_active:!!document.getElementById('map-shop-search')?.value.trim(),filter_count:activeFilters.size,reason})}catch(_){}
   }
+  let sourceRefreshTimer=0;
+  function scheduleSourceRefresh(reason,delay=180){clearTimeout(sourceRefreshTimer);sourceRefreshTimer=setTimeout(()=>refresh(reason),delay)}
   try{renderList=()=>refresh('renderList')}catch(_){}
   window.renderList=()=>refresh('renderList');
   window.FUNY_MAP_LIST={refresh,setSort:v=>setSort(v,'api'),getVisible:()=>window.FUNY_VISIBLE_SHOPS||[],getFilters:()=>[...activeFilters]};
@@ -135,7 +137,7 @@
   list?.addEventListener('click',e=>{const a=e.target.closest?.('.shop-card');if(!a)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{const n=+localStorage.getItem(FEEDBACK_VISITS_KEY)||0;localStorage.setItem(FEEDBACK_VISITS_KEY,String(Math.min(n+1,99)))}catch(_){}if(typeof state!=='undefined')state.scrollY=window.scrollY||0;location.hash='#/shop/'+a.dataset.id},true);
 
   window.addEventListener('funy:locationchange',()=>{if(sortMode==='near')refresh('location-change')});
-  window.addEventListener('funy:shops-source',()=>refresh('shops-source'));
-  window.addEventListener('funy:list-refresh',()=>refresh('external-refresh'));
-  updateFilterVisual();updateSortVisual();setTimeout(()=>refresh('boot'),0);
+  window.addEventListener('funy:shops-source',()=>scheduleSourceRefresh('shops-source',180));
+  window.addEventListener('funy:list-refresh',()=>scheduleSourceRefresh('external-refresh',140));
+  updateFilterVisual();updateSortVisual();scheduleSourceRefresh('boot',120);
 })();

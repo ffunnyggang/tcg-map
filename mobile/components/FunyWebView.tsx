@@ -368,7 +368,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&ref.current){ref.current.goBack();return true;}return false;});return()=>sub.remove();},[canGoBack,closeSheet,sheetOpen]));
   useEffect(()=>{setLoading(true);setError(false);reloadAttempts.current=0;if(Platform.OS==='android'){androidFirstPaintDone.current=false;setAndroidPageReady(false);}const timer=setTimeout(()=>setLoading(false),2500);return()=>clearTimeout(timer);},[url]);
   useEffect(()=>{
-    if(!isFocused||!isMapWebView||!ref.current)return;
+    if(!isFocused||!isMapWebView||!ref.current||Platform.OS==='android')return;
     const js=`
       (function(){
         try{
@@ -394,19 +394,12 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
           try{
             var nm=window.FUNY_NAVER_MAP_API&&window.FUNY_NAVER_MAP_API.getMap&&window.FUNY_NAVER_MAP_API.getMap();
             if(nm&&window.naver&&naver.maps&&naver.maps.Event){
-              var isAndroidApp=window.__FUNY_APP_CONTEXT&&window.__FUNY_APP_CONTEXT.platform==='android';
-              if(!isAndroidApp||!window.__FUNY_ANDROID_NAVER_RESIZED){
-                naver.maps.Event.trigger(nm,'resize');
-                if(isAndroidApp)window.__FUNY_ANDROID_NAVER_RESIZED=true;
-              }
-              if(isAndroidApp&&typeof naver.maps.Event.clearListeners==='function'){
-                naver.maps.Event.clearListeners(nm,'idle');
-              }
+              naver.maps.Event.trigger(nm,'resize');
             }
           }catch(_){}
         }catch(_){}
       })();true;`;
-    const retryMs=Platform.OS==='android'?[420]:[80,320,760];
+    const retryMs=[80,320,760];
     const timers=retryMs.map(ms=>setTimeout(()=>ref.current?.injectJavaScript(js),ms));
     return()=>timers.forEach(clearTimeout);
   },[isFocused,isMapWebView]);

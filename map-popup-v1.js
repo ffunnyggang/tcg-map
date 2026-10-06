@@ -88,6 +88,6 @@
       refreshMarkerSizes();
     }catch(e){}
   }
-  window.FUNY_MAP_POPUP={clear:(force=false)=>{if(!force&&Date.now()<(window.__FUNY_RETURN_CLEANUP_UNTIL||0)&&Date.now()-(window.__FUNY_LAST_MAP_MARKER_TAP||0)<1200)return;clearSelected(true)}};
+  window.FUNY_MAP_POPUP={clear:(force=false)=>{if(!force)return;clearSelected(true)}};
   ensureMarkerStyles();loadLivePins();let tries=0;const timer=setInterval(()=>{tries++;try{SHOPS.forEach(s=>bindMarker(s,markerById.get(s.id)));bindMapEvents();if(markerById.size>=SHOPS.length||tries>60)clearInterval(timer)}catch(e){if(tries>60)clearInterval(timer)}},250)
 })();

@@ -31,10 +31,8 @@
   filters?.addEventListener('change',e=>{if(e.target.closest?.('.country-filter-select'))schedule(80)},true);
   document.getElementById('list-sort-select')?.addEventListener('change',()=>schedule(20));
   window.addEventListener('funy:googlemapready',()=>schedule(60));
-  window.addEventListener('funy:sheetchange',()=>schedule(40));
   window.addEventListener('funy:shops-source',()=>schedule(60));
   window.addEventListener('funy:listchange',()=>schedule(10));
-  window.addEventListener('funy:mapdatachange',()=>schedule(40));
   window.addEventListener('hashchange',()=>schedule(80));
   schedule(160);
 })();

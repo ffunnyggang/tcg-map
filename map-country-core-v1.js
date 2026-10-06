@@ -3,7 +3,7 @@
   function loadGlobalI18n(){if(!document.querySelector('link[data-funy-i18n]')){const l=document.createElement('link');l.rel='stylesheet';l.href='funy-i18n.css?v=20260915-0523';l.dataset.funyI18n='';document.head.appendChild(l)}if(!document.querySelector('script[data-funy-i18n]')){const s=document.createElement('script');s.src='funy-i18n.js?v=20260915-0523';s.dataset.funyI18n='';document.head.appendChild(s)}}loadGlobalI18n();
   const reviewInfoDates={'KR-SEO-004':'2026-09-13','KR-SEO-005':'2026-09-14','KR-SEO-008':'2026-09-13'};if(typeof SHOPS!=='undefined'&&Array.isArray(SHOPS))SHOPS.forEach(shop=>{if(shop.id.startsWith('KR-'))shop.verified=reviewInfoDates[shop.id]||null});
   const track=document.getElementById('filters'),mapWrap=document.querySelector('.map-wrap-hero'),googleMapEl=document.getElementById('google-map');if(!track||!mapWrap||typeof renderFilters!=='function'||typeof syncMapMarkers!=='function')return;
-  const JAPAN_CENTER={lat:35.698683,lng:139.773148,zoom:12};const initialCountry=(()=>{try{const q=new URLSearchParams(location.search).get('country');if(q==='JP'||q==='KR')return q;const saved=sessionStorage.getItem('funypin_map_country');return saved==='JP'?'JP':'KR'}catch(_){return'KR'}})();let country=initialCountry,googleMap=null,googleLoader=null,selectedGoogleMarker=null,googlePopup=null,lastJapanBounds=null;const googleMarkers=new Map(),isJapan=s=>String(s&&s.id||'').startsWith('JP-');
+  const JAPAN_CENTER={lat:35.698683,lng:139.773148,zoom:12};const initialCountry=(()=>{try{const q=new URLSearchParams(location.search).get('country');if(q==='JP'||q==='KR')return q;const saved=sessionStorage.getItem('funypin_map_country');return saved==='JP'?'JP':'KR'}catch(_){return'KR'}})();let country=initialCountry,googleMap=null,googleLoader=null,selectedGoogleMarker=null,googlePopup=null,lastJapanBounds=null;let savedMapView={KR:null,JP:null};const googleMarkers=new Map(),isJapan=s=>String(s&&s.id||'').startsWith('JP-');
   const baseMatches=typeof window.matches==='function'?window.matches:null;
   if(baseMatches&&!window.__FUNY_COUNTRY_MATCH_WRAPPED){window.__FUNY_COUNTRY_MATCH_WRAPPED=true;window.matches=function(shop){const rightCountry=country==='JP'?isJapan(shop):!isJapan(shop);return rightCountry&&baseMatches(shop)}}
   function currentLanguage(){return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}
@@ -23,30 +23,53 @@
   function japanGeocodeAddress(s){let a=String(s.address||'').trim().replace(/^도쿄\s*/,'').replace(/,\s*,/g,',').replace(/\s+/g,' ');return [a,'Tokyo','Japan'].filter(Boolean).join(', ')}
   function syncJapanMarkers(){const shops=SHOPS.filter(isJapan),bounds=new google.maps.LatLngBounds(),geocoder=new google.maps.Geocoder(),places=(google.maps.places&&google.maps.places.PlacesService)?new google.maps.places.PlacesService(googleMap):null;let pending=shops.length;if(!pending)return;clearGoogleSelection();googleMarkers.forEach(m=>m.setMap(null));googleMarkers.clear();const done=()=>{pending--;if(pending===0){lastJapanBounds=bounds;if(country==='JP'&&!bounds.isEmpty())fitJapan();window.dispatchEvent(new CustomEvent('funy:googlemapready'))}};const usePos=(s,loc,source)=>{const p={lat:loc.lat(),lng:loc.lng()},inTokyo=p.lat>35.45&&p.lat<35.90&&p.lng>139.45&&p.lng<140.05;if(!inTokyo){console.warn('[FUNY PIN] Japan location outside Tokyo:',s.id,source,p);return false}s._coord=p;addGoogleMarker(s,p);bounds.extend(p);return true};const fallback=(s)=>geocoder.geocode({address:japanGeocodeAddress(s),region:'JP',componentRestrictions:{country:'JP'}},(results,status)=>{if(status==='OK'&&results&&results[0])usePos(s,results[0].geometry.location,'geocode');else console.warn('[FUNY PIN] Japan geocode failed:',s.id,status,japanGeocodeAddress(s));done()});shops.forEach(s=>{const lat=Number(s.lat),lng=Number(s.lng);if(Number.isFinite(lat)&&Number.isFinite(lng)&&lat>30&&lng>120){usePos(s,new google.maps.LatLng(lat,lng),'master-db');done();return}if(!places){fallback(s);return}const query=[s.en||s.name,s.address,s.city,'Japan'].filter(Boolean).join(' ');places.findPlaceFromQuery({query,fields:['geometry','name','formatted_address','place_id']},(results,status)=>{if(status===google.maps.places.PlacesServiceStatus.OK&&results&&results[0]&&results[0].geometry&&results[0].geometry.location&&usePos(s,results[0].geometry.location,'place'))done();else fallback(s)})})}
   function initJapanMap(){if(!googleMapEl)return;loadGoogleMaps().then(()=>{if(country!=='JP')return;buildOverlays();const center={lat:JAPAN_CENTER.lat,lng:JAPAN_CENTER.lng};if(!googleMap){googleMap=new google.maps.Map(googleMapEl,{center,zoom:JAPAN_CENTER.zoom,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,clickableIcons:false,gestureHandling:'greedy'});googleMap.addListener('click',clearGoogleSelection);window.dispatchEvent(new CustomEvent('funy:googlemapready'))}syncJapanMarkers();requestAnimationFrame(()=>google.maps.event.trigger(googleMap,'resize'))}).catch(error=>console.error('[FUNY PIN] Google Maps load error:',error))}
+  function captureMapView(){
+    try{
+      if(country==='JP'&&googleMap){
+        const center=googleMap.getCenter?.(),zoom=googleMap.getZoom?.();
+        if(center&&zoom!=null)savedMapView.JP={lat:center.lat(),lng:center.lng(),zoom:Number(zoom)};
+      }else{
+        const nm=window.FUNY_NAVER_MAP_API?.getMap?.();
+        const center=nm?.getCenter?.(),zoom=nm?.getZoom?.();
+        if(center&&zoom!=null){
+          const lat=typeof center.lat==='function'?center.lat():center.y;
+          const lng=typeof center.lng==='function'?center.lng():center.x;
+          if(Number.isFinite(Number(lat))&&Number.isFinite(Number(lng)))savedMapView.KR={lat:Number(lat),lng:Number(lng),zoom:Number(zoom)};
+        }
+      }
+    }catch(_){}
+  }
   function restoreMapAfterDetail(){
     try{clearGoogleSelection()}catch(_){}
-    try{if(window.FUNY_MAP_POPUP?.clear)window.FUNY_MAP_POPUP.clear()}catch(_){}
+    try{window.FUNY_MAP_POPUP?.clear?.()}catch(_){}
+    const naverEl=document.getElementById('naver-map'),googleEl=document.getElementById('google-map');
     if(country==='JP'){
       try{document.body.classList.add('country-japan')}catch(_){}
+      if(naverEl)naverEl.style.visibility='hidden';
+      if(googleEl){googleEl.style.display='block';googleEl.style.visibility='visible';}
+      const saved=savedMapView.JP;
       if(googleMap&&window.google?.maps){
-        try{
-          const center=googleMap.getCenter?.(),zoom=googleMap.getZoom?.();
-          requestAnimationFrame(()=>requestAnimationFrame(()=>{
-            try{google.maps.event.trigger(googleMap,'resize');if(center)googleMap.setCenter(center);if(zoom!=null)googleMap.setZoom(zoom)}catch(_){}
-          }));
-        }catch(_){}
-      }else{
-        try{initJapanMap()}catch(_){}
-      }
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          try{
+            google.maps.event.trigger(googleMap,'resize');
+            if(saved){googleMap.setCenter({lat:saved.lat,lng:saved.lng});googleMap.setZoom(saved.zoom);}
+          }catch(_){}
+        }));
+      }else{try{initJapanMap()}catch(_){}}
       return;
     }
     try{document.body.classList.remove('country-japan')}catch(_){}
+    if(googleEl){googleEl.style.removeProperty('display');googleEl.style.removeProperty('visibility');}
+    if(naverEl)naverEl.style.removeProperty('visibility');
+    const saved=savedMapView.KR;
     try{
       const nm=window.FUNY_NAVER_MAP_API?.getMap?.();
       if(nm&&window.naver?.maps?.Event){
-        const center=nm.getCenter?.(),zoom=nm.getZoom?.();
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          try{naver.maps.Event.trigger(nm,'resize');if(center)nm.setCenter(center);if(zoom!=null)nm.setZoom(zoom)}catch(_){}
+          try{
+            naver.maps.Event.trigger(nm,'resize');
+            if(saved){nm.setCenter(new naver.maps.LatLng(saved.lat,saved.lng));nm.setZoom(saved.zoom);}
+          }catch(_){}
         }));
       }
     }catch(_){}
@@ -62,7 +85,7 @@
       try{const nm=window.FUNY_NAVER_MAP_API?.getMap?.();if(nm&&window.naver?.maps?.Event)naver.maps.Event.trigger(nm,'resize');baseSyncMapMarkers(true)}catch(_){}
     }
   }
-  function applyCountry(next){country=next==='JP'?'JP':'KR';try{sessionStorage.setItem('funypin_map_country',country)}catch(e){}try{if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify({type:'MAP_COUNTRY',country}))}catch(e){}document.body.classList.toggle('country-japan',country==='JP');ensureCountryControl();const select=track.querySelector('.country-filter-select');if(select)select.value=country;updateCountryVisual();if(country==='JP'){hideKoreaMarkers();requestAnimationFrame(initJapanMap)}else{clearGoogleSelection();googleMarkers.forEach(m=>m.setMap(null));try{baseSyncMapMarkers(true)}catch(e){}}try{if(window.FUNY_MAP_LIST?.refresh)window.FUNY_MAP_LIST.refresh('country-apply');else renderList()}catch(e){}setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country}})),80);setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country}})),120)}
+  function applyCountry(next){const nextCountry=next==='JP'?'JP':'KR',changed=nextCountry!==country;if(changed){captureMapView();try{window.FUNY_MAP_LIST?.resetForCountryChange?.()}catch(_){}}country=nextCountry;try{sessionStorage.setItem('funypin_map_country',country)}catch(e){}try{if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify({type:'MAP_COUNTRY',country}))}catch(e){}document.body.classList.toggle('country-japan',country==='JP');ensureCountryControl();const select=track.querySelector('.country-filter-select');if(select)select.value=country;updateCountryVisual();if(country==='JP'){hideKoreaMarkers();requestAnimationFrame(initJapanMap)}else{clearGoogleSelection();googleMarkers.forEach(m=>m.setMap(null));try{baseSyncMapMarkers(true)}catch(e){}}try{if(window.FUNY_MAP_LIST?.refresh)window.FUNY_MAP_LIST.refresh('country-apply');else renderList()}catch(e){}setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapfitrequest',{detail:{country}})),80);setTimeout(()=>window.dispatchEvent(new CustomEvent('funy:mapdatachange',{detail:{country}})),120)}
   const baseRenderFilters=renderFilters;renderFilters=function(){baseRenderFilters();ensureCountryControl()};const baseSyncMapMarkers=syncMapMarkers;syncMapMarkers=function(refit=true){if(country==='JP'){hideKoreaMarkers();initJapanMap();return}return baseSyncMapMarkers(refit)};
   window.addEventListener('funy:mapfitrequest',()=>{if(country==='JP')fitJapan()});window.addEventListener('funy:sheetchange',e=>{if(country==='JP'&&e.detail?.mode==='half')setTimeout(fitJapan,360)});track.addEventListener('change',e=>{const select=e.target.closest('.country-filter-select');if(!select)return;applyCountry(select.value)});ensureCountryControl();applyCountry(initialCountry);window.addEventListener('hashchange',()=>{if(/^#\/shop\//.test(location.hash))return;setTimeout(()=>{try{if(country==='JP'){if(googleMap&&window.google?.maps){google.maps.event.trigger(googleMap,'resize');fitJapan()}}else{const nm=window.FUNY_NAVER_MAP_API?.getMap?.();if(nm&&window.naver?.maps?.Event)naver.maps.Event.trigger(nm,'resize');baseSyncMapMarkers(true)}}catch(e){}},140)});try{
     const home=document.getElementById('home-view');
@@ -76,5 +99,21 @@
       document.addEventListener('visibilitychange',()=>{if(!document.hidden)queueRestore()});
     }
   }catch(_){}
-  window.FUNY_MAP_COUNTRY={get:()=>country,set:applyCountry,refresh:refreshCurrentMap,restore:restoreMapAfterDetail};window.FUNY_GOOGLE_MAP_API={getMap:()=>googleMap,getMarkers:()=>googleMarkers,getCountry:()=>country,clearSelection:clearGoogleSelection};window.dispatchEvent(new CustomEvent('funy:googlemapready'));
+  window.FUNY_MAP_COUNTRY={get:()=>country,set:applyCountry,refresh:refreshCurrentMap,restore:restoreMapAfterDetail,capture:captureMapView};try{
+    if(!window.__FUNY_MAP_VIEW_TRACKING){
+      window.__FUNY_MAP_VIEW_TRACKING=true;
+      const bindViewTracking=()=>{
+        try{
+          const nm=window.FUNY_NAVER_MAP_API?.getMap?.();
+          if(nm&&window.naver?.maps?.Event&&!nm.__funyViewTracked){nm.__funyViewTracked=true;naver.maps.Event.addListener(nm,'idle',captureMapView);}
+        }catch(_){}
+        try{
+          if(googleMap&&!googleMap.__funyViewTracked){googleMap.__funyViewTracked=true;googleMap.addListener('idle',captureMapView);}
+        }catch(_){}
+      };
+      window.addEventListener('funy:googlemapready',()=>setTimeout(bindViewTracking,0));
+      setTimeout(bindViewTracking,300);
+    }
+  }catch(_){}
+  window.FUNY_GOOGLE_MAP_API={getMap:()=>googleMap,getMarkers:()=>googleMarkers,getCountry:()=>country,clearSelection:clearGoogleSelection};window.dispatchEvent(new CustomEvent('funy:googlemapready'));
 })();

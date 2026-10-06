@@ -34,7 +34,7 @@
   }
 
   if(/\/talk\.html$/.test(location.pathname)&&!document.querySelector('script[data-funy-talk-community]')){
-    const s=document.createElement('script');s.src='talk-community-v1.js?v=20261002-01';s.async=false;s.dataset.funyTalkCommunity='1';
+    const s=document.createElement('script');s.src='talk-community-v1.js?v=20261006-pokamo-external';s.async=false;s.dataset.funyTalkCommunity='1';
     s.onload=()=>{if(!document.querySelector('script[data-funy-talk-safety]')){const safe=document.createElement('script');safe.src='talk-safety-v1.js?v=20261002-01';safe.async=false;safe.dataset.funyTalkSafety='1';document.body.appendChild(safe)}};
     document.body.appendChild(s);
   }

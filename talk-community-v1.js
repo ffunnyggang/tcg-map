@@ -43,7 +43,7 @@ function cardHtml(x){
   const tags=source+`<span class="funy-category">${esc(x.category)}</span>`;
   const image=x.image?`<div class="thumb-stack"><img class="thumb" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">${x.images&&x.images.length>1?`<span class="thumb-count">+${x.images.length-1}</span>`:''}</div>`:'';
   if(x.source==='funy')return `<article class="card funy-post-card ${image?'':'noimg'}" data-funy-post="${esc(x.id)}"><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</article>`;
-  return `<a class="card ${image?'':'noimg'}" href="${esc(x.url)}" target="_blank" rel="noopener"><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</a>`;
+  return `<a class="card ${image?'':'noimg'}" href="${esc(x.url)}" target="_blank" rel="noopener" data-funy-link-mode="external" data-funy-external-source="pokamo"><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</a>`;
 }
 function render(){const list=selectedList();popularSort?.classList.toggle('show',current==='인기');feed.innerHTML=list.length?list.map(cardHtml).join(''):'<div class="talk-empty-note">해당 카테고리의 게시글이 없습니다.</div>';feed.querySelectorAll('[data-funy-post]').forEach(el=>el.onclick=()=>openDetail(el.dataset.funyPost));}
 

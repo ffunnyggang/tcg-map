@@ -76,13 +76,26 @@
   function scheduleSourceRefresh(reason,delay=180){clearTimeout(sourceRefreshTimer);sourceRefreshTimer=setTimeout(()=>refresh(reason),delay)}
   try{renderList=()=>refresh('renderList')}catch(_){}
   window.renderList=()=>refresh('renderList');
-  window.FUNY_MAP_LIST={refresh,setSort:v=>setSort(v,'api'),getVisible:()=>window.FUNY_VISIBLE_SHOPS||[],getFilters:()=>[...activeFilters]};
+  window.FUNY_MAP_LIST={refresh,setSort:v=>setSort(v,'api'),resetForCountryChange,getVisible:()=>window.FUNY_VISIBLE_SHOPS||[],getFilters:()=>[...activeFilters]};
 
   function updateFilterVisual(){const root=document.getElementById('filters');if(!root)return;root.querySelectorAll('.filter-chip').forEach(b=>{const id=b.dataset.filter;b.classList.toggle('active',id==='all'?activeFilters.size===0:activeFilters.has(id))})}
   function sortLabel(){return sortMode==='near'?'가까운 순':sortMode==='alpha'?'가나다 순':'추천 순'}
   function updateSortVisual(){const label=document.getElementById('list-sort-label');if(label)label.textContent=sortLabel();document.querySelectorAll('[data-sort-value]').forEach(b=>b.classList.toggle('active',b.dataset.sortValue===sortMode))}
   function closeSort(){sortOpen=false;document.getElementById('list-sort-menu')?.classList.remove('open');document.getElementById('list-sort-button')?.setAttribute('aria-expanded','false')}
   function toggleSort(e){e?.preventDefault();e?.stopPropagation();sortOpen=!sortOpen;document.getElementById('list-sort-menu')?.classList.toggle('open',sortOpen);document.getElementById('list-sort-button')?.setAttribute('aria-expanded',sortOpen?'true':'false')}
+  function resetForCountryChange(){
+    activeFilters.clear();
+    sortMode='recommend';
+    closeSort();
+    const search=document.getElementById('map-shop-search');
+    const clear=document.getElementById('map-shop-search-clear');
+    if(search)search.value='';
+    if(clear)clear.hidden=true;
+    lastListHtml='';
+    updateFilterVisual();
+    updateSortVisual();
+  }
+
   function setSort(value,reason='sort-change'){sortMode=['near','alpha'].includes(value)?value:'recommend';closeSort();updateSortVisual();if(sortMode==='near'&&!window.FUNY_CURRENT_LOCATION){document.getElementById('map-location-btn')?.click();setTimeout(()=>refresh(reason),80);return}refresh(reason)}
 
   const heading=document.querySelector('.list-heading');
@@ -122,7 +135,7 @@
     filters.addEventListener('change',e=>{
       const sel=e.target.closest?.('.country-filter-select');if(!sel)return;
       e.stopPropagation();e.stopImmediatePropagation();
-      const next=sel.value==='JP'?'JP':'KR';window.FUNY_MAP_COUNTRY?.set?.(next);setTimeout(()=>refresh('country-change'),20);
+      const next=sel.value==='JP'?'JP':'KR';window.FUNY_MAP_COUNTRY?.set?.(next);
     },true);
     new MutationObserver(()=>updateFilterVisual()).observe(filters,{childList:true,subtree:true});
   }

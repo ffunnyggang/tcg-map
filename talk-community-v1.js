@@ -64,6 +64,18 @@ const style=document.createElement('style');style.textContent=`.funy-source{disp
   padding:0 16px calc(56px + env(safe-area-inset-bottom))!important;
   background:#fff!important
 }
+
+/* TALK form handle lock: spacing belongs to fixed chrome, never to the handle itself */
+.talk-form-sheet .talk-community-top{
+  padding:9px 16px 0!important;
+  overflow:hidden!important
+}
+.talk-form-sheet .talk-community-handle{
+  margin:0 auto 10px!important;
+  transform:none!important;
+  translate:none!important;
+  flex:0 0 4px!important
+}
 `;document.head.appendChild(style);
 function modalShell(id,title,body){document.getElementById(id)?.remove();const el=document.createElement('div');el.id=id;el.className='talk-community-modal';const singleDim=id==='funyTalkEditor'||id==='funyTalkPostEdit';if(singleDim){el.dataset.funySingleDim='1';document.documentElement.classList.add('funy-talk-form-open')}const top=`<div class="talk-community-top"><div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div></div>`;const regularTop=`<div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div>`;el.innerHTML=`<div class="talk-community-sheet${singleDim?' talk-form-sheet':''}">${singleDim?top+'<div class="talk-form-scroll">'+body+'</div>':regularTop+body}</div>`;const close=()=>{el.remove();if(singleDim&&!document.querySelector('.talk-community-modal[data-funy-single-dim="1"]'))document.documentElement.classList.remove('funy-talk-form-open')};el.querySelector('.talk-community-close').onclick=close;el.addEventListener('click',e=>{if(e.target===el)close()});document.body.appendChild(el);return el}
 function pokamoLimit(n){if(n>=100)return 0;if(n>=50)return 3;if(n>=25)return 6;if(n>=10)return 12;return 30}

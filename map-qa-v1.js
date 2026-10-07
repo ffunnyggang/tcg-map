@@ -10,6 +10,7 @@
   const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   let VENDING=[];
+  const OPERATOR_LOGOS=new Map();
   async function loadVendingData(){
     const qs='select=id,name,address,operator,status,is_active,latitude,longitude,logo_url&order=id.asc';
     const r=await fetch(SB_URL+'/rest/v1/v_public_pokemon_card_vending_machines?'+qs,{
@@ -19,6 +20,7 @@
     if(!r.ok)throw new Error('vending DB '+r.status);
     const rows=await r.json();
     VENDING=(rows||[]).map(v=>{
+      if(v?.operator&&v?.logo_url&&!OPERATOR_LOGOS.has(v.operator))OPERATOR_LOGOS.set(v.operator,String(v.logo_url));
       const hasLat=v.latitude!==null&&v.latitude!==undefined&&v.latitude!=='';
       const hasLng=v.longitude!==null&&v.longitude!==undefined&&v.longitude!=='';
       const lat=hasLat?Number(v.latitude):NaN;
@@ -51,7 +53,7 @@ const $=s=>document.querySelector(s);
   const currentSearch=()=>normalize($('#map-shop-search')?.value||'');
   const category=v=>['롯데마트','이마트','롯데시네마','메가박스','CGV'].includes(v)?v:'기타';
   const operatorLabel=v=>v==='롯데시네마'?'LOTTE\nCINEMA':v==='롯데마트'?'LOTTE\nMART':v==='롯데월드'?'LOTTE\nWORLD':v==='스타필드마켓'?'STARFIELD\nMARKET':v;
-  const vendingLogoUrl=v=>String(v?.logo_url||'');
+  const vendingLogoUrl=v=>String(OPERATOR_LOGOS.get(v?.operator)||v?.logo_url||'');
   const addressIcon='<svg class="qa-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   const badge=document.createElement('div');badge.className='qa-dev-badge';badge.textContent='MAP V2 · QA';document.body.appendChild(badge);
@@ -78,12 +80,8 @@ const $=s=>document.querySelector(s);
   }
   function logoHtml(v){
     const url=vendingLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');
-    if(v.operator==='롯데시네마'&&url){
-      const safeUrl=String(url).replace(/'/g,'%27');
-      return '<span class="qa-operator-logo qa-operator-logo-bg" data-operator="롯데시네마" role="img" aria-label="롯데시네마 로고" style="background-image:url(\''+safeUrl+'\')"></span>';
-    }
     return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+
-      (url?'<img src="'+esc(url)+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+
+      (url?'<img src="'+esc(url)+'" alt="'+esc(v.operator)+' 로고" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+
       '</span>';
   }
   function popupHtml(v){
@@ -354,13 +352,6 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
-  document.addEventListener('change',e=>{
-    const select=e.target?.closest?.('.country-filter-select');
-    if(!select)return;
-    const next=select.value==='JP'?'JP':'KR';
-    try{window.FUNY_MAP_COUNTRY?.set?.(next)}catch(err){console.warn('[FUNY MAP] country handoff failed',err)}
-    setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},80);
-  },true);
   new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
     try{

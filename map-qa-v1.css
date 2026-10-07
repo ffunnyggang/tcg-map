@@ -97,3 +97,31 @@ html.funy-map-qa.qa-hide-events .funy-event-pin{display:none!important}
 }
 
 .qa-shop-tools .qa-tools-divider{flex:0 0 auto}
+
+
+/* JP QA safeguard: keep the existing Japan MAP UI unchanged */
+html.funy-map-qa body.country-japan .qa-layer-chip,
+html.funy-map-qa body.country-japan .qa-list-tabs,
+html.funy-map-qa body.country-japan .qa-shop-tools,
+html.funy-map-qa body.country-japan .qa-shop-filter-strip,
+html.funy-map-qa body.country-japan .qa-vending-panel,
+html.funy-map-qa body.country-japan .qa-geocode-status{display:none!important}
+
+html.funy-map-qa body.country-japan #filters>.filter-chip{display:inline-flex!important}
+html.funy-map-qa body.country-japan #filters>.country-filter-sep{display:none!important}
+html.funy-map-qa body.country-japan .country-filter-select{
+  height:38px!important;
+  padding:0 15px!important;
+  border:1px solid rgba(255,255,255,.88)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.88)!important;
+  color:#28242d!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  box-shadow:0 5px 18px rgba(34,29,44,.13),inset 0 1px 0 rgba(255,255,255,.96)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(150%)!important;
+  backdrop-filter:blur(18px) saturate(150%)!important
+}
+html.funy-map-qa body.country-japan .list-heading-v2{display:flex!important}
+html.funy-map-qa body.country-japan .shop-request-list-banner{margin:12px 0 11px!important}
+html.funy-map-qa body.country-japan .map-sheet-handle{padding-top:0!important;padding-bottom:0!important}

@@ -9,8 +9,11 @@
 .vm-copy{min-width:0}.vm-copy strong{display:block;margin:0 0 6px;color:#302b34;font-size:13px;font-weight:850}.vm-copy>span{display:flex;align-items:flex-start;gap:4px;color:#847c88;font-size:10px;line-height:1.4}.vm-address-icon{width:13px;height:13px;flex:0 0 13px;margin-top:1px;fill:none;stroke:currentColor;stroke-width:1.8}
 .vm-route{align-self:center;justify-self:end;min-width:46px;height:30px;padding:0 9px;border:1px solid #dcd8df;border-radius:9px;background:#f8f7f9;color:#625c66;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:800 10px/1 Pretendard,sans-serif}
 .vm-empty{padding:34px 12px;text-align:center;color:#9e96a2;font-size:11px}
-.vm-marker{width:28px;height:38px;filter:drop-shadow(0 3px 5px rgba(157,118,0,.20));transform-origin:50% 100%}.vm-marker svg{width:28px;height:38px;overflow:visible}.vm-marker.selected{transform:scale(1.08);filter:drop-shadow(0 4px 8px rgba(181,137,0,.34))}
+.vm-marker{position:relative;width:var(--marker-w);height:var(--marker-h);filter:drop-shadow(0 3px 5px rgba(157,118,0,.20));transform-origin:50% 100%}.vm-marker svg{position:absolute;left:50%;top:0;width:var(--pin-w);height:var(--pin-h);transform:translateX(-50%);overflow:visible}.vm-marker.selected{transform:scale(1.08);filter:drop-shadow(0 4px 8px rgba(181,137,0,.34))}
 .vm-popup{width:274px!important}.vm-popup .map-shop-popup{position:relative!important;display:block!important;width:274px!important;padding:14px 72px 14px 16px!important}.vm-popup-copy strong{display:block;margin-bottom:8px;font-size:15px}.vm-popup-address{display:flex;gap:4px;color:#847c88;font-size:10px}.vm-popup .vm-route{position:absolute;right:14px;top:50%;transform:translateY(-50%)}
 body.vm-tab-vending #shop-list,body.vm-tab-vending #empty,body.vm-tab-vending .shop-request-list-banner,body.vm-tab-vending .list-heading{display:none!important}
 body.vm-country-jp #vmLayerChip,body.vm-country-jp #vmTabs{display:none!important}
 @media(max-width:430px){.vm-layer-chip{height:36px;padding:0 11px;font-size:10.8px}.vm-tabs{position:sticky;top:0}}
+
+/* V21 QA: schedule pin keeps orange pin/DDAY only; calendar emoji hidden */
+.funy-event-calendar{display:none!important}

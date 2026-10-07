@@ -19,7 +19,10 @@
     if(!r.ok)throw new Error('vending DB '+r.status);
     const rows=await r.json();
     VENDING=(rows||[]).map(v=>{
-      const lat=Number(v.latitude),lng=Number(v.longitude);
+      const hasLat=v.latitude!==null&&v.latitude!==undefined&&v.latitude!=='';
+      const hasLng=v.longitude!==null&&v.longitude!==undefined&&v.longitude!=='';
+      const lat=hasLat?Number(v.latitude):NaN;
+      const lng=hasLng?Number(v.longitude):NaN;
       if(Number.isFinite(lat)&&Number.isFinite(lng))v._coord={lat,lng};
       return v;
     });

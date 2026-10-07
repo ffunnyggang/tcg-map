@@ -78,6 +78,10 @@ const $=s=>document.querySelector(s);
   }
   function logoHtml(v){
     const url=vendingLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');
+    if(v.operator==='롯데시네마'&&url){
+      const safeUrl=String(url).replace(/'/g,'%27');
+      return '<span class="qa-operator-logo qa-operator-logo-bg" data-operator="롯데시네마" role="img" aria-label="롯데시네마 로고" style="background-image:url(\''+safeUrl+'\')"></span>';
+    }
     return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+
       (url?'<img src="'+esc(url)+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+
       '</span>';
@@ -350,6 +354,13 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
+  document.addEventListener('change',e=>{
+    const select=e.target?.closest?.('.country-filter-select');
+    if(!select)return;
+    const next=select.value==='JP'?'JP':'KR';
+    try{window.FUNY_MAP_COUNTRY?.set?.(next)}catch(err){console.warn('[FUNY MAP] country handoff failed',err)}
+    setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},80);
+  },true);
   new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
     try{

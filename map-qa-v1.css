@@ -9,16 +9,16 @@ html.funy-map-qa .map-search-input{font-size:13px}
 html.funy-map-qa .map-filter-bar{top:70px!important;background:transparent!important}
 html.funy-map-qa #filters{gap:7px!important;padding:0 14px 8px!important}
 html.funy-map-qa #filters>.filter-chip{display:none!important}
-html.funy-map-qa #filters>.country-filter-sep{display:none!important}
+html.funy-map-qa #filters>.country-filter-sep{display:block!important;flex:0 0 1px!important;width:1px!important;height:24px!important;margin:7px 2px!important;background:rgba(83,75,91,.24)!important;border:0!important;border-radius:99px!important}
 html.funy-map-qa .country-filter-wrap{flex:0 0 auto!important}
-html.funy-map-qa .country-filter-select{height:38px!important;padding:0 30px 0 14px!important;border:1px solid #e5e0e9!important;border-radius:19px!important;background:#fff!important;color:#403a45!important;font:800 11.5px/1 Pretendard,sans-serif!important;box-shadow:0 3px 12px rgba(47,38,56,.06)!important}
+html.funy-map-qa .country-filter-select{height:38px!important;padding:0 30px 0 14px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:19px!important;background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62))!important;color:#403a45!important;font:800 11.5px/1 Pretendard,sans-serif!important;box-shadow:0 6px 18px rgba(48,39,58,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;-webkit-backdrop-filter:blur(18px) saturate(155%)!important;backdrop-filter:blur(18px) saturate(155%)!important}
 
-.qa-layer-chip{flex:0 0 auto;height:38px;padding:0 13px;border:1.5px solid #ddd8e1;border-radius:19px;background:rgba(255,255,255,.96);color:#9b949f;display:inline-flex;align-items:center;justify-content:center;gap:5px;font:800 11.5px/1 Pretendard,sans-serif;box-shadow:0 3px 12px rgba(47,38,56,.045);white-space:nowrap;cursor:pointer;transition:border-color .16s ease,color .16s ease,opacity .16s ease}
+.qa-layer-chip{flex:0 0 auto;height:38px;padding:0 13px;border:1.5px solid rgba(255,255,255,.68);border-radius:19px;background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.60));color:#9b949f;display:inline-flex;align-items:center;justify-content:center;gap:5px;font:800 11.5px/1 Pretendard,sans-serif;box-shadow:0 6px 18px rgba(48,39,58,.09),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.26);-webkit-backdrop-filter:blur(18px) saturate(155%);backdrop-filter:blur(18px) saturate(155%);white-space:nowrap;cursor:pointer;transition:border-color .16s ease,color .16s ease,opacity .16s ease,box-shadow .16s ease}
 .qa-layer-chip .qa-layer-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.32}
 .qa-layer-chip .qa-layer-count{font-size:10px;font-weight:900;opacity:.7}
-.qa-layer-chip[data-layer="shops"].active{border-color:#8062d8;background:#fff;color:#6f50c7}
-.qa-layer-chip[data-layer="events"].active{border-color:#ef9a5c;background:#fff;color:#d87331}
-.qa-layer-chip[data-layer="vending"].active{border-color:#e3bd2c;background:#fff;color:#a87d00}
+.qa-layer-chip[data-layer="shops"].active{border-color:rgba(128,98,216,.72);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(247,244,255,.68));color:#6f50c7;box-shadow:0 6px 18px rgba(100,72,183,.12),inset 0 1px 0 rgba(255,255,255,.96)}
+.qa-layer-chip[data-layer="events"].active{border-color:rgba(239,154,92,.76);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,248,242,.68));color:#d87331;box-shadow:0 6px 18px rgba(198,108,48,.11),inset 0 1px 0 rgba(255,255,255,.96)}
+.qa-layer-chip[data-layer="vending"].active{border-color:rgba(227,189,44,.82);background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(255,251,232,.72));color:#a87d00;box-shadow:0 6px 18px rgba(176,132,0,.11),inset 0 1px 0 rgba(255,255,255,.96)}
 .qa-layer-chip.active .qa-layer-dot{opacity:1}
 .qa-layer-chip.active .qa-layer-count{opacity:1}
 
@@ -26,14 +26,14 @@ html.funy-map-qa .country-filter-select{height:38px!important;padding:0 30px 0 1
 
 html.funy-map-qa .map-shop-sheet{background:#fbfafc!important}
 html.funy-map-qa .map-sheet-handle{padding-top:7px!important;padding-bottom:5px!important}
-.qa-list-tabs{margin:0 12px 6px;padding:3px;border:1px solid #e2dde6;border-radius:11px;background:#f0eef2;display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.qa-list-tabs{margin:0 0 8px;padding:3px;border:1px solid #e2dde6;border-radius:11px;background:#f0eef2;display:grid;grid-template-columns:1fr 1fr;gap:3px}
 .qa-list-tab{min-height:34px;border:0;border-radius:8px;background:transparent;color:#867e8a;font:800 11.5px/1 Pretendard,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer}
 .qa-list-tab.active{background:#fff;color:#302a34;box-shadow:0 2px 7px rgba(44,35,52,.07)}
 .qa-list-tab[data-tab="shops"].active .qa-tab-count{color:#7557d3}
 .qa-list-tab[data-tab="vending"].active .qa-tab-count{color:#b18800}
 .qa-tab-count{font-weight:900}
 
-.qa-shop-tools{display:flex;align-items:center;gap:7px;padding:0 12px 6px;min-width:0;overflow:visible}
+.qa-shop-tools{display:flex;align-items:center;gap:7px;padding:8px 0 10px;min-width:0;overflow:visible}
 .qa-shop-tools::-webkit-scrollbar,.qa-vending-tools::-webkit-scrollbar,.qa-operator-strip::-webkit-scrollbar,.qa-shop-filter-strip::-webkit-scrollbar{display:none}
 .qa-shop-filter-strip{flex:1 1 auto;min-width:0;display:flex;gap:7px;overflow-x:auto;padding:0;scrollbar-width:none}
 .qa-control-pill,.qa-operator-chip,.qa-shop-filter-chip{flex:0 0 auto;height:34px;padding:0 12px;border:1px solid #e5e0e9;border-radius:17px;background:#fff;color:#514a55;font:750 10.8px/1 Pretendard,sans-serif;white-space:nowrap;cursor:pointer}
@@ -41,17 +41,17 @@ html.funy-map-qa .map-sheet-handle{padding-top:7px!important;padding-bottom:5px!
 html.funy-map-qa .list-heading-v2{display:none!important}
 html.funy-map-qa .list-sort{margin:0!important}
 html.funy-map-qa .list-sort-button{height:34px!important;min-width:94px!important;padding:0 11px 0 13px!important;box-shadow:none!important}
-html.funy-map-qa .shop-request-list-banner{margin:0 12px 8px!important}
+html.funy-map-qa .shop-request-list-banner{margin:0 0 8px!important}
 
 .qa-vending-panel{padding-bottom:96px}
-.qa-vending-tools{display:flex;align-items:center;gap:7px;padding:0 12px 6px;min-width:0}
+.qa-vending-tools{display:flex;align-items:center;gap:7px;padding:8px 0 10px;min-width:0}
 .qa-vending-list-sort{position:relative!important;z-index:121!important;flex:0 0 auto!important}.qa-vending-list-sort .list-sort-button{height:34px!important;min-width:94px!important;padding:0 11px 0 13px!important}.qa-vending-list-sort .list-sort-menu{top:40px!important}
 .qa-tools-divider{flex:0 0 auto;width:1px;height:20px;background:#ddd8e1;margin:0 1px}
 .qa-operator-strip{flex:1 1 auto;min-width:0;display:flex;gap:7px;overflow-x:auto;padding:0;scrollbar-width:none}
 .qa-operator-chip.active{border-color:#e0bd32;background:#fff9df;color:#9e7700;font-weight:850}
 .qa-vending-summary{display:none}
 
-.qa-vending-list{display:grid;gap:8px;padding:0 12px}
+.qa-vending-list{display:grid;gap:8px;padding:0}
 .qa-vending-card{display:grid;grid-template-columns:54px minmax(0,1fr) 52px;gap:10px;align-items:center;min-height:78px;padding:11px 10px 11px 11px;border:1px solid #ece8ef;border-radius:15px;background:#fff;box-shadow:0 4px 15px rgba(46,38,54,.035);cursor:pointer}
 .qa-operator-logo{width:54px;height:54px;border:1px solid #ece8ef;border-radius:11px;background:#fff;display:grid;place-items:center;color:#58505d;font:900 8.8px/1.15 Pretendard,sans-serif;text-align:center;padding:5px;box-sizing:border-box}
 .qa-operator-logo[data-operator="롯데마트"],.qa-operator-logo[data-operator="롯데시네마"],.qa-operator-logo[data-operator="롯데월드"]{color:#d91e36;background:#fff8f8}

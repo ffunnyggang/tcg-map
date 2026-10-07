@@ -44,7 +44,7 @@
   }
   function logoHtml(v){return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+esc(operatorLabel(v.operator)).replace(/\n/g,'<br>')+'</span>'}
   function popupHtml(v){
-    return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup">'+logoHtml(v)+'<span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
+    return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup"><span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
   function selectVending(v,marker){
     try{if(activeInfoWindow)activeInfoWindow.close()}catch(_){}
@@ -119,20 +119,34 @@
     const el=document.querySelector('.qa-layer-chip[data-layer="events"] .qa-layer-count');if(el)el.textContent=String(n);
   }
 
+  let layerControlObserver=null,layerControlTimer=0;
   function buildLayerControls(){
     const track=$('#filters');if(!track)return;
-    ['shops','events','vending'].forEach(k=>track.querySelector('[data-layer="'+k+'"]')?.remove());
+    const existing=[...track.querySelectorAll('.qa-layer-chip')];
+    if(existing.length===3){
+      existing.forEach(b=>b.classList.toggle('active',!!state.layers[b.dataset.layer]));
+      return;
+    }
+    existing.forEach(x=>x.remove());
     const shopCount=(()=>{try{return SHOPS.filter(x=>!String(x.id).startsWith('JP-')).length}catch(_){return 0}})();
     const defs=[['shops','카드샵',shopCount],['events','일정',0],['vending','자판기',VENDING.length]];
+    const anchor=track.querySelector('.country-filter-sep')||track.querySelector('.country-filter-wrap');
+    let ref=anchor?.nextSibling||null;
     defs.forEach(([key,label,count])=>{
-      const b=document.createElement('button');b.type='button';b.className='qa-layer-chip active';b.dataset.layer=key;
+      const b=document.createElement('button');b.type='button';b.className='qa-layer-chip'+(state.layers[key]?' active':'');b.dataset.layer=key;
       b.innerHTML='<span class="qa-layer-dot"></span><span>'+label+'</span><span class="qa-layer-count">'+count+'</span>';
       b.onclick=e=>{e.preventDefault();e.stopPropagation();state.layers[key]=!state.layers[key];applyLayers()};
-      track.appendChild(b);
+      track.insertBefore(b,ref);
     });
-    setInterval(updateEventCount,900);
   }
-
+  function keepLayerControls(){
+    const track=$('#filters');if(!track)return;
+    if(layerControlObserver)layerControlObserver.disconnect();
+    layerControlObserver=new MutationObserver(()=>{clearTimeout(layerControlTimer);layerControlTimer=setTimeout(()=>{buildLayerControls();applyLayers()},20)});
+    layerControlObserver.observe(track,{childList:true,subtree:false});
+    buildLayerControls();
+    setInterval(()=>{buildLayerControls();updateEventCount()},900);
+  }
   function shopFilterDefs(){try{return [{id:'all',label:'전체'},...FILTERS]}catch(_){return[{id:'all',label:'전체'}]}}
   function syncShopFilterUI(){
     document.querySelectorAll('.qa-shop-filter-chip[data-filter]').forEach(b=>{
@@ -142,26 +156,38 @@
     const any=[...document.querySelectorAll('.qa-shop-filter-chip')].some(b=>b.classList.contains('active'));
     $('.qa-filter-toggle')?.classList.toggle('active',any);
   }
+  function vendingSortLabel(){return state.vendingSort==='near'?'가까운 순':'가나다 순'}
+  function closeVendingSort(){const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton');menu?.classList.remove('open');btn?.setAttribute('aria-expanded','false')}
+  function setVendingSort(value){state.vendingSort=value==='near'?'near':'alpha';const label=$('#qaVendingSortLabel');if(label)label.textContent=vendingSortLabel();document.querySelectorAll('#qaVendingSortMenu [data-vending-sort]').forEach(b=>b.classList.toggle('active',b.dataset.vendingSort===state.vendingSort));closeVendingSort();if(state.vendingSort==='near'&&!window.FUNY_CURRENT_LOCATION)document.getElementById('map-location-btn')?.click();renderVendingList()}
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||sheet.querySelector('.qa-list-tabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
     const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count">'+VENDING.length+'</span></button>';
     handle?.after(tabs);
+
     const heading=sheet.querySelector('.list-heading');
     const tools=document.createElement('div');tools.className='qa-shop-tools';
-    if(heading){heading.before(tools);const sort=heading.querySelector('.list-sort');if(sort)tools.appendChild(sort)}
+    if(heading){
+      heading.before(tools);
+      const sort=heading.querySelector('.list-sort');if(sort)tools.appendChild(sort);
+    }
+    const divider=document.createElement('span');divider.className='qa-tools-divider';divider.setAttribute('aria-hidden','true');tools.appendChild(divider);
     const strip=document.createElement('div');strip.className='qa-shop-filter-strip';
     strip.innerHTML=shopFilterDefs().map(f=>'<button type="button" class="qa-shop-filter-chip" data-filter="'+esc(f.id)+'">'+esc(f.label)+'</button>').join('');
-    tools.after(strip);
+    tools.appendChild(strip);
     strip.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]')?.click();setTimeout(syncShopFilterUI,30)};
+
     [heading,sheet.querySelector('.shop-request-list-banner'),sheet.querySelector('#shop-list'),sheet.querySelector('#empty')].filter(Boolean).forEach(el=>el.classList.add('qa-shop-only'));
+
     const vp=document.createElement('section');vp.className='qa-vending-panel';vp.hidden=true;
-    vp.innerHTML='<div class="qa-vending-tools"><select class="qa-vending-sort" id="qaVendingSort" aria-label="자판기 정렬"><option value="alpha">가나다 순</option><option value="near">가까운 순</option></select><span class="qa-tools-divider" aria-hidden="true"></span><div class="qa-operator-strip" id="qaOperatorStrip"></div></div><span class="qa-vending-summary" id="qaVendingSummary"></span><div class="qa-vending-list" id="qaVendingList"></div>';
+    vp.innerHTML='<div class="qa-vending-tools"><div class="list-sort qa-vending-list-sort"><button id="qaVendingSortButton" class="list-sort-button" type="button" aria-haspopup="menu" aria-expanded="false"><span id="qaVendingSortLabel">가나다 순</span><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div id="qaVendingSortMenu" class="list-sort-menu" role="menu"><button type="button" class="active" data-vending-sort="alpha">가나다 순</button><button type="button" data-vending-sort="near">가까운 순</button></div></div><span class="qa-tools-divider" aria-hidden="true"></span><div class="qa-operator-strip" id="qaOperatorStrip"></div></div><span class="qa-vending-summary" id="qaVendingSummary"></span><div class="qa-vending-list" id="qaVendingList"></div>';
     sheet.appendChild(vp);
     const ops=['all','롯데마트','이마트','롯데시네마','메가박스','CGV','기타'];
     $('#qaOperatorStrip').innerHTML=ops.map(x=>'<button type="button" class="qa-operator-chip'+(x==='all'?' active':'')+'" data-operator="'+x+'">'+(x==='all'?'전체':x)+'</button>').join('');
     $('#qaOperatorStrip').onclick=e=>{const b=e.target.closest('[data-operator]');if(!b)return;state.operator=b.dataset.operator;document.querySelectorAll('.qa-operator-chip').forEach(x=>x.classList.toggle('active',x===b));renderVendingList()};
-    $('#qaVendingSort').onchange=e=>{state.vendingSort=e.target.value;if(state.vendingSort==='near'&&!window.FUNY_CURRENT_LOCATION)document.getElementById('map-location-btn')?.click();renderVendingList()};
+    $('#qaVendingSortButton').onclick=e=>{e.preventDefault();e.stopPropagation();const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton'),open=menu?.classList.toggle('open');btn?.setAttribute('aria-expanded',open?'true':'false')};
+    $('#qaVendingSortMenu').onclick=e=>{const b=e.target.closest('[data-vending-sort]');if(!b)return;e.preventDefault();e.stopPropagation();setVendingSort(b.dataset.vendingSort)};
+    document.addEventListener('click',e=>{if(!e.target.closest('.qa-vending-list-sort'))closeVendingSort()},true);
     tabs.onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;setTab(b.dataset.tab)};
     setInterval(()=>{const n=document.querySelectorAll('#shop-list .shop-card').length;const el=$('#qaShopCount');if(el)el.textContent=String(n);syncShopFilterUI()},400);
   }
@@ -197,6 +223,6 @@
   window.addEventListener('funy:mapdatachange',()=>setTimeout(applyLayers,120));
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
 
-  buildLayerControls();buildSheet();renderVendingList();
+  keepLayerControls();buildSheet();renderVendingList();
   let tries=0,t=setInterval(()=>{tries++;if(mapReady()){clearInterval(t);try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending))))}catch(_){}buildVendingMarkers()}else if(tries>80)clearInterval(t)},200);
 })();

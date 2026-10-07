@@ -344,3 +344,31 @@ html.funy-map-qa body.country-japan .qa-sheet-sticky-head{
     background:#d9d5dd!important
   }
 }
+
+
+/* QA only: Japan card-shop sheet uses the same top spacing + 38x4 handle geometry */
+@media(max-width:430px){
+  html.funy-map-qa body.country-japan .map-shop-sheet{
+    padding-top:0!important
+  }
+  html.funy-map-qa body.country-japan .map-shop-sheet>.map-sheet-handle{
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:9px 0 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:linear-gradient(180deg,rgba(249,248,250,.98) 65%,rgba(249,248,250,0))!important
+  }
+  html.funy-map-qa body.country-japan .map-shop-sheet>.map-sheet-handle span{
+    width:38px!important;
+    height:4px!important;
+    min-width:38px!important;
+    min-height:4px!important;
+    max-width:38px!important;
+    max-height:4px!important;
+    border-radius:999px!important;
+    background:#d9d5dd!important
+  }
+}

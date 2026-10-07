@@ -170,6 +170,10 @@
     const handle=sheet.querySelector('.map-sheet-handle');
     const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count" id="qaVendingCount">'+VENDING.length+'</span></button>';
     handle?.after(tabs);
+    if(handle&&!sheet.querySelector('.qa-sheet-sticky-head')){
+      const sticky=document.createElement('div');sticky.className='qa-sheet-sticky-head';
+      handle.before(sticky);sticky.appendChild(handle);sticky.appendChild(tabs);
+    }
 
     const heading=sheet.querySelector('.list-heading');
     const tools=document.createElement('div');tools.className='qa-shop-tools';
@@ -202,14 +206,17 @@
     const heading=$('.list-heading');
     const shopTools=$('.qa-shop-tools');
     const sort=document.querySelector('.list-sort:not(.qa-vending-list-sort)');
+    const sheet=$('.list-wrap'),handle=sheet?.querySelector('.map-sheet-handle'),tabs=sheet?.querySelector('.qa-list-tabs'),sticky=sheet?.querySelector('.qa-sheet-sticky-head');
     const listTitle=heading?.querySelector('.list-title-label');
     if(listTitle)listTitle.textContent='TCG 카드샵';
     if(jp){
+      if(sticky&&handle&&tabs){sticky.before(handle);handle.after(tabs);sticky.remove()}
       if(heading&&sort&&!heading.contains(sort))heading.appendChild(sort);
       document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.display='');
       const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
       state.tab='shops';
     }else{
+      if(sheet&&handle&&tabs&&!sheet.querySelector('.qa-sheet-sticky-head')){const w=document.createElement('div');w.className='qa-sheet-sticky-head';handle.before(w);w.appendChild(handle);w.appendChild(tabs)}
       if(shopTools&&sort&&!shopTools.contains(sort))shopTools.insertBefore(sort,shopTools.firstChild);
       setTab(state.tab);
       buildLayerControls();

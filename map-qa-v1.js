@@ -40,7 +40,7 @@
     return {content:'<div class="funy-vending-marker'+(selected?' is-selected':'')+'" style="'+vars+'" aria-hidden="true"><svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vendingPinGrad'+(selected?'S':'N')+'" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vendingPinGrad'+(selected?'S':'N')+')"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function naverUrl(v){
-    return 'https://map.naver.com/p/search/'+encodeURIComponent((v.name||'')+' '+(v.address||''));
+    return 'https://map.naver.com/p/search/'+encodeURIComponent(v.name||'');
   }
   function logoHtml(v){return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+esc(operatorLabel(v.operator)).replace(/\n/g,'<br>')+'</span>'}
   function popupHtml(v){
@@ -162,7 +162,7 @@
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||sheet.querySelector('.qa-list-tabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
-    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count">'+VENDING.length+'</span></button>';
+    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count" id="qaVendingCount">'+VENDING.length+'</span></button>';
     handle?.after(tabs);
 
     const heading=sheet.querySelector('.list-heading');
@@ -200,7 +200,7 @@
   }
   function renderVendingList(){
     const list=$('#qaVendingList');if(!list)return;const rows=vendingListRows();
-    $('#qaVendingSummary').textContent='검색 결과 '+rows.length+'개';
+    $('#qaVendingSummary').textContent='검색 결과 '+rows.length+'개';const tabCount=$('#qaVendingCount');if(tabCount)tabCount.textContent=String(rows.length);
     list.innerHTML=rows.length?rows.map(v=>'<article class="qa-vending-card" data-vending-id="'+esc(v.id)+'">'+logoHtml(v)+'<div class="qa-vending-copy"><strong class="qa-vending-name">'+esc(v.name)+'</strong><span class="qa-vending-address-row">'+addressIcon+'<span class="qa-vending-address">'+esc(v.address)+'</span></span></div><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></article>').join(''):'<div class="qa-vending-empty">조건에 맞는 자판기가 없습니다.</div>';
     list.querySelectorAll('.qa-vending-card').forEach(card=>card.onclick=e=>{
       if(e.target.closest('.qa-naver-route'))return;

@@ -23,6 +23,16 @@
   const currentSearch=()=>normalize($('#map-shop-search')?.value||'');
   const category=v=>['롯데마트','이마트','롯데시네마','메가박스','CGV'].includes(v)?v:'기타';
   const operatorLabel=v=>v==='롯데시네마'?'LOTTE\nCINEMA':v==='롯데마트'?'LOTTE\nMART':v==='롯데월드'?'LOTTE\nWORLD':v==='스타필드마켓'?'STARFIELD\nMARKET':v;
+  const operatorLogoDomain=v=>({
+    '롯데마트':'lottemart.com',
+    '롯데시네마':'lottecinema.co.kr',
+    '롯데월드':'lotteworld.com',
+    '이마트':'emart.com',
+    '메가박스':'megabox.co.kr',
+    'CGV':'cgv.co.kr',
+    'KTX':'letskorail.com'
+  }[v]||'');
+  const operatorLogoUrl=v=>{const d=operatorLogoDomain(v);return d?'https://www.google.com/s2/favicons?sz=128&domain_url=https%3A%2F%2F'+encodeURIComponent(d):''};
   const addressIcon='<svg class="qa-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   const badge=document.createElement('div');badge.className='qa-dev-badge';badge.textContent='MAP V2 · QA';document.body.appendChild(badge);
@@ -47,7 +57,7 @@
   function naverUrl(v){
     return 'https://map.naver.com/p/search/'+encodeURIComponent(v.name||'');
   }
-  function logoHtml(v){return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+esc(operatorLabel(v.operator)).replace(/\n/g,'<br>')+'</span>'}
+  function logoHtml(v){const url=operatorLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+url+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+'</span>'}
   function popupHtml(v){
     return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup"><span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
@@ -113,7 +123,14 @@
     }
   }
   function applyLayers(){
-    try{markerById.forEach(m=>m.setMap(state.layers.shops?naverMap:null))}catch(_){}
+    try{
+      const visibleRows=Array.isArray(window.FUNY_VISIBLE_SHOPS)?window.FUNY_VISIBLE_SHOPS:[];
+      const visibleIds=new Set(visibleRows.filter(s=>!String(s?.id||'').startsWith('JP-')).map(s=>String(s.id)));
+      markerById.forEach((m,id)=>{
+        const show=state.layers.shops&&visibleIds.has(String(id));
+        m.setMap(show?naverMap:null);
+      });
+    }catch(_){}
     document.documentElement.classList.toggle('qa-hide-events',!state.layers.events);
     document.body.classList.toggle('qa-hide-events',!state.layers.events);
     applyVendingVisibility();
@@ -162,6 +179,14 @@
     const any=[...document.querySelectorAll('.qa-shop-filter-chip')].some(b=>b.classList.contains('active'));
     $('.qa-filter-toggle')?.classList.toggle('active',any);
   }
+  function placeQaSortMenu(btn,menu){
+    if(!btn||!menu)return;
+    const r=btn.getBoundingClientRect(),w=118,gap=6;
+    const left=Math.max(8,Math.min(r.left,window.innerWidth-w-8));
+    menu.style.position='fixed';menu.style.left=left+'px';menu.style.right='auto';menu.style.top=(r.bottom+gap)+'px';menu.style.width=w+'px';menu.style.zIndex='2147482500';
+  }
+  function syncShopSortMenu(){const btn=$('#list-sort-button'),menu=$('#list-sort-menu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu)}
+  function syncVendingSortMenu(){const btn=$('#qaVendingSortButton'),menu=$('#qaVendingSortMenu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu)}
   function vendingSortLabel(){return state.vendingSort==='near'?'가까운 순':'가나다 순'}
   function closeVendingSort(){const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton');menu?.classList.remove('open');btn?.setAttribute('aria-expanded','false')}
   function setVendingSort(value){state.vendingSort=value==='near'?'near':'alpha';const label=$('#qaVendingSortLabel');if(label)label.textContent=vendingSortLabel();document.querySelectorAll('#qaVendingSortMenu [data-vending-sort]').forEach(b=>b.classList.toggle('active',b.dataset.vendingSort===state.vendingSort));closeVendingSort();if(state.vendingSort==='near'&&!window.FUNY_CURRENT_LOCATION)document.getElementById('map-location-btn')?.click();renderVendingList()}
@@ -185,7 +210,7 @@
     const strip=document.createElement('div');strip.className='qa-shop-filter-strip';
     strip.innerHTML=shopFilterDefs().map(f=>'<button type="button" class="qa-shop-filter-chip" data-filter="'+esc(f.id)+'">'+esc(f.label)+'</button>').join('');
     tools.appendChild(strip);
-    strip.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]')?.click();setTimeout(syncShopFilterUI,30)};
+    strip.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]')?.click();setTimeout(()=>{syncShopFilterUI();applyLayers()},40)};
 
     [heading,sheet.querySelector('.shop-request-list-banner'),sheet.querySelector('#shop-list'),sheet.querySelector('#empty')].filter(Boolean).forEach(el=>el.classList.add('qa-shop-only'));
 
@@ -195,10 +220,13 @@
     const ops=['all','롯데마트','이마트','롯데시네마','메가박스','CGV','기타'];
     $('#qaOperatorStrip').innerHTML=ops.map(x=>'<button type="button" class="qa-operator-chip'+(x==='all'?' active':'')+'" data-operator="'+x+'">'+(x==='all'?'전체':x)+'</button>').join('');
     $('#qaOperatorStrip').onclick=e=>{const b=e.target.closest('[data-operator]');if(!b)return;state.operator=b.dataset.operator;document.querySelectorAll('.qa-operator-chip').forEach(x=>x.classList.toggle('active',x===b));renderVendingList()};
-    $('#qaVendingSortButton').onclick=e=>{e.preventDefault();e.stopPropagation();const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton'),open=menu?.classList.toggle('open');btn?.setAttribute('aria-expanded',open?'true':'false')};
+    $('#qaVendingSortButton').onclick=e=>{e.preventDefault();e.stopPropagation();const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton'),open=menu?.classList.toggle('open');btn?.setAttribute('aria-expanded',open?'true':'false');if(open)requestAnimationFrame(syncVendingSortMenu)};
     $('#qaVendingSortMenu').onclick=e=>{const b=e.target.closest('[data-vending-sort]');if(!b)return;e.preventDefault();e.stopPropagation();setVendingSort(b.dataset.vendingSort)};
     document.addEventListener('click',e=>{if(!e.target.closest('.qa-vending-list-sort'))closeVendingSort()},true);
     tabs.onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;setTab(b.dataset.tab)};
+    $('#list-sort-button')?.addEventListener('click',()=>requestAnimationFrame(syncShopSortMenu));
+    tools.addEventListener('scroll',()=>{document.getElementById('list-sort-menu')?.classList.remove('open');document.getElementById('list-sort-button')?.setAttribute('aria-expanded','false')},{passive:true});
+    vp.querySelector('.qa-vending-tools')?.addEventListener('scroll',()=>closeVendingSort(),{passive:true});
     setInterval(()=>{const n=document.querySelectorAll('#shop-list .shop-card').length;const el=$('#qaShopCount');if(el)el.textContent=String(n);syncShopFilterUI()},400);
   }
   function syncCountrySpecificQaUI(){
@@ -253,8 +281,11 @@
   }catch(_){}
   window.addEventListener('funy:mapdatachange',()=>setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},120));
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
+  window.addEventListener('funy:list-refresh',()=>setTimeout(applyLayers,20));
+  window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
 
   keepLayerControls();buildSheet();renderVendingList();
+  window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
   syncCountrySpecificQaUI();
   new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   let tries=0,t=setInterval(()=>{tries++;if(mapReady()){clearInterval(t);try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending))))}catch(_){}buildVendingMarkers()}else if(tries>80)clearInterval(t)},200);

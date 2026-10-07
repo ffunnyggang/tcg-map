@@ -454,7 +454,7 @@ html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-li
 
 /* Actual operator logo image presentation */
 .qa-operator-logo{
-  background:#fff!important;
+  background-color:#fff!important;
   border:1px solid #ece8ef!important
 }
 .qa-operator-logo img{

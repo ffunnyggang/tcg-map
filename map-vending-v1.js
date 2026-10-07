@@ -36,8 +36,19 @@
     }finally{clearTimeout(timer)}
   }
 
+  function markerMetrics(){
+    let z=11;try{z=naverMap.getZoom()}catch(_){}
+    if(z<=9)return{pinW:16,pinH:22,markerW:20,markerH:28};
+    if(z===10)return{pinW:18,pinH:25,markerW:22,markerH:31};
+    if(z===11)return{pinW:21,pinH:29,markerW:25,markerH:35};
+    if(z===12)return{pinW:24,pinH:33,markerW:28,markerH:39};
+    if(z===13)return{pinW:27,pinH:37,markerW:31,markerH:43};
+    if(z===14)return{pinW:30,pinH:41,markerW:34,markerH:47};
+    return{pinW:33,pinH:45,markerW:37,markerH:51};
+  }
   function markerIcon(selected=false){
-    return {content:'<div class="vm-marker'+(selected?' selected':'')+'"><svg viewBox="0 0 98 134" fill="none"><defs><linearGradient id="vmg'+(selected?'s':'n')+'" x1="15" y1="8" x2="84" y2="112"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vmg'+(selected?'s':'n')+')"/><path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#fff"/></svg></div>',anchor:new naver.maps.Point(14,38)};
+    const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
+    return {content:'<div class="vm-marker'+(selected?' selected':'')+'" style="'+vars+'"><svg viewBox="0 0 98 134" fill="none"><defs><linearGradient id="vmg'+(selected?'s':'n')+'" x1="15" y1="8" x2="84" y2="112"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vmg'+(selected?'s':'n')+')"/><path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#fff"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function mapReady(){return !!(window.naver?.maps&&typeof naverMap!=='undefined'&&naverMap)}
   function addMarker(v){
@@ -164,6 +175,7 @@
         clearInterval(t);
         state.rows.forEach(addMarker);
         syncMarkers();
+        try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>markers.forEach((m,id)=>m.setIcon(markerIcon(id===state.selected))))}catch(_){}
         geocodeMissing();
       }else if(tries>80)clearInterval(t);
     },200);

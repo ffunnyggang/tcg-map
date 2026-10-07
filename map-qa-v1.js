@@ -57,7 +57,13 @@
   function naverUrl(v){
     return 'https://map.naver.com/p/search/'+encodeURIComponent(v.name||'');
   }
-  function logoHtml(v){const url=vendingLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+url+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+'</span>'}
+  function logoHtml(v){
+    if(v.operator==='롯데시네마'){
+      return '<span class="qa-operator-logo" data-operator="롯데시네마" aria-label="롯데시네마 로고"><svg viewBox="0 0 96 96" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="lcg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d71920"/><stop offset="1" stop-color="#a40c16"/></linearGradient><pattern id="lcd" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="24" height="24" fill="transparent"/><rect x="0" y="0" width="12" height="24" fill="rgba(255,255,255,.04)"/></pattern></defs><rect width="96" height="96" fill="url(#lcg)"/><rect width="96" height="96" fill="url(#lcd)"/><text x="48" y="43" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="800">LOTTE</text><text x="48" y="64" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="800">CINEMA</text></svg></span>';
+    }
+    const url=vendingLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');
+    return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+url+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+'</span>'
+  }
   function popupHtml(v){
     return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup"><span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }

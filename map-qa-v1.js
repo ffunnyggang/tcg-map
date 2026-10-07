@@ -18,6 +18,7 @@
   const currentSearch=()=>normalize($('#map-shop-search')?.value||'');
   const category=v=>['롯데마트','이마트','롯데시네마','메가박스','CGV'].includes(v)?v:'기타';
   const operatorLabel=v=>v==='롯데시네마'?'LOTTE\nCINEMA':v==='롯데마트'?'LOTTE\nMART':v==='롯데월드'?'LOTTE\nWORLD':v==='스타필드마켓'?'STARFIELD\nMARKET':v;
+  const addressIcon='<svg class="qa-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   const badge=document.createElement('div');badge.className='qa-dev-badge';badge.textContent='MAP V2 · QA';document.body.appendChild(badge);
   $('#map-shop-search')?.setAttribute('placeholder','매장명 또는 지역으로 검색');
@@ -36,14 +37,14 @@
   }
   function vendingIcon(selected=false){
     const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
-    return {content:'<div class="funy-vending-marker'+(selected?' is-selected':'')+'" style="'+vars+'" aria-hidden="true"><svg viewBox="0 0 98 134" fill="none"><defs><linearGradient id="vendingPinGrad'+(selected?'S':'N')+'" x1="15" y1="8" x2="84" y2="112"><stop stop-color="#36C990"/><stop offset=".5" stop-color="#16A570"/><stop offset="1" stop-color="#087B53"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vendingPinGrad'+(selected?'S':'N')+')"/><rect x="36" y="35" width="26" height="32" rx="4" fill="white"/><rect x="41" y="40" width="16" height="9" rx="2" fill="#16A570"/><circle cx="49" cy="57" r="4" fill="#16A570"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
+    return {content:'<div class="funy-vending-marker'+(selected?' is-selected':'')+'" style="'+vars+'" aria-hidden="true"><svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vendingPinGrad'+(selected?'S':'N')+'" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vendingPinGrad'+(selected?'S':'N')+')"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function naverUrl(v){
     return 'https://map.naver.com/p/search/'+encodeURIComponent((v.name||'')+' '+(v.address||''));
   }
   function logoHtml(v){return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+esc(operatorLabel(v.operator)).replace(/\n/g,'<br>')+'</span>'}
   function popupHtml(v){
-    return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup">'+logoHtml(v)+'<span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address">'+esc(v.address)+'</span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer"><b>N</b>네이버 길찾기</a></div></div>';
+    return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup">'+logoHtml(v)+'<span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
   function selectVending(v,marker){
     try{if(activeInfoWindow)activeInfoWindow.close()}catch(_){}
@@ -132,7 +133,7 @@
     setInterval(updateEventCount,900);
   }
 
-  function shopFilterDefs(){try{return FILTERS}catch(_){return[]}}
+  function shopFilterDefs(){try{return [{id:'all',label:'전체'},...FILTERS]}catch(_){return[{id:'all',label:'전체'}]}}
   function syncShopFilterUI(){
     document.querySelectorAll('.qa-shop-filter-chip[data-filter]').forEach(b=>{
       const src=document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]');
@@ -144,25 +145,18 @@
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||sheet.querySelector('.qa-list-tabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
-    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count">'+VENDING.length+'</span></button>';
+    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count">'+VENDING.length+'</span></button>';
     handle?.after(tabs);
-
     const heading=sheet.querySelector('.list-heading');
     const tools=document.createElement('div');tools.className='qa-shop-tools';
-    const filterBtn=document.createElement('button');filterBtn.type='button';filterBtn.className='qa-filter-toggle';filterBtn.textContent='필터';
-    tools.appendChild(filterBtn);
-    if(heading){heading.before(tools);const sort=heading.querySelector('.list-sort');if(sort)tools.prepend(sort)}
-
-    const strip=document.createElement('div');strip.className='qa-shop-filter-strip';strip.hidden=true;
+    if(heading){heading.before(tools);const sort=heading.querySelector('.list-sort');if(sort)tools.appendChild(sort)}
+    const strip=document.createElement('div');strip.className='qa-shop-filter-strip';
     strip.innerHTML=shopFilterDefs().map(f=>'<button type="button" class="qa-shop-filter-chip" data-filter="'+esc(f.id)+'">'+esc(f.label)+'</button>').join('');
     tools.after(strip);
-    filterBtn.onclick=()=>{strip.hidden=!strip.hidden};
     strip.onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]')?.click();setTimeout(syncShopFilterUI,30)};
-
     [heading,sheet.querySelector('.shop-request-list-banner'),sheet.querySelector('#shop-list'),sheet.querySelector('#empty')].filter(Boolean).forEach(el=>el.classList.add('qa-shop-only'));
-
     const vp=document.createElement('section');vp.className='qa-vending-panel';vp.hidden=true;
-    vp.innerHTML='<div class="qa-vending-toolbar"><span class="qa-vending-summary" id="qaVendingSummary"></span><select class="qa-vending-sort" id="qaVendingSort" aria-label="자판기 정렬"><option value="alpha">가나다 순</option><option value="near">가까운 순</option></select></div><div class="qa-operator-strip" id="qaOperatorStrip"></div><div class="qa-vending-list" id="qaVendingList"></div>';
+    vp.innerHTML='<div class="qa-vending-tools"><select class="qa-vending-sort" id="qaVendingSort" aria-label="자판기 정렬"><option value="alpha">가나다 순</option><option value="near">가까운 순</option></select><span class="qa-tools-divider" aria-hidden="true"></span><div class="qa-operator-strip" id="qaOperatorStrip"></div></div><span class="qa-vending-summary" id="qaVendingSummary"></span><div class="qa-vending-list" id="qaVendingList"></div>';
     sheet.appendChild(vp);
     const ops=['all','롯데마트','이마트','롯데시네마','메가박스','CGV','기타'];
     $('#qaOperatorStrip').innerHTML=ops.map(x=>'<button type="button" class="qa-operator-chip'+(x==='all'?' active':'')+'" data-operator="'+x+'">'+(x==='all'?'전체':x)+'</button>').join('');
@@ -174,14 +168,14 @@
   function setTab(tab){
     state.tab=tab==='vending'?'vending':'shops';
     document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
-    document.querySelectorAll('.qa-shop-only,.qa-shop-tools,.qa-shop-filter-strip').forEach(el=>{if(el.classList.contains('qa-shop-filter-strip')&&el.hidden)return;el.style.display=state.tab==='shops'?'':'none'});
+    document.querySelectorAll('.qa-shop-only,.qa-shop-tools,.qa-shop-filter-strip').forEach(el=>{el.style.display=state.tab==='shops'?'':'none'});
     const vp=$('.qa-vending-panel');if(vp)vp.hidden=state.tab!=='vending';
     if(state.tab==='vending')renderVendingList();
   }
   function renderVendingList(){
     const list=$('#qaVendingList');if(!list)return;const rows=vendingListRows();
     $('#qaVendingSummary').textContent='검색 결과 '+rows.length+'개';
-    list.innerHTML=rows.length?rows.map(v=>'<article class="qa-vending-card" data-vending-id="'+esc(v.id)+'">'+logoHtml(v)+'<div class="qa-vending-copy"><strong class="qa-vending-name">'+esc(v.name)+'</strong><span class="qa-vending-address">'+esc(v.address)+'</span></div><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer"><b>N</b>네이버 길찾기</a></article>').join(''):'<div class="qa-vending-empty">조건에 맞는 자판기가 없습니다.</div>';
+    list.innerHTML=rows.length?rows.map(v=>'<article class="qa-vending-card" data-vending-id="'+esc(v.id)+'">'+logoHtml(v)+'<div class="qa-vending-copy"><strong class="qa-vending-name">'+esc(v.name)+'</strong><span class="qa-vending-address-row">'+addressIcon+'<span class="qa-vending-address">'+esc(v.address)+'</span></span></div><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></article>').join(''):'<div class="qa-vending-empty">조건에 맞는 자판기가 없습니다.</div>';
     list.querySelectorAll('.qa-vending-card').forEach(card=>card.onclick=e=>{
       if(e.target.closest('.qa-naver-route'))return;
       const v=VENDING.find(x=>x.id===card.dataset.vendingId),m=v&&vendingMarkers.get(v.id);if(!v)return;

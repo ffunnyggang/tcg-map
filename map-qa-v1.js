@@ -24,15 +24,15 @@
   const category=v=>['롯데마트','이마트','롯데시네마','메가박스','CGV'].includes(v)?v:'기타';
   const operatorLabel=v=>v==='롯데시네마'?'LOTTE\nCINEMA':v==='롯데마트'?'LOTTE\nMART':v==='롯데월드'?'LOTTE\nWORLD':v==='스타필드마켓'?'STARFIELD\nMARKET':v;
   const operatorLogoUrl=v=>({
-    '롯데마트':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Lotte_Mart_(2023).svg',
-    '이마트':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Emart_Logo.svg',
-    '롯데시네마':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Lottecinemalogo.png',
-    '메가박스':'https://www.megabox.co.kr/favicon.ico',
-    'CGV':'https://commons.wikimedia.org/wiki/Special:Redirect/file/CGV_logo.svg',
-    'KTX':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Korail_logo.svg',
-    '롯데월드':'https://adventure.lotteworld.com/favicon.ico'
+    '롯데마트':'/assets/vending/operator-logos/lotte-mart.png',
+    '이마트':'/assets/vending/operator-logos/emart.png',
+    '롯데시네마':'/assets/vending/operator-logos/lotte-cinema.png',
+    '메가박스':'/assets/vending/operator-logos/megabox.png',
+    'CGV':'/assets/vending/operator-logos/cgv.png',
+    'KTX':'/assets/vending/operator-logos/ktx.png',
+    '롯데월드':'/assets/vending/operator-logos/lotte-world.png'
   }[v]||'');
-  const vendingLogoUrl=v=>String(v?.name||'').includes('스타필드마켓')?'https://commons.wikimedia.org/wiki/Special:Redirect/file/Emart_Logo.svg':operatorLogoUrl(v?.operator);
+  const vendingLogoUrl=v=>String(v?.name||'').includes('스타필드마켓')?'/assets/vending/operator-logos/emart.png':operatorLogoUrl(v?.operator);
   const addressIcon='<svg class="qa-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   const badge=document.createElement('div');badge.className='qa-dev-badge';badge.textContent='MAP V2 · QA';document.body.appendChild(badge);

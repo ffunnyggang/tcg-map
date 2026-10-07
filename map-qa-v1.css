@@ -249,3 +249,28 @@ html.funy-map-qa body.country-japan .qa-sheet-sticky-head{
   border:0!important;
   box-shadow:none!important
 }
+
+
+/* KR QA sticky lock: eliminate the small snap when sheet scrolling begins */
+@media(max-width:430px){
+  html.funy-map-qa body:not(.country-japan) .map-shop-sheet>.qa-sheet-sticky-head{
+    position:sticky!important;
+    top:0!important;
+    margin:-12px 0 0!important;
+    padding:0 0 6px!important;
+    transform:none!important;
+    translate:none!important;
+    will-change:auto!important;
+    contain:paint!important
+  }
+  html.funy-map-qa body:not(.country-japan) .qa-sheet-sticky-head .map-sheet-handle{
+    margin:0 -4px 2px!important;
+    transform:none!important;
+    translate:none!important
+  }
+  html.funy-map-qa body:not(.country-japan) .qa-sheet-sticky-head .qa-list-tabs{
+    margin:0!important;
+    transform:none!important;
+    translate:none!important
+  }
+}

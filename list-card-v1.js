@@ -134,6 +134,7 @@
     },true);
     filters.addEventListener('change',e=>{
       const sel=e.target.closest?.('.country-filter-select');if(!sel)return;
+      if(document.documentElement.classList.contains('funy-map-qa'))return;
       e.stopPropagation();e.stopImmediatePropagation();
       const next=sel.value==='JP'?'JP':'KR';window.FUNY_MAP_COUNTRY?.set?.(next);
     },true);

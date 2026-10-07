@@ -372,3 +372,55 @@ html.funy-map-qa body.country-japan .qa-sheet-sticky-head{
     background:#d9d5dd!important
   }
 }
+
+
+/* QA: sort button + all filters scroll together as one horizontal row */
+html.funy-map-qa body:not(.country-japan) .qa-shop-tools,
+html.funy-map-qa body:not(.country-japan) .qa-vending-tools{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:7px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:none!important
+}
+html.funy-map-qa body:not(.country-japan) .qa-shop-tools::-webkit-scrollbar,
+html.funy-map-qa body:not(.country-japan) .qa-vending-tools::-webkit-scrollbar{display:none!important}
+html.funy-map-qa body:not(.country-japan) .qa-shop-filter-strip,
+html.funy-map-qa body:not(.country-japan) .qa-operator-strip{
+  display:flex!important;
+  flex:0 0 auto!important;
+  width:max-content!important;
+  min-width:max-content!important;
+  overflow:visible!important;
+  gap:7px!important
+}
+html.funy-map-qa body:not(.country-japan) .qa-shop-tools>.list-sort,
+html.funy-map-qa body:not(.country-japan) .qa-vending-tools>.list-sort{
+  flex:0 0 104px!important
+}
+html.funy-map-qa body:not(.country-japan) .qa-shop-tools .list-sort-menu,
+html.funy-map-qa body:not(.country-japan) .qa-vending-tools .list-sort-menu{
+  position:fixed!important;
+  right:auto!important;
+  margin:0!important
+}
+
+/* QA: actual operator brand mark in vending list */
+.qa-operator-logo{overflow:hidden!important}
+.qa-operator-logo img{
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  max-width:70%!important;
+  max-height:70%!important;
+  object-fit:contain!important
+}
+.qa-operator-logo-fallback{
+  color:inherit!important;
+  font:900 8.8px/1.15 Pretendard,sans-serif!important;
+  text-align:center!important
+}

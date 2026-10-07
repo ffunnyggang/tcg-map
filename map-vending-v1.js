@@ -4,7 +4,6 @@
   if(window.__FUNY_VENDING_V1)return;
   window.__FUNY_VENDING_V1=true;
 
-  document.documentElement.classList.add('funy-map-qa');
   const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const state={tab:'shops',operator:'all',sort:'alpha',layer:true,rows:[],selected:null};
@@ -49,7 +48,7 @@
   }
   function markerIcon(selected=false){
     const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
-    return {content:'<div class="vm-marker funy-vending-marker'+(selected?' selected is-selected':'')+'" style="'+vars+'"><svg viewBox="0 0 98 134" fill="none"><defs><linearGradient id="vmg'+(selected?'s':'n')+'" x1="15" y1="8" x2="84" y2="112"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vmg'+(selected?'s':'n')+')"/><path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#fff"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
+    return {content:'<div class="vm-marker'+(selected?' selected':'')+'" style="'+vars+'"><svg viewBox="0 0 98 134" fill="none"><defs><linearGradient id="vmg'+(selected?'s':'n')+'" x1="15" y1="8" x2="84" y2="112"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vmg'+(selected?'s':'n')+')"/><path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#fff"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function mapReady(){return !!(window.naver?.maps&&typeof naverMap!=='undefined'&&naverMap)}
   function addMarker(v){
@@ -59,7 +58,7 @@
     markers.set(v.id,m);
   }
   function popup(v){
-    return '<div class="map-popup-bubble vm-popup qa-vending-popup"><div class="map-shop-popup"><span class="vm-popup-copy qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="vm-popup-address qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="vm-route qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
+    return '<div class="map-popup-bubble vm-popup"><div class="map-shop-popup"><span class="vm-popup-copy"><strong>'+esc(v.name)+'</strong><span class="vm-popup-address">'+addressIcon+'<span>'+esc(v.address)+'</span></span></span><a class="vm-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
   function select(v,m){
     try{info?.close()}catch(_){}
@@ -110,12 +109,12 @@
   function logo(v){
     const url=String(v.logo_url||'');
     const fallback=esc(v.operator||'');
-    return '<span class="vm-logo qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+esc(url)+'" alt="'+fallback+' 로고" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'"><span class="vm-logo-fallback qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="vm-logo-fallback qa-operator-logo-fallback">'+fallback+'</span>')+'</span>';
+    return '<span class="vm-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+esc(url)+'" alt="'+fallback+' 로고" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'"><span class="vm-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="vm-logo-fallback">'+fallback+'</span>')+'</span>';
   }
   function render(){
     const list=$('#vmList'),count=$('#vmCount');if(!list)return;
     const r=rows();if(count)count.textContent=String(r.length);
-    list.innerHTML=r.length?r.map(v=>'<article class="vm-card qa-vending-card" data-id="'+esc(v.id)+'">'+logo(v)+'<div class="vm-copy qa-vending-copy"><strong class="qa-vending-name">'+esc(v.name)+'</strong><span class="qa-vending-address-row">'+addressIcon+'<span class="qa-vending-address">'+esc(v.address)+'</span></span></div><a class="vm-route qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></article>').join(''):'<div class="vm-empty qa-vending-empty">조건에 맞는 자판기가 없습니다.</div>';
+    list.innerHTML=r.length?r.map(v=>'<article class="vm-card" data-id="'+esc(v.id)+'">'+logo(v)+'<div class="vm-copy"><strong>'+esc(v.name)+'</strong><span>'+addressIcon+esc(v.address)+'</span></div><a class="vm-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></article>').join(''):'<div class="vm-empty">조건에 맞는 자판기가 없습니다.</div>';
     list.querySelectorAll('.vm-card').forEach(card=>card.addEventListener('click',e=>{
       if(e.target.closest('.vm-route'))return;
       const v=state.rows.find(x=>x.id===card.dataset.id),m=v&&markers.get(v.id);if(!v||!m)return;
@@ -127,39 +126,28 @@
   function setTab(tab){
     state.tab=tab==='vending'?'vending':'shops';
     document.body.classList.toggle('vm-tab-vending',state.tab==='vending');
-    document.body.classList.toggle('qa-vending-tab-active',state.tab==='vending');
-    document.querySelectorAll('.vm-tab,.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
-    document.querySelectorAll('.qa-shop-only,.qa-shop-tools').forEach(el=>{el.style.display=state.tab==='shops'?'':'none'});
+    document.querySelectorAll('.vm-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
     const panel=$('#vmPanel');if(panel)panel.hidden=state.tab!=='vending';
   }
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||$('#vmTabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
-    const tabs=document.createElement('div');tabs.id='vmTabs';tabs.className='vm-tabs qa-list-tabs';tabs.innerHTML='<button class="vm-tab qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="vmShopCount">0</span></button><button class="vm-tab qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count" id="vmCount">'+state.rows.length+'</span></button>';
-    if(handle){handle.after(tabs);const sticky=document.createElement('div');sticky.className='qa-sheet-sticky-head';handle.before(sticky);sticky.appendChild(handle);sticky.appendChild(tabs)}else sheet.prepend(tabs);
+    const tabs=document.createElement('div');tabs.id='vmTabs';tabs.className='vm-tabs';tabs.innerHTML='<button class="vm-tab active" data-tab="shops">TCG 카드샵 <b id="vmShopCount">0</b></button><button class="vm-tab" data-tab="vending">포켓몬 자판기 <b id="vmCount">'+state.rows.length+'</b></button>';
+    if(handle)handle.after(tabs);else sheet.prepend(tabs);
     tabs.addEventListener('click',e=>{const b=e.target.closest('.vm-tab');if(b)setTab(b.dataset.tab)});
 
-    const heading=sheet.querySelector('.list-heading');
-    const shopTools=document.createElement('div');shopTools.className='qa-shop-tools';
-    if(heading)heading.before(shopTools);
-    const existingSort=sheet.querySelector('.list-sort');if(existingSort)shopTools.appendChild(existingSort);
-    const shopDivider=document.createElement('span');shopDivider.className='qa-tools-divider';shopTools.appendChild(shopDivider);
-    const shopStrip=document.createElement('div');shopStrip.className='qa-shop-filter-strip';shopTools.appendChild(shopStrip);
-    const syncShopFilters=()=>{const src=[...document.querySelectorAll('#filters .filter-chip[data-filter]')];shopStrip.innerHTML=src.map(b=>'<button type="button" class="qa-shop-filter-chip'+(b.classList.contains('active')?' active':'')+'" data-filter="'+esc(b.dataset.filter)+'">'+esc(b.textContent.trim())+'</button>').join('')};
-    syncShopFilters();shopStrip.addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;document.querySelector('#filters .filter-chip[data-filter="'+b.dataset.filter+'"]')?.click();setTimeout(syncShopFilters,60)});
-    [heading,sheet.querySelector('.shop-request-list-banner'),sheet.querySelector('#shop-list'),sheet.querySelector('#empty')].filter(Boolean).forEach(el=>el.classList.add('qa-shop-only'));
-    const panel=document.createElement('section');panel.id='vmPanel';panel.className='vm-panel qa-vending-panel';panel.hidden=true;
-    panel.innerHTML='<div class="vm-tools qa-vending-tools"><button class="vm-sort qa-control-pill" type="button" data-sort="alpha">가나다 순</button><span class="vm-divider qa-tools-divider"></span><div class="vm-operators qa-operator-strip"></div></div><div id="vmList" class="vm-list qa-vending-list"></div>';
+    const panel=document.createElement('section');panel.id='vmPanel';panel.className='vm-panel';panel.hidden=true;
+    panel.innerHTML='<div class="vm-tools"><button class="vm-sort" type="button" data-sort="alpha">가나다 순</button><span class="vm-divider"></span><div class="vm-operators"></div></div><div id="vmList" class="vm-list"></div>';
     sheet.appendChild(panel);
     const ops=[['all','전체'],['롯데마트','롯데마트'],['이마트','이마트'],['롯데시네마','롯데시네마'],['메가박스','메가박스'],['CGV','CGV'],['기타','기타']];
     const strip=panel.querySelector('.vm-operators');
-    strip.innerHTML=ops.map(([k,l])=>'<button class="vm-op qa-operator-chip'+(k==='all'?' active':'')+'" data-op="'+k+'">'+l+'</button>').join('');
+    strip.innerHTML=ops.map(([k,l])=>'<button class="vm-op'+(k==='all'?' active':'')+'" data-op="'+k+'">'+l+'</button>').join('');
     strip.addEventListener('click',e=>{const b=e.target.closest('.vm-op');if(!b)return;state.operator=b.dataset.op;strip.querySelectorAll('.vm-op').forEach(x=>x.classList.toggle('active',x===b));render()});
     panel.querySelector('.vm-sort').addEventListener('click',e=>{state.sort=state.sort==='alpha'?'near':'alpha';e.currentTarget.textContent=state.sort==='near'?'가까운 순':'가나다 순';if(state.sort==='near'&&!window.FUNY_CURRENT_LOCATION)$('#map-location-btn')?.click();render()});
   }
   function buildLayerChip(){
     const track=$('#filters');if(!track||$('#vmLayerChip'))return;
-    const b=document.createElement('button');b.id='vmLayerChip';b.type='button';b.className='vm-layer-chip qa-layer-chip active';b.dataset.layer='vending';b.innerHTML='<span class="qa-layer-dot"></span><span>자판기</span><span class="qa-layer-count">'+state.rows.length+'</span>';
+    const b=document.createElement('button');b.id='vmLayerChip';b.type='button';b.className='vm-layer-chip active';b.innerHTML='<span></span>자판기 <b>'+state.rows.length+'</b>';
     const sep=track.querySelector('.country-filter-sep');if(sep)sep.after(b);else track.appendChild(b);
     b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();state.layer=!state.layer;b.classList.toggle('active',state.layer);syncMarkers()});
   }

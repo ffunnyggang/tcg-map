@@ -38,12 +38,13 @@ function selectedList(){
   let list=current==='인기'?[...mixed].sort((a,b)=>{if(popularMode==='likes')return(Number(b.likes)||0)-(Number(a.likes)||0);if(popularMode==='comments')return(Number(b.comments)||0)-(Number(a.comments)||0);return(Number(b.popularityScore)||0)-(Number(a.popularityScore)||0)}).filter(x=>(Number(x.popularityScore)||0)>0||(Number(x.likes)||0)>0||(Number(x.comments)||0)>0).slice(0,10):(current==='전체'?mixed:mixed.filter(x=>x.category===current));
   return list;
 }
+function pokamoLinkAttrs(){try{const ctx=window.__FUNY_APP_CONTEXT||{};const platform=String(ctx.platform||new URLSearchParams(location.search).get('appPlatform')||'').toLowerCase();if(platform==='ios')return 'target="_self" rel="noopener" data-funy-link-mode="inapp" data-funy-inapp-presentation="page" data-funy-link-source="pokamo"';if(platform==='android')return 'target="_blank" rel="noopener" data-funy-link-mode="external" data-funy-link-source="pokamo"';}catch(_){}return 'target="_blank" rel="noopener"';}
 function cardHtml(x){
   const source=x.source==='funy'?'<span class="funy-source funy">FUNY PIN</span>':'<span class="funy-source pokamo">POKAMO</span>';
   const tags=source+`<span class="funy-category">${esc(x.category)}</span>`;
   const image=x.image?`<div class="thumb-stack"><img class="thumb" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">${x.images&&x.images.length>1?`<span class="thumb-count">+${x.images.length-1}</span>`:''}</div>`:'';
   if(x.source==='funy')return `<article class="card funy-post-card ${image?'':'noimg'}" data-funy-post="${esc(x.id)}"><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</article>`;
-  return `<a class="card ${image?'':'noimg'}" href="${esc(x.url)}" target="_blank" rel="noopener" data-funy-link-mode="external" data-funy-external-source="pokamo"><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</a>`;
+  return `<a class="card ${image?'':'noimg'}" href="${esc(x.url)}" ${pokamoLinkAttrs()}><div><div>${tags}</div><h2>${esc(x.title)}</h2><div class="excerpt">${esc(x.excerpt)}</div><div class="meta">${esc(x.author)} · ${ago(x.publishedAt)}</div></div>${image}</a>`;
 }
 function render(){const list=selectedList();popularSort?.classList.toggle('show',current==='인기');feed.innerHTML=list.length?list.map(cardHtml).join(''):'<div class="talk-empty-note">해당 카테고리의 게시글이 없습니다.</div>';feed.querySelectorAll('[data-funy-post]').forEach(el=>el.onclick=()=>openDetail(el.dataset.funyPost));}
 

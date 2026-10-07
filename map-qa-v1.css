@@ -424,3 +424,48 @@ html.funy-map-qa body:not(.country-japan) .qa-vending-tools .list-sort-menu{
   font:900 8.8px/1.15 Pretendard,sans-serif!important;
   text-align:center!important
 }
+
+
+/* QA v15: portalized sort dropdowns so horizontal toolbar scrolling cannot offset them */
+.qa-sort-portal-host{
+  pointer-events:none!important;
+  margin:0!important;
+  padding:0!important
+}
+.qa-sort-portal-host .list-sort-menu{
+  position:static!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  width:118px!important;
+  min-width:118px!important;
+  margin:0!important;
+  pointer-events:auto!important
+}
+
+/* Vending tab must never show card-shop list toolbar/content */
+html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .qa-shop-tools,
+html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .qa-shop-only,
+html.funy-map-qa body:not(.country-japan).qa-vending-tab-active #shop-list,
+html.funy-map-qa body:not(.country-japan).qa-vending-tab-active #empty,
+html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-list-banner{
+  display:none!important
+}
+
+/* Actual operator logo image presentation */
+.qa-operator-logo{
+  background:#fff!important;
+  border:1px solid #ece8ef!important
+}
+.qa-operator-logo img{
+  width:42px!important;
+  height:42px!important;
+  max-width:82%!important;
+  max-height:82%!important;
+  object-fit:contain!important
+}
+.qa-operator-logo[data-operator="메가박스"] img,
+.qa-operator-logo[data-operator="롯데월드"] img{
+  width:34px!important;
+  height:34px!important
+}

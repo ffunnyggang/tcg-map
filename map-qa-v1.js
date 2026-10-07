@@ -354,6 +354,13 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
+  document.addEventListener('change',e=>{
+    const select=e.target?.closest?.('.country-filter-select');
+    if(!select)return;
+    const next=select.value==='JP'?'JP':'KR';
+    try{window.FUNY_MAP_COUNTRY?.set?.(next)}catch(err){console.warn('[FUNY MAP] country handoff failed',err)}
+    setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},80);
+  },true);
   new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
     try{

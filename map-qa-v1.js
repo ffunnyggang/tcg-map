@@ -26,7 +26,7 @@
   const operatorLogoUrl=v=>({
     '롯데마트':'/assets/vending/operator-logos/lotte-mart.png',
     '이마트':'/assets/vending/operator-logos/emart.png',
-    '롯데시네마':'/assets/vending/operator-logos/lotte-cinema.png',
+    '롯데시네마':'/assets/vending/operator-logos/lotte-cinema-v2.png?v=20261007-18',
     '메가박스':'/assets/vending/operator-logos/megabox.png',
     'CGV':'/assets/vending/operator-logos/cgv.png',
     'KTX':'/assets/vending/operator-logos/ktx.png',

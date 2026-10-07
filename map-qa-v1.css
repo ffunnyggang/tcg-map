@@ -494,6 +494,12 @@ html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-li
   object-fit:cover!important;
   padding:0!important;
 }
+.qa-operator-logo.qa-operator-logo-bg{
+  padding:0!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:cover!important;
+}
 .qa-operator-logo[data-operator="롯데월드"] img,
 .qa-operator-logo[data-operator="KTX"] img,
 .qa-operator-logo[data-operator="이마트"] img,

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-07T10:31:59.011552+00:00",
+  "updatedAt": "2026-10-07T11:30:47.561428+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "카드투어",
+      "author": "김철왕",
+      "publishedAt": "2026-10-07T10:49:36.874374Z",
+      "excerpt": "혁....이게 얼마야....",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e5a5281c-7422-4363-a770-e9352f52826a.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-PwwvQ9wP",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.02
+    },
     {
       "category": "자유 게시판",
       "title": "25주년 카드입니다",
@@ -11,10 +24,10 @@
       "excerpt": "25주년 카드입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/25주년-카드입니다-A04p8m2A",
-      "views": 1,
-      "likes": 0,
+      "views": 3,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.03
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "10등급 주세요🙏🏻",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791367705363f07a0954fc33c7d670f5b978a1c437f4da26b84f312697fcd92cf6ce837f51b40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘도-출췌에에에엑🤮-d9XmMmeP",
-      "views": 5,
+      "views": 12,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.05
+      "popularityScore": 0.12
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "고흐츄 입니다.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/고흐츄-입니다-dpWqr8gP",
-      "views": 14,
+      "views": 24,
       "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.14
+      "comments": 1,
+      "popularityScore": 5.24
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "정품은 맞는거 같고 재포장인지 잘 몰라서 많은 분들 댓글 부탁드려요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e52ef165-e957-47c7-b4fc-4922ffeb4f63.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-메가드림-메가브레이브-일판-박스-재포장인거-같나요-포잘알분들-댓글-달아주세요-ALErmY0P",
-      "views": 31,
+      "views": 33,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.31
+      "popularityScore": 3.33
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "아직 다른 카드는 한번에 할 생각이라 최근 뽑은것중에 요것만 익스프레스로 맡겨서 금액 40만원인데 10 나오면 33만원 차액 더 내야한다는데 맞나욤?? 10 나올 가능성 크다던데🥹 원래 이케 비싼가요..",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791343272320212100c2fab2b38ba7422d79c52276c05d0fbfe716c9509144e3b89c712b6ec60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/처음으로-psa-맡겼어요-A34EbODP",
-      "views": 33,
+      "views": 36,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.33
+      "popularityScore": 6.36
     },
     {
       "category": "자유 게시판",
@@ -76,10 +89,10 @@
       "excerpt": "포켓몬 카드 종류 상관 없이 팩당 350원 드립니다! 인페르노, 화플, 블볼은 600원 드리고요 하클팩은 문의 주세요! 많이는 필요 없고 40팩정도 구하고 있어요! 이 카페는 개인채팅이 안되니 이방으로 들어오셔서 갠챗 주시거나 댓글 주세요. 커뮤니티에 경기 포켓몬카드 소통,거래라고 치면",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/서치팩-매입-jb0oRRkP",
-      "views": 23,
+      "views": 24,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.23
+      "popularityScore": 0.24
     },
     {
       "category": "자유 게시판",
@@ -134,19 +147,6 @@
       "popularityScore": 7.35
     },
     {
-      "category": "자유 게시판",
-      "title": "우리집 애들 때매",
-      "author": "나가놀고싶다",
-      "publishedAt": "2026-10-06T12:43:33.965786Z",
-      "excerpt": "우리집 애들 때매",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/우리집-애들-때매-A34E2JpP",
-      "views": 1,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.01
-    },
-    {
       "category": "카드 자랑",
       "title": "이카드는 시세좀 알수있을까요? 알고싶습니다",
       "author": "세류동에어컨as",
@@ -154,10 +154,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 40,
+      "views": 41,
       "likes": 1,
       "comments": 4,
-      "popularityScore": 11.4
+      "popularityScore": 11.41
     },
     {
       "category": "카드거래",
@@ -193,10 +193,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 17,
+      "views": 18,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.17
+      "popularityScore": 6.18
     },
     {
       "category": "카드거래",
@@ -583,10 +583,10 @@
       "excerpt": "최근 공개된 나이키 × 원피스(ONE PIECE) 컬래버레이션 소식에 원피스 카드 수집가들의 관심이 뜨겁습니다 ​ 이번 컬래버레이션은 단순히 나이키 신발과 의류만 출시되는 것이 아니라, ONE PIECE CARD GAME 한정 프로모 카드까지 함께 등장해 더욱 화제가 되고 있는데요 ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/178847358716667c31e46632aa03582797507ccac217a7ae88a9a5e45205d2c2fb7bc525d71050.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/나이키-원피스-카드-받는-방법-총정리-dlOKkVqP",
-      "views": 264,
+      "views": 265,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 14.64
+      "popularityScore": 14.65
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -674,10 +674,10 @@
       "excerpt": "낱팩말고 드디어 박스 만져봄.. 첫봉 뜯자마자 사려고 찜해놨던 ㅋㅋㅋ 요염한 켈리몬 뜸 👽 더 뜯어말어 하다 다 뜯어봄 ㅎㅎㅎㅎㅎ 다음엔 귀여운거 없어서... 안남김.... 에메랄다는... 켈리몬만 내스탈...",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/474017a4-f111-4adb-9e79-c2d37047f93d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스톰에메랄다-👽-AOD5GwDP",
-      "views": 89,
+      "views": 90,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.89
+      "popularityScore": 5.9
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -687,10 +687,10 @@
       "excerpt": "아키하바라역에서 가까운 카드윙스 🃏🇯🇵 📍CARDWINGS 아키하바라역앞점 東京都千代田区外神田1-15-15 🚶아키하바라역 전기상점가 출구 도보 1분 숙소 체크인 전 잠깐 들러 포켓몬카드 위주로 둘러봤어요! 싱글카드가 많고 희귀도·타입별로 잘 분류되어 있어 구경하기 편했습니다 👀 가격은 평",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17878247866423675224f137d6a185d08a55706ea6f768657361f6c35227a8f0c5ad15c481ecc0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아키하바라-카드샵-추천-카드윙스-A4Nywy2d",
-      "views": 59,
+      "views": 60,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.59
+      "popularityScore": 0.6
     },
     {
       "category": "카드깡/카드샵 후기",

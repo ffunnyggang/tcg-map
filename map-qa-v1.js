@@ -23,16 +23,16 @@
   const currentSearch=()=>normalize($('#map-shop-search')?.value||'');
   const category=v=>['롯데마트','이마트','롯데시네마','메가박스','CGV'].includes(v)?v:'기타';
   const operatorLabel=v=>v==='롯데시네마'?'LOTTE\nCINEMA':v==='롯데마트'?'LOTTE\nMART':v==='롯데월드'?'LOTTE\nWORLD':v==='스타필드마켓'?'STARFIELD\nMARKET':v;
-  const operatorLogoDomain=v=>({
-    '롯데마트':'lottemart.com',
-    '롯데시네마':'lottecinema.co.kr',
-    '롯데월드':'lotteworld.com',
-    '이마트':'emart.com',
-    '메가박스':'megabox.co.kr',
-    'CGV':'cgv.co.kr',
-    'KTX':'letskorail.com'
+  const operatorLogoUrl=v=>({
+    '롯데마트':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Lotte_Mart_(2023).svg',
+    '이마트':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Emart_Logo.svg',
+    '롯데시네마':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Lottecinemalogo.png',
+    '메가박스':'https://www.megabox.co.kr/favicon.ico',
+    'CGV':'https://commons.wikimedia.org/wiki/Special:Redirect/file/CGV_logo.svg',
+    'KTX':'https://commons.wikimedia.org/wiki/Special:Redirect/file/Korail_logo.svg',
+    '롯데월드':'https://adventure.lotteworld.com/favicon.ico'
   }[v]||'');
-  const operatorLogoUrl=v=>{const d=operatorLogoDomain(v);return d?'https://www.google.com/s2/favicons?sz=128&domain_url=https%3A%2F%2F'+encodeURIComponent(d):''};
+  const vendingLogoUrl=v=>String(v?.name||'').includes('스타필드마켓')?'https://commons.wikimedia.org/wiki/Special:Redirect/file/Emart_Logo.svg':operatorLogoUrl(v?.operator);
   const addressIcon='<svg class="qa-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   const badge=document.createElement('div');badge.className='qa-dev-badge';badge.textContent='MAP V2 · QA';document.body.appendChild(badge);
@@ -57,7 +57,7 @@
   function naverUrl(v){
     return 'https://map.naver.com/p/search/'+encodeURIComponent(v.name||'');
   }
-  function logoHtml(v){const url=operatorLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+url+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+'</span>'}
+  function logoHtml(v){const url=vendingLogoUrl(v),fallback=esc(operatorLabel(v.operator)).replace(/\n/g,'<br>');return '<span class="qa-operator-logo" data-operator="'+esc(v.operator)+'">'+(url?'<img src="'+url+'" alt="'+esc(v.operator)+' 로고" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span class="qa-operator-logo-fallback" style="display:none">'+fallback+'</span>':'<span class="qa-operator-logo-fallback">'+fallback+'</span>')+'</span>'}
   function popupHtml(v){
     return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup"><span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
@@ -179,14 +179,33 @@
     const any=[...document.querySelectorAll('.qa-shop-filter-chip')].some(b=>b.classList.contains('active'));
     $('.qa-filter-toggle')?.classList.toggle('active',any);
   }
-  function placeQaSortMenu(btn,menu){
+  function ensureQaSortPortal(menu,type){
+    if(!menu)return null;
+    const id=type==='vending'?'qaVendingSortPortal':'qaShopSortPortal';
+    let host=document.getElementById(id);
+    if(!host){
+      host=document.createElement('div');
+      host.id=id;
+      host.className='qa-sort-portal-host list-sort'+(type==='vending'?' qa-vending-list-sort':'');
+      document.body.appendChild(host);
+    }
+    if(menu.parentNode!==host)host.appendChild(menu);
+    menu.classList.add('qa-sort-floating-menu');
+    return host;
+  }
+  function placeQaSortMenu(btn,menu,type){
     if(!btn||!menu)return;
+    const host=ensureQaSortPortal(menu,type);if(!host)return;
     const r=btn.getBoundingClientRect(),w=118,gap=6;
     const left=Math.max(8,Math.min(r.left,window.innerWidth-w-8));
-    menu.style.position='fixed';menu.style.left=left+'px';menu.style.right='auto';menu.style.top=(r.bottom+gap)+'px';menu.style.width=w+'px';menu.style.zIndex='2147482500';
+    host.style.setProperty('position','fixed','important');
+    host.style.setProperty('left',left+'px','important');
+    host.style.setProperty('top',(r.bottom+gap)+'px','important');
+    host.style.setProperty('width',w+'px','important');
+    host.style.setProperty('z-index','2147482500','important');
   }
-  function syncShopSortMenu(){const btn=$('#list-sort-button'),menu=$('#list-sort-menu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu)}
-  function syncVendingSortMenu(){const btn=$('#qaVendingSortButton'),menu=$('#qaVendingSortMenu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu)}
+  function syncShopSortMenu(){const btn=$('#list-sort-button'),menu=$('#list-sort-menu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu,'shop')}
+  function syncVendingSortMenu(){const btn=$('#qaVendingSortButton'),menu=$('#qaVendingSortMenu');if(menu?.classList.contains('open'))placeQaSortMenu(btn,menu,'vending')}
   function vendingSortLabel(){return state.vendingSort==='near'?'가까운 순':'가나다 순'}
   function closeVendingSort(){const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton');menu?.classList.remove('open');btn?.setAttribute('aria-expanded','false')}
   function setVendingSort(value){state.vendingSort=value==='near'?'near':'alpha';const label=$('#qaVendingSortLabel');if(label)label.textContent=vendingSortLabel();document.querySelectorAll('#qaVendingSortMenu [data-vending-sort]').forEach(b=>b.classList.toggle('active',b.dataset.vendingSort===state.vendingSort));closeVendingSort();if(state.vendingSort==='near'&&!window.FUNY_CURRENT_LOCATION)document.getElementById('map-location-btn')?.click();renderVendingList()}
@@ -222,8 +241,10 @@
     $('#qaOperatorStrip').onclick=e=>{const b=e.target.closest('[data-operator]');if(!b)return;state.operator=b.dataset.operator;document.querySelectorAll('.qa-operator-chip').forEach(x=>x.classList.toggle('active',x===b));renderVendingList()};
     $('#qaVendingSortButton').onclick=e=>{e.preventDefault();e.stopPropagation();const menu=$('#qaVendingSortMenu'),btn=$('#qaVendingSortButton'),open=menu?.classList.toggle('open');btn?.setAttribute('aria-expanded',open?'true':'false');if(open)requestAnimationFrame(syncVendingSortMenu)};
     $('#qaVendingSortMenu').onclick=e=>{const b=e.target.closest('[data-vending-sort]');if(!b)return;e.preventDefault();e.stopPropagation();setVendingSort(b.dataset.vendingSort)};
-    document.addEventListener('click',e=>{if(!e.target.closest('.qa-vending-list-sort'))closeVendingSort()},true);
+    document.addEventListener('click',e=>{if(!e.target.closest('.qa-vending-list-sort')&&!e.target.closest('#qaVendingSortPortal'))closeVendingSort()},true);
     tabs.onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;setTab(b.dataset.tab)};
+    ensureQaSortPortal($('#list-sort-menu'),'shop');
+    ensureQaSortPortal($('#qaVendingSortMenu'),'vending');
     $('#list-sort-button')?.addEventListener('click',()=>requestAnimationFrame(syncShopSortMenu));
     tools.addEventListener('scroll',()=>{document.getElementById('list-sort-menu')?.classList.remove('open');document.getElementById('list-sort-button')?.setAttribute('aria-expanded','false')},{passive:true});
     vp.querySelector('.qa-vending-tools')?.addEventListener('scroll',()=>closeVendingSort(),{passive:true});
@@ -242,7 +263,7 @@
       if(heading&&sort&&!heading.contains(sort))heading.appendChild(sort);
       document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.display='');
       const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
-      state.tab='shops';
+      state.tab='shops';document.body.classList.remove('qa-vending-tab-active');
     }else{
       if(sheet&&handle&&tabs&&!sheet.querySelector('.qa-sheet-sticky-head')){const w=document.createElement('div');w.className='qa-sheet-sticky-head';handle.before(w);w.appendChild(handle);w.appendChild(tabs)}
       if(shopTools&&sort&&!shopTools.contains(sort))shopTools.insertBefore(sort,shopTools.firstChild);
@@ -252,10 +273,11 @@
   }
   function setTab(tab){
     state.tab=tab==='vending'?'vending':'shops';
+    const vendingMode=state.tab==='vending';
+    document.body.classList.toggle('qa-vending-tab-active',vendingMode);
     document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
-    document.querySelectorAll('.qa-shop-only,.qa-shop-tools,.qa-shop-filter-strip').forEach(el=>{el.style.display=state.tab==='shops'?'':'none'});
-    const vp=$('.qa-vending-panel');if(vp)vp.hidden=state.tab!=='vending';
-    if(state.tab==='vending')renderVendingList();
+    const vp=$('.qa-vending-panel');if(vp)vp.hidden=!vendingMode;
+    if(vendingMode)renderVendingList();
   }
   function renderVendingList(){
     const list=$('#qaVendingList');if(!list)return;const rows=vendingListRows();

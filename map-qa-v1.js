@@ -204,5 +204,5 @@
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
 
   buildLayerControls();buildSheet();renderVendingList();
-  let tries=0,t=setInterval(()=>{tries++;if(mapReady()){clearInterval(t);try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending)))}catch(_){}buildVendingMarkers()}else if(tries>80)clearInterval(t)},200);
+  let tries=0,t=setInterval(()=>{tries++;if(mapReady()){clearInterval(t);try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending))))}catch(_){}buildVendingMarkers()}else if(tries>80)clearInterval(t)},200);
 })();

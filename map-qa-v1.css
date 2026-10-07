@@ -469,3 +469,39 @@ html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-li
   width:34px!important;
   height:34px!important
 }
+
+
+/* QA v17: normalize vending operator thumbnail fit */
+.qa-operator-logo{
+  padding:0!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.qa-operator-logo img{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  margin:0!important;
+  max-width:none!important;
+  max-height:none!important;
+}
+.qa-operator-logo[data-operator="롯데시네마"] img,
+.qa-operator-logo[data-operator="메가박스"] img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  padding:0!important;
+}
+.qa-operator-logo[data-operator="롯데월드"] img,
+.qa-operator-logo[data-operator="KTX"] img,
+.qa-operator-logo[data-operator="이마트"] img,
+.qa-operator-logo[data-operator="롯데마트"] img,
+.qa-operator-logo[data-operator="CGV"] img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  padding:3px!important;
+  box-sizing:border-box!important;
+}

@@ -162,3 +162,41 @@ html.funy-map-qa .qa-vending-tools{position:relative!important;overflow:visible!
   html.funy-map-qa .country-filter-select,
   html.funy-map-qa body.country-japan .country-filter-select{width:88px!important;min-width:88px!important;max-width:88px!important;height:36px!important}
 }
+
+
+/* QA polish: Japan top filter chip text must stay on one centered line */
+html.funy-map-qa body.country-japan #filters>.filter-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  min-width:max-content!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  line-height:1!important;
+  text-align:center!important
+}
+
+/* QA polish: KR shop/vending sort chevron stays optically centered when opened */
+html.funy-map-qa .qa-shop-tools>.list-sort .list-sort-button,
+html.funy-map-qa .qa-vending-tools>.list-sort .list-sort-button{
+  position:relative!important;
+  justify-content:flex-start!important;
+  padding-right:32px!important
+}
+html.funy-map-qa .qa-shop-tools>.list-sort .list-sort-chevron,
+html.funy-map-qa .qa-vending-tools>.list-sort .list-sort-chevron{
+  position:absolute!important;
+  right:11px!important;
+  top:50%!important;
+  width:14px!important;
+  height:14px!important;
+  margin:0!important;
+  align-self:auto!important;
+  transform:translateY(-50%) rotate(0deg)!important;
+  transform-origin:50% 50%!important
+}
+html.funy-map-qa .qa-shop-tools>.list-sort .list-sort-button[aria-expanded="true"] .list-sort-chevron,
+html.funy-map-qa .qa-vending-tools>.list-sort .list-sort-button[aria-expanded="true"] .list-sort-chevron{
+  transform:translateY(-50%) rotate(180deg)!important
+}

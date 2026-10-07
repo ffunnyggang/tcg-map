@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-07T00:41:37.528143+00:00",
+  "updatedAt": "2026-10-07T01:30:37.511920+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "리자몽이여~~~",
+      "author": "로피",
+      "publishedAt": "2026-10-07T01:18:58.582806Z",
+      "excerpt": "리자몽이여~~~",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽이여-A4Qe089P",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "이브이 리자몽 레쿠쟈 피카츄 위주로 모읍니다",
@@ -24,10 +37,10 @@
       "excerpt": "블래키 후기 올릴게요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791296563971bd1e6404d27df4f73fb6035ec342f29e7d8df8365ef45436c3aad589ee4bff730.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/테라스탈-깝니다-dz96KxpP",
-      "views": 17,
+      "views": 18,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.17
+      "popularityScore": 5.18
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.12
-    },
-    {
-      "category": "자유 게시판",
-      "title": "남자친구가 포켓몬카드를 엄청 좋아해요!",
-      "author": "도토리묵찌빠",
-      "publishedAt": "2026-10-05T19:05:20.211983Z",
-      "excerpt": "남자친구가 포켓몬카드를 엄청 좋아해요!",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/남자친구가-포켓몬카드를-엄청-좋아해요-ARognnWP",
-      "views": 19,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.19
     },
     {
       "category": "카드거래",

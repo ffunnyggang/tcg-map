@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-07T09:32:29.232213+00:00",
+  "updatedAt": "2026-10-07T10:31:59.011552+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "25주년 카드입니다",
+      "author": "안산짱나무",
+      "publishedAt": "2026-10-07T10:28:17.262032Z",
+      "excerpt": "25주년 카드입니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/25주년-카드입니다-A04p8m2A",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "오늘도 출췌에에에엑!!!🤮",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-10-07T10:10:13.418996Z",
+      "excerpt": "10등급 주세요🙏🏻",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791367705363f07a0954fc33c7d670f5b978a1c437f4da26b84f312697fcd92cf6ce837f51b40.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘도-출췌에에에엑🤮-d9XmMmeP",
+      "views": 5,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.05
+    },
     {
       "category": "자유 게시판",
       "title": "고흐츄 입니다.",
@@ -11,10 +37,10 @@
       "excerpt": "고흐츄 입니다.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/고흐츄-입니다-dpWqr8gP",
-      "views": 1,
-      "likes": 0,
+      "views": 14,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 3.14
     },
     {
       "category": "자유 게시판",
@@ -24,10 +50,10 @@
       "excerpt": "정품은 맞는거 같고 재포장인지 잘 몰라서 많은 분들 댓글 부탁드려요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e52ef165-e957-47c7-b4fc-4922ffeb4f63.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-메가드림-메가브레이브-일판-박스-재포장인거-같나요-포잘알분들-댓글-달아주세요-ALErmY0P",
-      "views": 29,
+      "views": 31,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.29
+      "popularityScore": 3.31
     },
     {
       "category": "자유 게시판",
@@ -37,10 +63,10 @@
       "excerpt": "아직 다른 카드는 한번에 할 생각이라 최근 뽑은것중에 요것만 익스프레스로 맡겨서 금액 40만원인데 10 나오면 33만원 차액 더 내야한다는데 맞나욤?? 10 나올 가능성 크다던데🥹 원래 이케 비싼가요..",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791343272320212100c2fab2b38ba7422d79c52276c05d0fbfe716c9509144e3b89c712b6ec60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/처음으로-psa-맡겼어요-A34EbODP",
-      "views": 32,
+      "views": 33,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.32
+      "popularityScore": 6.33
     },
     {
       "category": "자유 게시판",
@@ -50,10 +76,10 @@
       "excerpt": "포켓몬 카드 종류 상관 없이 팩당 350원 드립니다! 인페르노, 화플, 블볼은 600원 드리고요 하클팩은 문의 주세요! 많이는 필요 없고 40팩정도 구하고 있어요! 이 카페는 개인채팅이 안되니 이방으로 들어오셔서 갠챗 주시거나 댓글 주세요. 커뮤니티에 경기 포켓몬카드 소통,거래라고 치면",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/서치팩-매입-jb0oRRkP",
-      "views": 22,
+      "views": 23,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.22
+      "popularityScore": 0.23
     },
     {
       "category": "자유 게시판",
@@ -102,10 +128,10 @@
       "excerpt": "이런건 얼마나 하나요?? 좋은건가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179129062880362caa9fca9be9df7380afd8a58a281e8272795355691fb7946e19facf2b06bf90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-입문자-dGGrJlRd",
-      "views": 34,
+      "views": 35,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.34
+      "popularityScore": 7.35
     },
     {
       "category": "자유 게시판",
@@ -132,32 +158,6 @@
       "likes": 1,
       "comments": 4,
       "popularityScore": 11.4
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이거는 무슨카드인가요?",
-      "author": "세류동에어컨as",
-      "publishedAt": "2026-10-06T11:14:13.314932Z",
-      "excerpt": "이거는 무슨카드인가요?",
-      "image": "https://img.kr.gcp-karroter.net/community/community/20261006/88945a09-6806-4d3a-aa16-39720c4ba80b.jpeg?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거는-무슨카드인가요-AO6XaxDj",
-      "views": 3,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.03
-    },
-    {
-      "category": "자유 게시판",
-      "title": "랜덤 후기",
-      "author": "linn",
-      "publishedAt": "2026-10-06T10:56:07.561197Z",
-      "excerpt": "어제 홍대 오리파 다녀왔습니다. 기대는 안했지만, 지금 포켓몬 카드를 구하기 쉽지 않아서 일단 몇번 해봤습니다. 박스 3개랑 낱장 했는데, 낱장은 해루미 AR뽑았습니다 아쉬운 마음은 있지만 딱 절제하게 되어서 좋네요",
-      "image": "https://img.kr.gcp-karroter.net/community/community/20261006/486ec5db-bbfd-4673-8361-e44dd5cd8076.jpeg?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/랜덤-후기-PM0rm86A",
-      "views": 26,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.26
     },
     {
       "category": "카드거래",
@@ -258,10 +258,10 @@
       "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
-      "views": 66,
+      "views": 67,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 12.66
+      "popularityScore": 12.67
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -440,10 +440,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 116,
+      "views": 117,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 18.16
+      "popularityScore": 18.17
     },
     {
       "category": "카드 자랑",
@@ -726,7 +726,7 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 541,
+      "views": 542,
       "likes": 1,
       "comments": 2,
       "popularityScore": 12.0

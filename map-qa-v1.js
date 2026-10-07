@@ -103,7 +103,7 @@
     const q=currentSearch();
     for(const v of VENDING){
       const m=vendingMarkers.get(v.id);if(!m)continue;
-      const show=state.layers.vending&&(!q||vendingMatchesSearch(v));
+      const show=!document.body.classList.contains('country-japan')&&state.layers.vending&&(!q||vendingMatchesSearch(v));
       try{m.setMap(show?naverMap:null)}catch(_){}
     }
   }
@@ -122,6 +122,7 @@
   let layerControlObserver=null,layerControlTimer=0;
   function buildLayerControls(){
     const track=$('#filters');if(!track)return;
+    if(document.body.classList.contains('country-japan')){track.querySelectorAll('.qa-layer-chip').forEach(x=>x.remove());return;}
     const existing=[...track.querySelectorAll('.qa-layer-chip')];
     if(existing.length===3){
       existing.forEach(b=>b.classList.toggle('active',!!state.layers[b.dataset.layer]));
@@ -191,6 +192,22 @@
     tabs.onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;setTab(b.dataset.tab)};
     setInterval(()=>{const n=document.querySelectorAll('#shop-list .shop-card').length;const el=$('#qaShopCount');if(el)el.textContent=String(n);syncShopFilterUI()},400);
   }
+  function syncCountrySpecificQaUI(){
+    const jp=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
+    const heading=$('.list-heading');
+    const shopTools=$('.qa-shop-tools');
+    const sort=document.querySelector('.list-sort:not(.qa-vending-list-sort)');
+    if(jp){
+      if(heading&&sort&&!heading.contains(sort))heading.appendChild(sort);
+      document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.display='');
+      const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
+      state.tab='shops';
+    }else{
+      if(shopTools&&sort&&!shopTools.contains(sort))shopTools.insertBefore(sort,shopTools.firstChild);
+      setTab(state.tab);
+      buildLayerControls();
+    }
+  }
   function setTab(tab){
     state.tab=tab==='vending'?'vending':'shops';
     document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===state.tab));
@@ -220,9 +237,11 @@
     const originalSync=syncMapMarkers;
     syncMapMarkers=function(refit=true){originalSync(refit);setTimeout(applyLayers,0)}
   }catch(_){}
-  window.addEventListener('funy:mapdatachange',()=>setTimeout(applyLayers,120));
+  window.addEventListener('funy:mapdatachange',()=>setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},120));
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
 
   keepLayerControls();buildSheet();renderVendingList();
+  syncCountrySpecificQaUI();
+  new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
   let tries=0,t=setInterval(()=>{tries++;if(mapReady()){clearInterval(t);try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending))))}catch(_){}buildVendingMarkers()}else if(tries>80)clearInterval(t)},200);
 })();

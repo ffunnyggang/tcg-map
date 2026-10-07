@@ -352,7 +352,13 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
-  new MutationObserver(()=>{syncCountrySpecificQaUI();applyLayers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
+  let lastQaJapanState=document.body.classList.contains('country-japan');
+  new MutationObserver(()=>{
+    const nextQaJapanState=document.body.classList.contains('country-japan');
+    if(nextQaJapanState===lastQaJapanState)return;
+    lastQaJapanState=nextQaJapanState;
+    syncCountrySpecificQaUI();applyLayers();
+  }).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
     try{
       await loadVendingData();

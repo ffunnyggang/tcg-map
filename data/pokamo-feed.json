@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-07T14:32:46.914564+00:00",
+  "updatedAt": "2026-10-07T15:41:16.452268+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "어비스아이깡 ✨️",
+      "author": "깽깽깽",
+      "publishedAt": "2026-10-07T15:27:14.701417Z",
+      "excerpt": "ㅎㅎ 다른사람들 바인더에서 볼땐 감흥이없었는데 직뽑하니까 글라디오한테 빠질듯 😆",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/bf463e36-76c7-4a13-8789-3dcd763bc86e.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/어비스아이깡-✨-jvxBx21P",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.02
+    },
     {
       "category": "자유 게시판",
       "title": "새로운 아이들",
@@ -11,10 +24,10 @@
       "excerpt": "오늘 투희랑 모르페코가 입실 좋은애들 나타나면 뺏기겠지 ㅋㅋ 그동안 맘껏 누려라!ㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/d50c613c-c556-4b95-971d-b4da9cb0433c.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/새로운-아이들-ARoeWVVP",
-      "views": 6,
-      "likes": 1,
+      "views": 12,
+      "likes": 2,
       "comments": 0,
-      "popularityScore": 3.06
+      "popularityScore": 6.12
     },
     {
       "category": "카드 자랑",
@@ -24,10 +37,10 @@
       "excerpt": "스톰 에메랄다에서 1박스 까서 나왔는데 시세를 잘 몰라서 여쭤봅니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/a44ab11e-0d88-40c9-b71a-9c0a39676bfa.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-얼마정도-해요-dg3JVwwd",
-      "views": 25,
+      "views": 27,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.25
+      "popularityScore": 0.27
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "혁....이게 얼마야....",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e5a5281c-7422-4363-a770-e9352f52826a.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-PwwvQ9wP",
-      "views": 24,
+      "views": 25,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.24
+      "popularityScore": 0.25
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "10등급 주세요🙏🏻",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791367705363f07a0954fc33c7d670f5b978a1c437f4da26b84f312697fcd92cf6ce837f51b40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘도-출췌에에에엑🤮-d9XmMmeP",
-      "views": 14,
+      "views": 15,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.14
+      "popularityScore": 0.15
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "테라스탈 깝니다",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-10-06T14:23:34.498265Z",
-      "excerpt": "블래키 후기 올릴게요",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791296563971bd1e6404d27df4f73fb6035ec342f29e7d8df8365ef45436c3aad589ee4bff730.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/테라스탈-깝니다-dz96KxpP",
-      "views": 20,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.2
     },
     {
       "category": "카드 자랑",
@@ -297,10 +297,10 @@
       "excerpt": "포켓몬카드 30주년 퓨쳐리스틱한글판 추첨 응모하세요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/179064826009406147496a34c23e0fe34241ef2e24341dc346d1bba9894f90d4cebedec4305330.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-30주년-퓨쳐리스틱추-응완-PND2m10j",
-      "views": 64,
+      "views": 65,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.64
+      "popularityScore": 3.65
     },
     {
       "category": "카드거래",
@@ -310,10 +310,10 @@
       "excerpt": "하자 하나도 없어요 !! 보이는 그대로입니다 31.5에 팝니다 반택/ 직거래 원해요 직거래는 서울, 경기북부 가능합니다 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790641664868db64827ad9176a64c2a43e22d47674224926ed61f30250c90ac2654e943924810.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/메타몽-프로모카드-psa10-팝니다-Pk69rMMA",
-      "views": 31,
+      "views": 32,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.31
+      "popularityScore": 6.32
     },
     {
       "category": "카드 자랑",
@@ -453,10 +453,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 119,
+      "views": 120,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 18.19
+      "popularityScore": 18.2
     },
     {
       "category": "카드 자랑",
@@ -531,10 +531,10 @@
       "excerpt": "이거 45에 팔아요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/1996-초판-리자몽-PVD3yyvj",
-      "views": 50,
+      "views": 51,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.5
+      "popularityScore": 0.51
     },
     {
       "category": "정보 공유",
@@ -687,10 +687,10 @@
       "excerpt": "아키하바라역에서 가까운 카드윙스 🃏🇯🇵 📍CARDWINGS 아키하바라역앞점 東京都千代田区外神田1-15-15 🚶아키하바라역 전기상점가 출구 도보 1분 숙소 체크인 전 잠깐 들러 포켓몬카드 위주로 둘러봤어요! 싱글카드가 많고 희귀도·타입별로 잘 분류되어 있어 구경하기 편했습니다 👀 가격은 평",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17878247866423675224f137d6a185d08a55706ea6f768657361f6c35227a8f0c5ad15c481ecc0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아키하바라-카드샵-추천-카드윙스-A4Nywy2d",
-      "views": 61,
+      "views": 62,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.61
+      "popularityScore": 0.62
     },
     {
       "category": "카드깡/카드샵 후기",

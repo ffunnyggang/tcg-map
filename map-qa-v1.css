@@ -33,9 +33,9 @@ html.funy-map-qa .map-sheet-handle{padding-top:7px!important;padding-bottom:5px!
 .qa-list-tab[data-tab="vending"].active .qa-tab-count{color:#b18800}
 .qa-tab-count{font-weight:900}
 
-.qa-shop-tools{display:flex;align-items:center;gap:7px;padding:0 12px 5px;overflow:visible}
+.qa-shop-tools{display:flex;align-items:center;gap:7px;padding:0 12px 6px;min-width:0;overflow:visible}
 .qa-shop-tools::-webkit-scrollbar,.qa-vending-tools::-webkit-scrollbar,.qa-operator-strip::-webkit-scrollbar,.qa-shop-filter-strip::-webkit-scrollbar{display:none}
-.qa-shop-filter-strip{display:flex;gap:7px;overflow-x:auto;padding:0 12px 5px;scrollbar-width:none}
+.qa-shop-filter-strip{flex:1 1 auto;min-width:0;display:flex;gap:7px;overflow-x:auto;padding:0;scrollbar-width:none}
 .qa-control-pill,.qa-operator-chip,.qa-shop-filter-chip{flex:0 0 auto;height:34px;padding:0 12px;border:1px solid #e5e0e9;border-radius:17px;background:#fff;color:#514a55;font:750 10.8px/1 Pretendard,sans-serif;white-space:nowrap;cursor:pointer}
 .qa-shop-filter-chip.active{border-color:#c9b9ee;background:#f5f1fc;color:#6849bf;font-weight:850}
 html.funy-map-qa .list-heading-v2{display:none!important}
@@ -45,7 +45,7 @@ html.funy-map-qa .shop-request-list-banner{margin:0 12px 8px!important}
 
 .qa-vending-panel{padding-bottom:96px}
 .qa-vending-tools{display:flex;align-items:center;gap:7px;padding:0 12px 6px;min-width:0}
-.qa-vending-sort{flex:0 0 auto;height:34px;padding:0 28px 0 12px;border:1px solid #e5e0e9;border-radius:17px;background:#fff;color:#514a55;font:750 10.8px Pretendard,sans-serif}
+.qa-vending-list-sort{position:relative!important;z-index:121!important;flex:0 0 auto!important}.qa-vending-list-sort .list-sort-button{height:34px!important;min-width:94px!important;padding:0 11px 0 13px!important}.qa-vending-list-sort .list-sort-menu{top:40px!important}
 .qa-tools-divider{flex:0 0 auto;width:1px;height:20px;background:#ddd8e1;margin:0 1px}
 .qa-operator-strip{flex:1 1 auto;min-width:0;display:flex;gap:7px;overflow-x:auto;padding:0;scrollbar-width:none}
 .qa-operator-chip.active{border-color:#e0bd32;background:#fff9df;color:#9e7700;font-weight:850}
@@ -74,14 +74,13 @@ html.funy-map-qa .shop-request-list-banner{margin:0 12px 8px!important}
 
 html.funy-map-qa .funy-event-calendar{display:none!important}
 
-.qa-vending-popup{width:292px!important;min-width:292px!important;max-width:292px!important}
-.qa-vending-popup .map-shop-popup{display:grid!important;grid-template-columns:52px minmax(0,1fr) auto!important;gap:10px!important;padding:12px!important;align-items:center!important}
-.qa-vending-popup .qa-operator-logo{width:52px;height:52px}
-.qa-vending-popup .qa-popup-copy{min-width:0}
-.qa-vending-popup .qa-popup-name{display:block;margin-bottom:6px;color:#2f2933;font-size:14px;font-weight:850;line-height:1.25}
-.qa-vending-popup .qa-popup-address-row{font-size:10px;line-height:1.4}
+.qa-vending-popup{width:274px!important;min-width:274px!important;max-width:274px!important}
+.qa-vending-popup .map-shop-popup{position:relative!important;display:block!important;width:274px!important;min-width:274px!important;max-width:274px!important;min-height:0!important;padding:14px 72px 14px 16px!important;box-sizing:border-box!important;text-decoration:none!important;border:1px solid rgba(228,224,234,.94)!important;border-radius:18px!important;background:rgba(255,255,255,.97)!important;overflow:visible!important}
+.qa-vending-popup .qa-popup-copy{display:block!important;min-width:0}
+.qa-vending-popup .qa-popup-name{display:block;margin:0 0 8px;color:#2f2933;font-size:15px;font-weight:850;line-height:1.25}
+.qa-vending-popup .qa-popup-address-row{font-size:10.4px;line-height:1.35}
 .qa-vending-popup .qa-popup-address{display:block;min-width:0;color:inherit}
-.qa-vending-popup .qa-naver-route{grid-column:3;grid-row:1;align-self:center;justify-self:end}
+.qa-vending-popup .qa-naver-route{position:absolute!important;right:14px!important;top:50%!important;transform:translateY(-50%)!important;min-width:48px!important}
 html.funy-map-qa.qa-hide-events .funy-event-pin{display:none!important}
 
 .qa-geocode-status{position:absolute;left:50%;top:118px;z-index:90;transform:translateX(-50%);padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 4px 12px rgba(32,26,38,.10);color:#847b89;font:700 9px/1 Pretendard,sans-serif;pointer-events:none}
@@ -96,3 +95,5 @@ html.funy-map-qa.qa-hide-events .funy-event-pin{display:none!important}
   .qa-operator-logo{width:50px;height:50px}
   .qa-naver-route{min-width:44px;padding:0 8px}
 }
+
+.qa-shop-tools .qa-tools-divider{flex:0 0 auto}

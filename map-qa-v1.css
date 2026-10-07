@@ -11,7 +11,7 @@ html.funy-map-qa #filters{gap:7px!important;padding:0 14px 8px!important}
 html.funy-map-qa #filters>.filter-chip{display:none!important}
 html.funy-map-qa #filters>.country-filter-sep{display:block!important;flex:0 0 1px!important;width:1px!important;height:24px!important;margin:7px 2px!important;background:rgba(83,75,91,.24)!important;border:0!important;border-radius:99px!important}
 html.funy-map-qa .country-filter-wrap{flex:0 0 auto!important}
-html.funy-map-qa .country-filter-select{height:38px!important;padding:0 30px 0 14px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:19px!important;background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62))!important;color:#403a45!important;font:800 11.5px/1 Pretendard,sans-serif!important;box-shadow:0 6px 18px rgba(48,39,58,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;-webkit-backdrop-filter:blur(18px) saturate(155%)!important;backdrop-filter:blur(18px) saturate(155%)!important}
+html.funy-map-qa .country-filter-select{width:88px!important;min-width:88px!important;max-width:88px!important;height:38px!important;padding:0 26px 0 12px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:19px!important;background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62))!important;color:#403a45!important;font:800 11.5px/1 Pretendard,sans-serif!important;box-shadow:0 6px 18px rgba(48,39,58,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;-webkit-backdrop-filter:blur(18px) saturate(155%)!important;backdrop-filter:blur(18px) saturate(155%)!important}
 
 .qa-layer-chip{flex:0 0 auto;height:38px;padding:0 13px;border:1.5px solid rgba(255,255,255,.68);border-radius:19px;background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.60));color:#9b949f;display:inline-flex;align-items:center;justify-content:center;gap:5px;font:800 11.5px/1 Pretendard,sans-serif;box-shadow:0 6px 18px rgba(48,39,58,.09),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.26);-webkit-backdrop-filter:blur(18px) saturate(155%);backdrop-filter:blur(18px) saturate(155%);white-space:nowrap;cursor:pointer;transition:border-color .16s ease,color .16s ease,opacity .16s ease,box-shadow .16s ease}
 .qa-layer-chip .qa-layer-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.32}
@@ -108,20 +108,57 @@ html.funy-map-qa body.country-japan .qa-vending-panel,
 html.funy-map-qa body.country-japan .qa-geocode-status{display:none!important}
 
 html.funy-map-qa body.country-japan #filters>.filter-chip{display:inline-flex!important}
-html.funy-map-qa body.country-japan #filters>.country-filter-sep{display:none!important}
+html.funy-map-qa body.country-japan #filters>.country-filter-sep{display:block!important}
 html.funy-map-qa body.country-japan .country-filter-select{
+  width:88px!important;
+  min-width:88px!important;
+  max-width:88px!important;
   height:38px!important;
-  padding:0 15px!important;
-  border:1px solid rgba(255,255,255,.88)!important;
-  border-radius:999px!important;
-  background:rgba(255,255,255,.88)!important;
-  color:#28242d!important;
-  font-size:11.5px!important;
-  font-weight:750!important;
-  box-shadow:0 5px 18px rgba(34,29,44,.13),inset 0 1px 0 rgba(255,255,255,.96)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(150%)!important;
-  backdrop-filter:blur(18px) saturate(150%)!important
+  padding:0 26px 0 12px!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  border-radius:19px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62))!important;
+  color:#403a45!important;
+  font:800 11.5px/1 Pretendard,sans-serif!important;
+  box-shadow:0 6px 18px rgba(48,39,58,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(155%)!important;
+  backdrop-filter:blur(18px) saturate(155%)!important
 }
 html.funy-map-qa body.country-japan .list-heading-v2{display:flex!important}
 html.funy-map-qa body.country-japan .shop-request-list-banner{margin:12px 0 11px!important}
 html.funy-map-qa body.country-japan .map-sheet-handle{padding-top:0!important;padding-bottom:0!important}
+
+
+/* QA sort controls keep a fixed footprint when the selected label changes */
+html.funy-map-qa .qa-shop-tools>.list-sort,
+html.funy-map-qa .qa-vending-tools>.list-sort{
+  position:relative!important;
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  z-index:140!important
+}
+html.funy-map-qa .qa-shop-tools>.list-sort .list-sort-button,
+html.funy-map-qa .qa-vending-tools>.list-sort .list-sort-button{
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  box-sizing:border-box!important
+}
+html.funy-map-qa .qa-shop-tools>.list-sort .list-sort-menu,
+html.funy-map-qa .qa-vending-tools>.list-sort .list-sort-menu{
+  position:absolute!important;
+  left:0!important;
+  right:auto!important;
+  top:40px!important;
+  width:118px!important;
+  min-width:118px!important;
+  z-index:2147481000!important
+}
+html.funy-map-qa .qa-shop-tools,
+html.funy-map-qa .qa-vending-tools{position:relative!important;overflow:visible!important}
+@media(max-width:430px){
+  html.funy-map-qa .country-filter-select,
+  html.funy-map-qa body.country-japan .country-filter-select{width:88px!important;min-width:88px!important;max-width:88px!important;height:36px!important}
+}

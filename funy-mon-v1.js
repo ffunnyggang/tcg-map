@@ -145,7 +145,7 @@
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
     el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><p class="funy-mon-event-caption" id="funyMonEventCaption" hidden></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
-    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{};if(r.reward_type==='entry'){resultNeedsSave=false;closeModal();return}if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
+    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{},entryInput=document.getElementById('funyMonEntryInstagram'),entryPending=r.reward_type==='entry'&&r.entry_apply_enabled&&!!entryInput&&!entryInput.disabled;if(entryPending&&!confirm('이벤트 응모가 아직 완료되지 않았어요.\n응모를 완료하지 않고 닫을까요?'))return;if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
   }
   function closeModal(){
     const el=document.getElementById('funyMonModal');
@@ -247,55 +247,62 @@
     if(!input||input.__funyKeyboardBound)return;
     input.__funyKeyboardBound=true;
     const vv=window.visualViewport;
-    let focused=false,baseHeight=window.innerHeight,lastKeyboard=false;
+    const sheet=document.querySelector('#funyMonModal .funy-mon-sheet');
+    if(!sheet)return;
 
-    const ensureDim=()=>{
-      let dim=document.getElementById('funyMonKeyboardDim');
-      if(dim)return dim;
-      dim=document.createElement('div');
-      dim.id='funyMonKeyboardDim';
-      dim.className='funy-mon-keyboard-dim';
-      dim.hidden=true;
-      document.body.appendChild(dim);
-      dim.addEventListener('click',()=>{try{input.blur()}catch(_){}});
-      return dim;
+    let focused=false;
+    let keyboardOpen=false;
+    let baseHeight=Math.max(window.innerHeight,vv?.height||0);
+    let savedScrollTop=0;
+
+    const reset=()=>{
+      if(!keyboardOpen)return;
+      keyboardOpen=false;
+      document.body.classList.remove('funy-mon-keyboard-open');
+      document.documentElement.style.removeProperty('--funy-keyboard-shift');
+      requestAnimationFrame(()=>{sheet.scrollTop=savedScrollTop});
     };
 
     const apply=()=>{
-      if(!focused)return;
-      const currentHeight=vv?vv.height:window.innerHeight;
-      const offsetTop=vv?vv.offsetTop:0;
-      const keyboardHeight=Math.max(0,baseHeight-currentHeight-offsetTop);
+      if(!focused){reset();return}
+      const viewportHeight=vv?.height||window.innerHeight;
+      const offsetTop=vv?.offsetTop||0;
+      baseHeight=Math.max(baseHeight,window.innerHeight);
+      const keyboardHeight=Math.max(0,baseHeight-viewportHeight-offsetTop);
       const open=keyboardHeight>120;
 
-      if(open!==lastKeyboard){
-        lastKeyboard=open;
-        document.body.classList.toggle('funy-mon-keyboard-open',open);
-        const dim=ensureDim();
-        dim.hidden=!open;
+      if(!open){reset();return}
+
+      if(!keyboardOpen){
+        keyboardOpen=true;
+        savedScrollTop=sheet.scrollTop;
+        document.body.classList.add('funy-mon-keyboard-open');
       }
 
-      if(open){
-        const bottomGap=Math.max(10,Math.round(keyboardHeight+10));
-        document.documentElement.style.setProperty('--funy-keyboard-bottom',bottomGap+'px');
-      }
+      const sheetRect=sheet.getBoundingClientRect();
+      const entryRect=input.closest('.funy-mon-entry-apply')?.getBoundingClientRect();
+      const visibleBottom=offsetTop+viewportHeight-12;
+      const desiredBottom=entryRect?entryRect.bottom:visibleBottom;
+      const overlap=Math.max(0,desiredBottom-visibleBottom);
+      const shift=Math.max(34,Math.min(150,overlap+56));
+      document.documentElement.style.setProperty('--funy-keyboard-shift',shift+'px');
+
+      requestAnimationFrame(()=>{
+        const row=input.closest('.funy-mon-entry-apply');
+        if(row)row.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
+      });
     };
 
     input.addEventListener('focus',()=>{
       focused=true;
-      baseHeight=Math.max(baseHeight,window.innerHeight,vv?.height||0);
-      lastKeyboard=false;
-      requestAnimationFrame(apply);
-      setTimeout(apply,80);
-      setTimeout(apply,260);
+      baseHeight=Math.max(window.innerHeight,vv?.height||0);
+      setTimeout(apply,120);
+      setTimeout(apply,320);
     });
 
     input.addEventListener('blur',()=>{
       focused=false;
-      lastKeyboard=false;
-      document.body.classList.remove('funy-mon-keyboard-open');
-      document.getElementById('funyMonKeyboardDim')?.setAttribute('hidden','');
-      document.documentElement.style.removeProperty('--funy-keyboard-bottom');
+      setTimeout(reset,80);
     });
 
     vv?.addEventListener('resize',apply);

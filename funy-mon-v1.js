@@ -20,7 +20,12 @@
     {id:'bawidong',no:'07',name:'바위동',type:'바위',tier:'RARE',spawnable:false,cls:'mon-07',asset:'assets/funymon/07-bawidong.png'},
     {id:'grimjamong',no:'08',name:'그림자몽',type:'고스트',tier:'SUPER RARE',spawnable:false,cls:'mon-08',asset:'assets/funymon/08-grimjamong.png'},
     {id:'beonjjeogi',no:'09',name:'번쩍이',type:'전기',tier:'SUPER RARE',spawnable:false,cls:'mon-09',asset:'assets/funymon/09-beonjjeogi.png'},
-    {id:'neon',no:'10',name:'네온',type:'코스믹',tier:'LEGENDARY',spawnable:false,cls:'mon-10',asset:'assets/funymon/10-neon.png'}
+    {id:'neon',no:'10',name:'네온',type:'코스믹',tier:'LEGENDARY',spawnable:false,cls:'mon-10',asset:'assets/funymon/10-neon.png'},
+    {id:'longnyang',no:'11',name:'롱냥',type:'노말',tier:'COMMON',spawnable:false,cls:'mon-11',asset:'assets/funymon/11-longnyang.png'},
+    {id:'shuffleling',no:'12',name:'셔플링',type:'악',tier:'UNCOMMON',spawnable:false,cls:'mon-12',asset:'assets/funymon/12-shuffleling.png'},
+    {id:'neonkong',no:'13',name:'네온콩',type:'전기',tier:'UNCOMMON',spawnable:false,cls:'mon-13',asset:'assets/funymon/13-neonkong.png'},
+    {id:'paoring',no:'14',name:'파오링',type:'풀',tier:'RARE',spawnable:false,cls:'mon-14',asset:'assets/funymon/14-paoring.png'},
+    {id:'jokerbi',no:'15',name:'조커비',type:'에스퍼',tier:'LEGENDARY',spawnable:false,cls:'mon-15',asset:'assets/funymon/15-jokerbi.png'}
   ];
   const offsets=[
     {lat:0.00010,lng:0.00013},

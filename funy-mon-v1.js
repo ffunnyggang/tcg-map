@@ -248,9 +248,16 @@
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.url_action_label||r.action_label||'자세히보기')+'</button>':'';
-    const limitText=r.entry_limit_mode==='unlimited'?'이벤트 기간 중 응모 회수 제한 없음':r.entry_limit_mode==='daily'?'이벤트 기간 중 1일 '+Number(r.entry_limit_count||1)+'회 응모 가능':'이벤트 기간 중 '+Number(r.entry_limit_count||1)+'회 응모 가능';
+    const limitCount=Math.max(1,Number(r.entry_limit_count)||1);
+    const limitText=r.entry_limit_mode==='unlimited'
+      ?'이벤트 기간 중 응모 회수 제한 없음(중복 응모 가능)'
+      :r.entry_limit_mode==='daily'
+        ?'이벤트 기간 중 1일 '+limitCount+'회 응모 가능(중복 응모 가능)'
+        :limitCount===1
+          ?'이벤트 기간 중 1회 응모 가능'
+          :'이벤트 기간 중 '+limitCount+'회 응모 가능(중복 응모 가능)';
     const rule=entry&&r.entry_apply_enabled?('<div class="funy-mon-entry-rule">'+esc(limitText)+'</div>'):'';
-    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+rule+(!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(entry&&r.entry_apply_enabled&&r.entry_campaign_id?'<div class="funy-mon-entry-apply"><input id="funyMonEntryInstagram" type="text" maxlength="30" autocomplete="off" placeholder="@제외 Instagram 아이디 입력"><button id="funyMonEntrySubmit" type="button">응모</button><div id="funyMonEntryMessage" class="funy-mon-entry-message"></div></div>':'')+(!entry&&!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
+    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+rule+(!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(entry&&r.entry_apply_enabled&&r.entry_campaign_id?'<div class="funy-mon-entry-apply"><input id="funyMonEntryInstagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram 아이디 입력"><button id="funyMonEntrySubmit" type="button">응모</button><div id="funyMonEntryMessage" class="funy-mon-entry-message"></div></div>':'')+(!entry&&!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');
@@ -261,7 +268,14 @@
     reward.querySelector('[data-reward-image]')?.addEventListener('click',e=>openRewardImage(e.currentTarget.dataset.rewardImage));
     reward.querySelector('[data-reward-url]')?.addEventListener('click',e=>{const url=e.currentTarget.dataset.rewardUrl;if(url)window.open(url,'_blank','noopener,noreferrer')});
     reward.querySelector('#funyMonEntrySubmit')?.addEventListener('click',()=>submitEventEntry(data));
-    reward.querySelector('#funyMonEntryInstagram')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitEventEntry(data)});
+    const entryInput=reward.querySelector('#funyMonEntryInstagram');
+    entryInput?.addEventListener('keydown',e=>{if(e.key==='Enter')submitEventEntry(data)});
+    entryInput?.addEventListener('focus',()=>{
+      document.body.classList.add('funy-mon-entry-focus');
+      setTimeout(()=>entryInput.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}),180);
+      setTimeout(()=>entryInput.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}),520);
+    });
+    entryInput?.addEventListener('blur',()=>document.body.classList.remove('funy-mon-entry-focus'));
     save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){
@@ -288,7 +302,7 @@
       reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
     }
     document.getElementById('funyMonModal').hidden=false;document.body.classList.add('funy-mon-open');document.body.style.overflow='hidden';
-    if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
+    if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){if(eventCaption){eventCaption.textContent='';eventCaption.hidden=true}savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
   }
   function getPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('unsupported'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
   async function catchMonster(meta){

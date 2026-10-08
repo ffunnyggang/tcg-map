@@ -666,3 +666,77 @@ body.funy-mon-keyboard-open .funy-mon-entry-message{
 .funy-mon-meta .type-neonkong{background:#fff8df;border-color:#f2df9d;color:#a77b12}
 .funy-mon-meta .type-paoring{background:#edf8e9;border-color:#cde8c3;color:#448d48}
 .funy-mon-meta .type-jokerbi{background:#f2eaff;border-color:#d9c8f5;color:#6b4ba6}
+
+
+/* FUNY MON No.11~15 visual scale tuning */
+.funy-mon-marker.mon-11 img{transform:scale(1.12);transform-origin:50% 82%}
+.funy-mon-marker.mon-12 img{transform:scale(1.10);transform-origin:50% 82%}
+.funy-mon-marker.mon-13 img{transform:scale(1.11);transform-origin:50% 82%}
+.funy-mon-marker.mon-14 img{transform:scale(1.09);transform-origin:50% 82%}
+.funy-mon-marker.mon-15 img{transform:scale(1.12);transform-origin:50% 82%}
+
+.funy-mon-sheet.mon-longnyang .funy-mon-result-sprite{transform:scale(1.12)}
+.funy-mon-sheet.mon-shuffleling .funy-mon-result-sprite{transform:scale(1.10)}
+.funy-mon-sheet.mon-neonkong .funy-mon-result-sprite{transform:scale(1.11)}
+.funy-mon-sheet.mon-paoring .funy-mon-result-sprite{transform:scale(1.09)}
+.funy-mon-sheet.mon-jokerbi .funy-mon-result-sprite{transform:scale(1.12)}
+
+/* FUNY MON No.11~15 custom capture FX */
+.funy-mon-sheet.mon-longnyang .funy-mon-fx i{
+  color:#8d72d6;
+  text-shadow:0 0 9px rgba(141,114,214,.48);
+  animation:funyFxLongnyang 1.15s ease-in-out infinite!important;
+}
+.funy-mon-sheet.mon-shuffleling .funy-mon-fx i{
+  color:#5b457b;
+  text-shadow:0 0 10px rgba(73,48,101,.55);
+  animation:funyFxShuffleling 1.3s steps(5,end) infinite!important;
+}
+.funy-mon-sheet.mon-neonkong .funy-mon-fx i{
+  color:#e3ad16;
+  text-shadow:0 0 11px rgba(255,205,55,.72);
+  animation:funyFxNeonkong .82s steps(4,end) infinite!important;
+}
+.funy-mon-sheet.mon-paoring .funy-mon-fx i{
+  color:#62a95b;
+  text-shadow:0 0 9px rgba(94,171,87,.50);
+  animation:funyFxPaoring 1.35s ease-in-out infinite!important;
+}
+.funy-mon-sheet.mon-jokerbi .funy-mon-fx i{
+  color:#9a61d9;
+  text-shadow:0 0 12px rgba(150,83,218,.68);
+  animation:funyFxJokerbi 1.05s steps(6,end) infinite!important;
+}
+
+.funy-mon-sheet.mon-longnyang .funy-mon-fx i:nth-child(1),
+.funy-mon-sheet.mon-longnyang .funy-mon-fx i:nth-child(5){font-size:20px!important}
+.funy-mon-sheet.mon-shuffleling .funy-mon-fx i:nth-child(1),
+.funy-mon-sheet.mon-shuffleling .funy-mon-fx i:nth-child(5){font-size:20px!important}
+.funy-mon-sheet.mon-neonkong .funy-mon-fx i{font-size:21px!important}
+.funy-mon-sheet.mon-paoring .funy-mon-fx i:nth-child(1),
+.funy-mon-sheet.mon-paoring .funy-mon-fx i:nth-child(5){font-size:21px!important}
+.funy-mon-sheet.mon-jokerbi .funy-mon-fx i:nth-child(3){font-size:22px!important}
+
+@keyframes funyFxLongnyang{
+  0%,100%{transform:translateY(3px) scale(.86);opacity:.45}
+  50%{transform:translateY(-7px) scale(1.08);opacity:1}
+}
+@keyframes funyFxShuffleling{
+  0%{transform:translate(-2px,2px) rotate(-8deg);opacity:.35}
+  50%{transform:translate(3px,-5px) rotate(8deg);opacity:1}
+  100%{transform:translate(-2px,2px) rotate(-8deg);opacity:.35}
+}
+@keyframes funyFxNeonkong{
+  0%,100%{transform:scale(.72);opacity:.35}
+  40%{transform:scale(1.22);opacity:1}
+  62%{transform:scale(.92);opacity:.62}
+}
+@keyframes funyFxPaoring{
+  0%{transform:translate(-2px,5px) rotate(-10deg);opacity:.35}
+  50%{transform:translate(3px,-7px) rotate(12deg);opacity:1}
+  100%{transform:translate(-2px,5px) rotate(-10deg);opacity:.35}
+}
+@keyframes funyFxJokerbi{
+  0%,100%{transform:translateY(3px) rotate(-8deg) scale(.82);opacity:.35}
+  50%{transform:translateY(-6px) rotate(10deg) scale(1.16);opacity:1}
+}

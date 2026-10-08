@@ -5,218 +5,206 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>THE CARD ROOM × FUNY PIN 퍼니몬 이벤트</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<meta name="description" content="홍대 더카드룸에서 퍼니몬을 포획하고 이벤트에 응모하세요.">
+<meta name="description" content="홍대 더카드룸에서 퍼니몬을 포획하고 FUNY PIN 이벤트에 응모하세요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root{
-  --bg:#f5f4f8;
-  --surface:#fff;
-  --text:#17131d;
-  --sub:#706978;
-  --line:#ece8f1;
-  --purple:#7b5ce1;
-  --purple-dark:#6546c7;
-  --purple-soft:#f4f0ff;
-  --purple-soft-2:#faf8ff;
-  --shadow:0 8px 24px rgba(43,31,71,.06);
-}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-button,a{font:inherit}
-body{min-height:100dvh}
-.page{width:min(100%,420px);min-height:100dvh;margin:0 auto;background:#fff;padding-bottom:36px}
-.header{
-  position:sticky;top:0;z-index:50;height:56px;
-  display:grid;grid-template-columns:44px 1fr 44px;align-items:center;
-  padding:0 14px;background:rgba(255,255,255,.96);
-  backdrop-filter:blur(12px);
-}
-.header-back{width:44px;height:56px;border:0;background:none;color:#17131d;font-size:31px;line-height:1;text-align:left;padding:0}
-.header-title{margin:0;text-align:center;font-size:17px;font-weight:850;letter-spacing:-.035em}
-
-.hero{position:relative;padding:18px 18px 22px;overflow:hidden}
-.eyebrow{color:var(--purple);font-size:11px;font-weight:850;letter-spacing:.03em}
-.hero h1{max-width:300px;margin:9px 0 10px;font-size:28px;line-height:1.2;letter-spacing:-.055em;font-weight:950}
-.hero h1 .accent{color:var(--purple)}
-.hero-desc{max-width:300px;margin:0;color:#5f5866;font-size:13px;line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
-.hero-visual{position:relative;height:168px;margin-top:10px;border-radius:22px;background:linear-gradient(180deg,#fbfaff,#f4f0ff);overflow:hidden}
-.hero-store{position:absolute;right:10px;top:12px;width:150px;height:102px;border:1px solid #e6def7;border-radius:16px;background:linear-gradient(180deg,#eee9fb,#faf8ff);opacity:.88}
-.hero-store:before{content:"THE CARD ROOM";position:absolute;left:14px;right:14px;top:18px;height:34px;border-radius:7px;background:#595165;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:900;letter-spacing:.04em}
-.hero-store:after{content:"";position:absolute;left:28px;right:28px;bottom:10px;height:34px;border:1px solid #ddd4f1;border-bottom:0;background:linear-gradient(90deg,rgba(255,255,255,.72) 0 48%,transparent 48% 52%,rgba(255,255,255,.72) 52%)}
-.hero-pin{position:absolute;right:19px;top:5px;color:var(--purple);font-size:28px}
-.catch-badge{position:absolute;right:124px;top:18px;transform:rotate(-5deg);padding:7px 10px;border-radius:8px;background:var(--purple);color:#fff;font:900 10px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:3px 3px 0 rgba(74,49,144,.14)}
-.hero-mon{position:absolute;image-rendering:pixelated;object-fit:contain;user-select:none;-webkit-user-drag:none}
-.hero-mon.paoring{left:26px;bottom:-1px;width:132px;height:132px;z-index:3}
-.hero-mon.jokerbi{left:130px;bottom:9px;width:126px;height:126px;z-index:2}
-.hero-spark{position:absolute;color:#a185ef;font-size:15px;font-weight:900}
-.hero-spark.s1{left:13px;top:34px}.hero-spark.s2{left:168px;top:18px}.hero-spark.s3{right:12px;bottom:9px}
-.hero-note{position:absolute;right:18px;bottom:12px;color:#7255ca;font-size:11px;font-weight:750;transform:rotate(-4deg)}
-
-.section{padding:22px 18px;border-top:8px solid #f6f5f8}
-.section-title{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:20px;font-weight:950;letter-spacing:-.05em}
-.section-title .spark{color:#8667df;font-size:14px}
-
-.info-card{padding:6px 14px 14px;border:1px solid #ece7f5;border-radius:18px;background:linear-gradient(180deg,#fbfaff,#f7f4ff);box-shadow:var(--shadow)}
-.info-row{display:grid;grid-template-columns:38px 1fr;gap:10px;padding:13px 0;border-bottom:1px solid #ece8f1}
-.info-row:last-of-type{border-bottom:0}
-.info-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eee8ff;color:#7455d0;font-size:16px}
-.info-copy b{display:block;margin:0 0 4px;color:#6849c5;font-size:13px;font-weight:900}
-.info-copy span,.info-copy li{color:#312b37;font-size:12.5px;line-height:1.55}
+html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.page{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:32px}
+.head{position:sticky;top:0;z-index:55;height:58px;padding:0 14px;display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;background:rgba(255,255,255,.97)}
+.back{display:inline-flex;width:42px;height:58px;align-items:center;border:0;background:none;color:#29262e;padding:0;font:300 30px/1 Arial}
+.head-title{grid-column:2;grid-row:1;margin:0;font-size:17px;font-weight:800;text-align:center;letter-spacing:-.03em}
+.hero{padding:12px 18px 22px}
+.eyebrow{color:#8062d8;font-size:10px;font-weight:700;letter-spacing:.02em}
+.hero h1{margin:8px 0 9px;font-size:26px;line-height:1.24;letter-spacing:-.055em}
+.hero>p{margin:0;font-size:12px;line-height:1.48;color:#4e4952}
+.event-info{margin-top:18px;padding:16px;border-radius:16px;background:#f7f5fa;font-size:12px;line-height:1.55;word-break:keep-all}
+.event-info b{display:inline-block;margin-bottom:3px}
+.event-info .block{margin-top:14px}
+.event-info .block:first-child{margin-top:0}
 .prize-list{margin:2px 0 0;padding-left:18px}
-.info-note{margin-top:8px;padding:10px 0 0;border-top:1px solid #e8e2f1;color:#6d6574;font-size:11px;line-height:1.5}
-
-.mini-roster{display:flex;align-items:flex-end;justify-content:flex-end;gap:2px;margin:-5px 2px 10px}
-.mini-roster img{display:block;width:44px;height:44px;object-fit:contain;image-rendering:pixelated}
-.mini-roster img.main{width:51px;height:51px}
-
-.steps{display:grid;gap:12px}
-.step-card{position:relative;padding:16px;border:1px solid #ebe7f1;border-radius:17px;background:#fff;box-shadow:0 5px 18px rgba(43,31,71,.035)}
-.step-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
-.step-label{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:0 9px;border-radius:999px;background:#f0e9ff;color:#7353d0;font:900 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
-.step-card h3{margin:0;font-size:16px;line-height:1.35;letter-spacing:-.035em}
-.step-desc{margin:6px 0 12px;color:#6f6875;font-size:12px;line-height:1.5}
-.social-btns{display:grid;gap:8px}
-.link-btn,.secondary-btn,.primary-btn{
-  min-height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:850;letter-spacing:-.02em
-}
-.link-btn{border:1px solid #d8ccf6;background:#fff;color:#6e50c7;font-size:12px}
-.ig-mark{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:linear-gradient(135deg,#feda75,#d62976 48%,#4f5bd5);color:#fff;font-size:11px;font-weight:900}
-.step-note{margin:11px 0 0;color:#756e7a;font-size:10px;line-height:1.5}
-.bullets{margin:8px 0 14px;padding-left:18px;color:#4c4651;font-size:11.5px;line-height:1.55}
-.primary-btn{width:100%;border:0;background:linear-gradient(135deg,#896cf0,#6f4fd5);color:#fff;font-size:13px;box-shadow:0 5px 0 rgba(80,52,166,.11)}
-.primary-btn:active{transform:translateY(1px)}
-.step-map{position:absolute;right:10px;bottom:58px;width:76px;height:60px;border-radius:12px;background:linear-gradient(135deg,#eef0ff,#fafaff);opacity:.95;overflow:hidden}
-.step-map:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(125,100,225,.08) 49% 51%,transparent 52%),linear-gradient(0deg,transparent 48%,rgba(125,100,225,.08) 49% 51%,transparent 52%);background-size:20px 20px}
-.step-map-pin{position:absolute;right:10px;top:5px;color:#7c5ce1;font-size:22px}
-.step-map img{position:absolute;right:2px;bottom:-2px;width:49px;height:49px;object-fit:contain;image-rendering:pixelated}
-
-.secondary-btn{margin-top:14px;border:1px solid #d8ccf6;background:#fff;color:#6e50c7;font-size:13px}
-
-.dev-note{margin:18px 18px 0;padding:12px 13px;border-radius:13px;background:#faf9fc;color:#8b8490;font-size:10px;line-height:1.55}
-.dev-note b{color:#655d6b}
-
-@media(max-width:360px){
-  .hero h1{font-size:25px}
-  .hero-desc{max-width:270px}
-  .hero-mon.paoring{width:116px;height:116px}
-  .hero-mon.jokerbi{left:118px;width:110px;height:110px}
-}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.prize-list li{padding:1px 0}
+.pickup-note{display:block;margin-top:13px;padding-top:11px;border-top:1px solid #e9e5ed;color:#5f5964;font-size:11px;line-height:1.5}
+.section{padding:22px 18px;border-top:8px solid #f5f4f7}
+.section h2{margin:0 0 14px;font-size:16px;letter-spacing:-.03em}
+.flow{display:grid;gap:12px}
+.step{padding:16px;border:1px solid #e8e3ee;border-radius:16px;background:#fff}
+.step-kicker{color:#8062d8;font-size:11px;font-weight:900}
+.step h3{margin:5px 0 6px;font-size:15px;line-height:1.3;letter-spacing:-.025em}
+.step p{margin:0 0 12px;font-size:12px;line-height:1.5}
+.link-btn{display:flex;align-items:center;justify-content:center;width:100%;height:49px;margin-top:9px;border:1px solid #ded4f4;border-radius:13px;color:#8062d8;text-decoration:none;font-size:12px;font-weight:850}
+.action-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:13px;border:0;border-radius:13px;background:#8062d8;color:#fff;text-decoration:none;font-size:14px;font-weight:850}
+.note{margin:12px 0 0!important;font-size:11px!important;line-height:1.6!important}
+.lookup{width:100%;margin-top:11px;padding-top:11px;border:0;border-top:1px solid #eeeaf1;background:none;color:#8062d8;font:800 11px/1.4 inherit}
+.entry-lookup-panel{margin-top:10px;padding:12px;border:1px solid #e8e2ef;border-radius:13px;background:#faf8fc}
+.entry-lookup-panel[hidden]{display:none}
+.entry-lookup-row{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:7px}
+.entry-lookup-row input{min-width:0;height:42px;padding:0 11px;border:1px solid #ddd6e6;border-radius:10px;background:#fff;font:inherit;font-size:12px;outline:none}
+.entry-lookup-row input:focus{border-color:#8062d8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}
+.entry-lookup-row button{height:42px;border:0;border-radius:10px;background:#8062d8;color:#fff;font-size:12px;font-weight:850}
+.entry-lookup-row button:disabled{opacity:.55}
+.entry-lookup-result{min-height:16px;margin-top:9px;color:#716a76;font-size:11px;line-height:1.55}
+.entry-lookup-result b{color:#5d42a5}
+.follow-note{margin:11px 0 0!important;font-size:10px!important;line-height:1.55!important;color:#746d79}
+.campaign-state{display:none;margin-top:9px;color:#8a8290;font-size:10px;line-height:1.45}
+.campaign-state.show{display:block}
 </style>
+<meta name="robots" content="noindex,follow">
 </head>
 <body>
 <main class="page">
-  <header class="header">
-    <button class="header-back" type="button" aria-label="뒤로가기" onclick="history.length>1?history.back():location.href='./'">‹</button>
-    <h1 class="header-title">이벤트</h1>
-  </header>
+<header class="head">
+  <button class="back" type="button" onclick="history.length>1?history.back():location.href='./'" aria-label="뒤로가기">‹</button>
+  <strong class="head-title">이벤트</strong>
+</header>
 
-  <section class="hero">
-    <div class="eyebrow">THE CARD ROOM X FUNY PIN</div>
-    <h1>홍대 더카드룸 방문해서<br><span class="accent">퍼니몬 포획하고</span><br>이벤트 응모까지!</h1>
-    <p class="hero-desc">FUNY PIN 서비스 ‘TCG MAP’에서 더카드룸 주변의 퍼니몬을 포획하면 이벤트에 응모할 수 있어요.</p>
+<section class="hero">
+  <div class="eyebrow">THE CARD ROOM X FUNY PIN</div>
+  <h1>더카드룸 방문해서<br>퍼니몬 포획하고 🎯<br>이벤트 응모까지! 🎁</h1>
+  <p>FUNY PIN 서비스 ‘TCG MAP’에서<br>더카드룸 주변의 퍼니몬을 포획하면<br>이벤트에 응모할 수 있어요</p>
 
-    <div class="hero-visual" aria-hidden="true">
-      <div class="hero-store"></div>
-      <div class="hero-pin">●</div>
-      <div class="catch-badge">CATCH<br>FUNYMON!</div>
-      <span class="hero-spark s1">✦</span>
-      <span class="hero-spark s2">✦</span>
-      <span class="hero-spark s3">✦</span>
-      <img class="hero-mon paoring" src="assets/funymon/14-paoring.png?v=20261008-fm15" alt="">
-      <img class="hero-mon jokerbi" src="assets/funymon/15-jokerbi.png?v=20261008-fm15" alt="">
-      <div class="hero-note">카드를 넘어,<br>새로운 만남이 있는 곳!</div>
-    </div>
-  </section>
-
-  <section class="section" id="eventInfo">
-    <h2 class="section-title">이벤트 안내 <span class="spark">✦</span></h2>
-    <div class="info-card">
-      <div class="info-row">
-        <div class="info-icon">▣</div>
-        <div class="info-copy">
-          <b>이벤트 기간</b>
-          <span>2026년 XX월 XX일( ) ~ XX월 XX일( ) 오후 10시까지</span>
-        </div>
-      </div>
-      <div class="info-row">
-        <div class="info-icon">◢</div>
-        <div class="info-copy">
-          <b>당첨자 발표</b>
-          <span>2026년 XX월 XX일( )</span>
-        </div>
-      </div>
-      <div class="info-row">
-        <div class="info-icon">◆</div>
-        <div class="info-copy">
-          <b>경품(총 3명)</b>
-          <ul class="prize-list">
-            <li>1등 : XXXXXXXXXX 1BOX(1명)</li>
-            <li>2등 : XXXXXXXXXX 1BOX(1명)</li>
-            <li>3등 : XXXXXXXXXX 1BOX(1명)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="info-note">※ 본 이벤트 경품은 더카드룸 매장 방문 수령 필요</div>
-    </div>
-  </section>
-
-  <section class="section" id="participation">
-    <h2 class="section-title">참여 방법 <span class="spark">✦</span></h2>
-    <div class="mini-roster" aria-label="더카드룸 전용 퍼니몬">
-      <img src="assets/funymon/11-longnyang.png?v=20261008-fm15" alt="룸냥">
-      <img src="assets/funymon/12-shuffleling.png?v=20261008-fm15" alt="셔플링">
-      <img src="assets/funymon/13-neonkong.png?v=20261008-fm15" alt="네온콩">
-      <img class="main" src="assets/funymon/14-paoring.png?v=20261008-fm15" alt="파오링">
-      <img class="main" src="assets/funymon/15-jokerbi.png?v=20261008-fm15" alt="조커비">
+  <div class="event-info">
+    <div class="block">
+      <b>🗓️ 이벤트 기간</b><br>
+      <span id="eventPeriod">2026년 XX월 XX일( ) ~ XX월 XX일( )<br>오후 10시까지</span>
     </div>
 
-    <div class="steps">
-      <article class="step-card">
-        <div class="step-head">
-          <span class="step-label">STEP 1</span>
-          <h3>인스타그램 팔로우</h3>
-        </div>
-        <p class="step-desc">더카드룸 &amp; FUNY PIN 계정을 모두 팔로우해주세요.</p>
-        <div class="social-btns">
-          <a class="link-btn" href="https://www.instagram.com/tcr_kr/" target="_blank" rel="noopener">
-            <span class="ig-mark">◎</span><span>tcr_kr 인스타그램 방문하기</span><span>›</span>
-          </a>
-          <a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">
-            <span class="ig-mark">◎</span><span>깽퐌커플 인스타그램 방문하기</span><span>›</span>
-          </a>
-        </div>
-        <p class="step-note">※ 당첨자의 Instagram 팔로우 여부를 확인하여 조건 미충족 시 당첨이 취소될 수 있습니다.</p>
-      </article>
-
-      <article class="step-card">
-        <div class="step-head">
-          <span class="step-label">STEP 2</span>
-          <h3>FUNY PIN 지도에서 퍼니몬 포획하고 이벤트 응모!</h3>
-        </div>
-        <ul class="bullets">
-          <li>이벤트 기간 중 Instagram ID 기준 1일 1회 응모 가능</li>
-          <li>응모는 중복 참여가 가능하고, 중복 참여 시 당첨 확률 증가</li>
-        </ul>
-        <div class="step-map" aria-hidden="true">
-          <span class="step-map-pin">●</span>
-          <img src="assets/funymon/14-paoring.png?v=20261008-fm15" alt="">
-        </div>
-        <a class="primary-btn" id="captureEntryBtn" href="shops.html?event=cardroom">
-          <span>⌖</span><span>퍼니몬 포획하고 응모하기</span><span>›</span>
-        </a>
-      </article>
+    <div class="block">
+      <b>📢 당첨자 발표</b><br>
+      <span id="winnerDate">2026년 XX월 XX일( )</span>
     </div>
 
-    <a class="secondary-btn" id="entryHistoryBtn" href="my.html#entries">
-      <span>▤</span><span>내 응모이력 조회하기</span><span>›</span>
-    </a>
-  </section>
+    <div class="block">
+      <b>🎁 경품(총 3명)</b>
+      <ul class="prize-list">
+        <li>포켓몬카드 일본판 30주년 1BOX(1명)</li>
+        <li>포켓몬카드 일본판 메가드림ex 1BOX(1명)</li>
+        <li>포켓몬카드 일본판 퍼스트파트너 1BOX(1명)</li>
+      </ul>
+    </div>
 
-  <div class="dev-note">
-    <b>마크업 적용 기준</b><br>
-    날짜·경품 문구는 운영 확정값으로 교체하고, 응모 처리/1일 참여 제한/응모 이력은 기존 퍼니몬 이벤트 로직과 연결하는 구조입니다.
+    <span class="pickup-note">※ 본 이벤트 경품은 더카드룸 매장 방문 수령 필요</span>
   </div>
+</section>
+
+<section class="section">
+  <h2>이벤트 참여방법 및 응모</h2>
+
+  <div class="flow">
+    <div class="step">
+      <div class="step-kicker">STEP 1</div>
+      <h3>인스타그램 팔로우</h3>
+      <p>더카드룸 &amp; FUNY PIN 계정을 모두 팔로우해주세요</p>
+      <a class="link-btn" href="https://www.instagram.com/tcr_kr/" target="_blank" rel="noopener">tcr_kr 인스타그램 방문하기 ›</a>
+      <a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">깽퐌커플 인스타그램 방문하기 ›</a>
+      <p class="follow-note">※ 당첨자의 Instagram 팔로우 여부를 확인하여 조건 미충족시 당첨이 취소될 수 있습니다</p>
+    </div>
+
+    <div class="step">
+      <div class="step-kicker">STEP 2</div>
+      <h3>FUNY PIN 지도에서 퍼니몬 포획하고<br>이벤트 응모!</h3>
+      <p class="note">• 이벤트 기간 중 Instagram ID 기준 1일 1회 응모 가능<br>• 응모는 중복 참여가 가능하고, 중복 참여 시 당첨 확률 증가</p>
+      <a class="action-btn" id="mapEntryBtn" href="https://funypin.kr/shops.html">퍼니몬 포획하고 응모하기</a>
+      <div class="campaign-state" id="campaignState"></div>
+
+      <button class="lookup" id="entryLookupBtn" type="button">내 응모이력 조회하기</button>
+      <div id="entryLookupPanel" class="entry-lookup-panel" hidden>
+        <div class="entry-lookup-row">
+          <input id="entryLookupId" type="text" maxlength="30" autocomplete="off" placeholder="@제외 Instagram 아이디 입력">
+          <button id="entryLookupSearch" type="button">조회</button>
+        </div>
+        <div id="entryLookupResult" class="entry-lookup-result"></div>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
+
+<script>
+(function(){
+  var base='https://wdttzpbmqavaqfcbaywj.supabase.co';
+  var key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+  var headers={apikey:key,Authorization:'Bearer '+key};
+  var campaignId='';
+
+  var period=document.getElementById('eventPeriod');
+  var state=document.getElementById('campaignState');
+  var mapBtn=document.getElementById('mapEntryBtn');
+  var lookupBtn=document.getElementById('entryLookupBtn');
+  var panel=document.getElementById('entryLookupPanel');
+  var input=document.getElementById('entryLookupId');
+  var searchBtn=document.getElementById('entryLookupSearch');
+  var result=document.getElementById('entryLookupResult');
+
+  function kstParts(v){
+    var d=new Date(v);
+    if(isNaN(d))return null;
+    var parts=new Intl.DateTimeFormat('ko-KR',{
+      timeZone:'Asia/Seoul',year:'numeric',month:'numeric',day:'numeric',
+      weekday:'short',hour:'numeric',minute:'2-digit',hour12:true
+    }).formatToParts(d);
+    var o={};parts.forEach(function(x){o[x.type]=x.value});
+    return o;
+  }
+  function dayText(p){
+    return p.year+'년 '+p.month+'월 '+p.day+'일('+String(p.weekday||'').replace('요일','')+')';
+  }
+  function timeText(p){
+    return (p.dayPeriod||'')+' '+p.hour+'시'+(p.minute&&p.minute!=='00'?' '+p.minute+'분':'');
+  }
+  function renderCampaign(c){
+    if(!c)return;
+    campaignId=c.id||'';
+    var s=kstParts(c.starts_at),e=kstParts(c.ends_at);
+    if(s&&e&&period)period.innerHTML=dayText(s)+' ~ '+dayText(e)+'<br>'+timeText(e)+'까지';
+    if(state){state.className='campaign-state show';state.textContent='현재 이벤트 응모 설정이 연결되어 있어요.'}
+    if(mapBtn&&campaignId)mapBtn.href='https://funypin.kr/shops.html?event=cardroom&campaign='+encodeURIComponent(campaignId);
+  }
+  async function resolveCampaign(){
+    var forced=new URLSearchParams(location.search).get('campaign');
+    try{
+      if(forced&&/^EV-[A-Z0-9-]+$/i.test(forced)){
+        var q1='select=id,title,starts_at,ends_at,status,entry_limit_mode,entry_limit_count&id=eq.'+encodeURIComponent(forced)+'&limit=1';
+        var r1=await fetch(base+'/rest/v1/event_campaigns?'+q1,{headers:headers,cache:'no-store'});
+        if(r1.ok){var rows1=await r1.json();if(rows1.length){renderCampaign(rows1[0]);return}}
+      }
+      var q='select=id,title,starts_at,ends_at,status,entry_limit_mode,entry_limit_count&title=ilike.*'+encodeURIComponent('더카드룸')+'*&order=created_at.desc&limit=1';
+      var r=await fetch(base+'/rest/v1/event_campaigns?'+q,{headers:headers,cache:'no-store'});
+      if(!r.ok)throw new Error('campaign');
+      var rows=await r.json();
+      if(rows.length){renderCampaign(rows[0]);return}
+      if(state){state.className='campaign-state show';state.textContent='이벤트 응모 캠페인 연결 준비 중입니다.'}
+    }catch(e){
+      if(state){state.className='campaign-state show';state.textContent='이벤트 응모 설정을 불러오지 못했습니다.'}
+    }
+  }
+
+  lookupBtn.onclick=function(){panel.hidden=!panel.hidden;if(!panel.hidden)input.focus()};
+
+  async function runLookup(){
+    var id=input.value.trim().replace(/^@/,'').toLowerCase();
+    if(!/^[a-z0-9._]{1,30}$/.test(id)){result.textContent='Instagram 아이디를 정확히 입력해주세요.';return}
+    if(!campaignId){result.textContent='이벤트 응모 캠페인 연결 후 조회할 수 있어요.';return}
+    searchBtn.disabled=true;searchBtn.textContent='조회중';result.textContent='';
+    try{
+      var q='select=id,content,created_at&shop_id=eq.'+encodeURIComponent(campaignId)+'&status=eq.EVENT_ENTRY&content=eq.'+encodeURIComponent(id)+'&order=created_at.desc&limit=100';
+      var r=await fetch(base+'/rest/v1/live_reports?'+q,{headers:headers,cache:'no-store'});
+      if(!r.ok)throw new Error('lookup');
+      var rows=await r.json();
+      if(rows.length){
+        var latest=new Date(rows[0].created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+        result.innerHTML='<b>@'+id+'</b> · 총 '+rows.length+'회 응모 완료 🎁<br>최근 응모 '+latest;
+      }else result.innerHTML='<b>@'+id+'</b> · 더카드룸 이벤트 응모이력이 없습니다.';
+    }catch(e){
+      result.textContent='응모이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+    }
+    searchBtn.disabled=false;searchBtn.textContent='조회';
+  }
+
+  searchBtn.onclick=runLookup;
+  input.onkeydown=function(e){if(e.key==='Enter')runLookup()};
+  resolveCampaign();
+})();
+</script>
 </body>
 </html>

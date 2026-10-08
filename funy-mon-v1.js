@@ -243,6 +243,66 @@
       if(!input.disabled)btn.disabled=false
     }
   }
+  function bindEntryKeyboardMode(input){
+    if(!input||input.__funyKeyboardBound)return;
+    input.__funyKeyboardBound=true;
+    const vv=window.visualViewport;
+    let focused=false,baseHeight=window.innerHeight,lastKeyboard=false;
+
+    const ensureDim=()=>{
+      let dim=document.getElementById('funyMonKeyboardDim');
+      if(dim)return dim;
+      dim=document.createElement('div');
+      dim.id='funyMonKeyboardDim';
+      dim.className='funy-mon-keyboard-dim';
+      dim.hidden=true;
+      document.body.appendChild(dim);
+      dim.addEventListener('click',()=>{try{input.blur()}catch(_){}});
+      return dim;
+    };
+
+    const apply=()=>{
+      if(!focused)return;
+      const currentHeight=vv?vv.height:window.innerHeight;
+      const offsetTop=vv?vv.offsetTop:0;
+      const keyboardHeight=Math.max(0,baseHeight-currentHeight-offsetTop);
+      const open=keyboardHeight>120;
+
+      if(open!==lastKeyboard){
+        lastKeyboard=open;
+        document.body.classList.toggle('funy-mon-keyboard-open',open);
+        const dim=ensureDim();
+        dim.hidden=!open;
+      }
+
+      if(open){
+        const bottomGap=Math.max(10,Math.round(keyboardHeight+10));
+        document.documentElement.style.setProperty('--funy-keyboard-bottom',bottomGap+'px');
+      }
+    };
+
+    input.addEventListener('focus',()=>{
+      focused=true;
+      baseHeight=Math.max(baseHeight,window.innerHeight,vv?.height||0);
+      lastKeyboard=false;
+      requestAnimationFrame(apply);
+      setTimeout(apply,80);
+      setTimeout(apply,260);
+    });
+
+    input.addEventListener('blur',()=>{
+      focused=false;
+      lastKeyboard=false;
+      document.body.classList.remove('funy-mon-keyboard-open');
+      document.getElementById('funyMonKeyboardDim')?.setAttribute('hidden','');
+      document.documentElement.style.removeProperty('--funy-keyboard-bottom');
+    });
+
+    vv?.addEventListener('resize',apply);
+    vv?.addEventListener('scroll',apply);
+    window.addEventListener('resize',apply);
+  }
+
   function rewardMarkup(data){
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
@@ -270,12 +330,7 @@
     reward.querySelector('#funyMonEntrySubmit')?.addEventListener('click',()=>submitEventEntry(data));
     const entryInput=reward.querySelector('#funyMonEntryInstagram');
     entryInput?.addEventListener('keydown',e=>{if(e.key==='Enter')submitEventEntry(data)});
-    entryInput?.addEventListener('focus',()=>{
-      document.body.classList.add('funy-mon-entry-focus');
-      setTimeout(()=>entryInput.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}),180);
-      setTimeout(()=>entryInput.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'}),520);
-    });
-    entryInput?.addEventListener('blur',()=>document.body.classList.remove('funy-mon-entry-focus'));
+    bindEntryKeyboardMode(entryInput);
     save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){

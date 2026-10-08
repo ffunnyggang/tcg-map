@@ -318,7 +318,7 @@
   function rewardMarkup(data){
     const r=data.reward||{title:'꽝',description:'아쉬워요! 다음 기회에 다시 도전해보세요!',reward_type:'lose',is_win:false,claim_code:null,image_url:null,action_url:null};
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
-    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),escLines=s=>esc(s).replace(/\r?\n/g,'<br>');
     const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.url_action_label||r.action_label||'자세히보기')+'</button>':'';
     const limitCount=Math.max(1,Number(r.entry_limit_count)||1);
     const limitText=r.entry_limit_mode==='unlimited'
@@ -329,7 +329,7 @@
           ?'이벤트 기간 중 1회 응모 가능'
           :'이벤트 기간 중 '+limitCount+'회 응모 가능(중복 응모 가능)';
     const rule=entry&&r.entry_apply_enabled?('<div class="funy-mon-entry-rule">'+esc(limitText)+'</div>'):'';
-    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+rule+(!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(entry&&r.entry_apply_enabled&&r.entry_campaign_id?'<div class="funy-mon-entry-apply"><input id="funyMonEntryInstagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram 아이디 입력"><button id="funyMonEntrySubmit" type="button">응모</button><div id="funyMonEntryMessage" class="funy-mon-entry-message"></div></div>':'')+(!entry&&!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
+    return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+rule+(!lose&&r.description?'<div class="funy-mon-post-guide">'+escLines(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+escLines(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(entry&&r.entry_apply_enabled&&r.entry_campaign_id?'<div class="funy-mon-entry-apply"><input id="funyMonEntryInstagram" type="text" maxlength="30" autocomplete="off" placeholder="Instagram 아이디 입력"><button id="funyMonEntrySubmit" type="button">응모</button><div id="funyMonEntryMessage" class="funy-mon-entry-message"></div></div>':'')+(!entry&&!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
   }
   function revealReward(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover'),save=document.getElementById('funyMonSave');

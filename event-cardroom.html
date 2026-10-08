@@ -33,7 +33,7 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
 .step h3{margin:5px 0 6px;font-size:15px;line-height:1.3;letter-spacing:-.025em}
 .step p{margin:0 0 12px;font-size:12px;line-height:1.5}
 .link-btn{display:flex;align-items:center;justify-content:center;width:100%;height:49px;margin-top:9px;border:1px solid #ded4f4;border-radius:13px;color:#8062d8;text-decoration:none;font-size:12px;font-weight:850}
-.action-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:13px;border:0;border-radius:13px;background:#8062d8;color:#fff;text-decoration:none;font-size:14px;font-weight:850}
+.action-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:13px;border:0;border-radius:13px;background:#8062d8;color:#fff;text-decoration:none;font-size:14px;font-weight:850;cursor:pointer}
 .note{margin:12px 0 0!important;font-size:11px!important;line-height:1.6!important}
 .lookup{width:100%;margin-top:11px;padding-top:11px;border:0;border-top:1px solid #eeeaf1;background:none;color:#8062d8;font:800 11px/1.4 inherit}
 .entry-lookup-panel{margin-top:10px;padding:12px;border:1px solid #e8e2ef;border-radius:13px;background:#faf8fc}
@@ -46,8 +46,6 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
 .entry-lookup-result{min-height:16px;margin-top:9px;color:#716a76;font-size:11px;line-height:1.55}
 .entry-lookup-result b{color:#5d42a5}
 .follow-note{margin:11px 0 0!important;font-size:10px!important;line-height:1.55!important;color:#746d79}
-.campaign-state{display:none;margin-top:9px;color:#8a8290;font-size:10px;line-height:1.45}
-.campaign-state.show{display:block}
 </style>
 <meta name="robots" content="noindex,follow">
 </head>
@@ -83,7 +81,7 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
       </ul>
     </div>
 
-    <span class="pickup-note">※ 본 이벤트 경품은 더카드룸 매장 방문 수령 필요</span>
+    <span class="pickup-note">※ 당첨 경품은 더카드룸 매장에서 직접 수령해 주세요.</span>
   </div>
 </section>
 
@@ -94,7 +92,7 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
     <div class="step">
       <div class="step-kicker">STEP 1</div>
       <h3>인스타그램 팔로우</h3>
-      <p>더카드룸 &amp; FUNY PIN 계정을 모두 팔로우해주세요</p>
+      <p>더카드룸 &amp; 깽퐌커플 계정을 모두 팔로우해주세요</p>
       <a class="link-btn" href="https://www.instagram.com/tcr_kr/" target="_blank" rel="noopener">tcr_kr 인스타그램 방문하기 ›</a>
       <a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">깽퐌커플 인스타그램 방문하기 ›</a>
       <p class="follow-note">※ 당첨자의 Instagram 팔로우 여부를 확인하여 조건 미충족시 당첨이 취소될 수 있습니다</p>
@@ -103,9 +101,8 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
     <div class="step">
       <div class="step-kicker">STEP 2</div>
       <h3>FUNY PIN 지도에서 퍼니몬 포획하고<br>이벤트 응모!</h3>
-      <p class="note">• 이벤트 기간 중 Instagram ID 기준 1일 1회 응모 가능<br>• 응모는 중복 참여가 가능하고, 중복 참여 시 당첨 확률 증가</p>
-      <a class="action-btn" id="mapEntryBtn" href="https://funypin.kr/shops.html">퍼니몬 포획하고 응모하기</a>
-      <div class="campaign-state" id="campaignState"></div>
+      <p class="note">• 이벤트 기간 동안 Instagram ID 기준 하루 1회 응모할 수 있어요.<br>• 매일 참여할수록 응모 횟수가 쌓여 당첨 확률이 높아져요.</p>
+      <button class="action-btn" id="mapEntryBtn" type="button">퍼니몬 포획하고 응모하기</button>
 
       <button class="lookup" id="entryLookupBtn" type="button">내 응모이력 조회하기</button>
       <div id="entryLookupPanel" class="entry-lookup-panel" hidden>
@@ -128,7 +125,6 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
   var campaignId='';
 
   var period=document.getElementById('eventPeriod');
-  var state=document.getElementById('campaignState');
   var mapBtn=document.getElementById('mapEntryBtn');
   var lookupBtn=document.getElementById('entryLookupBtn');
   var panel=document.getElementById('entryLookupPanel');
@@ -157,8 +153,6 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
     campaignId=c.id||'';
     var s=kstParts(c.starts_at),e=kstParts(c.ends_at);
     if(s&&e&&period)period.innerHTML=dayText(s)+' ~ '+dayText(e)+'<br>'+timeText(e)+'까지';
-    if(state){state.className='campaign-state show';state.textContent='현재 이벤트 응모 설정이 연결되어 있어요.'}
-    if(mapBtn&&campaignId)mapBtn.href='https://funypin.kr/shops.html?event=cardroom&campaign='+encodeURIComponent(campaignId);
   }
   async function resolveCampaign(){
     var forced=new URLSearchParams(location.search).get('campaign');
@@ -173,11 +167,65 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
       if(!r.ok)throw new Error('campaign');
       var rows=await r.json();
       if(rows.length){renderCampaign(rows[0]);return}
-      if(state){state.className='campaign-state show';state.textContent='이벤트 응모 캠페인 연결 준비 중입니다.'}
     }catch(e){
-      if(state){state.className='campaign-state show';state.textContent='이벤트 응모 설정을 불러오지 못했습니다.'}
     }
   }
+
+  function webMapUrl(){
+    var u='https://funypin.kr/shops.html?event=cardroom';
+    if(campaignId)u+='&campaign='+encodeURIComponent(campaignId);
+    return u;
+  }
+
+  function openCaptureEntry(){
+    var ua=navigator.userAgent||'';
+    var isIOS=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    var isAndroid=/Android/i.test(ua);
+
+    if(isAndroid){
+      location.href=webMapUrl();
+      return;
+    }
+
+    if(isIOS){
+      var appUrl='funypin://map?country=KR&from=cardroom-event';
+      if(campaignId)appUrl+='&campaign='+encodeURIComponent(campaignId);
+      var storeUrl='https://apps.apple.com/us/app/funy-pin/id6817652126';
+      var fallbackTimer=null;
+      var launched=false;
+
+      function cleanup(){
+        if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null}
+        document.removeEventListener('visibilitychange',onVisibility);
+        window.removeEventListener('pagehide',onPageHide);
+        window.removeEventListener('blur',onBlur);
+      }
+      function markLaunched(){
+        if(launched)return;
+        launched=true;
+        cleanup();
+      }
+      function onVisibility(){if(document.hidden)markLaunched()}
+      function onPageHide(){markLaunched()}
+      function onBlur(){markLaunched()}
+
+      document.addEventListener('visibilitychange',onVisibility);
+      window.addEventListener('pagehide',onPageHide,{once:true});
+      window.addEventListener('blur',onBlur,{once:true});
+
+      fallbackTimer=setTimeout(function(){
+        cleanup();
+        if(!launched&&!document.hidden)location.href=storeUrl;
+      },1300);
+
+      location.href=appUrl;
+      return;
+    }
+
+    location.href=webMapUrl();
+  }
+
+  mapBtn.onclick=openCaptureEntry;
 
   lookupBtn.onclick=function(){panel.hidden=!panel.hidden;if(!panel.hidden)input.focus()};
 

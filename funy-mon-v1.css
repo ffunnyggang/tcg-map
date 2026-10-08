@@ -740,3 +740,30 @@ body.funy-mon-keyboard-open .funy-mon-entry-message{
   0%,100%{transform:translateY(3px) rotate(-8deg) scale(.82);opacity:.35}
   50%{transform:translateY(-6px) rotate(10deg) scale(1.16);opacity:1}
 }
+
+
+/* FUNY MON No.11~15 unified scale v2 */
+.funy-mon-marker.mon-11 img,
+.funy-mon-marker.mon-12 img,
+.funy-mon-marker.mon-13 img,
+.funy-mon-marker.mon-14 img,
+.funy-mon-marker.mon-15 img{
+  transform:scale(1.18)!important;
+  transform-origin:50% 82%!important;
+}
+.funy-mon-sheet.mon-longnyang .funy-mon-result-sprite,
+.funy-mon-sheet.mon-shuffleling .funy-mon-result-sprite,
+.funy-mon-sheet.mon-neonkong .funy-mon-result-sprite,
+.funy-mon-sheet.mon-paoring .funy-mon-result-sprite,
+.funy-mon-sheet.mon-jokerbi .funy-mon-result-sprite{
+  transform:scale(1.18)!important;
+}
+
+/* Preserve Admin reward description line breaks */
+.funy-mon-reward-result .funy-mon-post-guide,
+.funy-mon-reward-result:has(.funy-mon-entry-apply) .funy-mon-post-guide{
+  white-space:pre-wrap!important;
+}
+.funy-mon-lose-copy{
+  white-space:pre-wrap!important;
+}

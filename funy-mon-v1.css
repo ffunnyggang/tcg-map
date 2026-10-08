@@ -659,3 +659,10 @@ body.funy-mon-keyboard-open .funy-mon-entry-message{
 #funyMonEntryInstagram::placeholder{
   font-size:14px!important;
 }
+
+/* FUNY MON No.11~15 type chips */
+.funy-mon-meta .type-longnyang{background:#eeeef1;border-color:#d9d9df;color:#5e5c66}
+.funy-mon-meta .type-shuffleling{background:#eee9f5;border-color:#d8cae6;color:#5b3a73}
+.funy-mon-meta .type-neonkong{background:#fff8df;border-color:#f2df9d;color:#a77b12}
+.funy-mon-meta .type-paoring{background:#edf8e9;border-color:#cde8c3;color:#448d48}
+.funy-mon-meta .type-jokerbi{background:#f2eaff;border-color:#d9c8f5;color:#6b4ba6}

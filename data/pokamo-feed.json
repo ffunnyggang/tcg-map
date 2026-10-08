@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-08T03:31:50.240601+00:00",
+  "updatedAt": "2026-10-08T04:31:48.568349+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "아들이 너무좋아할때",
+      "author": "푸른늑대",
+      "publishedAt": "2026-10-08T04:17:10.510033Z",
+      "excerpt": "아들이 너무좋아할때",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아들이-너무좋아할때-d9XJKLoP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "어비스아이깡 ✨️",
@@ -11,10 +24,10 @@
       "excerpt": "ㅎㅎ 다른사람들 바인더에서 볼땐 감흥이없었는데 직뽑하니까 글라디오한테 빠질듯 😆",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/bf463e36-76c7-4a13-8789-3dcd763bc86e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/어비스아이깡-✨-jvxBx21P",
-      "views": 13,
+      "views": 15,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.13
+      "popularityScore": 0.15
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "스톰 에메랄다에서 1박스 까서 나왔는데 시세를 잘 몰라서 여쭤봅니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/a44ab11e-0d88-40c9-b71a-9c0a39676bfa.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-얼마정도-해요-dg3JVwwd",
-      "views": 31,
-      "likes": 0,
+      "views": 32,
+      "likes": 1,
       "comments": 0,
-      "popularityScore": 0.31
+      "popularityScore": 3.32
     },
     {
       "category": "자유 게시판",
@@ -115,10 +128,10 @@
       "excerpt": "아직 다른 카드는 한번에 할 생각이라 최근 뽑은것중에 요것만 익스프레스로 맡겨서 금액 40만원인데 10 나오면 33만원 차액 더 내야한다는데 맞나욤?? 10 나올 가능성 크다던데🥹 원래 이케 비싼가요..",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791343272320212100c2fab2b38ba7422d79c52276c05d0fbfe716c9509144e3b89c712b6ec60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/처음으로-psa-맡겼어요-A34EbODP",
-      "views": 41,
+      "views": 42,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 12.41
+      "popularityScore": 12.42
     },
     {
       "category": "자유 게시판",
@@ -128,10 +141,10 @@
       "excerpt": "포켓몬 카드 종류 상관 없이 팩당 350원 드립니다! 인페르노, 화플, 블볼은 600원 드리고요 하클팩은 문의 주세요! 많이는 필요 없고 40팩정도 구하고 있어요! 이 카페는 개인채팅이 안되니 이방으로 들어오셔서 갠챗 주시거나 댓글 주세요. 커뮤니티에 경기 포켓몬카드 소통,거래라고 치면",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/서치팩-매입-jb0oRRkP",
-      "views": 25,
+      "views": 26,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.25
+      "popularityScore": 0.26
     },
     {
       "category": "자유 게시판",
@@ -145,19 +158,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.15
-    },
-    {
-      "category": "자유 게시판",
-      "title": "이브이 리자몽 레쿠쟈 피카츄 위주로 모읍니다",
-      "author": "김양동",
-      "publishedAt": "2026-10-06T16:53:13.188604Z",
-      "excerpt": "이브이 리자몽 레쿠쟈 피카츄 위주로 모읍니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이브이-리자몽-레쿠쟈-피카츄-위주로-모읍니다-A4QeJyGP",
-      "views": 4,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.04
     },
     {
       "category": "카드 자랑",
@@ -726,7 +726,7 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 543,
+      "views": 544,
       "likes": 1,
       "comments": 2,
       "popularityScore": 12.0

@@ -145,7 +145,7 @@
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
     el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><p class="funy-mon-event-caption" id="funyMonEventCaption" hidden></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
-    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{},entryPending=(r.reward_type==='entry'&&r.entry_apply_enabled&&r.claim_code&&pendingEntries().some(x=>x.claim_code===r.claim_code));if(entryPending){resultNeedsSave=false;closeModal();return}if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
+    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{};if(r.reward_type==='entry'){resultNeedsSave=false;closeModal();return}if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
   }
   function closeModal(){
     const el=document.getElementById('funyMonModal');
@@ -221,19 +221,20 @@
       if(!saved.ok)throw new Error('응모 저장 실패');
       if(!result?.ok){
         const code=result?.error||'';
-        if(code==='daily_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='오늘은 이미 '+Number(result.limit||1)+'회 응모했어요. 내일 다시 참여해주세요.';return}
-        if(code==='campaign_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='이 이벤트는 최대 '+Number(result.limit||1)+'회까지 응모할 수 있어요.';return}
-        if(code==='already_submitted'){removePendingEntry(claim);if(msg)msg.textContent='이미 사용한 응모권입니다.';return}
+        if(code==='daily_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='오늘 응모 가능 횟수를 모두 사용했어요. 내일 다시 참여해주세요.';return}
+        if(code==='campaign_entry_limit'){removePendingEntry(claim);if(msg)msg.textContent='이벤트 기간 중 응모 가능 횟수를 모두 사용했어요.';return}
+        if(code==='already_submitted'){removePendingEntry(claim);if(msg)msg.textContent='이미 사용한 응모권이에요.';return}
         if(code==='campaign_not_started'){if(msg)msg.textContent='아직 이벤트 응모 기간이 시작되지 않았어요.';return}
-        if(code==='campaign_ended'||code==='campaign_unavailable'){removePendingEntry(claim);if(msg)msg.textContent='이벤트 응모 기간이 종료되었거나 현재 참여할 수 없어요.';return}
+        if(code==='campaign_ended'||code==='campaign_unavailable'){removePendingEntry(claim);if(msg)msg.textContent='이벤트 응모 기간이 종료되었거나 현재 응모할 수 없어요.';return}
         if(code==='invalid_claim_code'||code==='missing_claim_code'){removePendingEntry(claim);if(msg)msg.textContent='응모권 정보를 확인하지 못했어요. 퍼니몬을 다시 포획해주세요.';return}
         if(msg)msg.textContent='응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.';return
       }
       input.disabled=true;btn.textContent='응모 완료';
       const total=Number(result.entry_count_total||1),today=Number(result.entry_count_today||1),mode=String(result.limit_mode||'');
-      let done='이벤트 응모가 완료됐어요! · 누적 '+total+'회';
+      let done='응모 완료! · 누적 '+total+'회';
       if(mode==='daily'&&result.limit)done='응모 완료! · 오늘 '+today+'/'+Number(result.limit)+'회 · 누적 '+total+'회';
       else if(mode==='total'&&result.limit)done='응모 완료! · 누적 '+total+'/'+Number(result.limit)+'회';
+      else if(mode==='unlimited')done='응모 완료! · 누적 '+total+'회';
       if(msg){msg.classList.add('done');msg.textContent=done}
       resultNeedsSave=false;removePendingEntry(claim)
     }catch(e){
@@ -247,7 +248,8 @@
     const type=r.reward_type||(r.is_win===true?'win':'lose'),win=type==='win',entry=type==='entry',lose=type==='lose';
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const action=r.action_url?'<button class="funy-mon-reward-detail" type="button" data-reward-url="'+esc(r.action_url)+'">'+esc(r.url_action_label||r.action_label||'자세히보기')+'</button>':'';
-    const rule=entry&&r.entry_apply_enabled?('<div class="funy-mon-entry-rule">'+esc(r.entry_campaign_title||'이벤트 응모')+' · '+esc(r.entry_limit_mode==='unlimited'?'응모 제한 없음':r.entry_limit_mode==='daily'?'1일 '+Number(r.entry_limit_count||1)+'회':'이벤트 기간 중 '+Number(r.entry_limit_count||1)+'회')+'</div>'):'';
+    const limitText=r.entry_limit_mode==='unlimited'?'이벤트 기간 중 응모 회수 제한 없음':r.entry_limit_mode==='daily'?'이벤트 기간 중 1일 '+Number(r.entry_limit_count||1)+'회 응모 가능':'이벤트 기간 중 '+Number(r.entry_limit_count||1)+'회 응모 가능';
+    const rule=entry&&r.entry_apply_enabled?('<div class="funy-mon-entry-rule">'+esc(limitText)+'</div>'):'';
     return '<div class="funy-mon-reward-retro '+(lose?'lose':'win')+'">'+esc(r.result_label||(entry?'응모권':win?'당첨!':'꽝'))+'</div>'+(!lose?'<strong class="funy-mon-reward-title">'+esc(r.title||(entry?'이벤트 응모하기':'당첨 상품'))+'</strong>':'')+rule+(!lose&&r.description?'<div class="funy-mon-post-guide">'+esc(r.description)+'</div>':'')+(!lose&&r.image_url?'<button class="funy-mon-reward-detail" type="button" data-reward-image="'+esc(r.image_url)+'">'+esc(r.image_action_label||r.action_label||'이미지 보기')+'</button>':'')+(!lose?action:'')+(lose?'<p class="funy-mon-lose-copy">'+esc(r.description||'아쉬워요! 다음 기회에 다시 도전해보세요!')+'</p>':'')+(entry&&r.entry_apply_enabled&&r.entry_campaign_id?'<div class="funy-mon-entry-apply"><input id="funyMonEntryInstagram" type="text" maxlength="30" autocomplete="off" placeholder="@제외 Instagram 아이디 입력"><button id="funyMonEntrySubmit" type="button">응모</button><div id="funyMonEntryMessage" class="funy-mon-entry-message"></div></div>':'')+(!entry&&!lose&&r.claim_code?'<div class="funy-mon-claim-code"><span>당첨 코드</span><b>'+esc(r.claim_code)+'</b></div>':'');
   }
   function revealReward(data,def){

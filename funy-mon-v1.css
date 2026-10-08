@@ -608,3 +608,54 @@ body.funy-mon-keyboard-open #funyMonEntryInstagram::placeholder{
     width:78px!important;
   }
 }
+
+
+/* FUNY MON keyboard sheet motion 20261008 v6 */
+.funy-mon-keyboard-dim{display:none!important}
+body.funy-mon-keyboard-open .funy-mon-entry-apply{
+  position:static!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  z-index:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  transform:none!important;
+  margin-top:9px!important;
+  padding-top:9px!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  padding-bottom:0!important;
+  border:0!important;
+  border-top:1px solid rgba(128,98,216,.16)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  grid-template-columns:minmax(0,1fr) 88px!important;
+}
+
+body.funy-mon-keyboard-open .funy-mon-sheet{
+  transform:translateY(calc(-1 * var(--funy-keyboard-shift,56px))) scale(1.035)!important;
+  transform-origin:50% 100%!important;
+  transition:transform .22s cubic-bezier(.22,.8,.24,1)!important;
+  max-height:calc(100dvh - 8px)!important;
+  overflow-y:auto!important;
+}
+
+body:not(.funy-mon-keyboard-open) .funy-mon-sheet{
+  transition:transform .22s cubic-bezier(.22,.8,.24,1)!important;
+}
+
+body.funy-mon-keyboard-open .funy-mon-entry-message{
+  display:block!important;
+  min-height:16px!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+#funyMonEntryInstagram{
+  font-size:16px!important;
+}
+#funyMonEntryInstagram::placeholder{
+  font-size:14px!important;
+}

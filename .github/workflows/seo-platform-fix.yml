@@ -1,92 +1,62 @@
-name: FUNY PIN SEO and platform fixes
+﻿name: Verify FUNY PIN SVG brand icon
 
 on:
   push:
     paths:
+      - 'favicon.svg'
+      - 'apple-touch-icon.png'
+      - 'favicon.ico'
+      - '*.html'
       - '.github/workflows/seo-platform-fix.yml'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  apply:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply SEO, favicon and Naver Maps fixes
+      - name: Verify legacy raster icon removal and SVG parity
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
+          import subprocess
 
-          site='https://www.funypin.kr'
-          og=f'{site}/assets/og/funy-pin-og.png'
-          pages={
-            'index.html': {
-              'title':'FUNY PIN | TCG 카드샵 지도',
-              'desc':'포켓몬카드부터 다양한 TCG 카드샵까지. FUNY PIN에서 가까운 카드샵을 찾고 방문 정보와 리뷰를 확인해보세요.',
-              'url':f'{site}/'
-            },
-            'shops.html': {
-              'title':'TCG 카드샵 지도 | FUNY PIN',
-              'desc':'한국과 일본의 TCG 카드샵을 지도에서 찾아보세요. 지역 검색과 매장 상세정보를 FUNY PIN에서 한눈에 확인할 수 있습니다.',
-              'url':f'{site}/shops.html'
-            },
-            'reviews.html': {
-              'title':'카드샵 리뷰·정보 | FUNY PIN',
-              'desc':'깽퐌커플이 직접 경험한 TCG 카드샵 방문기와 카드샵 정보를 FUNY PIN에서 확인해보세요.',
-              'url':f'{site}/reviews.html'
-            }
-          }
+          legacy_files = [Path('apple-touch-icon.png'), Path('favicon.ico')]
+          existing = [str(p) for p in legacy_files if p.exists()]
+          if existing:
+              raise SystemExit('Legacy raster icon files still exist: ' + ', '.join(existing))
 
-          for fn,m in pages.items():
-            p=Path(fn); s=p.read_text(encoding='utf-8')
-            title=re.search(r'<title>.*?</title>',s,re.S)
-            if not title: raise SystemExit(f'No title in {fn}')
-            extra=f'''<title>{m['title']}</title><meta name="description" content="{m['desc']}"><link rel="canonical" href="{m['url']}"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="{m['title']}"><meta property="og:description" content="{m['desc']}"><meta property="og:url" content="{m['url']}"><meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{m['title']}"><meta name="twitter:description" content="{m['desc']}"><meta name="twitter:image" content="{og}">'''
-            if fn=='index.html':
-              extra += f'''<script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebSite","name":"FUNY PIN","alternateName":"FUNYPIN","url":"{site}/","description":"{m['desc']}"}}</script>'''
-            s=s[:title.start()]+extra+s[title.end():]
-            p.write_text(s,encoding='utf-8')
+          workflow = '.github/workflows/seo-platform-fix.yml'
+          text_suffixes = {'.html', '.htm', '.js', '.ts', '.tsx', '.css', '.json', '.xml', '.md', '.yml', '.yaml'}
+          refs = []
+          tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode('utf-8').split('\0')
+          for name in tracked:
+              if not name or name == workflow or '/node_modules/' in f'/{name}/':
+                  continue
+              path = Path(name)
+              if path.suffix.lower() not in text_suffixes:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if 'apple-touch-icon.png' in text or 'favicon.ico' in text:
+                  refs.append(name)
+          if refs:
+              raise SystemExit('Legacy raster icon references remain: ' + ', '.join(refs))
 
-          # NAVER Maps: load core first, then geocoder submodule sequentially.
-          p=Path('shops.html'); s=p.read_text(encoding='utf-8')
-          old='<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9&submodules=geocoder"></script>'
-          new='<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9"></script><script src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script>'
-          if old not in s: raise SystemExit('Expected NAVER Maps loader not found')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
-
-          Path('robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: https://www.funypin.kr/sitemap.xml\n',encoding='utf-8')
-          Path('sitemap.xml').write_text('''<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://www.funypin.kr/</loc></url>\n  <url><loc>https://www.funypin.kr/shops.html</loc></url>\n  <url><loc>https://www.funypin.kr/reviews.html</loc></url>\n</urlset>\n''',encoding='utf-8')
-          Path('favicon.svg').write_text('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40"><defs><linearGradient id="funyPinGrad" x1="8" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse"><stop stop-color="#b093f4"/><stop offset=".48" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient><radialGradient id="funyPinButton" cx="35%" cy="25%" r="75%"><stop stop-color="#fff"/><stop offset="1" stop-color="#eee9fb"/></radialGradient></defs><ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="rgba(117,87,200,.10)"/><ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="rgba(117,87,200,.16)"/><path fill="url(#funyPinGrad)" d="M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z"/><path d="M7.75 13.05h6.38a4.2 4.2 0 0 1 7.74 0h6.38v1.15h-6.08a4.2 4.2 0 0 1-8.34 0H7.75Z" fill="#fff"/><circle cx="18" cy="13.65" r="3.15" fill="url(#funyPinButton)"/></svg>''',encoding='utf-8')
+          svg = Path('favicon.svg').read_text(encoding='utf-8')
+          home = Path('index.html').read_text(encoding='utf-8')
+          marker_path = 'M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z'
+          required_svg = ['viewBox="0 0 36 40"', marker_path, 'ellipse cx="18" cy="36.2"', 'funyPinButton']
+          missing = [item for item in required_svg if item not in svg]
+          if missing:
+              raise SystemExit('favicon.svg does not match the HOME header SVG: ' + ', '.join(missing))
+          if marker_path not in home or '/favicon.svg' not in home:
+              raise SystemExit('HOME header SVG or SVG favicon link is missing')
+          print('FUNY PIN SVG brand icon verification passed')
           PY
-          python -m pip install --quiet pillow
-          python - <<'PY'
-          from PIL import Image, ImageDraw, ImageFont
-          from pathlib import Path
-          Path('assets/og').mkdir(parents=True,exist_ok=True)
-          # OG 1200x630
-          og=Image.new('RGB',(1200,630),(247,244,255)); od=ImageDraw.Draw(og)
-          for y in range(630):
-            t=y/629; c=tuple(int(a*(1-t)+b*t) for a,b in zip((251,250,255),(235,226,255)))
-            od.line((0,y,1200,y),fill=c)
-          od.ellipse((110,105,350,345),fill=(128,98,216)); od.polygon([(145,285),(315,285),(230,470)],fill=(128,98,216)); od.rectangle((114,220,346,240),fill='white'); od.ellipse((198,190,262,254),fill=(247,244,255))
-          try:
-            f1=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',72)
-            f2=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',31)
-            f3=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24)
-          except: f1=f2=f3=None
-          od.text((430,190),'FUNY PIN',font=f1,fill=(31,27,42))
-          od.text((434,290),'TCG CARD SHOP MAP',font=f2,fill=(104,83,158))
-          od.text((435,355),'COLLECT  ·  TRADE  ·  BE HAPPY',font=f3,fill=(118,112,128))
-          od.text((435,420),'www.funypin.kr',font=f3,fill=(128,98,216))
-          og.save('assets/og/funy-pin-og.png',quality=92)
-          PY
-      - name: Commit generated changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html shops.html reviews.html robots.txt sitemap.xml favicon.svg assets/og/funy-pin-og.png
-          git commit -m "Improve SEO social sharing favicon and Naver geocoder loading"
-          git push

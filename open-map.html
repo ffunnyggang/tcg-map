@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FUNY PIN TCG MAP 열기</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="robots" content="noindex,follow">
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#f7f5fb;color:#211b29;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Pretendard,sans-serif}
+.wrap{min-height:100dvh;display:grid;place-items:center;padding:24px}
+.card{width:min(100%,380px);padding:28px 22px;border:1px solid #ebe5f5;border-radius:22px;background:#fff;text-align:center;box-shadow:0 16px 42px rgba(62,43,91,.08)}
+.mark{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#8c73e8,#6b4bc8);color:#fff;font-size:30px;font-weight:900;box-shadow:0 8px 20px rgba(107,75,200,.24)}
+h1{margin:0;font-size:21px;letter-spacing:-.04em}p{margin:10px 0 0;color:#766e7e;font-size:13px;line-height:1.6}
+.actions{display:grid;gap:9px;margin-top:20px}.btn{height:50px;border:0;border-radius:13px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:13px;font-weight:850}
+.primary{background:#7e60dc;color:#fff}.secondary{border:1px solid #ded4f2;background:#fff;color:#6749bd}.muted{background:#f4f1f7;color:#665f6c}
+.note{margin-top:14px;color:#9a939f;font-size:10px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <div class="mark">⌖</div>
+    <h1>FUNY PIN TCG MAP으로 이동 중이에요</h1>
+    <p id="status">사용 중인 기기에 맞는 화면을 열고 있어요.</p>
+    <div class="actions">
+      <button class="btn primary" id="openAppBtn" type="button">FUNY PIN 앱 열기</button>
+      <a class="btn secondary" id="webMapBtn" href="https://funypin.kr/shops.html">Web TCG MAP 열기</a>
+      <a class="btn muted" id="storeBtn" href="https://apps.apple.com/us/app/funy-pin/id6817652126">App Store에서 설치하기</a>
+    </div>
+    <div class="note">iPhone에서는 FUNY PIN이 설치되어 있으면 앱이 열리고, 설치되어 있지 않으면 App Store로 이동합니다.</div>
+  </main>
+</div>
+<script>
+(function(){
+  var APP_STORE='https://apps.apple.com/us/app/funy-pin/id6817652126';
+  var qs=new URLSearchParams(location.search);
+  var event=qs.get('event')||'';
+  var campaign=qs.get('campaign')||'';
+  var from=qs.get('from')||'qr';
+
+  function webUrl(){
+    var u=new URL('https://funypin.kr/shops.html');
+    u.searchParams.set('country','KR');
+    u.searchParams.set('from',from);
+    if(event)u.searchParams.set('event',event);
+    if(campaign)u.searchParams.set('campaign',campaign);
+    return u.toString();
+  }
+  function appUrl(){
+    var q=new URLSearchParams();
+    q.set('country','KR');
+    q.set('from',from);
+    if(event)q.set('event',event);
+    if(campaign)q.set('campaign',campaign);
+    return 'funypin://map?'+q.toString();
+  }
+
+  var ua=navigator.userAgent||'';
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAndroid=/Android/i.test(ua);
+  var status=document.getElementById('status');
+  var openBtn=document.getElementById('openAppBtn');
+  var webBtn=document.getElementById('webMapBtn');
+  var storeBtn=document.getElementById('storeBtn');
+  webBtn.href=webUrl();
+  storeBtn.href=APP_STORE;
+
+  function openIOSApp(){
+    var launched=false;
+    var timer;
+    function cleanup(){
+      if(timer)clearTimeout(timer);
+      document.removeEventListener('visibilitychange',onVisibility);
+      window.removeEventListener('pagehide',onGone);
+      window.removeEventListener('blur',onGone);
+    }
+    function onGone(){launched=true;cleanup()}
+    function onVisibility(){if(document.hidden)onGone()}
+    document.addEventListener('visibilitychange',onVisibility);
+    window.addEventListener('pagehide',onGone,{once:true});
+    window.addEventListener('blur',onGone,{once:true});
+    timer=setTimeout(function(){
+      cleanup();
+      if(!launched&&!document.hidden)location.replace(APP_STORE);
+    },1300);
+    location.href=appUrl();
+  }
+
+  openBtn.onclick=function(){
+    if(isIOS){openIOSApp();return}
+    if(isAndroid){location.href=webUrl();return}
+    location.href=webUrl();
+  };
+
+  if(isAndroid){
+    status.textContent='Android에서는 Web TCG MAP으로 이동합니다.';
+    openBtn.textContent='Web TCG MAP 열기';
+    storeBtn.style.display='none';
+    setTimeout(function(){location.replace(webUrl())},250);
+  }else if(isIOS){
+    status.textContent='FUNY PIN 앱을 확인하고 있어요.';
+    setTimeout(openIOSApp,250);
+  }else{
+    status.textContent='Web TCG MAP으로 이동합니다.';
+    openBtn.textContent='Web TCG MAP 열기';
+    storeBtn.style.display='none';
+    setTimeout(function(){location.replace(webUrl())},250);
+  }
+})();
+</script>
+</body>
+</html>

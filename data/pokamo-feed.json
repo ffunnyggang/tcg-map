@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-08T11:31:52.406677+00:00",
+  "updatedAt": "2026-10-08T12:39:09.994217+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "망나뇽 뽑았습니다",
+      "author": "깜찍한카드",
+      "publishedAt": "2026-10-08T12:38:03.094949Z",
+      "excerpt": "망나뇽 뽑았습니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/망나뇽-뽑았습니다-ALEKNymP",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
     {
       "category": "자유 게시판",
       "title": "신규 카드쇼핑몰 한량TCG입니다.",
@@ -24,10 +37,10 @@
       "excerpt": "피카츄 30종 모으기 위해 더 까야겠구만요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/b2d19f86-1591-4917-ac50-61e7a6dc529d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-카드깡-결과물-d9XJYGDP",
-      "views": 18,
+      "views": 20,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.18
+      "popularityScore": 3.2
     },
     {
       "category": "자유 게시판",
@@ -147,19 +160,6 @@
       "popularityScore": 3.43
     },
     {
-      "category": "자유 게시판",
-      "title": "처음으로 psa 맡겼어요!!",
-      "author": "당근을흔들어주세요",
-      "publishedAt": "2026-10-07T03:23:11.360791Z",
-      "excerpt": "아직 다른 카드는 한번에 할 생각이라 최근 뽑은것중에 요것만 익스프레스로 맡겨서 금액 40만원인데 10 나오면 33만원 차액 더 내야한다는데 맞나욤?? 10 나올 가능성 크다던데🥹 원래 이케 비싼가요..",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791343272320212100c2fab2b38ba7422d79c52276c05d0fbfe716c9509144e3b89c712b6ec60.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/처음으로-psa-맡겼어요-A34EbODP",
-      "views": 48,
-      "likes": 4,
-      "comments": 5,
-      "popularityScore": 22.48
-    },
-    {
       "category": "카드 자랑",
       "title": "이카드는 시세좀 알수있을까요? 알고싶습니다",
       "author": "세류동에어컨as",
@@ -180,10 +180,10 @@
       "excerpt": "패러다임 트리거 18만 메타몽 프로모 brg10 26만 뮤츠 Vstar sar psa10 26만",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ae0141a5-c227-4863-a77d-bcb8a666286d.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-박스-등급카드-판매-AO6gORgj",
-      "views": 23,
+      "views": 24,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.23
+      "popularityScore": 0.24
     },
     {
       "category": "자유 게시판",
@@ -206,10 +206,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 19,
+      "views": 20,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.19
+      "popularityScore": 6.2
     },
     {
       "category": "카드거래",
@@ -609,10 +609,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 139,
+      "views": 140,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.39
+      "popularityScore": 9.4
     },
     {
       "category": "정보 공유",

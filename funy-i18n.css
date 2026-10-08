@@ -36,3 +36,6 @@ html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;
 
 /* QA floating action polish */
 .live-pin-entry{background:#17151B!important;box-shadow:0 8px 24px rgba(17,16,21,.24)!important}
+
+/* Temporarily hide device-local pending FUNY MON entry action until account-based sync is ready */
+#funyMonPendingEntry,.funy-mon-pending-entry{display:none!important}

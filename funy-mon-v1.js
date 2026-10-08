@@ -354,7 +354,7 @@
     cover.onpointerup=cover.onpointercancel=()=>{if(!revealed&&active)reset()};
   }
   function funyMonFxMarkup(def){
-    const shapes={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']};
+    const shapes={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦'],longnyang:['✦','♡','✧','♡','✦'],shuffleling:['♠','✦','◆','✦','♠'],neonkong:['ϟ','✦','ϟ','✧','ϟ'],paoring:['❧','✦','❖','✦','❧'],jokerbi:['✦','◆','★','◇','✦']};
     return (shapes[def.id]||shapes.ponanyang).map(x=>'<i>'+x+'</i>').join('');
   }
   function openResult(data,def){

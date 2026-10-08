@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://funypin.kr/</loc></url>
-  <url><loc>https://funypin.kr/shops.html</loc></url>
-  <url><loc>https://funypin.kr/reviews.html</loc></url>
-  <url><loc>https://funypin.kr/talk.html</loc></url>
+  <url><loc>https://funypin.kr/</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/shops.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/reviews.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/talk.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/card-centering.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/faq.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/notice.html</loc><lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://funypin.kr/partner.html</loc><lastmod>2026-10-08</lastmod></url>
 </urlset>

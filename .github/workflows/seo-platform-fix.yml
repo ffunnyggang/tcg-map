@@ -1,12 +1,16 @@
-﻿name: Verify FUNY PIN SVG brand icon
+name: Verify FUNY PIN SEO and SVG brand icon
 
 on:
   push:
+    branches:
+      - main
+      - app-mvp
     paths:
-      - 'favicon.svg'
-      - 'apple-touch-icon.png'
-      - 'favicon.ico'
       - '*.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - 'favicon.svg'
+      - 'assets/og/funy-pin-og.png'
       - '.github/workflows/seo-platform-fix.yml'
   workflow_dispatch:
 
@@ -18,45 +22,82 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify legacy raster icon removal and SVG parity
+      - name: Validate SEO metadata and brand assets
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import subprocess
-
-          legacy_files = [Path('apple-touch-icon.png'), Path('favicon.ico')]
-          existing = [str(p) for p in legacy_files if p.exists()]
-          if existing:
-              raise SystemExit('Legacy raster icon files still exist: ' + ', '.join(existing))
-
-          workflow = '.github/workflows/seo-platform-fix.yml'
-          text_suffixes = {'.html', '.htm', '.js', '.ts', '.tsx', '.css', '.json', '.xml', '.md', '.yml', '.yaml'}
-          refs = []
-          tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode('utf-8').split('\0')
-          for name in tracked:
-              if not name or name == workflow or '/node_modules/' in f'/{name}/':
-                  continue
-              path = Path(name)
-              if path.suffix.lower() not in text_suffixes:
-                  continue
-              try:
-                  text = path.read_text(encoding='utf-8')
-              except UnicodeDecodeError:
-                  continue
-              if 'apple-touch-icon.png' in text or 'favicon.ico' in text:
-                  refs.append(name)
-          if refs:
-              raise SystemExit('Legacy raster icon references remain: ' + ', '.join(refs))
-
-          svg = Path('favicon.svg').read_text(encoding='utf-8')
-          home = Path('index.html').read_text(encoding='utf-8')
-          marker_path = 'M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z'
-          required_svg = ['viewBox="0 0 36 40"', marker_path, 'ellipse cx="18" cy="36.2"', 'funyPinButton']
-          missing = [item for item in required_svg if item not in svg]
-          if missing:
-              raise SystemExit('favicon.svg does not match the HOME header SVG: ' + ', '.join(missing))
-          if marker_path not in home or '/favicon.svg' not in home:
-              raise SystemExit('HOME header SVG or SVG favicon link is missing')
-          print('FUNY PIN SVG brand icon verification passed')
-          PY
+          node <<'NODE'
+          const fs = require('fs');
+          const SITE = 'https://funypin.kr';
+          const PUBLIC = {
+            'index.html': `${SITE}/`,
+            'shops.html': `${SITE}/shops.html`,
+            'reviews.html': `${SITE}/reviews.html`,
+            'talk.html': `${SITE}/talk.html`,
+            'card-centering.html': `${SITE}/card-centering.html`,
+            'faq.html': `${SITE}/faq.html`,
+            'notice.html': `${SITE}/notice.html`,
+            'partner.html': `${SITE}/partner.html`,
+          };
+          const NOINDEX = new Set([
+            'account-delete.html','admin.html','cardshow-draw.html','cardvault-draw.html','chat-test.html',
+            'cms-builder-preview.html','cms-home-test.html','community-guidelines.html','event-cardvault.html',
+            'event-koreatcgfair-draw.html','event-koreatcgfair.html','event-pin-test.html','feedback.html',
+            'google-place-bridge.html','home-iframe-position.html','iframe-position.html','info-creator-position.html',
+            'inpock-card-test.html','inpock-coordinate.html','inpock-embed-layout-test.html','inpock-test.html',
+            'inpock-visit-test.html','live-pin-admin-test.html','live-pin-test.html','price-test.html','privacy.html',
+            'promo.html','reviews-iframe-position.html','shop-request.html','shops-qa.html','support.html','terms.html'
+          ]);
+          const parseAttrs = (tag) => Object.fromEntries(
+            [...tag.matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/gs)].map((m) => [m[1].toLowerCase(), m[3]])
+          );
+          const find = (source, tag, key, value) => {
+            for (const match of source.matchAll(new RegExp(`<${tag}\\b[^>]*>`, 'gi'))) {
+              const data = parseAttrs(match[0]);
+              if (data[key] === value) return data;
+            }
+            return {};
+          };
+          for (const [file, canonical] of Object.entries(PUBLIC)) {
+            if (!fs.existsSync(file)) continue;
+            const source = fs.readFileSync(file, 'utf8');
+            const titles = [...source.matchAll(/<title>([\s\S]*?)<\/title>/gi)];
+            if (titles.length !== 1 || !titles[0][1].trim()) throw new Error(`${file}: invalid title`);
+            const description = find(source, 'meta', 'name', 'description').content || '';
+            if (description.length < 40 || description.length > 180) throw new Error(`${file}: description length ${description.length}`);
+            if ((find(source, 'link', 'rel', 'canonical').href || '') !== canonical) throw new Error(`${file}: canonical mismatch`);
+            const robots = (find(source, 'meta', 'name', 'robots').content || '').toLowerCase();
+            if (!robots.includes('index') || !robots.includes('follow') || robots.includes('noindex')) throw new Error(`${file}: robots mismatch`);
+            if ((source.match(/<h1\b/gi) || []).length < 1) throw new Error(`${file}: h1 missing`);
+            for (const [key, value] of [['property','og:title'],['property','og:description'],['property','og:url'],['name','twitter:title'],['name','twitter:description']]) {
+              if (!find(source, 'meta', key, value).content) throw new Error(`${file}: ${value} missing`);
+            }
+            if ((find(source, 'meta', 'property', 'og:url').content || '') !== canonical) throw new Error(`${file}: og:url mismatch`);
+            const scripts = [...source.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+            if (!scripts.length) throw new Error(`${file}: JSON-LD missing`);
+            scripts.forEach((script) => JSON.parse(script[1]));
+            if (/<meta\b[^>]*name=["']keywords["']/i.test(source)) throw new Error(`${file}: obsolete meta keywords`);
+          }
+          for (const file of NOINDEX) {
+            if (!fs.existsSync(file)) continue;
+            const source = fs.readFileSync(file, 'utf8');
+            const robots = (find(source, 'meta', 'name', 'robots').content || '').toLowerCase();
+            if (!robots.includes('noindex')) throw new Error(`${file}: noindex missing`);
+          }
+          for (const file of fs.readdirSync('.').filter((name) => name.endsWith('.html'))) {
+            const source = fs.readFileSync(file, 'utf8');
+            if (/<meta\b[^>]*name=["']keywords["']/i.test(source)) throw new Error(`${file}: obsolete meta keywords`);
+            if (source.includes('apple-touch-icon.png') || source.includes('favicon.ico')) throw new Error(`${file}: legacy raster icon reference`);
+          }
+          if (fs.existsSync('apple-touch-icon.png') || fs.existsSync('favicon.ico')) throw new Error('legacy raster icon file exists');
+          const favicon = fs.readFileSync('favicon.svg', 'utf8');
+          if (!favicon.includes('M18 2.8A10.5 10.5') || !favicon.includes('#8062d8')) throw new Error('favicon.svg mismatch');
+          const robotsText = fs.readFileSync('robots.txt', 'utf8');
+          if (!robotsText.includes(`Sitemap: ${SITE}/sitemap.xml`) || robotsText.includes('www.funypin.kr')) throw new Error('robots.txt mismatch');
+          const sitemapText = fs.readFileSync('sitemap.xml', 'utf8');
+          const urls = [...sitemapText.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
+          const expected = Object.entries(PUBLIC).filter(([file]) => fs.existsSync(file)).map(([, url]) => url);
+          if (JSON.stringify(urls) !== JSON.stringify(expected)) throw new Error(`sitemap mismatch: ${JSON.stringify(urls)}`);
+          const png = fs.readFileSync('assets/og/funy-pin-og.png');
+          if (png.readUInt32BE(16) !== 1200 || png.readUInt32BE(20) !== 630) throw new Error('OG image must be 1200x630');
+          console.log('FUNY PIN SEO validation passed');
+          NODE

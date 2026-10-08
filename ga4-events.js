@@ -50,3 +50,61 @@
     if(/\/reviews\.html$/.test(path)){const decorate=()=>document.querySelectorAll('a.review-schedule-card[href]').forEach(a=>{const href=a.getAttribute('href')||'';if(!href||href==='#'||href.startsWith('javascript:'))return;a.setAttribute('data-funy-link-mode','inapp');a.setAttribute('data-funy-inapp-presentation','bottom_sheet');a.removeAttribute('target')});decorate();const root=document.querySelector('.review-schedule-list')||document.body;new MutationObserver(decorate).observe(root,{childList:true,subtree:true});}
   }catch(_){}
 })();
+/* FUNY PIN analytics additive v1.1 — web-only, no app shell changes. */
+(function(){
+  if(window.__FUNY_ANALYTICS_ADDON_V11)return;
+  window.__FUNY_ANALYTICS_ADDON_V11=true;
+  const track=(name,p={})=>{try{window.FUNY_TRACK?.(name,p)}catch(_){}};
+  const plain=v=>String(v??'').replace(/\s+/g,' ').trim().slice(0,100);
+  let detailId='';
+  function reportDetail(){
+    if(!/\/shops\.html$/i.test(location.pathname))return;
+    const m=location.hash.match(/#\/shop\/([^/?#]+)/i);
+    const id=m?.[1]||'';
+    if(!id||id===detailId)return;
+    detailId=id;
+    track('shop_detail_view',{shop_id:id,source_page:'tcg_map'});
+  }
+  reportDetail();
+  window.addEventListener('hashchange',reportDetail);
+  document.addEventListener('click',e=>{
+    const t=e.target instanceof Element?e.target:null;if(!t)return;
+    if(t.closest('.home-notice-link'))track('home_notice_click',{placement:'home_notice'});
+    if(t.closest('.live-pin-entry'))track('live_pin_entry_click',{placement:location.pathname});
+    const popup=t.closest('.map-shop-popup');
+    if(popup)track('map_popup_click',{shop_id:plain(popup.getAttribute('data-id')||popup.getAttribute('data-jp-shop')||'')});
+    if(t.closest('.map-location-button,[data-action="my-location"]'))track('map_my_location_click');
+    const detail=t.closest('#detail-view a,#detail-view button');
+    if(detail){
+      const id=location.hash.match(/#\/shop\/([^/?#]+)/i)?.[1]||'';
+      const label=plain(detail.getAttribute('aria-label')||detail.textContent);
+      if(/길찾기|directions|route/i.test(label))track('shop_directions_click',{shop_id:id});
+      if(/전화|call|tel/i.test(label)||detail.getAttribute('href')?.startsWith('tel:'))track('shop_phone_click',{shop_id:id});
+    }
+  },true);
+  // Observe completed server-side catch results without modifying requests or responses.
+  const originalFetch=window.fetch;
+  if(typeof originalFetch==='function'){
+    window.fetch=function(input,init){
+      const promise=originalFetch.apply(this,arguments);
+      try{
+        const url=typeof input==='string'?input:input?.url||'';
+        if(String(url).includes('/functions/v1/funy-mon-catch')){
+          Promise.resolve(promise).then(r=>{
+            if(!r?.ok)return;
+            r.clone().json().then(data=>{
+              if(!data||data.ok!==true||data.result==='failed')return;
+              const reward=data.reward||{};
+              track('funymon_catch_success',{
+                funymon_id:plain(data.monster_id||data.funy_mon_id||data.monster?.id||''),
+                reward_type:plain(reward.reward_type||''),
+                event_id:plain(reward.event_id||'')
+              });
+            }).catch(()=>{});
+          }).catch(()=>{});
+        }
+      }catch(_){}
+      return promise;
+    };
+  }
+})();

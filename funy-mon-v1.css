@@ -546,3 +546,65 @@ body.funy-mon-entry-focus .funy-mon-sheet{
   #funyMonEntryInstagram{font-size:12px!important}
   #funyMonEntryInstagram::placeholder{font-size:11.5px!important}
 }
+
+
+/* FUNY MON keyboard entry mode 20261008 v5 */
+.funy-mon-keyboard-dim[hidden]{display:none!important}
+.funy-mon-keyboard-dim{
+  position:fixed;
+  inset:0;
+  z-index:2147483645;
+  background:rgba(26,20,35,.48);
+  backdrop-filter:blur(1.5px);
+  -webkit-backdrop-filter:blur(1.5px);
+}
+
+body.funy-mon-keyboard-open .funy-mon-entry-apply{
+  position:fixed!important;
+  left:50%!important;
+  bottom:var(--funy-keyboard-bottom,12px)!important;
+  z-index:2147483646!important;
+  width:min(calc(100vw - 28px),392px)!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  padding:12px!important;
+  border:1px solid #e1d8ee!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:0 14px 34px rgba(26,18,40,.22)!important;
+  grid-template-columns:minmax(0,1fr) 88px!important;
+  gap:8px!important;
+}
+
+body.funy-mon-keyboard-open .funy-mon-entry-message{
+  min-height:16px!important;
+  margin-top:0!important;
+}
+
+#funyMonEntryInstagram{
+  font-size:16px!important;
+  line-height:1!important;
+  letter-spacing:-.01em!important;
+  transform:none!important;
+}
+#funyMonEntryInstagram::placeholder{
+  font-size:14px!important;
+  letter-spacing:-.02em!important;
+}
+body.funy-mon-keyboard-open #funyMonEntryInstagram{
+  font-size:16px!important;
+}
+body.funy-mon-keyboard-open #funyMonEntryInstagram::placeholder{
+  font-size:14px!important;
+}
+
+@media(max-width:360px){
+  body.funy-mon-keyboard-open .funy-mon-entry-apply{
+    width:calc(100vw - 20px)!important;
+    grid-template-columns:minmax(0,1fr) 78px!important;
+    padding:10px!important;
+  }
+  body.funy-mon-keyboard-open .funy-mon-entry-apply button{
+    width:78px!important;
+  }
+}

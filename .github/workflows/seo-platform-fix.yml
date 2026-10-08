@@ -44,7 +44,7 @@ jobs:
             p=Path(fn); s=p.read_text(encoding='utf-8')
             title=re.search(r'<title>.*?</title>',s,re.S)
             if not title: raise SystemExit(f'No title in {fn}')
-            extra=f'''<title>{m['title']}</title><meta name="description" content="{m['desc']}"><link rel="canonical" href="{m['url']}"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="{m['title']}"><meta property="og:description" content="{m['desc']}"><meta property="og:url" content="{m['url']}"><meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{m['title']}"><meta name="twitter:description" content="{m['desc']}"><meta name="twitter:image" content="{og}">'''
+            extra=f'''<title>{m['title']}</title><meta name="description" content="{m['desc']}"><link rel="canonical" href="{m['url']}"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="{m['title']}"><meta property="og:description" content="{m['desc']}"><meta property="og:url" content="{m['url']}"><meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{m['title']}"><meta name="twitter:description" content="{m['desc']}"><meta name="twitter:image" content="{og}">'''
             if fn=='index.html':
               extra += f'''<script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebSite","name":"FUNY PIN","alternateName":"FUNYPIN","url":"{site}/","description":"{m['desc']}"}}</script>'''
             s=s[:title.start()]+extra+s[title.end():]
@@ -59,18 +59,13 @@ jobs:
 
           Path('robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: https://www.funypin.kr/sitemap.xml\n',encoding='utf-8')
           Path('sitemap.xml').write_text('''<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>https://www.funypin.kr/</loc></url>\n  <url><loc>https://www.funypin.kr/shops.html</loc></url>\n  <url><loc>https://www.funypin.kr/reviews.html</loc></url>\n</urlset>\n''',encoding='utf-8')
-          Path('favicon.svg').write_text('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="12" y1="8" x2="52" y2="54" gradientUnits="userSpaceOnUse"><stop stop-color="#b093f4"/><stop offset=".5" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient></defs><path fill="url(#g)" d="M32 4C17.6 4 9 14.7 9 27.1 9 43.5 32 60 32 60s23-16.5 23-32.9C55 14.7 46.4 4 32 4Z"/><path fill="#fff" d="M10 26h13.5a9 9 0 0 1 17 0H54v3H41a9 9 0 0 1-18 0H10Z"/><circle cx="32" cy="27.5" r="6.2" fill="#f6f3ff"/></svg>''',encoding='utf-8')
+          Path('favicon.svg').write_text('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40"><defs><linearGradient id="funyPinGrad" x1="8" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse"><stop stop-color="#b093f4"/><stop offset=".48" stop-color="#8062d8"/><stop offset="1" stop-color="#6749bd"/></linearGradient><radialGradient id="funyPinButton" cx="35%" cy="25%" r="75%"><stop stop-color="#fff"/><stop offset="1" stop-color="#eee9fb"/></radialGradient></defs><ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="rgba(117,87,200,.10)"/><ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="rgba(117,87,200,.16)"/><path fill="url(#funyPinGrad)" d="M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z"/><path d="M7.75 13.05h6.38a4.2 4.2 0 0 1 7.74 0h6.38v1.15h-6.08a4.2 4.2 0 0 1-8.34 0H7.75Z" fill="#fff"/><circle cx="18" cy="13.65" r="3.15" fill="url(#funyPinButton)"/></svg>''',encoding='utf-8')
           PY
           python -m pip install --quiet pillow
           python - <<'PY'
           from PIL import Image, ImageDraw, ImageFont
           from pathlib import Path
           Path('assets/og').mkdir(parents=True,exist_ok=True)
-          # favicon / touch icon
-          im=Image.new('RGBA',(512,512),(247,244,255,255)); d=ImageDraw.Draw(im)
-          d.ellipse((104,42,408,346),fill=(128,98,216,255)); d.polygon([(150,260),(362,260),(256,470)],fill=(128,98,216,255)); d.rectangle((108,188,404,214),fill='white'); d.ellipse((214,157,298,241),fill=(247,244,255,255))
-          im.resize((180,180),Image.Resampling.LANCZOS).save('apple-touch-icon.png')
-          im.save('favicon.ico',sizes=[(16,16),(32,32),(48,48),(64,64)])
           # OG 1200x630
           og=Image.new('RGB',(1200,630),(247,244,255)); od=ImageDraw.Draw(og)
           for y in range(630):
@@ -92,6 +87,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html shops.html reviews.html robots.txt sitemap.xml favicon.svg favicon.ico apple-touch-icon.png assets/og/funy-pin-og.png
+          git add index.html shops.html reviews.html robots.txt sitemap.xml favicon.svg assets/og/funy-pin-og.png
           git commit -m "Improve SEO social sharing favicon and Naver geocoder loading"
           git push

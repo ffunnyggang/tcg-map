@@ -1,8 +1,47 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-09T09:33:09.064343+00:00",
+  "updatedAt": "2026-10-09T10:33:13.038255+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "🎉 휴일인데 뭐 하지? 카드쇼 구경 어때요? 👀",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-10-09T10:25:44.442621Z",
+      "excerpt": "FUNY PIN에서 내 주변 카드샵부터 TCG 카드쇼 일정까지 한눈에! 📍 오늘의 목적지는 강남 카드스토리! 🃏 현재 미니 카드쇼가 진행 중이라고 하는데요. 다양한 볼거리와 즐길 거리가 준비되어 있으니 카드스토리 카드쇼 많•관•부! 🔥 💜 FUNY PIN iOS 앱 정식 출시! 내 취향",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎉-휴일인데-뭐-하지-카드쇼-구경-어때요-👀-PWMaEBZj",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "로켓단의 영광 케이스",
+      "author": "향이",
+      "publishedAt": "2026-10-09T10:24:32.471279Z",
+      "excerpt": "소장 가치가 있을까요? 아니면 까볼까요?",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/로켓단의-영광-케이스-P5nXqQyd",
+      "views": 2,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.02
+    },
+    {
+      "category": "자유 게시판",
+      "title": "용산 아덕페",
+      "author": "김철왕",
+      "publishedAt": "2026-10-09T10:17:17.626324Z",
+      "excerpt": "아덕페 카드 구입 했습니다. 그냥 구경만 할려고 했는데...(40...사용...) 그래도 행복하네요~",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/f0a14bcb-a144-43e4-8b88-6c8583ee5a11.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/용산-아덕페-j8reqKJP",
+      "views": 18,
+      "likes": 2,
+      "comments": 2,
+      "popularityScore": 10.18
+    },
     {
       "category": "자유 게시판",
       "title": "아직 가진 카드가 없습니다 뉴비입니다",
@@ -11,10 +50,10 @@
       "excerpt": "아직 가진 카드가 없습니다 뉴비입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/아직-가진-카드가-없습니다-PV2B5L3P",
-      "views": 14,
+      "views": 16,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.14
+      "popularityScore": 9.16
     },
     {
       "category": "자유 게시판",
@@ -24,10 +63,10 @@
       "excerpt": "이런 카드는 얼마쯤 하나요~? 아들이 궁금해하는데 여쭤 볼 곳이 없어서요ㅠㅠ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179146814025912f01a99231954de70e7ca456cbbf563e730623aeccb1b143a2cc35429f944c40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드-시세-궁금합니다-Pww425EP",
-      "views": 46,
+      "views": 48,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.46
+      "popularityScore": 6.48
     },
     {
       "category": "자유 게시판",
@@ -50,10 +89,10 @@
       "excerpt": "포켓몬 30주년 일판 스톰에메랄다 메가드림 원피스 일판 op17 16 13 eb03 등 다양한 카드 박스 라이브로 판매하고 있습니다.! 관심있는분들은 한번씩 들러주심 감사하것습니다 ㅎㅎ 혹 홍보가 문제가되면 글 바로 내리겠습니다^^",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/신규-카드쇼핑몰-한량TCG입니다-AO6qbNnj",
-      "views": 8,
+      "views": 10,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.08
+      "popularityScore": 0.1
     },
     {
       "category": "자유 게시판",
@@ -121,45 +160,6 @@
       "popularityScore": 12.52
     },
     {
-      "category": "자유 게시판",
-      "title": "카드투어",
-      "author": "김철왕",
-      "publishedAt": "2026-10-07T10:49:36.874374Z",
-      "excerpt": "혁....이게 얼마야....",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e5a5281c-7422-4363-a770-e9352f52826a.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드투어-PwwvQ9wP",
-      "views": 28,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.28
-    },
-    {
-      "category": "자유 게시판",
-      "title": "25주년 카드입니다",
-      "author": "안산짱나무",
-      "publishedAt": "2026-10-07T10:28:17.262032Z",
-      "excerpt": "25주년 카드입니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/25주년-카드입니다-A04p8m2A",
-      "views": 4,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "오늘도 출췌에에에엑!!!🤮",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-10-07T10:10:13.418996Z",
-      "excerpt": "10등급 주세요🙏🏻",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791367705363f07a0954fc33c7d670f5b978a1c437f4da26b84f312697fcd92cf6ce837f51b40.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘도-출췌에에에엑🤮-d9XmMmeP",
-      "views": 17,
-      "likes": 0,
-      "comments": 0,
-      "popularityScore": 0.17
-    },
-    {
       "category": "카드 자랑",
       "title": "이카드는 시세좀 알수있을까요? 알고싶습니다",
       "author": "세류동에어컨as",
@@ -167,10 +167,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 56,
+      "views": 58,
       "likes": 1,
       "comments": 4,
-      "popularityScore": 11.56
+      "popularityScore": 11.58
     },
     {
       "category": "카드거래",
@@ -206,10 +206,10 @@
       "excerpt": "블래키와 다크라이가 함께 있는 포켓몬카드입니다. 태그팀 GX로 강력한 공격력을 자랑해요. 소장 가치가 높은 카드이니 특별한 컬렉션을 완성해보세요.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/21f71acd-2641-42b4-9c90-89dbc8328649.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/psa10-포켓몬카드-블래키다크라이-GX-태그팀-jK2k24Qd",
-      "views": 22,
+      "views": 23,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.22
+      "popularityScore": 6.23
     },
     {
       "category": "카드거래",
@@ -726,7 +726,7 @@
       "excerpt": "스폰지밥과 원피스 한쪽은 바닷속 비키니 시티를 대표하는 캐릭터이고, 다른 한쪽은 그랜드라인을 누비는 밀짚모자 해적단인데요 ​ 전혀 어울릴 것 같지 않았던 두 세계가 만나면서 정말 상상도 못했던 콜라보가 탄생했습니다 ​ 바로 스폰지밥 × 원피스 × 맥도날드 해피밀 콜라보입니다. 🍔🏴‍☠️ ​",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/1787198103572d3ccb439a45954c1c7cff05d11b546885debc13a2f7e4b529415b875bfe035f50.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/스폰지밥-원피스-맥도날드-콜라보역대급-해피밀-굿즈-등장-Pm6O9Z7d",
-      "views": 551,
+      "views": 552,
       "likes": 1,
       "comments": 2,
       "popularityScore": 12.0

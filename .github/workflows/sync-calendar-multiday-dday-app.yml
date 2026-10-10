@@ -1,0 +1,48 @@
+name: Sync calendar D-DAY fix to app
+
+on:
+  push:
+    branches:
+      - app-mvp
+    paths:
+      - '.github/workflows/sync-calendar-multiday-dday-app.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: app-mvp
+          fetch-depth: 0
+      - name: Sync production calendar marker logic
+        shell: bash
+        run: |
+          git fetch origin main
+          git show origin/main:map-calendar-v1.js > map-calendar-v1.js
+          node <<'NODE'
+          const fs = require('fs');
+          const calendar = fs.readFileSync('map-calendar-v1.js', 'utf8');
+          if (!calendar.includes("today>=startDay&&now<=end") || !calendar.includes('exclusiveEnd.getTime()-1') || !calendar.includes('setInterval(refreshMarkers,30000)')) {
+            throw new Error('Synced calendar file is missing the multi-day D-DAY logic');
+          }
+          new Function(calendar);
+          let shops = fs.readFileSync('shops.html', 'utf8');
+          shops = shops.replace(/map-calendar-v1\.js\?v=[^"']+/, 'map-calendar-v1.js?v=20261010-multiday-dday1');
+          shops = shops.replace(/var v='[^']+',k='funypin-deploy-version'/, "var v='20261010-calendar-dday1',k='funypin-deploy-version'");
+          if (!shops.includes('map-calendar-v1.js?v=20261010-multiday-dday1')) throw new Error('App calendar cache key update failed');
+          fs.writeFileSync('shops.html', shops, 'utf8');
+          fs.unlinkSync('.github/workflows/sync-calendar-multiday-dday-app.yml');
+          NODE
+      - name: Commit app calendar fix
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add map-calendar-v1.js shops.html .github/workflows/sync-calendar-multiday-dday-app.yml
+          git commit -m 'fix: keep app event D-DAY visible through event end'
+          git push origin HEAD:app-mvp

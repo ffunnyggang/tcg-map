@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff">
+<title>오리파 확률 계산기 | FUNY PIN</title><meta name="description" content="전체 수량, 당첨 수량, 구매 수량을 입력해 실물 오리파의 실제 당첨 확률을 계산합니다."><link rel="canonical" href="https://funypin.kr/oripa-calculator.html"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--p:#8062d8;--pd:#6749bd;--ps:#f3effb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--good:#208a55;--bad:#b42318}
+*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink)}button,input,select{font:inherit}
+.shell{width:min(100%,440px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(36px,env(safe-area-inset-bottom))}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #f0edf3}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px}.spacer{width:38px;margin-left:auto}
+main{padding:18px 16px}.eyebrow{font-size:10px;font-weight:900;color:var(--p);letter-spacing:.1em}.title{margin:6px 0 5px;font-size:26px;letter-spacing:-.05em}.desc{margin:0;color:#77717c;font-size:12px;line-height:1.6}
+.card{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:20px;background:#fff}.section-title{font-size:12px;font-weight:900;margin-bottom:11px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{min-width:0}.field.wide{grid-column:1/-1}.field label{display:block;margin:0 0 6px;font-size:10px;font-weight:800;color:#77717c}.field input,.field select{width:100%;height:46px;border:1px solid #dfd9e4;border-radius:12px;background:#fff;padding:0 12px;font-size:15px;outline:none}.field input:focus,.field select:focus{border-color:#a68ce8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}
+.hero-result{margin-top:16px;padding:20px;border-radius:22px;background:linear-gradient(145deg,#f5f1fd,#faf9fc);text-align:center;border:1px solid #e7def5}.hero-result span{display:block;font-size:10px;color:#817986;font-weight:800}.hero-result strong{display:block;margin-top:6px;font-size:34px;letter-spacing:-.06em;color:var(--pd)}.hero-result small{display:block;margin-top:5px;font-size:10px;color:#8c8590;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.metric{padding:13px 10px;border:1px solid var(--line);border-radius:14px;background:#fff}.metric span{font-size:9px;color:#928a96;font-weight:750}.metric strong{display:block;margin-top:5px;font-size:16px}.note{margin:12px 2px 0;color:#9b949f;font-size:10px;line-height:1.55}.error{margin-top:10px;color:var(--bad);font-size:10px;font-weight:750;min-height:16px}.btn{width:100%;height:48px;margin-top:12px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-weight:900}
+.list{display:grid;gap:7px}.row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;background:#f8f6fa}.row b{font-size:11px}.row span{margin-left:auto;font-size:11px;font-weight:850;color:var(--pd)}
+</style></head><body><div class="shell"><header><button class="back" onclick="history.length>1?history.back():location.href='tcg-tools.html'" aria-label="뒤로가기">‹</button><div class="brand">오리파 확률 계산기</div><div class="spacer"></div></header><main>
+<div class="eyebrow">FUNY TCG TOOL</div><h1 class="title">오리파 확률 계산기</h1><p class="desc">실물 오리파처럼 한 번 뽑은 상품이 재고에서 빠지는 <b>비복원 추출</b> 기준으로 계산합니다.</p>
+<section class="card"><div class="section-title">기본 정보</div><div class="grid">
+<div class="field"><label>전체 수량</label><input id="total" type="number" min="1" step="1" value="100"></div>
+<div class="field"><label>당첨 수량</label><input id="wins" type="number" min="0" step="1" value="5"></div>
+<div class="field wide"><label>구매 예정 수량</label><input id="buy" type="range" min="1" max="100" value="10"><div style="display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:#8d8691"><span>1개</span><b id="buyLabel">10개</b><span id="buyMax">100개</span></div></div>
+</div><div id="err" class="error"></div></section>
+<section class="hero-result"><span id="heroLabel">10개 구매 시 1개 이상 당첨될 확률</span><strong id="chance">0%</strong><small>단순 확률 × 구매 수량이 아닌 실제 비복원 추출 확률입니다.</small></section>
+<section class="metrics"><div class="metric"><span>1개 당첨 확률</span><strong id="single">0%</strong></div><div class="metric"><span>모두 실패할 확률</span><strong id="fail">0%</strong></div><div class="metric"><span>예상 당첨 개수</span><strong id="expected">0개</strong></div><div class="metric"><span>평균 당첨 1개당</span><strong id="avg">-</strong></div></section>
+<section class="card"><div class="section-title">목표 확률별 필요한 구매 수량</div><div class="list" id="targets"></div></section>
+<p class="note">※ 계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.</p>
+</main></div><script>
+(()=>{const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
+function noHit(N,H,n){if(n<=0)return 1;if(H<=0)return 1;if(n>N-H)return 0;let p=1;for(let i=0;i<n;i++)p*=((N-H-i)/(N-i));return p}
+function pct(v){return (v*100).toFixed(v*100<10?1:0)+'%'}
+function needed(N,H,t){if(H<=0)return null;for(let n=1;n<=N;n++){if(1-noHit(N,H,n)>=t)return n}return N}
+function calc(){let N=Number($('total').value),H=Number($('wins').value),n=Number($('buy').value);const err=$('err');err.textContent='';
+if(!Number.isInteger(N)||N<1||!Number.isInteger(H)||H<0||H>N){err.textContent='전체 수량과 당첨 수량을 확인해주세요.';return}
+$('buy').max=N;n=Math.min(Math.max(1,n),N);$('buy').value=n;$('buyLabel').textContent=n+'개';$('buyMax').textContent=N+'개';
+const miss=noHit(N,H,n),hit=1-miss,single=H/N,exp=n*single;
+$('heroLabel').textContent=n+'개 구매 시 1개 이상 당첨될 확률';$('chance').textContent=pct(hit);$('single').textContent=pct(single);$('fail').textContent=pct(miss);$('expected').textContent=exp.toFixed(2)+'개';$('avg').textContent=H?Math.ceil(N/H)+'개':'-';
+$('targets').innerHTML=targets.map(x=>{const k=needed(N,H,x/100);return '<div class="row"><b>'+x+'% 이상</b><span>'+(k?Math.min(k,N)+'개':'달성 불가')+'</span></div>'}).join('');
+try{window.FUNY_TRACK?.('oripa_calculator_change',{total_count:N,win_count:H,buy_count:n})}catch(_){}
+}
+['total','wins','buy'].forEach(id=>$(id).addEventListener('input',calc));calc()})();
+</script></body></html>

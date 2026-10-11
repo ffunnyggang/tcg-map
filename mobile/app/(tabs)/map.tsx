@@ -5,11 +5,14 @@ import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import FunyWebView,{isShopDetail,isWebBackPage} from '../../components/FunyWebView';
 import LivePinButton from '../../components/LivePinButton';
+import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
 
 export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
   const [shopDetail,setShopDetail]=useState(false);
   const [scrolling,setScrolling]=useState(false);
+  const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
+  useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
   const {__tabRefresh,country,shop,from}=useLocalSearchParams<{__tabRefresh?:string;country?:string;shop?:string;from?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const [mapCountry,setMapCountry]=useState<'KR'|'JP'>(initialCountry);
@@ -23,13 +26,13 @@ export default function MapScreen(){
     setWebBack(back);
   },[]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} country={mapCountry}>
+    <ViewWithLivePin webBack={webBack} shopDetail={shopDetail} scrolling={scrolling} country={mapCountry} overlayOpen={overlayOpen}>
       <FunyWebView key={`map-${initialCountry}-${__tabRefresh||'0'}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" onWebScrollChange={setScrolling} onMapCountryChange={value=>setMapCountry(value==='JP'?'JP':'KR')}/>
     </ViewWithLivePin>
   </SafeAreaView>;
 }
 
-function ViewWithLivePin({children,webBack,shopDetail,scrolling,country}:{children:ReactNode;webBack:boolean;shopDetail:boolean;scrolling:boolean;country:'KR'|'JP'}){
-  const hideLivePin=webBack||country==='JP';
+function ViewWithLivePin({children,webBack,shopDetail,scrolling,country,overlayOpen}:{children:ReactNode;webBack:boolean;shopDetail:boolean;scrolling:boolean;country:'KR'|'JP';overlayOpen:boolean}){
+  const hideLivePin=webBack||country==='JP'||overlayOpen;
   return <View style={{flex:1}}>{children}{!hideLivePin?<LivePinButton withNav scrolling={scrolling}/>:null}</View>;
 }

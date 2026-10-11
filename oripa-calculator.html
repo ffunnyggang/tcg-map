@@ -13,14 +13,15 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 .hero{margin:0 -16px;padding:20px 16px 15px;background:linear-gradient(180deg,#fff 0%,#fbf9fd 64%,#f4f1f7 100%);position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;left:50%;bottom:-62px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 38%,transparent 72%);pointer-events:none}
 .result-area{text-align:center;position:relative;z-index:3;min-height:145px}.result-kicker{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 10px;border-radius:999px;background:#f2eefb;color:var(--purple-dark);font-size:9px;font-weight:900}.result-text{display:block;margin-top:10px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-sub{display:block;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}.chance{display:block;margin-top:8px;font-size:48px;line-height:1;font-weight:950;letter-spacing:-.07em;color:var(--purple-dark);text-shadow:0 3px 12px rgba(103,73,189,.10)}
-.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.keyin-field{min-width:0}.keyin-field label{display:block;margin:0 0 6px;color:#948c98;font-size:9px;font-weight:750}.keyin-field input{width:100%;height:44px;border:1px solid #e2dde6;border-radius:12px;background:#fff;color:#342f38;padding:0 11px;text-align:center;font-size:16px;font-weight:900;outline:none;-moz-appearance:textfield}.keyin-field input::-webkit-outer-spin-button,.keyin-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-field input:focus{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
-.picker-area{position:relative;z-index:4;margin-top:14px;padding:0 2px}.picker-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.picker-col{min-width:0;position:relative}.picker-col+.picker-col:before{content:"";position:absolute;left:-9px;top:34px;bottom:12px;width:1px;background:#f0ecf3}
-.picker-label{display:flex;align-items:center;justify-content:center;height:28px;color:#6f6874;font-size:10px;font-weight:850;white-space:nowrap}.picker-label small{margin-left:4px;color:#aaa2ad;font-size:8px;font-weight:700}
-.wheel-wrap{position:relative;height:205px;overflow:hidden}.wheel-wrap:before,.wheel-wrap:after{content:"";position:absolute;left:0;right:0;height:64px;z-index:5;pointer-events:none}.wheel-wrap:before{top:0;background:linear-gradient(#fbf9fd 6%,rgba(251,249,253,.88) 38%,rgba(251,249,253,0) 100%)}.wheel-wrap:after{bottom:0;background:linear-gradient(rgba(244,241,247,0) 0%,rgba(244,241,247,.88) 62%,#f4f1f7 96%)}
-.wheel-selected{position:absolute;left:3px;right:3px;top:77px;height:52px;border-radius:14px;background:rgba(234,232,237,.78);z-index:1;pointer-events:none}
-.wheel{position:relative;z-index:2;height:205px;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;padding:77px 0 76px;-webkit-overflow-scrolling:touch}.wheel::-webkit-scrollbar{display:none}
-.wheel-item{height:52px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;color:#b8b0bf;font-size:16px;font-weight:600;cursor:pointer;user-select:none;transition:color .14s ease,font-size .14s ease,font-weight .14s ease,opacity .14s ease;opacity:.48}.wheel-item.active{color:var(--purple-dark);font-size:24px;font-weight:850;opacity:1}.wheel-item.near{color:#9f96a7;font-size:19px;opacity:.62}
-.step-help{margin:5px 0 0;text-align:center;color:#a098a5;font-size:8.8px}
+.picker-area{position:relative;z-index:4;margin-top:14px;padding:0}.picker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.picker-col{min-width:0;position:relative;padding:0 6px}.picker-col+.picker-col:before{content:"";position:absolute;left:0;top:32px;bottom:12px;width:1px;background:#f0ecf3}
+.picker-label{display:flex;align-items:center;justify-content:center;height:28px;color:#6f6874;font-size:10px;font-weight:850;white-space:nowrap}
+.wheel-wrap{position:relative;height:190px;overflow:hidden}.wheel-wrap:before,.wheel-wrap:after{content:"";position:absolute;left:0;right:0;height:60px;z-index:5;pointer-events:none}.wheel-wrap:before{top:0;background:linear-gradient(#fbf9fd 8%,rgba(251,249,253,.9) 42%,rgba(251,249,253,0) 100%)}.wheel-wrap:after{bottom:0;background:linear-gradient(rgba(244,241,247,0) 0%,rgba(244,241,247,.9) 60%,#f4f1f7 96%)}
+.wheel-selected{position:absolute;left:4px;right:4px;top:69px;height:52px;border-radius:14px;background:rgba(234,232,237,.80);z-index:1;pointer-events:none}
+.wheel{position:relative;z-index:2;height:190px;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;padding:69px 0;-webkit-overflow-scrolling:touch}.wheel::-webkit-scrollbar{display:none}
+.wheel-item{height:52px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;color:#bbb4c0;font-size:15px;font-weight:600;cursor:pointer;user-select:none;opacity:.44;transition:color .14s ease,font-size .14s ease,font-weight .14s ease,opacity .14s ease}.wheel-item.active{color:#2f2934;font-size:21px;font-weight:850;opacity:1}.wheel-item.near{color:#a49baa;font-size:17px;opacity:.62}
+.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.keyin-field{min-width:0}.keyin-field label{display:block;margin:0 0 6px;color:#6f6874;font-size:10px;font-weight:850}.keyin-box{display:flex;align-items:center;height:54px;border:1px solid #ddd7e3;border-radius:13px;background:#fff;overflow:hidden}.keyin-box input{min-width:0;flex:1;height:52px;border:0;background:transparent;color:#2f2934;padding:0 4px 0 12px;text-align:right;font-size:20px;font-weight:850;outline:none;-moz-appearance:textfield}.keyin-box input::-webkit-outer-spin-button,.keyin-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-box span{padding:0 12px 0 5px;color:#756e79;font-size:12px;font-weight:800;white-space:nowrap}.keyin-box:focus-within{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
+.price-summary{display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding:0 2px;color:#928a96;font-size:9.5px}.price-summary strong{color:#5f5865;font-size:11px}
+.step-help{margin:6px 0 0;text-align:center;color:#a098a5;font-size:8.8px}
 .error{min-height:14px;margin-top:7px;color:var(--danger);font-size:9px;font-weight:750;text-align:center}.fair-note{display:flex;align-items:flex-start;justify-content:center;gap:6px;margin:11px auto 0;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.78);color:#8f8794;font-size:9.5px;line-height:1.45}.fair-dot{flex:none;width:6px;height:6px;margin-top:4px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}.metric{padding:12px;border:1px solid #eee9f1;border-radius:14px;background:#fff}.metric-label{display:block;color:#948c98;font-size:9px;font-weight:750}.metric strong{display:block;margin-top:4px;font-size:18px;line-height:1.15;font-weight:950;letter-spacing:-.04em}
 .chart-card,.target-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.section-head{display:flex;align-items:center;gap:8px}.section-title{font-size:12px;font-weight:900}.section-sub{margin-left:auto;color:#9a929e;font-size:9px}
@@ -37,26 +38,37 @@ main{position:relative;z-index:1;padding:0 16px 18px}
     <strong class="chance" id="chance">0%</strong>
   </div>
 
-  <div class="keyin-grid" aria-label="오리파 기본 정보">
-    <div class="keyin-field"><label for="total">전체 수량</label><input id="total" type="number" min="1" step="1" value="100" inputmode="numeric"></div>
-    <div class="keyin-field"><label for="wins">남은 당첨 수량</label><input id="wins" type="number" min="0" step="1" value="5" inputmode="numeric"></div>
-  </div>
-
   <section class="picker-area" aria-label="오리파 수량 선택">
     <div class="picker-grid">
+      <div class="picker-col">
+        <div class="picker-label">전체 수량</div>
+        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="totalWheel" aria-label="전체 수량"></div></div>
+      </div>
       <div class="picker-col">
         <div class="picker-label">남은 수량</div>
         <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="remainingWheel" aria-label="남은 수량"></div></div>
       </div>
       <div class="picker-col">
-        <div class="picker-label">구매 예정 수량</div>
-        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="buyWheel" aria-label="구매 예정 수량"></div></div>
+        <div class="picker-label">남은 당첨 수량</div>
+        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="winsWheel" aria-label="남은 당첨 수량"></div></div>
       </div>
     </div>
-    <input id="remaining" type="hidden" value="100"><input id="buy" type="hidden" value="10">
     <p class="step-help">위·아래로 스크롤해 수량을 선택하세요.</p>
-    <div id="err" class="error"></div>
   </section>
+
+  <div class="keyin-grid" aria-label="구매 정보 입력">
+    <div class="keyin-field">
+      <label for="buy">구매 예정 수량</label>
+      <div class="keyin-box"><input id="buy" type="number" min="1" step="1" value="1" inputmode="numeric"><span>개</span></div>
+    </div>
+    <div class="keyin-field">
+      <label for="price">한게임 가격</label>
+      <div class="keyin-box"><input id="price" type="number" min="0" step="100" value="15000" inputmode="numeric"><span>원</span></div>
+    </div>
+  </div>
+  <div class="price-summary"><span>총 구매 금액</span><strong id="totalPrice">15,000원</strong></div>
+  <input id="total" type="hidden" value="100"><input id="remaining" type="hidden" value="100"><input id="wins" type="hidden" value="5">
+  <div id="err" class="error"></div>
 
   <p class="fair-note"><span class="fair-dot"></span><span>계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.</span></p>
 </section>
@@ -82,66 +94,61 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 </main></div><script>
 (()=>{
   const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
-  const state={total:100,remaining:100,buy:10};
-  const wheels={remaining:$('remainingWheel'),buy:$('buyWheel')};
+  const state={total:100,remaining:100,wins:5,buy:1,price:15000};
+  const wheels={total:$('totalWheel'),remaining:$('remainingWheel'),wins:$('winsWheel')};
   const wheelTimer={};
 
   function noHit(N,H,n){if(n<=0)return 1;if(H<=0)return 1;if(n>N-H)return 0;let p=1;for(let i=0;i<n;i++)p*=((N-H-i)/(N-i));return p}
   function pct(v){return (v*100).toFixed(v*100<10?1:0)+'%'}
   function needed(N,H,t){if(H<=0)return null;for(let n=1;n<=N;n++){if(1-noHit(N,H,n)>=t)return n}return N}
+  function won(v){return Math.max(0,Math.round(v||0)).toLocaleString('ko-KR')+'원'}
 
   function setWheelClasses(name,value){
-    const wheel=wheels[name];const items=[...wheel.querySelectorAll('.wheel-item')];
-    items.forEach(item=>{const d=Math.abs(Number(item.dataset.value)-value);item.classList.toggle('active',d===0);item.classList.toggle('near',d===1)});
+    const wheel=wheels[name];wheel.querySelectorAll('.wheel-item').forEach(item=>{const d=Math.abs(Number(item.dataset.value)-value);item.classList.toggle('active',d===0);item.classList.toggle('near',d===1)});
   }
   function buildWheel(name,min,max,value){
-    const wheel=wheels[name];value=Math.max(min,Math.min(max,Math.round(value||min)));state[name]=value;
-    wheel.innerHTML='';const frag=document.createDocumentFragment();
+    const wheel=wheels[name];value=Math.max(min,Math.min(max,Math.round(value||min)));state[name]=value;wheel.innerHTML='';const frag=document.createDocumentFragment();
     for(let i=min;i<=max;i++){const item=document.createElement('div');item.className='wheel-item';item.dataset.value=i;item.textContent=i+'개';item.addEventListener('click',()=>selectWheel(name,i,true));frag.appendChild(item)}
     wheel.appendChild(frag);setWheelClasses(name,value);requestAnimationFrame(()=>scrollToValue(name,value,false));
   }
   function scrollToValue(name,value,smooth=true){
-    const wheel=wheels[name],item=wheel.querySelector('[data-value="'+value+'"]');if(!item)return;
-    wheel.scrollTo({top:item.offsetTop-77,behavior:smooth?'smooth':'auto'});setWheelClasses(name,value);
+    const wheel=wheels[name],item=wheel.querySelector('[data-value="'+value+'"]');if(!item)return;wheel.scrollTo({top:item.offsetTop-69,behavior:smooth?'smooth':'auto'});setWheelClasses(name,value);
   }
   function selectWheel(name,value,smooth=true){
-    if(name==='remaining'){
-      state.remaining=Math.max(1,Math.min(state.total,value));
-      if(state.buy>state.remaining)state.buy=state.remaining;
-      buildWheel('buy',1,state.remaining,state.buy);
-    }else state.buy=Math.max(1,Math.min(state.remaining,value));
-    $('remaining').value=state.remaining;$('buy').value=state.buy;scrollToValue(name,state[name],smooth);calc();
+    if(name==='total'){
+      state.total=value;if(state.remaining>value)state.remaining=value;if(state.wins>state.remaining)state.wins=state.remaining;if(state.buy>state.remaining)state.buy=state.remaining;
+      buildWheel('remaining',1,state.total,state.remaining);buildWheel('wins',0,state.remaining,state.wins);
+    }else if(name==='remaining'){
+      state.remaining=Math.max(1,Math.min(state.total,value));if(state.wins>state.remaining)state.wins=state.remaining;if(state.buy>state.remaining)state.buy=state.remaining;
+      buildWheel('wins',0,state.remaining,state.wins);
+    }else state.wins=Math.max(0,Math.min(state.remaining,value));
+    $('total').value=state.total;$('remaining').value=state.remaining;$('wins').value=state.wins;$('buy').value=state.buy;scrollToValue(name,state[name],smooth);calc();
   }
   function bindWheel(name){
-    const wheel=wheels[name];wheel.addEventListener('scroll',()=>{
-      clearTimeout(wheelTimer[name]);wheelTimer[name]=setTimeout(()=>{
-        const center=wheel.scrollTop+wheel.clientHeight/2;let best=null,dist=Infinity;
-        wheel.querySelectorAll('.wheel-item').forEach(item=>{const mid=item.offsetTop+item.offsetHeight/2,d=Math.abs(mid-center);if(d<dist){dist=d;best=item}});
-        if(best)selectWheel(name,Number(best.dataset.value),true);
-      },80);
-    },{passive:true});
+    const wheel=wheels[name];wheel.addEventListener('scroll',()=>{clearTimeout(wheelTimer[name]);wheelTimer[name]=setTimeout(()=>{
+      const center=wheel.scrollTop+wheel.clientHeight/2;let best=null,dist=Infinity;wheel.querySelectorAll('.wheel-item').forEach(item=>{const mid=item.offsetTop+item.offsetHeight/2,d=Math.abs(mid-center);if(d<dist){dist=d;best=item}});
+      if(best)selectWheel(name,Number(best.dataset.value),true);
+    },80)},{passive:true});
   }
-  function syncTotal(){
-    let total=Math.round(Number($('total').value)||1);total=Math.max(1,Math.min(500,total));$('total').value=total;state.total=total;
-    if(state.remaining>total)state.remaining=total;if(state.buy>state.remaining)state.buy=state.remaining;
-    buildWheel('remaining',1,state.total,state.remaining);buildWheel('buy',1,state.remaining,state.buy);
-    let wins=Math.round(Number($('wins').value)||0);wins=Math.max(0,Math.min(state.remaining,wins));$('wins').value=wins;calc();
+  function syncKeyins(){
+    let buy=Math.round(Number($('buy').value)||1);buy=Math.max(1,Math.min(state.remaining,buy));state.buy=buy;$('buy').value=buy;
+    let price=Math.round(Number($('price').value)||0);price=Math.max(0,Math.min(100000000,price));state.price=price;$('price').value=price;calc();
   }
   function calc(){
-    const total=state.total,N=state.remaining,H=Number($('wins').value),n=state.buy,err=$('err');err.textContent='';
-    if(!Number.isInteger(total)||total<1||!Number.isInteger(N)||N<1||N>total||!Number.isInteger(H)||H<0||H>N||n<1||n>N){err.textContent='수량 정보를 확인해주세요.';return}
+    const total=state.total,N=state.remaining,H=state.wins,n=state.buy,err=$('err');err.textContent='';
+    if(total<1||N<1||N>total||H<0||H>N||n<1||n>N){err.textContent='수량 정보를 확인해주세요.';return}
     const miss=noHit(N,H,n),hit=1-miss,single=H/N,exp=n*single;
-    $('heroLabel').textContent=n+'개 구매 시 1개 이상 당첨될 확률';$('chance').textContent=pct(hit);$('single').textContent=pct(single);$('fail').textContent=pct(miss);$('expected').textContent=exp.toFixed(2)+'개';$('avg').textContent=H?Math.ceil(N/H)+'개':'-';
+    $('heroLabel').textContent=n+'개 구매 시 1개 이상 당첨될 확률';$('chance').textContent=pct(hit);$('single').textContent=pct(single);$('fail').textContent=pct(miss);$('expected').textContent=exp.toFixed(2)+'개';$('avg').textContent=H?Math.ceil(N/H)+'개':'-';$('totalPrice').textContent=won(n*state.price);
     const hp=hit*100;let comment='당첨 가능성이 아직 낮은 편이에요';if(hp>=70)comment='당첨 가능성이 높은 편이에요';else if(hp>=40)comment='당첨 가능성이 꽤 있는 편이에요';else if(hp>=20)comment='당첨 가능성이 보통 수준이에요';$('heroComment').textContent=comment;
     $('targets').innerHTML=targets.map(x=>{const k=needed(N,H,x/100);return '<div class="row"><b>'+x+'% 이상</b><span>'+(k?Math.min(k,N)+'개':'달성 불가')+'</span></div>'}).join('');
     const chartPoints=[1,5,10,20,30].filter(x=>x<=N);if(!chartPoints.includes(n))chartPoints.push(n);chartPoints.sort((a,b)=>a-b);$('bars').innerHTML=chartPoints.slice(-6).map(x=>{const v=1-noHit(N,H,x);return '<div class="bar-item"><div class="bar-wrap"><div class="bar" style="height:'+Math.max(4,Math.round(v*100))+'%"></div></div><b>'+x+'개</b><span>'+pct(v)+'</span></div>'}).join('');
-    try{window.FUNY_TRACK?.('oripa_calculator_change',{total_count:total,remaining_count:N,win_count:H,buy_count:n})}catch(_){}
+    try{window.FUNY_TRACK?.('oripa_calculator_change',{total_count:total,remaining_count:N,win_count:H,buy_count:n,game_price:state.price,total_price:n*state.price})}catch(_){}
   }
 
-  buildWheel('remaining',1,state.total,state.remaining);buildWheel('buy',1,state.remaining,state.buy);
+  buildWheel('total',1,500,state.total);buildWheel('remaining',1,state.total,state.remaining);buildWheel('wins',0,state.remaining,state.wins);
   Object.keys(wheels).forEach(bindWheel);
-  $('total').addEventListener('change',syncTotal);$('total').addEventListener('blur',syncTotal);
-  $('wins').addEventListener('input',calc);$('wins').addEventListener('blur',()=>{let v=Math.round(Number($('wins').value)||0);v=Math.max(0,Math.min(state.remaining,v));$('wins').value=v;calc()});
+  $('buy').addEventListener('input',syncKeyins);$('buy').addEventListener('blur',syncKeyins);
+  $('price').addEventListener('input',syncKeyins);$('price').addEventListener('blur',syncKeyins);
   calc();
 })();
 </script></body></html>

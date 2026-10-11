@@ -17,29 +17,29 @@
 .shell:before{content:"";position:absolute;left:-95px;top:82px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(128,98,216,.12),rgba(128,98,216,0) 68%);pointer-events:none}.shell:after{content:"";position:absolute;right:-130px;top:315px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(168,143,235,.13),rgba(168,143,235,0) 69%);pointer-events:none}
 header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(235,230,239,.82)}
 .back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;cursor:pointer;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px;letter-spacing:-.025em}.header-spacer{width:38px;margin-left:auto}
-main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;font-weight:900;color:var(--purple);letter-spacing:.1em}.title{margin:6px 0 5px;font-size:27px;line-height:1.18;letter-spacing:-.05em}.desc{margin:0;color:#77717c;font-size:12.5px;line-height:1.55}
+main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:38px;margin-left:auto;border:0;border-radius:11px;background:#f5f2f8;color:#554d5b;display:grid;place-items:center;font-size:17px;cursor:pointer}.sound-toggle.off{opacity:.55}.sound-toggle:active{transform:scale(.96)}
 
-.game-card{margin-top:14px;padding:20px 16px 16px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,#fdfcff 0%,#faf8fd 100%);box-shadow:0 10px 34px rgba(56,43,70,.07);overflow:hidden;position:relative}.game-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 25%,rgba(128,98,216,.09),transparent 45%);pointer-events:none}
-.result-area{min-height:50px;text-align:center;position:relative;z-index:2}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
-.coin-stage{display:block;width:250px;height:285px;margin:8px auto 0;padding:0;border:0;background:transparent;perspective:900px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}.coin-stage:disabled{cursor:default}
-.coin-rise{width:100%;height:100%;display:grid;place-items:center;position:relative;transform-origin:50% 82%;will-change:transform}.coin-stage.flipping .coin-rise{animation:coinFlight 1.62s cubic-bezier(.18,.68,.22,1)}
-.coin{width:172px;height:172px;position:relative;transform-style:preserve-3d;transform:rotateX(10deg) rotateZ(-4deg);transition:transform 1.62s cubic-bezier(.12,.72,.18,1);will-change:transform}
-.coin-rim,.coin-rim i,.coin-face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}.coin-rim i{display:block;transform:translateZ(var(--z));background:linear-gradient(90deg,#706b73 0%,#d9d7da 14%,#8e8990 34%,#f7f6f7 53%,#858087 74%,#d8d5d9 92%,#6d6870 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
-.coin-face{inset:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid rgba(255,255,255,.75);overflow:hidden}
-.coin-front{transform:translateZ(9px);background:radial-gradient(circle at 35% 27%,#ffffff 0%,#f8f7f8 25%,#d9d6db 57%,#aaa5ad 82%,#858087 100%);color:#29262c;box-shadow:inset 0 0 0 3px rgba(57,53,60,.12),inset 0 -18px 24px rgba(49,44,53,.13)}
+.game-card{margin:0 -16px;padding:20px 16px 14px;background:linear-gradient(180deg,#ffffff 0%,#fbf9fd 64%,#f4f1f7 100%);overflow:visible;position:relative;min-height:510px}.game-card:before{content:"";position:absolute;left:50%;bottom:78px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 35%,transparent 72%);pointer-events:none}
+.result-area{min-height:60px;text-align:center;position:relative;z-index:4;padding-top:4px}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
+.coin-stage{display:block;width:min(100%,408px);height:360px;margin:4px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible}.coin-stage:disabled{cursor:default}
+.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:46px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{animation:coinFlight 1.9s cubic-bezier(.18,.68,.22,1)}
+.coin{width:176px;height:176px;position:relative;transform-style:preserve-3d;transform:rotateX(66deg) rotateZ(-12deg);transition:transform 1.9s cubic-bezier(.12,.74,.18,1);will-change:transform}
+.coin-rim,.coin-rim i,.coin-face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}.coin-rim i{display:block;transform:translateZ(var(--z));background:linear-gradient(90deg,#5c5960 0%,#c9c6cb 10%,#77727b 30%,#f2f1f3 52%,#7c7780 74%,#d2cfd4 91%,#5c5760 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.coin-face{inset:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid rgba(255,255,255,.72);overflow:hidden}
+.coin-front{transform:translateZ(9px);background:radial-gradient(circle at 35% 27%,#fff 0%,#f7f6f8 23%,#d8d5da 56%,#aaa6ad 82%,#817c85 100%);color:#29262c;box-shadow:inset 0 0 0 3px rgba(57,53,60,.12),inset 0 -18px 24px rgba(49,44,53,.13)}
 .coin-back{transform:rotateX(180deg) translateZ(9px);background:radial-gradient(circle at 34% 25%,#87838a 0%,#605c63 35%,#3f3b42 68%,#29262b 100%);color:#fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),inset 0 -18px 24px rgba(0,0,0,.22)}
 .coin-face:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 31%,transparent 48%,rgba(255,255,255,.18) 72%,transparent 100%);mix-blend-mode:soft-light;pointer-events:none}
 .coin-ring{position:absolute;inset:13px;border-radius:50%;border:2px solid rgba(63,57,67,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);pointer-events:none}.coin-back .coin-ring{border-color:rgba(255,255,255,.25)}
 .coin-brand{font-size:9px;font-weight:950;letter-spacing:.18em;opacity:.62}.coin-mark{margin-top:2px;font-size:44px;line-height:1;font-weight:950;letter-spacing:-.09em;text-shadow:0 2px 3px rgba(0,0,0,.08)}.coin-side-name{margin-top:6px;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.62}
-.coin-shadow{position:absolute;left:50%;bottom:20px;width:128px;height:24px;border-radius:50%;background:rgba(35,30,39,.28);filter:blur(11px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{animation:shadowFlight 1.62s ease-in-out}
-.flip-button{width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.coin-shadow{position:absolute;left:50%;bottom:34px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{animation:shadowFlight 1.9s ease-in-out}
+.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
 .history-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.history-head{display:flex;align-items:center;gap:8px}.history-title{font-size:12px;font-weight:900}.history-count{font-size:9px;color:#9a929e}.reset-history{margin-left:auto;border:0;background:#f4f1f6;color:#817a86;border-radius:9px;height:29px;padding:0 10px;font-size:9px;font-weight:850;cursor:pointer}.reset-history:disabled{opacity:.45}.history-list{display:flex;gap:7px;overflow-x:auto;padding:12px 1px 2px;scrollbar-width:none}.history-list::-webkit-scrollbar{display:none}.history-empty{width:100%;padding:12px 4px 7px;color:#a098a5;font-size:10.5px;text-align:center}.history-chip{min-width:48px;height:48px;padding:0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;border:1px solid #e9e3ef;background:#faf8fc}.history-chip.front{background:#f2eefb;border-color:#e0d6f4;color:#684bbb}.history-chip.back{background:#f2f0f3;border-color:#e1dde4;color:#433d47}.history-chip b{font-size:11px;line-height:1.1}.history-chip span{margin-top:3px;font-size:8px;opacity:.68;font-weight:750}
 .tip{margin:13px 2px 0;color:#9a929e;font-size:10px;line-height:1.55;text-align:center}.tip b{color:#766e7b}
 .toast{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));z-index:100;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(38,33,43,.92);color:#fff;font-size:11px;font-weight:750;transform:translate(-50%,18px);opacity:0;pointer-events:none;transition:.22s ease}.toast.show{transform:translate(-50%,0);opacity:1}
 @keyframes coinFlight{0%{transform:translateY(28px) scale(.94)}12%{transform:translateY(8px) scale(.98)}43%{transform:translateY(-92px) scale(1.06)}66%{transform:translateY(-42px) scale(1.025)}84%{transform:translateY(8px) scale(.99)}92%{transform:translateY(-8px) scale(1.01)}100%{transform:translateY(0) scale(1)}}
 @keyframes shadowFlight{0%{opacity:.9;transform:translateX(-50%) scale(1)}43%{opacity:.18;transform:translateX(-50%) scale(.44)}66%{opacity:.38;transform:translateX(-50%) scale(.62)}84%{opacity:.88;transform:translateX(-50%) scale(1.02)}92%{opacity:.62;transform:translateX(-50%) scale(.82)}100%{opacity:.88;transform:translateX(-50%) scale(1)}}
-@media(max-height:730px){main{padding-top:12px}.game-card{padding-top:14px}.coin-stage{height:235px}.coin{width:150px;height:150px}.coin-mark{font-size:38px}.coin-shadow{bottom:10px}.stats{margin-top:10px}.history-card{margin-top:9px}}
+@media(max-height:730px){main{padding-top:0}.game-card{min-height:455px;padding-top:14px}.coin-stage{height:310px}.coin{width:154px;height:154px}.coin-mark{font-size:38px}.coin-shadow{bottom:30px}.stats{margin-top:10px}.history-card{margin-top:9px}}.game-card{padding-top:14px}.coin-stage{height:235px}.coin{width:150px;height:150px}.coin-mark{font-size:38px}.coin-shadow{bottom:10px}.stats{margin-top:10px}.history-card{margin-top:9px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.flip-button,.toast{transition:none}.coin-stage.flipping .coin-rise,.coin-stage.flipping .coin-shadow{animation:none}.coin{transition-duration:.28s!important}}
 </style>
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -49,11 +49,8 @@ main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;f
 </head>
 <body>
 <div class="shell">
-<header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">FUNY PIN</div><div class="header-spacer"></div></header>
+<header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
 <main>
-<div class="eyebrow">FUNY TCG TOOL</div>
-<h1 class="title">코인플립</h1>
-<p class="desc" id="pageDesc">앞면과 뒷면 중 하나를 공정하게 결정해요. 코인을 직접 누르거나 아래 버튼을 눌러주세요.</p>
 <section class="game-card" aria-labelledby="resultText">
 <div class="result-area" aria-live="polite" aria-atomic="true">
 <span class="result-kicker" id="resultKicker">READY</span>
@@ -94,7 +91,7 @@ main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;f
   const LABELS=['앞면','뒷면'];
   const $=id=>document.getElementById(id);
   const els={coin:$('coin'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),streakCount:$('streakCount'),streakLabel:$('streakLabel'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
-  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0;
+  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null;
 
   function loadHistory(){
     try{
@@ -108,12 +105,23 @@ main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;f
   function secureRandom(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]>>>0}catch(_){return Math.floor(Math.random()*4294967296)>>>0}}
   function setBusy(v){busy=v;els.stage.disabled=v;els.flip.disabled=v;els.flip.textContent=v?'코인 플립 중...':'코인 던지기'}
   function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
+  function audio(){
+    if(!soundOn)return null;
+    try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
+  }
+  function tone(freq,duration,volume=.06,type='sine',delay=0){
+    const ctx=audio();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.02)
+  }
+  function playLaunch(){tone(880,.08,.07,'triangle');tone(1240,.07,.045,'sine',.035)}
+  function playSpin(){[0,.11,.22,.33,.44].forEach((d,i)=>tone(520+i*70,.045,.018,'square',d))}
+  function playLand(){tone(150,.13,.10,'triangle');tone(92,.17,.065,'sine',.018);tone(760,.035,.024,'square',.02)}
+  function syncSoundButton(){const b=$('soundToggle');b.classList.toggle('off',!soundOn);b.textContent=soundOn?'🔊':'🔇';b.setAttribute('aria-pressed',String(soundOn));b.setAttribute('aria-label',soundOn?'효과음 켜짐':'효과음 꺼짐')}
   function track(name,params={}){try{window.FUNY_TRACK?.(name,{tool_name:'coin_flip',...params})}catch(_){}}
   function align(outcome){
     const base=Math.floor(currentAngle/360)*360;
     currentAngle=base+(outcome===1?180:0);
     els.coin.style.transition='none';
-    els.coin.style.transform=`rotateX(${currentAngle+10}deg) rotateZ(-4deg)`;
+    els.coin.style.transform=`rotateX(${currentAngle+66}deg) rotateZ(-12deg)`;
     void els.coin.offsetWidth;
     els.coin.style.removeProperty('transition');
   }
@@ -133,7 +141,7 @@ main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;f
     if(token!==flipToken)return;
     history.push(outcome);if(history.length>20)history.shift();save();setBusy(false);els.stage.classList.remove('flipping');
     els.kicker.textContent='RESULT';els.text.textContent=LABELS[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent='코인플립 결과가 결정되었습니다.';
-    renderStats();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
+    renderStats();playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
   }
   function flip(){
     if(busy)return;
@@ -142,19 +150,20 @@ main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;f
     currentAngle+=spins*360+delta;
     setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent='잠시만 기다려주세요.';
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
-    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?320:1620;
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?320:1900;
     els.coin.style.transitionDuration=duration+'ms';
     const tilt=(secureRandom()%9)-4;
-    requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+10}deg) rotateZ(${-4+tilt}deg)`});
+    playLaunch();playSpin();requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+66}deg) rotateZ(${-12+tilt}deg)`});
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start');setTimeout(()=>finish(outcome,token),duration+80);
   }
   function reset(){
     if(busy||!history.length)return;history=[];save();align(0);renderResult();renderStats();showToast('기록을 초기화했어요.');track('coin_flip_reset');
   }
   $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
+  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){tone(660,.06,.045,'sine');showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);els.stage.classList.remove('flipping');renderResult();align(history.length?history[history.length-1]:0)}});
-  renderResult();renderStats();align(history.length?history[history.length-1]:0);track('coin_flip_view');
+  syncSoundButton();renderResult();renderStats();align(history.length?history[history.length-1]:0);track('coin_flip_view');
 })();
 </script>
 </body>

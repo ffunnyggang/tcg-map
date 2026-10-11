@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff">
+<title>등급 확률 · 손익 계산기 | FUNY PIN</title><meta name="description" content="Raw 카드 가격, 그레이딩 비용, 등급별 예상가와 확률로 기대 손익을 계산합니다."><link rel="canonical" href="https://funypin.kr/grading-calculator.html"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--p:#8062d8;--pd:#6749bd;--ps:#f3effb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--good:#208a55;--bad:#b42318}
+*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink)}button,input,select{font:inherit}
+.shell{width:min(100%,440px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(36px,env(safe-area-inset-bottom))}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #f0edf3}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px}.spacer{width:38px;margin-left:auto}
+main{padding:18px 16px}.eyebrow{font-size:10px;font-weight:900;color:var(--p);letter-spacing:.1em}.title{margin:6px 0 5px;font-size:26px;letter-spacing:-.05em}.desc{margin:0;color:#77717c;font-size:12px;line-height:1.6}
+.card{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:20px;background:#fff}.section-title{font-size:12px;font-weight:900;margin-bottom:11px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{min-width:0}.field.wide{grid-column:1/-1}.field label{display:block;margin:0 0 6px;font-size:10px;font-weight:800;color:#77717c}.field input,.field select{width:100%;height:46px;border:1px solid #dfd9e4;border-radius:12px;background:#fff;padding:0 12px;font-size:15px;outline:none}.field input:focus,.field select:focus{border-color:#a68ce8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}
+.hero-result{margin-top:16px;padding:20px;border-radius:22px;background:linear-gradient(145deg,#f5f1fd,#faf9fc);text-align:center;border:1px solid #e7def5}.hero-result span{display:block;font-size:10px;color:#817986;font-weight:800}.hero-result strong{display:block;margin-top:6px;font-size:34px;letter-spacing:-.06em;color:var(--pd)}.hero-result small{display:block;margin-top:5px;font-size:10px;color:#8c8590;line-height:1.5}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.metric{padding:13px 10px;border:1px solid var(--line);border-radius:14px;background:#fff}.metric span{font-size:9px;color:#928a96;font-weight:750}.metric strong{display:block;margin-top:5px;font-size:16px}.note{margin:12px 2px 0;color:#9b949f;font-size:10px;line-height:1.55}.error{margin-top:10px;color:var(--bad);font-size:10px;font-weight:750;min-height:16px}.btn{width:100%;height:48px;margin-top:12px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-weight:900}
+.list{display:grid;gap:7px}.row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;background:#f8f6fa}.row b{font-size:11px}.row span{margin-left:auto;font-size:11px;font-weight:850;color:var(--pd)}
+</style></head><body><div class="shell"><header><button class="back" onclick="history.length>1?history.back():location.href='tcg-tools.html'" aria-label="뒤로가기">‹</button><div class="brand">등급 확률 · 손익 계산기</div><div class="spacer"></div></header><main>
+<div class="eyebrow">FUNY TCG TOOL</div><h1 class="title">등급 확률 · 손익 계산기</h1><p class="desc">그레이딩 전 비용과 예상 등급별 판매가를 넣어 기대가치와 손익을 계산해보세요.</p>
+<section class="card"><div class="section-title">투입 비용</div><div class="grid">
+<div class="field"><label>RAW 카드 가치</label><input id="raw" type="number" min="0" value="100000"></div>
+<div class="field"><label>그레이딩 비용</label><input id="grading" type="number" min="0" value="30000"></div>
+<div class="field wide"><label>배송 · 기타 비용</label><input id="other" type="number" min="0" value="10000"></div>
+</div></section>
+<section class="card"><div class="section-title">등급별 예상 판매가 · 확률</div><div class="grid">
+<div class="field"><label>10등급 예상가</label><input id="v10" type="number" min="0" value="250000"></div><div class="field"><label>10등급 확률 (%)</label><input id="p10" type="number" min="0" max="100" value="40"></div>
+<div class="field"><label>9등급 예상가</label><input id="v9" type="number" min="0" value="120000"></div><div class="field"><label>9등급 확률 (%)</label><input id="p9" type="number" min="0" max="100" value="40"></div>
+<div class="field"><label>8이하 예상가</label><input id="v8" type="number" min="0" value="80000"></div><div class="field"><label>8이하 확률 (%)</label><input id="p8" type="number" min="0" max="100" value="20"></div>
+</div><div id="err" class="error"></div></section>
+<section class="hero-result"><span>확률 가중 예상 손익</span><strong id="profit">₩0</strong><small id="profitSub">기대가치에서 총 투입비용을 차감합니다.</small></section>
+<section class="metrics"><div class="metric"><span>총 투입비용</span><strong id="cost">₩0</strong></div><div class="metric"><span>예상 그레이딩 가치</span><strong id="ev">₩0</strong></div><div class="metric"><span>예상 수익률</span><strong id="roi">0%</strong></div><div class="metric"><span>손익분기 10등급 확률</span><strong id="break">-</strong></div></section>
+<p class="note">※ 실제 등급과 시세는 달라질 수 있습니다. 본 도구는 사용자가 직접 입력한 가정에 따른 기대값 계산용입니다.</p>
+</main></div><script>
+(()=>{const $=id=>document.getElementById(id),won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');function calc(){
+const vals=['raw','grading','other','v10','p10','v9','p9','v8','p8'].map(id=>Math.max(0,Number($(id).value)||0));const [raw,g,o,v10,p10,v9,p9,v8,p8]=vals,err=$('err'),sum=p10+p9+p8;err.textContent='';
+if(Math.abs(sum-100)>.001){err.textContent='등급 확률 합계를 100%로 맞춰주세요.'}
+const cost=raw+g+o,ev=v10*p10/100+v9*p9/100+v8*p8/100,profit=ev-cost,roi=cost?profit/cost*100:0;
+$('cost').textContent=won(cost);$('ev').textContent=won(ev);$('profit').textContent=(profit>=0?'+':'-')+won(Math.abs(profit));$('profit').style.color=profit>=0?'var(--good)':'var(--bad)';$('roi').textContent=(roi>=0?'+':'')+roi.toFixed(1)+'%';
+const rest=p9+p8,non10=rest?((v9*p9+v8*p8)/rest):0,den=v10-non10;let br=den>0?(cost-non10)/den:null;if(br==null||br<0)$('break').textContent='0%';else if(br>1)$('break').textContent='100% 초과';else $('break').textContent=(br*100).toFixed(1)+'%';
+$('profitSub').textContent=sum===100?'확률 가중 기대가치 기준입니다.':'확률 합계가 100%가 아니어서 결과를 확인해주세요.';
+try{window.FUNY_TRACK?.('grading_calculator_change',{grade10_probability:p10,total_cost:Math.round(cost)})}catch(_){}
+}document.querySelectorAll('input').forEach(x=>x.addEventListener('input',calc));calc()})();
+</script></body></html>

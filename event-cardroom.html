@@ -64,12 +64,12 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
   <div class="event-info">
     <div class="block">
       <b>🗓️ 이벤트 기간</b><br>
-      <span id="eventPeriod">2026년 XX월 XX일( ) ~ XX월 XX일( )<br>오후 10시까지</span>
+      <span id="eventPeriod">2026년 10월 12일(월) ~ 10월 30일(금)<br>오후 10시까지</span>
     </div>
 
     <div class="block">
       <b>📢 당첨자 발표</b><br>
-      <span id="winnerDate">2026년 XX월 XX일( )</span>
+      <span id="winnerDate">2026년 10월 31일(토)</span>
     </div>
 
     <div class="block">
@@ -122,7 +122,7 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
   var base='https://wdttzpbmqavaqfcbaywj.supabase.co';
   var key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   var headers={apikey:key,Authorization:'Bearer '+key};
-  var campaignId='';
+  var campaignId='EV-20261011-40FDF5';
 
   var period=document.getElementById('eventPeriod');
   var mapBtn=document.getElementById('mapEntryBtn');
@@ -152,10 +152,10 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
     if(!c)return;
     campaignId=c.id||'';
     var s=kstParts(c.starts_at),e=kstParts(c.ends_at);
-    if(s&&e&&period)period.innerHTML=dayText(s)+' ~ '+dayText(e)+'<br>'+timeText(e)+'까지';
+    // 이벤트 기간/당첨자 발표일은 본 페이지 고정 안내값을 사용합니다.
   }
   async function resolveCampaign(){
-    var forced=new URLSearchParams(location.search).get('campaign');
+    var forced=new URLSearchParams(location.search).get('campaign')||campaignId;
     try{
       if(forced&&/^EV-[A-Z0-9-]+$/i.test(forced)){
         var q1='select=id,title,starts_at,ends_at,status,entry_limit_mode,entry_limit_count&id=eq.'+encodeURIComponent(forced)+'&limit=1';

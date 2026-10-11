@@ -65,7 +65,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
     </div>
   </div>
   <div class="price-summary"><span>총 구매 금액</span><strong id="totalPrice">15,000원</strong></div>
-  <input id="total" type="hidden" value="100"><input id="remaining" type="hidden" value="100"><input id="wins" type="hidden" value="5">
+  <input id="total" type="hidden" value="100"><input id="remaining" type="hidden" value="100"><input id="wins" type="hidden" value="20">
   <div id="err" class="error"></div>
 
   <p class="fair-note"><span class="fair-icon">⚠️</span><span>계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.</span></p>
@@ -92,7 +92,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 </main></div><script>
 (()=>{
   const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
-  const state={total:100,remaining:100,wins:5,buy:1,price:15000};
+  const state={total:100,remaining:100,wins:20,buy:1,price:15000};
   const wheels={total:$('totalWheel'),remaining:$('remainingWheel'),wins:$('winsWheel')};
   const wheelTimer={};
 

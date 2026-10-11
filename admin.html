@@ -885,12 +885,12 @@ async function deleteEventCampaign(campaign){
  if(!confirm('“'+campaign.title+'” 이벤트 내역을 삭제할까요?\n\n이벤트는 목록에서 제거되고 신규 응모가 중단됩니다. 기존 응모 기록은 DB에 보관됩니다.'))return;
  let campaignDeleted=false;
  try{
-  await api('/rest/v1/event_campaigns?id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.active',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'deleted',updated_at:new Date().toISOString()})});
+  await api('/rest/v1/event_campaigns?id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.active',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'archived',updated_at:new Date().toISOString()})});
   campaignDeleted=true;
   try{
    await api('/rest/v1/funy_mon_rewards?entry_campaign_id=eq.'+encodeURIComponent(campaign.shopId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({entry_apply_enabled:false,entry_campaign_id:null,updated_at:new Date().toISOString()})});
   }catch(syncError){
-   try{await api('/rest/v1/event_campaigns?id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.deleted',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'active',updated_at:new Date().toISOString()})});campaignDeleted=false}catch(_){}
+   try{await api('/rest/v1/event_campaigns?id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.archived',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'active',updated_at:new Date().toISOString()})});campaignDeleted=false}catch(_){}
    throw new Error('연결된 퍼니몬 리워드 해제 실패: '+syncError.message);
   }
   await renderEventCampaignList();

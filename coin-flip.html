@@ -94,7 +94,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const LABELS=['앞면','뒷면'];
   const $=id=>document.getElementById(id);
   const els={coin:$('coin'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),dailyTotal:$('dailyTotal'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
-  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null;
+  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,activeDate=kstDate();
 
   function kstDate(){
     try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
@@ -135,7 +135,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     const base=Math.floor(currentAngle/360)*360;
     currentAngle=base+(outcome===1?180:0);
     els.coin.style.transition='none';
-    els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(-12deg)`;
+    els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(-10deg)`;
     void els.coin.offsetWidth;
     els.coin.style.removeProperty('transition');
   }
@@ -193,7 +193,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){tone(660,.06,.045,'sine');showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);els.stage.classList.remove('flipping');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats()}});
-  syncSoundButton();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const before=history.length;ensureToday();if(before&&!history.length){renderResult();loadDailyStats();showToast('새로운 날짜의 기록이 시작됐어요.')}},30000);track('coin_flip_view');
+  syncSoundButton();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');
 })();
 </script>
 </body>

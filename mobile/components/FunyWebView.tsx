@@ -508,6 +508,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const cmsInternalPageHeaderInjection=hideWebPageHeader&&isFunyHost(url)?String.raw`
 (function(){
 try{
+  var host=String(location.hostname||'').toLowerCase();
+  if(host!=='funypin.kr'&&host!=='www.funypin.kr')return;
   document.documentElement.classList.add('app-cms-internal-page');
   var style=document.createElement('style');
   style.id='__funy_cms_internal_page_header__';

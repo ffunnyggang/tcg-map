@@ -767,3 +767,20 @@ body.funy-mon-keyboard-open .funy-mon-entry-message{
 .funy-mon-lose-copy{
   white-space:pre-wrap!important;
 }
+
+
+/* FUNY MON detail event link reset */
+a.funymon-detail-banner,
+a.funymon-detail-banner:link,
+a.funymon-detail-banner:visited,
+a.funymon-detail-banner:hover,
+a.funymon-detail-banner:active{
+  color:inherit!important;
+  text-decoration:none!important;
+}
+a.funymon-detail-banner b,
+a.funymon-detail-banner small,
+a.funymon-detail-banner i,
+a.funymon-detail-banner span{
+  text-decoration:none!important;
+}

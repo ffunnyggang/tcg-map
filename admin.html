@@ -883,7 +883,7 @@ let eventRows=[];
 async function loadEventEntries(campaign=eventCampaigns[0]||EVENT_CAMPAIGNS[0]){
  const f=$('feed');f.innerHTML='<div class="empty">불러오는 중...</div>';
  try{
-  eventRows=await api('/rest/v1/live_reports?select=id,content,created_at,client_id,status&shop_id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.EVENT_ENTRY&order=created_at.desc&limit=1000');
+  eventRows=await api('/rest/v1/live_reports?select=id,content,created_at,client_id,status,entry_claim_code&shop_id=eq.'+encodeURIComponent(campaign.shopId)+'&status=eq.EVENT_ENTRY&order=created_at.desc&limit=1000');
   renderEventEntries('',campaign);
  }catch(e){f.innerHTML='<div class="empty error">이벤트 응모 조회 실패: '+esc(e.message)+'</div>'}
 }
@@ -939,10 +939,23 @@ function openEventEntryEdit(row,campaign,query=''){
 async function deleteEventEntry(row,campaign,query=''){
  const who=(row.content||'').trim();
  if(!confirm('@'+who+' 응모 내역을 삭제할까요?\n\n삭제된 응모는 추첨 대상과 응모 제한 계산에서 제외되며 DB에는 삭제 이력으로 보관됩니다.'))return;
+ let entryDeleted=false;
  try{
   await api('/rest/v1/live_reports?id=eq.'+encodeURIComponent(row.id)+'&status=eq.EVENT_ENTRY',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'EVENT_ENTRY_DELETED'})});
+  entryDeleted=true;
+  if(row.entry_claim_code){
+   try{
+    await api('/rest/v1/user_entries?source_type=eq.funy_mon&code=eq.'+encodeURIComponent(row.entry_claim_code),{method:'DELETE',headers:{Prefer:'return=minimal'}});
+   }catch(syncError){
+    try{await api('/rest/v1/live_reports?id=eq.'+encodeURIComponent(row.id)+'&status=eq.EVENT_ENTRY_DELETED',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:'EVENT_ENTRY'})});entryDeleted=false}catch(_){}
+    throw new Error('MY 응모 내역 동기화 실패: '+syncError.message);
+   }
+  }
   eventRows=eventRows.filter(x=>String(x.id)!==String(row.id));renderEventEntries(query,campaign);alert('응모 내역을 삭제했습니다.');
- }catch(e){alert('응모 내역 삭제 실패: '+e.message)}
+ }catch(e){
+  if(entryDeleted){try{await loadEventEntries(campaign)}catch(_){}}
+  alert('응모 내역 삭제 실패: '+e.message)
+ }
 }
 async function resetEventEntries(campaign=window.__currentEventCampaign||eventCampaigns[0]||EVENT_CAMPAIGNS[0]){
  if(!eventRows.length){alert('리셋할 응모이력이 없습니다.');return}

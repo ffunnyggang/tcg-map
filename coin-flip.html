@@ -118,18 +118,47 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     if(!soundOn)return null;
     try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
   }
-  function tone(freq,duration,volume=.06,type='sine',delay=0){
-    const ctx=audio();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(Math.max(40,freq*.72),t+duration);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.02)
+  function makeNoise(duration=.08,delay=0,volume=.08,low=700,high=7000){
+    const ctx=audio();if(!ctx)return;const len=Math.max(1,Math.floor(ctx.sampleRate*duration)),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);
+    for(let i=0;i<len;i++){const env=Math.exp(-i/(ctx.sampleRate*(duration*.18)));data[i]=(Math.random()*2-1)*env}
+    const src=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),gain=ctx.createGain(),t=ctx.currentTime+delay;
+    src.buffer=buffer;hp.type='highpass';hp.frequency.value=low;lp.type='lowpass';lp.frequency.value=high;
+    gain.gain.setValueAtTime(volume,t);gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    src.connect(hp);hp.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start(t);src.stop(t+duration+.02)
   }
-  function metalPing(delay=0,volume=.055){
-    const partials=[1180,1760,2440,3260,4120];partials.forEach((f,i)=>tone(f,.10+i*.018,volume/(1+i*.34),i%2?'triangle':'sine',delay+i*.0015));
+  function resonant(freq,duration=.22,volume=.035,delay=0,detune=0){
+    const ctx=audio();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+delay;
+    o.type='sine';o.frequency.setValueAtTime(freq,t);o.detune.setValueAtTime(detune,t);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.025)
   }
-  function metalClink(delay=0,volume=.08){
-    const ctx=audio();if(!ctx)return;const len=Math.floor(ctx.sampleRate*.11),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*.018));const src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain(),t=ctx.currentTime+delay;src.buffer=buffer;filter.type='bandpass';filter.frequency.value=3200;filter.Q.value=3.8;gain.gain.setValueAtTime(volume,t);gain.gain.exponentialRampToValueAtTime(.0001,t+.11);src.connect(filter);filter.connect(gain);gain.connect(ctx.destination);src.start(t);src.stop(t+.12);metalPing(delay,volume*.65)
+  function coinImpact(delay=0,volume=.10,pitch=1){
+    makeNoise(.055,delay,volume*.72,1200,9800);
+    const modes=[
+      [1280,.19,1.00],[1840,.24,.72],[2470,.18,.50],[3180,.14,.34],[4360,.10,.20]
+    ];
+    modes.forEach(([f,d,v],i)=>resonant(f*pitch,d,volume*v,delay+i*.0008,(Math.random()-.5)*9));
   }
-  function playLaunch(){metalClink(0,.075);tone(720,.09,.028,'triangle',.015)}
-  function playSpin(){[0,.14,.28,.42,.56,.70].forEach((d,i)=>{metalPing(d,.018);tone(980+i*30,.035,.009,'sine',d+.012)})}
-  function playLand(){metalClink(0,.12);tone(190,.10,.055,'triangle',0);metalPing(.045,.045);metalClink(.095,.045)}
+  function edgeTick(delay=0,volume=.025){
+    makeNoise(.022,delay,volume*.7,2400,11000);
+    resonant(2900+Math.random()*380,.07,volume,delay,(Math.random()-.5)*12);
+    resonant(4200+Math.random()*500,.045,volume*.45,delay+.001,(Math.random()-.5)*15);
+  }
+  function playLaunch(){
+    makeNoise(.028,0,.045,500,5200);
+    coinImpact(.012,.055,.96);
+  }
+  function playSpin(){
+    [0.22,0.48,0.76,1.03,1.31].forEach((d,i)=>edgeTick(d,.013-(i*.001)));
+  }
+  function playLand(){
+    coinImpact(0,.125,1.00);
+    makeNoise(.075,.002,.075,450,8500);
+    edgeTick(.082,.034);
+    coinImpact(.115,.052,1.035);
+    edgeTick(.205,.018);
+    coinImpact(.235,.025,.97);
+  }
   function track(name,params={}){try{window.FUNY_TRACK?.(name,{tool_name:'coin_flip',...params})}catch(_){}}
   function align(outcome){
     const base=Math.floor(currentAngle/360)*360;

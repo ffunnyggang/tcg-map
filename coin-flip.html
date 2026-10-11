@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>코인플립 | FUNY PIN</title>
+<meta name="description" content="앞면·뒷면 또는 선공·후공을 공정하게 결정하는 무료 TCG 코인플립 도구입니다.">
+<link rel="canonical" href="https://funypin.kr/coin-flip.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--purple:#8062d8;--purple-dark:#6749bd;--purple-soft:#f2eefb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--danger:#b42318}
+*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;color:var(--ink);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button{font:inherit}button:focus-visible{outline:3px solid rgba(128,98,216,.28);outline-offset:3px}
+.shell{width:min(100%,440px);min-height:100dvh;margin:0 auto;background:#fff;overflow:hidden;position:relative;padding-bottom:max(34px,env(safe-area-inset-bottom))}
+.shell:before{content:"";position:absolute;left:-95px;top:82px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(128,98,216,.12),rgba(128,98,216,0) 68%);pointer-events:none}.shell:after{content:"";position:absolute;right:-130px;top:315px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(168,143,235,.13),rgba(168,143,235,0) 69%);pointer-events:none}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(235,230,239,.82)}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;cursor:pointer;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px;letter-spacing:-.025em}.header-spacer{width:38px;margin-left:auto}
+main{position:relative;z-index:1;padding:18px 16px 0}.eyebrow{font-size:10.5px;font-weight:900;color:var(--purple);letter-spacing:.1em}.title{margin:6px 0 5px;font-size:27px;line-height:1.18;letter-spacing:-.05em}.desc{margin:0;color:#77717c;font-size:12.5px;line-height:1.55}
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:18px;padding:4px;border:1px solid #e9e3ee;border-radius:14px;background:#f8f6fa}.mode-tab{height:39px;border:0;border-radius:10px;background:transparent;color:#837b88;font-size:12px;font-weight:850;cursor:pointer;transition:.18s ease}.mode-tab.on{background:#fff;color:var(--purple-dark);box-shadow:0 4px 14px rgba(66,48,86,.09)}
+.game-card{margin-top:14px;padding:20px 16px 16px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,#fdfcff 0%,#faf8fd 100%);box-shadow:0 10px 34px rgba(56,43,70,.07);overflow:hidden;position:relative}.game-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 25%,rgba(128,98,216,.09),transparent 45%);pointer-events:none}
+.result-area{min-height:50px;text-align:center;position:relative;z-index:2}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
+.coin-stage{display:block;width:210px;height:220px;margin:8px auto 0;padding:0;border:0;background:transparent;perspective:1000px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent}.coin-stage:disabled{cursor:default}.coin-rise{width:100%;height:100%;display:grid;place-items:center;position:relative;transform-origin:50% 78%}.coin-stage.flipping .coin-rise{animation:coinToss 1.32s cubic-bezier(.24,.68,.32,1)}
+.coin{width:164px;height:164px;position:relative;transform-style:preserve-3d;transform:rotateY(0deg) rotateX(7deg);transition:transform 1.32s cubic-bezier(.16,.72,.18,1);will-change:transform}.coin-face{position:absolute;inset:0;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:7px solid rgba(255,255,255,.68);box-shadow:inset 0 0 0 3px rgba(70,50,100,.14),inset 0 -12px 22px rgba(43,26,72,.12),0 3px 0 #5f44ad,0 7px 0 #51399a,0 12px 22px rgba(53,39,72,.20)}.coin-front{background:linear-gradient(145deg,#b9a6ee 0%,#876bdd 42%,#6a4bc3 100%);color:#fff}.coin-back{transform:rotateY(180deg);background:linear-gradient(145deg,#5c5663 0%,#36313b 45%,#242129 100%);color:#fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.10),inset 0 -12px 22px rgba(0,0,0,.20),0 3px 0 #312b36,0 7px 0 #242027,0 12px 22px rgba(28,23,32,.26)}.coin-ring{position:absolute;inset:12px;border-radius:50%;border:2px dashed rgba(255,255,255,.42);pointer-events:none}.coin-brand{font-size:9px;font-weight:900;letter-spacing:.18em;opacity:.82}.coin-mark{margin-top:3px;font-size:40px;line-height:1;font-weight:950;letter-spacing:-.08em;text-shadow:0 2px 9px rgba(45,26,76,.18)}.coin-mark.wide{font-size:29px;letter-spacing:-.06em}.coin-side-name{margin-top:5px;font-size:9px;font-weight:850;letter-spacing:.12em;opacity:.78}.coin-shadow{position:absolute;left:50%;bottom:17px;width:122px;height:22px;border-radius:50%;background:rgba(52,42,61,.20);filter:blur(10px);transform:translateX(-50%) scale(1);transition:.24s ease}.coin-stage.flipping .coin-shadow{animation:shadowToss 1.32s ease-in-out}
+.flip-button{width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
+.history-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.history-head{display:flex;align-items:center;gap:8px}.history-title{font-size:12px;font-weight:900}.history-count{font-size:9px;color:#9a929e}.reset-history{margin-left:auto;border:0;background:#f4f1f6;color:#817a86;border-radius:9px;height:29px;padding:0 10px;font-size:9px;font-weight:850;cursor:pointer}.reset-history:disabled{opacity:.45}.history-list{display:flex;gap:7px;overflow-x:auto;padding:12px 1px 2px;scrollbar-width:none}.history-list::-webkit-scrollbar{display:none}.history-empty{width:100%;padding:12px 4px 7px;color:#a098a5;font-size:10.5px;text-align:center}.history-chip{min-width:48px;height:48px;padding:0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;border:1px solid #e9e3ef;background:#faf8fc}.history-chip.front{background:#f2eefb;border-color:#e0d6f4;color:#684bbb}.history-chip.back{background:#f2f0f3;border-color:#e1dde4;color:#433d47}.history-chip b{font-size:11px;line-height:1.1}.history-chip span{margin-top:3px;font-size:8px;opacity:.68;font-weight:750}
+.tip{margin:13px 2px 0;color:#9a929e;font-size:10px;line-height:1.55;text-align:center}.tip b{color:#766e7b}
+.toast{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));z-index:100;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(38,33,43,.92);color:#fff;font-size:11px;font-weight:750;transform:translate(-50%,18px);opacity:0;pointer-events:none;transition:.22s ease}.toast.show{transform:translate(-50%,0);opacity:1}
+@keyframes coinToss{0%{transform:translateY(0) scale(1)}37%{transform:translateY(-54px) scale(1.05)}72%{transform:translateY(-12px) scale(1.01)}100%{transform:translateY(0) scale(1)}}@keyframes shadowToss{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}37%{opacity:.3;transform:translateX(-50%) scale(.55)}72%{opacity:.65;transform:translateX(-50%) scale(.82)}}
+@media(max-height:730px){main{padding-top:12px}.mode-tabs{margin-top:13px}.game-card{padding-top:14px}.coin-stage{height:190px}.coin{width:145px;height:145px}.coin-mark{font-size:35px}.coin-mark.wide{font-size:26px}.coin-shadow{bottom:7px}.stats{margin-top:10px}.history-card{margin-top:9px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.mode-tab,.flip-button,.toast{transition:none}.coin-stage.flipping .coin-rise,.coin-stage.flipping .coin-shadow{animation:none}.coin{transition-duration:.28s!important}}
+</style>
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="application-name" content="FUNY PIN">
+<meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="앞면·뒷면 또는 선공·후공을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="앞면·뒷면 또는 선공·후공을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"앞면·뒷면 또는 선공·후공을 결정하는 무료 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+</head>
+<body>
+<div class="shell">
+<header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">FUNY PIN</div><div class="header-spacer"></div></header>
+<main>
+<div class="eyebrow">FUNY TCG TOOL</div>
+<h1 class="title">코인플립</h1>
+<p class="desc" id="pageDesc">앞면과 뒷면 중 하나를 공정하게 결정해요. 코인을 직접 누르거나 아래 버튼을 눌러주세요.</p>
+<div class="mode-tabs" role="tablist" aria-label="코인플립 모드">
+<button class="mode-tab on" id="modeCoin" type="button" role="tab" aria-selected="true" data-mode="coin">앞면 · 뒷면</button>
+<button class="mode-tab" id="modeTurn" type="button" role="tab" aria-selected="false" data-mode="turn">선공 · 후공</button>
+</div>
+<section class="game-card" aria-labelledby="resultText">
+<div class="result-area" aria-live="polite" aria-atomic="true">
+<span class="result-kicker" id="resultKicker">READY</span>
+<strong class="result-text" id="resultText">코인을 던져보세요</strong>
+<span class="result-sub" id="resultSub">결과는 브라우저에서 무작위로 결정됩니다.</span>
+</div>
+<button class="coin-stage" id="coinStage" type="button" aria-label="코인 던지기">
+<span class="coin-rise">
+<span class="coin" id="coin">
+<span class="coin-face coin-front"><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark" id="frontMark">앞</b><span class="coin-side-name" id="frontName">HEADS</span></span>
+<span class="coin-face coin-back"><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark" id="backMark">뒤</b><span class="coin-side-name" id="backName">TAILS</span></span>
+</span>
+<span class="coin-shadow"></span>
+</span>
+</button>
+<button class="flip-button" id="flipButton" type="button">코인 던지기</button>
+<p class="fair-note"><span class="fair-dot"></span>브라우저 난수로 결정 · 서버 전송 없음</p>
+</section>
+<section class="stats" aria-label="코인플립 통계">
+<div class="stat"><span class="stat-label" id="statFrontLabel">앞면</span><strong id="frontCount">0</strong><small id="frontRate">0%</small></div>
+<div class="stat"><span class="stat-label" id="statBackLabel">뒷면</span><strong id="backCount">0</strong><small id="backRate">0%</small></div>
+<div class="stat"><span class="stat-label">현재 연속</span><strong id="streakCount">0</strong><small id="streakLabel">-</small></div>
+</section>
+<section class="history-card">
+<div class="history-head"><span class="history-title">최근 결과</span><span class="history-count" id="historyCount">0회</span><button class="reset-history" id="resetHistory" type="button" disabled>기록 초기화</button></div>
+<div class="history-list" id="historyList"><div class="history-empty">아직 결과가 없습니다.</div></div>
+</section>
+<p class="tip"><b>TIP</b> · TCG 대전 전 선공/후공 결정이 필요하다면 위에서 모드를 바꿔보세요.</p>
+</main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(()=>{
+  const STORAGE_KEY='funypin-coin-flip-v1';
+  const MODES={
+    coin:{labels:['앞면','뒷면'],marks:['앞','뒤'],sideNames:['HEADS','TAILS'],button:'코인 던지기',ready:'코인을 던져보세요',desc:'앞면과 뒷면 중 하나를 공정하게 결정해요. 코인을 직접 누르거나 아래 버튼을 눌러주세요.'},
+    turn:{labels:['선공','후공'],marks:['선공','후공'],sideNames:['FIRST','SECOND'],button:'선공 · 후공 정하기',ready:'순서를 정해보세요',desc:'TCG 대전의 선공과 후공을 빠르게 결정해요. 코인을 직접 누르거나 아래 버튼을 눌러주세요.'}
+  };
+  const $=id=>document.getElementById(id);
+  const els={coin:$('coin'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),desc:$('pageDesc'),frontMark:$('frontMark'),backMark:$('backMark'),frontName:$('frontName'),backName:$('backName'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),frontLabel:$('statFrontLabel'),backLabel:$('statBackLabel'),streakCount:$('streakCount'),streakLabel:$('streakLabel'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
+  let state=loadState(),busy=false,currentAngle=0,flipToken=0,toastTimer=0;
+
+  function loadState(){
+    try{
+      const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+      const mode=raw.mode==='turn'?'turn':'coin';
+      const coin=Array.isArray(raw.histories?.coin)?raw.histories.coin.filter(v=>v===0||v===1).slice(-20):[];
+      const turn=Array.isArray(raw.histories?.turn)?raw.histories.turn.filter(v=>v===0||v===1).slice(-20):[];
+      return{mode,histories:{coin,turn}};
+    }catch(_){return{mode:'coin',histories:{coin:[],turn:[]}}}
+  }
+  function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(_){}}
+  function secureRandom(){
+    try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]>>>0}catch(_){return Math.floor(Math.random()*4294967296)>>>0}
+  }
+  function labels(){return MODES[state.mode].labels}
+  function currentHistory(){return state.histories[state.mode]}
+  function setBusy(value){busy=value;els.stage.disabled=value;els.flip.disabled=value;els.flip.textContent=value?'결정 중...':MODES[state.mode].button}
+  function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
+  function track(name,params={}){try{window.FUNY_TRACK?.(name,{tool_name:'coin_flip',mode:state.mode,...params})}catch(_){}}
+  function alignCoinTo(outcome){
+    const base=Math.floor(currentAngle/360)*360;
+    currentAngle=base+(outcome===1?180:0);
+    els.coin.style.transition='none';
+    els.coin.style.transform=`rotateY(${currentAngle}deg) rotateX(7deg)`;
+    void els.coin.offsetWidth;
+    els.coin.style.removeProperty('transition');
+  }
+  function setMode(next){
+    if(busy||!MODES[next]||next===state.mode)return;
+    state.mode=next;saveState();
+    document.querySelectorAll('.mode-tab').forEach(button=>{const on=button.dataset.mode===next;button.classList.toggle('on',on);button.setAttribute('aria-selected',String(on))});
+    renderMode();renderStats();
+    const h=currentHistory();alignCoinTo(h.length?h[h.length-1]:0);
+    track('coin_flip_mode_change',{selected_mode:next});
+  }
+  function renderMode(){
+    const m=MODES[state.mode];
+    els.desc.textContent=m.desc;els.frontMark.textContent=m.marks[0];els.backMark.textContent=m.marks[1];els.frontName.textContent=m.sideNames[0];els.backName.textContent=m.sideNames[1];
+    els.frontMark.classList.toggle('wide',state.mode==='turn');els.backMark.classList.toggle('wide',state.mode==='turn');
+    els.frontLabel.textContent=m.labels[0];els.backLabel.textContent=m.labels[1];els.flip.textContent=m.button;
+    const h=currentHistory();
+    if(h.length){const last=h[h.length-1];els.kicker.textContent='LAST RESULT';els.text.textContent=m.labels[last]+'!';els.text.classList.add('emphasis');els.sub.textContent='코인을 다시 던져 새로운 결과를 확인해보세요.'}
+    else{els.kicker.textContent='READY';els.text.textContent=m.ready;els.text.classList.remove('emphasis');els.sub.textContent='결과는 브라우저에서 무작위로 결정됩니다.'}
+  }
+  function renderStats(){
+    const h=currentHistory(),total=h.length,front=h.filter(v=>v===0).length,back=total-front;
+    els.frontCount.textContent=String(front);els.backCount.textContent=String(back);els.frontRate.textContent=(total?Math.round(front/total*100):0)+'%';els.backRate.textContent=(total?Math.round(back/total*100):0)+'%';
+    let streak=0,last=null;if(total){last=h[total-1];for(let i=total-1;i>=0&&h[i]===last;i--)streak++}
+    els.streakCount.textContent=String(streak);els.streakLabel.textContent=last===null?'-':labels()[last];els.historyCount.textContent=total+'회';els.reset.disabled=!total;
+    if(!total){els.historyList.innerHTML='<div class="history-empty">아직 결과가 없습니다.</div>';return}
+    els.historyList.innerHTML=h.slice().reverse().map((value,index)=>`<div class="history-chip ${value===0?'front':'back'}"><b>${labels()[value]}</b><span>${total-index}번째</span></div>`).join('');
+  }
+  function finishFlip(outcome,token){
+    if(token!==flipToken)return;
+    const h=currentHistory();h.push(outcome);if(h.length>20)h.shift();saveState();setBusy(false);els.stage.classList.remove('flipping');
+    els.kicker.textContent='RESULT';els.text.textContent=labels()[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent=state.mode==='turn'?(outcome===0?'이번 게임은 선공으로 시작하세요.':'이번 게임은 후공으로 시작하세요.'):'코인플립 결과가 결정되었습니다.';
+    renderStats();try{navigator.vibrate?.([35,35,60])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:h.length});
+  }
+  function flip(){
+    if(busy)return;
+    const token=++flipToken,outcome=secureRandom()&1,extraSpins=5+(secureRandom()%3),normalized=((currentAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
+    currentAngle+=extraSpins*360+delta;setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='결과 확인 중...';els.text.classList.remove('emphasis');els.sub.textContent='잠시만 기다려주세요.';els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?320:1320;els.coin.style.transitionDuration=duration+'ms';requestAnimationFrame(()=>{els.coin.style.transform=`rotateY(${currentAngle}deg) rotateX(7deg)`});
+    try{navigator.vibrate?.(28)}catch(_){}track('coin_flip_start');setTimeout(()=>finishFlip(outcome,token),duration+70);
+  }
+  function resetHistory(){
+    if(busy||!currentHistory().length)return;
+    state.histories[state.mode]=[];saveState();alignCoinTo(0);renderMode();renderStats();showToast('현재 모드의 기록을 초기화했어요.');track('coin_flip_reset');
+  }
+  $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
+  document.querySelectorAll('.mode-tab').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.mode)));
+  els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',resetHistory);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);els.stage.classList.remove('flipping');renderMode();const h=currentHistory();alignCoinTo(h.length?h[h.length-1]:0)}});
+  document.querySelectorAll('.mode-tab').forEach(button=>{const on=button.dataset.mode===state.mode;button.classList.toggle('on',on);button.setAttribute('aria-selected',String(on))});
+  renderMode();renderStats();const initial=currentHistory();alignCoinTo(initial.length?initial[initial.length-1]:0);track('coin_flip_view');
+})();
+</script>
+</body>
+</html>

@@ -102,7 +102,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
   function won(v){return Math.max(0,Math.round(v||0)).toLocaleString('ko-KR')+'원'}
 
   function setWheelClasses(name,value){
-    const wheel=wheels[name];wheel.querySelectorAll('.wheel-item').forEach(item=>{const d=Math.abs(Number(item.dataset.value)-value);item.classList.toggle('active',d===0);item.classList.toggle('near',d===1)});
+    const wheel=wheels[name];wheel.querySelectorAll('.wheel-item').forEach(item=>{const d=Math.abs(Number(item.dataset.value)-value);item.classList.toggle('active',d===0);item.classList.toggle('near',d===1);item.classList.toggle('far',d===2)});
   }
   function buildWheel(name,min,max,value){
     const wheel=wheels[name];value=Math.max(min,Math.min(max,Math.round(value||min)));state[name]=value;wheel.innerHTML='';const frag=document.createDocumentFragment();

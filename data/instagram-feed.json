@@ -1,7 +1,67 @@
 {
-  "updatedAt": "2026-10-11T02:42:40.285Z",
+  "updatedAt": "2026-10-11T16:59:34.817Z",
   "source": "brightdata-instagram-profiles",
   "shops": {
+    "KR-SEO-006": {
+      "username": "cardtown_kr",
+      "source": "brightdata-instagram-profiles",
+      "posts": [
+        {
+          "image": "images/instagram/KR-SEO-006/DeUNoLoGSEY.jpg",
+          "permalink": "https://www.instagram.com/p/DeUNoLoGSEY",
+          "timestamp": "2026-10-09T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-006/DeQmhAUGUUX.jpg",
+          "permalink": "https://www.instagram.com/p/DeQmhAUGUUX",
+          "timestamp": "2026-10-08T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-006/DeVsz-XGViX.jpg",
+          "permalink": "https://www.instagram.com/p/DeVsz-XGViX",
+          "timestamp": "2026-10-10T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-SEO-006/DeVquhymUgH.jpg",
+          "permalink": "https://www.instagram.com/p/DeVquhymUgH",
+          "timestamp": "2026-10-10T00:00:00.000Z",
+          "contentType": "Carousel"
+        }
+      ]
+    },
+    "KR-SEO-001": {
+      "username": "tcgcardnova",
+      "source": "brightdata-instagram-profiles",
+      "posts": [
+        {
+          "image": "images/instagram/KR-SEO-001/DeGlSjhvvh5.jpg",
+          "permalink": "https://www.instagram.com/p/DeGlSjhvvh5",
+          "timestamp": "2026-10-04T00:00:00.000Z",
+          "contentType": "Video"
+        },
+        {
+          "image": "images/instagram/KR-SEO-001/DeWPk44PnCW.jpg",
+          "permalink": "https://www.instagram.com/p/DeWPk44PnCW",
+          "timestamp": "2026-10-11T00:00:00.000Z",
+          "contentType": "Video"
+        },
+        {
+          "image": "images/instagram/KR-SEO-001/Dd_Al2_D4Gc.jpg",
+          "permalink": "https://www.instagram.com/p/Dd_Al2_D4Gc",
+          "timestamp": "2026-10-02T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-001/Dd-zfPKD6k-.jpg",
+          "permalink": "https://www.instagram.com/p/Dd-zfPKD6k-",
+          "timestamp": "2026-10-01T00:00:00.000Z",
+          "contentType": "Image"
+        }
+      ]
+    },
     "KR-SEO-003": {
       "username": "firstcardshop",
       "source": "brightdata-instagram-profiles",
@@ -32,36 +92,6 @@
         }
       ]
     },
-    "KR-SEO-001": {
-      "username": "tcgcardnova",
-      "source": "brightdata-instagram-profiles",
-      "posts": [
-        {
-          "image": "images/instagram/KR-SEO-001/DeGlSjhvvh5.jpg",
-          "permalink": "https://www.instagram.com/p/DeGlSjhvvh5",
-          "timestamp": "2026-10-04T00:00:00.000Z",
-          "contentType": "Video"
-        },
-        {
-          "image": "images/instagram/KR-SEO-001/Dd_Al2_D4Gc.jpg",
-          "permalink": "https://www.instagram.com/p/Dd_Al2_D4Gc",
-          "timestamp": "2026-10-02T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-001/Dd-zfPKD6k-.jpg",
-          "permalink": "https://www.instagram.com/p/Dd-zfPKD6k-",
-          "timestamp": "2026-10-01T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-001/Dd-uSgAPnlb.jpg",
-          "permalink": "https://www.instagram.com/p/Dd-uSgAPnlb",
-          "timestamp": "2026-10-01T00:00:00.000Z",
-          "contentType": "Video"
-        }
-      ]
-    },
     "KR-SEO-002": {
       "username": "rubycard_shop",
       "source": "brightdata-instagram-profiles",
@@ -73,21 +103,21 @@
           "contentType": "Carousel"
         },
         {
-          "image": "images/instagram/KR-SEO-002/DeT6TO1BmW9.jpg",
-          "permalink": "https://www.instagram.com/p/DeT6TO1BmW9",
-          "timestamp": "2026-10-10T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-002/DeW4mZ3AajE.jpg",
+          "permalink": "https://www.instagram.com/p/DeW4mZ3AajE",
+          "timestamp": "2026-10-11T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-SEO-002/DeWtH4WBFSI.jpg",
+          "permalink": "https://www.instagram.com/p/DeWtH4WBFSI",
+          "timestamp": "2026-10-11T00:00:00.000Z",
           "contentType": "Video"
         },
         {
-          "image": "images/instagram/KR-SEO-002/DeJIn0ph4hi.jpg",
-          "permalink": "https://www.instagram.com/p/DeJIn0ph4hi",
-          "timestamp": "2026-10-05T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-002/DeHWZRQBs0V.jpg",
-          "permalink": "https://www.instagram.com/p/DeHWZRQBs0V",
-          "timestamp": "2026-10-05T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-002/DeT6TO1BmW9.jpg",
+          "permalink": "https://www.instagram.com/p/DeT6TO1BmW9",
+          "timestamp": "2026-10-10T00:00:00.000Z",
           "contentType": "Video"
         }
       ]
@@ -122,93 +152,33 @@
         }
       ]
     },
-    "KR-SEO-006": {
-      "username": "cardtown_kr",
+    "KR-SEO-009": {
+      "username": "tcr_kr",
       "source": "brightdata-instagram-profiles",
       "posts": [
         {
-          "image": "images/instagram/KR-SEO-006/DeUNoLoGSEY.jpg",
-          "permalink": "https://www.instagram.com/p/DeUNoLoGSEY",
-          "timestamp": "2026-10-09T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-009/DeBi2SxiPCq.jpg",
+          "permalink": "https://www.instagram.com/p/DeBi2SxiPCq",
+          "timestamp": "2026-10-03T00:00:00.000Z",
           "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-006/DeQmhAUGUUX.jpg",
-          "permalink": "https://www.instagram.com/p/DeQmhAUGUUX",
+          "image": "images/instagram/KR-SEO-009/DeOskKyCBhb.jpg",
+          "permalink": "https://www.instagram.com/p/DeOskKyCBhb",
           "timestamp": "2026-10-08T00:00:00.000Z",
           "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-006/DeTSom9GaAG.jpg",
-          "permalink": "https://www.instagram.com/p/DeTSom9GaAG",
-          "timestamp": "2026-10-09T00:00:00.000Z",
-          "contentType": "Carousel"
-        },
-        {
-          "image": "images/instagram/KR-SEO-006/DeOZXpfGdLz.jpg",
-          "permalink": "https://www.instagram.com/p/DeOZXpfGdLz",
-          "timestamp": "2026-10-08T00:00:00.000Z",
-          "contentType": "Carousel"
-        }
-      ]
-    },
-    "KR-SEO-011": {
-      "username": "golden.m_kr",
-      "source": "brightdata-instagram-profiles",
-      "posts": [
-        {
-          "image": "images/instagram/KR-SEO-011/DeOKzbSEgq8.jpg",
-          "permalink": "https://www.instagram.com/p/DeOKzbSEgq8",
+          "image": "images/instagram/KR-SEO-009/DeL4PTjCn11.jpg",
+          "permalink": "https://www.instagram.com/p/DeL4PTjCn11",
           "timestamp": "2026-10-07T00:00:00.000Z",
-          "contentType": "Carousel"
-        },
-        {
-          "image": "images/instagram/KR-SEO-011/DeGSj1Lkg90.jpg",
-          "permalink": "https://www.instagram.com/p/DeGSj1Lkg90",
-          "timestamp": "2026-10-04T00:00:00.000Z",
-          "contentType": "Carousel"
-        },
-        {
-          "image": "images/instagram/KR-SEO-011/DdzWJuYkpzn.jpg",
-          "permalink": "https://www.instagram.com/p/DdzWJuYkpzn",
-          "timestamp": "2026-09-27T00:00:00.000Z",
-          "contentType": "Carousel"
-        },
-        {
-          "image": "images/instagram/KR-SEO-011/DdBWPcmEtut.jpg",
-          "permalink": "https://www.instagram.com/p/DdBWPcmEtut",
-          "timestamp": "2026-09-08T00:00:00.000Z",
-          "contentType": "Image"
-        }
-      ]
-    },
-    "KR-SEO-007": {
-      "username": "moacardshop",
-      "source": "brightdata-instagram-profiles",
-      "posts": [
-        {
-          "image": "images/instagram/KR-SEO-007/DeF8gP8n6uZ.jpg",
-          "permalink": "https://www.instagram.com/p/DeF8gP8n6uZ",
-          "timestamp": "2026-10-04T00:00:00.000Z",
           "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-007/Dcf-X3fn8Ai.jpg",
-          "permalink": "https://www.instagram.com/p/Dcf-X3fn8Ai",
-          "timestamp": "2026-08-26T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-009/DeJI3bZiNG6.jpg",
+          "permalink": "https://www.instagram.com/p/DeJI3bZiNG6",
+          "timestamp": "2026-10-05T00:00:00.000Z",
           "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-007/DcbeJ5AH_no.jpg",
-          "permalink": "https://www.instagram.com/p/DcbeJ5AH_no",
-          "timestamp": "2026-08-24T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-007/DeUIKU1JjG0.jpg",
-          "permalink": "https://www.instagram.com/p/DeUIKU1JjG0",
-          "timestamp": "2026-10-10T00:00:00.000Z",
-          "contentType": "Video"
         }
       ]
     },
@@ -242,6 +212,36 @@
         }
       ]
     },
+    "KR-SEO-007": {
+      "username": "moacardshop",
+      "source": "brightdata-instagram-profiles",
+      "posts": [
+        {
+          "image": "images/instagram/KR-SEO-007/DeF8gP8n6uZ.jpg",
+          "permalink": "https://www.instagram.com/p/DeF8gP8n6uZ",
+          "timestamp": "2026-10-04T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-007/Dcf-X3fn8Ai.jpg",
+          "permalink": "https://www.instagram.com/p/Dcf-X3fn8Ai",
+          "timestamp": "2026-08-26T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-007/DcbeJ5AH_no.jpg",
+          "permalink": "https://www.instagram.com/p/DcbeJ5AH_no",
+          "timestamp": "2026-08-24T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-007/DeWyjb5n2CK.jpg",
+          "permalink": "https://www.instagram.com/p/DeWyjb5n2CK",
+          "timestamp": "2026-10-11T00:00:00.000Z",
+          "contentType": "Image"
+        }
+      ]
+    },
     "KR-SEO-010": {
       "username": "golden_archive2",
       "source": "brightdata-instagram-profiles",
@@ -251,6 +251,12 @@
           "permalink": "https://www.instagram.com/p/Dd5Eg6AH_7L",
           "timestamp": "2026-09-29T00:00:00.000Z",
           "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-010/DeWZTf6H4oM.jpg",
+          "permalink": "https://www.instagram.com/p/DeWZTf6H4oM",
+          "timestamp": "2026-10-11T00:00:00.000Z",
+          "contentType": "Video"
         },
         {
           "image": "images/instagram/KR-SEO-010/DeT0dkGHyus.jpg",
@@ -263,41 +269,35 @@
           "permalink": "https://www.instagram.com/p/DeRPpkTn15F",
           "timestamp": "2026-10-09T00:00:00.000Z",
           "contentType": "Video"
-        },
-        {
-          "image": "images/instagram/KR-SEO-010/DeNsht2Hwg_.jpg",
-          "permalink": "https://www.instagram.com/p/DeNsht2Hwg_",
-          "timestamp": "2026-10-07T00:00:00.000Z",
-          "contentType": "Image"
         }
       ]
     },
-    "KR-SEO-009": {
-      "username": "tcr_kr",
+    "KR-SEO-011": {
+      "username": "golden.m_kr",
       "source": "brightdata-instagram-profiles",
       "posts": [
         {
-          "image": "images/instagram/KR-SEO-009/DeBi2SxiPCq.jpg",
-          "permalink": "https://www.instagram.com/p/DeBi2SxiPCq",
-          "timestamp": "2026-10-03T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-009/DeOskKyCBhb.jpg",
-          "permalink": "https://www.instagram.com/p/DeOskKyCBhb",
-          "timestamp": "2026-10-08T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-009/DeL4PTjCn11.jpg",
-          "permalink": "https://www.instagram.com/p/DeL4PTjCn11",
+          "image": "images/instagram/KR-SEO-011/DeOKzbSEgq8.jpg",
+          "permalink": "https://www.instagram.com/p/DeOKzbSEgq8",
           "timestamp": "2026-10-07T00:00:00.000Z",
-          "contentType": "Image"
+          "contentType": "Carousel"
         },
         {
-          "image": "images/instagram/KR-SEO-009/DeJI3bZiNG6.jpg",
-          "permalink": "https://www.instagram.com/p/DeJI3bZiNG6",
-          "timestamp": "2026-10-05T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-011/DeGSj1Lkg90.jpg",
+          "permalink": "https://www.instagram.com/p/DeGSj1Lkg90",
+          "timestamp": "2026-10-04T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-SEO-011/DdzWJuYkpzn.jpg",
+          "permalink": "https://www.instagram.com/p/DdzWJuYkpzn",
+          "timestamp": "2026-09-27T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-SEO-011/DdBWPcmEtut.jpg",
+          "permalink": "https://www.instagram.com/p/DdBWPcmEtut",
+          "timestamp": "2026-09-08T00:00:00.000Z",
           "contentType": "Image"
         }
       ]
@@ -332,33 +332,33 @@
         }
       ]
     },
-    "KR-SEO-014": {
-      "username": "card_sungji",
+    "KR-SEO-016": {
+      "username": "kadotrade",
       "source": "brightdata-instagram-profiles",
       "posts": [
         {
-          "image": "images/instagram/KR-SEO-014/DaChsEPT7BS.jpg",
-          "permalink": "https://www.instagram.com/p/DaChsEPT7BS",
-          "timestamp": "2026-06-25T00:00:00.000Z",
-          "contentType": "Video"
-        },
-        {
-          "image": "images/instagram/KR-SEO-014/Dd6g4MFM4SI.jpg",
-          "permalink": "https://www.instagram.com/p/Dd6g4MFM4SI",
-          "timestamp": "2026-09-30T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-016/DbU6uWGzY_r.jpg",
+          "permalink": "https://www.instagram.com/p/DbU6uWGzY_r",
+          "timestamp": "2026-07-27T00:00:00.000Z",
           "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-014/DcjMqM5ycaO.jpg",
-          "permalink": "https://www.instagram.com/p/DcjMqM5ycaO",
-          "timestamp": "2026-08-27T00:00:00.000Z",
-          "contentType": "Video"
+          "image": "images/instagram/KR-SEO-016/DeTYxTQE1RD.jpg",
+          "permalink": "https://www.instagram.com/p/DeTYxTQE1RD",
+          "timestamp": "2026-10-09T00:00:00.000Z",
+          "contentType": "Carousel"
         },
         {
-          "image": "images/instagram/KR-SEO-014/Dcgq3mPTRSy.jpg",
-          "permalink": "https://www.instagram.com/p/Dcgq3mPTRSy",
-          "timestamp": "2026-08-26T00:00:00.000Z",
-          "contentType": "Image"
+          "image": "images/instagram/KR-SEO-016/DeJevLikwlM.jpg",
+          "permalink": "https://www.instagram.com/p/DeJevLikwlM",
+          "timestamp": "2026-10-06T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-SEO-016/DeWV38Ak1BL.jpg",
+          "permalink": "https://www.instagram.com/p/DeWV38Ak1BL",
+          "timestamp": "2026-10-11T00:00:00.000Z",
+          "contentType": "Carousel"
         }
       ]
     },
@@ -388,6 +388,36 @@
           "image": "images/instagram/KR-SEO-012/DakEmbuP_rc.jpg",
           "permalink": "https://www.instagram.com/p/DakEmbuP_rc",
           "timestamp": "2026-07-09T00:00:00.000Z",
+          "contentType": "Image"
+        }
+      ]
+    },
+    "KR-SEO-014": {
+      "username": "card_sungji",
+      "source": "brightdata-instagram-profiles",
+      "posts": [
+        {
+          "image": "images/instagram/KR-SEO-014/DaChsEPT7BS.jpg",
+          "permalink": "https://www.instagram.com/p/DaChsEPT7BS",
+          "timestamp": "2026-06-25T00:00:00.000Z",
+          "contentType": "Video"
+        },
+        {
+          "image": "images/instagram/KR-SEO-014/Dd6g4MFM4SI.jpg",
+          "permalink": "https://www.instagram.com/p/Dd6g4MFM4SI",
+          "timestamp": "2026-09-30T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-SEO-014/DcjMqM5ycaO.jpg",
+          "permalink": "https://www.instagram.com/p/DcjMqM5ycaO",
+          "timestamp": "2026-08-27T00:00:00.000Z",
+          "contentType": "Video"
+        },
+        {
+          "image": "images/instagram/KR-SEO-014/Dcgq3mPTRSy.jpg",
+          "permalink": "https://www.instagram.com/p/Dcgq3mPTRSy",
+          "timestamp": "2026-08-26T00:00:00.000Z",
           "contentType": "Image"
         }
       ]
@@ -422,33 +452,33 @@
         }
       ]
     },
-    "KR-SEO-016": {
-      "username": "kadotrade",
+    "KR-SEO-027": {
+      "username": "card._.chaser",
       "source": "brightdata-instagram-profiles",
       "posts": [
         {
-          "image": "images/instagram/KR-SEO-016/DbU6uWGzY_r.jpg",
-          "permalink": "https://www.instagram.com/p/DbU6uWGzY_r",
-          "timestamp": "2026-07-27T00:00:00.000Z",
+          "image": "images/instagram/KR-SEO-027/DeN-HUUSejU.jpg",
+          "permalink": "https://www.instagram.com/p/DeN-HUUSejU",
+          "timestamp": "2026-10-07T00:00:00.000Z",
           "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-016/DeTYxTQE1RD.jpg",
-          "permalink": "https://www.instagram.com/p/DeTYxTQE1RD",
-          "timestamp": "2026-10-09T00:00:00.000Z",
-          "contentType": "Carousel"
+          "image": "images/instagram/KR-SEO-027/Dd85Md_ylfc.jpg",
+          "permalink": "https://www.instagram.com/p/Dd85Md_ylfc",
+          "timestamp": "2026-10-01T00:00:00.000Z",
+          "contentType": "Video"
         },
         {
-          "image": "images/instagram/KR-SEO-016/DeJevLikwlM.jpg",
-          "permalink": "https://www.instagram.com/p/DeJevLikwlM",
-          "timestamp": "2026-10-06T00:00:00.000Z",
-          "contentType": "Carousel"
+          "image": "images/instagram/KR-SEO-027/Dd8IzTByL_c.jpg",
+          "permalink": "https://www.instagram.com/p/Dd8IzTByL_c",
+          "timestamp": "2026-10-01T00:00:00.000Z",
+          "contentType": "Image"
         },
         {
-          "image": "images/instagram/KR-SEO-016/DeT5lWJkzbf.jpg",
-          "permalink": "https://www.instagram.com/p/DeT5lWJkzbf",
-          "timestamp": "2026-10-10T00:00:00.000Z",
-          "contentType": "Carousel"
+          "image": "images/instagram/KR-SEO-027/Dd3VKCUSg3K.jpg",
+          "permalink": "https://www.instagram.com/p/Dd3VKCUSg3K",
+          "timestamp": "2026-09-29T00:00:00.000Z",
+          "contentType": "Video"
         }
       ]
     },
@@ -482,66 +512,6 @@
         }
       ]
     },
-    "KR-ICN-002": {
-      "username": "adorenalinekorea",
-      "source": "brightdata-instagram-profiles",
-      "posts": [
-        {
-          "image": "images/instagram/KR-ICN-002/DeLZX8FT_1L.jpg",
-          "permalink": "https://www.instagram.com/p/DeLZX8FT_1L",
-          "timestamp": "2026-10-06T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-ICN-002/Dc8Kn7ATqEB.jpg",
-          "permalink": "https://www.instagram.com/p/Dc8Kn7ATqEB",
-          "timestamp": "2026-09-06T00:00:00.000Z",
-          "contentType": "Video"
-        },
-        {
-          "image": "images/instagram/KR-ICN-002/DdIos7fEidx.jpg",
-          "permalink": "https://www.instagram.com/p/DdIos7fEidx",
-          "timestamp": "2026-09-10T00:00:00.000Z",
-          "contentType": "Carousel"
-        },
-        {
-          "image": "images/instagram/KR-ICN-002/DeO-NZPzznU.jpg",
-          "permalink": "https://www.instagram.com/p/DeO-NZPzznU",
-          "timestamp": "2026-10-08T00:00:00.000Z",
-          "contentType": "Video"
-        }
-      ]
-    },
-    "KR-SEO-027": {
-      "username": "card._.chaser",
-      "source": "brightdata-instagram-profiles",
-      "posts": [
-        {
-          "image": "images/instagram/KR-SEO-027/DeN-HUUSejU.jpg",
-          "permalink": "https://www.instagram.com/p/DeN-HUUSejU",
-          "timestamp": "2026-10-07T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-027/Dd85Md_ylfc.jpg",
-          "permalink": "https://www.instagram.com/p/Dd85Md_ylfc",
-          "timestamp": "2026-10-01T00:00:00.000Z",
-          "contentType": "Video"
-        },
-        {
-          "image": "images/instagram/KR-SEO-027/Dd8IzTByL_c.jpg",
-          "permalink": "https://www.instagram.com/p/Dd8IzTByL_c",
-          "timestamp": "2026-10-01T00:00:00.000Z",
-          "contentType": "Image"
-        },
-        {
-          "image": "images/instagram/KR-SEO-027/Dd3VKCUSg3K.jpg",
-          "permalink": "https://www.instagram.com/p/Dd3VKCUSg3K",
-          "timestamp": "2026-09-29T00:00:00.000Z",
-          "contentType": "Video"
-        }
-      ]
-    },
     "KR-SEO-038": {
       "username": "tcg_seoul",
       "source": "brightdata-instagram-profiles",
@@ -568,6 +538,36 @@
           "image": "images/instagram/KR-SEO-038/DeIuBxHJEDk.jpg",
           "permalink": "https://www.instagram.com/p/DeIuBxHJEDk",
           "timestamp": "2026-10-05T00:00:00.000Z",
+          "contentType": "Video"
+        }
+      ]
+    },
+    "KR-ICN-002": {
+      "username": "adorenalinekorea",
+      "source": "brightdata-instagram-profiles",
+      "posts": [
+        {
+          "image": "images/instagram/KR-ICN-002/Dd--2ghTztK.jpg",
+          "permalink": "https://www.instagram.com/p/Dd--2ghTztK",
+          "timestamp": "2026-10-02T00:00:00.000Z",
+          "contentType": "Video"
+        },
+        {
+          "image": "images/instagram/KR-ICN-002/DeLZX8FT_1L.jpg",
+          "permalink": "https://www.instagram.com/p/DeLZX8FT_1L",
+          "timestamp": "2026-10-06T00:00:00.000Z",
+          "contentType": "Image"
+        },
+        {
+          "image": "images/instagram/KR-ICN-002/DdIos7fEidx.jpg",
+          "permalink": "https://www.instagram.com/p/DdIos7fEidx",
+          "timestamp": "2026-09-10T00:00:00.000Z",
+          "contentType": "Carousel"
+        },
+        {
+          "image": "images/instagram/KR-ICN-002/DeO-NZPzznU.jpg",
+          "permalink": "https://www.instagram.com/p/DeO-NZPzznU",
+          "timestamp": "2026-10-08T00:00:00.000Z",
           "contentType": "Video"
         }
       ]

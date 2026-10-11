@@ -48,8 +48,7 @@
     const loc=[s.area,s.station?(s.station+(s.walkMin?' 도보 '+s.walkMin+'분':'')):''].filter(Boolean).join(' · ');
     const funyMonActive=window.FUNY_FUNYMON_ACTIVE_SHOPS instanceof Set&&window.FUNY_FUNYMON_ACTIVE_SHOPS.has(s.id);
     const activeClass=(window.FUNY_ACTIVE_EVENT_SHOPS?.has(s.id)?' is-event-shop':'')+(funyMonActive?' is-funymon-shop':'');
-    const monBadge=funyMonActive?'<span class="funymon-thumb-badge">FUNY MON</span>':'';
-    return `<a class="shop-card shop-card-v1${activeClass}" href="#/shop/${s.id}" data-id="${s.id}"><div class="shop-thumb ${SHOP_IMAGES[s.id]?'has-image':'is-fallback'}">${image}${monBadge}</div><div class="shop-main"><h3 class="shop-name">${esc(s.name)}</h3><p class="shop-meta list-meta-line">${pinSvg}<span>${esc(loc)}</span></p><p class="shop-hours list-meta-line">${clockSvg}<span>${esc(todayHours(s))}</span></p><div class="tag-row">${shown.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}${extra>0?`<span class="tag tag-more">+${extra}</span>`:''}</div></div><div class="chev">›</div></a>`;
+    return `<a class="shop-card shop-card-v1${activeClass}" href="#/shop/${s.id}" data-id="${s.id}"><div class="shop-thumb ${SHOP_IMAGES[s.id]?'has-image':'is-fallback'}">${image}</div><div class="shop-main"><h3 class="shop-name">${esc(s.name)}</h3><p class="shop-meta list-meta-line">${pinSvg}<span>${esc(loc)}</span></p><p class="shop-hours list-meta-line">${clockSvg}<span>${esc(todayHours(s))}</span></p><div class="tag-row">${shown.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}${extra>0?`<span class="tag tag-more">+${extra}</span>`:''}</div></div><div class="chev">›</div></a>`;
   }
   try{cardHTML=card}catch(_){}
   window.cardHTML=card;

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THE CARD ROOM × FUNY PIN 퍼니몬 이벤트</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="홍대 더카드룸에서 퍼니몬을 포획하고 FUNY PIN 이벤트에 응모하세요.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.page{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:32px}
+.head{position:sticky;top:0;z-index:55;height:58px;padding:0 14px;display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;background:rgba(255,255,255,.97)}
+.back{display:inline-flex;width:42px;height:58px;align-items:center;border:0;background:none;color:#29262e;padding:0;font:300 30px/1 Arial}
+.head-title{grid-column:2;grid-row:1;margin:0;font-size:17px;font-weight:800;text-align:center;letter-spacing:-.03em}
+.hero{padding:12px 18px 22px}
+.eyebrow{color:#8062d8;font-size:10px;font-weight:700;letter-spacing:.02em}
+.hero h1{margin:8px 0 9px;font-size:26px;line-height:1.24;letter-spacing:-.055em}
+.hero>p{margin:0;font-size:12px;line-height:1.48;color:#4e4952}
+.event-info{margin-top:18px;padding:16px;border-radius:16px;background:#f7f5fa;font-size:12px;line-height:1.55;word-break:keep-all}
+.event-info b{display:inline-block;margin-bottom:3px}
+.event-info .block{margin-top:14px}
+.event-info .block:first-child{margin-top:0}
+.prize-list{margin:2px 0 0;padding-left:18px}
+.prize-list li{padding:1px 0}
+.pickup-note{display:block;margin-top:13px;padding-top:11px;border-top:1px solid #e9e5ed;color:#5f5964;font-size:11px;line-height:1.5}
+.section{padding:22px 18px;border-top:8px solid #f5f4f7}
+.section h2{margin:0 0 14px;font-size:16px;letter-spacing:-.03em}
+.flow{display:grid;gap:12px}
+.step{padding:16px;border:1px solid #e8e3ee;border-radius:16px;background:#fff}
+.step-kicker{color:#8062d8;font-size:11px;font-weight:900}
+.step h3{margin:5px 0 6px;font-size:15px;line-height:1.3;letter-spacing:-.025em}
+.step p{margin:0 0 12px;font-size:12px;line-height:1.5}
+.link-btn{display:flex;align-items:center;justify-content:center;width:100%;height:49px;margin-top:9px;border:1px solid #ded4f4;border-radius:13px;color:#8062d8;text-decoration:none;font-size:12px;font-weight:850}
+.action-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:13px;border:0;border-radius:13px;background:#8062d8;color:#fff;text-decoration:none;font-size:14px;font-weight:850;cursor:pointer}
+.note{margin:12px 0 0!important;font-size:11px!important;line-height:1.6!important}
+.lookup{width:100%;margin-top:11px;padding-top:11px;border:0;border-top:1px solid #eeeaf1;background:none;color:#8062d8;font:800 11px/1.4 inherit}
+.entry-lookup-panel{margin-top:10px;padding:12px;border:1px solid #e8e2ef;border-radius:13px;background:#faf8fc}
+.entry-lookup-panel[hidden]{display:none}
+.entry-lookup-row{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:7px}
+.entry-lookup-row input{min-width:0;height:42px;padding:0 11px;border:1px solid #ddd6e6;border-radius:10px;background:#fff;font:inherit;font-size:12px;outline:none}
+.entry-lookup-row input:focus{border-color:#8062d8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}
+.entry-lookup-row button{height:42px;border:0;border-radius:10px;background:#8062d8;color:#fff;font-size:12px;font-weight:850}
+.entry-lookup-row button:disabled{opacity:.55}
+.entry-lookup-result{min-height:16px;margin-top:9px;color:#716a76;font-size:11px;line-height:1.55}
+.entry-lookup-result b{color:#5d42a5}
+.follow-note{margin:11px 0 0!important;font-size:10px!important;line-height:1.55!important;color:#746d79}
+</style>
+<meta name="robots" content="noindex,follow">
+</head>
+<body>
+<main class="page">
+<header class="head">
+  <button class="back" type="button" onclick="history.length>1?history.back():location.href='./'" aria-label="뒤로가기">‹</button>
+  <strong class="head-title">이벤트</strong>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">THE CARD ROOM X FUNY PIN</div>
+  <h1>더카드룸 방문해서<br>퍼니몬 포획하고, 응모하고 🎯<br>특별한 선물까지! 🎁</h1>
+  <p>FUNY PIN 서비스 ‘TCG MAP’에서<br>더카드룸 주변의 퍼니몬을 포획하면<br>이벤트에 응모할 수 있어요</p>
+
+  <div class="event-info">
+    <div class="block">
+      <b>🗓️ 이벤트 기간</b><br>
+      <span id="eventPeriod">2026년 10월 12일(월) ~ 10월 30일(금) 오후 10시까지</span>
+    </div>
+
+    <div class="block">
+      <b>📢 당첨자 발표</b><br>
+      <span id="winnerDate">2026년 10월 31일(토)</span>
+    </div>
+
+    <div class="block">
+      <b>🎁 경품(총 3명)</b>
+      <ul class="prize-list">
+        <li>포켓몬카드 일본판 30주년 1BOX(1명)</li>
+        <li>포켓몬카드 일본판 메가드림ex 1BOX(1명)</li>
+        <li>포켓몬카드 일본판 퍼스트파트너 1BOX(1명)</li>
+      </ul>
+    </div>
+
+    <span class="pickup-note">※ 당첨 경품은 더카드룸 매장 방문 수령입니다.</span>
+  </div>
+</section>
+
+<section class="section">
+  <h2>이벤트 참여방법 및 응모</h2>
+
+  <div class="flow">
+    <div class="step">
+      <div class="step-kicker">STEP 1</div>
+      <h3>인스타그램 팔로우</h3>
+      <p>더카드룸 &amp; 깽퐌커플 계정을 모두 팔로우해주세요</p>
+      <a class="link-btn" href="https://www.instagram.com/tcr_kr/" target="_blank" rel="noopener">tcr_kr 인스타그램 방문하기 ›</a>
+      <a class="link-btn" href="https://www.instagram.com/ffunnyggang/" target="_blank" rel="noopener">깽퐌커플 인스타그램 방문하기 ›</a>
+      <p class="follow-note">※ 당첨자의 Instagram 팔로우 여부를 확인하여 조건 미충족시 당첨이 취소될 수 있습니다</p>
+    </div>
+
+    <div class="step">
+      <div class="step-kicker">STEP 2</div>
+      <h3>FUNY PIN 지도에서 퍼니몬 포획하고<br>이벤트 응모!</h3>
+      <p class="note">• 이벤트 기간 동안 Instagram ID 기준 하루 1회 응모할 수 있어요.<br>• 매일 참여할수록 응모 횟수가 쌓여 당첨 확률이 높아져요.</p>
+      <button class="action-btn" id="mapEntryBtn" type="button">퍼니몬 포획하고 응모하기</button>
+
+      <button class="lookup" id="entryLookupBtn" type="button">내 응모이력 조회하기</button>
+      <div id="entryLookupPanel" class="entry-lookup-panel" hidden>
+        <div class="entry-lookup-row">
+          <input id="entryLookupId" type="text" maxlength="30" autocomplete="off" placeholder="@제외 Instagram 아이디 입력">
+          <button id="entryLookupSearch" type="button">조회</button>
+        </div>
+        <div id="entryLookupResult" class="entry-lookup-result"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  var base='https://wdttzpbmqavaqfcbaywj.supabase.co';
+  var key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+  var headers={apikey:key,Authorization:'Bearer '+key};
+  var campaignId='EV-20261011-82460D';
+
+  var period=document.getElementById('eventPeriod');
+  var mapBtn=document.getElementById('mapEntryBtn');
+  var lookupBtn=document.getElementById('entryLookupBtn');
+  var panel=document.getElementById('entryLookupPanel');
+  var input=document.getElementById('entryLookupId');
+  var searchBtn=document.getElementById('entryLookupSearch');
+  var result=document.getElementById('entryLookupResult');
+
+  function kstParts(v){
+    var d=new Date(v);
+    if(isNaN(d))return null;
+    var parts=new Intl.DateTimeFormat('ko-KR',{
+      timeZone:'Asia/Seoul',year:'numeric',month:'numeric',day:'numeric',
+      weekday:'short',hour:'numeric',minute:'2-digit',hour12:true
+    }).formatToParts(d);
+    var o={};parts.forEach(function(x){o[x.type]=x.value});
+    return o;
+  }
+  function dayText(p){
+    return p.year+'년 '+p.month+'월 '+p.day+'일('+String(p.weekday||'').replace('요일','')+')';
+  }
+  function timeText(p){
+    return (p.dayPeriod||'')+' '+p.hour+'시'+(p.minute&&p.minute!=='00'?' '+p.minute+'분':'');
+  }
+  function renderCampaign(c){
+    if(!c)return;
+    campaignId=c.id||'';
+    var s=kstParts(c.starts_at),e=kstParts(c.ends_at);
+    // 이벤트 기간/당첨자 발표일은 본 페이지 고정 안내값을 사용합니다.
+  }
+  async function resolveCampaign(){
+    var forced=new URLSearchParams(location.search).get('campaign')||campaignId;
+    try{
+      if(forced&&/^EV-[A-Z0-9-]+$/i.test(forced)){
+        var q1='select=id,title,starts_at,ends_at,status,entry_limit_mode,entry_limit_count&id=eq.'+encodeURIComponent(forced)+'&limit=1';
+        var r1=await fetch(base+'/rest/v1/event_campaigns?'+q1,{headers:headers,cache:'no-store'});
+        if(r1.ok){var rows1=await r1.json();if(rows1.length){renderCampaign(rows1[0]);return}}
+      }
+      var q='select=id,title,starts_at,ends_at,status,entry_limit_mode,entry_limit_count&title=ilike.*'+encodeURIComponent('더카드룸')+'*&order=created_at.desc&limit=1';
+      var r=await fetch(base+'/rest/v1/event_campaigns?'+q,{headers:headers,cache:'no-store'});
+      if(!r.ok)throw new Error('campaign');
+      var rows=await r.json();
+      if(rows.length){renderCampaign(rows[0]);return}
+    }catch(e){
+    }
+  }
+
+  function webMapUrl(){
+    var u='https://funypin.kr/shops.html?event=cardroom';
+    if(campaignId)u+='&campaign='+encodeURIComponent(campaignId);
+    return u;
+  }
+
+  function openCaptureEntry(){
+    var ua=navigator.userAgent||'';
+    var isIOS=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    var isAndroid=/Android/i.test(ua);
+
+    if(isAndroid){
+      location.href=webMapUrl();
+      return;
+    }
+
+    if(isIOS){
+      var appUrl='funypin://map?country=KR&from=cardroom-event';
+      if(campaignId)appUrl+='&campaign='+encodeURIComponent(campaignId);
+      var storeUrl='https://apps.apple.com/us/app/funy-pin/id6817652126';
+      var fallbackTimer=null;
+      var launched=false;
+
+      function cleanup(){
+        if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null}
+        document.removeEventListener('visibilitychange',onVisibility);
+        window.removeEventListener('pagehide',onPageHide);
+        window.removeEventListener('blur',onBlur);
+      }
+      function markLaunched(){
+        if(launched)return;
+        launched=true;
+        cleanup();
+      }
+      function onVisibility(){if(document.hidden)markLaunched()}
+      function onPageHide(){markLaunched()}
+      function onBlur(){markLaunched()}
+
+      document.addEventListener('visibilitychange',onVisibility);
+      window.addEventListener('pagehide',onPageHide,{once:true});
+      window.addEventListener('blur',onBlur,{once:true});
+
+      fallbackTimer=setTimeout(function(){
+        cleanup();
+        if(!launched&&!document.hidden)location.href=storeUrl;
+      },1300);
+
+      location.href=appUrl;
+      return;
+    }
+
+    location.href=webMapUrl();
+  }
+
+  mapBtn.onclick=openCaptureEntry;
+
+  lookupBtn.onclick=function(){panel.hidden=!panel.hidden;if(!panel.hidden)input.focus()};
+
+  async function runLookup(){
+    var id=input.value.trim().replace(/^@/,'').toLowerCase();
+    if(!/^[a-z0-9._]{1,30}$/.test(id)){result.textContent='Instagram 아이디를 정확히 입력해주세요.';return}
+    if(!campaignId){result.textContent='이벤트 응모 캠페인 연결 후 조회할 수 있어요.';return}
+    searchBtn.disabled=true;searchBtn.textContent='조회중';result.textContent='';
+    try{
+      var q='select=id,content,created_at&shop_id=eq.'+encodeURIComponent(campaignId)+'&status=eq.EVENT_ENTRY&content=eq.'+encodeURIComponent(id)+'&order=created_at.desc&limit=100';
+      var r=await fetch(base+'/rest/v1/live_reports?'+q,{headers:headers,cache:'no-store'});
+      if(!r.ok)throw new Error('lookup');
+      var rows=await r.json();
+      if(rows.length){
+        var latest=new Date(rows[0].created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+        result.innerHTML='<b>@'+id+'</b> · 총 '+rows.length+'회 응모 완료 🎁<br>최근 응모 '+latest;
+      }else result.innerHTML='<b>@'+id+'</b> · 더카드룸 이벤트 응모이력이 없습니다.';
+    }catch(e){
+      result.textContent='응모이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+    }
+    searchBtn.disabled=false;searchBtn.textContent='조회';
+  }
+
+  searchBtn.onclick=runLookup;
+  input.onkeydown=function(e){if(e.key==='Enter')runLookup()};
+  resolveCampaign();
+})();
+</script>
+</body>
+</html>

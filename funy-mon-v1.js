@@ -112,7 +112,10 @@
     const m=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!m)return;
     const shopId=m[1].toUpperCase(),ev=window.FUNY_FUNYMON_ACTIVE_EVENTS.get(shopId);if(!ev)return;
     const summary=document.querySelector('#detail .summary-card');if(!summary)return;
-    const box=document.createElement('div');box.className='funymon-detail-banner';
+    const eventUrls={'KR-SEO-009':'https://funypin.kr/event-thecardroom.html'};
+    const eventUrl=eventUrls[shopId]||'';
+    const box=document.createElement(eventUrl?'a':'div');box.className='funymon-detail-banner';
+    if(eventUrl){box.href=eventUrl;box.setAttribute('aria-label','FUNY MON 이벤트 자세히 보기')}
     const end=ev.ends_at?new Date(ev.ends_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
     box.innerHTML='<span class="funymon-detail-kicker">FUNY MON</span><div><b>퍼니몬 출현 중</b><small>'+String(ev.title||'매장 이벤트').replace(/[<>]/g,'')+(end?' · '+end+'까지':'')+'</small></div><i>›</i>';
     summary.insertAdjacentElement('afterend',box);

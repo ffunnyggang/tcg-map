@@ -3,26 +3,79 @@
 <title>오리파 확률 계산기 | FUNY PIN</title><meta name="description" content="전체 수량, 당첨 수량, 구매 수량을 입력해 실물 오리파의 실제 당첨 확률을 계산합니다."><link rel="canonical" href="https://funypin.kr/oripa-calculator.html"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root{--p:#8062d8;--pd:#6749bd;--ps:#f3effb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--good:#208a55;--bad:#b42318}
-*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink)}button,input,select{font:inherit}
-.shell{width:min(100%,440px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(36px,env(safe-area-inset-bottom))}
-header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #f0edf3}
-.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px}.spacer{width:38px;margin-left:auto}
-main{padding:14px 16px 18px}.eyebrow{font-size:10px;font-weight:900;color:var(--p);letter-spacing:.1em}.title{margin:6px 0 5px;font-size:26px;letter-spacing:-.05em}.desc{margin:0;color:#77717c;font-size:12px;line-height:1.6}
-.card{margin-top:14px;padding:17px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#fff 0%,#fdfcff 100%);box-shadow:0 8px 28px rgba(58,44,70,.045)}.section-title{font-size:12px;font-weight:900;margin-bottom:13px;letter-spacing:-.02em}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{min-width:0}.field.wide{grid-column:1/-1}.field label{display:block;margin:0 0 6px;font-size:10px;font-weight:800;color:#77717c}.field input,.field select{width:100%;height:48px;border:1px solid #dfd9e4;border-radius:13px;background:#fff;padding:0 12px;font-size:15px;font-weight:750;outline:none}.field input:focus,.field select:focus{border-color:#a68ce8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}.purchase-field{margin-top:4px}.stepper{display:grid;grid-template-columns:54px minmax(0,1fr) 54px;gap:8px;align-items:stretch}.stepper button{height:56px;border:1px solid #ded7e7;border-radius:15px;background:#f7f4fb;color:var(--pd);font-size:25px;font-weight:700;cursor:pointer}.stepper button:active{transform:scale(.97);background:#efe9fa}.stepper button:disabled{opacity:.35}.step-value{height:56px;border:1px solid #cfc4e9;border-radius:15px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 3px rgba(128,98,216,.045)}.step-value input{width:86px;height:54px;border:0!important;box-shadow:none!important;padding:0;text-align:right;font-size:25px;font-weight:950;color:var(--ink);-moz-appearance:textfield}.step-value input::-webkit-outer-spin-button,.step-value input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.step-value span{margin-left:5px;font-size:13px;font-weight:800;color:#8c8490}.step-help{margin:7px 2px 0;text-align:center;color:#99919c;font-size:9.5px;line-height:1.4}
-.hero-result{margin-top:12px;padding:20px 18px 18px;border-radius:24px;background:linear-gradient(145deg,#f3edff 0%,#faf8ff 58%,#fff 100%);text-align:center;border:1px solid #ddd1f4;box-shadow:0 12px 32px rgba(103,73,189,.07);position:relative;overflow:hidden}.hero-result:before{content:"";position:absolute;right:-35px;top:-35px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(128,98,216,.17),rgba(128,98,216,0) 70%)}.hero-result:after{content:"✦";position:absolute;right:22px;top:20px;color:#a991e5;font-size:18px;opacity:.75}.hero-badge{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:24px;padding:0 9px;border-radius:999px;background:#fff;color:var(--pd);font-size:9px;font-weight:900;box-shadow:0 3px 12px rgba(103,73,189,.09)}.hero-result span{display:block;margin-top:10px;font-size:10.5px;color:#756d80;font-weight:850;line-height:1.45}.hero-result strong{display:block;margin-top:7px;font-size:44px;line-height:1.05;letter-spacing:-.07em;color:var(--pd)}.hero-result small{display:block;margin-top:8px;font-size:9.5px;color:#928a96;line-height:1.5}.probability-track{height:11px;margin-top:15px;border-radius:99px;background:#e8e2ef;overflow:hidden;position:relative}.probability-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#a98de6,#7557c8);transition:width .22s ease}.probability-legend{display:flex;justify-content:space-between;margin-top:6px;font-size:8.5px;color:#9b939f;font-weight:750}
-.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:10px}.metric{padding:14px 12px;border:1px solid var(--line);border-radius:16px;background:#fff}.metric span{font-size:9px;color:#928a96;font-weight:750}.metric strong{display:block;margin-top:5px;font-size:16px}.note{margin:12px 2px 0;color:#9b949f;font-size:10px;line-height:1.55}.error{margin-top:10px;color:var(--bad);font-size:10px;font-weight:750;min-height:16px}.btn{width:100%;height:48px;margin-top:12px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;font-weight:900}
-.quick-picks{display:flex;gap:6px;margin-top:10px;overflow:auto;padding-bottom:2px;scrollbar-width:none}.quick-picks::-webkit-scrollbar{display:none}.quick-picks button{height:32px;min-width:46px;padding:0 10px;border:1px solid #e0d9e7;border-radius:999px;background:#fff;color:#756f7b;font-size:10px;font-weight:850;white-space:nowrap}.quick-picks button.on{background:var(--ps);border-color:#cdbfea;color:var(--pd)}.chart-card{margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:20px;background:#fff}.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.chart-head b{font-size:12px}.chart-head span{font-size:9px;color:#948c99}.bars{height:150px;display:flex;align-items:flex-end;gap:7px;padding:6px 2px 0}.bar-item{flex:1;min-width:0;text-align:center}.bar-wrap{height:112px;display:flex;align-items:flex-end;justify-content:center}.bar{width:100%;max-width:36px;min-height:4px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#9e83df,#7557c8);transition:height .22s ease}.bar-item b{display:block;margin-top:6px;font-size:9px;color:#5f5865}.bar-item span{display:block;margin-top:2px;font-size:8px;color:#9d95a1}.list{display:grid;gap:7px}.row{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:13px;background:#f8f6fa;border:1px solid #f0ecf4}.row b{font-size:11px}.row span{margin-left:auto;font-size:11px;font-weight:850;color:var(--pd)}
+:root{--purple:#8062d8;--purple-dark:#6749bd;--purple-soft:#f2eefb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--danger:#b42318}
+*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;color:var(--ink);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input{font:inherit}button:focus-visible,input:focus-visible{outline:3px solid rgba(128,98,216,.22);outline-offset:2px}
+.shell{width:min(100%,440px);min-height:100dvh;margin:0 auto;background:#fff;overflow:hidden;position:relative;padding-bottom:max(34px,env(safe-area-inset-bottom))}
+.shell:before{content:"";position:absolute;left:-110px;top:72px;width:290px;height:290px;border-radius:50%;background:radial-gradient(circle,rgba(128,98,216,.12),rgba(128,98,216,0) 70%);pointer-events:none}.shell:after{content:"";position:absolute;right:-135px;top:300px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(168,143,235,.13),rgba(168,143,235,0) 70%);pointer-events:none}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(235,230,239,.82)}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;cursor:pointer;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px;letter-spacing:-.025em}.spacer{width:38px;margin-left:auto}
+main{position:relative;z-index:1;padding:0 16px 18px}
+.hero{margin:0 -16px;padding:20px 16px 15px;background:linear-gradient(180deg,#fff 0%,#fbf9fd 64%,#f4f1f7 100%);position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;left:50%;bottom:-62px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 38%,transparent 72%);pointer-events:none}
+.result-area{text-align:center;position:relative;z-index:3;min-height:145px}.result-kicker{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 10px;border-radius:999px;background:#f2eefb;color:var(--purple-dark);font-size:9px;font-weight:900}.result-text{display:block;margin-top:10px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-sub{display:block;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}.chance{display:block;margin-top:8px;font-size:48px;line-height:1;font-weight:950;letter-spacing:-.07em;color:var(--purple-dark);text-shadow:0 3px 12px rgba(103,73,189,.10)}
+.probability-track{width:min(82%,310px);height:8px;margin:13px auto 0;border-radius:99px;background:#e7e2ea;overflow:hidden}.probability-track i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#9f86df,#7455ca);transition:width .2s ease}
+.input-card{position:relative;z-index:4;margin-top:13px;padding:14px;border:1px solid var(--line);border-radius:19px;background:rgba(255,255,255,.96)}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{min-width:0}.field.wide{grid-column:1/-1}.field label{display:block;margin:0 0 6px;color:#948c98;font-size:9px;font-weight:750}.field input{width:100%;height:44px;border:1px solid #e2dde6;border-radius:12px;background:#fff;color:#342f38;padding:0 11px;font-size:15px;font-weight:900;outline:none}.field input:focus{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
+.stepper{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:7px}.stepper button{height:50px;border:1px solid #e1dce7;border-radius:13px;background:#f5f2f8;color:#6752aa;font-size:24px;font-weight:700;cursor:pointer}.stepper button:active:not(:disabled){transform:scale(.97)}.stepper button:disabled{opacity:.35}.step-value{height:50px;border:1px solid #ded6ec;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center}.step-value input{width:72px;height:46px;border:0!important;box-shadow:none!important;padding:0;text-align:right;font-size:22px;font-weight:950;-moz-appearance:textfield}.step-value input::-webkit-outer-spin-button,.step-value input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.step-value span{margin-left:4px;color:#8f8794;font-size:12px;font-weight:800}
+.quick-picks{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}.quick-picks::-webkit-scrollbar{display:none}.quick-picks button{height:30px;min-width:44px;padding:0 10px;border:1px solid #e4dfea;border-radius:999px;background:#fff;color:#817a86;font-size:9px;font-weight:850}.quick-picks button.on{background:#f2eefb;border-color:#d9cdf3;color:#684bbb}.quick-picks button:disabled{opacity:.35}.step-help{margin:7px 0 0;text-align:center;color:#a098a5;font-size:9px}
+.error{min-height:14px;margin-top:7px;color:var(--danger);font-size:9px;font-weight:750;text-align:center}.fair-note{display:flex;align-items:flex-start;justify-content:center;gap:6px;margin:11px auto 0;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.78);color:#8f8794;font-size:9.5px;line-height:1.45}.fair-dot{flex:none;width:6px;height:6px;margin-top:4px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}.metric{padding:12px;border:1px solid #eee9f1;border-radius:14px;background:#fff}.metric-label{display:block;color:#948c98;font-size:9px;font-weight:750}.metric strong{display:block;margin-top:4px;font-size:18px;line-height:1.15;font-weight:950;letter-spacing:-.04em}
+.chart-card,.target-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.section-head{display:flex;align-items:center;gap:8px}.section-title{font-size:12px;font-weight:900}.section-sub{margin-left:auto;color:#9a929e;font-size:9px}
+.bars{height:158px;display:flex;align-items:flex-end;gap:7px;padding:10px 1px 0;border-bottom:1px solid #eee9f1}.bar-item{flex:1;min-width:0;text-align:center}.bar-wrap{height:112px;display:flex;align-items:flex-end;justify-content:center}.bar{width:100%;max-width:36px;min-height:4px;border-radius:9px 9px 4px 4px;background:linear-gradient(180deg,#a78de7,#7557c8);box-shadow:0 5px 12px rgba(117,87,200,.12);transition:height .2s ease}.bar-item b{display:block;margin-top:6px;color:#5f5865;font-size:9px}.bar-item span{display:block;margin-top:2px;color:#9d95a1;font-size:8px}
+.list{display:grid;gap:7px;margin-top:11px}.row{display:flex;align-items:center;min-height:42px;padding:0 12px;border-radius:12px;background:#f8f6fa}.row b{font-size:10.5px}.row span{margin-left:auto;color:var(--purple-dark);font-size:11px;font-weight:900}
+.note{margin:13px 2px 0;color:#9a929e;font-size:9.5px;line-height:1.55;text-align:center}
+@media(max-width:360px){.chance{font-size:43px}.input-card{padding:12px}.stepper{grid-template-columns:44px minmax(0,1fr) 44px}.metric strong{font-size:16px}}
 </style></head><body><div class="shell"><header><button class="back" onclick="history.length>1?history.back():location.href='tcg-tools.html'" aria-label="뒤로가기">‹</button><div class="brand">오리파 확률 계산기</div><div class="spacer"></div></header><main>
-<section class="card"><div class="section-title">기본 정보</div><div class="grid">
-<div class="field"><label>전체 수량</label><input id="total" type="number" min="1" step="1" value="100"></div>
-<div class="field"><label>당첨 수량</label><input id="wins" type="number" min="0" step="1" value="5"></div>
-<div class="field wide purchase-field"><label>구매 예정 수량</label><div class="stepper" role="group" aria-label="구매 예정 수량"><button id="buyMinus" type="button" aria-label="구매 수량 1개 줄이기">−</button><div class="step-value"><input id="buy" type="number" min="1" max="100" step="1" value="10" inputmode="numeric" aria-label="구매 예정 수량"><span>개</span></div><button id="buyPlus" type="button" aria-label="구매 수량 1개 늘리기">＋</button></div><div class="quick-picks" id="quickPicks"><button type="button" data-buy="1">1개</button><button type="button" data-buy="5">5개</button><button type="button" data-buy="10">10개</button><button type="button" data-buy="20">20개</button><button type="button" data-buy="30">30개</button></div><p class="step-help">− / + 버튼으로 조절하거나 숫자를 직접 입력할 수 있어요.</p></div>
-</div><div id="err" class="error"></div></section>
-<section class="hero-result"><div class="hero-badge" id="levelBadge">확률 계산</div><span id="heroLabel">10개 구매 시 1개 이상 당첨될 확률</span><strong id="chance">0%</strong><small id="heroComment">단순 확률 × 구매 수량이 아닌 실제 비복원 추출 확률입니다.</small><div class="probability-track"><i id="probabilityBar"></i></div><div class="probability-legend"><span>당첨 가능성</span><span id="probabilityLegend">0%</span></div></section>
-<section class="metrics"><div class="metric"><span>1개 당첨 확률</span><strong id="single">0%</strong></div><div class="metric"><span>모두 실패할 확률</span><strong id="fail">0%</strong></div><div class="metric"><span>예상 당첨 개수</span><strong id="expected">0개</strong></div><div class="metric"><span>평균 당첨 1개당</span><strong id="avg">-</strong></div></section>
-<section class="chart-card"><div class="chart-head"><b>구매 수량별 당첨 확률</b><span>1개 이상 당첨 기준</span></div><div class="bars" id="bars"></div></section><section class="card"><div class="section-title">목표 확률별 필요한 구매 수량</div><div class="list" id="targets"></div></section>
-<p class="note">※ 계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.</p>
+<section class="hero">
+  <div class="result-area" aria-live="polite">
+    <span class="result-kicker">당첨될 확률</span>
+    <strong class="result-text" id="heroComment">당첨 가능성을 계산해보세요</strong>
+    <span class="result-sub" id="heroLabel">구매 수량을 입력해주세요</span>
+    <strong class="chance" id="chance">0%</strong>
+    <div class="probability-track" aria-hidden="true"><i id="probabilityBar"></i></div>
+  </div>
+
+  <section class="input-card" aria-label="오리파 정보 입력">
+    <div class="input-grid">
+      <div class="field"><label for="total">전체 수량</label><input id="total" type="number" min="1" step="1" value="100" inputmode="numeric"></div>
+      <div class="field"><label for="wins">당첨 수량</label><input id="wins" type="number" min="0" step="1" value="5" inputmode="numeric"></div>
+      <div class="field wide">
+        <label for="buy">구매 예정 수량</label>
+        <div class="stepper" role="group" aria-label="구매 예정 수량">
+          <button id="buyMinus" type="button" aria-label="구매 수량 1개 줄이기">−</button>
+          <div class="step-value"><input id="buy" type="number" min="1" max="100" step="1" value="10" inputmode="numeric" aria-label="구매 예정 수량"><span>개</span></div>
+          <button id="buyPlus" type="button" aria-label="구매 수량 1개 늘리기">＋</button>
+        </div>
+        <div class="quick-picks" id="quickPicks">
+          <button type="button" data-buy="1">1개</button><button type="button" data-buy="5">5개</button><button type="button" data-buy="10">10개</button><button type="button" data-buy="20">20개</button><button type="button" data-buy="30">30개</button>
+        </div>
+        <p class="step-help">− / + 버튼 또는 숫자 직접 입력</p>
+      </div>
+    </div>
+    <div id="err" class="error"></div>
+  </section>
+
+  <p class="fair-note"><span class="fair-dot"></span><span>계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.</span></p>
+</section>
+
+<section class="metrics">
+  <div class="metric"><span class="metric-label">1개 당첨 확률</span><strong id="single">0%</strong></div>
+  <div class="metric"><span class="metric-label">모두 실패할 확률</span><strong id="fail">0%</strong></div>
+  <div class="metric"><span class="metric-label">예상 당첨 개수</span><strong id="expected">0개</strong></div>
+  <div class="metric"><span class="metric-label">평균 당첨 1개당</span><strong id="avg">-</strong></div>
+</section>
+
+<section class="chart-card">
+  <div class="section-head"><span class="section-title">구매 수량별 당첨 확률</span><span class="section-sub">1개 이상 당첨 기준</span></div>
+  <div class="bars" id="bars"></div>
+</section>
+
+<section class="target-card">
+  <div class="section-head"><span class="section-title">목표 확률별 필요한 구매 수량</span></div>
+  <div class="list" id="targets"></div>
+</section>
+
+<p class="note">실물 오리파처럼 한 번 뽑은 상품이 재고에서 빠지는 비복원 추출 기준으로 계산합니다.</p>
 </main></div><script>
 (()=>{const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
 function noHit(N,H,n){if(n<=0)return 1;if(H<=0)return 1;if(n>N-H)return 0;let p=1;for(let i=0;i<n;i++)p*=((N-H-i)/(N-i));return p}
@@ -32,8 +85,8 @@ function calc(){let N=Number($('total').value),H=Number($('wins').value),n=Numbe
 if(!Number.isInteger(N)||N<1||!Number.isInteger(H)||H<0||H>N){err.textContent='전체 수량과 당첨 수량을 확인해주세요.';return}
 $('buy').max=N;n=Math.min(Math.max(1,Math.round(n||1)),N);$('buy').value=n;$('buyMinus').disabled=n<=1;$('buyPlus').disabled=n>=N;
 const miss=noHit(N,H,n),hit=1-miss,single=H/N,exp=n*single;
-$('heroLabel').textContent=n+'개 구매 시 1개 이상 당첨될 확률';$('chance').textContent=pct(hit);$('single').textContent=pct(single);$('fail').textContent=pct(miss);$('expected').textContent=exp.toFixed(2)+'개';$('avg').textContent=H?Math.ceil(N/H)+'개':'-';$('probabilityBar').style.width=Math.max(0,Math.min(100,hit*100))+'%';$('probabilityLegend').textContent=pct(hit);
-const hp=hit*100;let badge='낮음',comment='당첨 가능성이 아직 낮은 편이에요.';if(hp>=70){badge='높음';comment='당첨 가능성이 높은 편이에요.'}else if(hp>=40){badge='괜찮음';comment='당첨 가능성이 꽤 있는 편이에요.'}else if(hp>=20){badge='보통';comment='당첨 가능성과 실패 가능성을 함께 비교해보세요.'}$('levelBadge').textContent=badge;$('heroComment').textContent=comment;
+$('heroLabel').textContent=n+'개 구매 시 1개 이상 당첨될 확률';$('chance').textContent=pct(hit);$('single').textContent=pct(single);$('fail').textContent=pct(miss);$('expected').textContent=exp.toFixed(2)+'개';$('avg').textContent=H?Math.ceil(N/H)+'개':'-';$('probabilityBar').style.width=Math.max(0,Math.min(100,hit*100))+'%';
+const hp=hit*100;let comment='당첨 가능성이 아직 낮은 편이에요';if(hp>=70){comment='당첨 가능성이 높은 편이에요'}else if(hp>=40){comment='당첨 가능성이 꽤 있는 편이에요'}else if(hp>=20){comment='당첨 가능성이 보통 수준이에요'}$('heroComment').textContent=comment;
 $('targets').innerHTML=targets.map(x=>{const k=needed(N,H,x/100);return '<div class="row"><b>'+x+'% 이상</b><span>'+(k?Math.min(k,N)+'개':'달성 불가')+'</span></div>'}).join('');
 const chartPoints=[1,5,10,20,30].filter(x=>x<=N);if(!chartPoints.includes(n)&&n<=N)chartPoints.push(n);chartPoints.sort((a,b)=>a-b);$('bars').innerHTML=chartPoints.slice(-6).map(x=>{const v=1-noHit(N,H,x);return '<div class="bar-item"><div class="bar-wrap"><div class="bar" style="height:'+Math.max(4,Math.round(v*100))+'%"></div></div><b>'+x+'개</b><span>'+pct(v)+'</span></div>'}).join('');
 document.querySelectorAll('#quickPicks button').forEach(b=>{const v=Number(b.dataset.buy);b.disabled=v>N;b.classList.toggle('on',v===n)});

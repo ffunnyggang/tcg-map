@@ -62,6 +62,86 @@
     'FUNY PIN은 어떤 서비스인가요?':{en:'What is FUNY PIN?'},'카드샵 정보는 어떻게 확인하나요?':{en:'How do I find card shop information?'}
   });
 
+  /* WEB_I18N_V3 */
+  Object.assign(textMap,{
+    'FUNY PIN의 새로운 소식과 안내를 확인해보세요.':{en:'Check the latest news and updates from FUNY PIN.'},
+    'FUNY PIN 이용에 궁금한 내용을 확인해보세요.':{en:'Find answers to common questions about FUNY PIN.'},
+    '카드샵 정보가 실제와 달라요.':{en:'The card shop information is incorrect.'},
+    '영업시간, 주소, 취급 상품 등 매장 정보는 변경될 수 있어요. 잘못되거나 변경된 정보를 발견하셨다면':{en:'Shop details such as hours, address, and products may change. If you find incorrect or outdated information,'},
+    '을 통해 알려주세요.':{en:'please let us know through the form.'},
+    '정보 수정 요청하기 ›':{en:'Request an Update ›'},
+    '새로운 카드샵을 등록하고 싶어요.':{en:'I want to add a new card shop.'},
+    '매장 등록 · 정보 수정 요청 페이지에서 매장명과 주소를 입력해 보내주세요. 확인 후 FUNY PIN 카드샵 정보에 순차적으로 반영합니다.':{en:'Enter the shop name and address on the Add / Update Shop page. After review, the information will be added to FUNY PIN.'},
+    '매장 등록 요청하기 ›':{en:'Add a Card Shop ›'},
+    '카드샵 정보는 실시간으로 업데이트되나요?':{en:'Is card shop information updated in real time?'},
+    '모든 매장 정보가 실시간으로 자동 갱신되는 것은 아닙니다. FUNY PIN은 현재 베타 서비스로, 카드샵 데이터를 계속 확인하고 업데이트하고 있어요. 방문 전에는 매장의 공식 채널에서 최신 영업정보를 함께 확인하는 것을 권장합니다.':{en:'Not all shop information is updated automatically in real time. FUNY PIN is currently in beta and we continue to review and update shop data. Please check the shop’s official channels before visiting.'},
+    '일본 카드샵도 볼 수 있나요?':{en:'Can I find card shops in Japan?'},
+    '네. TCG MAP의 국가 변경 기능을 이용해 등록된 일본 카드샵도 확인할 수 있습니다. 지역과 매장 데이터는 계속 추가·보완하고 있어요.':{en:'Yes. Use the country selector in TCG MAP to browse registered card shops in Japan. We continue to add and improve regional shop data.'},
+    'PICK와 TALK에서는 무엇을 볼 수 있나요?':{en:'What can I find in PICK and TALK?'},
+    '에서는 TCG 관련 정보, 일정, 깽퐌커플의 카드샵 방문기를 확인할 수 있고,':{en:'offers TCG information, events, and FFUNNYGGANG card shop visits, while'},
+    '에서는 카드 수집 관련 커뮤니티 콘텐츠를 모아볼 수 있습니다.':{en:'offers community content for card collectors.'},
+    '광고나 제휴 문의는 어디로 하면 되나요?':{en:'How can I contact FUNY PIN about advertising or partnerships?'},
+    'FUNY PIN 내 배너, 카드샵·브랜드 소개 등 광고 및 제휴 문의는 전용 문의 페이지를 이용해주세요.':{en:'For banners, card shop or brand features, and other advertising or partnership inquiries, please use our dedicated inquiry page.'},
+    '광고 · 제휴 문의하기 ›':{en:'Advertising & Partnership Inquiry ›'},
+    '서비스 오류나 개선 의견을 보내고 싶어요.':{en:'I want to report an issue or suggest an improvement.'},
+    '서비스 만족도 조사를 통해 불편했던 점이나 개선 의견을 남겨주세요. 보내주신 의견은 FUNY PIN 개선에 참고합니다.':{en:'Share issues or suggestions through the Service Survey. Your feedback helps us improve FUNY PIN.'},
+    '서비스 만족도 조사 ›':{en:'Service Survey ›'},
+
+    '새로운 카드샵을 알려주시거나':{en:'Tell us about a new card shop or'},
+    '등록된 매장 정보를 수정 요청해주세요.':{en:'request an update to an existing shop.'},
+    '국문명과 영문명이 함께 있다면':{en:'If the shop has both Korean and English names,'},
+    '/ 로 구분해주세요.':{en:'separate them with /.'},
+    '예) 퍼니카드 / FUNY CARD':{en:'e.g. 퍼니카드 / FUNY CARD'},
+    '네이버지도에 표시된 도로명 주소를 입력해주세요':{en:'Enter the road address shown on Naver Map'},
+    '네이버지도 공유하기 URL을 붙여넣어주세요':{en:'Paste the Naver Map share URL'},
+    '영업하는 요일만 체크하고 시간을 입력해주세요. 체크하지 않거나 시간이 비어 있는 요일은 정기휴무로 처리됩니다.':{en:'Select only the days the shop is open and enter the hours. Unchecked days or days without hours will be treated as regular closing days.'},
+    '월':{en:'Mon'},'화':{en:'Tue'},'수':{en:'Wed'},'목':{en:'Thu'},'금':{en:'Fri'},'토':{en:'Sat'},'일':{en:'Sun'},
+    '취급 항목':{en:'Shop Features'},'FUNY PIN의 카드샵 필터 항목과 동일하며 여러 개 선택할 수 있어요.':{en:'These match the filters in FUNY PIN. You can select multiple options.'},
+    '포켓몬':{en:'Pokémon'},'원피스':{en:'ONE PIECE'},'드래곤볼':{en:'Dragon Ball'},'기타 TCG':{en:'Other TCG'},
+    '등급카드':{en:'Graded Cards'},'빈티지카드':{en:'Vintage Cards'},'오리파':{en:'Oripa'},'박스제품':{en:'Booster Boxes'},'낱개팩':{en:'Packs'},'카드용품':{en:'Accessories'},'카드매입':{en:'Buyback'},'등급대행':{en:'Grading Service'},'플레이공간':{en:'Play Space'},'면세':{en:'Tax Free'},
+    '공식 홈페이지 URL':{en:'Official Website URL'},'전화번호':{en:'Phone Number'},'매장 연락처':{en:'Shop Contact'},'주차':{en:'Parking'},'미확인':{en:'Unknown'},
+    '매장 이미지':{en:'Shop Images'},'매장 로고':{en:'Shop Logo'},'정사각형(1:1) 이미지를 권장해요.':{en:'A square (1:1) image is recommended.'},
+    '사진 추가':{en:'Add Photo'},'매장 사진':{en:'Shop Photos'},'최대 5장':{en:'Up to 5 photos'},'상세페이지 매장 사진 영역에 등록할 이미지를 첨부해주세요.':{en:'Upload images to display in the shop photo section.'},
+    '추가로 알려주실 내용':{en:'Additional Information'},'수정이 필요한 내용을 알려주세요':{en:'Tell us what needs to be updated'},'그 외 매장 이용에 도움이 되는 정보를 적어주세요.':{en:'Add any other information that may help visitors.'},'현재 정보와 다른 부분을 자세히 적어주세요.':{en:'Describe what differs from the current information.'},
+    '요청자 연락처':{en:'Your Contact'},'내용 확인이 필요한 경우에만 연락드려요.':{en:'We will contact you only if we need to verify the request.'},'인스타그램 ID 또는 이메일':{en:'Instagram ID or Email'},
+    '제출된 내용은 확인 후 FUNY PIN에 반영됩니다.':{en:'Submitted information will be reviewed before being reflected on FUNY PIN.'},
+    '실제 매장 정보와 다르거나 확인이 어려운 경우 반영되지 않을 수 있습니다.':{en:'Information that cannot be verified or differs from the actual shop may not be reflected.'},
+    '매장 관계자뿐 아니라 이용자도 자유롭게 제보할 수 있어요.':{en:'Both shop representatives and users are welcome to submit updates.'},
+    '개인정보 수집 및 이용에 동의합니다.':{en:'I agree to the collection and use of personal information.'},
+    '매장 등록 및 정보 수정 요청 확인을 위해 요청자 연락처를 수집하며, 요청 내용 확인 및 처리 목적으로만 이용합니다.':{en:'We collect your contact information only to verify and process shop registration or update requests.'},
+    '요청 보내기':{en:'Submit Request'},'요청 보내는 중...':{en:'Submitting Request...'},'이미지 업로드 중...':{en:'Uploading Image...'},
+
+    'FUNY PIN과 함께할 브랜드와 카드샵의':{en:'We welcome ideas from brands and card shops'},
+    '다양한 제안을 기다리고 있어요.':{en:'that want to work with FUNY PIN.'},
+    '브랜드 / 업체명':{en:'Brand / Company'},'브랜드 또는 업체명을 입력해 주세요':{en:'Enter the brand or company name'},
+    '상품 / 서비스명':{en:'Product / Service'},'제안하실 상품 또는 서비스를 입력해 주세요':{en:'Enter the product or service you would like to propose'},
+    '담당자 정보':{en:'Contact Information'},'담당자명':{en:'Contact Name'},'담당자명을 입력해 주세요':{en:'Enter the contact name'},
+    '회신 이메일':{en:'Reply Email'},'회신받을 이메일을 입력해 주세요':{en:'Enter the email address for our reply'},'연락처':{en:'Contact'},'전화번호 또는 연락 가능한 채널':{en:'Phone number or other contact channel'},
+    '제안서 작성':{en:'Proposal'},'제안 내용':{en:'Proposal Details'},'캠페인 일정, 예산, 희망 광고 영역 등 제안 내용을 자유롭게 작성해 주세요.':{en:'Describe your proposal, including campaign schedule, budget, preferred placements, and other details.'},
+    '최대 2,000자까지 작성할 수 있어요.':{en:'Up to 2,000 characters.'},
+    '문의 확인 및 회신을 위해 담당자명, 이메일, 연락처를 수집하며 문의 처리 목적으로만 이용합니다.':{en:'We collect the contact name, email, and contact information only to review and respond to your inquiry.'},
+    '문의 보내기':{en:'Send Inquiry'},'입력하신 정보는 광고·제휴 문의 확인 및 회신 목적으로 사용됩니다.':{en:'The information you provide will only be used to review and respond to your advertising or partnership inquiry.'},
+
+    '매장명 또는 지역으로 검색':{en:'Search by shop name or area'},'카드샵 또는 자판기 매장명·지역 검색':{en:'Search card shops or vending machines by name or area'},
+    '한국':{en:'Korea'},'일본':{en:'Japan'},'카드샵':{en:'Card Shops'},'자판기':{en:'Vending Machines'},'TCG 카드샵':{en:'TCG Card Shops'},'포켓몬 자판기':{en:'Pokémon Vending Machines'},
+    '추천 순':{en:'Recommended'},'가까운 순':{en:'Nearest'},'가나다 순':{en:'A–Z'},'가까운 순':{en:'Nearest'},'가나다순':{en:'A–Z'},
+    '플레이공간':{en:'Play Space'},
+
+    '게시물 등록':{en:'Create Post'},'등록하기':{en:'Post'},'등록':{en:'Post'},'게시판':{en:'Board'},'제목을 입력해주세요':{en:'Enter a title'},'함께 나누고 싶은 이야기를 적어주세요':{en:'Share your story or question'},'사진 첨부':{en:'Add Photos'},'사진 추가':{en:'Add Photos'},'최대 3장 · 장당 5MB':{en:'Up to 3 photos · 5 MB each'},'등록 중':{en:'Posting...'},
+
+    '※ LIVE PIN은 매일 00시에 초기화됩니다.':{en:'※ LIVE PIN resets every day at 00:00.'},
+    '아직 등록된 LIVE PIN이 없어요.':{en:'No LIVE PIN updates yet.'},'현재 카드샵·자판기 현황을 가장 먼저 공유해보세요.':{en:'Be the first to share the latest card shop or vending machine status.'},
+    '위치 선택':{en:'Select Location'},'LIVE PIN 등록':{en:'Add LIVE PIN'},'📍 현장 정보 알려주기':{en:'📍 Share On-site Info'},'🙋 정보 요청하기':{en:'🙋 Request Info'},
+    '구분':{en:'Location Type'},'카드샵을 불러오는 중...':{en:'Loading card shops...'},'자판기를 불러오는 중...':{en:'Loading vending machines...'},'포켓몬카드 자판기':{en:'Pokémon Vending Machine'},
+    '제보 종류':{en:'Update Type'},'요청 종류':{en:'Request Type'},'내용':{en:'Details'},'궁금한 내용':{en:'Question'},
+    '현장 상황을 간단히 알려주세요':{en:'Briefly describe the current situation'},'요청에 대한 현장 정보를 알려주세요':{en:'Share an update for this request'},'예: 30주년 박스 재고 있나요?':{en:'e.g. Is the 30th Anniversary box in stock?'},
+    '현장 사진':{en:'On-site Photo'},'선택':{en:'Optional'},'사진 추가하기':{en:'Add Photo'},'사진이 있으면 현장 정보를 확인하는 데 도움이 돼요.':{en:'A photo helps others verify the update.'},'사진 삭제':{en:'Remove Photo'},
+    '• 같은 기기 연속 제보 제한 · 같은 위치 반복 제보 제한':{en:'• Repeated submissions from the same device or location are limited'},
+    '• 허위 정보·광고·부적절한 사진은 신고 가능':{en:'• False information, ads, or inappropriate photos can be reported'},
+    '신고 사유를 선택하세요':{en:'Select a report reason'},'잘못된 정보':{en:'Incorrect Information'},'욕설·비방·혐오 표현':{en:'Abusive or Hateful Content'},'광고·홍보·도배':{en:'Ads / Spam'},'부적절한 사진·내용':{en:'Inappropriate Photo / Content'},
+    '현장 사진 크게 보기':{en:'View On-site Photo'},'현장 정보 알려주기':{en:'Share On-site Info'},'정보 요청하기':{en:'Request Info'},'등록 중...':{en:'Submitting...'},'사진 업로드 중...':{en:'Uploading Photo...'}
+  });
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;
@@ -84,6 +164,6 @@
     document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"],meta[name="twitter:title"],meta[name="twitter:description"]').forEach(el=>{const v=el.getAttribute('content');if(v)el.setAttribute('content',tr(v))});
   }
   function apply(){ensureTalkNav();applyPngNavIcons();replaceReviewBanners();ensureReviewScheduleUI();translateHead();document.documentElement.lang=lang;document.body.classList.toggle('funy-lang-home',isHome);walk(document.body);renderSwitch();syncSwitch();window.dispatchEvent(new CustomEvent('funy:languagechange',{detail:{lang}}))}
-  const observer=new MutationObserver(mutations=>{mutations.forEach(m=>m.addedNodes.forEach(node=>{if(node.nodeType===1&&node.closest&&node.closest('.funy-lang-switch'))return;walk(node)}))});
-  function start(){apply();observer.observe(document.body,{childList:true,subtree:true})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.FUNY_I18N={getLang:()=>lang,setLang(next){if(!supported.includes(next))return;localStorage.setItem(KEY,next);location.reload()},t:tr};
+  const observer=new MutationObserver(mutations=>{mutations.forEach(m=>{if(m.type==='attributes'){translateElement(m.target);return}m.addedNodes.forEach(node=>{if(node.nodeType===1&&node.closest&&node.closest('.funy-lang-switch'))return;walk(node)})})});
+  function start(){apply();observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:attrNames})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.FUNY_I18N={getLang:()=>lang,setLang(next){if(!supported.includes(next))return;localStorage.setItem(KEY,next);location.reload()},t:tr};
 })();

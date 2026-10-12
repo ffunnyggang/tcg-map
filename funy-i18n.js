@@ -142,6 +142,27 @@
     '현장 사진 크게 보기':{en:'View On-site Photo'},'현장 정보 알려주기':{en:'Share On-site Info'},'정보 요청하기':{en:'Request Info'},'등록 중...':{en:'Submitting...'},'사진 업로드 중...':{en:'Uploading Photo...'}
   });
 
+  /* WEB_I18N_V4 */
+  Object.assign(textMap,{
+    'FUNY PIN은 카드 수집을 좋아하는 분들이':{en:'FUNY PIN is a service for card collectors that brings together'},
+    '카드샵 위치와 매장 정보, TCG 정보·일정·방문기, 커뮤니티 콘텐츠':{en:'card shop locations and details, TCG information and events, shop visits, and community content'},
+    '를 한곳에서 조금 더 편하게 확인할 수 있도록 깽퐌커플이 직접 만들고 있는 서비스입니다.':{en:'in one convenient place, created and operated by FFUNNYGGANG.'},
+    'TCG MAP에서 지도와 매장 리스트를 이용해 확인할 수 있어요. 국가와 취급 항목 등의 필터를 이용하면 원하는 카드샵을 조금 더 쉽게 찾아볼 수 있습니다.':{en:'Use the map and shop list in TCG MAP. Country and shop-feature filters make it easier to find the card shop you want.'},
+    '영업시간, 주소, 취급 상품 등 매장 정보는 변경될 수 있어요. 잘못되거나 변경된 정보를 발견하셨다면':{en:'Shop details such as business hours, address, and products may change. If you find incorrect or outdated information,'},
+    '매장 등록 · 정보 수정 요청':{en:'Add / Update Shop'},
+    'PICK':{en:'PICK'},'TALK':{en:'TALK'},
+    '📍 카드샵':{en:'📍 Card Shops'},'🧃 자판기':{en:'🧃 Vending Machines'},'🏪 카드샵':{en:'🏪 Card Shops'},'🏪 매장':{en:'🏪 Shop'},'📦 재고':{en:'📦 Stock'},'👥 대기':{en:'👥 Queue'},'🙋 요청':{en:'🙋 Request'},
+    '🇰🇷 한국':{en:'🇰🇷 Korea'},'🇯🇵 일본':{en:'🇯🇵 Japan'},
+    '추천순':{en:'Recommended'},'가까운순':{en:'Nearest'},'TCG 카드샵':{en:'TCG Card Shops'},'포켓몬카드 자판기':{en:'Pokémon Vending Machines'},
+    '싱글카드':{en:'Singles'},'위탁판매':{en:'Consignment'},'무인매장':{en:'Unmanned Shop'},
+    '🏪 매장 현황':{en:'🏪 Shop Status'},'📦 재고 현황':{en:'📦 Stock Status'},'👥 대기 현황':{en:'👥 Queue Status'},
+    '⚡ LIVE PIN 등록':{en:'⚡ Add LIVE PIN'},'LIVE PIN 등록':{en:'Add LIVE PIN'},
+    '카드샵을 선택해주세요':{en:'Select a card shop'},'자판기를 선택해주세요':{en:'Select a vending machine'},
+    '기타 · 등록되지 않은 카드샵':{en:'Other · Unlisted Card Shop'},
+    '사진 첨부':{en:'Add Photos'},'게시물 등록은 로그인 후 이용할 수 있어요.':{en:'Please log in to create a post.'},
+    '게시물 등록':{en:'Create Post'},'등록하기':{en:'Post'}
+  });
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;
@@ -151,8 +172,28 @@
     const lead=raw.slice(0,raw.indexOf(trimmed)),tail=raw.slice(raw.indexOf(trimmed)+trimmed.length);
     return lead+direct[lang]+tail;
   }
-  function translateTextNode(node){if(!originalText.has(node))originalText.set(node,node.nodeValue);const base=originalText.get(node);node.nodeValue=lang==='ko'?base:tr(base)}
-  function translateElement(el){if(!(el instanceof Element))return;if(el.closest&&el.closest('.funy-lang-switch'))return;attrNames.forEach(name=>{if(!el.hasAttribute(name))return;let store=originalAttr.get(el);if(!store){store={};originalAttr.set(el,store)}if(!(name in store))store[name]=el.getAttribute(name);const base=store[name];el.setAttribute(name,lang==='ko'?base:tr(base))})}
+  function translateTextNode(node){
+    const current=node.nodeValue;
+    if(!originalText.has(node))originalText.set(node,current);
+    else{
+      const base=originalText.get(node),expected=lang==='ko'?base:tr(base);
+      if(current!==expected)originalText.set(node,current);
+    }
+    const base=originalText.get(node),desired=lang==='ko'?base:tr(base);
+    if(node.nodeValue!==desired)node.nodeValue=desired;
+  }
+  function translateElement(el){
+    if(!(el instanceof Element))return;if(el.closest&&el.closest('.funy-lang-switch'))return;
+    attrNames.forEach(name=>{
+      if(!el.hasAttribute(name))return;
+      let store=originalAttr.get(el);if(!store){store={};originalAttr.set(el,store)}
+      const current=el.getAttribute(name);
+      if(!(name in store))store[name]=current;
+      else{const expected=lang==='ko'?store[name]:tr(store[name]);if(current!==expected)store[name]=current}
+      const base=store[name],desired=lang==='ko'?base:tr(base);
+      if(current!==desired)el.setAttribute(name,desired);
+    })
+  }
   function walk(root){if(!root)return;if(root.nodeType===Node.TEXT_NODE){translateTextNode(root);return}if(root.nodeType!==Node.ELEMENT_NODE&&root.nodeType!==Node.DOCUMENT_NODE)return;if(root.nodeType===Node.ELEMENT_NODE)translateElement(root);const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);let n;while((n=walker.nextNode())){if(n.nodeType===Node.TEXT_NODE)translateTextNode(n);else translateElement(n)}}
   function ensureTalkNav(){const nav=document.querySelector('.portal-bottom-nav');if(!nav||nav.querySelector('a[href="talk.html"]'))return;const css=document.createElement('link');css.rel='stylesheet';css.href='nav-v4.css?v=20260917-0548';document.head.appendChild(css);const a=document.createElement('a');a.href='talk.html';a.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 5.5h16v11H9l-5 3v-14Z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg><span>TALK</span>';nav.appendChild(a)}
   function replaceReviewBanners(){if(!/(^|\/)reviews\.html$/.test(path))return;const imgs=document.querySelectorAll('.review-banner-slide img');const srcs=['assets/banners/banner_review_01.jpg','assets/banners/banner_review_02.jpg','assets/banners/banner_review_03.jpg'];imgs.forEach((img,i)=>{if(srcs[i])img.src=srcs[i]})}
@@ -164,6 +205,6 @@
     document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"],meta[name="twitter:title"],meta[name="twitter:description"]').forEach(el=>{const v=el.getAttribute('content');if(v)el.setAttribute('content',tr(v))});
   }
   function apply(){ensureTalkNav();applyPngNavIcons();replaceReviewBanners();ensureReviewScheduleUI();translateHead();document.documentElement.lang=lang;document.body.classList.toggle('funy-lang-home',isHome);walk(document.body);renderSwitch();syncSwitch();window.dispatchEvent(new CustomEvent('funy:languagechange',{detail:{lang}}))}
-  const observer=new MutationObserver(mutations=>{mutations.forEach(m=>{if(m.type==='attributes'){translateElement(m.target);return}m.addedNodes.forEach(node=>{if(node.nodeType===1&&node.closest&&node.closest('.funy-lang-switch'))return;walk(node)})})});
-  function start(){apply();observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:attrNames})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.FUNY_I18N={getLang:()=>lang,setLang(next){if(!supported.includes(next))return;localStorage.setItem(KEY,next);location.reload()},t:tr};
+  const observer=new MutationObserver(mutations=>{mutations.forEach(m=>{if(m.type==='attributes'){translateElement(m.target);return}if(m.type==='characterData'){translateTextNode(m.target);return}m.addedNodes.forEach(node=>{if(node.nodeType===1&&node.closest&&node.closest('.funy-lang-switch'))return;walk(node)})})});
+  function start(){apply();observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:attrNames,characterData:true})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();window.FUNY_I18N={getLang:()=>lang,setLang(next){if(!supported.includes(next))return;localStorage.setItem(KEY,next);location.reload()},t:tr};
 })();

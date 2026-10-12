@@ -579,14 +579,14 @@ function openNewShop(){
  openEditorWith(seed);
 }
 function openShopEditor(id){const s=shopRows.find(x=>x.id===id);if(!s)return;isNewShop=false;editingShopId=id;openEditorWith(s)}
-function triValue(v){return v===true?'true':v===false?'false':'null'}
+function triValue(v){if(v===true||v==='true'||v===1||v==='1'||v==='t')return 'true';if(v===false||v==='false'||v===0||v==='0'||v==='f')return 'false';return 'null'}
 function openEditorWith(s){
  const tcgMap={};shopTcgRows.filter(x=>x.shop_id===s.id).forEach(x=>tcgMap[String(x.tcg_id)]=x.status);
  const featMap={};shopFeatureRows.filter(x=>x.shop_id===s.id).forEach(x=>featMap[String(x.feature_id)]=x);
  const imgs=shopImageRows.filter(x=>x.shop_id===s.id),primary=imgs.find(x=>x.is_primary)||imgs.find(x=>x.image_type==='thumbnail'),gallery=imgs.filter(x=>!x.is_primary&&x.image_type==='gallery');editorImageState={primary:primary?{url:primary.storage_path||primary.source_path||'',storage:!!primary.storage_path,file:null}:null,gallery:gallery.map(x=>({url:x.storage_path||x.source_path||'',storage:!!x.storage_path,file:null})),removedStorageUrls:[]};const review=shopReviewRows.find(x=>x.shop_id===s.id)||{};const contents=shopContentRows.filter(x=>x.shop_id===s.id);
  $('editorTitle').textContent=isNewShop?'카드샵 신규 등록':'카드샵 정보 수정';$('editorIdLabel').textContent=s.id||'';$('editorDelete').style.display=isNewShop?'none':'block';
  const tcgHtml=tcgTypes.map(t=>'<div class="tri-item"><b>'+esc(t.name_ko)+'</b><select class="select" data-tcg-code="'+esc(t.code)+'"><option value="null">미확인</option><option value="true">O</option><option value="false">X</option></select></div>').join('');
- const adminFeatureLabels={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이공간',unmanned:'무인매장',tax_free:'면세'};const featHtml=featureTypes.map(t=>{const row=featMap[String(t.id)]||{},label=adminFeatureLabels[t.code]||t.name_ko;return '<div class="feature-item"><div class="feature-item-head"><b>'+esc(label)+'</b></div><select class="select" data-feature-code="'+esc(t.code)+'"><option value="null">미확인</option><option value="true">O</option><option value="false">X</option></select><input class="input feature-detail" data-feature-detail="'+esc(t.code)+'" placeholder="상세 메모" value="'+esc(row.detail||'')+'"></div>'}).join('');
+ const adminFeatureLabels={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이공간',unmanned:'무인매장',tax_free:'면세'};const featHtml=featureTypes.map(t=>{const row=featMap[String(t.id)]||{},label=adminFeatureLabels[t.code]||t.name_ko,v=triValue(row.value);return '<div class="feature-item"><div class="feature-item-head"><b>'+esc(label)+'</b></div><select class="select" data-feature-code="'+esc(t.code)+'"><option value="null"'+(v==='null'?' selected':'')+'>미확인</option><option value="true"'+(v==='true'?' selected':'')+'>O</option><option value="false"'+(v==='false'?' selected':'')+'>X</option></select><input class="input feature-detail" data-feature-detail="'+esc(t.code)+'" placeholder="상세 메모" value="'+esc(row.detail||'')+'"></div>'}).join('');
  $('editorBody').innerHTML=
  '<div class="editor-pane on" data-editor-pane="info"><section class="editor-section"><h3>기본 정보</h3><div class="form-grid">'+
  '<div class="field"><label for="shop_id">매장 ID · 자동채번</label><input id="shop_id" class="input" type="text" value="'+esc(s.id||'')+'" disabled aria-disabled="true"></div>'+
@@ -611,7 +611,7 @@ function openEditorWith(s){
  '<p id="editorMsg" class="editor-msg">저장 버튼을 누르면 모든 탭의 변경사항이 함께 반영됩니다.</p>';
  $('is_active').value=String(s.is_active!==false);$('event_highlight_enabled').value=String(s.event_highlight_enabled===true);$('status').value=['운영','오픈예정','휴업','폐점'].includes(s.status)?s.status:'운영';$('instagram_feed_enabled').value=triValue(s.instagram_feed_enabled);$('contentAdd').onclick=()=>addContentRow();bindContentRemove();bindReviewAutoScore();bindCoordinateTools();bindImageUploadTools();
  tcgTypes.forEach(t=>{const el=document.querySelector('[data-tcg-code="'+CSS.escape(t.code)+'"]');if(el)el.value=triValue(tcgMap[String(t.id)])});
- featureTypes.forEach(t=>{const row=featMap[String(t.id)]||{};const el=document.querySelector('[data-feature-code="'+CSS.escape(t.code)+'"]');if(el)el.value=triValue(row.value)});
+ featureTypes.forEach(t=>{const row=featMap[String(t.id)]||{};const el=$('editorBody')?.querySelector('[data-feature-code="'+CSS.escape(t.code)+'"]');if(el)el.value=triValue(row.value)});
  bindShopIdControls(s);
  setEditorTab('info');$('shopEditor').classList.add('show');$('shopEditor').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
 }

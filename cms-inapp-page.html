@@ -27,15 +27,22 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
     target.protocol='https:';
     target.hostname='funypin.kr';
     target.port='';
-    target.searchParams.set('app','1');
-    target.searchParams.set('cmsInappPage','1');
-    const platform=params.get('appPlatform');
-    const appv=params.get('appv');
-    if(platform)target.searchParams.set('appPlatform',platform);
-    if(appv)target.searchParams.set('appv',appv);
   }catch(_){
     frame.style.display='none';error.style.display='flex';return;
   }
+
+  const isApp=params.get('app')==='1';
+  if(!isApp){
+    location.replace(target.toString());
+    return;
+  }
+
+  target.searchParams.set('app','1');
+  target.searchParams.set('cmsInappPage','1');
+  const platform=params.get('appPlatform');
+  const appv=params.get('appv');
+  if(platform)target.searchParams.set('appPlatform',platform);
+  if(appv)target.searchParams.set('appv',appv);
 
   const css=[
     'html,body{background:#fff!important}',

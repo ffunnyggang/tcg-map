@@ -7,7 +7,23 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="description" content="홍대 더카드룸에서 퍼니몬을 포획하고 FUNY PIN 이벤트에 응모하세요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script id="app-event-page-bridge">
+(function(){
+  try{
+    if(!window.ReactNativeWebView)return;
+    var ctx=window.__FUNY_APP_CONTEXT||{};
+    if(ctx.surface!=='tab')return;
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      type:'OPEN_INAPP_PAGE',
+      url:location.href,
+      title:'',
+      source:'event-thecardroom'
+    }));
+  }catch(_){}
+})();
+</script>
 <style>
+html.app-shell .head{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}
 *{box-sizing:border-box}
 html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .page{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:32px}

@@ -1,6 +1,6 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 (async()=>{
- function element(value=''){return{value,options:[],listeners:{},add(o){this.options.push(o)},addEventListener(e,fn){this.listeners[e]=fn},dispatchEvent(e){this.listeners[e.type]?.()},after(){},focus(){},hidden:false}}
+ function element(value=''){return{value,style:{},options:[],listeners:{},add(o){this.options.push(o)},addEventListener(e,fn){this.listeners[e]=fn},dispatchEvent(e){this.listeners[e.type]?.()},after(){},focus(){},hidden:false}}
  const type=element('shop'),shop=element(''),label=element(),country=element('KR'),name=element(),mapEl=element(),coord=element(),current=element(),modes=[{...element(),dataset:{mode:'request'}},{...element(),dataset:{mode:'report'}}];
  const section=element();section.querySelector=s=>({'#liveDirectCountry':country,'#liveDirectName':name,'#liveDirectMap':mapEl,'#liveDirectCoord':coord,'#liveDirectCurrent':current}[s]);
  let click,pan;const alerts=[];const w={naver:{maps:{Map:class{panTo(p){pan=p}},LatLng:class{constructor(lat,lng){this.lat=lat;this.lng=lng}},Marker:class{setMap(){}},Event:{addListener(m,e,cb){click=cb},trigger(){}}}}};
@@ -8,5 +8,5 @@ const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/st
  assert.equal(api.payload(),null);type.value='direct';api.show(true);await Promise.resolve();assert(section.hidden===false&&shop.hidden);assert.throws(()=>api.payload(),/위치명/);name.value='  Event venue  ';assert.throws(()=>api.payload(),/위치/);click({coord:{lat:()=>37.5,lng:()=>127}});assert.equal(api.payload().shop_name,'Event venue');assert.equal(api.payload().latitude,37.5);
  current.onclick();assert(pan);assert.throws(()=>api.payload(),/위치/);click({coord:{lat:()=>37.6,lng:()=>127}});assert.equal(api.payload().latitude,37.6);
  api.setRequest(true);assert(type.options[0].disabled);assert.equal(type.value,'shop');api.setRequest(false);assert(!type.options[0].disabled);api.show(false);assert(!shop.hidden&&section.hidden);
- type.value='direct';api.reset();assert.throws(()=>api.payload());console.log('Picker required name/point, current-location reconfirmation, request restriction, and registered-mode restoration passed.');
+ api.setRequest(true);shop.value='KR-OTHER';shop.listeners.change();assert.equal(type.value,'shop');api.setRequest(false);shop.listeners.change();assert.equal(type.value,'direct');api.show(true);assert.equal(label.style.display,'none');api.show(false);assert.equal(label.style.display,'');type.value='direct';api.reset();assert.throws(()=>api.payload());console.log('Picker required name/point, current-location reconfirmation, request restriction, and registered-mode restoration passed.');
 })().catch(e=>{console.error(e);process.exitCode=1});

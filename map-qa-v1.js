@@ -71,9 +71,9 @@ const $=s=>document.querySelector(s);
     if(z===14)return{pinW:29,pinH:40,markerW:33,markerH:46};
     return{pinW:32,pinH:44,markerW:36,markerH:50};
   }
-  function vendingIcon(selected=false){
+  function vendingIcon(selected=false,id=''){
     const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
-    return {content:'<div class="funy-vending-marker'+(selected?' is-selected':'')+'" style="'+vars+'" aria-hidden="true"><svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vendingPinGrad'+(selected?'S':'N')+'" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vendingPinGrad'+(selected?'S':'N')+')"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
+    return {content:'<div class="funy-vending-marker'+(selected?' is-selected':'')+'" style="'+vars+'" aria-hidden="true">'+(window.FUNY_LIVE_MAP?.hasRegisteredLive?.(id)?'<span class="live-registered-bolt">⚡</span>':'')+'<svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="vendingPinGrad'+(selected?'S':'N')+'" x1="15" y1="8" x2="84" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE46A"/><stop offset=".48" stop-color="#F6C928"/><stop offset="1" stop-color="#D9A900"/></linearGradient></defs><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="url(#vendingPinGrad'+(selected?'S':'N')+')"/><path d="M6 52h28M64 52h28" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="52" r="14.5" fill="#FFFFFF"/></svg></div>',anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function naverUrl(v){
     return 'https://map.naver.com/p/search/'+encodeURIComponent(v.name||'');
@@ -89,16 +89,16 @@ const $=s=>document.querySelector(s);
   }
   function selectVending(v,marker){
     try{if(activeInfoWindow)activeInfoWindow.close()}catch(_){}
-    if(state.selectedVending===v.id){state.selectedVending=null;marker.setIcon(vendingIcon(false));try{activeInfoWindow=null}catch(_){};return}
-    if(state.selectedVending&&vendingMarkers.get(state.selectedVending))vendingMarkers.get(state.selectedVending).setIcon(vendingIcon(false));
-    state.selectedVending=v.id;marker.setIcon(vendingIcon(true));
+    if(state.selectedVending===v.id){state.selectedVending=null;marker.setIcon(vendingIcon(false,v.id));try{activeInfoWindow=null}catch(_){};return}
+    if(state.selectedVending&&vendingMarkers.get(state.selectedVending))vendingMarkers.get(state.selectedVending).setIcon(vendingIcon(false,state.selectedVending));
+    state.selectedVending=v.id;marker.setIcon(vendingIcon(true,v.id));
     const iw=new naver.maps.InfoWindow({content:popupHtml(v),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-12)});
     iw.open(naverMap,marker);try{activeInfoWindow=iw}catch(_){}
   }
   function makeVendingMarker(v,pos){
     if(!mapReady()||vendingMarkers.has(v.id))return;
     v._coord={lat:+pos.lat,lng:+pos.lng};
-    const marker=new naver.maps.Marker({map:state.layers.vending?naverMap:null,position:new naver.maps.LatLng(+pos.lat,+pos.lng),title:v.name,icon:vendingIcon(false),zIndex:110});
+    const marker=new naver.maps.Marker({map:state.layers.vending?naverMap:null,position:new naver.maps.LatLng(+pos.lat,+pos.lng),title:v.name,icon:vendingIcon(false,v.id),zIndex:110});
     naver.maps.Event.addListener(marker,'click',()=>selectVending(v,marker));
     vendingMarkers.set(v.id,marker);
     applyVendingVisibility();
@@ -163,7 +163,7 @@ const $=s=>document.querySelector(s);
     const q=currentSearch();
     for(const v of VENDING){
       const m=vendingMarkers.get(v.id);if(!m)continue;
-      const show=!document.body.classList.contains('country-japan')&&state.layers.vending&&(!q||vendingMatchesSearch(v));
+      const show=!document.body.classList.contains('country-japan')&&(state.layers.vending||window.FUNY_LIVE_MAP?.hasRegisteredLive?.(v.id))&&(!q||vendingMatchesSearch(v));
       try{m.setMap(show?naverMap:null)}catch(_){}
     }
   }
@@ -172,7 +172,7 @@ const $=s=>document.querySelector(s);
       const visibleRows=Array.isArray(window.FUNY_VISIBLE_SHOPS)?window.FUNY_VISIBLE_SHOPS:[];
       const visibleIds=new Set(visibleRows.filter(s=>!String(s?.id||'').startsWith('JP-')).map(s=>String(s.id)));
       markerById.forEach((m,id)=>{
-        const show=state.layers.shops&&visibleIds.has(String(id));
+        const show=(state.layers.shops||window.FUNY_LIVE_MAP?.hasRegisteredLive?.(id))&&visibleIds.has(String(id));
         m.setMap(show?naverMap:null);
       });
     }catch(_){}
@@ -181,6 +181,7 @@ const $=s=>document.querySelector(s);
     applyVendingVisibility();
     document.querySelectorAll('.qa-layer-chip').forEach(b=>b.classList.toggle('active',!!state.layers[b.dataset.layer]));
   }
+  window.FUNY_QA_LAYERS={refresh:()=>{vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending,id)));applyLayers()}};
   function updateEventCount(){
     const n=document.querySelectorAll('.funy-event-pin').length;
     const el=document.querySelector('.qa-layer-chip[data-layer="events"] .qa-layer-count');if(el)el.textContent=String(n);
@@ -372,7 +373,7 @@ const $=s=>document.querySelector(s);
       tries++;
       if(mapReady()){
         clearInterval(t);
-        try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending))))}catch(_){}
+        try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending,id))))}catch(_){}
         buildVendingMarkers();
       }else if(tries>80)clearInterval(t)
     },200);

@@ -84,11 +84,11 @@
       const res=await fetch(URL+'/rest/v1/live_reports?'+q,{headers:{apikey:KEY,Authorization:'Bearer '+KEY},cache:'no-store'});
       if(!res.ok)return;
       const rows=await res.json();
-      rows.forEach(x=>x.shop_id&&liveShopIds.add(x.shop_id));
+      liveShopIds.clear();const ids=window.FUNY_LIVE_MAP?window.FUNY_LIVE_MAP.getRegisteredIds():rows.map(x=>x.shop_id);ids.forEach(id=>id&&liveShopIds.add(id));
       refreshMarkerSizes();
     }catch(e){}
   }
   window.FUNY_MAP_POPUP={clear:(force=false)=>{if(!force)return;clearSelected(true)}};
-  window.FUNY_MAP_POPUP={clear:()=>clearSelected(true)};
+  window.FUNY_MAP_POPUP={clear:()=>clearSelected(true),setLiveIds:ids=>{liveShopIds.clear();ids.forEach(id=>liveShopIds.add(id));refreshMarkerSizes()}};
   ensureMarkerStyles();loadLivePins();let tries=0;const timer=setInterval(()=>{tries++;try{SHOPS.forEach(s=>bindMarker(s,markerById.get(s.id)));bindMapEvents();if(markerById.size>=SHOPS.length||tries>60)clearInterval(timer)}catch(e){if(tries>60)clearInterval(timer)}},250)
 })();

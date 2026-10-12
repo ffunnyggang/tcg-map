@@ -18,7 +18,7 @@ const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/st
  vm.runInContext(fs.readFileSync('map-live-pin-v1.js','utf8'),context);const flush=async()=>{for(let i=0;i<15;i++)await Promise.resolve()};await flush();
  assert.equal(created.length,1);assert(created[0].opts.icon.content.includes('⚡'));assert(created[0].opts.icon.content.includes('#17151b'));
  country='JP';intervals[0]();assert.equal(created[0].map,null);assert.equal(googleCreated,1);
- rows=[];handlers.live_pin_map_revision();await flush();assert.equal(w.FUNY_LIVE_MAP.getRows().length,0);
+ rows=[{...report,id:3,location_type:'registered',shop_id:'KR-SEO-001'}];w.FUNY_LIVE_MAP.refresh();await flush();assert(w.FUNY_LIVE_MAP.hasRegisteredLive('KR-SEO-001'));elements.get('liveTempLayer').onclick({preventDefault(){},stopPropagation(){}});assert(!w.FUNY_LIVE_MAP.hasRegisteredLive('KR-SEO-001'));elements.get('liveTempLayer').onclick({preventDefault(){},stopPropagation(){}});assert(w.FUNY_LIVE_MAP.hasRegisteredLive('KR-SEO-001'));assert.equal(w.FUNY_LIVE_MAP.metrics('JP').pinW,33);assert.equal(w.FUNY_LIVE_MAP.metrics('KR').pinW,21);rows=[];handlers.live_pin_map_revision();await flush();assert.equal(w.FUNY_LIVE_MAP.getRows().length,0);
  country='KR';rows=[report];w.FUNY_LIVE_MAP.refresh();await flush();assert.equal(w.FUNY_LIVE_MAP.getRows().length,1);
  now=Date.parse('2026-10-14T00:00:00+09:00');intervals[0]();await flush();assert.equal(w.FUNY_LIVE_MAP.getRows().length,0);assert.equal(created.at(-1).map,null);
  console.log('KR black/bolt marker, JP switch, moderation signal, and midnight map removal passed.');

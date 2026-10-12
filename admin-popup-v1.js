@@ -21,7 +21,7 @@
     const s=document.createElement('style');
     s.id='popup-admin-style';
     s.textContent=`
-      .popup-admin-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+      .popup-admin-head{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-bottom:12px}
       .popup-admin-head h2{margin:0;font-size:17px}
       .popup-admin-head p{margin:4px 0 0;color:#817887;font-size:11px}
       .popup-admin-new{border:0;border-radius:12px;background:#7653e8;color:#fff;font-weight:800;height:40px;padding:0 16px;cursor:pointer}
@@ -108,7 +108,7 @@
   function renderList(){
     const f=$('feed');
     f.innerHTML=
-      '<div class="popup-admin-head"><div><h2>팝업 관리</h2><p>HOME / TCG MAP / PICK / TALK 진입 팝업을 관리합니다.</p></div><button id="popupNew" class="popup-admin-new" type="button">+ 팝업 등록</button></div>'+
+      '<div class="popup-admin-head"><button id="popupNew" class="popup-admin-new" type="button">+ 팝업 등록</button></div>'+
       (popupRows.length?'<div id="popupAdminList" class="popup-admin-list"></div>':'<div class="empty">등록된 팝업이 없습니다.</div>');
     $('popupNew').onclick=()=>renderEditor(null);
     const list=$('popupAdminList'); if(!list)return;

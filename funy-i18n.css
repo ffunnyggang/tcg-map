@@ -39,3 +39,19 @@ html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;
 
 /* Temporarily hide device-local pending FUNY MON entry action until account-based sync is ready */
 #funyMonPendingEntry,.funy-mon-pending-entry{display:none!important}
+
+
+/* Floating LIVE PIN compact shape */
+html[lang="en"] .live-pin-entry-wrap.is-scrolling .live-pin-entry,
+html[lang="en"] .live-pin-detail-entry.is-scrolling .live-pin-entry,
+.live-pin-entry-wrap.is-scrolling .live-pin-entry,
+.live-pin-detail-entry.is-scrolling .live-pin-entry{
+  width:46px!important;
+  min-width:46px!important;
+  max-width:46px!important;
+  height:46px!important;
+  flex:0 0 46px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  box-sizing:border-box!important;
+}

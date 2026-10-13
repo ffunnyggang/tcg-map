@@ -1227,6 +1227,17 @@
     '스킨 초기화에 실패했어요. 다시 시도해주세요.':{en:'Failed to reset the skin. Please try again.'}
   });
 
+
+  /* WEB_I18N_V8_COIN_FACE */
+  Object.assign(textMap,{
+    '앞뒷면 전환':{en:'Switch Coin Side'},
+    '앞/뒤 전환':{en:'Switch Side'},
+    '앞면 보기':{en:'Show Heads'},
+    '뒷면 보기':{en:'Show Tails'},
+    '앞면으로 전환했어요.':{en:'Showing heads.'},
+    '뒷면으로 전환했어요.':{en:'Showing tails.'}
+  });
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;

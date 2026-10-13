@@ -22,10 +22,10 @@ header{height:58px;padding:0 14px;display:flex;align-items:center;position:stick
 .back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;cursor:pointer;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px;letter-spacing:-.025em}.header-spacer{width:38px;margin-left:auto}
 main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:38px;margin-left:auto;border:0;border-radius:11px;background:#f5f2f8;color:#554d5b;display:grid;place-items:center;font-size:17px;cursor:pointer}.sound-toggle.off{opacity:.55}.sound-toggle:active{transform:scale(.96)}
 
-.game-card{margin:0 -16px;padding:20px 16px 14px;background:linear-gradient(180deg,#ffffff 0%,#fbf9fd 64%,#f4f1f7 100%);overflow:visible;position:relative;min-height:510px}.game-card:before{content:"";position:absolute;left:50%;bottom:78px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 35%,transparent 72%);pointer-events:none}
-.result-area{min-height:60px;text-align:center;position:relative;z-index:4;padding-top:4px}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
-.coin-stage{display:block;width:min(100%,408px);height:360px;margin:4px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible;transform-origin:50% 84%;will-change:transform}.coin-stage:disabled{cursor:default}.coin-stage.flipping{}
-.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:46px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{}
+.game-card{margin:0 -16px;padding:16px 16px 10px;background:linear-gradient(180deg,#ffffff 0%,#fbf9fd 64%,#f4f1f7 100%);overflow:visible;position:relative;min-height:0}.game-card:before{content:"";position:absolute;left:50%;bottom:78px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 35%,transparent 72%);pointer-events:none}
+.result-area{min-height:56px;text-align:center;position:relative;z-index:4;padding-top:2px}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
+.coin-stage{display:block;width:min(100%,408px);height:400px;margin:2px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible;transform-origin:50% 84%;will-change:transform}.coin-stage:disabled{cursor:default}.coin-stage.flipping{}
+.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:42px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{}
 .coin{width:176px;height:176px;position:relative;transform-style:preserve-3d;transform:rotateX(50deg) rotateZ(-10deg);transition:transform .28s ease;will-change:transform}
 .coin-rim,.coin-rim i,.coin-face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}.coin-rim i{display:block;transform:translateZ(var(--z));background:linear-gradient(90deg,#5c5960 0%,#c9c6cb 10%,#77727b 30%,#f2f1f3 52%,#7c7780 74%,#d2cfd4 91%,#5c5760 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
 .coin-face{inset:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid rgba(255,255,255,.72);overflow:hidden}
@@ -34,9 +34,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 .coin-face:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 31%,transparent 48%,rgba(255,255,255,.18) 72%,transparent 100%);mix-blend-mode:soft-light;pointer-events:none;z-index:4}.coin-skin-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:2}.coin-face.has-skin .coin-skin-img{display:block}.coin-face.has-skin .coin-ring,.coin-face.has-skin .coin-brand,.coin-face.has-skin .coin-mark,.coin-face.has-skin .coin-side-name{display:none}.coin-face.has-skin:before{opacity:.22}
 .coin-ring{position:absolute;inset:13px;border-radius:50%;border:2px solid rgba(63,57,67,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);pointer-events:none}.coin-back .coin-ring{border-color:rgba(255,255,255,.25)}
 .coin-brand{font-size:9px;font-weight:950;letter-spacing:.18em;opacity:.62}.coin-mark{margin-top:2px;font-size:44px;line-height:1;font-weight:950;letter-spacing:-.09em;text-shadow:0 2px 3px rgba(0,0,0,.08)}.coin-side-name{margin-top:6px;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.62}
-.coin-shadow{position:absolute;left:50%;bottom:34px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{}
-.tool-controls{position:relative;z-index:6;display:flex;justify-content:center;gap:7px;margin:-1px 0 10px}.tool-control{height:34px;min-width:58px;padding:0 12px;border:1px solid #e4dfea;border-radius:11px;background:#fff;color:#746d79;font-size:10px;font-weight:850;cursor:pointer;box-shadow:0 3px 10px rgba(56,43,70,.035)}.tool-control:active{transform:scale(.97)}.tool-control.active{background:#f2eefb;border-color:#dacff2;color:#684bbb}.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
+.coin-shadow{position:absolute;left:50%;bottom:30px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{}
+.tool-controls{position:relative;z-index:6;display:flex;justify-content:center;gap:7px;margin:2px 0 8px}.tool-control{height:34px;min-width:58px;padding:0 12px;border:1px solid #e4dfea;border-radius:11px;background:#fff;color:#746d79;font-size:10px;font-weight:850;cursor:pointer;box-shadow:0 3px 10px rgba(56,43,70,.035)}.tool-control:active{transform:scale(.97)}.tool-control.active{background:#f2eefb;border-color:#dacff2;color:#684bbb}.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:8px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
 .history-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.history-head{display:flex;align-items:center;gap:8px}.history-title{font-size:12px;font-weight:900}.history-count{font-size:9px;color:#9a929e}.reset-history{margin-left:auto;border:0;background:#f4f1f6;color:#817a86;border-radius:9px;height:29px;padding:0 10px;font-size:9px;font-weight:850;cursor:pointer}.reset-history:disabled{opacity:.45}.history-list{display:flex;gap:7px;overflow-x:auto;padding:12px 1px 2px;scrollbar-width:none}.history-list::-webkit-scrollbar{display:none}.history-empty{width:100%;padding:12px 4px 7px;color:#a098a5;font-size:10.5px;text-align:center}.history-chip{min-width:48px;height:48px;padding:0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;border:1px solid #e9e3ef;background:#faf8fc}.history-chip.front{background:#f2eefb;border-color:#e0d6f4;color:#684bbb}.history-chip.back{background:#f2f0f3;border-color:#e1dde4;color:#433d47}.history-chip b{font-size:11px;line-height:1.1}.history-chip span{margin-top:3px;font-size:8px;opacity:.68;font-weight:750}
 .tip{margin:13px 2px 0;color:#9a929e;font-size:10px;line-height:1.55;text-align:center}.tip b{color:#766e7b}
 .skin-modal{position:fixed;inset:0;z-index:220;display:none;align-items:flex-end;justify-content:center;background:rgba(20,16,24,.42)}.skin-modal.open{display:flex}.skin-sheet{width:min(100%,440px);max-height:min(90dvh,760px);padding:0 16px calc(18px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -6px 22px rgba(32,28,42,.18);overflow:auto}.skin-handle{width:42px;height:5px;border-radius:99px;background:#d6d0dc;margin:8px auto 6px}.skin-head{height:44px;display:flex;align-items:center;justify-content:space-between}.skin-title{font-size:14px;font-weight:800;letter-spacing:-.02em}.skin-close{width:38px;height:38px;border:0;background:transparent;color:#857e8a;font-size:28px;line-height:28px;cursor:pointer}.skin-desc{margin:0 0 8px;color:#918a96;font-size:10.5px;line-height:17px}.skin-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:11px;align-items:center;min-height:76px;padding:10px 0;border-top:1px solid #f0ecf3}.skin-preview{width:56px;height:56px;border-radius:50%;overflow:hidden;background:#eee9f5;border:1px solid #ddd6e7;display:grid;place-items:center;color:#7158b5;font-size:11px;font-weight:850}.skin-preview img{width:100%;height:100%;object-fit:cover;display:none}.skin-preview.has-image img{display:block}.skin-preview.has-image span{display:none}.skin-copy b{display:block;color:#342f38;font-size:12.5px;font-weight:850}.skin-copy span{display:block;margin-top:3px;color:#9a929e;font-size:9.5px;line-height:1.35}.skin-actions{display:flex;gap:6px}.skin-action{height:38px;border:0;border-radius:11px;background:#f2eefb;color:#684bbb;padding:0 10px;font-size:10.5px;font-weight:850;cursor:pointer}.skin-action.reset{background:#f4f2f5;color:#817a86}.skin-file{display:none}.skin-editor{display:none}.skin-sheet.editing .skin-main{display:none}.skin-sheet.editing .skin-editor{display:block}.crop-stage-wrap{display:grid;place-items:center;padding:10px 0 14px;background:#f7f4fc;border-radius:18px}.crop-stage{position:relative;width:min(66vw,260px);aspect-ratio:1;border-radius:50%;overflow:hidden;background:#232129;touch-action:none;box-shadow:0 0 0 2px rgba(255,255,255,.98),0 8px 24px rgba(34,28,42,.16);cursor:grab}.crop-stage:active{cursor:grabbing}.crop-stage img{position:absolute;left:0;top:0;max-width:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none;transform-origin:0 0;will-change:transform}.crop-guide{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}.crop-help{margin:12px 0 10px;text-align:center;color:#8f8794;font-size:10.5px;line-height:16px}.crop-zoom-row{display:grid;grid-template-columns:28px minmax(0,1fr) 28px;align-items:center;gap:7px}.crop-zoom-row span{text-align:center;color:#766e7b;font-size:18px;font-weight:700}.crop-zoom{width:100%;accent-color:#8062d8}.crop-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.crop-actions button{height:46px;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer}.crop-cancel{border:1px solid #e0dae5;background:#fff;color:#5f5865}.crop-save{border:0;background:#6749bd;color:#fff;box-shadow:0 5px 16px rgba(103,73,189,.24)}
@@ -44,7 +44,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 @keyframes cameraPullback{0%{transform:perspective(1100px) rotateX(0deg) scale(1)}34%{transform:perspective(1350px) rotateX(6deg) scale(.84)}58%{transform:perspective(1320px) rotateX(4deg) scale(.87)}82%{transform:perspective(1180px) rotateX(1.5deg) scale(.96)}100%{transform:perspective(1100px) rotateX(0deg) scale(1)}}
 @keyframes coinFlight{0%{transform:translateY(0) scale(.98)}8%{transform:translateY(-18px) scale(1)}38%{transform:translateY(-210px) scale(1.09)}58%{transform:translateY(-152px) scale(1.06)}78%{transform:translateY(-48px) scale(1.015)}88%{transform:translateY(5px) scale(.99)}94%{transform:translateY(-13px) scale(1.008)}100%{transform:translateY(0) scale(1)}}
 @keyframes shadowFlight{0%,100%{opacity:.82;transform:translateX(-50%) scale(1)}38%{opacity:.12;transform:translateX(-50%) scale(.34)}58%{opacity:.22;transform:translateX(-50%) scale(.46)}78%{opacity:.52;transform:translateX(-50%) scale(.72)}88%{opacity:.92;transform:translateX(-50%) scale(1.08)}94%{opacity:.6;transform:translateX(-50%) scale(.86)}}
-@media(max-height:730px){main{padding-top:0}.game-card{min-height:455px;padding-top:14px}.coin-stage{height:310px}.coin{width:154px;height:154px}.coin-mark{font-size:38px}.coin-shadow{bottom:30px}.stats{margin-top:10px}.history-card{margin-top:9px}}
+@media(max-height:730px){main{padding-top:0}.game-card{padding-top:10px;padding-bottom:8px}.result-area{min-height:52px}.coin-stage{height:335px}.coin-rise{padding-bottom:34px}.coin{width:150px;height:150px}.coin-mark{font-size:37px}.coin-shadow{bottom:25px}.tool-controls{margin-top:0;margin-bottom:6px}.flip-button{height:48px}.fair-note{margin-top:6px}.stats{margin-top:8px}.stat{padding:10px 6px}.history-card{margin-top:9px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.flip-button,.toast{transition:none}.coin-stage.flipping .coin-rise,.coin-stage.flipping .coin-shadow{animation:none}.coin{transition-duration:.28s!important}}
 </style>
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
@@ -52,7 +52,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 </head>
-<body data-coin-build="20261013-1934">
+<body data-coin-build="20261013-1954">
 <div class="shell">
 <header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
 <main>
@@ -75,7 +75,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 </span>
 </button>
 <div class="tool-controls" aria-label="코인 설정">
-  <button class="tool-control" id="durationToggle" type="button" aria-label="회전 시간 변경">3초</button>
+  <button class="tool-control" id="durationToggle" type="button" aria-label="회전 시간 변경">1.5초</button>
   <button class="tool-control" id="skinButton" type="button">스킨</button>
 </div>
 <button class="flip-button" id="flipButton" type="button">코인 던지기</button>
@@ -152,52 +152,79 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function ensureToday(){
     try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!raw||raw.date!==kstDate()){history=[];save();renderHistory()}}catch(_){}
   }
-  function loadDuration(){const v=Number(localStorage.getItem(DURATION_KEY)||3);return [3,5,7].includes(v)?v:3}
+  function loadDuration(){const v=Number(localStorage.getItem(DURATION_KEY)||1.5);return [1.5,3,4.5].includes(v)?v:1.5}
   function applyDuration(){
     const b=$('durationToggle');if(b){b.textContent=flipSeconds+'초';b.setAttribute('aria-label','회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
   }
   function cycleDuration(){
-    if(busy)return;flipSeconds=flipSeconds===3?5:flipSeconds===5?7:3;
+    if(busy)return;flipSeconds=flipSeconds===1.5?3:flipSeconds===3?4.5:1.5;
     try{localStorage.setItem(DURATION_KEY,String(flipSeconds))}catch(_){}
     applyDuration();showToast('회전 시간을 '+flipSeconds+'초로 설정했어요.');track('coin_flip_duration_change',{seconds:flipSeconds});
   }
   function cancelFlightAnimations(){
     flightAnimations.forEach(a=>{try{a.cancel()}catch(_){}});flightAnimations=[];
   }
-  function animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs){
+  function animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt){
     cancelFlightAnimations();
     if(!els.rise||!els.shadow||!els.stage||typeof els.rise.animate!=='function')return;
-    const a=ascentMs/totalMs,d1=(ascentMs+dwellMs*.34)/totalMs,d2=(ascentMs+dwellMs*.68)/totalMs,top=(ascentMs+dwellMs)/totalMs,land=(ascentMs+dwellMs+descentMs)/totalMs,bounce=(ascentMs+dwellMs+descentMs+bounceMs*.52)/totalMs;
+    const a=ascentMs/totalMs,
+      d1=(ascentMs+dwellMs*.34)/totalMs,
+      d2=(ascentMs+dwellMs*.68)/totalMs,
+      top=(ascentMs+dwellMs)/totalMs,
+      land=(ascentMs+dwellMs+descentMs)/totalMs,
+      rebound1=Math.min(.995,land+(bounceMs*.28)/totalMs),
+      impact2=Math.min(.997,land+(bounceMs*.54)/totalMs),
+      rebound2=Math.min(.999,land+(bounceMs*.74)/totalMs),
+      settle=Math.min(.9995,land+(bounceMs*.90)/totalMs);
+    const preImpactAngle=finalAngle-32;
     flightAnimations=[
       els.rise.animate([
         {offset:0,transform:'translateY(0) scale(.98)'},
-        {offset:a,transform:'translateY(-210px) scale(1.07)'},
-        {offset:d1,transform:'translateY(-217px) scale(1.075)'},
-        {offset:d2,transform:'translateY(-205px) scale(1.065)'},
-        {offset:top,transform:'translateY(-210px) scale(1.07)'},
-        {offset:land,transform:'translateY(5px) scale(.99)'},
-        {offset:bounce,transform:'translateY(-12px) scale(1.008)'},
+        {offset:a,transform:'translateY(-280px) scale(1.075)'},
+        {offset:d1,transform:'translateY(-288px) scale(1.08)'},
+        {offset:d2,transform:'translateY(-274px) scale(1.068)'},
+        {offset:top,transform:'translateY(-280px) scale(1.075)'},
+        {offset:land,transform:'translateY(8px) scale(.982)'},
+        {offset:rebound1,transform:'translateY(-27px) scale(1.014)'},
+        {offset:impact2,transform:'translateY(3px) scale(.992)'},
+        {offset:rebound2,transform:'translateY(-9px) scale(1.005)'},
+        {offset:settle,transform:'translateY(1px) scale(.998)'},
         {offset:1,transform:'translateY(0) scale(1)'}
       ],{duration:totalMs,easing:'linear',fill:'forwards'}),
       els.shadow.animate([
         {offset:0,opacity:.82,transform:'translateX(-50%) scale(1)'},
-        {offset:a,opacity:.13,transform:'translateX(-50%) scale(.34)'},
-        {offset:d1,opacity:.11,transform:'translateX(-50%) scale(.32)'},
-        {offset:d2,opacity:.16,transform:'translateX(-50%) scale(.38)'},
-        {offset:top,opacity:.13,transform:'translateX(-50%) scale(.34)'},
-        {offset:land,opacity:.92,transform:'translateX(-50%) scale(1.08)'},
-        {offset:bounce,opacity:.60,transform:'translateX(-50%) scale(.86)'},
+        {offset:a,opacity:.10,transform:'translateX(-50%) scale(.29)'},
+        {offset:d1,opacity:.08,transform:'translateX(-50%) scale(.27)'},
+        {offset:d2,opacity:.13,transform:'translateX(-50%) scale(.34)'},
+        {offset:top,opacity:.10,transform:'translateX(-50%) scale(.29)'},
+        {offset:land,opacity:.98,transform:'translateX(-50%) scale(1.14)'},
+        {offset:rebound1,opacity:.46,transform:'translateX(-50%) scale(.74)'},
+        {offset:impact2,opacity:.90,transform:'translateX(-50%) scale(1.06)'},
+        {offset:rebound2,opacity:.66,transform:'translateX(-50%) scale(.90)'},
+        {offset:settle,opacity:.84,transform:'translateX(-50%) scale(1.01)'},
         {offset:1,opacity:.82,transform:'translateX(-50%) scale(1)'}
       ],{duration:totalMs,easing:'linear',fill:'forwards'}),
       els.stage.animate([
         {offset:0,transform:'perspective(1100px) rotateX(0deg) scale(1)'},
-        {offset:a,transform:'perspective(1350px) rotateX(6deg) scale(.84)'},
-        {offset:d1,transform:'perspective(1350px) rotateX(5.4deg) scale(.84)'},
-        {offset:d2,transform:'perspective(1320px) rotateX(5deg) scale(.86)'},
-        {offset:top,transform:'perspective(1350px) rotateX(6deg) scale(.84)'},
-        {offset:land,transform:'perspective(1150px) rotateX(1deg) scale(.98)'},
-        {offset:bounce,transform:'perspective(1100px) rotateX(0deg) scale(1.01)'},
+        {offset:a,transform:'perspective(1380px) rotateX(6deg) scale(.83)'},
+        {offset:d1,transform:'perspective(1380px) rotateX(5.5deg) scale(.83)'},
+        {offset:d2,transform:'perspective(1340px) rotateX(4.8deg) scale(.85)'},
+        {offset:top,transform:'perspective(1380px) rotateX(6deg) scale(.83)'},
+        {offset:land,transform:'perspective(1120px) rotateX(.8deg) scale(.985)'},
+        {offset:rebound1,transform:'perspective(1100px) rotateX(-.4deg) scale(1.012)'},
+        {offset:impact2,transform:'perspective(1100px) rotateX(.3deg) scale(.995)'},
+        {offset:rebound2,transform:'perspective(1100px) rotateX(-.15deg) scale(1.004)'},
         {offset:1,transform:'perspective(1100px) rotateX(0deg) scale(1)'}
+      ],{duration:totalMs,easing:'linear',fill:'forwards'}),
+      els.coin.animate([
+        {offset:0,transform:'rotateX('+(startAngle+50)+'deg) rotateZ(-10deg)'},
+        {offset:Math.max(0.001,land-.018),transform:'rotateX('+(preImpactAngle+50)+'deg) rotateZ('+(-10+tilt)+'deg)'},
+        {offset:land,transform:'rotateX('+(finalAngle+50-10)+'deg) rotateZ('+(-10+tilt*.55)+'deg)'},
+        {offset:rebound1,transform:'rotateX('+(finalAngle+50+7)+'deg) rotateZ(-9deg)'},
+        {offset:impact2,transform:'rotateX('+(finalAngle+50-4)+'deg) rotateZ(-10.5deg)'},
+        {offset:rebound2,transform:'rotateX('+(finalAngle+50+2)+'deg) rotateZ(-9.7deg)'},
+        {offset:settle,transform:'rotateX('+(finalAngle+50-.6)+'deg) rotateZ(-10.1deg)'},
+        {offset:1,transform:'rotateX('+(finalAngle+50)+'deg) rotateZ(-10deg)'}
       ],{duration:totalMs,easing:'linear',fill:'forwards'})
     ];
   }
@@ -444,16 +471,16 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function flip(){
     if(busy)return;
     const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const totalMs=flipSeconds*1000,ascentMs=reduced?120:620,descentMs=reduced?120:620,bounceMs=reduced?80:240,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
-    const spins=Math.max(8,Math.round((totalMs/1000)*3.1))+(secureRandom()%3);
-    const normalized=((currentAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
-    currentAngle+=spins*360+delta;
-    setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent=reduced?'잠시만 기다려주세요.':'튕긴 순간부터 약 '+flipSeconds+'초 동안 회전해요.';
+    const totalMs=flipSeconds*1000,ascentMs=reduced?180:470,descentMs=reduced?180:500,bounceMs=reduced?180:500,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
+    const spins=Math.max(5,Math.round((totalMs/1000)*3.15))+(secureRandom()%2);
+    const startAngle=currentAngle,normalized=((startAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
+    const finalAngle=startAngle+spins*360+delta;currentAngle=finalAngle;
+    setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent='튕긴 순간부터 약 '+flipSeconds+'초 후 결과가 결정돼요.';
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
-    animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs);
-    els.coin.style.transition='transform '+totalMs+'ms linear';
     const tilt=(secureRandom()%9)-4;
-    playLaunch();playSpin(totalMs);requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(${-10+tilt}deg)`});
+    els.coin.style.transition='none';els.coin.style.transform=`rotateX(${finalAngle+50}deg) rotateZ(-10deg)`;
+    animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt);
+    playLaunch();playSpin(totalMs);
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){

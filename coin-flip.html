@@ -322,7 +322,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     }
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
     const desc=document.querySelector('.skin-desc');
-    if(desc)desc.textContent=auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정과 현재 기기에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장되며 다음 접속에도 유지됩니다.';
+    if(desc)desc.textContent=isEnglish()?(auth?'Set separate images for the front and back. They are saved to your account and this device.':'Set separate images for the front and back. They are saved on this device and kept for future visits.'):(auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정과 현재 기기에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장되며 다음 접속에도 유지됩니다.');
     if(!auth)return;
     for(const side of ['front','back']){
       try{
@@ -387,7 +387,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     const side=cropState.side,img=$('cropImage');if(!side||!img?.naturalWidth)return;
     const V=cropSize(),S=512,r=S/V,canvas=document.createElement('canvas');canvas.width=S;canvas.height=S;
     const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);ctx.drawImage(img,cropState.x*r,cropState.y*r,img.naturalWidth*cropState.scale*r,img.naturalHeight*cropState.scale*r);
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob){showToast('이미지를 저장하지 못했어요.');return}
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob){showToast(isEnglish()?'Could not save the image.':'이미지를 저장하지 못했어요.');return}
     try{
       const scope=await persistSkin(side,blob);
       showToast(isEnglish()?((side==='front'?'Front':'Back')+' skin saved.'):(side==='front'?'앞면':'뒷면')+' 스킨을 '+(scope==='account'?'계정에':'이 기기에')+' 저장했어요.');

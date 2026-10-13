@@ -987,6 +987,7 @@
     return lead+translated+tail;
   }
   function translateTextNode(node){
+    if(node.parentElement?.closest('[data-funy-i18n="off"]'))return;
     const current=node.nodeValue;
     if(!originalText.has(node))originalText.set(node,current);
     else{
@@ -997,7 +998,7 @@
     if(node.nodeValue!==desired)node.nodeValue=desired;
   }
   function translateElement(el){
-    if(!(el instanceof Element))return;if(el.closest&&el.closest('.funy-lang-switch'))return;
+    if(!(el instanceof Element))return;if(el.closest?.('[data-funy-i18n="off"]'))return;if(el.closest&&el.closest('.funy-lang-switch'))return;
     attrNames.forEach(name=>{
       if(!el.hasAttribute(name))return;
       let store=originalAttr.get(el);if(!store){store={};originalAttr.set(el,store)}

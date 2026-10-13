@@ -75,6 +75,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 </span>
 </button>
 <div class="tool-controls" aria-label="코인 설정">
+  <button class="tool-control" id="faceToggle" type="button" aria-label="앞뒷면 전환">앞/뒤 전환</button>
   <button class="tool-control" id="durationToggle" type="button" aria-label="회전 시간 변경">1.5초</button>
   <button class="tool-control" id="skinButton" type="button">스킨</button>
 </div>
@@ -128,6 +129,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 (()=>{
   const STORAGE_KEY='funypin-coin-flip-v3';
   const DURATION_KEY='funypin-coin-duration';
+  const FACE_KEY='funypin-coin-face';
   const SKIN_DB='funypin-coin-skins-v1';
   const SKIN_LOCAL_PREFIX='funypin-coin-skin-v2:';
   const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
@@ -154,6 +156,15 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!raw||raw.date!==kstDate()){history=[];save();renderHistory()}}catch(_){}
   }
   function loadDuration(){const raw=localStorage.getItem(DURATION_KEY),v=Number(raw==null?'1.5':raw);return [1.5,3,4.5].includes(v)?v:1.5}
+  function loadFace(){try{return localStorage.getItem(FACE_KEY)==='back'?1:0}catch(_){return 0}}
+  function saveFace(face){try{localStorage.setItem(FACE_KEY,face===1?'back':'front')}catch(_){}}
+  function currentFace(){const n=((currentAngle%360)+360)%360;return n>=90&&n<270?1:0}
+  function applyFaceToggle(){
+    const b=$('faceToggle');if(!b)return;
+    const face=currentFace();
+    b.textContent=isEnglish()?(face===0?'Show Tails':'Show Heads'):(face===0?'뒷면 보기':'앞면 보기');
+    b.setAttribute('aria-label',isEnglish()?'Switch coin side':'앞뒷면 전환');
+  }
   function applyDuration(){
     const b=$('durationToggle');if(b){b.textContent=isEnglish()?flipSeconds+'s':flipSeconds+'초';b.setAttribute('aria-label',isEnglish()?'Flip duration '+flipSeconds+' seconds · tap to change':'회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
   }
@@ -452,13 +463,26 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     softTick(.115,.013);
   }
   function track(name,params={}){try{window.FUNY_TRACK?.(name,{tool_name:'coin_flip',...params})}catch(_){}}
-  function align(outcome){
+  function align(outcome,persist=true){
     const base=Math.floor(currentAngle/360)*360;
     currentAngle=base+(outcome===1?180:0);
     els.coin.style.transition='none';
     els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(-10deg)`;
     void els.coin.offsetWidth;
     els.coin.style.removeProperty('transition');
+    if(persist)saveFace(outcome);
+    applyFaceToggle();
+  }
+  function toggleFace(){
+    if(busy)return;
+    const next=currentFace()===0?1:0;
+    const base=Math.floor(currentAngle/360)*360;
+    currentAngle=base+(next===1?180:0);
+    els.coin.style.transition='transform .32s cubic-bezier(.22,.61,.36,1)';
+    els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(-10deg)`;
+    saveFace(next);applyFaceToggle();
+    showToast(isEnglish()?(next===0?'Showing heads.':'Showing tails.'):(next===0?'앞면으로 전환했어요.':'뒷면으로 전환했어요.'));
+    track('coin_flip_face_toggle',{face:next===0?'front':'back'});
   }
   function renderResult(){
     if(history.length){const last=history[history.length-1];els.kicker.textContent='LAST RESULT';els.text.textContent=LABELS()[last]+'!';els.text.classList.add('emphasis');els.sub.textContent='코인을 다시 눌러 새로운 결과를 확인해보세요.'}
@@ -490,7 +514,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   function finish(outcome,token){
     if(token!==flipToken)return;
-    history.push(outcome);if(history.length>20)history.shift();save();setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');
+    history.push(outcome);if(history.length>20)history.shift();save();saveFace(outcome);applyFaceToggle();setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');
     els.kicker.textContent='RESULT';els.text.textContent=LABELS()[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent=isEnglish()?'The coin flip result is set.':'코인플립 결과가 결정되었습니다.';
     renderHistory();saveFlipToDb(outcome);playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
   }
@@ -511,10 +535,11 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){
-    if(busy||!history.length)return;history=[];save();align(0);renderResult();renderHistory();showToast('내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
+    if(busy||!history.length)return;history=[];save();renderResult();renderHistory();showToast(isEnglish()?"Today's history has been reset.":'내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
   }
   $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
   $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){brightPing(0,.045,1);showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  $('faceToggle').addEventListener('click',toggleFace);
   $('durationToggle').addEventListener('click',cycleDuration);
   $('skinButton').addEventListener('click',()=>setSkinModal(true));$('skinClose').addEventListener('click',()=>setSkinModal(false));$('skinModal').addEventListener('click',e=>{if(e.target===$('skinModal'))setSkinModal(false)});
   $('frontPick').addEventListener('click',()=>$('frontFile').click());$('backPick').addEventListener('click',()=>$('backFile').click());
@@ -530,8 +555,8 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const endCropPointer=e=>{if(!cropState.pointers.has(e.pointerId))return;cropState.pointers.delete(e.pointerId);try{cropStage.releasePointerCapture(e.pointerId)}catch(_){}if(cropState.pointers.size===1){const entry=[...cropState.pointers.entries()][0],p=entry[1];cropState.drag={id:entry[0],px:p.x,py:p.y,x:cropState.x,y:cropState.y};cropState.pinch=null}else{cropState.drag=null;cropState.pinch=null}};
   cropStage.addEventListener('pointerup',endCropPointer);cropStage.addEventListener('pointercancel',endCropPointer);
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();syncDurationFromStorage();loadDailyStats();restoreDeviceSkinsSync();loadSkins()}});
-  restoreDeviceSkinsSync();syncSoundButton();syncDurationFromStorage();loadSkins();window.addEventListener('funy:auth-ready',()=>{cloudAuthCache=undefined;syncDurationFromStorage();loadSkins()});ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',()=>{syncDurationFromStorage();restoreDeviceSkinsSync();loadSkins()});window.addEventListener('focus',()=>{syncDurationFromStorage();restoreDeviceSkinsSync()});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(loadFace(),false)}if(!document.hidden){ensureToday();syncDurationFromStorage();loadDailyStats();restoreDeviceSkinsSync();loadSkins()}});
+  restoreDeviceSkinsSync();syncSoundButton();syncDurationFromStorage();loadSkins();window.addEventListener('funy:auth-ready',()=>{cloudAuthCache=undefined;syncDurationFromStorage();loadSkins()});ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);showToast(isEnglish()?'A new day of results has started.':'새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',()=>{syncDurationFromStorage();restoreDeviceSkinsSync();loadSkins()});window.addEventListener('focus',()=>{syncDurationFromStorage();restoreDeviceSkinsSync()});
 })();
 </script>
 <script src="funy-i18n.js?v=20261014-coin-state-en1"></script></body>

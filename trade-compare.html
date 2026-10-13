@@ -30,4 +30,4 @@ function calc(){const sides=document.querySelectorAll('.side'),mine=sum(sides[0]
 $('verdict').textContent=!mine&&!theirs?'양쪽 카드 가치를 입력해주세요.':pct<=5?'가치 차이가 5% 이내로 비교적 균형적입니다.':diff>0?'상대 카드 쪽 가치가 약 '+pct.toFixed(1)+'% 높습니다.':'내 카드 쪽 가치가 약 '+pct.toFixed(1)+'% 높습니다.';
 try{window.FUNY_TRACK?.('trade_compare_change',{my_total:Math.round(mine),their_total:Math.round(theirs)})}catch(_){}
 }function $(id){return document.getElementById(id)}calc()})();
-</script></body></html>
+</script><script src="funy-i18n.js?v=20261013-tools-i18n"></script></body></html>

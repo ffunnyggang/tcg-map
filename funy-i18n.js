@@ -1148,6 +1148,47 @@
     '계정 삭제 요청 접수':{en:'Submit Account Deletion Request'},'계정 삭제 요청이 접수되었습니다.':{en:'Your account deletion request has been received.'},'입력한 정보를 확인한 뒤 필요한 경우 이메일로 본인 확인을 안내합니다.':{en:'We will review the information and contact you by email if identity verification is required.'},'삭제 시 처리되는 정보':{en:'Data Processed Upon Deletion'},'계정 및 프로필':{en:'Account & Profile'},'회원 활동 정보':{en:'Member Activity'},'FUNY TALK 콘텐츠':{en:'FUNY TALK Content'},'기타 식별 가능한 회원 데이터':{en:'Other Identifiable Member Data'},'계정 삭제 요청':{en:'Request Account Deletion'}
   });
 
+
+  /* WEB_I18N_V6_POLICY_FULL */
+  Object.assign(textMap,{
+    'Supabase Auth 계정 식별정보, Apple·Google·Kakao 등 로그인 제공자가 전달하는 이메일·이름 등':{en:'Supabase Auth account identifiers and information such as email and name provided by sign-in providers including Apple, Google, and Kakao'},
+    '회원 식별, 로그인 상태 유지':{en:'Identify members and maintain sign-in status'},
+    '닉네임, 사용자가 선택한 프로필 이미지':{en:'Nickname and user-selected profile image'},
+    'MY 및 커뮤니티 프로필 제공':{en:'Provide MY and community profiles'},
+    '기기 위치 권한을 허용한 경우 현재 위치':{en:'Current location when device location permission is granted'},
+    '내 위치 표시, 가까운 카드샵 탐색, 위치 기반 FUNY MON 기능':{en:'Show your location, find nearby card shops, and provide location-based FUNY MON features'},
+    '관심 매장, FUNY MON 포획, 이벤트 응모·쿠폰 기록':{en:'Favorite shops, FUNY MON catches, event entries, and coupon records'},
+    '회원 기능 제공 및 이용 내역 표시':{en:'Provide member features and display usage history'},
+    '게시물 제목·내용, 첨부 이미지, 작성 시각, 신고 및 사용자 차단 기록':{en:'Post titles and content, attached images, timestamps, reports, and user-block records'},
+    '커뮤니티 제공, 안전 관리, 스팸·악용 방지':{en:'Provide community features, maintain safety, and prevent spam and abuse'},
+    '서비스 이용 과정에서 생성되는 기본 접속 및 이용 기록':{en:'Basic access and usage records generated while using the service'},
+    '서비스 운영, 오류 확인 및 품질 개선':{en:'Operate the service, diagnose errors, and improve quality'},
+    '이용자가 문의 과정에서 직접 제공한 정보':{en:'Information provided directly by the user during an inquiry'},
+    '개인정보는 서비스 제공에 필요한 기간 동안 보관합니다. 앱의 MY에서 계정 삭제를 완료하면 법령상 보존 의무가 있는 정보를 제외하고 계정과 연결된 프로필, 관심 매장, 커뮤니티 게시물 및 사용자가 업로드한 프로필·게시물 이미지를 삭제합니다. FUNY MON 운영 통계 등 서비스 운영 기록은 계정 식별정보를 제거한 형태로 보관될 수 있습니다.':{en:'Personal information is retained for as long as needed to provide the service. When account deletion is completed in MY, account-linked profile data, favorite shops, community posts, and user-uploaded profile and post images are deleted except where retention is required by law. Operational records such as FUNY MON statistics may be retained after account identifiers are removed.'},
+    '이용자는 자신의 개인정보에 대해 열람, 수정, 삭제를 요청할 수 있습니다. 앱의 프로필 편집 및 계정 삭제 기능을 직접 이용할 수 있으며, 앱을 이용할 수 없는 경우':{en:'You may request access to, correction of, or deletion of your personal information. You can use the profile editing and account deletion features in the app, or if you cannot use the app,'},
+    '웹 계정 삭제 요청 페이지':{en:'web account deletion request page'},
+    '를 통해 삭제를 요청할 수 있습니다. FUNY TALK에서는 특정 작성자를 차단하고 MY에서 차단을 해제할 수 있습니다.':{en:'to request deletion. In FUNY TALK, you can block specific authors and unblock them from MY.'},
+    'FUNY TALK의 안전한 운영을 위해 신고, 사용자 차단, 도배 방지 및 부적절한 콘텐츠 필터링 기능을 운영할 수 있습니다. 신고 기록은 안전 관리와 분쟁 대응을 위해 필요한 범위에서 처리될 수 있습니다.':{en:'To operate FUNY TALK safely, FUNY PIN may use reporting, user blocking, anti-spam controls, and inappropriate-content filtering. Report records may be processed as necessary for safety management and dispute handling.'},
+    '개인정보 및 서비스 관련 문의는':{en:'For privacy and service inquiries, contact'},
+    '으로 요청할 수 있습니다.':{en:'.'},
+    '본 개인정보처리방침은 서비스 변경 또는 관련 법령 및 정책 변경에 따라 수정될 수 있으며, 변경 시 서비스 내 또는 웹사이트를 통해 안내합니다.':{en:'This Privacy Policy may be revised due to service changes or changes in applicable laws and policies. Updates will be announced within the service or on the website.'},
+
+    'TALK 등 이용자가 작성한 콘텐츠의 책임은 작성자에게 있습니다. FUNY PIN은 부적절하거나 불쾌감을 주는 콘텐츠, 욕설·혐오·괴롭힘·협박 등 다른 이용자를 학대하는 행위 및 악성 이용자에 대해 무관용 원칙을 적용합니다.':{en:'Users are responsible for content they create, including content posted in TALK. FUNY PIN applies a zero-tolerance policy to inappropriate or offensive content, abuse of other users including abusive language, hate, harassment, or threats, and malicious users.'},
+    '운영자는 신고 또는 운영정책 위반이 확인된 콘텐츠를 즉시 숨김·삭제할 수 있으며, 위반 이용자의 서비스 이용을 제한하거나 계정을 차단할 수 있습니다. 이용자는 게시물 신고 및 작성자 차단 기능을 통해 부적절한 콘텐츠와 이용자를 운영자에게 알릴 수 있습니다.':{en:'FUNY PIN may immediately hide or remove content that is reported or found to violate operating policies, and may restrict service access or block accounts of violating users. Users can report inappropriate content and users through post reporting and author blocking features.'},
+    '회원은 앱의 MY 화면에서 계정 삭제를 요청할 수 있으며, 앱을 이용할 수 없는 경우':{en:'Members can request account deletion from the MY screen in the app. If the app cannot be used,'},
+    '를 이용할 수 있습니다. 삭제 시 법령상 보존이 필요한 정보를 제외하고 계정과 연결된 개인정보 및 사용자 소유 저장 파일을 삭제합니다.':{en:'may be used instead. Upon deletion, account-linked personal information and user-owned stored files are deleted except where retention is required by law.'},
+    '서비스는 법령 및 서비스 운영상 필요한 경우 약관을 변경할 수 있으며, 변경 사항은 서비스 내에서 안내합니다.':{en:'The Terms may be changed when required by law or service operation. Changes will be announced within the service.'},
+    '서비스 이용 관련 문의는 FUNY PIN 운영 이메일':{en:'For service-related inquiries, contact the FUNY PIN operating email'},
+    '을 통해 접수할 수 있습니다.':{en:'.'},
+
+    'FUNY TALK는 TCG 수집가들이 정보를 공유하고 대화하는 공간입니다. FUNY PIN은 부적절한 콘텐츠와 악성 이용 행위를 허용하지 않으며, 다른 이용자를 존중하고 카드 수집 문화에 맞는 건전한 대화를 지향합니다.':{en:'FUNY TALK is a space for TCG collectors to share information and communicate. FUNY PIN does not allow inappropriate content or malicious behavior and promotes respectful, healthy discussion within card-collecting culture.'},
+    'FUNY PIN은 부적절한 표현과 유해 콘텐츠가 게시되지 않도록 등록 단계에서 자동 필터링과 도배 방지 정책을 적용할 수 있습니다. 필터를 우회하거나 반복적으로 정책을 위반하는 경우 게시물 삭제 또는 이용 제한 조치가 적용될 수 있습니다.':{en:'FUNY PIN may apply automated filtering and anti-spam controls when content is submitted to help prevent inappropriate expressions and harmful content. Attempts to bypass filters or repeated policy violations may result in content removal or service restrictions.'},
+    '문제가 있는 게시물은 게시물 상세의 신고 기능을 통해 접수할 수 있습니다. 운영자는 접수된 신고를 확인하고 커뮤니티 안전을 위해 게시물 숨김·삭제, 작성자 이용 제한 등 필요한 조치를 가능한 한 신속하게 진행합니다.':{en:'Problematic posts can be reported from the post detail page. FUNY PIN reviews submitted reports and takes necessary actions such as hiding or removing posts or restricting authors as promptly as reasonably possible to protect community safety.'},
+    '게시물 상세에서 특정 작성자를 차단할 수 있습니다. 차단한 작성자의 FUNY PIN 게시물은 내 TALK 피드에서 숨겨지며, MY &gt; 차단한 사용자에서 차단 상태를 확인하거나 해제할 수 있습니다.':{en:'You can block a specific author from a post detail page. Posts from blocked authors are hidden from your TALK feed, and you can review or remove blocks in MY > Blocked Users.'},
+    '스팸, 괴롭힘, 혐오·음란 콘텐츠 등 중대한 위반이나 반복적인 정책 위반이 확인되는 계정은 서비스 이용이 제한될 수 있습니다.':{en:'Accounts involved in serious or repeated violations, including spam, harassment, hateful content, or sexually explicit content, may have their access to the service restricted.'},
+    '운영정책 또는 커뮤니티 안전 관련 문의는 FUNY PIN 운영 이메일':{en:'For questions about community policy or safety, contact the FUNY PIN operating email'}
+  });
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;
@@ -1187,9 +1228,35 @@
   function ensureReviewScheduleUI(){if(!/(^|\/)reviews\.html$/.test(path)||document.querySelector('.review-schedule'))return;const banner=document.querySelector('.review-banner');if(!banner)return;const style=document.createElement('style');style.id='review-schedule-style';style.textContent='.review-schedule{margin:0 -14px;padding:22px 14px 26px;background:#fff}.review-schedule-head{display:flex;align-items:center;justify-content:space-between;margin:0 3px 13px}.review-schedule-title{margin:0;color:#1d1b24;font-size:17px;font-weight:850;letter-spacing:-.04em}.review-schedule-badge{display:inline-flex;align-items:center;height:21px;padding:0 8px;border-radius:999px;background:#f4f0ff;color:#7659cf;font-size:8.5px;font-weight:850;letter-spacing:.09em}.review-schedule-list{display:grid;gap:9px}.review-schedule-card{display:flex;align-items:center;gap:14px;min-height:72px;padding:10px 13px 10px 10px;border:1px solid #eeeaf4;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(67,50,98,.05)}.review-schedule-date{display:flex;flex:0 0 54px;height:54px;flex-direction:column;align-items:center;justify-content:center;border-radius:13px;background:linear-gradient(145deg,#f5f1ff,#eee7ff);color:#7053ca}.review-schedule-month{font-size:8.5px;line-height:1;font-weight:850;letter-spacing:.08em}.review-schedule-day{margin-top:4px;font-size:21px;line-height:.9;font-weight:900;letter-spacing:-.03em}.review-schedule-info{min-width:0;flex:1}.review-schedule-name{overflow:hidden;margin:0;color:#24212a;font-size:14px;font-weight:850;line-height:1.35;letter-spacing:-.03em;text-overflow:ellipsis;white-space:nowrap}.review-schedule-meta{overflow:hidden;margin:6px 0 0;color:#96909d;font-size:11px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}.review-schedule-arrow{display:flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:#f7f4fb;color:#9e94ae;font-size:18px;line-height:1}@media(max-width:430px){.review-schedule{padding-top:19px;padding-bottom:23px}.review-schedule-title{font-size:16px}.review-schedule-card{gap:12px;min-height:68px;padding:9px 11px 9px 9px}.review-schedule-date{flex-basis:52px;height:52px}.review-schedule-day{font-size:20px}}';document.head.appendChild(style);const section=document.createElement('section');section.className='review-schedule';section.setAttribute('aria-label','다가오는 TCG 일정');section.innerHTML='<div class="review-schedule-head"><h2 class="review-schedule-title">다가오는 TCG 일정</h2><span class="review-schedule-badge">CALENDAR</span></div><div class="review-schedule-list"><article class="review-schedule-card"><div class="review-schedule-date"><span class="review-schedule-month">SEP</span><strong class="review-schedule-day">19</strong></div><div class="review-schedule-info"><h3 class="review-schedule-name">FUNY PIN 테스트 일정</h3><p class="review-schedule-meta">서울 · 캘린더 연동 전 UI 미리보기</p></div><span class="review-schedule-arrow" aria-hidden="true">›</span></article></div></section>';banner.insertAdjacentElement('beforebegin',section)}
   function renderSwitch(){if(new URLSearchParams(location.search).get('app')==='1')return;if(!/(^|\/)(index\.html|reviews\.html|talk\.html)?$/.test(path)||/(^|\/)shops\.html$/.test(path))return;if(document.querySelector('.funy-lang-switch'))return;const wrap=document.createElement('div');wrap.className='funy-lang-switch';wrap.setAttribute('role','group');wrap.setAttribute('aria-label',lang==='ko'?'언어 선택':'Language');wrap.innerHTML='<button type="button" class="funy-lang-toggle" aria-label="'+(lang==='ko'?'Switch to English':'한국어로 변경')+'"><svg class="funy-lang-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.8 12h16.4M12 3.5c2.25 2.35 3.45 5.2 3.45 8.5S14.25 18.15 12 20.5M12 3.5C9.75 5.85 8.55 8.7 8.55 12s1.2 6.15 3.45 8.5"/></svg><span>'+(lang==='ko'?'KO':'EN')+'</span></button>';document.body.appendChild(wrap);wrap.addEventListener('click',e=>{const btn=e.target.closest('.funy-lang-toggle');if(!btn)return;const next=lang==='ko'?'en':'ko';localStorage.setItem(KEY,next);location.reload()})}
   function syncSwitch(){const btn=document.querySelector('.funy-lang-toggle');if(!btn)return;btn.querySelector('span:last-child').textContent=lang==='ko'?'KO':'EN';btn.setAttribute('aria-label',lang==='ko'?'Switch to English':'한국어로 변경')}
+  function translateStructuredData(){
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(el=>{
+      if(!el.dataset.funyOriginalJson)el.dataset.funyOriginalJson=el.textContent||'';
+      const base=el.dataset.funyOriginalJson;
+      if(lang==='ko'){if(el.textContent!==base)el.textContent=base;return}
+      try{
+        const data=JSON.parse(base);
+        const walkJson=v=>{
+          if(Array.isArray(v))return v.map(walkJson);
+          if(v&&typeof v==='object'){
+            const out={};
+            Object.entries(v).forEach(([k,val])=>{
+              if(k==='inLanguage')out[k]='en';
+              else if(typeof val==='string'&&['name','headline','description','alternateName'].includes(k))out[k]=tr(val);
+              else out[k]=walkJson(val);
+            });
+            return out;
+          }
+          return v;
+        };
+        el.textContent=JSON.stringify(walkJson(data));
+      }catch(_){}
+    });
+  }
   function translateHead(){
     const title=document.querySelector('title');if(title)title.textContent=tr(title.textContent||'');
-    document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"],meta[name="twitter:title"],meta[name="twitter:description"]').forEach(el=>{const v=el.getAttribute('content');if(v)el.setAttribute('content',tr(v))});
+    document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"],meta[name="twitter:title"],meta[name="twitter:description"],meta[property="og:image:alt"],meta[name="twitter:image:alt"]').forEach(el=>{const v=el.getAttribute('content');if(v)el.setAttribute('content',tr(v))});
+    document.querySelectorAll('meta[property="og:locale"]').forEach(el=>el.setAttribute('content',lang==='en'?'en_US':'ko_KR'));
+    translateStructuredData();
   }
   function apply(){ensureTalkNav();applyPngNavIcons();replaceReviewBanners();ensureReviewScheduleUI();translateHead();document.documentElement.lang=lang;document.body.classList.toggle('funy-lang-home',isHome);walk(document.body);renderSwitch();syncSwitch();window.dispatchEvent(new CustomEvent('funy:languagechange',{detail:{lang}}))}
   const observer=new MutationObserver(mutations=>{mutations.forEach(m=>{if(m.type==='attributes'){translateElement(m.target);return}if(m.type==='characterData'){translateTextNode(m.target);return}m.addedNodes.forEach(node=>{if(node.nodeType===1&&node.closest&&node.closest('.funy-lang-switch'))return;walk(node)})})});

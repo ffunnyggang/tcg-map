@@ -1,6 +1,6 @@
 /* FUNY PIN GA4 interaction events */
 (function(){
-  const context=()=>{const c=window.__FUNY_APP_CONTEXT||{};return{client_surface:c.surface||'web',app_platform:c.platform||'web',app_version:c.appVersion||'',app_build:c.buildVersion||'',login_state:c.loggedIn?'logged_in':'logged_out'}};const send=(name,params={})=>{try{if(typeof window.gtag==='function')window.gtag('event',name,{...context(),...params})}catch(e){}};window.FUNY_TRACK=send;try{if(typeof window.gtag==='function')window.gtag('set',context())}catch(e){};
+  const context=()=>window.__FUNY_ANALYTICS_CORE?.context()||{};const send=window.__FUNY_ANALYTICS_CORE?.track||((name,params={})=>{try{window.gtag?.('event',name,{...context(),...params})}catch(_){}});window.FUNY_TRACK=send;
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim().slice(0,100);
   const fileName=src=>{try{return decodeURIComponent(new URL(src,location.href).pathname.split('/').pop()||'')}catch(e){return clean(src)}};
   const shop=()=>{const id=(window.state&&state.current)||location.hash.match(/^#\/shop\/([^/?#]+)/)?.[1]||'';const s=window.SHOPS&&SHOPS.find(x=>x.id===id);return{id, name:s?.name||document.querySelector('#detail-view .d-name')?.textContent||''}};
@@ -9,6 +9,7 @@
   const bannerParams=(el,placement)=>{const img=el.querySelector('img'),all=[...el.parentElement.children].filter(x=>x.matches('a,article,.fp-carousel-slide,.home-hero-slide,.review-banner-slide'));return{banner_placement:placement,banner_id:fileName(img?.getAttribute('src')||''),banner_name:clean(img?.alt||''),banner_position:Math.max(1,all.indexOf(el)+1),link_url:clean(el.getAttribute('href')||el.querySelector('a')?.getAttribute('href')||'')}};
 
   document.addEventListener('click',e=>{
+    if(e.__funyAnalyticsCaptured)return;
     const target=e.target instanceof Element?e.target:null;if(!target)return;
     const cmsLink=target.closest('[data-funy-link-mode]');if(cmsLink){send('cms_link_click',{link_mode:clean(cmsLink.dataset.funyLinkMode||'inapp'),inapp_presentation:clean(cmsLink.dataset.funyInappPresentation||'page'),link_url:clean(cmsLink.getAttribute('href')||''),link_text:clean(cmsLink.getAttribute('aria-label')||cmsLink.textContent||'')});}
     const hero=target.closest('.home-hero-slide');if(hero){send('hero_banner_click',bannerParams(hero,'home_hero'));return}
@@ -61,13 +62,15 @@
     if(!/\/shops\.html$/i.test(location.pathname))return;
     const m=location.hash.match(/#\/shop\/([^/?#]+)/i);
     const id=m?.[1]||'';
-    if(!id||id===detailId)return;
+    if(!id){detailId='';return;}
+    if(id===detailId)return;
     detailId=id;
     track('shop_detail_view',{shop_id:id,source_page:'tcg_map'});
   }
   reportDetail();
   window.addEventListener('hashchange',reportDetail);
   document.addEventListener('click',e=>{
+    if(e.__funyAnalyticsCaptured)return;
     const t=e.target instanceof Element?e.target:null;if(!t)return;
     if(t.closest('.home-notice-link'))track('home_notice_click',{placement:'home_notice'});
     if(t.closest('.live-pin-entry'))track('live_pin_entry_click',{placement:location.pathname});
@@ -94,9 +97,10 @@
             if(!r?.ok)return;
             r.clone().json().then(data=>{
               if(!data||data.ok!==true||data.result==='failed')return;
-              const reward=data.reward||{};
+              const reward=data.reward||{};let request={};try{request=typeof init?.body==='string'?JSON.parse(init.body):{}}catch(_){}
               track('funymon_catch_success',{
-                funymon_id:plain(data.monster_id||data.funy_mon_id||data.monster?.id||''),
+                monster_id:plain(data.monster_id||data.funy_mon_id||data.monster?.id||request.monster_id||''),
+                shop_id:plain(data.shop_id||request.shop_id||''),
                 reward_type:plain(reward.reward_type||''),
                 event_id:plain(reward.event_id||'')
               });
@@ -108,3 +112,4 @@
     };
   }
 })();
+

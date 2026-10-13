@@ -256,7 +256,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   function flip(){
     if(busy)return;
-    const token=++flipToken,outcome=secureRandom()&1,spins=6+(secureRandom()%3);
+    const token=++flipToken,outcome=secureRandom()&1,spins=Math.max(6,Math.round(flipSeconds*3))+(secureRandom()%3);
     const normalized=((currentAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
     currentAngle+=spins*360+delta;
     setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent='잠시만 기다려주세요.';

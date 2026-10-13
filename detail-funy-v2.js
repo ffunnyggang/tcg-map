@@ -18,19 +18,20 @@
   }
 
   actionsHTML = function(s){
-    const a=[];
-    if(s.naver)a.push([s.naver,'naver','네이버지도']);
+    const en=window.FUNY_IS_ENGLISH?.()===true,a=[];
+    if(s.naver)a.push([s.naver,'naver',en?'Naver Map':'네이버지도']);
     if(s.google)a.push([s.google,'pin','Google Maps']);
-    if(String(s.id||'').startsWith('JP-')&&s.website)a.push([s.website,'globe','공식 홈페이지']);
+    if(String(s.id||'').startsWith('JP-')&&s.website)a.push([s.website,'globe',en?'Official Website':'공식 홈페이지']);
     if(s.instagram)a.push([s.instagram,'ig','Instagram']);
-    if(s.phone)a.push([`tel:${s.phone}`,'phone','전화하기']);
+    if(s.phone)a.push([`tel:${s.phone}`,'phone',en?'Call':'전화하기']);
     return a.length?`<div class="quick-actions">${a.map(([u,i,l])=>`<a class="quick-action" href="${u}" ${u.startsWith('http')?'target="_blank" rel="noopener"':''}><span class="qa-icon ${i==='naver'?'naver-map-icon':''}">${i==='naver'?naverMapIcon():icon(i)}</span><span>${l}</span></a>`).join('')}</div>`:'';
   };
 
   compHTML = function(s,rv){
-    const tcg=[s.tcg.pokemon&&'포켓몬',s.tcg.onePiece&&'원피스',s.tcg.dragonBall&&'드래곤볼'].filter(Boolean).join(' · ');
-    const bars=[['싱글카드',rv.single],['등급카드',rv.graded],['박스제품',rv.box],['오리파',rv.oripa]];
-    return `<div class="comp-card"><h3 class="sub-title">상품 구성 상세</h3>${tcg?`<div class="tcg-line"><span class="tcg-label">취급 TCG</span><span class="tcg-value">${tcg}</span></div>`:''}<div class="bar-list">${bars.map(([l,v],idx)=>`<div class="bar-row"><div class="bar-label">${l}</div><div class="bar-track"><div class="bar-fill" style="--bar-width:${v/5*100}%;--bar-delay:${120+idx*90}ms"></div></div></div>`).join('')}</div></div>`;
+    const en=window.FUNY_IS_ENGLISH?.()===true;
+    const tcg=[s.tcg.pokemon&&window.FUNY_TCG_LABEL('pokemon'),s.tcg.onePiece&&window.FUNY_TCG_LABEL('onePiece'),s.tcg.dragonBall&&window.FUNY_TCG_LABEL('dragonBall')].filter(Boolean).join(' · ');
+    const bars=en?[['Singles',rv.single],['Graded Cards',rv.graded],['Boxes',rv.box],['Oripa',rv.oripa]]:[['싱글카드',rv.single],['등급카드',rv.graded],['박스제품',rv.box],['오리파',rv.oripa]];
+    return `<div class="comp-card"><h3 class="sub-title">${en?'Product Mix':'상품 구성 상세'}</h3>${tcg?`<div class="tcg-line"><span class="tcg-label">${en?'TCG Titles':'취급 TCG'}</span><span class="tcg-value">${tcg}</span></div>`:''}<div class="bar-list">${bars.map(([l,v],idx)=>`<div class="bar-row"><div class="bar-label">${l}</div><div class="bar-track"><div class="bar-fill" style="--bar-width:${v/5*100}%;--bar-delay:${120+idx*90}ms"></div></div></div>`).join('')}</div></div>`;
   };
 
   const REVIEW_META_TTL=1000*60*60*24*7;
@@ -49,6 +50,6 @@
   detailHTML = function(s){s=window.FUNY_SHOP_DISPLAY(s);const rv=REVIEWS[s.id],tags=tagList(s).slice(0,8);return `<div class="hero"><div class="hero-top"><button class="icon-btn" id="hero-back" aria-label="뒤로가기">${icon('back')}</button><button class="icon-btn share-btn" aria-label="공유">${shareIcon()}</button></div>${heroGalleryHTML(s)}</div><div class="detail-content"><section class="summary-card"><h1 class="d-name">${esc(s.name)}</h1><p class="d-en">${esc(s.en)}</p><p class="d-loc"><span class="loc-icon">${icon('pin')}</span>${esc(window.FUNY_SHOP_LOCATION_TEXT(s))}</p><div class="d-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>${actionsHTML(s)}</section>${infoHTML(s)}${rv?`<section class="section"><h2 class="section-title"><span class="accent-icon">${icon('chart')}</span>한눈에 보는 매장 분석</h2><p class="analysis-note">※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</p><div class="analysis-card" data-analysis-card><div class="analysis-grid"><div class="radar-card">${radarSVG(rv)}</div>${compHTML(s,rv)}</div>${visitDateHTML(s)}</div></section>`:''}${reviewHTML(s)}<div style="height:10px"></div></div>${otherShopsFabHTML()}`}
   function bindAnalysisMotion(){const card=document.querySelector('[data-analysis-card]');if(!card)return;if(!('IntersectionObserver' in window)){card.classList.add('is-visible');return}const obs=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){card.classList.add('is-visible');obs.disconnect()}})},{threshold:.28});obs.observe(card)}
   function bindOtherShopsFab(){const wrap=document.querySelector('[data-other-shops-fab]');if(!wrap)return;const btn=wrap.querySelector('.other-shops-fab');if(btn)btn.addEventListener('click',()=>{document.querySelector('#hero-back')?.click()});if(otherShopsScrollHandler)window.removeEventListener('scroll',otherShopsScrollHandler);otherShopsScrollHandler=()=>{if(document.querySelector('#detail-view')?.hidden)return;wrap.classList.add('is-scrolling');clearTimeout(otherShopsScrollTimer);otherShopsScrollTimer=setTimeout(()=>{if(!document.querySelector('#detail-view')?.hidden)wrap.classList.remove('is-scrolling')},650)};window.addEventListener('scroll',otherShopsScrollHandler,{passive:true});document.addEventListener('scroll',otherShopsScrollHandler,{passive:true,capture:true})}
-  openDetail = function(id){const s=SHOPS.find(x=>x.id===id);if(!s)return;state.current=id;$('#home-view').hidden=true;$('#detail-view').hidden=false;$('#detail').innerHTML=detailHTML(s);$('#sticky-name').textContent=s.name;const stickyShare=document.querySelector('#detail-sticky .share-btn');if(stickyShare)stickyShare.innerHTML=shareIcon();window.scrollTo(0,0);setTimeout(()=>{bindDetail();bindHeroGallery();loadReviewThumbs();bindAnalysisMotion();bindOtherShopsFab()},0)}
+  openDetail = function(id){const s=SHOPS.find(x=>x.id===id);if(!s)return;state.current=id;$('#home-view').hidden=true;$('#detail-view').hidden=false;$('#detail').innerHTML=detailHTML(s);$('#sticky-name').textContent=window.FUNY_SHOP_DISPLAY(s).name;const stickyShare=document.querySelector('#detail-sticky .share-btn');if(stickyShare)stickyShare.innerHTML=shareIcon();window.scrollTo(0,0);setTimeout(()=>{bindDetail();bindHeroGallery();loadReviewThumbs();bindAnalysisMotion();bindOtherShopsFab()},0)}
   const m=location.hash.match(/^#\/shop\/(KR-SEO-\d{3})$/);if(m&&!document.querySelector('#detail-view')?.hidden){openDetail(m[1])}
 })();

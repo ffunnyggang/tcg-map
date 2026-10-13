@@ -972,9 +972,83 @@
       [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
       [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
     ];
+    /* WEB_I18N_V4_TOOL_RULES */
+    rules.push(
+      [/^(\d+)회$/,m=>m[1]+' times'],
+      [/^(\d+)번째$/,m=>'#'+m[1]],
+      [/^(\d+)개 구매 시 1개 이상 당첨 기준$/,m=>'Chance of at least one win when buying '+m[1]],
+      [/^(\d+(?:\.\d+)?)% 판매 · (\d+(?:\.\d+)?)% 남음$/,m=>m[1]+'% sold · '+m[2]+'% remaining'],
+      [/^(\d+(?:\.\d+)?)% 이상$/,m=>m[1]+'% or more'],
+      [/^(\d+(?:\.\d+)?)개$/,m=>m[1]+' items'],
+      [/^상대 카드 쪽 가치가 약 (\d+(?:\.\d+)?)% 높습니다\.$/,m=>'Their side is worth about '+m[1]+'% more.'],
+      [/^내 카드 쪽 가치가 약 (\d+(?:\.\d+)?)% 높습니다\.$/,m=>'My side is worth about '+m[1]+'% more.']
+    );
     for(const [pattern,format] of rules){const match=value.match(pattern);if(match)return format(match)}
     return value;
   }
+
+
+  /* WEB_I18N_V4_TOOLS */
+  Object.assign(textMap,{
+    '코인플립, 오리파 확률, 센터링 측정, 그레이딩 손익, 트레이딩 비교를 한곳에서 이용하세요.':{en:'Use coin flip, Oripa odds, centering, grading ROI, and trade comparison tools in one place.'},
+    '카드 수집과 플레이에 자주 필요한 기능을 빠르게 사용할 수 있어요.':{en:'Quick access to useful tools for card collecting and play.'},
+    '코인플립':{en:'Coin Flip'},'실제 코인처럼 3D로 던져 앞면·뒷면 결정':{en:'Flip a 3D coin to decide heads or tails'},
+    '오리파 확률 계산기':{en:'Oripa Odds Calculator'},'구매 수량에 따른 실제 당첨 확률 계산':{en:'Calculate win odds based on purchase quantity'},
+    '카드 센터링 측정':{en:'Card Centering Tool'},'사진으로 좌우·상하 센터링 비율 확인':{en:'Check left/right and top/bottom centering from a photo'},
+    '등급 확률 · 손익 계산기':{en:'Grading Odds & ROI Calculator'},'그레이딩 전 예상가치와 손익 계산':{en:'Estimate grading value and profit before submission'},
+    '트레이딩 가치 비교':{en:'Trade Value Compare'},'교환 카드의 보정 가치를 한눈에 비교':{en:'Compare adjusted trade values at a glance'},
+
+    '코인플립 | FUNY PIN':{en:'Coin Flip | FUNY PIN'},
+    '실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 공정하게 결정하는 무료 TCG 도구입니다.':{en:'A free TCG tool with a 3D coin flip to fairly decide heads or tails.'},
+    '실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요.':{en:'Quickly and fairly decide heads or tails with a realistic 3D coin flip.'},
+    'FUNY PIN 코인플립':{en:'FUNY PIN Coin Flip'},'실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구':{en:'A free 3D coin flip tool for deciding heads or tails.'},
+    '효과음 켜짐':{en:'Sound On'},'효과음 꺼짐':{en:'Sound Off'},'코인을 던져보세요':{en:'Flip the coin'},'결과는 브라우저에서 무작위로 결정됩니다.':{en:'The result is randomly generated in your browser.'},
+    '코인 던지기':{en:'Flip Coin'},'앞':{en:'Front'},'뒤':{en:'Back'},'앞면':{en:'Heads'},'뒷면':{en:'Tails'},
+    '브라우저 난수로 결정 · 서버 전송 없음':{en:'Browser-generated randomness · No server transmission'},'오늘 전체 코인플립 통계':{en:"Today's Coin Flip Stats"},
+    '오늘 앞면':{en:'Heads Today'},'오늘 뒷면':{en:'Tails Today'},'오늘 전체':{en:'Total Today'},'00:00 리셋':{en:'Resets at 00:00'},
+    '내 오늘 최근 결과':{en:"My Recent Results Today"},'기록 초기화':{en:'Reset History'},'아직 결과가 없습니다.':{en:'No results yet.'},
+    '· 코인 또는 아래 버튼을 눌러 다시 던질 수 있어요.':{en:'· Tap the coin or the button below to flip again.'},'코인 플립 중...':{en:'Flipping coin...'},
+    '코인을 다시 눌러 새로운 결과를 확인해보세요.':{en:'Tap the coin again for a new result.'},'오늘 전체 확률 집계 연결을 확인해주세요.':{en:'Unable to load today’s aggregate stats.'},
+    '코인플립 결과가 결정되었습니다.':{en:'Coin flip result decided.'},'코인이 회전 중...':{en:'Coin is spinning...'},'잠시만 기다려주세요.':{en:'Please wait a moment.'},
+    '내 오늘 기록을 초기화했어요.':{en:"Today's history has been reset."},'효과음을 켰어요.':{en:'Sound turned on.'},'효과음을 껐어요.':{en:'Sound turned off.'},'새로운 날짜의 기록이 시작됐어요.':{en:'A new day of results has started.'},
+
+    '오리파 확률 계산기 | FUNY PIN':{en:'Oripa Odds Calculator | FUNY PIN'},
+    '전체 수량, 당첨 수량, 구매 수량을 입력해 실물 오리파의 실제 당첨 확률을 계산합니다.':{en:'Enter total stock, winning stock, and purchase quantity to calculate Oripa win odds.'},
+    '오리파 당첨 확률':{en:'Oripa Win Odds'},'당첨 가능성을 계산해보세요':{en:'Calculate your chance of winning'},'구매 수량을 입력해주세요':{en:'Enter purchase quantity'},
+    '오리파 수량 선택':{en:'Oripa Quantity'},'전체 수량':{en:'Total Quantity'},'전체 수량 직접 입력':{en:'Enter Total Quantity'},'남은 수량':{en:'Remaining Quantity'},'남은 수량 직접 입력':{en:'Enter Remaining Quantity'},
+    '남은 당첨 수량':{en:'Remaining Winners'},'남은 당첨 수량 직접 입력':{en:'Enter Remaining Winners'},'구매 정보 입력':{en:'Purchase Information'},'구매 예정 수량':{en:'Quantity to Buy'},'한게임 가격':{en:'Price per Draw'},
+    '총 구매 금액':{en:'Total Purchase Cost'},'판매 진행률':{en:'Sales Progress'},'계산 결과는 입력한 오리파 구성에 대한 수학적 확률입니다. 실제 당첨을 보장하지 않습니다.':{en:'Results are mathematical probabilities based on the entered Oripa setup and do not guarantee a win.'},
+    '1개 당첨 확률':{en:'Single-Draw Win Rate'},'모두 실패할 확률':{en:'Chance of No Wins'},'예상 당첨 개수':{en:'Expected Wins'},'당첨 1개당 구성 수량':{en:'Items per Winning Slot'},
+    '구매 수량별 당첨 확률':{en:'Win Odds by Purchase Quantity'},'1개 이상 당첨 기준':{en:'Chance of at Least One Win'},'목표 확률별 필요한 구매 수량':{en:'Purchases Needed by Target Probability'},
+    '실물 오리파처럼 한 번 뽑은 상품이 재고에서 빠지는 비복원 추출 기준으로 계산합니다.':{en:'Calculated without replacement, matching physical Oripa where drawn items leave the remaining stock.'},
+    '수량 정보를 확인해주세요.':{en:'Please check the quantity values.'},'🌱 당첨 가능성이 낮은 편이에요':{en:'🌱 The chance of winning is low'},'🎯 당첨 가능성이 높은 편이에요':{en:'🎯 The chance of winning is high'},
+    '✨ 당첨 가능성이 꽤 있는 편이에요':{en:'✨ The chance of winning is fairly good'},'🍀 당첨 가능성이 조금 있는 편이에요':{en:'🍀 There is a modest chance of winning'},'달성 불가':{en:'Not reachable'},
+
+    '등급 확률 · 손익 계산기 | FUNY PIN':{en:'Grading Odds & ROI Calculator | FUNY PIN'},
+    'Raw 카드 가격, 그레이딩 비용, 등급별 예상가와 확률로 기대 손익을 계산합니다.':{en:'Estimate expected profit using raw card value, grading costs, grade values, and probabilities.'},
+    '그레이딩 전 비용과 예상 등급별 판매가를 넣어 기대가치와 손익을 계산해보세요.':{en:'Enter grading costs and expected sale values by grade to calculate expected value and profit.'},
+    '투입 비용':{en:'Input Costs'},'RAW 카드 가치':{en:'Raw Card Value'},'그레이딩 비용':{en:'Grading Cost'},'배송 · 기타 비용':{en:'Shipping & Other Costs'},
+    '등급별 예상 판매가 · 확률':{en:'Expected Sale Value & Probability by Grade'},'10등급 예상가':{en:'Grade 10 Value'},'10등급 확률 (%)':{en:'Grade 10 Probability (%)'},'9등급 예상가':{en:'Grade 9 Value'},'9등급 확률 (%)':{en:'Grade 9 Probability (%)'},'8이하 예상가':{en:'Grade 8 or Lower Value'},'8이하 확률 (%)':{en:'Grade 8 or Lower Probability (%)'},
+    '확률 가중 예상 손익':{en:'Probability-Weighted Expected Profit'},'기대가치에서 총 투입비용을 차감합니다.':{en:'Total input cost is deducted from expected value.'},'총 투입비용':{en:'Total Input Cost'},'예상 그레이딩 가치':{en:'Expected Graded Value'},'예상 수익률':{en:'Expected ROI'},'손익분기 10등급 확률':{en:'Break-Even Grade 10 Probability'},
+    '※ 실제 등급과 시세는 달라질 수 있습니다. 본 도구는 사용자가 직접 입력한 가정에 따른 기대값 계산용입니다.':{en:'※ Actual grades and market prices may vary. This tool calculates expected values based on your inputs.'},
+    '등급 확률 합계를 100%로 맞춰주세요.':{en:'Grade probabilities must total 100%.'},'100% 초과':{en:'Over 100%'},'확률 가중 기대가치 기준입니다.':{en:'Based on probability-weighted expected value.'},'확률 합계가 100%가 아니어서 결과를 확인해주세요.':{en:'The probabilities do not total 100%. Please review the result.'},
+
+    '트레이딩 가치 비교 | FUNY PIN':{en:'Trade Value Compare | FUNY PIN'},'내 카드와 상대 카드의 시장가치와 상태를 입력해 트레이딩 가치 차이를 비교합니다.':{en:'Compare trade value by entering the market value and condition of both sides.'},
+    '양쪽 카드 가격과 상태를 입력해 교환 가치 차이를 빠르게 비교합니다.':{en:'Enter card prices and conditions on both sides to compare trade value quickly.'},'내가 주는 카드':{en:'My Cards'},'+ 카드 추가':{en:'+ Add Card'},'보정 총가치':{en:'Adjusted Total Value'},
+    '상대가 주는 카드':{en:"Their Cards"},'트레이딩 가치 차이':{en:'Trade Value Difference'},'양쪽 카드 가치를 입력해주세요.':{en:'Enter card values for both sides.'},'내 카드 총가치':{en:'My Total Value'},'상대 카드 총가치':{en:'Their Total Value'},
+    '상태 보정 기본값: Mint 100% · NM 95% · LP 85% · MP 70%. 실제 거래가격과 개인 선호도에 따라 가치는 달라질 수 있습니다.':{en:'Default condition adjustments: Mint 100% · NM 95% · LP 85% · MP 70%. Actual trade value may vary by transaction price and personal preference.'},
+    '카드':{en:'Card'},'카드명':{en:'Card Name'},'카드 가치':{en:'Card Value'},'가격':{en:'Price'},'상태':{en:'Condition'},'가치 차이가 5% 이내로 비교적 균형적입니다.':{en:'The values are relatively balanced within 5%.'},
+
+    '포켓몬카드 센터링 측정 도구 | FUNY PIN':{en:'Pokémon Card Centering Tool | FUNY PIN'},'카드 사진을 올려 좌우·상하 센터링 비율을 확인하는 무료 카드 측정 도구입니다. 포켓몬카드 등급 평가 전 참고용으로 활용하세요.':{en:'A free tool to check left/right and top/bottom centering from a card photo before grading.'},
+    '포켓몬카드 센터링 측정 도구':{en:'Pokémon Card Centering Tool'},'카드 사진으로 좌우·상하 센터링 비율을 확인하는 무료 웹 도구':{en:'A free web tool for checking card centering from a photo'},
+    '카드 사진을 올린 뒤 흰색 선은 카드 외곽, 보라색 선은 안쪽 프레임에 맞춰주세요. 사진은 서버로 전송하지 않고 현재 브라우저에서만 처리됩니다.':{en:'Upload a card photo, align the white guides to the card edges and the purple guides to the inner frame. The image is processed only in your browser and is not uploaded.'},
+    '＋ 카드 사진 선택':{en:'＋ Choose Card Photo'},'정면에서 촬영한 카드 사진을 준비해주세요':{en:'Use a straight-on photo of the card'},'기울어짐과 원근 왜곡이 적을수록 측정값이 정확해집니다.':{en:'Results are more accurate with minimal tilt and perspective distortion.'},'측정할 카드':{en:'Card to measure'},
+    '선을 직접 드래그해 테두리에 맞춰주세요. 바깥쪽 4개 선과 안쪽 4개 선 사이의 간격으로 센터링을 계산합니다.':{en:'Drag the guides to match the borders. Centering is calculated from the spacing between the four outer and four inner guides.'},
+    '가이드 초기화':{en:'Reset Guides'},'사진 −':{en:'Photo −'},'사진 ＋':{en:'Photo ＋'},'최대 중심 편차':{en:'Maximum Center Deviation'},'가이드라인을 맞춰주세요':{en:'Align the guides'},'선을 움직이면 결과가 실시간으로 계산됩니다.':{en:'Results update in real time as you move the guides.'},
+    '※ 본 결과는 이미지상의 센터링 비율을 계산한 참고용 측정값입니다. 실제 PSA·BGS·CGC 등 그레이딩 등급을 보장하거나 예측하지 않습니다. 촬영 각도와 이미지 왜곡에 따라 오차가 발생할 수 있습니다.':{en:'※ This is a reference measurement based on image centering. It does not guarantee or predict PSA, BGS, CGC, or other grading results. Camera angle and image distortion may affect accuracy.'},
+    '다른 카드 측정하기':{en:'Measure Another Card'},'센터링이 매우 균형적이에요':{en:'Centering is very balanced'},'이미지 기준으로 좌우·상하 편차가 작습니다.':{en:'Left/right and top/bottom deviation is small in the image.'},
+    '센터링이 비교적 양호해요':{en:'Centering looks fairly good'},'한쪽으로 약간 치우쳐 보일 수 있습니다.':{en:'It may appear slightly shifted to one side.'},'센터링 편차가 보여요':{en:'Centering deviation detected'},'가이드 위치와 촬영 각도를 다시 확인해보세요.':{en:'Check the guide positions and camera angle again.'}
+  });
 
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){

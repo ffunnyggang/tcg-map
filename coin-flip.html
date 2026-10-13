@@ -98,7 +98,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     <div class="skin-handle"></div>
     <div class="skin-head"><strong class="skin-title" id="skinTitle">코인 스킨 설정</strong><button class="skin-close" id="skinClose" type="button" aria-label="닫기">×</button></div>
     <div class="skin-main" id="skinMain">
-      <p class="skin-desc">앞면과 뒷면 이미지를 각각 선택해 위치와 크기를 조정할 수 있어요. 화면을 나가면 기본 스킨으로 초기화됩니다.</p>
+      <p class="skin-desc">앞면과 뒷면 이미지를 각각 선택해 위치와 크기를 조정할 수 있어요. 설정한 스킨은 다음 접속에도 유지됩니다.</p>
       <div class="skin-row">
         <div class="skin-preview" id="frontPreview"><img id="frontPreviewImg" alt="앞면 스킨 미리보기"><span>앞</span></div>
         <div class="skin-copy"><b>앞면 스킨</b><span>사진 선택 후 확대·축소와 위치를 조정해요.</span></div>
@@ -292,41 +292,58 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     if(!res.ok&&res.status!==404)throw new Error('skin delete '+res.status);
   }
   async function accountSkinGet(auth,side){
+    const local=await localBlobGet(accountSkinKey(auth.userId,side));
     try{
       const cloud=await cloudSkinGet(auth,side);
       if(cloud?.size){await localBlobSet(accountSkinKey(auth.userId,side),cloud);return cloud}
-      localBlobDelete(accountSkinKey(auth.userId,side));return null;
+      return local?.size?local:null;
     }catch(_){
-      return await localBlobGet(accountSkinKey(auth.userId,side));
+      return local?.size?local:null;
     }
   }
   async function loadSkins(){
+    const device={};
+    for(const side of ['front','back']){
+      try{
+        device[side]=await deviceSkinGet(side);
+        applySkinBlob(side,device[side]);
+      }catch(_){
+        device[side]=null;
+      }
+    }
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
     const desc=document.querySelector('.skin-desc');
-    if(desc)desc.textContent=auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장됩니다.';
+    if(desc)desc.textContent=auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정과 현재 기기에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장되며 다음 접속에도 유지됩니다.';
+    if(!auth)return;
     for(const side of ['front','back']){
-      try{applySkinBlob(side,auth?await accountSkinGet(auth,side):await deviceSkinGet(side))}
-      catch(_){applySkinBlob(side,null)}
+      try{
+        const account=await accountSkinGet(auth,side);
+        if(account?.size){
+          await deviceSkinSet(side,account);
+          applySkinBlob(side,account);
+        }else if(device[side]?.size){
+          applySkinBlob(side,device[side]);
+        }
+      }catch(_){
+        if(device[side]?.size)applySkinBlob(side,device[side]);
+      }
     }
   }
   async function persistSkin(side,blob){
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
-    if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
+    await deviceSkinSet(side,blob);
     if(auth){
-      await cloudSkinSet(auth,side,blob);
       await localBlobSet(accountSkinKey(auth.userId,side),blob);
-    }else{
-      await deviceSkinSet(side,blob);
+      try{await cloudSkinSet(auth,side,blob)}catch(_){}
     }
     applySkinBlob(side,blob);return auth?'account':'device';
   }
   async function deletePersistedSkin(side){
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
-    if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
+    await deviceSkinDelete(side);
     if(auth){
-      await cloudSkinDelete(auth,side);localBlobDelete(accountSkinKey(auth.userId,side));
-    }else{
-      await deviceSkinDelete(side);
+      localBlobDelete(accountSkinKey(auth.userId,side));
+      try{await cloudSkinDelete(auth,side)}catch(_){}
     }
     applySkinBlob(side,null);return auth?'account':'device';
   }

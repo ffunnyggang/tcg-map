@@ -43,6 +43,7 @@
   }
 
   function card(s){
+    s=window.FUNY_SHOP_DISPLAY(s);
     const tags=tagList(s),shown=tags.slice(0,3),extra=tags.length-shown.length;
     const image=SHOP_IMAGES[s.id]?`<img src="${SHOP_IMAGES[s.id]}" alt="${esc(s.name)} 대표 이미지" loading="lazy" decoding="async">`:fallbackThumb;
     const loc=window.FUNY_SHOP_LOCATION_TEXT(s);

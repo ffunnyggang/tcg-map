@@ -414,7 +414,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     els.coin.style.transition='transform '+totalMs+'ms linear';
     const tilt=(secureRandom()%9)-4;
     playLaunch();playSpin(totalMs);requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(${-10+tilt}deg)`});
-    try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs+60);
+    try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){
     if(busy||!history.length)return;history=[];save();align(0);renderResult();renderHistory();showToast('내 오늘 기록을 초기화했어요.');track('coin_flip_reset');

@@ -7,7 +7,6 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<script>try{const u=new URL(location.href);if(!u.searchParams.has('cv')){u.searchParams.set('cv','20261013-1905');location.replace(u.toString())}}catch(_){}</script>
 <title>코인플립 | FUNY PIN</title>
 <meta name="description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 공정하게 결정하는 무료 TCG 도구입니다.">
 <link rel="canonical" href="https://funypin.kr/coin-flip.html">
@@ -53,7 +52,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 </head>
-<body>
+<body data-coin-build="20261013-1934">
 <div class="shell">
 <header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
 <main>
@@ -130,6 +129,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const STORAGE_KEY='funypin-coin-flip-v3';
   const DURATION_KEY='funypin-coin-duration';
   const SKIN_DB='funypin-coin-skins-v1';
+  const SKIN_LOCAL_PREFIX='funypin-coin-skin-v2:';
   const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const LABELS=['앞면','뒷면'];
@@ -205,8 +205,30 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     return new Promise((resolve,reject)=>{try{const req=indexedDB.open(SKIN_DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('skins'))db.createObjectStore('skins')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}catch(e){reject(e)}})
   }
   async function skinDbGet(side){try{const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readonly'),req=tx.objectStore('skins').get(side);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close()})}catch(_){return null}}
-  async function skinDbSet(side,blob){const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').put(blob,side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}
+  async function skinDbSet(side,blob){try{const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').put(blob,side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}catch(_){return false}}
   async function skinDbDelete(side){try{const db=await openSkinDb();await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').delete(side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}catch(_){}}
+  function blobToDataUrl(blob){return new Promise((resolve,reject)=>{try{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error);r.readAsDataURL(blob)}catch(e){reject(e)}})}
+  async function dataUrlToBlob(value){try{const res=await fetch(value);return await res.blob()}catch(_){return null}}
+  function deviceSkinKey(side){return SKIN_LOCAL_PREFIX+'device:'+side}
+  function accountSkinKey(userId,side){return SKIN_LOCAL_PREFIX+'account:'+String(userId)+':'+side}
+  async function localBlobGet(key){
+    try{const data=localStorage.getItem(key);return data?await dataUrlToBlob(data):null}catch(_){return null}
+  }
+  async function localBlobSet(key,blob){
+    try{const data=await blobToDataUrl(blob);localStorage.setItem(key,data);return true}catch(_){return false}
+  }
+  function localBlobDelete(key){try{localStorage.removeItem(key)}catch(_){}}
+  async function deviceSkinGet(side){
+    const local=await localBlobGet(deviceSkinKey(side));if(local?.size)return local;
+    const legacy=await skinDbGet(side);if(legacy?.size){await localBlobSet(deviceSkinKey(side),legacy);return legacy}
+    return null;
+  }
+  async function deviceSkinSet(side,blob){
+    const localOk=await localBlobSet(deviceSkinKey(side),blob);
+    const dbOk=await skinDbSet(side,blob);
+    if(!localOk&&!dbOk)throw new Error('DEVICE_SAVE_FAILED');
+  }
+  async function deviceSkinDelete(side){localBlobDelete(deviceSkinKey(side));await skinDbDelete(side)}
   function revokeSkinUrl(side){try{if(skinUrls[side])URL.revokeObjectURL(skinUrls[side])}catch(_){}skinUrls[side]=null}
   function applySkinBlob(side,blob){
     revokeSkinUrl(side);const face=$(side==='front'?'coinFront':'coinBack'),img=$(side+'SkinImg'),preview=$(side+'Preview'),previewImg=$(side+'PreviewImg');
@@ -242,30 +264,44 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     const res=await fetch(SUPABASE_URL+'/storage/v1/object/coin-skins/'+path,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+auth.token}});
     if(!res.ok&&res.status!==404)throw new Error('skin delete '+res.status);
   }
+  async function accountSkinGet(auth,side){
+    try{
+      const cloud=await cloudSkinGet(auth,side);
+      if(cloud?.size){await localBlobSet(accountSkinKey(auth.userId,side),cloud);return cloud}
+      localBlobDelete(accountSkinKey(auth.userId,side));return null;
+    }catch(_){
+      return await localBlobGet(accountSkinKey(auth.userId,side));
+    }
+  }
   async function loadSkins(){
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
     const desc=document.querySelector('.skin-desc');
     if(desc)desc.textContent=auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장됩니다.';
     for(const side of ['front','back']){
-      try{
-        const blob=auth?await cloudSkinGet(auth,side):await skinDbGet(side);
-        applySkinBlob(side,blob);
-      }catch(_){applySkinBlob(side,null)}
+      try{applySkinBlob(side,auth?await accountSkinGet(auth,side):await deviceSkinGet(side))}
+      catch(_){applySkinBlob(side,null)}
     }
   }
   async function persistSkin(side,blob){
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
     if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
-    if(auth)await cloudSkinSet(auth,side,blob);else await skinDbSet(side,blob);
-    applySkinBlob(side,blob);
-    return auth?'account':'device';
+    if(auth){
+      await cloudSkinSet(auth,side,blob);
+      await localBlobSet(accountSkinKey(auth.userId,side),blob);
+    }else{
+      await deviceSkinSet(side,blob);
+    }
+    applySkinBlob(side,blob);return auth?'account':'device';
   }
   async function deletePersistedSkin(side){
     const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
     if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
-    if(auth)await cloudSkinDelete(auth,side);else await skinDbDelete(side);
-    applySkinBlob(side,null);
-    return auth?'account':'device';
+    if(auth){
+      await cloudSkinDelete(auth,side);localBlobDelete(accountSkinKey(auth.userId,side));
+    }else{
+      await deviceSkinDelete(side);
+    }
+    applySkinBlob(side,null);return auth?'account':'device';
   }
   function cropSize(){return $('cropStage')?.clientWidth||260}
   function cleanupCropSource(){try{if(cropState.url)URL.revokeObjectURL(cropState.url)}catch(_){}cropState.url=null;cropState.blob=null;cropState.side=null;cropState.drag=null;cropState.pinch=null;cropState.pointers.clear()}
@@ -296,9 +332,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   async function applyCropSkin(){
     const side=cropState.side,img=$('cropImage');if(!side||!img?.naturalWidth)return;
-    const V=cropSize(),S=800,r=S/V,canvas=document.createElement('canvas');canvas.width=S;canvas.height=S;
+    const V=cropSize(),S=512,r=S/V,canvas=document.createElement('canvas');canvas.width=S;canvas.height=S;
     const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);ctx.drawImage(img,cropState.x*r,cropState.y*r,img.naturalWidth*cropState.scale*r,img.naturalHeight*cropState.scale*r);
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.88));if(!blob){showToast('이미지를 저장하지 못했어요.');return}
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob){showToast('이미지를 저장하지 못했어요.');return}
     try{
       const scope=await persistSkin(side,blob);
       showToast((side==='front'?'앞면':'뒷면')+' 스킨을 '+(scope==='account'?'계정에':'이 기기에')+' 저장했어요.');
@@ -440,7 +476,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const endCropPointer=e=>{if(!cropState.pointers.has(e.pointerId))return;cropState.pointers.delete(e.pointerId);try{cropStage.releasePointerCapture(e.pointerId)}catch(_){}if(cropState.pointers.size===1){const entry=[...cropState.pointers.entries()][0],p=entry[1];cropState.drag={id:entry[0],px:p.x,py:p.y,x:cropState.x,y:cropState.y};cropState.pinch=null}else{cropState.drag=null;cropState.pinch=null}};
   cropStage.addEventListener('pointerup',endCropPointer);cropStage.addEventListener('pointercancel',endCropPointer);
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats()}});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats();loadSkins()}});
   syncSoundButton();applyDuration();loadSkins();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',e=>{if(e.persisted)loadSkins()});
 })();
 </script>

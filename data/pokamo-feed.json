@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-13T17:36:39.222973+00:00",
+  "updatedAt": "2026-10-13T22:45:55.777468+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "피카츄 좋아합니당!",
+      "author": "호오잇",
+      "publishedAt": "2026-10-13T19:08:42.949273Z",
+      "excerpt": "피카츄 좋아합니당!",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-좋아합니당-dlYgll1j",
+      "views": 1,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.01
+    },
     {
       "category": "자유 게시판",
       "title": "30대 직장인입니다. 잘부탁드립니다.",
@@ -24,10 +37,10 @@
       "excerpt": "이거 처음 뽑았는데 얼마정도인가요?? 지금 이 상태로 유지중입니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1791895849776069baa8a7b18e016bd93823a1ad35bc05cb5e35b24ee761c843091eb6e3a154e1.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-뮤츠-ex-fur-j8rKVbQP",
-      "views": 20,
+      "views": 30,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.2
+      "popularityScore": 0.3
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "제가 보기엔 괜찮은거같은데 여러분이 보기에 어때보시이세요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/27c0ef65-0c24-45d0-9cf9-c5ca6b6b3d8e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/Psa보내도-되는-상태일까용-dEbxqD8j",
-      "views": 11,
+      "views": 12,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.11
+      "popularityScore": 0.12
     },
     {
       "category": "카드 자랑",
@@ -50,10 +63,10 @@
       "excerpt": "역시 피카츄가 제일 이쁘네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/17918835663818751865909df27dc7b4488fff586e81ad07175270edf5b92fdaedea686c50bc41.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-좋아하니-선물받았어요-AramxGej",
-      "views": 35,
-      "likes": 4,
+      "views": 38,
+      "likes": 5,
       "comments": 3,
-      "popularityScore": 18.35
+      "popularityScore": 21.38
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "피카츄가 역시 제일 귀엽네요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄가-역시-제일-귀엽네요-AramxpQj",
-      "views": 3,
+      "views": 4,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.03
+      "popularityScore": 3.04
     },
     {
       "category": "자유 게시판",
@@ -173,19 +186,6 @@
       "popularityScore": 3.08
     },
     {
-      "category": "자유 게시판",
-      "title": "그냥 추억의 포켓몬스터 피카추 라이추 파이리 꼬부기 버터풀 야도란",
-      "author": "솜떵",
-      "publishedAt": "2026-10-11T11:56:45.125316Z",
-      "excerpt": "그냥 추억의 포켓몬스터 피카추 라이추 파이리 꼬부기 버터풀 야도란",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/그냥-추억의-포켓몬스터-피카추-라이추-파이리-jvxMaB3P",
-      "views": 16,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.16
-    },
-    {
       "category": "카드깡/카드샵 후기",
       "title": "카드볼트 님피아빠데이 이브이 고대팩 대리 도파민!",
       "author": "퐌퐌퐌",
@@ -232,10 +232,10 @@
       "excerpt": "비한카드인가요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4b76fed1-2996-411d-925f-4b13b47803f8.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이카드는-시세좀-알수있을까요-알고싶습니다-dZno9Lxd",
-      "views": 75,
+      "views": 76,
       "likes": 1,
       "comments": 5,
-      "popularityScore": 13.75
+      "popularityScore": 13.76
     },
     {
       "category": "카드거래",
@@ -310,10 +310,10 @@
       "excerpt": "홍대에 오픈한 24시간 무인 카드샵 TCG서울 다녀왔습니다! 👀 최근 저희 깽퐌커플은 오리파를 조금 자제하고 있었지만… 눈앞에 있으니 또 그냥 지나치기가 쉽지 않습니다 🤣 🔥 결국 저희도 못 참고 구매했습니다 결국 저희도 구경만 하고 나오지는 못했습니다 PSA 등급카드 오리파에 도전하고",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17907788217833cd5eddc813e76dbbaa258eef7b242f64294b641c2cc50d76646202a09e7b9470.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/24시간-무인카드샵-오리파-첫-도전-PV2Xz5aP",
-      "views": 42,
+      "views": 43,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.42
+      "popularityScore": 3.43
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -388,10 +388,10 @@
       "excerpt": "가격만 괜찮으면 바로 거래하고 싶어요. 서울에 살고 있고, 만약 멀리 계신다면 택배 거래도 괜찮습니 다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/2e89fbae-8115-40fc-9121-4021ae340f22.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저는-일판-트레이너-카드-아니면-트레이너와-포켓몬이-같이-나온-카드만-모으고-있습니다-d9XXOrOP",
-      "views": 16,
+      "views": 17,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.16
+      "popularityScore": 0.17
     },
     {
       "category": "카드 자랑",

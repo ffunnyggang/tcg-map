@@ -61,12 +61,12 @@
    var r=await fetch(base+'/rest/v1/live_reports?'+q,{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});
    if(!r.ok)throw new Error('lookup');
    var rows=await r.json();
-   if(rows.length){o.innerHTML='<b>@'+id+'</b> · 응모 완료 🎁<br>응모일시 '+new Date(rows[0].created_at).toLocaleString('ko-KR')}
+   if(rows.length){o.innerHTML='<b>@'+id+'</b> · 응모 완료 🎁<br>응모일시 '+new Date(rows[0].created_at).toLocaleString(localStorage.getItem('funy-pin-lang')==='en'?'en-US':'ko-KR')}
    else{o.innerHTML='<b>@'+id+'</b> · 코티페 이벤트 응모이력이 없습니다.'}
   }catch(e){o.textContent='응모이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'}
   s.disabled=false;s.textContent='조회';
  }
  s.onclick=run;i.onkeydown=function(e){if(e.key==='Enter')run()};
 })();
-</script></body>
+</script><script src="funy-i18n.js?v=20261013-web-en-v6"></script></body>
 </html>

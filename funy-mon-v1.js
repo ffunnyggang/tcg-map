@@ -1,5 +1,6 @@
 /* FUNY PIN map creature MVP */
 (function(){
+  const monText=value=>window.FUNY_I18N?.t(value)||value;
   const ENDPOINT='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/funy-mon-catch';
   const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
@@ -153,7 +154,7 @@
     el.id='funyMonModal';el.className='funy-mon-modal';el.hidden=true;
     el.innerHTML='<div class="funy-mon-backdrop" data-mon-close></div><section class="funy-mon-sheet" role="dialog" aria-modal="true" aria-labelledby="funyMonTitle"><div class="funy-mon-handle" aria-hidden="true"></div><button class="funy-mon-close" type="button" data-mon-close aria-label="닫기">×</button><div class="funy-mon-pixel-corners" aria-hidden="true"></div><div class="funy-mon-visual"><div class="funy-mon-fx" id="funyMonFx" aria-hidden="true"></div><div class="funy-mon-result-icon" id="funyMonIcon"></div></div><h3 id="funyMonTitle"></h3><div class="funy-mon-meta" id="funyMonMeta" hidden></div><p class="funy-mon-location" id="funyMonCopy"></p><p class="funy-mon-event-caption" id="funyMonEventCaption" hidden></p><div class="funy-mon-reward-kuji" id="funyMonReward" hidden><div class="funy-mon-reward-result" id="funyMonRewardResult"></div><div class="funy-mon-reward-cover" id="funyMonRewardCover"><span class="funy-mon-kuji-label">REWARD</span><strong>→ 오른쪽으로 밀어 결과 확인</strong></div></div><div class="funy-mon-actions"><button class="funy-mon-primary" id="funyMonSave" type="button" disabled>이미지 저장</button></div></section>';
     document.body.appendChild(el);
-    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{},entryInput=document.getElementById('funyMonEntryInstagram'),entryPending=r.reward_type==='entry'&&r.entry_apply_enabled&&!!entryInput&&!entryInput.disabled;if(entryPending&&!confirm('이벤트 응모가 아직 완료되지 않았어요.\n응모를 완료하지 않고 닫을까요?'))return;if(resultNeedsSave&&!confirm('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.'))return;resultNeedsSave=false;closeModal()}));
+    el.querySelectorAll('[data-mon-close]').forEach(b=>b.addEventListener('click',()=>{const r=currentResultData?.reward||{},entryInput=document.getElementById('funyMonEntryInstagram'),entryPending=r.reward_type==='entry'&&r.entry_apply_enabled&&!!entryInput&&!entryInput.disabled;if(entryPending&&!confirm(monText('이벤트 응모가 아직 완료되지 않았어요.\n응모를 완료하지 않고 닫을까요?')))return;if(resultNeedsSave&&!confirm(monText('이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.')))return;resultNeedsSave=false;closeModal()}));
   }
   function closeModal(){
     const el=document.getElementById('funyMonModal');
@@ -194,7 +195,7 @@
     el.hidden=false;
   }
   function showMessage(title,copy){
-    showCatchOutcome(false,title+' · '+copy);
+    showCatchOutcome(false,monText(title)+' · '+monText(copy));
   }
   function ensureRewardImageViewer(){
     if(document.getElementById('funyMonRewardImageViewer'))return;
@@ -410,11 +411,11 @@
     const aura=ctx.createRadialGradient(540,365,30,540,365,270);aura.addColorStop(0,'rgba(142,116,202,.20)');aura.addColorStop(.55,'rgba(142,116,202,.07)');aura.addColorStop(1,'rgba(142,116,202,0)');ctx.fillStyle=aura;ctx.beginPath();ctx.arc(540,365,270,0,Math.PI*2);ctx.fill();
     const marks=fxMap[def.id]||fxMap.ponanyang,pts=[[300,390],[365,245],[540,215],[715,250],[780,395]];const fxColors={ponanyang:'#8b72d8',bubblelong:'#59b9df',hatring:'#ed79ad',bulgi:'#ee7b4d',namumong:'#67a85b',ggomagureum:'#9db9d4',bawidong:'#9b8c74',grimjamong:'#7764ae',beonjjeogi:'#e5b633',neon:'#8a71ff'};ctx.fillStyle=fxColors[def.id]||'#8b72d8';ctx.font='800 34px sans-serif';marks.forEach((m,i)=>ctx.fillText(m,pts[i][0],pts[i][1]));
     try{const mon=await loadCanvasImage(def.asset);const size=390,x=(1080-size)/2,y=185;ctx.drawImage(mon,x,y,size,size)}catch(_){}
-    ctx.fillStyle='#2d2832';ctx.font='950 64px "DotGothic16",monospace';ctx.fillText(def.name,540,650);
+    ctx.fillStyle='#2d2832';ctx.font='950 64px "DotGothic16",monospace';ctx.fillText(monText(def.name),540,650);
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
-    const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,def.type,tc[0],tc[1]);ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText('📍 '+data.shop_name+'에서 포획했어요',540,790);ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
+    const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,monText(def.type),tc[0],tc[1]);ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText(monText('📍 '+data.shop_name+'에서 포획했어요'),540,790);ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
     const isAndroid=/Android/i.test(navigator.userAgent);const mime=isAndroid?'image/jpeg':'image/png';const ext=isAndroid?'jpg':'png';const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
-    if(blob){const file=new File([blob],fileName,{type:mime});if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'FUNY MON 이미지'});notifyImageSaved();return}catch(e){if(e&&e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved()}
+    if(blob){const file=new File([blob],fileName,{type:mime});if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:monText('FUNY MON 이미지')});notifyImageSaved();return}catch(e){if(e&&e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved()}
   }
 
   function pageAnonKey(){return SUPABASE_KEY}

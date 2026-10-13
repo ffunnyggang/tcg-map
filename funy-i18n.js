@@ -248,14 +248,743 @@
   }
 });
 
+  /* WEB_I18N_V6: FAQ, forms, events, FUNY MON and CMS UI. */
+  Object.assign(textMap,{
+  "FUNY PIN 이용 방법·자주 묻는 질문": {
+    "en": "FUNY PIN Help & FAQ"
+  },
+  "FUNY PIN 이용에 궁금한 내용을 확인해보세요.": {
+    "en": "Find answers to your questions about FUNY PIN."
+  },
+  "FUNY PIN은 어떤 서비스인가요?": {
+    "en": "What is FUNY PIN?"
+  },
+  "카드샵 정보는 어떻게 확인하나요?": {
+    "en": "How can I find card shop details?"
+  },
+  "카드샵 정보가 실제와 달라요.": {
+    "en": "The shop information is incorrect."
+  },
+  "을 통해 알려주세요.": {
+    "en": "to let us know."
+  },
+  "정보 수정 요청하기 ›": {
+    "en": "Request an Update ›"
+  },
+  "새로운 카드샵을 등록하고 싶어요.": {
+    "en": "How can I add a new card shop?"
+  },
+  "매장 등록 · 정보 수정 요청 페이지에서 매장명과 주소를 입력해 보내주세요. 확인 후 FUNY PIN 카드샵 정보에 순차적으로 반영합니다.": {
+    "en": "Submit the shop name and address on the Add / Update Shop page. We will review your request and update FUNY PIN."
+  },
+  "매장 등록 요청하기 ›": {
+    "en": "Add a Shop ›"
+  },
+  "카드샵 정보는 실시간으로 업데이트되나요?": {
+    "en": "Is shop information updated in real time?"
+  },
+  "모든 매장 정보가 실시간으로 자동 갱신되는 것은 아닙니다. FUNY PIN은 현재 베타 서비스로, 카드샵 데이터를 계속 확인하고 업데이트하고 있어요. 방문 전에는 매장의 공식 채널에서 최신 영업정보를 함께 확인하는 것을 권장합니다.": {
+    "en": "Not all shop information updates automatically in real time. FUNY PIN is currently in beta, and we continue to verify and update shop data. Check the shop’s official channels for the latest opening hours before visiting."
+  },
+  "일본 카드샵도 볼 수 있나요?": {
+    "en": "Can I find card shops in Japan?"
+  },
+  "네. TCG MAP의 국가 변경 기능을 이용해 등록된 일본 카드샵도 확인할 수 있습니다. 지역과 매장 데이터는 계속 추가·보완하고 있어요.": {
+    "en": "Yes. Select Japan in TCG MAP to see listed shops. We continue to add and improve shop and area information."
+  },
+  "PICK와 TALK에서는 무엇을 볼 수 있나요?": {
+    "en": "What can I find in PICK and TALK?"
+  },
+  "에서는 TCG 관련 정보, 일정, 깽퐌커플의 카드샵 방문기를 확인할 수 있고,": {
+    "en": "features TCG news, events, and shop visits by FFUNNYGGANG, while"
+  },
+  "에서는 카드 수집 관련 커뮤니티 콘텐츠를 모아볼 수 있습니다.": {
+    "en": "brings together community posts about card collecting."
+  },
+  "광고나 제휴 문의는 어디로 하면 되나요?": {
+    "en": "How can I contact you about advertising or partnerships?"
+  },
+  "FUNY PIN 내 배너, 카드샵·브랜드 소개 등 광고 및 제휴 문의는 전용 문의 페이지를 이용해주세요.": {
+    "en": "Use our partnership inquiry page for advertising, banners, and shop or brand promotions on FUNY PIN."
+  },
+  "광고 · 제휴 문의하기 ›": {
+    "en": "Advertising / Partnerships ›"
+  },
+  "서비스 오류나 개선 의견을 보내고 싶어요.": {
+    "en": "How can I report a problem or share feedback?"
+  },
+  "서비스 만족도 조사를 통해 불편했던 점이나 개선 의견을 남겨주세요. 보내주신 의견은 FUNY PIN 개선에 참고합니다.": {
+    "en": "Share problems and suggestions in our service feedback survey. Your feedback helps us improve FUNY PIN."
+  },
+  "서비스 만족도 조사 ›": {
+    "en": "Share Feedback ›"
+  },
+  "캠페인 정보 입력": {
+    "en": "Campaign Details"
+  },
+  "광고": {
+    "en": "Advertising"
+  },
+  "공동구매": {
+    "en": "Group Purchase"
+  },
+  "협찬": {
+    "en": "Sponsorship"
+  },
+  "제품제공": {
+    "en": "Product Samples"
+  },
+  "제휴": {
+    "en": "Partnership"
+  },
+  "가능": {
+    "en": "Available"
+  },
+  "불가": {
+    "en": "Unavailable"
+  },
+  "국문명과 영문명이 함께 있다면": {
+    "en": "If the shop has Korean and English names,"
+  },
+  "로 구분해주세요.": {
+    "en": "separate them with a slash."
+  },
+  "예) 퍼니카드 / FUNY CARD": {
+    "en": "e.g. 퍼니카드 / FUNY CARD"
+  },
+  "네이버지도에 표시된 도로명 주소를 입력해주세요": {
+    "en": "Enter the street address shown on Naver Maps"
+  },
+  "네이버지도 공유하기 URL을 붙여넣어주세요": {
+    "en": "Paste the Naver Maps share URL"
+  },
+  "영업하는 요일만 체크하고 시간을 입력해주세요. 체크하지 않거나 시간이 비어 있는 요일은 정기휴무로 처리됩니다.": {
+    "en": "Select opening days and enter the hours. Unchecked days or days without hours will be marked as closed."
+  },
+  "TCG MAP의 카드샵 필터 항목과 동일하며 여러 개 선택할 수 있어요.": {
+    "en": "These match the TCG MAP shop filters. You can select multiple options."
+  },
+  "매장 사진 미리보기": {
+    "en": "Shop photo preview"
+  },
+  "로고 삭제": {
+    "en": "Remove Logo"
+  },
+  "개인정보 수집 및 이용에 동의해주세요.": {
+    "en": "Please agree to the collection and use of personal information."
+  },
+  "매장 등록/정보 수정 요청이 접수되었습니다.": {
+    "en": "Your shop registration or update request has been submitted."
+  },
+  "광고 · 제휴 문의가 접수되었습니다.": {
+    "en": "Your advertising or partnership inquiry has been submitted."
+  },
+  "문의 접수에 실패했습니다. 잠시 후 다시 시도해주세요.": {
+    "en": "Unable to submit your inquiry. Please try again shortly."
+  },
+  "요청을 보내지 못했어요. 잠시 후 다시 시도해주세요.": {
+    "en": "Unable to submit your request. Please try again shortly."
+  },
+  "등록된 공지사항이 없습니다.": {
+    "en": "No announcements yet."
+  },
+  "미완료 응모": {
+    "en": "Pending Entries"
+  },
+  "FUNY MON 이벤트 자세히 보기": {
+    "en": "View FUNY MON Event"
+  },
+  "퍼니몬 출현 중": {
+    "en": "FUNY MON Spotted"
+  },
+  "매장 이벤트": {
+    "en": "Shop Event"
+  },
+  "→ 오른쪽으로 밀어 결과 확인": {
+    "en": "→ Swipe right to reveal your reward"
+  },
+  "이미지 저장": {
+    "en": "Save Image"
+  },
+  "이벤트 응모가 아직 완료되지 않았어요.\n응모를 완료하지 않고 닫을까요?": {
+    "en": "Your event entry is incomplete.\nClose without completing it?"
+  },
+  "이미지를 저장하지 않았어요!\n지금 닫으면 포획 결과 화면이 닫혀요.": {
+    "en": "You have not saved the image!\nClosing will dismiss your catch result."
+  },
+  "퍼니몬 포획 중...": {
+    "en": "Catching FUNY MON..."
+  },
+  "잠시만 기다려주세요": {
+    "en": "Please wait"
+  },
+  "포획 성공!": {
+    "en": "Caught!"
+  },
+  "포획 실패!": {
+    "en": "Catch Failed!"
+  },
+  "당첨 상품 이미지": {
+    "en": "Prize image"
+  },
+  "Instagram 아이디를 정확히 입력해주세요.": {
+    "en": "Enter a valid Instagram username."
+  },
+  "응모 확인 중...": {
+    "en": "Checking entry..."
+  },
+  "오늘 응모 가능 횟수를 모두 사용했어요. 내일 다시 참여해주세요.": {
+    "en": "You have reached today’s entry limit. Please try again tomorrow."
+  },
+  "이벤트 기간 중 응모 가능 횟수를 모두 사용했어요.": {
+    "en": "You have reached the entry limit for this event."
+  },
+  "이미 사용한 응모권이에요.": {
+    "en": "This entry ticket has already been used."
+  },
+  "아직 이벤트 응모 기간이 시작되지 않았어요.": {
+    "en": "This event has not opened for entries yet."
+  },
+  "이벤트 응모 기간이 종료되었거나 현재 응모할 수 없어요.": {
+    "en": "Entries are closed or currently unavailable."
+  },
+  "응모권 정보를 확인하지 못했어요. 퍼니몬을 다시 포획해주세요.": {
+    "en": "Unable to verify your entry ticket. Please catch a FUNY MON again."
+  },
+  "응모 처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.": {
+    "en": "Unable to process your entry. Please try again shortly."
+  },
+  "응모 완료": {
+    "en": "Entry Complete"
+  },
+  "꽝": {
+    "en": "No Prize"
+  },
+  "아쉬워요! 다음 기회에 다시 도전해보세요!": {
+    "en": "Better luck next time! Try again for another chance."
+  },
+  "자세히보기": {
+    "en": "View Details"
+  },
+  "이벤트 기간 중 응모 회수 제한 없음(중복 응모 가능)": {
+    "en": "Unlimited entries during the event. Repeat entries are allowed."
+  },
+  "이벤트 기간 중 1회 응모 가능": {
+    "en": "One entry during the event."
+  },
+  "응모권": {
+    "en": "Entry Ticket"
+  },
+  "당첨!": {
+    "en": "You Won!"
+  },
+  "이벤트 응모하기": {
+    "en": "Enter Event"
+  },
+  "당첨 상품": {
+    "en": "Prize"
+  },
+  "이미지 보기": {
+    "en": "View Image"
+  },
+  "Instagram 아이디 입력": {
+    "en": "Enter Instagram username"
+  },
+  "응모": {
+    "en": "Enter"
+  },
+  "당첨 코드": {
+    "en": "Prize Code"
+  },
+  "포획 가능 거리 밖이에요": {
+    "en": "You are outside the catch range"
+  },
+  "오늘 포획 가능 횟수를 모두 사용했어요": {
+    "en": "You have reached today’s catch limit"
+  },
+  "오늘 포획을 완료했어요": {
+    "en": "You have already caught one today"
+  },
+  "내일 다시 도전해주세요.": {
+    "en": "Please try again tomorrow."
+  },
+  "이벤트에 참여할 수 없어요": {
+    "en": "This event is unavailable"
+  },
+  "이벤트가 종료되었거나 현재 운영 중이 아니에요.": {
+    "en": "The event has ended or is currently inactive."
+  },
+  "포획할 수 없는 퍼니몬이에요": {
+    "en": "This FUNY MON cannot be caught"
+  },
+  "이벤트 설정이 변경되었어요. 지도를 새로고침해주세요.": {
+    "en": "The event settings have changed. Please refresh the map."
+  },
+  "카드샵 정보를 확인할 수 없어요": {
+    "en": "Unable to verify the card shop"
+  },
+  "잠시 후 다시 시도해주세요.": {
+    "en": "Please try again shortly."
+  },
+  "포획 정보를 확인하지 못했어요": {
+    "en": "Unable to verify the catch"
+  },
+  "페이지를 새로고침한 뒤 다시 시도해주세요.": {
+    "en": "Refresh the page and try again."
+  },
+  "포획 처리 중 오류가 발생했어요": {
+    "en": "Unable to process the catch"
+  },
+  "아쉽게 놓쳤어요! 다른 퍼니몬을 포획해보세요.": {
+    "en": "It got away! Try catching another FUNY MON."
+  },
+  "퍼니몬을 포획했어요!": {
+    "en": "You caught a FUNY MON!"
+  },
+  "위치 권한이 필요해요": {
+    "en": "Location permission required"
+  },
+  "현재 위치를 확인해야 가까운 FUNY MON을 포획할 수 있어요.": {
+    "en": "Allow location access to catch nearby FUNY MON."
+  },
+  "현재 위치를 확인하지 못했어요": {
+    "en": "Unable to find your location"
+  },
+  "GPS 또는 위치 서비스를 켠 뒤 다시 시도해주세요.": {
+    "en": "Turn on GPS or location services and try again."
+  },
+  "위치 확인 시간이 초과됐어요": {
+    "en": "Location request timed out"
+  },
+  "위치 서비스를 켠 뒤 다시 시도해주세요.": {
+    "en": "Turn on location services and try again."
+  },
+  "이미지 저장이 완료되었습니다.": {
+    "en": "Image saved."
+  },
+  "FUNY MON 이미지": {
+    "en": "FUNY MON Image"
+  },
+  "노말": {
+    "en": "Normal"
+  },
+  "물": {
+    "en": "Water"
+  },
+  "페어리": {
+    "en": "Fairy"
+  },
+  "불": {
+    "en": "Fire"
+  },
+  "풀": {
+    "en": "Grass"
+  },
+  "비행": {
+    "en": "Flying"
+  },
+  "바위": {
+    "en": "Rock"
+  },
+  "고스트": {
+    "en": "Ghost"
+  },
+  "전기": {
+    "en": "Electric"
+  },
+  "코스믹": {
+    "en": "Cosmic"
+  },
+  "악": {
+    "en": "Dark"
+  },
+  "에스퍼": {
+    "en": "Psychic"
+  },
+  "이벤트": {
+    "en": "Event"
+  },
+  "🗓️ 이벤트 기간": {
+    "en": "🗓️ Event Period"
+  },
+  "📢 당첨자 발표": {
+    "en": "📢 Winners Announcement"
+  },
+  "🎁 경품(총 3명)": {
+    "en": "🎁 Prizes (3 Winners)"
+  },
+  "🎁 경품(총 4명)": {
+    "en": "🎁 Prizes (4 Winners)"
+  },
+  "이벤트 참여방법 및 응모": {
+    "en": "How to Participate"
+  },
+  "인스타그램 팔로우": {
+    "en": "Follow on Instagram"
+  },
+  "깽퐌커플 인스타그램 방문하기 ›": {
+    "en": "Visit FFUNNYGGANG on Instagram ›"
+  },
+  "퍼니몬 포획하고 응모하기": {
+    "en": "Catch FUNY MON & Enter"
+  },
+  "내 응모이력 조회하기": {
+    "en": "View My Entries"
+  },
+  "@제외 Instagram 아이디 입력": {
+    "en": "Instagram username without @"
+  },
+  "@ 제외하고 아이디 입력": {
+    "en": "Username without @"
+  },
+  "조회": {
+    "en": "Search"
+  },
+  "조회중": {
+    "en": "Searching..."
+  },
+  "조회 중": {
+    "en": "Searching..."
+  },
+  "이벤트 응모 캠페인 연결 후 조회할 수 있어요.": {
+    "en": "Entry history will be available once this campaign is connected."
+  },
+  "응모이력을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.": {
+    "en": "Unable to load your entry history. Please try again shortly."
+  },
+  "THE CARD ROOM × FUNY PIN 퍼니몬 이벤트": {
+    "en": "THE CARD ROOM × FUNY PIN — FUNY MON Event"
+  },
+  "더카드룸 방문해서": {
+    "en": "Visit THE CARD ROOM,"
+  },
+  "퍼니몬 포획하고, 응모하고 🎯": {
+    "en": "catch FUNY MON and enter 🎯"
+  },
+  "특별한 선물까지! 🎁": {
+    "en": "for a chance to win special prizes! 🎁"
+  },
+  "FUNY PIN 서비스 ‘TCG MAP’에서": {
+    "en": "In FUNY PIN’s TCG MAP,"
+  },
+  "더카드룸 주변의 퍼니몬을 포획하면": {
+    "en": "catch a FUNY MON near THE CARD ROOM"
+  },
+  "이벤트에 응모할 수 있어요": {
+    "en": "to enter the event."
+  },
+  "2026년 10월 12일(월) ~ 10월 30일(금) 오후 10시까지": {
+    "en": "Oct 12 (Mon) – Oct 30 (Fri), 2026, until 10 PM KST"
+  },
+  "2026년 10월 31일(토)": {
+    "en": "Oct 31 (Sat), 2026"
+  },
+  "포켓몬카드 일본판 30주년 1BOX(1명)": {
+    "en": "Japanese Pokémon TCG 30th Anniversary: 1 box (1 winner)"
+  },
+  "포켓몬카드 일본판 메가드림ex 1BOX(1명)": {
+    "en": "Japanese Pokémon TCG MEGA Dream ex: 1 box (1 winner)"
+  },
+  "포켓몬카드 북미판 퍼스트파트너 1BOX(1명)": {
+    "en": "North American Pokémon TCG First Partner: 1 box (1 winner)"
+  },
+  "※ 당첨 경품은 더카드룸 매장 방문 수령입니다.": {
+    "en": "※ Prizes must be collected in person at THE CARD ROOM."
+  },
+  "더카드룸 & 깽퐌커플 계정을 모두 팔로우해주세요": {
+    "en": "Follow both THE CARD ROOM and FFUNNYGGANG."
+  },
+  "tcr_kr 인스타그램 방문하기 ›": {
+    "en": "Visit tcr_kr on Instagram ›"
+  },
+  "※ 당첨자의 Instagram 팔로우 여부를 확인하여 조건 미충족시 당첨이 취소될 수 있습니다": {
+    "en": "※ Winners’ Instagram follows will be checked. A prize may be revoked if the requirements are not met."
+  },
+  "FUNY PIN 지도에서 퍼니몬 포획하고": {
+    "en": "Catch FUNY MON on the FUNY PIN map"
+  },
+  "이벤트 응모!": {
+    "en": "and enter the event!"
+  },
+  "• 이벤트 기간 동안 Instagram ID 기준 하루 1회 응모할 수 있어요.": {
+    "en": "• One entry per Instagram username per day during the event."
+  },
+  "• 매일 참여할수록 응모 횟수가 쌓여 당첨 확률이 높아져요.": {
+    "en": "• Enter daily to accumulate entries and increase your chance of winning."
+  },
+  "KOREA TCG FAIR × FUNY PIN 이벤트": {
+    "en": "KOREA TCG FAIR × FUNY PIN Event"
+  },
+  "코티페에서 퍼니몬 잡고": {
+    "en": "Catch FUNY MON at KOREA TCG FAIR"
+  },
+  "이벤트 응모까지! 🎯🎁": {
+    "en": "and enter the event! 🎯🎁"
+  },
+  "코티페 참석해서 FUNY PIN 지도에서": {
+    "en": "At KOREA TCG FAIR, use the FUNY PIN map"
+  },
+  "퍼니몬을 잡아 포획하면 응모할 수 있어요": {
+    "en": "to catch FUNY MON and enter the event."
+  },
+  "2026년 10월 3일(토)": {
+    "en": "Oct 3 (Sat), 2026"
+  },
+  "오전 10시 30분 ~ 오후 5시 30분까지": {
+    "en": "10:30 AM – 5:30 PM KST"
+  },
+  "2026년 10월 3일(토) 오후 6시": {
+    "en": "Oct 3 (Sat), 2026, at 6 PM KST"
+  },
+  "- 포켓몬카드 일본판 100덱 3BOX(각 1BOX 씩 3명)": {
+    "en": "- Japanese Pokémon TCG 100 Deck: 3 boxes (1 each for 3 winners)"
+  },
+  "- 포켓몬카드 한국판 스톰에메랄다 1BOX(1명)": {
+    "en": "- Korean Pokémon TCG Storm Emeralda: 1 box (1 winner)"
+  },
+  "※ 본 이벤트 경품은 행사 당일 현장에서 제공됩니다": {
+    "en": "※ Prizes are provided at the venue on the event day."
+  },
+  "코티페 & 깽퐌커플 계정을 모두 팔로우해주세요": {
+    "en": "Follow both KOREA TCG FAIR and FFUNNYGGANG."
+  },
+  "KTF.official 인스타그램 방문하기 ›": {
+    "en": "Visit KTF.official on Instagram ›"
+  },
+  "퍼니몬은 별도의 자리 이동 없이": {
+    "en": "You can find FUNY MON without changing seats"
+  },
+  "FUNY PIN 지도에서 찾으실 수 있어요!": {
+    "en": "on the FUNY PIN map!"
+  },
+  "※ Instagram 아이디 기준 1인 1회 참여 가능합니다": {
+    "en": "※ One entry per person, based on Instagram username."
+  },
+  "FUNY PIN × 카드볼트 한가위 이벤트": {
+    "en": "FUNY PIN × CARDVAULT Chuseok Event"
+  },
+  "카드볼트 이벤트": {
+    "en": "CARDVAULT Event"
+  },
+  "한가위 카드볼트": {
+    "en": "Celebrate Chuseok at CARDVAULT"
+  },
+  "방문 인증 이벤트 🌕 🐰": {
+    "en": "Visit & Enter Event 🌕 🐰"
+  },
+  "카드볼트에 방문하고 FUNY PIN으로 인증하면": {
+    "en": "Visit CARDVAULT and verify your visit with FUNY PIN"
+  },
+  "한가위 이벤트에 응모할 수 있어요": {
+    "en": "to enter the Chuseok event."
+  },
+  "2026년 9월 22일(화) ~ 9월 27일(일) 오후 10시까지": {
+    "en": "Sep 22 (Tue) – Sep 27 (Sun), 2026, until 10 PM KST"
+  },
+  "2026년 9월 28일(월)": {
+    "en": "Sep 28 (Mon), 2026"
+  },
+  "- 포켓몬 퍼스트파트너 시리즈1 1BOX(1명)": {
+    "en": "- Pokémon First Partner Series 1: 1 box (1 winner)"
+  },
+  "- 유미의 세포들 콜렉션 카드 1BOX(1명)": {
+    "en": "- Yumi’s Cells Collection Cards: 1 box (1 winner)"
+  },
+  "- 캐치 티니핑 콜렉션 카드 1BOX(1명)": {
+    "en": "- Catch! Teenieping Collection Cards: 1 box (1 winner)"
+  },
+  "※ 본 이벤트 경품은 카드볼트 매장에서 직접 수령만 가능합니다": {
+    "en": "※ Prizes must be collected in person at CARDVAULT."
+  },
+  "경품 안내": {
+    "en": "Prize Details"
+  },
+  "카드볼트 매장 방문 및 방문 인증": {
+    "en": "Visit CARDVAULT & Verify Your Visit"
+  },
+  "매장에 비치된 이벤트 QR코드를 스캔해주세요": {
+    "en": "Scan the event QR code displayed in the shop."
+  },
+  "방문 인증하기": {
+    "en": "Verify Visit"
+  },
+  "깽퐌커플 & 카드볼트 계정을 모두 팔로우해주세요": {
+    "en": "Follow both FFUNNYGGANG and CARDVAULT."
+  },
+  "카드볼트 인스타그램 방문하기 ›": {
+    "en": "Visit CARDVAULT on Instagram ›"
+  },
+  "깽퐌커플 & 카드볼트 계정을 모두 팔로우했습니다": {
+    "en": "I follow both FFUNNYGGANG and CARDVAULT."
+  },
+  "이벤트 응모": {
+    "en": "Event Entry"
+  },
+  "인스타그램 아이디를 입력하고 이벤트에 응모하세요": {
+    "en": "Enter your Instagram username to join the event."
+  },
+  "※ 인스타그램 아이디 기준 1인 1회 참여 가능합니다": {
+    "en": "※ One entry per person, based on Instagram username."
+  },
+  "※ 당첨자 선정 시 방문 인증 및 두 계정의 팔로우 여부를 확인하며 조건 미충족 시 당첨이 취소될 수 있습니다": {
+    "en": "※ Visit verification and both Instagram follows will be checked. A prize may be revoked if the requirements are not met."
+  },
+  "응모가 완료됐어요!": {
+    "en": "Your entry is complete!"
+  },
+  "9월 28일(월) 당첨자 발표를 확인해주세요": {
+    "en": "Check the winners announcement on Sep 28 (Mon)."
+  },
+  "FUNY PIN X CARDVAULT 이벤트에 참여해주셔서 감사합니다 💜": {
+    "en": "Thank you for joining the FUNY PIN × CARDVAULT event 💜"
+  },
+  "이벤트 게시물에 응모 완료 댓글 남기러가기 >": {
+    "en": "Leave a comment on the event post >"
+  },
+  "FUNY PIN × CARDVAULT 이벤트 경품 안내": {
+    "en": "FUNY PIN × CARDVAULT Prize Details"
+  },
+  "카드볼트 방문 인증": {
+    "en": "Verify Your CARDVAULT Visit"
+  },
+  "매장에 비치된 FUNY PIN QR코드를 화면 안에 맞춰주세요": {
+    "en": "Place the shop’s FUNY PIN QR code inside the frame."
+  },
+  "QR 인증이 어려우신가요? 직원 인증 코드 사용": {
+    "en": "Having trouble scanning? Use a staff verification code"
+  },
+  "6자리 코드": {
+    "en": "6-digit code"
+  },
+  "인증": {
+    "en": "Verify"
+  },
+  "방문 인증 완료": {
+    "en": "Visit Verified"
+  },
+  "카메라를 열 수 없어요. 브라우저 카메라 권한을 확인해주세요.": {
+    "en": "Unable to open the camera. Check your browser’s camera permission."
+  },
+  "이벤트용 QR코드가 아니에요": {
+    "en": "This is not an event QR code."
+  },
+  "인증 코드를 다시 확인해주세요.": {
+    "en": "Please check the verification code."
+  },
+  "인스타그램 아이디를 정확히 입력해주세요.": {
+    "en": "Enter a valid Instagram username."
+  },
+  "해당 아이디의 응모이력이 없습니다": {
+    "en": "No entries found for this username."
+  },
+  "응모이력을 불러오지 못했어요. 잠시 후 다시 시도해주세요.": {
+    "en": "Unable to load your entry history. Please try again shortly."
+  },
+  "먼저 카드볼트 방문 인증을 완료해주세요.": {
+    "en": "Verify your CARDVAULT visit first."
+  },
+  "깽퐌커플과 카드볼트 두 계정 모두 팔로우 후 확인에 체크해주세요.": {
+    "en": "Follow both FFUNNYGGANG and CARDVAULT, then select the confirmation checkbox."
+  },
+  "이미 이 이벤트에 응모했어요.": {
+    "en": "You have already entered this event."
+  },
+  "현재 이벤트 응모 기간이 아닙니다.": {
+    "en": "This event is not currently accepting entries."
+  },
+  "이미 응모한 인스타그램 아이디입니다.": {
+    "en": "This Instagram username has already entered."
+  },
+  "응모 중...": {
+    "en": "Submitting entry..."
+  },
+  "추천 카드샵": {
+    "en": "Recommended Card Shops"
+  },
+  "카드샵 소식": {
+    "en": "Shop Updates"
+  },
+  "링크 모음": {
+    "en": "Useful Links"
+  },
+  "다가오는 TCG 일정": {
+    "en": "Upcoming TCG Events"
+  },
+  "등록된 일정이 없습니다.": {
+    "en": "No events listed yet."
+  },
+  "일정": {
+    "en": "Events"
+  },
+  "월": {
+    "en": "Mon"
+  },
+  "화": {
+    "en": "Tue"
+  },
+  "수": {
+    "en": "Wed"
+  },
+  "목": {
+    "en": "Thu"
+  },
+  "금": {
+    "en": "Fri"
+  },
+  "토": {
+    "en": "Sat"
+  },
+  "일": {
+    "en": "Sun"
+  },
+  "• 제출된 내용은 확인 후 FUNY PIN에 반영됩니다.": {
+    "en": "• Submitted information will be reviewed before being added to FUNY PIN."
+  },
+  "• 실제 매장 정보와 다르거나 확인이 어려운 경우 반영되지 않을 수 있습니다.": {
+    "en": "• Information that differs from the actual shop or cannot be verified may not be added."
+  },
+  "• 매장 관계자뿐 아니라 이용자도 자유롭게 제보할 수 있어요.": {
+    "en": "• Both shop representatives and users are welcome to submit updates."
+  }
+});
+
+  Object.assign(textMap,{"서비스 이용 중 오류, 계정, 카드샵 정보, FUNY TALK 관련 문의를 바로 접수해주세요.":{"en":"Contact us about service errors, your account, shop information, or FUNY TALK."},"확인 후 필요한 경우 입력한 이메일로 답변드립니다.":{"en":"We will review your inquiry and reply to the email provided if needed."},"문의 제목을 입력해주세요":{"en":"Enter an inquiry subject"},"발생 화면, 재현 방법 등을 함께 적어주시면 확인에 도움이 됩니다.":{"en":"Include the affected screen and steps to reproduce the issue."},"문의가 접수되었습니다.":{"en":"Your inquiry has been submitted."},"서비스 개선 의견 | FUNY PIN":{"en":"Service Feedback | FUNY PIN"},"만족도 조사":{"en":"Feedback Survey"},"더 나은 FUNY PIN을 만들 수 있도록":{"en":"Help us improve FUNY PIN."},"이용 경험과 의견을 들려주세요.":{"en":"Tell us about your experience and suggestions."},"서비스 이용 경험에 얼마나 만족하시나요?":{"en":"How satisfied are you with FUNY PIN?"},"아쉬워요":{"en":"Dissatisfied"},"만족해요":{"en":"Satisfied"},"불편한점을 알려주세요.":{"en":"Tell us what was inconvenient."},"개선할 부분이 있다면 알려주세요.":{"en":"What could we improve?"},"답변을 적어주세요.":{"en":"Enter your answer."},"제출하기":{"en":"Submit"},"제출 완료":{"en":"Submitted"},"제출 중...":{"en":"Submitting..."},"이미 의견을 보내주셨어요. 30일 후 다시 참여할 수 있어요.":{"en":"You have already submitted feedback. You can participate again after 30 days."},"서비스 만족도 조사가 접수되었습니다.":{"en":"Your service feedback has been submitted."},"제출하지 못했어요. 잠시 후 다시 시도해 주세요.":{"en":"Unable to submit. Please try again shortly."},"추석 연휴 카드샵 영업시간 안내":{"en":"Card Shop Hours During Chuseok"},"추석 연휴 기간에는 카드샵별 영업시간과 휴무 일정이 평소와 다를 수 있습니다.":{"en":"Shop hours and closing days may differ during the Chuseok holiday."},"FUNY PIN에 등록된 영업정보도 연휴 기간의 임시 운영시간까지 실시간으로 반영되지 않을 수 있으니, 방문 전에는 꼭 해당 카드샵의 공식 SNS나 매장에 직접 확인해주세요.":{"en":"Temporary holiday hours may not appear immediately on FUNY PIN. Check the shop’s official social channels or contact the shop before visiting."},"즐겁고 편안한 추석 연휴 보내시고, FUNY PIN도 앞으로 더 편리하고 좋은 서비스로 보답하겠습니다 💜":{"en":"Have a wonderful Chuseok holiday. We will keep working to make FUNY PIN more useful 💜"},"by 깽퐌커플":{"en":"by FFUNNYGGANG"},"FUNY PIN 서비스 안내":{"en":"About FUNY PIN"},"FUNY PIN은 TCG 카드샵 탐색 및 커뮤니티 서비스를 제공하고 있습니다.":{"en":"FUNY PIN helps you discover TCG card shops and connect with the collecting community."},"카드샵 데이터는 지속적으로 업데이트하고 있으며, 일부 정보는 실제 매장 정보와 다를 수 있습니다.":{"en":"We continuously update shop data. Some details may differ from current shop information."},"이용 중 발견한 오류나 잘못된 정보, 개선 의견이 있다면 편하게 제보해주세요 :)":{"en":"Please let us know about errors, incorrect information, or suggestions :)"},"FUNY PIN 서비스 오픈🎉":{"en":"FUNY PIN Is Live 🎉"},"포켓몬카드를 수집하면서 카드샵을 직접 다니다 보니 “카드샵 정보를 한곳에서 편하게 볼 수 있으면 좋겠다”는 생각으로 시작한 FUNY PIN!":{"en":"FUNY PIN began with an idea while collecting Pokémon cards and visiting shops: “What if all the shop information were in one convenient place?”"},"아직 부족한 부분도 많고 카드샵 데이터도 계속 업데이트 중이지만, 더 미루지 않고 그냥 오픈합니다 😂":{"en":"There is still plenty to improve, and we are updating shop data, but we decided to launch without waiting any longer 😂"},"🗺️ TCG 카드샵 지도":{"en":"🗺️ TCG Card Shop Map"},"🔍 카드샵 검색 & 필터":{"en":"🔍 Shop Search & Filters"},"📍 매장 상세정보":{"en":"📍 Shop Details"},"📝 TCG 소식 • 일정 • 방문 리뷰":{"en":"📝 TCG News • Events • Shop Reviews"},"여러분과 함께 하나씩 채워가는 TCG 서비스로 만들어보겠습니다 💜":{"en":"Let’s build this TCG service together, one step at a time 💜"}});
+  function translateDynamic(value){
+    const rules=[
+      [/^(\d+)건 · 이어서 응모하기$/,m=>m[1]+' pending · Continue entry'],
+      [/^이벤트 기간 중 1일 (\d+)회 응모 가능\(중복 응모 가능\)$/,m=>m[1]+' entries per day during the event. Repeat entries are allowed.'],
+      [/^이벤트 기간 중 (\d+)회 응모 가능\(중복 응모 가능\)$/,m=>m[1]+' entries during the event. Repeat entries are allowed.'],
+      [/^응모 완료! · 오늘 (\d+\/\d+)회 · 누적 (\d+)회$/,m=>'Entry complete! · Today '+m[1]+' · Total '+m[2]],
+      [/^응모 완료! · 누적 (\d+(?:\/\d+)?)회$/,m=>'Entry complete! · Total '+m[1]],
+      [/^📍 (.+)에서 포획했어요$/,m=>'📍 Caught at '+m[1]],
+      [/^현재 위치에서 (.+)까지 약 (\d+)m예요\. 포획 가능 거리는 (\d+)m 이내예요\.$/,m=>'You are about '+m[2]+' m from '+m[1]+'. Catch range: '+m[3]+' m.'],
+      [/^이 이벤트에서는 하루 (\d+)회까지 포획할 수 있어요\.$/,m=>'You can catch up to '+m[1]+' per day in this event.'],
+      [/^연속 등록 방지를 위해 (\d+)분 후 다시 요청해주세요\.$/,m=>'Please wait '+m[1]+' minutes before submitting another request.'],
+      [/^도배 방지를 위해 하루 최대 (\d+)건까지 요청할 수 있어요\.$/,m=>'You can submit up to '+m[1]+' requests per day.'],
+      [/^이미지 업로드 중\.\.\. (\d+\/\d+)$/,m=>'Uploading image... '+m[1]],
+      [/^요청을 보내지 못했어요\. 잠시 후 다시 시도해주세요\.\n([\s\S]*)$/,m=>'Unable to submit your request. Please try again shortly.\n'+m[1]],
+      [/^(.+)에서 도보 (\d+)분$/,m=>m[2]+' min walk from '+m[1]],
+      [/^· 총 (\d+)회 응모 완료 🎁$/,m=>'· '+m[1]+' entries complete 🎁'],
+      [/^최근 응모 (.+)$/,m=>'Latest entry: '+m[1]],
+      [/^· 더카드룸 이벤트 응모이력이 없습니다\.$/,()=> '· No entries found for THE CARD ROOM event.'],
+      [/^· 코티페 이벤트 응모이력이 없습니다\.$/,()=> '· No entries found for KOREA TCG FAIR.'],
+      [/^· 응모 완료 🎁$/,()=> '· Entry complete 🎁'],
+      [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
+      [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
+    ];
+    for(const [pattern,format] of rules){const match=value.match(pattern);if(match)return format(match)}
+    return value;
+  }
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;
     const raw=String(value??''),trimmed=raw.trim(),direct=textMap[raw]||textMap[trimmed];
-    if(!direct||!direct[lang])return value;
-    if(raw===trimmed)return direct[lang];
+    const translated=direct?.[lang]||translateDynamic(trimmed);
+    if(translated===trimmed)return value;
+    if(raw===trimmed)return translated;
     const lead=raw.slice(0,raw.indexOf(trimmed)),tail=raw.slice(raw.indexOf(trimmed)+trimmed.length);
-    return lead+direct[lang]+tail;
+    return lead+translated+tail;
   }
   function translateTextNode(node){
     const current=node.nodeValue;

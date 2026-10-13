@@ -40,8 +40,10 @@
 <div class="submit-wrap"><button class="submit" id="partnerSubmit" type="submit">문의 보내기</button><p id="partnerStatus" class="help" style="text-align:center"></p><p class="privacy">입력하신 정보는 광고·제휴 문의 확인 및 회신 목적으로 사용됩니다.</p></div>
 </form>
 </main>
-<script>
-function finishSubmission(message){alert(message);try{if(window.ReactNativeWebView&&window.__FUNY_APP_CONTEXT){window.ReactNativeWebView.postMessage(JSON.stringify({type:'FORM_COMPLETE_BACK'}));return}}catch(_){}if(history.length>1)history.back();else location.replace('./')}
+<script>const pageText=value=>window.FUNY_I18N?.t(value)||value;
+const pageAlert=value=>alert(pageText(value));
+
+function finishSubmission(message){pageAlert(message);try{if(window.ReactNativeWebView&&window.__FUNY_APP_CONTEXT){window.ReactNativeWebView.postMessage(JSON.stringify({type:'FORM_COMPLETE_BACK'}));return}}catch(_){}if(history.length>1)history.back();else location.replace('./')}
 const SB='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const token=()=>String(window.__FUNY_ACCESS_TOKEN||'');
 const uid=()=>{try{const raw=token().split('.')[1];if(!raw)return null;const n=raw.replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(atob(n.padEnd(Math.ceil(n.length/4)*4,'='))).sub||null}catch(_){return null}};
@@ -81,6 +83,6 @@ form.addEventListener('submit',async e=>{
   }
 });
 </script>
-<script src="funy-i18n.js?v=20261013-web-en-v3"></script>
+<script src="funy-i18n.js?v=20261013-web-en-v6"></script>
 </body>
 </html>

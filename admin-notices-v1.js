@@ -10,7 +10,7 @@ const dt=v=>v?new Date(v).toLocaleString('ko-KR',{year:'numeric',month:'2-digit'
 const localValue=v=>{if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
 
 async function getNotices(){
- return api('/rest/v1/notices?select=id,title,body,status,is_pinned,published_at,created_at,updated_at&order=is_pinned.desc,published_at.desc.nullslast,created_at.desc');
+ return api('/rest/v1/notices?select=id,title,title_en,body,body_en,status,is_pinned,published_at,created_at,updated_at&order=is_pinned.desc,published_at.desc.nullslast,created_at.desc');
 }
 async function getHomeNoticeItems(){
  const items=await api('/rest/v1/home_notice_items?select=slot,notice_id&order=slot.asc');
@@ -93,8 +93,10 @@ function openNoticeEditor(item){
  wrap.innerHTML='<div class="editor-panel" style="max-width:640px">'+
   '<div class="editor-head"><div><b>'+(isNew?'공지사항 등록':'공지사항 수정')+'</b><br><span>현재 프론트 디자인은 변경하지 않고 내용만 관리합니다.</span></div><button class="editor-close" type="button" aria-label="닫기">×</button></div>'+
   '<div class="editor-body"><div class="editor-section"><div class="form-grid">'+
-   '<div class="field wide"><label>제목 *</label><input id="noticeTitle" class="input" maxlength="150" value="'+h(item?.title||'')+'" placeholder="공지 제목을 입력해주세요"></div>'+
-   '<div class="field wide"><label>본문 *</label><textarea id="noticeBody" class="textarea" style="min-height:260px" placeholder="문단은 빈 줄로 구분하고, 한 문단 안의 줄바꿈은 그대로 표시됩니다.">'+h(item?.body||'')+'</textarea></div>'+
+   '<div class="field wide"><label>제목 · 국문 *</label><input id="noticeTitle" class="input" maxlength="150" value="'+h(item?.title||'')+'" placeholder="공지 제목을 입력해주세요"></div>'+
+   '<div class="field wide"><label>제목 · 영문</label><input id="noticeTitleEn" class="input" maxlength="150" value="'+h(item?.title_en||'')+'" placeholder="공란이면 영문모드에서도 국문 제목 표시"></div>'+
+   '<div class="field wide"><label>본문 · 국문 *</label><textarea id="noticeBody" class="textarea" style="min-height:220px" placeholder="문단은 빈 줄로 구분하고, 한 문단 안의 줄바꿈은 그대로 표시됩니다.">'+h(item?.body||'')+'</textarea></div>'+
+   '<div class="field wide"><label>본문 · 영문</label><textarea id="noticeBodyEn" class="textarea" style="min-height:220px" placeholder="공란이면 영문모드에서도 국문 본문 표시">'+h(item?.body_en||'')+'</textarea></div>'+
    '<div class="field"><label>상태</label><select id="noticeStatus" class="select"><option value="draft"'+(status==='draft'?' selected':'')+'>임시저장</option><option value="published"'+(status==='published'?' selected':'')+'>공개</option><option value="hidden"'+(status==='hidden'?' selected':'')+'>숨김</option></select></div>'+
    '<div class="field"><label>상단 고정</label><select id="noticePinned" class="select"><option value="false"'+(!item?.is_pinned?' selected':'')+'>OFF</option><option value="true"'+(item?.is_pinned?' selected':'')+'>ON</option></select></div>'+
    '<div class="field wide"><label>발행 일시</label><input id="noticePublishedAt" class="input" type="datetime-local" value="'+h(publishedAt)+'"><div class="editor-msg">공개 상태에서 발행 일시가 비어 있으면 저장 시 현재 시각으로 자동 설정됩니다.</div></div>'+
@@ -109,12 +111,14 @@ function openNoticeEditor(item){
  document.getElementById('noticeSave').onclick=async()=>{
   const title=document.getElementById('noticeTitle').value.trim();
   const body=document.getElementById('noticeBody').value.trim();
+  const titleEn=document.getElementById('noticeTitleEn').value.trim();
+  const bodyEn=document.getElementById('noticeBodyEn').value.trim();
   const nextStatus=document.getElementById('noticeStatus').value;
   const pinned=document.getElementById('noticePinned').value==='true';
   let at=document.getElementById('noticePublishedAt').value;
   if(!title||!body){setEditorMessage('제목과 본문을 모두 입력해주세요.',true);return}
   if(nextStatus==='published'&&!at)at=localValue(new Date().toISOString());
-  const payload={title,body,status:nextStatus,is_pinned:pinned,published_at:at?new Date(at).toISOString():null,updated_at:new Date().toISOString()};
+  const payload={title,title_en:titleEn||null,body,body_en:bodyEn||null,status:nextStatus,is_pinned:pinned,published_at:at?new Date(at).toISOString():null,updated_at:new Date().toISOString()};
   const btn=document.getElementById('noticeSave');btn.disabled=true;btn.textContent='저장 중...';
   try{
    if(isNew)await api('/rest/v1/notices',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({...payload,created_at:new Date().toISOString()})});

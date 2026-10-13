@@ -972,6 +972,13 @@
       [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
       [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
     ];
+    /* WEB_I18N_V9_SHOP_RULES */
+    rules.push(
+      [/^운영 중 · 24시간$/,()=> 'Open · 24 Hours'],
+      [/^운영 중 · (\d{1,2}:\d{2})[~–](\d{1,2}:\d{2})$/,m=>'Open · '+m[1]+'–'+m[2]],
+      [/^영업마감 · (\d{1,2}:\d{2})[~–](\d{1,2}:\d{2})$/,m=>'Closed · '+m[1]+'–'+m[2]]
+    );
+
     /* WEB_I18N_V7_COIN_RULES */
     rules.push(
       [/^앞면!$/,()=> 'Heads!'],
@@ -1236,6 +1243,38 @@
     '뒷면 보기':{en:'Show Tails'},
     '앞면으로 전환했어요.':{en:'Showing heads.'},
     '뒷면으로 전환했어요.':{en:'Showing tails.'}
+  });
+
+
+  /* WEB_I18N_V9_SHOP_DETAIL */
+  Object.assign(textMap,{
+    '공지':{en:'Notice'},
+    '운영 중':{en:'Open'},
+    '영업중':{en:'Open'},
+    '영업마감':{en:'Closed'},
+    '오늘 휴무':{en:'Closed Today'},
+    '한눈에 보는 매장 분석':{en:'Shop Analysis at a Glance'},
+    '상품구성':{en:'Products'},
+    '가격':{en:'Price'},
+    '매장규모':{en:'Store Size'},
+    '매장분위기':{en:'Atmosphere'},
+    '접근성':{en:'Accessibility'},
+    '상품 구성 상세':{en:'Product Mix'},
+    '취급 TCG':{en:'TCG Titles'},
+    '포켓몬':{en:'Pokémon'},
+    '원피스':{en:'One Piece'},
+    '드래곤볼':{en:'Dragon Ball'},
+    '기본 정보':{en:'Basic Info'},
+    '정기휴무':{en:'Regular Closing'},
+    '주차':{en:'Parking'},
+    '네이버지도':{en:'Naver Map'},
+    '공식 홈페이지':{en:'Official Website'},
+    '전화하기':{en:'Call'},
+    '카드샵에서 직접 전하는 최신 소식이에요.':{en:'Latest updates shared directly by the card shop.'},
+    '전체보기':{en:'View All'},
+    '싱글카드':{en:'Singles'},
+    '등급카드':{en:'Graded Cards'},
+    '박스제품':{en:'Boxes'}
   });
 
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();

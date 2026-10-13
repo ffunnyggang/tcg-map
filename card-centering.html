@@ -60,4 +60,4 @@ file.addEventListener('change',()=>{const f=file.files&&file.files[0];if(!f)retu
 document.getElementById('fit').onclick=defaults;document.getElementById('zoomIn').onclick=()=>{scale=Math.min(scale*1.12,baseScale*3);renderImage()};document.getElementById('zoomOut').onclick=()=>{scale=Math.max(scale/1.12,baseScale*.7);renderImage()};document.getElementById('reset').onclick=()=>{file.value='';photo.removeAttribute('src');workspace.classList.remove('on');results.classList.remove('on');empty.style.display='block';window.scrollTo({top:0,behavior:'smooth'})};
 window.addEventListener('resize',()=>{if(photo.src){fitImage();defaults()}})})();
 </script>
-</body></html>
+<script src="funy-i18n.js?v=20261013-tools-i18n"></script></body></html>

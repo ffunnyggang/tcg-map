@@ -21,22 +21,22 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 
 .game-card{margin:0 -16px;padding:20px 16px 14px;background:linear-gradient(180deg,#ffffff 0%,#fbf9fd 64%,#f4f1f7 100%);overflow:visible;position:relative;min-height:510px}.game-card:before{content:"";position:absolute;left:50%;bottom:78px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 35%,transparent 72%);pointer-events:none}
 .result-area{min-height:60px;text-align:center;position:relative;z-index:4;padding-top:4px}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
-.coin-stage{display:block;width:min(100%,408px);height:360px;margin:4px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible;transform-origin:50% 84%;will-change:transform}.coin-stage:disabled{cursor:default}.coin-stage.flipping{animation:cameraPullback 1.9s cubic-bezier(.18,.68,.22,1)}
-.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:46px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{animation:coinFlight 1.9s cubic-bezier(.18,.68,.22,1)}
-.coin{width:176px;height:176px;position:relative;transform-style:preserve-3d;transform:rotateX(50deg) rotateZ(-10deg);transition:transform 1.9s cubic-bezier(.12,.74,.18,1);will-change:transform}
+.coin-stage{display:block;width:min(100%,408px);height:360px;margin:4px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible;transform-origin:50% 84%;will-change:transform}.coin-stage:disabled{cursor:default}.coin-stage.flipping{animation:cameraPullback var(--flip-duration,3s) cubic-bezier(.18,.68,.22,1)}
+.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:46px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{animation:coinFlight var(--flip-duration,3s) cubic-bezier(.18,.68,.22,1)}
+.coin{width:176px;height:176px;position:relative;transform-style:preserve-3d;transform:rotateX(50deg) rotateZ(-10deg);transition:transform var(--flip-duration,3s) cubic-bezier(.12,.74,.18,1);will-change:transform}
 .coin-rim,.coin-rim i,.coin-face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}.coin-rim i{display:block;transform:translateZ(var(--z));background:linear-gradient(90deg,#5c5960 0%,#c9c6cb 10%,#77727b 30%,#f2f1f3 52%,#7c7780 74%,#d2cfd4 91%,#5c5760 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
 .coin-face{inset:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid rgba(255,255,255,.72);overflow:hidden}
 .coin-front{transform:translateZ(9px);background:radial-gradient(circle at 35% 27%,#fff 0%,#f7f6f8 23%,#d8d5da 56%,#aaa6ad 82%,#817c85 100%);color:#29262c;box-shadow:inset 0 0 0 3px rgba(57,53,60,.12),inset 0 -18px 24px rgba(49,44,53,.13)}
 .coin-back{transform:rotateX(180deg) translateZ(9px);background:radial-gradient(circle at 34% 25%,#87838a 0%,#605c63 35%,#3f3b42 68%,#29262b 100%);color:#fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),inset 0 -18px 24px rgba(0,0,0,.22)}
-.coin-face:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 31%,transparent 48%,rgba(255,255,255,.18) 72%,transparent 100%);mix-blend-mode:soft-light;pointer-events:none}
+.coin-face:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 31%,transparent 48%,rgba(255,255,255,.18) 72%,transparent 100%);mix-blend-mode:soft-light;pointer-events:none;z-index:4}.coin-skin-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:2}.coin-face.has-skin .coin-skin-img{display:block}.coin-face.has-skin .coin-ring,.coin-face.has-skin .coin-brand,.coin-face.has-skin .coin-mark,.coin-face.has-skin .coin-side-name{display:none}.coin-face.has-skin:before{opacity:.22}
 .coin-ring{position:absolute;inset:13px;border-radius:50%;border:2px solid rgba(63,57,67,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);pointer-events:none}.coin-back .coin-ring{border-color:rgba(255,255,255,.25)}
 .coin-brand{font-size:9px;font-weight:950;letter-spacing:.18em;opacity:.62}.coin-mark{margin-top:2px;font-size:44px;line-height:1;font-weight:950;letter-spacing:-.09em;text-shadow:0 2px 3px rgba(0,0,0,.08)}.coin-side-name{margin-top:6px;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.62}
-.coin-shadow{position:absolute;left:50%;bottom:34px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{animation:shadowFlight 1.9s ease-in-out}
-.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.coin-shadow{position:absolute;left:50%;bottom:34px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{animation:shadowFlight var(--flip-duration,3s) ease-in-out}
+.tool-controls{position:relative;z-index:6;display:flex;justify-content:center;gap:7px;margin:-1px 0 10px}.tool-control{height:34px;min-width:58px;padding:0 12px;border:1px solid #e4dfea;border-radius:11px;background:#fff;color:#746d79;font-size:10px;font-weight:850;cursor:pointer;box-shadow:0 3px 10px rgba(56,43,70,.035)}.tool-control:active{transform:scale(.97)}.tool-control.active{background:#f2eefb;border-color:#dacff2;color:#684bbb}.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
 .history-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.history-head{display:flex;align-items:center;gap:8px}.history-title{font-size:12px;font-weight:900}.history-count{font-size:9px;color:#9a929e}.reset-history{margin-left:auto;border:0;background:#f4f1f6;color:#817a86;border-radius:9px;height:29px;padding:0 10px;font-size:9px;font-weight:850;cursor:pointer}.reset-history:disabled{opacity:.45}.history-list{display:flex;gap:7px;overflow-x:auto;padding:12px 1px 2px;scrollbar-width:none}.history-list::-webkit-scrollbar{display:none}.history-empty{width:100%;padding:12px 4px 7px;color:#a098a5;font-size:10.5px;text-align:center}.history-chip{min-width:48px;height:48px;padding:0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;border:1px solid #e9e3ef;background:#faf8fc}.history-chip.front{background:#f2eefb;border-color:#e0d6f4;color:#684bbb}.history-chip.back{background:#f2f0f3;border-color:#e1dde4;color:#433d47}.history-chip b{font-size:11px;line-height:1.1}.history-chip span{margin-top:3px;font-size:8px;opacity:.68;font-weight:750}
 .tip{margin:13px 2px 0;color:#9a929e;font-size:10px;line-height:1.55;text-align:center}.tip b{color:#766e7b}
-.toast{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));z-index:100;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(38,33,43,.92);color:#fff;font-size:11px;font-weight:750;transform:translate(-50%,18px);opacity:0;pointer-events:none;transition:.22s ease}.toast.show{transform:translate(-50%,0);opacity:1}
+.skin-modal{position:fixed;inset:0;z-index:220;display:none;align-items:flex-end;justify-content:center;background:rgba(24,20,28,.34);padding:0 12px env(safe-area-inset-bottom)}.skin-modal.open{display:flex}.skin-sheet{width:min(100%,420px);padding:10px 16px 18px;border-radius:22px 22px 0 0;background:#fff;box-shadow:0 -8px 30px rgba(32,27,38,.16)}.skin-handle{width:38px;height:4px;margin:0 auto 10px;border-radius:99px;background:#d8d2dc}.skin-head{display:flex;align-items:center;justify-content:space-between}.skin-title{font-size:13px;font-weight:900}.skin-close{width:34px;height:34px;border:0;background:#f4f1f6;border-radius:10px;color:#706976;font-size:20px;cursor:pointer}.skin-desc{margin:4px 0 12px;color:#98909c;font-size:9.5px;line-height:1.45}.skin-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #f0ecf3}.skin-preview{width:46px;height:46px;border-radius:50%;overflow:hidden;background:#f3f0f5;border:1px solid #e5dfe9;display:grid;place-items:center;color:#908895;font-size:10px;font-weight:900}.skin-preview img{width:100%;height:100%;object-fit:cover;display:none}.skin-preview.has-image img{display:block}.skin-preview.has-image span{display:none}.skin-copy b{display:block;font-size:11px}.skin-copy span{display:block;margin-top:3px;color:#9b939f;font-size:9px}.skin-actions{display:flex;gap:5px}.skin-action{height:32px;border:0;border-radius:9px;background:#f2eefb;color:#684bbb;padding:0 9px;font-size:9px;font-weight:850;cursor:pointer}.skin-action.reset{background:#f4f2f5;color:#857e8a}.skin-file{display:none}.toast{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));z-index:100;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(38,33,43,.92);color:#fff;font-size:11px;font-weight:750;transform:translate(-50%,18px);opacity:0;pointer-events:none;transition:.22s ease}.toast.show{transform:translate(-50%,0);opacity:1}
 @keyframes cameraPullback{0%{transform:perspective(1100px) rotateX(0deg) scale(1)}34%{transform:perspective(1350px) rotateX(6deg) scale(.84)}58%{transform:perspective(1320px) rotateX(4deg) scale(.87)}82%{transform:perspective(1180px) rotateX(1.5deg) scale(.96)}100%{transform:perspective(1100px) rotateX(0deg) scale(1)}}
 @keyframes coinFlight{0%{transform:translateY(0) scale(.98)}8%{transform:translateY(-18px) scale(1)}38%{transform:translateY(-210px) scale(1.09)}58%{transform:translateY(-152px) scale(1.06)}78%{transform:translateY(-48px) scale(1.015)}88%{transform:translateY(5px) scale(.99)}94%{transform:translateY(-13px) scale(1.008)}100%{transform:translateY(0) scale(1)}}
 @keyframes shadowFlight{0%,100%{opacity:.82;transform:translateX(-50%) scale(1)}38%{opacity:.12;transform:translateX(-50%) scale(.34)}58%{opacity:.22;transform:translateX(-50%) scale(.46)}78%{opacity:.52;transform:translateX(-50%) scale(.72)}88%{opacity:.92;transform:translateX(-50%) scale(1.08)}94%{opacity:.6;transform:translateX(-50%) scale(.86)}}
@@ -64,12 +64,16 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <span class="coin-rim" aria-hidden="true">
 <i style="--z:-8px"></i><i style="--z:-7px"></i><i style="--z:-6px"></i><i style="--z:-5px"></i><i style="--z:-4px"></i><i style="--z:-3px"></i><i style="--z:-2px"></i><i style="--z:-1px"></i><i style="--z:0px"></i><i style="--z:1px"></i><i style="--z:2px"></i><i style="--z:3px"></i><i style="--z:4px"></i><i style="--z:5px"></i><i style="--z:6px"></i><i style="--z:7px"></i><i style="--z:8px"></i>
 </span>
-<span class="coin-face coin-front"><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">앞</b><span class="coin-side-name">HEADS</span></span>
-<span class="coin-face coin-back"><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">뒤</b><span class="coin-side-name">TAILS</span></span>
+<span class="coin-face coin-front" id="coinFront"><img class="coin-skin-img" id="frontSkinImg" alt=""><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">앞</b><span class="coin-side-name">HEADS</span></span>
+<span class="coin-face coin-back" id="coinBack"><img class="coin-skin-img" id="backSkinImg" alt=""><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">뒤</b><span class="coin-side-name">TAILS</span></span>
 </span>
 <span class="coin-shadow"></span>
 </span>
 </button>
+<div class="tool-controls" aria-label="코인 설정">
+  <button class="tool-control" id="durationToggle" type="button" aria-label="회전 시간 변경">3초</button>
+  <button class="tool-control" id="skinButton" type="button">스킨</button>
+</div>
 <button class="flip-button" id="flipButton" type="button">코인 던지기</button>
 <p class="fair-note"><span class="fair-dot"></span>브라우저 난수로 결정 · 서버 전송 없음</p>
 </section>
@@ -85,16 +89,37 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <p class="tip"><b>TIP</b> · 코인 또는 아래 버튼을 눌러 다시 던질 수 있어요.</p>
 </main>
 </div>
+<div class="skin-modal" id="skinModal" aria-hidden="true">
+  <div class="skin-sheet" role="dialog" aria-modal="true" aria-labelledby="skinTitle">
+    <div class="skin-handle"></div>
+    <div class="skin-head"><strong class="skin-title" id="skinTitle">코인 스킨</strong><button class="skin-close" id="skinClose" type="button" aria-label="닫기">×</button></div>
+    <p class="skin-desc">사진첩 이미지로 앞면과 뒷면을 각각 설정할 수 있어요.</p>
+    <div class="skin-row">
+      <div class="skin-preview" id="frontPreview"><img id="frontPreviewImg" alt="앞면 스킨 미리보기"><span>앞</span></div>
+      <div class="skin-copy"><b>앞면</b><span>원형 영역에 맞춰 표시됩니다.</span></div>
+      <div class="skin-actions"><button class="skin-action" id="frontPick" type="button">사진 선택</button><button class="skin-action reset" id="frontReset" type="button">초기화</button></div>
+    </div>
+    <div class="skin-row">
+      <div class="skin-preview" id="backPreview"><img id="backPreviewImg" alt="뒷면 스킨 미리보기"><span>뒤</span></div>
+      <div class="skin-copy"><b>뒷면</b><span>원형 영역에 맞춰 표시됩니다.</span></div>
+      <div class="skin-actions"><button class="skin-action" id="backPick" type="button">사진 선택</button><button class="skin-action reset" id="backReset" type="button">초기화</button></div>
+    </div>
+    <input class="skin-file" id="frontFile" type="file" accept="image/*">
+    <input class="skin-file" id="backFile" type="file" accept="image/*">
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (()=>{
   const STORAGE_KEY='funypin-coin-flip-v3';
+  const DURATION_KEY='funypin-coin-duration';
+  const SKIN_DB='funypin-coin-skins-v1';
   const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const LABELS=['앞면','뒷면'];
   const $=id=>document.getElementById(id);
   const els={coin:$('coin'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),dailyTotal:$('dailyTotal'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
-  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,activeDate=kstDate();
+  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,activeDate=kstDate(),flipSeconds=loadDuration(),skinUrls={front:null,back:null};
 
   function kstDate(){
     try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
@@ -111,6 +136,33 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function ensureToday(){
     try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!raw||raw.date!==kstDate()){history=[];save();renderHistory()}}catch(_){}
   }
+  function loadDuration(){const v=Number(localStorage.getItem(DURATION_KEY)||3);return [3,5,7].includes(v)?v:3}
+  function applyDuration(){
+    const value=flipSeconds+'s';document.documentElement.style.setProperty('--flip-duration',value);
+    const b=$('durationToggle');if(b)b.textContent=flipSeconds+'초';
+  }
+  function cycleDuration(){
+    if(busy)return;flipSeconds=flipSeconds===3?5:flipSeconds===5?7:3;
+    try{localStorage.setItem(DURATION_KEY,String(flipSeconds))}catch(_){}
+    applyDuration();showToast('회전 시간을 '+flipSeconds+'초로 설정했어요.');track('coin_flip_duration_change',{seconds:flipSeconds});
+  }
+  function openSkinDb(){
+    return new Promise((resolve,reject)=>{try{const req=indexedDB.open(SKIN_DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('skins'))db.createObjectStore('skins')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}catch(e){reject(e)}})
+  }
+  async function skinDbGet(side){try{const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readonly'),req=tx.objectStore('skins').get(side);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close()})}catch(_){return null}}
+  async function skinDbSet(side,blob){const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').put(blob,side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}
+  async function skinDbDelete(side){try{const db=await openSkinDb();await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').delete(side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}catch(_){}}
+  function revokeSkinUrl(side){try{if(skinUrls[side])URL.revokeObjectURL(skinUrls[side])}catch(_){}skinUrls[side]=null}
+  function applySkinBlob(side,blob){
+    revokeSkinUrl(side);const face=$(side==='front'?'coinFront':'coinBack'),img=$(side+'SkinImg'),preview=$(side+'Preview'),previewImg=$(side+'PreviewImg');
+    if(!blob){face?.classList.remove('has-skin');if(img)img.removeAttribute('src');preview?.classList.remove('has-image');if(previewImg)previewImg.removeAttribute('src');return}
+    const url=URL.createObjectURL(blob);skinUrls[side]=url;face?.classList.add('has-skin');if(img)img.src=url;preview?.classList.add('has-image');if(previewImg)previewImg.src=url;
+  }
+  async function loadSkins(){for(const side of ['front','back'])applySkinBlob(side,await skinDbGet(side))}
+  async function saveSkin(side,file){if(!file||!file.type.startsWith('image/'))return;try{await skinDbSet(side,file);applySkinBlob(side,file);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 저장했어요.');track('coin_flip_skin_change',{side,action:'set'})}catch(_){showToast('이미지를 저장하지 못했어요.')}}
+  async function resetSkin(side){await skinDbDelete(side);applySkinBlob(side,null);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 초기화했어요.');track('coin_flip_skin_change',{side,action:'reset'})}
+  function setSkinModal(open){const m=$('skinModal');m.classList.toggle('open',open);m.setAttribute('aria-hidden',String(!open));}
+
   function secureRandom(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]>>>0}catch(_){return Math.floor(Math.random()*4294967296)>>>0}}
   function setBusy(v){busy=v;els.stage.disabled=v;els.flip.disabled=v;els.flip.textContent=v?'코인 플립 중...':'코인 던지기'}
   function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
@@ -149,8 +201,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function playLaunch(){
     brightPing(0,.092,.985);
   }
-  function playSpin(){
-    [0.36,0.72,1.08].forEach((d,i)=>softTick(d,.008-(i*.0015)));
+  function playSpin(durationMs){
+    const seconds=Math.max(1,durationMs/1000),count=Math.min(7,Math.max(3,Math.round(seconds)));
+    for(let i=1;i<=count;i++){const d=(seconds*.68)*(i/(count+1));softTick(d,.007)}
   }
   function playLand(){
     makeNoise(.032,0,.032,700,7200);
@@ -208,20 +261,26 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     currentAngle+=spins*360+delta;
     setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent='잠시만 기다려주세요.';
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
-    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?320:1900;
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?320:flipSeconds*1000;
     els.coin.style.transitionDuration=duration+'ms';
     const tilt=(secureRandom()%9)-4;
-    playLaunch();playSpin();requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(${-10+tilt}deg)`});
+    playLaunch();playSpin(duration);requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(${-10+tilt}deg)`});
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start');setTimeout(()=>finish(outcome,token),duration+80);
   }
   function reset(){
     if(busy||!history.length)return;history=[];save();align(0);renderResult();renderHistory();showToast('내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
   }
   $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
-  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){tone(660,.06,.045,'sine');showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){brightPing(0,.045,1);showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  $('durationToggle').addEventListener('click',cycleDuration);
+  $('skinButton').addEventListener('click',()=>setSkinModal(true));$('skinClose').addEventListener('click',()=>setSkinModal(false));$('skinModal').addEventListener('click',e=>{if(e.target===$('skinModal'))setSkinModal(false)});
+  $('frontPick').addEventListener('click',()=>$('frontFile').click());$('backPick').addEventListener('click',()=>$('backFile').click());
+  $('frontFile').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)saveSkin('front',file);e.target.value=''});
+  $('backFile').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)saveSkin('back',file);e.target.value=''});
+  $('frontReset').addEventListener('click',()=>resetSkin('front'));$('backReset').addEventListener('click',()=>resetSkin('back'));
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);els.stage.classList.remove('flipping');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats()}});
-  syncSoundButton();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');
+  syncSoundButton();applyDuration();loadSkins();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{revokeSkinUrl('front');revokeSkinUrl('back')});
 })();
 </script>
 <script src="funy-i18n.js?v=20261013-tools-i18n"></script></body>

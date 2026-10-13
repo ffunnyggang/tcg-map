@@ -42,3 +42,9 @@
 
 /* PNG-only nav icon guard: remove every legacy pseudo/mask icon layer */
 .portal-bottom-nav a:nth-child(1):before,.portal-bottom-nav a:nth-child(2):before,.portal-bottom-nav a:nth-child(3):before,.portal-bottom-nav a:nth-child(4):before,.shops-bottom-nav a:nth-child(1):before,.shops-bottom-nav a:nth-child(2):before,.shops-bottom-nav a:nth-child(3):before,.shops-bottom-nav a:nth-child(4):before{display:none!important;content:none!important;background:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+
+/* Equal 20px visible artwork within the existing 24px icon slot; source PNGs remain unchanged. */
+.portal-bottom-nav a:nth-child(1) .nav-icon[data-nav-icon="home"],.shops-bottom-nav a:nth-child(1) .nav-icon[data-nav-icon="home"]{transform:translate(0.0000px,0.8333px) scale(1.367521)!important}
+.portal-bottom-nav a:nth-child(2) .nav-icon[data-nav-icon="map"],.shops-bottom-nav a:nth-child(2) .nav-icon[data-nav-icon="map"]{transform:translate(0.0000px,0.0000px) scale(1.205273)!important}
+.portal-bottom-nav a:nth-child(3) .nav-icon[data-nav-icon="pick"],.shops-bottom-nav a:nth-child(3) .nav-icon[data-nav-icon="pick"]{transform:translate(0.0000px,0.9554px) scale(1.358811)!important}
+.portal-bottom-nav a:nth-child(4) .nav-icon[data-nav-icon="talk"],.shops-bottom-nav a:nth-child(4) .nav-icon[data-nav-icon="talk"]{transform:translate(-0.3311px,0.3311px) scale(1.412804)!important}

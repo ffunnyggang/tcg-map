@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><script src="funy-analytics-core.js?v=20261013-analytics-v2" data-ga-init="1" data-route-tracking="1"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>코인플립 | FUNY PIN</title>
+<meta name="description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 공정하게 결정하는 무료 TCG 도구입니다.">
+<link rel="canonical" href="https://funypin.kr/coin-flip.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{--purple:#8062d8;--purple-dark:#6749bd;--purple-soft:#f2eefb;--ink:#28232e;--muted:#857e8a;--line:#ebe6ef;--bg:#f5f3f7;--danger:#b42318}
+*{box-sizing:border-box}html{background:var(--bg)}html,body{margin:0;min-height:100%;color:var(--ink);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button{font:inherit}button:focus-visible{outline:3px solid rgba(128,98,216,.28);outline-offset:3px}
+.shell{width:min(100%,440px);min-height:100dvh;margin:0 auto;background:#fff;overflow:hidden;position:relative;padding-bottom:max(34px,env(safe-area-inset-bottom))}
+.shell:before{content:"";position:absolute;left:-95px;top:82px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(128,98,216,.12),rgba(128,98,216,0) 68%);pointer-events:none}.shell:after{content:"";position:absolute;right:-130px;top:315px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(168,143,235,.13),rgba(168,143,235,0) 69%);pointer-events:none}
+header{height:58px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(235,230,239,.82)}
+.back{width:38px;height:38px;border:0;background:transparent;font-size:28px;line-height:1;color:#3e3943;padding:0;cursor:pointer;text-align:left}.brand{margin-left:auto;font-weight:900;font-size:15px;letter-spacing:-.025em}.header-spacer{width:38px;margin-left:auto}
+main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:38px;margin-left:auto;border:0;border-radius:11px;background:#f5f2f8;color:#554d5b;display:grid;place-items:center;font-size:17px;cursor:pointer}.sound-toggle.off{opacity:.55}.sound-toggle:active{transform:scale(.96)}
+
+.game-card{margin:0 -16px;padding:20px 16px 14px;background:linear-gradient(180deg,#ffffff 0%,#fbf9fd 64%,#f4f1f7 100%);overflow:visible;position:relative;min-height:510px}.game-card:before{content:"";position:absolute;left:50%;bottom:78px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 35%,transparent 72%);pointer-events:none}
+.result-area{min-height:60px;text-align:center;position:relative;z-index:4;padding-top:4px}.result-kicker{display:block;color:#9a929f;font-size:9px;font-weight:900;letter-spacing:.13em}.result-text{display:block;margin-top:4px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-text.emphasis{color:var(--purple-dark)}.result-sub{display:block;min-height:18px;margin-top:4px;color:#8a8390;font-size:10.5px;font-weight:650}
+.coin-stage{display:block;width:min(100%,408px);height:360px;margin:4px auto 0;padding:0;border:0;background:transparent;perspective:1100px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;overflow:visible;transform-origin:50% 84%;will-change:transform}.coin-stage:disabled{cursor:default}.coin-stage.flipping{}
+.coin-rise{width:100%;height:100%;display:grid;place-items:end center;position:relative;padding-bottom:46px;transform-origin:50% 88%;will-change:transform}.coin-stage.flipping .coin-rise{}
+.coin{width:176px;height:176px;position:relative;transform-style:preserve-3d;transform:rotateX(50deg) rotateZ(-10deg);transition:transform .28s ease;will-change:transform}
+.coin-rim,.coin-rim i,.coin-face{position:absolute;inset:0;border-radius:50%;transform-style:preserve-3d}.coin-rim i{display:block;transform:translateZ(var(--z));background:linear-gradient(90deg,#5c5960 0%,#c9c6cb 10%,#77727b 30%,#f2f1f3 52%,#7c7780 74%,#d2cfd4 91%,#5c5760 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.coin-face{inset:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:3px solid rgba(255,255,255,.72);overflow:hidden}
+.coin-front{transform:translateZ(9px);background:radial-gradient(circle at 35% 27%,#fff 0%,#f7f6f8 23%,#d8d5da 56%,#aaa6ad 82%,#817c85 100%);color:#29262c;box-shadow:inset 0 0 0 3px rgba(57,53,60,.12),inset 0 -18px 24px rgba(49,44,53,.13)}
+.coin-back{transform:rotateX(180deg) translateZ(9px);background:radial-gradient(circle at 34% 25%,#87838a 0%,#605c63 35%,#3f3b42 68%,#29262b 100%);color:#fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),inset 0 -18px 24px rgba(0,0,0,.22)}
+.coin-face:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.08) 31%,transparent 48%,rgba(255,255,255,.18) 72%,transparent 100%);mix-blend-mode:soft-light;pointer-events:none;z-index:4}.coin-skin-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:2}.coin-face.has-skin .coin-skin-img{display:block}.coin-face.has-skin .coin-ring,.coin-face.has-skin .coin-brand,.coin-face.has-skin .coin-mark,.coin-face.has-skin .coin-side-name{display:none}.coin-face.has-skin:before{opacity:.22}
+.coin-ring{position:absolute;inset:13px;border-radius:50%;border:2px solid rgba(63,57,67,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);pointer-events:none}.coin-back .coin-ring{border-color:rgba(255,255,255,.25)}
+.coin-brand{font-size:9px;font-weight:950;letter-spacing:.18em;opacity:.62}.coin-mark{margin-top:2px;font-size:44px;line-height:1;font-weight:950;letter-spacing:-.09em;text-shadow:0 2px 3px rgba(0,0,0,.08)}.coin-side-name{margin-top:6px;font-size:9px;font-weight:900;letter-spacing:.14em;opacity:.62}
+.coin-shadow{position:absolute;left:50%;bottom:34px;width:156px;height:30px;border-radius:50%;background:rgba(35,30,39,.24);filter:blur(12px);transform:translateX(-50%) scale(1);transition:.2s ease;will-change:transform,opacity}.coin-stage.flipping .coin-shadow{}
+.tool-controls{position:relative;z-index:6;display:flex;justify-content:center;gap:7px;margin:-1px 0 10px}.tool-control{height:34px;min-width:58px;padding:0 12px;border:1px solid #e4dfea;border-radius:11px;background:#fff;color:#746d79;font-size:10px;font-weight:850;cursor:pointer;box-shadow:0 3px 10px rgba(56,43,70,.035)}.tool-control:active{transform:scale(.97)}.tool-control.active{background:#f2eefb;border-color:#dacff2;color:#684bbb}.flip-button{position:relative;z-index:5;width:100%;height:52px;border:0;border-radius:15px;background:linear-gradient(135deg,#8062d8,#6f51c8);color:#fff;font-size:14px;font-weight:900;letter-spacing:-.01em;box-shadow:0 8px 20px rgba(112,79,197,.25);cursor:pointer;transition:transform .15s ease,opacity .15s ease}.flip-button:active:not(:disabled){transform:scale(.987)}.flip-button:disabled{opacity:.58;cursor:default}.fair-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:11px 0 0;color:#9a929e;font-size:9.5px;font-weight:650}.fair-dot{width:6px;height:6px;border-radius:50%;background:#8b72d6;box-shadow:0 0 0 4px rgba(128,98,216,.09)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.stat{padding:12px 7px;border:1px solid #eee9f1;border-radius:14px;background:#fff;text-align:center}.stat-label{display:block;color:#948c98;font-size:9px;font-weight:750}.stat strong{display:block;margin-top:4px;font-size:17px;line-height:1.15;font-weight:950;letter-spacing:-.04em}.stat small{display:block;margin-top:2px;color:#aaa2ad;font-size:8.5px;font-weight:650}
+.history-card{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:19px;background:#fff}.history-head{display:flex;align-items:center;gap:8px}.history-title{font-size:12px;font-weight:900}.history-count{font-size:9px;color:#9a929e}.reset-history{margin-left:auto;border:0;background:#f4f1f6;color:#817a86;border-radius:9px;height:29px;padding:0 10px;font-size:9px;font-weight:850;cursor:pointer}.reset-history:disabled{opacity:.45}.history-list{display:flex;gap:7px;overflow-x:auto;padding:12px 1px 2px;scrollbar-width:none}.history-list::-webkit-scrollbar{display:none}.history-empty{width:100%;padding:12px 4px 7px;color:#a098a5;font-size:10.5px;text-align:center}.history-chip{min-width:48px;height:48px;padding:0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;border:1px solid #e9e3ef;background:#faf8fc}.history-chip.front{background:#f2eefb;border-color:#e0d6f4;color:#684bbb}.history-chip.back{background:#f2f0f3;border-color:#e1dde4;color:#433d47}.history-chip b{font-size:11px;line-height:1.1}.history-chip span{margin-top:3px;font-size:8px;opacity:.68;font-weight:750}
+.tip{margin:13px 2px 0;color:#9a929e;font-size:10px;line-height:1.55;text-align:center}.tip b{color:#766e7b}
+.skin-modal{position:fixed;inset:0;z-index:220;display:none;align-items:flex-end;justify-content:center;background:rgba(20,16,24,.42)}.skin-modal.open{display:flex}.skin-sheet{width:min(100%,440px);max-height:min(90dvh,760px);padding:0 16px calc(18px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -6px 22px rgba(32,28,42,.18);overflow:auto}.skin-handle{width:42px;height:5px;border-radius:99px;background:#d6d0dc;margin:8px auto 6px}.skin-head{height:44px;display:flex;align-items:center;justify-content:space-between}.skin-title{font-size:14px;font-weight:800;letter-spacing:-.02em}.skin-close{width:38px;height:38px;border:0;background:transparent;color:#857e8a;font-size:28px;line-height:28px;cursor:pointer}.skin-desc{margin:0 0 8px;color:#918a96;font-size:10.5px;line-height:17px}.skin-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:11px;align-items:center;min-height:76px;padding:10px 0;border-top:1px solid #f0ecf3}.skin-preview{width:56px;height:56px;border-radius:50%;overflow:hidden;background:#eee9f5;border:1px solid #ddd6e7;display:grid;place-items:center;color:#7158b5;font-size:11px;font-weight:850}.skin-preview img{width:100%;height:100%;object-fit:cover;display:none}.skin-preview.has-image img{display:block}.skin-preview.has-image span{display:none}.skin-copy b{display:block;color:#342f38;font-size:12.5px;font-weight:850}.skin-copy span{display:block;margin-top:3px;color:#9a929e;font-size:9.5px;line-height:1.35}.skin-actions{display:flex;gap:6px}.skin-action{height:38px;border:0;border-radius:11px;background:#f2eefb;color:#684bbb;padding:0 10px;font-size:10.5px;font-weight:850;cursor:pointer}.skin-action.reset{background:#f4f2f5;color:#817a86}.skin-file{display:none}.skin-editor{display:none}.skin-sheet.editing .skin-main{display:none}.skin-sheet.editing .skin-editor{display:block}.crop-stage-wrap{display:grid;place-items:center;padding:10px 0 14px;background:#f7f4fc;border-radius:18px}.crop-stage{position:relative;width:min(66vw,260px);aspect-ratio:1;border-radius:50%;overflow:hidden;background:#232129;touch-action:none;box-shadow:0 0 0 2px rgba(255,255,255,.98),0 8px 24px rgba(34,28,42,.16);cursor:grab}.crop-stage:active{cursor:grabbing}.crop-stage img{position:absolute;left:0;top:0;max-width:none;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;pointer-events:none;transform-origin:0 0;will-change:transform}.crop-guide{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}.crop-help{margin:12px 0 10px;text-align:center;color:#8f8794;font-size:10.5px;line-height:16px}.crop-zoom-row{display:grid;grid-template-columns:28px minmax(0,1fr) 28px;align-items:center;gap:7px}.crop-zoom-row span{text-align:center;color:#766e7b;font-size:18px;font-weight:700}.crop-zoom{width:100%;accent-color:#8062d8}.crop-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.crop-actions button{height:46px;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer}.crop-cancel{border:1px solid #e0dae5;background:#fff;color:#5f5865}.crop-save{border:0;background:#6749bd;color:#fff;box-shadow:0 5px 16px rgba(103,73,189,.24)}
+.toast{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));z-index:100;max-width:calc(100% - 32px);padding:10px 14px;border-radius:12px;background:rgba(38,33,43,.92);color:#fff;font-size:11px;font-weight:750;transform:translate(-50%,18px);opacity:0;pointer-events:none;transition:.22s ease}.toast.show{transform:translate(-50%,0);opacity:1}
+@keyframes cameraPullback{0%{transform:perspective(1100px) rotateX(0deg) scale(1)}34%{transform:perspective(1350px) rotateX(6deg) scale(.84)}58%{transform:perspective(1320px) rotateX(4deg) scale(.87)}82%{transform:perspective(1180px) rotateX(1.5deg) scale(.96)}100%{transform:perspective(1100px) rotateX(0deg) scale(1)}}
+@keyframes coinFlight{0%{transform:translateY(0) scale(.98)}8%{transform:translateY(-18px) scale(1)}38%{transform:translateY(-210px) scale(1.09)}58%{transform:translateY(-152px) scale(1.06)}78%{transform:translateY(-48px) scale(1.015)}88%{transform:translateY(5px) scale(.99)}94%{transform:translateY(-13px) scale(1.008)}100%{transform:translateY(0) scale(1)}}
+@keyframes shadowFlight{0%,100%{opacity:.82;transform:translateX(-50%) scale(1)}38%{opacity:.12;transform:translateX(-50%) scale(.34)}58%{opacity:.22;transform:translateX(-50%) scale(.46)}78%{opacity:.52;transform:translateX(-50%) scale(.72)}88%{opacity:.92;transform:translateX(-50%) scale(1.08)}94%{opacity:.6;transform:translateX(-50%) scale(.86)}}
+@media(max-height:730px){main{padding-top:0}.game-card{min-height:455px;padding-top:14px}.coin-stage{height:310px}.coin{width:154px;height:154px}.coin-mark{font-size:38px}.coin-shadow{bottom:30px}.stats{margin-top:10px}.history-card{margin-top:9px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.flip-button,.toast{transition:none}.coin-stage.flipping .coin-rise,.coin-stage.flipping .coin-shadow{animation:none}.coin{transition-duration:.28s!important}}
+</style>
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<meta name="application-name" content="FUNY PIN">
+<meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+</head>
+<body data-coin-build="20261013-1934">
+<div class="shell">
+<header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
+<main>
+<section class="game-card" aria-labelledby="resultText">
+<div class="result-area" aria-live="polite" aria-atomic="true">
+<span class="result-kicker" id="resultKicker">READY</span>
+<strong class="result-text" id="resultText">코인을 던져보세요</strong>
+<span class="result-sub" id="resultSub">결과는 브라우저에서 무작위로 결정됩니다.</span>
+</div>
+<button class="coin-stage" id="coinStage" type="button" aria-label="코인 던지기">
+<span class="coin-rise">
+<span class="coin" id="coin">
+<span class="coin-rim" aria-hidden="true">
+<i style="--z:-8px"></i><i style="--z:-7px"></i><i style="--z:-6px"></i><i style="--z:-5px"></i><i style="--z:-4px"></i><i style="--z:-3px"></i><i style="--z:-2px"></i><i style="--z:-1px"></i><i style="--z:0px"></i><i style="--z:1px"></i><i style="--z:2px"></i><i style="--z:3px"></i><i style="--z:4px"></i><i style="--z:5px"></i><i style="--z:6px"></i><i style="--z:7px"></i><i style="--z:8px"></i>
+</span>
+<span class="coin-face coin-front" id="coinFront"><img class="coin-skin-img" id="frontSkinImg" alt=""><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">앞</b><span class="coin-side-name">HEADS</span></span>
+<span class="coin-face coin-back" id="coinBack"><img class="coin-skin-img" id="backSkinImg" alt=""><span class="coin-ring"></span><span class="coin-brand">FUNY PIN</span><b class="coin-mark">뒤</b><span class="coin-side-name">TAILS</span></span>
+</span>
+<span class="coin-shadow"></span>
+</span>
+</button>
+<div class="tool-controls" aria-label="코인 설정">
+  <button class="tool-control" id="durationToggle" type="button" aria-label="회전 시간 변경">3초</button>
+  <button class="tool-control" id="skinButton" type="button">스킨</button>
+</div>
+<button class="flip-button" id="flipButton" type="button">코인 던지기</button>
+<p class="fair-note"><span class="fair-dot"></span>브라우저 난수로 결정 · 서버 전송 없음</p>
+</section>
+<section class="stats" aria-label="오늘 전체 코인플립 통계">
+<div class="stat"><span class="stat-label">오늘 앞면</span><strong id="frontRate">0%</strong><small id="frontCount">0회</small></div>
+<div class="stat"><span class="stat-label">오늘 뒷면</span><strong id="backRate">0%</strong><small id="backCount">0회</small></div>
+<div class="stat"><span class="stat-label">오늘 전체</span><strong id="dailyTotal">0</strong><small>00:00 리셋</small></div>
+</section>
+<section class="history-card">
+<div class="history-head"><span class="history-title">내 오늘 최근 결과</span><span class="history-count" id="historyCount">0회</span><button class="reset-history" id="resetHistory" type="button" disabled>기록 초기화</button></div>
+<div class="history-list" id="historyList"><div class="history-empty">아직 결과가 없습니다.</div></div>
+</section>
+<p class="tip"><b>TIP</b> · 코인 또는 아래 버튼을 눌러 다시 던질 수 있어요.</p>
+</main>
+</div>
+<div class="skin-modal" id="skinModal" aria-hidden="true">
+  <div class="skin-sheet" id="skinSheet" role="dialog" aria-modal="true" aria-labelledby="skinTitle">
+    <div class="skin-handle"></div>
+    <div class="skin-head"><strong class="skin-title" id="skinTitle">코인 스킨 설정</strong><button class="skin-close" id="skinClose" type="button" aria-label="닫기">×</button></div>
+    <div class="skin-main" id="skinMain">
+      <p class="skin-desc">앞면과 뒷면 이미지를 각각 선택해 위치와 크기를 조정할 수 있어요. 화면을 나가면 기본 스킨으로 초기화됩니다.</p>
+      <div class="skin-row">
+        <div class="skin-preview" id="frontPreview"><img id="frontPreviewImg" alt="앞면 스킨 미리보기"><span>앞</span></div>
+        <div class="skin-copy"><b>앞면 스킨</b><span>사진 선택 후 확대·축소와 위치를 조정해요.</span></div>
+        <div class="skin-actions"><button class="skin-action" id="frontPick" type="button">사진 선택</button><button class="skin-action reset" id="frontReset" type="button">초기화</button></div>
+      </div>
+      <div class="skin-row">
+        <div class="skin-preview" id="backPreview"><img id="backPreviewImg" alt="뒷면 스킨 미리보기"><span>뒤</span></div>
+        <div class="skin-copy"><b>뒷면 스킨</b><span>사진 선택 후 확대·축소와 위치를 조정해요.</span></div>
+        <div class="skin-actions"><button class="skin-action" id="backPick" type="button">사진 선택</button><button class="skin-action reset" id="backReset" type="button">초기화</button></div>
+      </div>
+    </div>
+    <div class="skin-editor" id="skinEditor">
+      <p class="skin-desc" id="cropSideLabel">스킨 이미지 조정</p>
+      <div class="crop-stage-wrap">
+        <div class="crop-stage" id="cropStage"><img id="cropImage" alt="스킨 이미지 조정"><div class="crop-guide"></div></div>
+      </div>
+      <p class="crop-help">드래그로 위치 이동 · 슬라이더 또는 두 손가락으로 확대/축소</p>
+      <div class="crop-zoom-row"><span>−</span><input class="crop-zoom" id="cropZoom" type="range" min="1" max="5" step="0.01" value="1" aria-label="이미지 확대 축소"><span>＋</span></div>
+      <div class="crop-actions"><button class="crop-cancel" id="cropCancel" type="button">취소</button><button class="crop-save" id="cropSave" type="button">적용</button></div>
+    </div>
+    <input class="skin-file" id="frontFile" type="file" accept="image/*">
+    <input class="skin-file" id="backFile" type="file" accept="image/*">
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(()=>{
+  const STORAGE_KEY='funypin-coin-flip-v3';
+  const DURATION_KEY='funypin-coin-duration';
+  const SKIN_DB='funypin-coin-skins-v1';
+  const SKIN_LOCAL_PREFIX='funypin-coin-skin-v2:';
+  const SUPABASE_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
+  const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+  const LABELS=['앞면','뒷면'];
+  const $=id=>document.getElementById(id);
+  const els={coin:$('coin'),rise:document.querySelector('.coin-rise'),shadow:document.querySelector('.coin-shadow'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),dailyTotal:$('dailyTotal'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
+  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,activeDate=kstDate(),flipSeconds=loadDuration(),skinUrls={front:null,back:null},flightAnimations=[],cloudAuthCache=undefined,cropState={side:null,blob:null,url:null,minScale:1,scale:1,zoom:1,x:0,y:0,drag:null,pinch:null,pointers:new Map()};
+
+  function kstDate(){
+    try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
+    catch(_){const d=new Date(Date.now()+9*3600000);return d.toISOString().slice(0,10)}
+  }
+  function loadHistory(){
+    try{
+      const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'),today=kstDate();
+      if(raw&&raw.date===today&&Array.isArray(raw.items))return raw.items.filter(v=>v===0||v===1).slice(-20);
+      return[];
+    }catch(_){return[]}
+  }
+  function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({date:kstDate(),items:history}))}catch(_){}}
+  function ensureToday(){
+    try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!raw||raw.date!==kstDate()){history=[];save();renderHistory()}}catch(_){}
+  }
+  function loadDuration(){const v=Number(localStorage.getItem(DURATION_KEY)||3);return [3,5,7].includes(v)?v:3}
+  function applyDuration(){
+    const b=$('durationToggle');if(b){b.textContent=flipSeconds+'초';b.setAttribute('aria-label','회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
+  }
+  function cycleDuration(){
+    if(busy)return;flipSeconds=flipSeconds===3?5:flipSeconds===5?7:3;
+    try{localStorage.setItem(DURATION_KEY,String(flipSeconds))}catch(_){}
+    applyDuration();showToast('회전 시간을 '+flipSeconds+'초로 설정했어요.');track('coin_flip_duration_change',{seconds:flipSeconds});
+  }
+  function cancelFlightAnimations(){
+    flightAnimations.forEach(a=>{try{a.cancel()}catch(_){}});flightAnimations=[];
+  }
+  function animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs){
+    cancelFlightAnimations();
+    if(!els.rise||!els.shadow||!els.stage||typeof els.rise.animate!=='function')return;
+    const a=ascentMs/totalMs,d1=(ascentMs+dwellMs*.34)/totalMs,d2=(ascentMs+dwellMs*.68)/totalMs,top=(ascentMs+dwellMs)/totalMs,land=(ascentMs+dwellMs+descentMs)/totalMs,bounce=(ascentMs+dwellMs+descentMs+bounceMs*.52)/totalMs;
+    flightAnimations=[
+      els.rise.animate([
+        {offset:0,transform:'translateY(0) scale(.98)'},
+        {offset:a,transform:'translateY(-210px) scale(1.07)'},
+        {offset:d1,transform:'translateY(-217px) scale(1.075)'},
+        {offset:d2,transform:'translateY(-205px) scale(1.065)'},
+        {offset:top,transform:'translateY(-210px) scale(1.07)'},
+        {offset:land,transform:'translateY(5px) scale(.99)'},
+        {offset:bounce,transform:'translateY(-12px) scale(1.008)'},
+        {offset:1,transform:'translateY(0) scale(1)'}
+      ],{duration:totalMs,easing:'linear',fill:'forwards'}),
+      els.shadow.animate([
+        {offset:0,opacity:.82,transform:'translateX(-50%) scale(1)'},
+        {offset:a,opacity:.13,transform:'translateX(-50%) scale(.34)'},
+        {offset:d1,opacity:.11,transform:'translateX(-50%) scale(.32)'},
+        {offset:d2,opacity:.16,transform:'translateX(-50%) scale(.38)'},
+        {offset:top,opacity:.13,transform:'translateX(-50%) scale(.34)'},
+        {offset:land,opacity:.92,transform:'translateX(-50%) scale(1.08)'},
+        {offset:bounce,opacity:.60,transform:'translateX(-50%) scale(.86)'},
+        {offset:1,opacity:.82,transform:'translateX(-50%) scale(1)'}
+      ],{duration:totalMs,easing:'linear',fill:'forwards'}),
+      els.stage.animate([
+        {offset:0,transform:'perspective(1100px) rotateX(0deg) scale(1)'},
+        {offset:a,transform:'perspective(1350px) rotateX(6deg) scale(.84)'},
+        {offset:d1,transform:'perspective(1350px) rotateX(5.4deg) scale(.84)'},
+        {offset:d2,transform:'perspective(1320px) rotateX(5deg) scale(.86)'},
+        {offset:top,transform:'perspective(1350px) rotateX(6deg) scale(.84)'},
+        {offset:land,transform:'perspective(1150px) rotateX(1deg) scale(.98)'},
+        {offset:bounce,transform:'perspective(1100px) rotateX(0deg) scale(1.01)'},
+        {offset:1,transform:'perspective(1100px) rotateX(0deg) scale(1)'}
+      ],{duration:totalMs,easing:'linear',fill:'forwards'})
+    ];
+  }
+  function openSkinDb(){
+    return new Promise((resolve,reject)=>{try{const req=indexedDB.open(SKIN_DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('skins'))db.createObjectStore('skins')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}catch(e){reject(e)}})
+  }
+  async function skinDbGet(side){try{const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readonly'),req=tx.objectStore('skins').get(side);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close()})}catch(_){return null}}
+  async function skinDbSet(side,blob){try{const db=await openSkinDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').put(blob,side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}catch(_){return false}}
+  async function skinDbDelete(side){try{const db=await openSkinDb();await new Promise((resolve,reject)=>{const tx=db.transaction('skins','readwrite');tx.objectStore('skins').delete(side);tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)}})}catch(_){}}
+  function blobToDataUrl(blob){return new Promise((resolve,reject)=>{try{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error);r.readAsDataURL(blob)}catch(e){reject(e)}})}
+  async function dataUrlToBlob(value){try{const res=await fetch(value);return await res.blob()}catch(_){return null}}
+  function deviceSkinKey(side){return SKIN_LOCAL_PREFIX+'device:'+side}
+  function accountSkinKey(userId,side){return SKIN_LOCAL_PREFIX+'account:'+String(userId)+':'+side}
+  async function localBlobGet(key){
+    try{const data=localStorage.getItem(key);return data?await dataUrlToBlob(data):null}catch(_){return null}
+  }
+  async function localBlobSet(key,blob){
+    try{const data=await blobToDataUrl(blob);localStorage.setItem(key,data);return true}catch(_){return false}
+  }
+  function localBlobDelete(key){try{localStorage.removeItem(key)}catch(_){}}
+  async function deviceSkinGet(side){
+    const local=await localBlobGet(deviceSkinKey(side));if(local?.size)return local;
+    const legacy=await skinDbGet(side);if(legacy?.size){await localBlobSet(deviceSkinKey(side),legacy);return legacy}
+    return null;
+  }
+  async function deviceSkinSet(side,blob){
+    const localOk=await localBlobSet(deviceSkinKey(side),blob);
+    const dbOk=await skinDbSet(side,blob);
+    if(!localOk&&!dbOk)throw new Error('DEVICE_SAVE_FAILED');
+  }
+  async function deviceSkinDelete(side){localBlobDelete(deviceSkinKey(side));await skinDbDelete(side)}
+  function revokeSkinUrl(side){try{if(skinUrls[side])URL.revokeObjectURL(skinUrls[side])}catch(_){}skinUrls[side]=null}
+  function applySkinBlob(side,blob){
+    revokeSkinUrl(side);const face=$(side==='front'?'coinFront':'coinBack'),img=$(side+'SkinImg'),preview=$(side+'Preview'),previewImg=$(side+'PreviewImg');
+    if(!blob){face?.classList.remove('has-skin');if(img)img.removeAttribute('src');preview?.classList.remove('has-image');if(previewImg)previewImg.removeAttribute('src');return}
+    const url=URL.createObjectURL(blob);skinUrls[side]=url;face?.classList.add('has-skin');if(img)img.src=url;preview?.classList.add('has-image');if(previewImg)previewImg.src=url;
+  }
+  function skinCloudPath(userId,side){return encodeURIComponent(String(userId))+'/'+encodeURIComponent(side+'.jpg')}
+  async function getCloudAuth(){
+    const token=String(window.__FUNY_ACCESS_TOKEN||'').trim();
+    if(!token){cloudAuthCache=null;return null}
+    if(cloudAuthCache&&cloudAuthCache.token===token)return cloudAuthCache;
+    try{
+      const res=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+token},cache:'no-store'});
+      if(!res.ok)throw new Error('auth '+res.status);
+      const user=await res.json();if(!user?.id)throw new Error('missing user');
+      cloudAuthCache={token,userId:String(user.id)};return cloudAuthCache;
+    }catch(_){cloudAuthCache=null;return null}
+  }
+  async function cloudSkinGet(auth,side){
+    const path=skinCloudPath(auth.userId,side);
+    const res=await fetch(SUPABASE_URL+'/storage/v1/object/authenticated/coin-skins/'+path+'?v='+Date.now(),{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+auth.token},cache:'no-store'});
+    if(res.status===404)return null;
+    if(!res.ok)throw new Error('skin download '+res.status);
+    const blob=await res.blob();return blob?.size?blob:null;
+  }
+  async function cloudSkinSet(auth,side,blob){
+    const path=skinCloudPath(auth.userId,side);
+    const res=await fetch(SUPABASE_URL+'/storage/v1/object/coin-skins/'+path,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+auth.token,'Content-Type':'image/jpeg','x-upsert':'true'},body:blob});
+    if(!res.ok)throw new Error('skin upload '+res.status);
+  }
+  async function cloudSkinDelete(auth,side){
+    const path=skinCloudPath(auth.userId,side);
+    const res=await fetch(SUPABASE_URL+'/storage/v1/object/coin-skins/'+path,{method:'DELETE',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+auth.token}});
+    if(!res.ok&&res.status!==404)throw new Error('skin delete '+res.status);
+  }
+  async function accountSkinGet(auth,side){
+    try{
+      const cloud=await cloudSkinGet(auth,side);
+      if(cloud?.size){await localBlobSet(accountSkinKey(auth.userId,side),cloud);return cloud}
+      localBlobDelete(accountSkinKey(auth.userId,side));return null;
+    }catch(_){
+      return await localBlobGet(accountSkinKey(auth.userId,side));
+    }
+  }
+  async function loadSkins(){
+    const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
+    const desc=document.querySelector('.skin-desc');
+    if(desc)desc.textContent=auth?'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정에 저장됩니다.':'앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장됩니다.';
+    for(const side of ['front','back']){
+      try{applySkinBlob(side,auth?await accountSkinGet(auth,side):await deviceSkinGet(side))}
+      catch(_){applySkinBlob(side,null)}
+    }
+  }
+  async function persistSkin(side,blob){
+    const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
+    if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
+    if(auth){
+      await cloudSkinSet(auth,side,blob);
+      await localBlobSet(accountSkinKey(auth.userId,side),blob);
+    }else{
+      await deviceSkinSet(side,blob);
+    }
+    applySkinBlob(side,blob);return auth?'account':'device';
+  }
+  async function deletePersistedSkin(side){
+    const token=String(window.__FUNY_ACCESS_TOKEN||'').trim(),auth=token?await getCloudAuth():null;
+    if(token&&!auth)throw new Error('LOGIN_SESSION_UNAVAILABLE');
+    if(auth){
+      await cloudSkinDelete(auth,side);localBlobDelete(accountSkinKey(auth.userId,side));
+    }else{
+      await deviceSkinDelete(side);
+    }
+    applySkinBlob(side,null);return auth?'account':'device';
+  }
+  function cropSize(){return $('cropStage')?.clientWidth||260}
+  function cleanupCropSource(){try{if(cropState.url)URL.revokeObjectURL(cropState.url)}catch(_){}cropState.url=null;cropState.blob=null;cropState.side=null;cropState.drag=null;cropState.pinch=null;cropState.pointers.clear()}
+  function clampCrop(){
+    const img=$('cropImage'),V=cropSize();if(!img?.naturalWidth)return;
+    const w=img.naturalWidth*cropState.scale,h=img.naturalHeight*cropState.scale;
+    cropState.x=Math.min(0,Math.max(V-w,cropState.x));cropState.y=Math.min(0,Math.max(V-h,cropState.y));
+  }
+  function drawCrop(){
+    const img=$('cropImage');if(!img)return;clampCrop();img.style.transform='translate('+cropState.x+'px,'+cropState.y+'px) scale('+cropState.scale+')';
+    const z=$('cropZoom');if(z)z.value=String(cropState.zoom);
+  }
+  function setCropZoom(next,cx,cy){
+    const img=$('cropImage'),V=cropSize();if(!img?.naturalWidth)return;
+    next=Math.max(1,Math.min(5,Number(next)||1));const oldScale=cropState.scale,newScale=cropState.minScale*next,px=cx??V/2,py=cy??V/2,ratio=newScale/Math.max(.0001,oldScale);
+    cropState.x=px-(px-cropState.x)*ratio;cropState.y=py-(py-cropState.y)*ratio;cropState.zoom=next;cropState.scale=newScale;drawCrop();
+  }
+  function startSkinEditor(side,file){
+    if(!file||!file.type.startsWith('image/'))return;
+    cleanupCropSource();cropState.side=side;cropState.blob=file;cropState.url=URL.createObjectURL(file);
+    const sheet=$('skinSheet'),title=$('skinTitle'),label=$('cropSideLabel'),img=$('cropImage');
+    sheet.classList.add('editing');title.textContent=(side==='front'?'앞면':'뒷면')+' 스킨 조정';label.textContent='원형 영역에 맞게 이미지 위치와 크기를 조정해주세요.';
+    img.onload=()=>{const V=cropSize();cropState.minScale=Math.max(V/img.naturalWidth,V/img.naturalHeight);cropState.zoom=1;cropState.scale=cropState.minScale;cropState.x=(V-img.naturalWidth*cropState.scale)/2;cropState.y=(V-img.naturalHeight*cropState.scale)/2;drawCrop()};
+    img.src=cropState.url;setSkinModal(true);
+  }
+  function closeSkinEditor(){
+    const sheet=$('skinSheet'),img=$('cropImage');sheet.classList.remove('editing');$('skinTitle').textContent='코인 스킨 설정';if(img)img.removeAttribute('src');cleanupCropSource();
+  }
+  async function applyCropSkin(){
+    const side=cropState.side,img=$('cropImage');if(!side||!img?.naturalWidth)return;
+    const V=cropSize(),S=512,r=S/V,canvas=document.createElement('canvas');canvas.width=S;canvas.height=S;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);ctx.drawImage(img,cropState.x*r,cropState.y*r,img.naturalWidth*cropState.scale*r,img.naturalHeight*cropState.scale*r);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob){showToast('이미지를 저장하지 못했어요.');return}
+    try{
+      const scope=await persistSkin(side,blob);
+      showToast((side==='front'?'앞면':'뒷면')+' 스킨을 '+(scope==='account'?'계정에':'이 기기에')+' 저장했어요.');
+      track('coin_flip_skin_change',{side,action:'set',scope});closeSkinEditor();
+    }catch(_){showToast('스킨 저장에 실패했어요. 다시 시도해주세요.')}
+  }
+  async function resetSkin(side){
+    try{const scope=await deletePersistedSkin(side);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 초기화했어요.');track('coin_flip_skin_change',{side,action:'reset',scope})}
+    catch(_){showToast('스킨 초기화에 실패했어요. 다시 시도해주세요.')}
+  }
+  function setSkinModal(open){
+    const m=$('skinModal');if(!open&&$('skinSheet')?.classList.contains('editing'))closeSkinEditor();
+    m.classList.toggle('open',open);m.setAttribute('aria-hidden',String(!open));document.body.style.overflow=open?'hidden':'';
+  }
+
+  function secureRandom(){try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]>>>0}catch(_){return Math.floor(Math.random()*4294967296)>>>0}}
+  function setBusy(v){busy=v;els.stage.disabled=v;els.flip.disabled=v;els.flip.textContent=v?'코인 플립 중...':'코인 던지기'}
+  function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
+  function audio(){
+    if(!soundOn)return null;
+    try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
+  }
+  function makeNoise(duration=.045,delay=0,volume=.035,low=900,high=9200){
+    const ctx=audio();if(!ctx)return;const len=Math.max(1,Math.floor(ctx.sampleRate*duration)),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);
+    for(let i=0;i<len;i++){const env=Math.exp(-i/(ctx.sampleRate*(duration*.11)));data[i]=(Math.random()*2-1)*env}
+    const src=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),lp=ctx.createBiquadFilter(),gain=ctx.createGain(),t=ctx.currentTime+delay;
+    src.buffer=buffer;hp.type='highpass';hp.frequency.value=low;lp.type='lowpass';lp.frequency.value=high;
+    gain.gain.setValueAtTime(volume,t);gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    src.connect(hp);hp.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start(t);src.stop(t+duration+.02)
+  }
+  function resonant(freq,duration=.34,volume=.04,delay=0,detune=0){
+    const ctx=audio();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+delay;
+    o.type='sine';o.frequency.setValueAtTime(freq,t);o.detune.setValueAtTime(detune,t);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),t+.0015);g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.03)
+  }
+  function brightPing(delay=0,volume=.085,pitch=1){
+    makeNoise(.020,delay,volume*.20,1800,9800);
+    const partials=[
+      [1760,.42,1.00],
+      [2640,.34,.56],
+      [3520,.26,.30],
+      [5280,.17,.13]
+    ];
+    partials.forEach(([f,d,v],i)=>resonant(f*pitch,d,volume*v,delay+i*.0007,(Math.random()-.5)*5));
+  }
+  function softTick(delay=0,volume=.012){
+    makeNoise(.015,delay,volume,2200,10500);
+    resonant(3100+Math.random()*260,.055,volume*.75,delay,(Math.random()-.5)*8);
+  }
+  function playLaunch(){
+    brightPing(0,.092,.985);
+  }
+  function playSpin(durationMs){
+    const seconds=Math.max(1,durationMs/1000),count=Math.min(7,Math.max(3,Math.round(seconds)));
+    for(let i=1;i<=count;i++){const d=(seconds*.68)*(i/(count+1));softTick(d,.007)}
+  }
+  function playLand(){
+    makeNoise(.032,0,.032,700,7200);
+    brightPing(.008,.118,1.00);
+    resonant(980,.12,.018,.002,(Math.random()-.5)*4);
+    softTick(.115,.013);
+  }
+  function track(name,params={}){try{window.FUNY_TRACK?.(name,{tool_name:'coin_flip',...params})}catch(_){}}
+  function align(outcome){
+    const base=Math.floor(currentAngle/360)*360;
+    currentAngle=base+(outcome===1?180:0);
+    els.coin.style.transition='none';
+    els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(-10deg)`;
+    void els.coin.offsetWidth;
+    els.coin.style.removeProperty('transition');
+  }
+  function renderResult(){
+    if(history.length){const last=history[history.length-1];els.kicker.textContent='LAST RESULT';els.text.textContent=LABELS[last]+'!';els.text.classList.add('emphasis');els.sub.textContent='코인을 다시 눌러 새로운 결과를 확인해보세요.'}
+    else{els.kicker.textContent='READY';els.text.textContent='코인을 던져보세요';els.text.classList.remove('emphasis');els.sub.textContent='결과는 브라우저에서 무작위로 결정됩니다.'}
+  }
+  function renderHistory(){
+    const total=history.length;
+    els.historyCount.textContent=total+'회';els.reset.disabled=!total;
+    if(!total){els.historyList.innerHTML='<div class="history-empty">아직 결과가 없습니다.</div>';return}
+    els.historyList.innerHTML=history.slice().reverse().map((value,index)=>`<div class="history-chip ${value===0?'front':'back'}"><b>${LABELS[value]}</b><span>${total-index}번째</span></div>`).join('');
+  }
+  function renderDailyStats(stats){
+    const total=Number(stats?.total_count||0),front=Number(stats?.heads_count||0),back=Number(stats?.tails_count||0);
+    els.frontCount.textContent=front+'회';els.backCount.textContent=back+'회';els.frontRate.textContent=(total?Math.round(front/total*100):0)+'%';els.backRate.textContent=(total?Math.round(back/total*100):0)+'%';els.dailyTotal.textContent=String(total);
+  }
+  async function loadDailyStats(){
+    try{
+      const date=kstDate(),res=await fetch(SUPABASE_URL+'/rest/v1/v_coin_flip_daily_stats?select=flip_date,total_count,heads_count,tails_count&flip_date=eq.'+encodeURIComponent(date),{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},cache:'no-store'});
+      if(!res.ok)throw new Error('stats '+res.status);
+      const rows=await res.json();renderDailyStats(rows?.[0]||null);
+    }catch(_){renderDailyStats(null)}
+  }
+  async function saveFlipToDb(outcome){
+    try{
+      const res=await fetch(SUPABASE_URL+'/rest/v1/coin_flip_events',{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({outcome})});
+      if(!res.ok)throw new Error('insert '+res.status);
+      await loadDailyStats();
+    }catch(_){showToast('오늘 전체 확률 집계 연결을 확인해주세요.')}
+  }
+  function finish(outcome,token){
+    if(token!==flipToken)return;
+    history.push(outcome);if(history.length>20)history.shift();save();setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');
+    els.kicker.textContent='RESULT';els.text.textContent=LABELS[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent='코인플립 결과가 결정되었습니다.';
+    renderHistory();saveFlipToDb(outcome);playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
+  }
+  function flip(){
+    if(busy)return;
+    const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const totalMs=flipSeconds*1000,ascentMs=reduced?120:620,descentMs=reduced?120:620,bounceMs=reduced?80:240,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
+    const spins=Math.max(8,Math.round((totalMs/1000)*3.1))+(secureRandom()%3);
+    const normalized=((currentAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
+    currentAngle+=spins*360+delta;
+    setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent=reduced?'잠시만 기다려주세요.':'튕긴 순간부터 약 '+flipSeconds+'초 동안 회전해요.';
+    els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
+    animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs);
+    els.coin.style.transition='transform '+totalMs+'ms linear';
+    const tilt=(secureRandom()%9)-4;
+    playLaunch();playSpin(totalMs);requestAnimationFrame(()=>{els.coin.style.transform=`rotateX(${currentAngle+50}deg) rotateZ(${-10+tilt}deg)`});
+    try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
+  }
+  function reset(){
+    if(busy||!history.length)return;history=[];save();align(0);renderResult();renderHistory();showToast('내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
+  }
+  $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
+  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){brightPing(0,.045,1);showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  $('durationToggle').addEventListener('click',cycleDuration);
+  $('skinButton').addEventListener('click',()=>setSkinModal(true));$('skinClose').addEventListener('click',()=>setSkinModal(false));$('skinModal').addEventListener('click',e=>{if(e.target===$('skinModal'))setSkinModal(false)});
+  $('frontPick').addEventListener('click',()=>$('frontFile').click());$('backPick').addEventListener('click',()=>$('backFile').click());
+  $('frontFile').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)startSkinEditor('front',file);e.target.value=''});
+  $('backFile').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)startSkinEditor('back',file);e.target.value=''});
+  $('frontReset').addEventListener('click',()=>resetSkin('front'));$('backReset').addEventListener('click',()=>resetSkin('back'));
+  $('cropCancel').addEventListener('click',closeSkinEditor);$('cropSave').addEventListener('click',applyCropSkin);$('cropZoom').addEventListener('input',e=>setCropZoom(e.target.value));
+  const cropStage=$('cropStage');
+  const localPoint=e=>{const r=cropStage.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+  const beginPinch=()=>{const pts=[...cropState.pointers.values()];if(pts.length<2)return;const a=pts[0],b=pts[1],dx=a.x-b.x,dy=a.y-b.y;cropState.pinch={distance:Math.max(1,Math.hypot(dx,dy)),scale:cropState.scale,zoom:cropState.zoom,x:cropState.x,y:cropState.y,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2};cropState.drag=null};
+  cropStage.addEventListener('pointerdown',e=>{e.preventDefault();const p=localPoint(e);cropState.pointers.set(e.pointerId,p);try{cropStage.setPointerCapture(e.pointerId)}catch(_){}if(cropState.pointers.size===1)cropState.drag={id:e.pointerId,px:p.x,py:p.y,x:cropState.x,y:cropState.y};else if(cropState.pointers.size===2)beginPinch()});
+  cropStage.addEventListener('pointermove',e=>{if(!cropState.pointers.has(e.pointerId))return;e.preventDefault();const p=localPoint(e);cropState.pointers.set(e.pointerId,p);if(cropState.pointers.size===1&&cropState.drag){cropState.x=cropState.drag.x+(p.x-cropState.drag.px);cropState.y=cropState.drag.y+(p.y-cropState.drag.py);drawCrop()}else if(cropState.pointers.size>=2&&cropState.pinch){const pts=[...cropState.pointers.values()],a=pts[0],b=pts[1],d=Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),factor=d/cropState.pinch.distance,next=Math.max(1,Math.min(5,cropState.pinch.zoom*factor)),newScale=cropState.minScale*next,ratio=newScale/Math.max(.0001,cropState.pinch.scale);cropState.scale=newScale;cropState.zoom=next;cropState.x=cropState.pinch.cx-(cropState.pinch.cx-cropState.pinch.x)*ratio;cropState.y=cropState.pinch.cy-(cropState.pinch.cy-cropState.pinch.y)*ratio;drawCrop()}});
+  const endCropPointer=e=>{if(!cropState.pointers.has(e.pointerId))return;cropState.pointers.delete(e.pointerId);try{cropStage.releasePointerCapture(e.pointerId)}catch(_){}if(cropState.pointers.size===1){const entry=[...cropState.pointers.entries()][0],p=entry[1];cropState.drag={id:entry[0],px:p.x,py:p.y,x:cropState.x,y:cropState.y};cropState.pinch=null}else{cropState.drag=null;cropState.pinch=null}};
+  cropStage.addEventListener('pointerup',endCropPointer);cropStage.addEventListener('pointercancel',endCropPointer);
+  els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats();loadSkins()}});
+  syncSoundButton();applyDuration();loadSkins();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',e=>{if(e.persisted)loadSkins()});
+})();
+</script>
+<script src="funy-i18n.js?v=20261013-tools-i18n"></script></body>
+</html>
+

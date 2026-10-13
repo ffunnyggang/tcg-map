@@ -350,6 +350,16 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   },[accessToken,authReady]);
   useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
   useEffect(()=>{
+    if(!authReady)return;
+    let isCoinFlip=false;
+    try{isCoinFlip=/\/coin-flip(?:-v2)?\.html$/i.test(new URL(currentTarget||url).pathname)}catch{}
+    if(!isCoinFlip)return;
+    const tokenScript=accessToken
+      ? `window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};window.dispatchEvent(new CustomEvent('funy:auth-ready',{detail:{loggedIn:true}}));true;`
+      : `window.__FUNY_ACCESS_TOKEN='';window.dispatchEvent(new CustomEvent('funy:auth-ready',{detail:{loggedIn:false}}));true;`;
+    ref.current?.injectJavaScript(tokenScript);
+  },[accessToken,authReady,currentTarget,url]);
+  useEffect(()=>{
     if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;

@@ -972,6 +972,14 @@
       [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
       [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
     ];
+    /* WEB_I18N_V4_LIVE_RULES */
+    rules.push(
+      [/^(.+)를 선택해주세요 \((\d+)개\)$/,m=>'Please select '+m[1]+' ('+m[2]+')'],
+      [/^(\d+)분 전$/,m=>m[1]+' min ago'],
+      [/^(\d+)시간 전$/,m=>m[1]+' hr ago'],
+      [/^(\d+)일 전$/,m=>m[1]+' days ago']
+    );
+
     /* WEB_I18N_V4_TOOL_RULES */
     rules.push(
       [/^(\d+)회$/,m=>m[1]+' times'],
@@ -1048,6 +1056,18 @@
     '※ 본 결과는 이미지상의 센터링 비율을 계산한 참고용 측정값입니다. 실제 PSA·BGS·CGC 등 그레이딩 등급을 보장하거나 예측하지 않습니다. 촬영 각도와 이미지 왜곡에 따라 오차가 발생할 수 있습니다.':{en:'※ This is a reference measurement based on image centering. It does not guarantee or predict PSA, BGS, CGC, or other grading results. Camera angle and image distortion may affect accuracy.'},
     '다른 카드 측정하기':{en:'Measure Another Card'},'센터링이 매우 균형적이에요':{en:'Centering is very balanced'},'이미지 기준으로 좌우·상하 편차가 작습니다.':{en:'Left/right and top/bottom deviation is small in the image.'},
     '센터링이 비교적 양호해요':{en:'Centering looks fairly good'},'한쪽으로 약간 치우쳐 보일 수 있습니다.':{en:'It may appear slightly shifted to one side.'},'센터링 편차가 보여요':{en:'Centering deviation detected'},'가이드 위치와 촬영 각도를 다시 확인해보세요.':{en:'Check the guide positions and camera angle again.'}
+  });
+
+
+  /* WEB_I18N_V4_LIVE_PIN */
+  Object.assign(textMap,{
+    '공백 포함 최대 60자 · 현장 상황을 입력해주세요':{en:'Up to 60 characters including spaces · Describe the current situation'},
+    '사진 추가하기 (최대 1장)':{en:'Add Photo (Max 1)'},
+    '방금 전':{en:'Just now'},'나도 궁금해요':{en:'I want to know too'},
+    '선택한 조건에 등록된 LIVE PIN이 없어요.':{en:'No LIVE PIN posts match the selected filters.'},
+    'LIVE PIN 조회 실패:':{en:'Failed to load LIVE PIN:'},'반응 등록 실패:':{en:'Failed to add reaction:'},
+    '등록 실패:':{en:'Submission failed:'},'사진 업로드 실패 / HTTP':{en:'Photo upload failed / HTTP'},'신고 접수 실패: HTTP':{en:'Report submission failed: HTTP'},
+    '잠시 후 다시 등록해주세요.':{en:'Please try submitting again shortly.'}
   });
 
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();

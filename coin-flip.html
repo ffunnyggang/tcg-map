@@ -224,6 +224,6 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   syncSoundButton();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');
 })();
 </script>
-</body>
+<script src="funy-i18n.js?v=20261013-tools-i18n"></script></body>
 </html>
 

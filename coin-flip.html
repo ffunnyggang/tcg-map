@@ -95,7 +95,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     <div class="skin-handle"></div>
     <div class="skin-head"><strong class="skin-title" id="skinTitle">코인 스킨 설정</strong><button class="skin-close" id="skinClose" type="button" aria-label="닫기">×</button></div>
     <div class="skin-main" id="skinMain">
-      <p class="skin-desc">앞면과 뒷면 이미지를 각각 선택해 코인에 맞게 위치와 크기를 조정할 수 있어요.</p>
+      <p class="skin-desc">앞면과 뒷면 이미지를 각각 선택해 위치와 크기를 조정할 수 있어요. 화면을 나가면 기본 스킨으로 초기화됩니다.</p>
       <div class="skin-row">
         <div class="skin-preview" id="frontPreview"><img id="frontPreviewImg" alt="앞면 스킨 미리보기"><span>앞</span></div>
         <div class="skin-copy"><b>앞면 스킨</b><span>사진 선택 후 확대·축소와 위치를 조정해요.</span></div>
@@ -150,12 +150,12 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   function loadDuration(){const v=Number(localStorage.getItem(DURATION_KEY)||3);return [3,5,7].includes(v)?v:3}
   function applyDuration(){
-    const b=$('durationToggle');if(b){b.textContent=flipSeconds+'초';b.setAttribute('aria-label','공중 회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
+    const b=$('durationToggle');if(b){b.textContent=flipSeconds+'초';b.setAttribute('aria-label','회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
   }
   function cycleDuration(){
     if(busy)return;flipSeconds=flipSeconds===3?5:flipSeconds===5?7:3;
     try{localStorage.setItem(DURATION_KEY,String(flipSeconds))}catch(_){}
-    applyDuration();showToast('공중 회전 시간을 '+flipSeconds+'초로 설정했어요.');track('coin_flip_duration_change',{seconds:flipSeconds});
+    applyDuration();showToast('회전 시간을 '+flipSeconds+'초로 설정했어요.');track('coin_flip_duration_change',{seconds:flipSeconds});
   }
   function cancelFlightAnimations(){
     flightAnimations.forEach(a=>{try{a.cancel()}catch(_){}});flightAnimations=[];
@@ -209,7 +209,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     if(!blob){face?.classList.remove('has-skin');if(img)img.removeAttribute('src');preview?.classList.remove('has-image');if(previewImg)previewImg.removeAttribute('src');return}
     const url=URL.createObjectURL(blob);skinUrls[side]=url;face?.classList.add('has-skin');if(img)img.src=url;preview?.classList.add('has-image');if(previewImg)previewImg.src=url;
   }
-  async function loadSkins(){for(const side of ['front','back'])applySkinBlob(side,await skinDbGet(side))}
+  async function clearPersistedSkins(){try{await skinDbDelete('front');await skinDbDelete('back')}catch(_){}}
   function cropSize(){return $('cropStage')?.clientWidth||260}
   function cleanupCropSource(){try{if(cropState.url)URL.revokeObjectURL(cropState.url)}catch(_){}cropState.url=null;cropState.blob=null;cropState.side=null;cropState.drag=null;cropState.pinch=null;cropState.pointers.clear()}
   function clampCrop(){
@@ -242,9 +242,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     const V=cropSize(),S=800,r=S/V,canvas=document.createElement('canvas');canvas.width=S;canvas.height=S;
     const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,S,S);ctx.drawImage(img,cropState.x*r,cropState.y*r,img.naturalWidth*cropState.scale*r,img.naturalHeight*cropState.scale*r);
     const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.9));if(!blob){showToast('이미지를 저장하지 못했어요.');return}
-    try{await skinDbSet(side,blob);applySkinBlob(side,blob);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 저장했어요.');track('coin_flip_skin_change',{side,action:'set'});closeSkinEditor()}catch(_){showToast('이미지를 저장하지 못했어요.')}
+    try{applySkinBlob(side,blob);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 적용했어요.');track('coin_flip_skin_change',{side,action:'set'});closeSkinEditor()}catch(_){showToast('이미지를 적용하지 못했어요.')}
   }
-  async function resetSkin(side){await skinDbDelete(side);applySkinBlob(side,null);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 초기화했어요.');track('coin_flip_skin_change',{side,action:'reset'})}
+  async function resetSkin(side){applySkinBlob(side,null);showToast((side==='front'?'앞면':'뒷면')+' 스킨을 초기화했어요.');track('coin_flip_skin_change',{side,action:'reset'})}
   function setSkinModal(open){
     const m=$('skinModal');if(!open&&$('skinSheet')?.classList.contains('editing'))closeSkinEditor();
     m.classList.toggle('open',open);m.setAttribute('aria-hidden',String(!open));document.body.style.overflow=open?'hidden':'';
@@ -344,11 +344,11 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function flip(){
     if(busy)return;
     const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const ascentMs=reduced?90:620,dwellMs=reduced?80:flipSeconds*1000,descentMs=reduced?90:620,bounceMs=reduced?60:240,totalMs=ascentMs+dwellMs+descentMs+bounceMs;
+    const selectedMs=flipSeconds*1000,ascentMs=reduced?90:620,descentMs=reduced?90:620,bounceMs=reduced?60:240,totalMs=reduced?320:selectedMs,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
     const spins=Math.max(8,Math.round((totalMs/1000)*3.1))+(secureRandom()%3);
     const normalized=((currentAngle%360)+360)%360,desired=outcome*180,delta=(desired-normalized+360)%360;
     currentAngle+=spins*360+delta;
-    setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent=reduced?'잠시만 기다려주세요.':'공중에서 '+flipSeconds+'초 동안 회전해요.';
+    setBusy(true);els.kicker.textContent='FLIPPING';els.text.textContent='코인이 회전 중...';els.text.classList.remove('emphasis');els.sub.textContent=reduced?'잠시만 기다려주세요.':'튕긴 순간부터 약 '+flipSeconds+'초 동안 회전해요.';
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
     animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs);
     els.coin.style.transition='transform '+totalMs+'ms linear';
@@ -377,7 +377,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   cropStage.addEventListener('pointerup',endCropPointer);cropStage.addEventListener('pointercancel',endCropPointer);
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(history.length?history[history.length-1]:0)}if(!document.hidden){ensureToday();loadDailyStats()}});
-  syncSoundButton();applyDuration();loadSkins();ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{revokeSkinUrl('front');revokeSkinUrl('back');cleanupCropSource()});
+  syncSoundButton();applyDuration();clearPersistedSkins();applySkinBlob('front',null);applySkinBlob('back',null);ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(history.length?history[history.length-1]:0);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(0);showToast('새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{applySkinBlob('front',null);applySkinBlob('back',null);revokeSkinUrl('front');revokeSkinUrl('back');cleanupCropSource()});
 })();
 </script>
 <script src="funy-i18n.js?v=20261013-tools-i18n"></script></body>

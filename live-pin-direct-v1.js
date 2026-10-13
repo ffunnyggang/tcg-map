@@ -22,14 +22,14 @@
    if(region.value==='KR'){
      const pos=new naver.maps.LatLng(coordinate.lat,coordinate.lng);
      if(!pin){
-       pin=new naver.maps.Marker({map,position:pos,zIndex:220,title:tr('선택한 위치','Selected location'),icon:{content:'<div style="width:22px;height:22px;border:4px solid #fff;border-radius:50% 50% 50% 0;background:#8062d8;box-shadow:0 2px 10px rgba(57,39,99,.38);transform:rotate(-45deg)"><span style="display:block;width:6px;height:6px;margin:4px;border-radius:50%;background:#fff"></span></div>',anchor:new naver.maps.Point(11,20)}});
+       pin=new naver.maps.Marker({map,position:pos,zIndex:220,title:tr('선택한 위치','Selected location')});
      }else{
        pin.setPosition(pos);pin.setMap(map);
      }
    }else{
      const pos={lat:coordinate.lat,lng:coordinate.lng};
      if(!pin){
-       pin=new google.maps.Marker({map,position:pos,zIndex:220,title:tr('선택한 위치','Selected location'),icon:{path:'M 0,-10 C -5,-10 -9,-6 -9,-1 C -9,5 0,13 0,13 C 0,13 9,5 9,-1 C 9,-6 5,-10 0,-10 Z',fillColor:'#8062d8',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:3,scale:1.2,anchor:new google.maps.Point(0,12)}});
+       pin=new google.maps.Marker({map,position:pos,zIndex:220,title:tr('선택한 위치','Selected location')});
      }else{
        pin.setPosition(pos);pin.setMap(map);
      }

@@ -163,6 +163,91 @@
     '게시물 등록':{en:'Create Post'},'등록하기':{en:'Post'}
   });
 
+  /* WEB_I18N_V5: recent LIVE PIN additions. */
+  Object.assign(textMap,{
+  "전체 위치": {
+    "en": "All Locations"
+  },
+  "📍 기타": {
+    "en": "📍 Other"
+  },
+  "직접 위치 등록": {
+    "en": "Choose a Location"
+  },
+  "위치명": {
+    "en": "Location Name"
+  },
+  "LIVE PIN은 매일 00시에 초기화됩니다.": {
+    "en": "LIVE PIN resets daily at 00:00 Korea time."
+  },
+  "※ LIVE PIN은 매일 00시에 초기화됩니다.": {
+    "en": "※ LIVE PIN resets daily at 00:00 Korea time."
+  },
+  "제보 내용 보기": {
+    "en": "View Update"
+  },
+  "지금도 맞아요": {
+    "en": "Still Accurate"
+  },
+  "정보가 달라요": {
+    "en": "Outdated Information"
+  },
+  "목록을 불러오지 못했어요. 다시 열어주세요.": {
+    "en": "Unable to load locations. Close and reopen this form."
+  },
+  "직접 위치 지정은 현장 제보에서만 사용할 수 있어요.": {
+    "en": "You can choose a location only when sharing an update."
+  },
+  "카드샵 또는 자판기를 선택해주세요.": {
+    "en": "Select a card shop or vending machine."
+  },
+  "요청 종류를 선택해주세요.": {
+    "en": "Select a request type."
+  },
+  "제보 종류를 선택해주세요.": {
+    "en": "Select an update type."
+  },
+  "내용을 입력해주세요.": {
+    "en": "Enter the details."
+  },
+  "정보 요청이 등록됐어요.": {
+    "en": "Your information request has been posted."
+  },
+  "현장 제보가 등록됐어요.": {
+    "en": "Your update has been posted."
+  },
+  "잠시 후 다시 등록해주세요.\nLIVE PIN은 30초에 한 번 등록할 수 있어요.": {
+    "en": "Please try again shortly.\nYou can post a LIVE PIN once every 30 seconds."
+  },
+  "같은 카드샵의 같은 유형 정보는 5분 후 다시 등록할 수 있어요.": {
+    "en": "Wait 5 minutes before posting the same type of update for the same card shop."
+  },
+  "기기 확인에 실패했어요. 페이지를 새로고침한 뒤 다시 시도해주세요.": {
+    "en": "Unable to verify your device. Refresh the page and try again."
+  },
+  "신고 사유를 선택해주세요.": {
+    "en": "Select a report reason."
+  },
+  "신고가 정상 접수됐어요.": {
+    "en": "Your report has been submitted."
+  },
+  "이미 신고한 LIVE PIN이에요.": {
+    "en": "You have already reported this LIVE PIN."
+  },
+  "신고 접수에 실패했어요.": {
+    "en": "Unable to submit your report."
+  },
+  "사진 압축 실패": {
+    "en": "Unable to process the photo."
+  },
+  "사진 업로드 경로를 받지 못했어요.": {
+    "en": "The uploaded photo could not be located."
+  },
+  "LIVE PIN을 불러오는 중...": {
+    "en": "Loading LIVE PIN..."
+  }
+});
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;

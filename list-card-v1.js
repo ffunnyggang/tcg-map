@@ -22,7 +22,7 @@
   function searchable(s){
     const fl=FILTERS.filter(f=>{try{return f.test(s)}catch(_){return false}}).map(f=>f.label);
     const ft=typeof FEATURE_LABELS!=='undefined'?Object.entries(FEATURE_LABELS).filter(([k])=>s.f?.[k]===true).map(([,v])=>v):[];
-    return normalize([s.name,s.en,s.city,s.area,s.address,s.station,...fl,...ft,s.tcg?.pokemon?'포켓몬':'',s.tcg?.onePiece?'원피스':'',s.tcg?.dragonBall?'드래곤볼':''].filter(Boolean).join(' '));
+    return normalize([s.name,s.en,s.city,s.area,s.address,s.station,s.cityEn,s.areaEn,s.addressEn,s.stationEn,...fl,...ft,s.tcg?.pokemon?'포켓몬':'',s.tcg?.onePiece?'원피스':'',s.tcg?.dragonBall?'드래곤볼':''].filter(Boolean).join(' '));
   }
   function passFilter(s){for(const id of activeFilters){const f=FILTERS.find(x=>x.id===id);if(f&&!f.test(s))return false}return true}
   function passSearch(s){const q=normalize(document.getElementById('map-shop-search')?.value||'');return !q||searchable(s).includes(q)}
@@ -45,7 +45,7 @@
   function card(s){
     const tags=tagList(s),shown=tags.slice(0,3),extra=tags.length-shown.length;
     const image=SHOP_IMAGES[s.id]?`<img src="${SHOP_IMAGES[s.id]}" alt="${esc(s.name)} 대표 이미지" loading="lazy" decoding="async">`:fallbackThumb;
-    const loc=[s.area,s.station?(s.station+(s.walkMin?' 도보 '+s.walkMin+'분':'')):''].filter(Boolean).join(' · ');
+    const loc=window.FUNY_SHOP_LOCATION_TEXT(s);
     const funyMonActive=window.FUNY_FUNYMON_ACTIVE_SHOPS instanceof Set&&window.FUNY_FUNYMON_ACTIVE_SHOPS.has(s.id);
     const activeClass=(window.FUNY_ACTIVE_EVENT_SHOPS?.has(s.id)?' is-event-shop':'')+(funyMonActive?' is-funymon-shop':'');
     return `<a class="shop-card shop-card-v1${activeClass}" href="#/shop/${s.id}" data-id="${s.id}"><div class="shop-thumb ${SHOP_IMAGES[s.id]?'has-image':'is-fallback'}">${image}</div><div class="shop-main"><h3 class="shop-name">${esc(s.name)}</h3><p class="shop-meta list-meta-line">${pinSvg}<span>${esc(loc)}</span></p><p class="shop-hours list-meta-line">${clockSvg}<span>${esc(todayHours(s))}</span></p><div class="tag-row">${shown.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}${extra>0?`<span class="tag tag-more">+${extra}</span>`:''}</div></div><div class="chev">›</div></a>`;

@@ -972,6 +972,20 @@
       [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
       [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
     ];
+    /* WEB_I18N_V7_COIN_RULES */
+    rules.push(
+      [/^앞면!$/,()=> 'Heads!'],
+      [/^뒷면!$/,()=> 'Tails!'],
+      [/^(\d+(?:\.\d+)?)초$/,m=>m[1]+'s'],
+      [/^회전 시간 (\d+(?:\.\d+)?)초 · 눌러서 변경$/,m=>'Flip duration '+m[1]+' seconds · tap to change'],
+      [/^회전 시간을 (\d+(?:\.\d+)?)초로 설정했어요\.$/,m=>'Flip duration set to '+m[1]+' seconds.'],
+      [/^튕긴 순간부터 약 (\d+(?:\.\d+)?)초 후 결과가 결정돼요\.$/,m=>'The result will be decided about '+m[1]+' seconds after the flip.'],
+      [/^앞면 스킨을 (?:계정에|이 기기에) 저장했어요\.$/,()=> 'Front skin saved.'],
+      [/^뒷면 스킨을 (?:계정에|이 기기에) 저장했어요\.$/,()=> 'Back skin saved.'],
+      [/^앞면 스킨을 초기화했어요\.$/,()=> 'Front skin reset.'],
+      [/^뒷면 스킨을 초기화했어요\.$/,()=> 'Back skin reset.']
+    );
+
     /* WEB_I18N_V4_CORE_RULES */
     rules.push(
       [/^매장 방문일 (.+)$/,m=>'Visited '+m[1]],
@@ -1187,6 +1201,30 @@
     '게시물 상세에서 특정 작성자를 차단할 수 있습니다. 차단한 작성자의 FUNY PIN 게시물은 내 TALK 피드에서 숨겨지며, MY &gt; 차단한 사용자에서 차단 상태를 확인하거나 해제할 수 있습니다.':{en:'You can block a specific author from a post detail page. Posts from blocked authors are hidden from your TALK feed, and you can review or remove blocks in MY > Blocked Users.'},
     '스팸, 괴롭힘, 혐오·음란 콘텐츠 등 중대한 위반이나 반복적인 정책 위반이 확인되는 계정은 서비스 이용이 제한될 수 있습니다.':{en:'Accounts involved in serious or repeated violations, including spam, harassment, hateful content, or sexually explicit content, may have their access to the service restricted.'},
     '운영정책 또는 커뮤니티 안전 관련 문의는 FUNY PIN 운영 이메일':{en:'For questions about community policy or safety, contact the FUNY PIN operating email'}
+  });
+
+
+  /* WEB_I18N_V7_COIN_SKIN */
+  Object.assign(textMap,{
+    '코인 설정':{en:'Coin Settings'},
+    '회전 시간 변경':{en:'Change Flip Duration'},
+    '스킨':{en:'Skin'},
+    '코인 스킨 설정':{en:'Coin Skin Settings'},
+    '앞면과 뒷면 이미지를 각각 선택해 위치와 크기를 조정할 수 있어요. 설정한 스킨은 다음 접속에도 유지됩니다.':{en:'Choose separate images for the front and back, then adjust their position and size. Your skins will be kept for future visits.'},
+    '앞면 스킨 미리보기':{en:'Front skin preview'},
+    '앞면 스킨':{en:'Front Skin'},
+    '뒷면 스킨 미리보기':{en:'Back skin preview'},
+    '뒷면 스킨':{en:'Back Skin'},
+    '사진 선택 후 확대·축소와 위치를 조정해요.':{en:'Choose a photo, then adjust zoom and position.'},
+    '스킨 이미지 조정':{en:'Adjust Skin Image'},
+    '드래그로 위치 이동 · 슬라이더 또는 두 손가락으로 확대/축소':{en:'Drag to reposition · Use the slider or pinch to zoom'},
+    '이미지 확대 축소':{en:'Image zoom'},
+    '앞면과 뒷면 이미지를 각각 설정할 수 있어요. 로그인 계정과 현재 기기에 저장됩니다.':{en:'Set separate images for the front and back. They are saved to your account and this device.'},
+    '앞면과 뒷면 이미지를 각각 설정할 수 있어요. 현재 기기에 저장되며 다음 접속에도 유지됩니다.':{en:'Set separate images for the front and back. They are saved on this device and kept for future visits.'},
+    '원형 영역에 맞게 이미지 위치와 크기를 조정해주세요.':{en:'Adjust the image position and size to fit the circular area.'},
+    '이미지를 저장하지 못했어요.':{en:'Could not save the image.'},
+    '스킨 저장에 실패했어요. 다시 시도해주세요.':{en:'Failed to save the skin. Please try again.'},
+    '스킨 초기화에 실패했어요. 다시 시도해주세요.':{en:'Failed to reset the skin. Please try again.'}
   });
 
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();

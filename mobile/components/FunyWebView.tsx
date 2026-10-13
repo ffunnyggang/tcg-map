@@ -352,7 +352,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   useEffect(()=>{
     if(!authReady)return;
     let isCoinFlip=false;
-    try{isCoinFlip=/\/coin-flip(?:-v2)?\.html$/i.test(new URL(currentTarget||url).pathname)}catch{}
+    try{isCoinFlip=/\/coin-flip\.html$/i.test(new URL(currentTarget||url).pathname)}catch{}
     if(!isCoinFlip)return;
     const tokenScript=accessToken
       ? `window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};window.dispatchEvent(new CustomEvent('funy:auth-ready',{detail:{loggedIn:true}}));true;`

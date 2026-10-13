@@ -972,6 +972,13 @@
       [/^응모일시 (.+)$/,m=>'Entry date: '+m[1]],
       [/^응모 완료 · (.+)$/,m=>'Entry complete · '+m[1]]
     ];
+    /* WEB_I18N_V4_CORE_RULES */
+    rules.push(
+      [/^매장 방문일 (.+)$/,m=>'Visited '+m[1]],
+      [/^매장 사진 (\d+)$/,m=>'Shop Photo '+m[1]],
+      [/^사진 추가 \((\d+)\/(\d+)\)$/,m=>'Add Photos ('+m[1]+'/'+m[2]+')']
+    );
+
     /* WEB_I18N_V4_LIVE_RULES */
     rules.push(
       [/^(.+)를 선택해주세요 \((\d+)개\)$/,m=>'Please select '+m[1]+' ('+m[2]+')'],
@@ -1068,6 +1075,43 @@
     'LIVE PIN 조회 실패:':{en:'Failed to load LIVE PIN:'},'반응 등록 실패:':{en:'Failed to add reaction:'},
     '등록 실패:':{en:'Submission failed:'},'사진 업로드 실패 / HTTP':{en:'Photo upload failed / HTTP'},'신고 접수 실패: HTTP':{en:'Report submission failed: HTTP'},
     '잠시 후 다시 등록해주세요.':{en:'Please try submitting again shortly.'}
+  });
+
+
+  /* WEB_I18N_V4_CORE_DYNAMIC */
+  Object.assign(textMap,{
+    'TCG 카드샵·포켓몬카드 자판기 지도 | FUNY PIN':{en:'TCG Card Shop & Pokémon Card Vending Machine Map | FUNY PIN'},
+    '한국과 일본의 TCG 카드샵, 포켓몬카드 자판기 위치를 지도에서 검색하세요. 포켓몬·원피스·드래곤볼 취급 매장과 길찾기 정보를 제공합니다.':{en:'Find TCG card shops and Pokémon Card vending machines across Korea and Japan, including shops for Pokémon, ONE PIECE, Dragon Ball, and directions.'},
+    'FUNY PIN TCG 카드샵 지도':{en:'FUNY PIN TCG Card Shop Map'},'TCG 카드샵·포켓몬카드 자판기 지도':{en:'TCG Card Shop & Pokémon Card Vending Machine Map'},
+    '전화하기':{en:'Call'},'상품 구성 상세':{en:'Product Details'},'취급 TCG':{en:'TCG Titles'},'썸네일':{en:'Thumbnail'},'매장 이미지 준비 중':{en:'Shop images coming soon'},'TCG MAP으로 돌아가기':{en:'Back to TCG MAP'},
+    '한눈에 보는 매장 분석':{en:'Shop Overview'},'※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.':{en:'※ This is a subjective overview based on FFUNNYGGANG visit ratings and is provided for reference only.'},
+    'Google 매장 정보':{en:'Google Shop Information'},'Google 정보를 불러오는 중...':{en:'Loading Google information...'},'별점':{en:'Rating'},'Google 사용자':{en:'Google User'},'Google 매장 사진':{en:'Google Shop Photos'},
+    'Google 평점 · 리뷰':{en:'Google Rating & Reviews'},'Google 리뷰':{en:'Google Reviews'},'Google Maps에서 전체 보기':{en:'View All on Google Maps'},'Google Maps 제공 정보':{en:'Information provided by Google Maps'},'Google 매장 정보를 불러오지 못했습니다.':{en:'Could not load Google shop information.'},
+    '길찾기':{en:'Directions'},'조건에 맞는 자판기가 없습니다.':{en:'No vending machines match these filters.'},
+
+    '현재 위치 마커 설정':{en:'Current Location Marker'},'내 위치 보기':{en:'Show My Location'},'내 위치 표시':{en:'Show My Location'},'캐릭터 사용':{en:'Use Character'},
+    '남자 1':{en:'Male 1'},'남자 2':{en:'Male 2'},'여자 1':{en:'Female 1'},'여자 2':{en:'Female 2'},
+    'iPhone Safari에서 아래 순서로 허용해주세요.':{en:'On iPhone Safari, allow location access as follows.'},'주소창의':{en:'In the address bar, tap'},'페이지 메뉴':{en:'Page Menu'},'를 눌러주세요.':{en:'.'},
+    '웹사이트 설정 → 위치':{en:'Website Settings → Location'},'허용':{en:'Allow'},'으로 변경한 뒤 다시 시도해주세요.':{en:'and try again.'},'iPhone 브라우저에서 위치 권한을 허용해주세요.':{en:'Please allow location access in your iPhone browser.'},
+    '설정 → 개인정보 보호 및 보안 → 위치 서비스':{en:'Settings → Privacy & Security → Location Services'},'를 열어주세요.':{en:'.'},'사용 중인':{en:'Allow location access for'},'의 위치 접근을 허용해주세요.':{en:'.'},'FUNY PIN으로 돌아와 다시 시도해주세요.':{en:'Return to FUNY PIN and try again.'},
+    'Android Chrome에서 아래 순서로 허용해주세요.':{en:'On Android Chrome, allow location access as follows.'},'주소창 왼쪽의':{en:'Tap the icon to the left of the address bar:'},'사이트 정보':{en:'Site Information'},'권한 → 위치':{en:'Permissions → Location'},
+    'Android 브라우저에서 위치 권한을 허용해주세요.':{en:'Please allow location access in your Android browser.'},'브라우저의':{en:'Open your browser’s'},'사이트 설정 또는 권한':{en:'Site Settings or Permissions'},'현재 사이트의':{en:'For this site, set'},'을 허용해주세요.':{en:'to Allow.'},
+    '브라우저에서 위치 권한을 허용해주세요.':{en:'Please allow location access in your browser.'},'사이트 정보 또는 설정':{en:'Site Information or Settings'},'페이지로 돌아와 다시 시도해주세요.':{en:'Return to the page and try again.'},'위치 권한 안내':{en:'Location Permission'},
+    '내 위치를 표시하려면':{en:'To show your location,'},'내 위치':{en:'My Location'},'현재 위치를 확인하지 못했습니다.':{en:'Could not determine your current location.'},'위치 권한을 허용하면 내 위치를 표시할 수 있어요.':{en:'Allow location access to show your current location.'},
+    '현재 위치 정보를 가져오지 못했습니다.':{en:'Could not retrieve your current location.'},'위치 확인 시간이 초과됐습니다. 다시 시도해주세요.':{en:'Location request timed out. Please try again.'},'이 브라우저에서는 위치 기능을 지원하지 않습니다.':{en:'This browser does not support location services.'},'지도를 불러온 뒤 다시 시도해주세요.':{en:'Please wait for the map to load and try again.'},'현재 위치를 지도에 표시했습니다.':{en:'Your current location is shown on the map.'},
+
+    'TCG 카드 수집가 커뮤니티 | FUNY TALK':{en:'TCG Collector Community | FUNY TALK'},'포켓몬카드, 원피스카드 등 TCG 수집 정보와 카드 자랑, 질문, 트레이딩 이야기를 나누는 FUNY PIN 커뮤니티입니다.':{en:'FUNY PIN community for sharing TCG collecting tips, card showcases, questions, and trading stories including Pokémon and ONE PIECE cards.'},'TCG 카드 수집가 커뮤니티 FUNY TALK':{en:'TCG Collector Community FUNY TALK'},
+    '좋아요':{en:'Like'},'♡ 좋아요':{en:'♡ Like'},'♥ 좋아요':{en:'♥ Like'},'댓글을 불러오는 중...':{en:'Loading comments...'},'첫 댓글을 남겨보세요.':{en:'Be the first to comment.'},'댓글을 불러오지 못했어요.':{en:'Could not load comments.'},
+    '좋아요는 로그인 후 이용할 수 있어요.':{en:'Please sign in to like posts.'},'좋아요 처리에 실패했어요.':{en:'Could not update like.'},'댓글을 입력해주세요':{en:'Enter a comment'},'로그인 후 댓글 작성':{en:'Sign in to comment'},'댓글 작성은 로그인 후 이용할 수 있어요.':{en:'Please sign in to comment.'},'댓글 등록 실패':{en:'Failed to post comment'},
+    '게시물 수정':{en:'Edit Post'},'(최대 3장 · 장당 5MB)':{en:'(Up to 3 images · 5MB each)'},'이미지를 선택해주세요':{en:'Select images'},'카드 거래 게시물은 FUNY PIN 자체 게시판에서 지원하지 않습니다.':{en:'Card sales/trade listing posts are not supported on the FUNY PIN board.'},'수정 완료':{en:'Save Changes'},
+    'JPG, PNG, WebP 이미지만 첨부할 수 있어요.':{en:'Only JPG, PNG, and WebP images can be attached.'},'이미지는 장당 5MB 이하만 첨부할 수 있어요.':{en:'Each image must be 5MB or smaller.'},'제목과 내용을 입력해주세요.':{en:'Enter a title and content.'},'수정 중…':{en:'Saving…'},'수정에 실패했습니다.':{en:'Failed to save changes.'},'이미지 업로드에 실패했습니다.':{en:'Image upload failed.'},'이미지 정보를 저장하지 못했습니다.':{en:'Could not save image information.'},
+    '게시물을 삭제할까요?':{en:'Delete this post?'},'삭제에 실패했습니다.':{en:'Delete failed.'},'수정하기':{en:'Edit'},'삭제하기':{en:'Delete'},'댓글을 삭제할까요?':{en:'Delete this comment?'},'댓글 삭제에 실패했습니다.':{en:'Failed to delete comment.'},'댓글 수정':{en:'Edit Comment'},'댓글 수정에 실패했습니다.':{en:'Failed to edit comment.'},
+    '댓글 신고는 로그인 후 이용할 수 있어요.':{en:'Please sign in to report comments.'},'도배 · 광고':{en:'Spam · Advertising'},'욕설 · 괴롭힘':{en:'Abuse · Harassment'},'부적절한 콘텐츠':{en:'Inappropriate Content'},'개인정보 노출':{en:'Personal Information'},'댓글 신고':{en:'Report Comment'},'이미 신고한 댓글이에요.':{en:'You already reported this comment.'},'신고 처리에 실패했습니다.':{en:'Failed to submit report.'},'신고가 접수되었습니다.':{en:'Report submitted.'},
+    '게시물 신고는 로그인 후 이용할 수 있어요.':{en:'Please sign in to report posts.'},'게시물 신고':{en:'Report Post'},'신고 사유를 선택해주세요. 신고 내용은 LIVE PIN 신고와 별도로 관리됩니다.':{en:'Select a reason. TALK reports are managed separately from LIVE PIN reports.'},'이미 신고한 게시물이에요.':{en:'You already reported this post.'},'게시물 첨부 이미지':{en:'Post Attachment'},'게시물 신고하기':{en:'Report Post'},
+    '도배 방지를 위해 1분에 1개, 시간당 최대 5개까지 등록할 수 있어요. 카드 거래 게시물은 FUNY PIN 자체 게시판에서 지원하지 않습니다.':{en:'To prevent spam, you can post once per minute and up to 5 times per hour. Card sales/trade listing posts are not supported on the FUNY PIN board.'},
+    '등록 중…':{en:'Posting…'},'시간당 최대 5개의 게시물을 등록할 수 있어요.':{en:'You can post up to 5 times per hour.'},'게시물은 1분 간격으로 등록할 수 있어요.':{en:'Posts can be submitted once per minute.'},'게시물 등록에 실패했습니다.':{en:'Failed to create post.'},'게시물 등록 결과를 확인하지 못했습니다.':{en:'Could not confirm the post result.'},'게시물이 등록되었습니다.':{en:'Post published.'},'+ 게시물 등록':{en:'+ New Post'},
+    '사용자 차단과 함께 자동 접수된 신고입니다.':{en:'This report was automatically submitted with the user block.'},'작성자 차단은 로그인 후 이용할 수 있어요.':{en:'Please sign in to block authors.'},'작성자 정보를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.':{en:'Could not identify the author. Please try again shortly.'},'내 게시물은 차단할 수 없어요.':{en:'You cannot block your own post.'},'이미 차단한 사용자예요.':{en:'This user is already blocked.'},
+    '이 작성자를 차단할까요?\n차단한 사용자의 FUNY PIN 게시물은 보이지 않아요.':{en:'Block this author?\nPosts from blocked users will no longer appear in FUNY PIN.'},'차단 처리에 실패했습니다.':{en:'Failed to block user.'},'작성자를 차단하고 운영팀에 신고를 접수했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.':{en:'The author was blocked and reported to the moderation team.\nTheir posts are now hidden.'},'작성자를 차단했습니다.\n해당 사용자의 게시물은 즉시 숨겨집니다.':{en:'The author was blocked.\nTheir posts are now hidden.'},'차단하기':{en:'Block'}
   });
 
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();

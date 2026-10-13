@@ -13,14 +13,14 @@ html.funy-map-qa #filters>.country-filter-sep{display:block!important;flex:0 0 1
 html.funy-map-qa .country-filter-wrap{flex:0 0 auto!important}
 html.funy-map-qa .country-filter-select{width:88px!important;min-width:88px!important;max-width:88px!important;height:38px!important;padding:0 26px 0 12px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:19px!important;background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62))!important;color:#403a45!important;font:800 11.5px/1 Pretendard,sans-serif!important;box-shadow:0 6px 18px rgba(48,39,58,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;-webkit-backdrop-filter:blur(18px) saturate(155%)!important;backdrop-filter:blur(18px) saturate(155%)!important}
 
-.qa-layer-chip{flex:0 0 auto;height:38px;padding:0 13px;border:1.5px solid rgba(255,255,255,.68);border-radius:19px;background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.60));color:#9b949f;display:inline-flex;align-items:center;justify-content:center;gap:5px;font:800 11.5px/1 Pretendard,sans-serif;box-shadow:0 6px 18px rgba(48,39,58,.09),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.26);-webkit-backdrop-filter:blur(18px) saturate(155%);backdrop-filter:blur(18px) saturate(155%);white-space:nowrap;cursor:pointer;transition:border-color .16s ease,color .16s ease,opacity .16s ease,box-shadow .16s ease}
+.qa-layer-chip,.live-temp-layer{flex:0 0 auto;height:38px;padding:0 13px;border:1.5px solid rgba(255,255,255,.68);border-radius:19px;background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.60));color:#9b949f;display:inline-flex;align-items:center;justify-content:center;gap:5px;font:800 11.5px/1 Pretendard,sans-serif;box-shadow:0 6px 18px rgba(48,39,58,.09),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.26);-webkit-backdrop-filter:blur(18px) saturate(155%);backdrop-filter:blur(18px) saturate(155%);white-space:nowrap;cursor:pointer;transition:border-color .16s ease,color .16s ease,opacity .16s ease,box-shadow .16s ease}
 .qa-layer-chip .qa-layer-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.32}
-.qa-layer-chip .qa-layer-count{font-size:10px;font-weight:900;opacity:.7}
+.qa-layer-chip .qa-layer-count,.live-temp-layer .qa-layer-count{font-size:10px;font-weight:900;opacity:.7}
 .qa-layer-chip[data-layer="shops"].active{border-color:rgba(128,98,216,.72);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(247,244,255,.68));color:#6f50c7;box-shadow:0 6px 18px rgba(100,72,183,.12),inset 0 1px 0 rgba(255,255,255,.96)}
 .qa-layer-chip[data-layer="events"].active{border-color:rgba(239,154,92,.76);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,248,242,.68));color:#d87331;box-shadow:0 6px 18px rgba(198,108,48,.11),inset 0 1px 0 rgba(255,255,255,.96)}
 .qa-layer-chip[data-layer="vending"].active{border-color:rgba(227,189,44,.82);background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(255,251,232,.72));color:#a87d00;box-shadow:0 6px 18px rgba(176,132,0,.11),inset 0 1px 0 rgba(255,255,255,.96)}
 .qa-layer-chip.active .qa-layer-dot{opacity:1}
-.qa-layer-chip.active .qa-layer-count{opacity:1}
+.qa-layer-chip.active .qa-layer-count,.live-temp-layer.active .qa-layer-count{opacity:1}
 
 .qa-dev-badge{position:fixed;right:max(12px,calc((100vw - 420px)/2 + 12px));top:max(8px,env(safe-area-inset-top));z-index:2147482001;padding:5px 9px;border-radius:999px;background:#201b27;color:#fff;font:900 9px/1 Pretendard,sans-serif;letter-spacing:.06em;box-shadow:0 4px 12px rgba(0,0,0,.18);pointer-events:none}
 
@@ -88,7 +88,7 @@ html.funy-map-qa.qa-hide-events .funy-event-pin{display:none!important}
 @media(max-width:430px){
   html.funy-map-qa .map-search-float{top:10px}
   html.funy-map-qa .map-filter-bar{top:64px!important}
-  .qa-layer-chip{height:36px;padding:0 11px;font-size:10.8px}
+  .qa-layer-chip,.live-temp-layer{height:36px;padding:0 11px;font-size:10.8px}
   .country-filter-select{height:36px!important}
   .qa-list-tab{min-height:32px}
   .qa-vending-card{grid-template-columns:50px minmax(0,1fr) 48px;gap:9px}
@@ -511,3 +511,7 @@ html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-li
   padding:3px!important;
   box-sizing:border-box!important;
 }
+
+/* LIVE PIN uses the same liquid-glass chip geometry as the map layers. */
+.live-temp-layer.active{border-color:rgba(83,76,94,.64);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(245,243,248,.68));color:#37313f;box-shadow:0 6px 18px rgba(48,39,58,.12),inset 0 1px 0 rgba(255,255,255,.96)}
+.live-temp-layer .live-layer-bolt{font-size:1em;line-height:1;opacity:.45}.live-temp-layer.active .live-layer-bolt{opacity:1}

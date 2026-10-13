@@ -54,6 +54,8 @@ const dateText=value=>{
  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
  return parts.year+'.'+parts.month+'.'+parts.day;
 };
+const isEnglish=()=>localStorage.getItem('funy-pin-lang')==='en';
+const pickLang=(x,key)=>isEnglish()?(String(x?.[key+'_en']||'').trim()||x?.[key]||''):(x?.[key]||'');
 const bodyHtml=body=>String(body||'').split(/\n{2,}/).filter(Boolean).map(p=>{
  const emoji=/^[🗺️🔍📍📝💬]/u.test(p.trim());
  return '<p'+(emoji?' class="emoji-lines"':'')+'>'+esc(p).replace(/\n/g,'<br>')+'</p>';
@@ -62,14 +64,14 @@ const bodyHtml=body=>String(body||'').split(/\n{2,}/).filter(Boolean).map(p=>{
 function renderNotices(rows){
  const list=document.getElementById('noticeList');
  if(!rows.length){list.innerHTML='<div style="padding:42px 2px;text-align:center;color:#aaa3af;font-size:12px">등록된 공지사항이 없습니다.</div>';return}
- list.innerHTML=rows.map(x=>'<article class="notice-item"><button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title">'+esc(x.title)+'</span><span class="notice-date">'+esc(dateText(x.published_at))+'</span></span><span class="arrow">⌄</span></button><div class="notice-body">'+bodyHtml(x.body)+'</div></article>').join('');
+ list.innerHTML=rows.map(x=>'<article class="notice-item"><button class="notice-toggle" type="button" aria-expanded="false"><span><span class="notice-title" data-funy-i18n="off">'+esc(pickLang(x,'title'))+'</span><span class="notice-date">'+esc(dateText(x.published_at))+'</span></span><span class="arrow">⌄</span></button><div class="notice-body" data-funy-i18n="off">'+bodyHtml(pickLang(x,'body'))+'</div></article>').join('');
  list.querySelectorAll('.notice-toggle').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.notice-item'),open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))}));
 }
 
 async function loadNotices(){
  try{
   const now=encodeURIComponent(new Date().toISOString());
-  const res=await fetch(BASE+'/rest/v1/notices?select=title,body,published_at,is_pinned&status=eq.published&published_at=lte.'+now+'&order=is_pinned.desc,published_at.desc',{headers:{apikey:KEY,Accept:'application/json'}});
+  const res=await fetch(BASE+'/rest/v1/notices?select=title,title_en,body,body_en,published_at,is_pinned&status=eq.published&published_at=lte.'+now+'&order=is_pinned.desc,published_at.desc',{headers:{apikey:KEY,Accept:'application/json'}});
   if(!res.ok)throw new Error('HTTP '+res.status);
   const rows=await res.json();
   renderNotices(Array.isArray(rows)?rows:[]);
@@ -79,6 +81,6 @@ async function loadNotices(){
 }
 loadNotices();
 </script>
-<script src="funy-i18n.js?v=20261013-web-en-v6"></script>
+<script src="funy-i18n.js?v=20261013-web-en-v7"></script>
 </body>
 </html>

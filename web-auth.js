@@ -67,7 +67,7 @@
   async function signInSocial(provider,returnTo){
     if(isAppShell())throw new Error('APP_NATIVE_AUTH_ONLY');
     await init();rememberReturn(returnTo||document.referrer||'/');
-    const redirectTo=location.origin+'/login.html?callback=1';
+    const redirectTo=location.origin+'/login.html';
     const options={redirectTo};
     if(provider==='kakao')options.queryParams={scope:'profile_nickname profile_image'};
     const {data,error}=await client.auth.signInWithOAuth({provider,options});

@@ -1,10 +1,10 @@
 /* FUNY PIN global language switch */
-.funy-lang-switch{position:fixed;top:max(15px,env(safe-area-inset-top));right:58px;z-index:120;display:flex!important;align-items:center;padding:0;background:transparent}
+.funy-lang-switch{position:static!important;top:auto!important;right:auto!important;z-index:120;display:flex!important;align-items:center;margin-left:auto!important;padding:0;background:transparent;height:54px!important}
 body.funy-lang-home .funy-lang-switch{display:flex!important}
 .funy-lang-switch button{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#8062d8;height:28px;min-width:44px;padding:0 4px;font:800 11.5px/1 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.025em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 .funy-lang-icon{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .funy-lang-switch button:active{opacity:.58}
-@media(max-width:430px){.funy-lang-switch{top:max(14px,env(safe-area-inset-top));right:54px}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:11.5px;gap:4px}.funy-lang-icon{width:15px;height:15px}}
+@media(max-width:430px){.funy-lang-switch{top:auto!important;right:auto!important;height:54px!important}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:11.5px;gap:4px}.funy-lang-icon{width:15px;height:15px}}
 
 /* EN overflow guards: preserve existing KO layout and structure */
 html[lang="en"] .header-more-menu{width:min(270px,calc(100vw - 28px))}
@@ -27,11 +27,11 @@ html[lang="en"] .portal-bottom-nav a span,
 html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Header-aligned language control */
-.funy-lang-switch{top:0;height:58px;align-items:center}
+.funy-lang-switch{position:static!important;height:54px!important;margin-left:auto!important;align-items:center!important}
 .funy-lang-switch button{height:32px;align-items:center;justify-content:center;line-height:1}
 .funy-lang-icon{display:block}
 .funy-lang-switch button span{display:flex;align-items:center;height:15px;line-height:15px}
-@media(max-width:430px){.funy-lang-switch{top:0;height:58px}.funy-lang-switch button{height:32px}}
+@media(max-width:430px){.funy-lang-switch{height:54px!important}.funy-lang-switch button{height:32px}}
 
 /* QA floating action polish */
 .live-pin-entry{background:#17151B!important;box-shadow:0 8px 24px rgba(17,16,21,.24)!important}

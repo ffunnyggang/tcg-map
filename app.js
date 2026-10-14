@@ -23,6 +23,14 @@ window.FUNY_SHOP_LOCATION_TEXT=function(shop){
   }
   return [area,station?(station+(Number.isFinite(walk)&&walk>0?' 도보 '+walk+'분':'')):''].filter(Boolean).join(' · ');
 };
+window.FUNY_SHOP_LOCATION_SHORT=function(shop){
+  const raw=shop||{},s=window.FUNY_SHOP_DISPLAY(raw);
+  if(!window.FUNY_IS_ENGLISH?.())return window.FUNY_SHOP_LOCATION_TEXT(raw);
+  const fallback={강남:'Gangnam',강동:'Gangdong',강북:'Gangbuk',건대:'Konkuk Univ.',관악:'Gwanak',김포:'Gimpo',논현:'Nonhyeon',니혼바시:'Nihombashi',대림:'Daerim',대전:'Daejeon',동대문:'Dongdaemun',마포:'Mapo',목동:'Mokdong',부천:'Bucheon',부평:'Bupyeong',서대문:'Seodaemun',성남:'Seongnam',성수:'Seongsu',송도:'Songdo',송파:'Songpa',수원:'Suwon',신촌:'Sinchon',아키하바라:'Akihabara',안양:'Anyang','왕십리/한양대':'Wangsimni / Hanyang Univ.',용산:'Yongsan',용인:'Yongin',은평:'Eunpyeong',의정부:'Uijeongbu',이수:'Isu',일산:'Ilsan',천안:'Cheonan',평택:'Pyeongtaek',합정:'Hapjeong',홍대:'Hongdae'};
+  const area=raw.areaEn||raw.area_en||s.areaEn||s.area_en||fallback[raw.area]||fallback[s.area]||s.area||raw.cityEn||raw.city_en||s.cityEn||s.city_en||s.city;
+  const station=raw.stationEn||raw.nearest_station_en||s.stationEn||s.nearest_station_en||s.station;
+  return [area,station].filter(Boolean).join(' · ');
+};
 window.FUNY_SHOP_ADDRESS_TEXT=function(shop){
   const raw=shop||{},s=window.FUNY_SHOP_DISPLAY(raw);
   if(!window.FUNY_IS_ENGLISH?.())return s.address||raw.address||'';

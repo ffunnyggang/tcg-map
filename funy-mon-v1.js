@@ -376,12 +376,28 @@
     if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){if(eventCaption){eventCaption.textContent='';eventCaption.hidden=true}savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
   }
   function getPosition(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('unsupported'));navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
+  function captureAuth(){
+    const nativeToken=String(window.__FUNY_ACCESS_TOKEN||'').trim();
+    const webToken=String(window.FUNY_WEB_AUTH?.session?.access_token||'').trim();
+    return {token:nativeToken||webToken,app:!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell')||new URLSearchParams(location.search).get('app')==='1'};
+  }
+  function requireCaptureLogin(){
+    const auth=captureAuth();
+    if(auth.token)return auth;
+    if(auth.app){
+      try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/login?next=map'}))}catch(_){}
+    }else if(window.FUNY_WEB_AUTH?.goLogin){
+      window.FUNY_WEB_AUTH.goLogin(location.href);
+    }else{
+      location.href='/login.html';
+    }
+    return null;
+  }
   async function catchMonster(meta){
-    if(busy)return;busy=true;showCatchLoading();try{window.gtag?.('event','funymon_catch_start',{shop_id:meta.shop.id,monster_id:meta.def.id})}catch(_){}
+    if(busy)return;const auth=requireCaptureLogin();if(!auth)return;busy=true;showCatchLoading();try{window.gtag?.('event','funymon_catch_start',{shop_id:meta.shop.id,monster_id:meta.def.id})}catch(_){}
     try{
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
-      const captureHeaders={'Content-Type':'application/json'};
-      try{if(window.__FUNY_ACCESS_TOKEN)captureHeaders.Authorization='Bearer '+window.__FUNY_ACCESS_TOKEN}catch(_){}
+      const captureHeaders={'Content-Type':'application/json',Authorization:'Bearer '+auth.token};
       const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:captureHeaders,body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok){

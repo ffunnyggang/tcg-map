@@ -384,12 +384,13 @@
   function requireCaptureLogin(){
     const auth=captureAuth();
     if(auth.token)return auth;
+    alert('퍼니몬 포획은 로그인 후 이용할 수 있어요.');
     if(auth.app){
       try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/login?next=map'}))}catch(_){}
     }else if(window.FUNY_WEB_AUTH?.goLogin){
       window.FUNY_WEB_AUTH.goLogin(location.href);
     }else{
-      location.href='/login.html';
+      location.href='/login.html?next='+encodeURIComponent(location.href);
     }
     return null;
   }

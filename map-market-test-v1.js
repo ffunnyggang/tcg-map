@@ -25,7 +25,7 @@
   let markers=new Map(),popup=null,selectedMarkerId=null;
   let registerMap=null,registerProduct=null,registerType='single',registerDirectBuy=false,registerLat=37.5665,registerLng=126.9780,registerLocation='거래 희망 위치',reverseTimer=null;
   let marketPanel=null,marketTabBtn=null,layerChip=null;
-  let chatChannel=null,currentChatRoom=null,chatRoomsCache=new Map();
+  let chatChannel=null,chatInboxChannel=null,currentChatRoom=null,chatRoomsCache=new Map();
 
   async function waitForMap(){
     for(let i=0;i<120;i++){
@@ -385,6 +385,7 @@
   const tabs=await waitForQaTabs();
   if(tabs)setupMarketPanel(tabs);
   ensureLayerChip();buildFab();buildOverlay();buildRegister();buildDetail();buildChatList();buildChatRoom();refreshChatBadge();
+  chatInboxChannel=A.client.channel('market-chat-inbox').on('postgres_changes',{event:'INSERT',schema:'public',table:'market_chat_messages'},()=>refreshChatBadge()).subscribe();
   if(map)naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());
   setInterval(()=>{ensureLayerChip();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));if(marketPanel)marketPanel.hidden=false}},700);
   await loadRows();

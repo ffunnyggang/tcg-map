@@ -19,3 +19,19 @@ body.country-japan .shops-bottom-nav a.active{color:#6f55c7!important}
 
 /* Japan does not expose LIVE PIN */
 body.country-japan .live-pin-entry-wrap,body.country-japan .live-pin-detail-entry{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+/* 2026-10-14: country picker moved beside search */
+.map-search-float{display:flex!important;align-items:center!important;gap:8px!important}
+.map-search-float .map-search-box{flex:1 1 auto!important;min-width:0!important}
+.country-filter-search{position:relative;display:flex;align-items:center;flex:0 0 auto;z-index:30}
+.country-filter-button{width:42px;height:42px;border:1px solid rgba(226,221,232,.95);border-radius:14px;background:rgba(255,255,255,.92);box-shadow:0 7px 22px rgba(45,35,60,.10);display:grid;place-items:center;padding:0;font-size:20px;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%)}
+.country-filter-menu{position:absolute;right:0;top:48px;min-width:128px;padding:5px;border:1px solid #e5e0e8;border-radius:12px;background:#fff;box-shadow:0 12px 30px rgba(38,31,46,.16);display:none;z-index:2147482000}
+.country-filter-search.open .country-filter-menu{display:block}
+.country-filter-menu button{width:100%;height:38px;padding:0 10px;border:0;border-radius:8px;background:#fff;color:#403a45;text-align:left;font-size:11px;font-weight:800;cursor:pointer}
+.country-filter-menu button.active{background:#f3effc;color:#6749bd}
+body.country-japan .country-filter-menu button.active{background:#fff0f2;color:#b9002d}
+.map-filter-bar .country-filter-wrap,.map-filter-bar .country-filter-sep{display:none!important}
+@media(max-width:430px){
+  .country-filter-button{width:40px;height:40px;border-radius:13px;font-size:19px}
+  .country-filter-menu{top:46px;min-width:124px}
+}

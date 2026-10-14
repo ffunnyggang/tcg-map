@@ -68,6 +68,8 @@
 /* Sticky content below a 54px common header */
 .info-tabs{top:var(--funy-header-h)!important}
 html.app-shell.live-pin-page .filters{top:54px!important}
+.portal-shell .talk-body>.filters{top:54px!important}
+.portal-shell .popular-sort.show{top:104px!important}
 
 /* Common sub-page header: ‹ + left-aligned title */
 .funy-sub-header{

@@ -12,7 +12,7 @@ body.market-test-ready{visibility:visible!important}
 .market-layer-chip .market-layer-count{color:#8062D8;font-weight:900}
 .market-layer-chip.active{background:linear-gradient(135deg,#28232E,#17151B);color:#fff;border-color:rgba(255,255,255,.34);box-shadow:0 7px 20px rgba(30,25,38,.25),inset 0 1px 0 rgba(255,255,255,.18)}
 .market-layer-chip.active .market-layer-count{color:#FFD858}
-body.country-japan .market-layer-chip{display:none!important}
+body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.country-japan [data-open-market-overlay]{display:none!important}
 
 /* market tab in current bottom sheet */
 .qa-list-tabs .market-list-tab{min-width:0}

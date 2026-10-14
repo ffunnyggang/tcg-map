@@ -9,7 +9,7 @@ style.textContent=`
 .summary-card{position:relative}
 .web-favorite-btn{position:absolute;right:14px;top:17px;width:34px;height:34px;padding:0;border:0;background:transparent;color:#A49DAC;display:grid;place-items:center;z-index:5;cursor:pointer}
 .web-favorite-btn svg{width:28px;height:28px;display:block}
-.web-favorite-btn.is-on{color:#8062D8}
+.web-favorite-btn.is-on{color:#8062D8}body.country-japan .web-favorite-btn.is-on{color:#D93B55}
 .web-favorite-btn:disabled{opacity:.5}
 .summary-card>.d-name{padding-right:44px}
 .web-favorite-toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:2147483600;max-width:calc(100vw - 36px);padding:10px 14px;border-radius:999px;background:rgba(31,28,35,.92);color:#fff;font:750 11px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;white-space:nowrap;opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .18s ease,transform .2s ease}

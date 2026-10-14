@@ -36,11 +36,26 @@
       wrap=document.createElement('div');wrap.className='country-filter-wrap country-filter-search';wrap.setAttribute('data-country-filter','');
       wrap.innerHTML='<button class="country-filter-button" type="button" aria-haspopup="menu" aria-expanded="false"></button><div class="country-filter-menu" role="menu"><button type="button" data-country-value="KR" role="menuitem">🇰🇷 한국</button><button type="button" data-country-value="JP" role="menuitem">🇯🇵 일본</button></div>';
       searchFloat.appendChild(wrap);
-      const btn=wrap.querySelector('.country-filter-button');
-      btn.onclick=e=>{e.preventDefault();e.stopPropagation();wrap.classList.toggle('open');updateCountryVisual()};
-      wrap.querySelector('.country-filter-menu').onclick=e=>{const item=e.target.closest('[data-country-value]');if(!item)return;e.preventDefault();e.stopPropagation();wrap.classList.remove('open');applyCountry(item.dataset.countryValue)};
-      document.addEventListener('click',e=>{if(!e.target.closest('[data-country-filter]')){wrap.classList.remove('open');updateCountryVisual()}});
-      document.addEventListener('keydown',e=>{if(e.key==='Escape'){wrap.classList.remove('open');updateCountryVisual()}});
+      const btn=wrap.querySelector('.country-filter-button'),menu=wrap.querySelector('.country-filter-menu');
+      const placeMenu=()=>{
+        const r=btn.getBoundingClientRect();
+        menu.style.position='fixed';
+        menu.style.right=Math.max(8,window.innerWidth-r.right)+'px';
+        menu.style.top=(r.bottom+6)+'px';
+        menu.style.zIndex='2147483600';
+      };
+      const openMenu=()=>{
+        if(menu.parentElement!==document.body)document.body.appendChild(menu);
+        placeMenu();menu.classList.add('open');wrap.classList.add('open');updateCountryVisual();
+      };
+      const closeMenu=()=>{
+        menu.classList.remove('open');wrap.classList.remove('open');updateCountryVisual();
+      };
+      btn.onclick=e=>{e.preventDefault();e.stopPropagation();menu.classList.contains('open')?closeMenu():openMenu()};
+      menu.onclick=e=>{const item=e.target.closest('[data-country-value]');if(!item)return;e.preventDefault();e.stopPropagation();closeMenu();applyCountry(item.dataset.countryValue)};
+      document.addEventListener('click',e=>{if(!e.target.closest('[data-country-filter]')&&!e.target.closest('.country-filter-menu'))closeMenu()});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+      window.addEventListener('resize',()=>{if(menu.classList.contains('open'))placeMenu()},{passive:true});
     }else if(wrap.parentElement!==searchFloat){
       wrap.remove();
       return ensureCountryControl();

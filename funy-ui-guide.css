@@ -39,13 +39,16 @@
   gap:0!important;
 }
 .portal-header .portal-logo,
-.portal-header .portal-logo svg{
+.portal-header .portal-logo svg,
+.portal-header .portal-logo img{
   width:30px!important;
   height:34px!important;
   flex:0 0 30px!important;
   display:block!important;
+  object-fit:contain!important;
 }
 .portal-header .portal-logo{margin-right:8px!important}
+.portal-body .portal-header .portal-brand>strong,
 .portal-header .portal-brand strong,
 .portal-header .info-title{
   margin:0!important;

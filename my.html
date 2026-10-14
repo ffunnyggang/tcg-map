@@ -32,7 +32,7 @@ body{padding:0}
 .activity-card,.support-card,.settings-card{border-radius:19px;background:#fff;border:1px solid #E3DDED;overflow:hidden}
 .activity-row{min-height:72px;padding:0 14px;display:flex;align-items:center;color:inherit;text-decoration:none;border-bottom:1px solid #EEEAF1}
 .activity-row:last-child{border-bottom:0}
-.activity-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;background:#F0EBF9;display:grid;place-items:center;color:#6749bd;font-size:18px}
+.activity-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;background:#F0EBF9;display:grid;place-items:center;color:#6749bd;font-size:19px;line-height:1}
 .activity-copy{flex:1;min-width:0;margin-left:12px}
 .activity-label{display:block;font-size:14px;font-weight:900;color:#28232e}
 .activity-sub{display:block;margin-top:4px;font-size:10.5px;color:#8f8794;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -121,11 +121,11 @@ body{padding:0}
       '<a class="profile-edit" href="/my-profile.html">'+T.edit+'</a>'+
     '</section>'+
     '<section class="my-section"><div class="section-head"><h2 class="section-title">'+T.activity+'</h2></div><div class="activity-card">'+
-      '<a class="activity-row" href="/my-favorites.html"><span class="activity-icon">♡</span><span class="activity-copy"><span class="activity-label">'+T.fav+'</span><span class="activity-sub">'+T.favSub+'</span></span><span class="chevron">›</span></a>'+
-      '<a class="activity-row" href="/my-funymon.html"><span class="activity-icon">✦</span><span class="activity-copy"><span class="activity-label">'+T.mon+'</span><span class="activity-sub">'+T.monSub+'</span></span><span class="chevron">›</span></a>'+
-      '<a class="activity-row" href="/my-entries.html"><span class="activity-icon">🎟</span><span class="activity-copy"><span class="activity-label">'+T.entries+'</span><span class="activity-sub">'+T.entriesSub+'</span></span><span class="chevron">›</span></a>'+
-      '<a class="activity-row" href="/my-coupons.html"><span class="activity-icon">▣</span><span class="activity-copy"><span class="activity-label">'+T.coupons+'</span><span class="activity-sub">'+T.couponsSub+'</span></span><span class="chevron">›</span></a>'+
-      '<a class="activity-row" href="/my-blocked-users.html"><span class="activity-icon">⊘</span><span class="activity-copy"><span class="activity-label">'+T.blocked+'</span><span class="activity-sub">'+T.blockedSub+'</span></span><span class="chevron">›</span></a>'+
+      '<a class="activity-row" href="/my-favorites.html"><span class="activity-icon" aria-hidden="true">⭐</span><span class="activity-copy"><span class="activity-label">'+T.fav+'</span><span class="activity-sub">'+T.favSub+'</span></span><span class="chevron">›</span></a>'+
+      '<a class="activity-row" href="/my-funymon.html"><span class="activity-icon" aria-hidden="true">👾</span><span class="activity-copy"><span class="activity-label">'+T.mon+'</span><span class="activity-sub">'+T.monSub+'</span></span><span class="chevron">›</span></a>'+
+      '<a class="activity-row" href="/my-entries.html"><span class="activity-icon" aria-hidden="true">🎟️</span><span class="activity-copy"><span class="activity-label">'+T.entries+'</span><span class="activity-sub">'+T.entriesSub+'</span></span><span class="chevron">›</span></a>'+
+      '<a class="activity-row" href="/my-coupons.html"><span class="activity-icon" aria-hidden="true">🎫</span><span class="activity-copy"><span class="activity-label">'+T.coupons+'</span><span class="activity-sub">'+T.couponsSub+'</span></span><span class="chevron">›</span></a>'+
+      '<a class="activity-row" href="/my-blocked-users.html"><span class="activity-icon" aria-hidden="true">🚫</span><span class="activity-copy"><span class="activity-label">'+T.blocked+'</span><span class="activity-sub">'+T.blockedSub+'</span></span><span class="chevron">›</span></a>'+
     '</div></section>'+
     '<section class="my-section"><div class="section-head"><h2 class="section-title">'+T.settings+'</h2></div><div class="settings-card"><div class="language-row"><span class="support-label">'+T.language+'</span><div class="language-toggle"><button class="language-option '+(!en?'is-on':'')+'" data-lang="ko" type="button">한국어</button><button class="language-option '+(en?'is-on':'')+'" data-lang="en" type="button">EN</button></div></div></div></section>'+
     '<section class="my-section"><div class="section-head"><h2 class="section-title">'+T.support+'</h2></div><div class="support-card">'+

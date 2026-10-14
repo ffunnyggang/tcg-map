@@ -34,8 +34,8 @@ body{padding:0}
 .activity-row:last-child{border-bottom:0}
 .activity-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;background:#F0EBF9;display:grid;place-items:center;color:#6749bd;font-size:18px}
 .activity-copy{flex:1;min-width:0;margin-left:12px}
-.activity-label{font-size:14px;font-weight:900;color:#28232e}
-.activity-sub{margin-top:4px;font-size:10.5px;color:#8f8794;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-label{display:block;font-size:14px;font-weight:900;color:#28232e}
+.activity-sub{display:block;margin-top:4px;font-size:10.5px;color:#8f8794;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chevron{flex:0 0 auto;margin-left:8px;color:#B0A9B5;font-size:21px;font-weight:400}
 .language-row{min-height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .support-label{font-size:13.5px;font-weight:700;color:#514b56}
@@ -51,7 +51,7 @@ body{padding:0}
 .legal-links{margin-top:22px;display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}
 .legal-links a{color:#8f8794;text-decoration:none;font-size:10.5px;font-weight:700}
 .legal-divider{color:#C5BDC9;font-size:10px}
-.my-message{margin-top:10px;color:#b42318;text-align:center;font-size:11px;line-height:1.5}
+.my-message{margin-top:10px;color:#b42318;text-align:center;font-size:11px;line-height:1.5}.my-toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:2147483600;transform:translate(-50%,12px);max-width:calc(100% - 36px);padding:10px 14px;border-radius:999px;background:rgba(32,29,36,.92);color:#fff;font-size:11px;font-weight:750;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .2s ease}.my-toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:360px){.portal-main{padding-left:14px!important;padding-right:14px!important}.activity-sub{font-size:10px}.language-option{min-width:48px}}
 </style>
 <script src="/web-auth.js?v=20261014-web-auth4"></script>
@@ -84,7 +84,7 @@ body{padding:0}
   <a href="talk.html"><img class="nav-icon" data-nav-icon="talk" src="/assets/nav-icons-final-v2/funypin_nav_talk_off.png?v=20261013-nav-unify" alt=""><span>TALK</span></a>
   <a class="active" href="my.html" aria-label="MY"><span class="nav-my-symbol" aria-hidden="true"></span><span>MY</span></a>
 </nav>
-</div>
+</div><div id="myToast" class="my-toast" role="status" aria-live="polite"></div>
 <script>
 (async()=>{
   const A=window.FUNY_WEB_AUTH,root=document.getElementById('myRoot');
@@ -139,8 +139,24 @@ body{padding:0}
     '<div class="account-actions"><button id="logout" class="logout-button" type="button">'+T.logout+'</button><button id="deleteAccount" class="delete-button" type="button">'+T.deleteAccount+'</button><div id="myMessage" class="my-message"></div></div>'+
     '<div class="legal-links"><a href="/terms.html">'+T.terms+'</a><span class="legal-divider">·</span><a href="/privacy.html">'+T.privacy+'</a><span class="legal-divider">·</span><a href="/community-guidelines.html">'+T.guidelines+'</a></div>';
 
+  const toast=document.getElementById('myToast');
+  const toastMessage=()=>{
+    const value=sessionStorage.getItem('funy-my-lang-toast');
+    if(!value)return;
+    sessionStorage.removeItem('funy-my-lang-toast');
+    toast.textContent=value;requestAnimationFrame(()=>toast.classList.add('show'));setTimeout(()=>toast.classList.remove('show'),1800);
+  };
+  const savedScroll=Number(sessionStorage.getItem('funy-my-lang-scroll')||'');
+  if(Number.isFinite(savedScroll)&&savedScroll>0){
+    sessionStorage.removeItem('funy-my-lang-scroll');
+    requestAnimationFrame(()=>{window.scrollTo(0,savedScroll);setTimeout(()=>window.scrollTo(0,savedScroll),80)});
+  }
+  toastMessage();
   document.querySelectorAll('[data-lang]').forEach(btn=>btn.addEventListener('click',()=>{
     const next=btn.dataset.lang==='en'?'en':'ko';
+    if((en?'en':'ko')===next)return;
+    sessionStorage.setItem('funy-my-lang-scroll',String(window.scrollY||document.documentElement.scrollTop||0));
+    sessionStorage.setItem('funy-my-lang-toast',next==='en'?'Language changed to English.':'언어가 한국어로 변경되었습니다.');
     localStorage.setItem('funy-pin-lang',next);
     location.reload();
   }));
@@ -148,7 +164,7 @@ body{padding:0}
   const logout=document.getElementById('logout'),del=document.getElementById('deleteAccount'),msg=document.getElementById('myMessage');
   logout.onclick=async()=>{
     if(logout.disabled||del.disabled)return;
-    if(!confirm(en?'Log out of FUNY PIN?':'로그아웃할까요?'))return;
+    if(!confirm(en?'Log out of FUNY PIN?\n\nYour saved favorite shops and activity history will remain in your account.':'로그아웃할까요?\n\n로그아웃해도 저장된 관심 매장과 활동 내역은 계정에 유지돼요.'))return;
     logout.disabled=true;del.disabled=true;logout.textContent=T.loggingOut;
     try{await A.signOut();location.replace('/')}catch(e){msg.textContent=en?'Could not log out. Please try again.':'로그아웃에 실패했습니다. 다시 시도해주세요.';logout.disabled=false;del.disabled=false;logout.textContent=T.logout}
   };

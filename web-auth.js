@@ -17,6 +17,10 @@
   const lang=()=>{try{return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}catch(_){return'ko'}};
   const emit=()=>{listeners.forEach(fn=>{try{fn(currentSession)}catch(_){}});try{window.dispatchEvent(new CustomEvent('funy:web-auth-change',{detail:{loggedIn:!!currentSession,user:currentSession?.user||null}}))}catch(_){}};
 
+  function clearStoredAuth(){
+    clearStoredAuth();
+  }
+
   function loadSdk(){
     if(window.supabase?.createClient)return Promise.resolve(window.supabase);
     return new Promise((resolve,reject)=>{
@@ -42,6 +46,12 @@
       }catch(e){console.warn('[FUNY WEB AUTH] callback exchange failed',e)}
       const {data}=await client.auth.getSession();
       currentSession=data?.session||null;
+      if(currentSession){
+        try{
+          const {data:userData,error:userError}=await client.auth.getUser();
+          if(userError||!userData?.user){clearStoredAuth();currentSession=null}
+        }catch(_){clearStoredAuth();currentSession=null}
+      }
       client.auth.onAuthStateChange((_event,session)=>{currentSession=session||null;emit()});
       emit();
       return currentSession;

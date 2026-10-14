@@ -99,6 +99,57 @@ function jsonLdData(html: string) {
   return out;
 }
 
+function listingImages(html: string, primary: string) {
+  const all: string[] = [];
+  const re = /https:\/\/img\.kr\.gcp-karroter\.net\/origin\/article\/[^"'<>\\\s]+/gi;
+  let match;
+  while ((match = re.exec(html))) {
+    const raw = clean(decodeHtml(match[0]).replace(/\\u0026/g, "&"));
+    if (raw) all.push(raw);
+  }
+
+  const normalized = all.map((raw) => {
+    try {
+      const u = new URL(raw);
+      u.search = "";
+      return u.toString();
+    } catch (_) { return raw.split("?")[0]; }
+  });
+
+  let primaryPath = "";
+  let primaryStamp = NaN;
+  try {
+    const u = new URL(primary);
+    primaryPath = u.origin + u.pathname;
+    const filename = u.pathname.split("/").pop() || "";
+    const stamp = filename.match(/^(\d{13})/);
+    primaryStamp = stamp ? Number(stamp[1]) : NaN;
+  } catch (_) {}
+
+  const unique = [...new Set([primaryPath, ...normalized].filter(Boolean))];
+  const batch = unique.filter((raw) => {
+    if (!Number.isFinite(primaryStamp)) return raw === primaryPath;
+    try {
+      const filename = new URL(raw).pathname.split("/").pop() || "";
+      const stamp = filename.match(/^(\d{13})/);
+      return !!stamp && Math.abs(Number(stamp[1]) - primaryStamp) <= 120000;
+    } catch (_) { return raw === primaryPath; }
+  });
+
+  const chosen = (batch.length ? batch : [primaryPath]).filter(Boolean).slice(0, 20);
+  return chosen.map((raw) => {
+    try {
+      const u = new URL(raw);
+      u.searchParams.set("f", "webp");
+      u.searchParams.set("q", "95");
+      u.searchParams.set("s", "1440x1440");
+      u.searchParams.set("service", "webapp");
+      u.searchParams.set("t", "inside");
+      return u.toString();
+    } catch (_) { return raw; }
+  });
+}
+
 function normalizePrice(raw: string) {
   const value = clean(raw);
   if (!value) return "";
@@ -139,6 +190,7 @@ Deno.serve(async (req: Request) => {
     const title = structured.title || ogTitle || meta(html, "twitter:title") || clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]);
     const description = structured.description || meta(html, "og:description") || meta(html, "description");
     const image = structured.image || ogImage || meta(html, "og:image:secure_url") || meta(html, "twitter:image");
+    const images = listingImages(html, clean(image));
     const rawPrice = structured.price || meta(html, "product:price:amount") || meta(html, "og:price:amount") ||
       ((description.match(/(?:₩\s*)?([0-9][0-9,]{2,})\s*원/) || [])[1] || "");
     const currency = structured.currency || meta(html, "product:price:currency") || "KRW";
@@ -155,7 +207,8 @@ Deno.serve(async (req: Request) => {
       price: normalizePrice(rawPrice),
       price_raw: clean(rawPrice),
       currency,
-      image: clean(image),
+      image: clean(images[0] || image),
+      images,
       description: clean(description),
       availability: structured.availability || "",
       fetched_at: new Date().toISOString(),

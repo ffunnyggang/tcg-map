@@ -31,7 +31,7 @@
     if(readyPromise)return readyPromise;
     readyPromise=(async()=>{
       const sdk=await loadSdk();
-      client=sdk.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}});
+      client=sdk.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'}});
       try{
         const u=new URL(location.href),code=u.searchParams.get('code');
         if(code){

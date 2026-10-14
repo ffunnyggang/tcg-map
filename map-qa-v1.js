@@ -201,7 +201,8 @@ const $=s=>document.querySelector(s);
     const shopCount=(()=>{try{return SHOPS.filter(x=>!String(x.id).startsWith('JP-')).length}catch(_){return 0}})();
     const defs=[['shops','카드샵',shopCount],['events','일정',0],['vending','자판기',VENDING.length]];
     const anchor=track.querySelector('.country-filter-sep')||track.querySelector('.country-filter-wrap');
-    let ref=anchor?.nextSibling||null;
+    if(anchor)anchor.remove();
+    let ref=track.firstChild||null;
     defs.forEach(([key,label,count])=>{
       const b=document.createElement('button');b.type='button';b.className='qa-layer-chip'+(state.layers[key]?' active':'');b.dataset.layer=key;
       b.innerHTML='<span class="qa-layer-dot"></span><span>'+label+'</span><span class="qa-layer-count">'+count+'</span>';

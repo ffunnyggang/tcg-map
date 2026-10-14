@@ -3,9 +3,9 @@
 이 문서는 WEB과 APP의 공통 UI 수치를 관리하는 기준이다.
 
 ## Source of truth
-- APP: `mobile/lib/theme.ts`
-- WEB: `funy-ui-guide.css`
-- 공통 수치 변경 시 두 파일을 함께 갱신한다.
+- 현재 승인 기준: WEB `funy-ui-guide.css`
+- APP: `mobile/lib/theme.ts`는 다음 네이티브 배포 시 WEB 승인 기준에 동기화한다.
+- WEB에서 공통 UI가 확정되면 문서와 CSS를 먼저 갱신하고, APP 후속 배포에서 동일 수치를 반영한다.
 
 ## Core tokens
 | Token | Value |
@@ -59,6 +59,7 @@ APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞�
 
 ## Native parity backlog
 WEB에서 먼저 적용했으며 다음 APP 배포 시 함께 맞출 항목:
+- MY 내 활동 메뉴 아이콘: WEB과 동일한 이모지 기준
 - MY 퍼니몬 도감 No.11~15: 롱냥, 셔플링, 네온콩, 파오링, 조커비
 - MY 언어 변경 시 현재 스크롤 위치 유지 + 변경 완료 토스트
 - APP 하단 내비게이션에 MY 탭을 추가하는 시점에는 MY 헤더를 WEB 채널 헤더(심볼 + MY)와 동일하게 전환

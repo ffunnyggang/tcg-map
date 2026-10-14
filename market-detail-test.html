@@ -20,11 +20,11 @@
 </div>
 <script>
 (async()=>{
- const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq',A=window.FUNY_WEB_AUTH;const id=new URLSearchParams(location.search).get('id');const root=document.getElementById('root');document.getElementById('back').onclick=()=>{if(history.length>1)history.back();else location.href='/market-test.html'};const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
+ const A=window.FUNY_WEB_AUTH;const id=new URLSearchParams(location.search).get('id');const root=document.getElementById('root');document.getElementById('back').onclick=()=>{if(history.length>1)history.back();else location.href='/market-test.html'};const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
  if(!id){root.innerHTML='<div class="error">매물 ID가 없습니다.</div>';return}
  try{
-   await A.init().catch(()=>null);
-   const r=await fetch(BASE+'/rest/v1/market_listings?select=*&id=eq.'+encodeURIComponent(id)+'&limit=1',{headers:{apikey:KEY,Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const rows=await r.json(),x=rows[0];if(!x)throw Error('매물을 찾을 수 없습니다.');
+   const session=await A.init();if(!session){alert('MARKET 테스트는 로그인 후 이용할 수 있어요.');A.goLogin(location.pathname+location.search);return}
+   const {data:x,error}=await A.client.from('market_listings').select('*').eq('id',id).maybeSingle();if(error)throw error;if(!x)throw Error('매물을 찾을 수 없습니다.');
    const sold=x.listing_status==='sold'||x.listing_status==='expired'||x.listing_status==='hidden';
    root.innerHTML='<main class="page">'+
      '<div class="hero">'+(x.thumbnail_url?'<img src="'+esc(x.thumbnail_url)+'" alt="" referrerpolicy="no-referrer">':'<div class="hero-ph">NO IMAGE</div>')+'</div>'+

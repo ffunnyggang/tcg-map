@@ -27,7 +27,7 @@ html.funy-map-qa .country-filter-select{width:88px!important;min-width:88px!impo
 html.funy-map-qa .map-shop-sheet{background:#fbfafc!important}
 html.funy-map-qa .map-sheet-handle{padding-top:7px!important;padding-bottom:5px!important}
 .qa-list-tabs{margin:0 0 8px;padding:3px;border:1px solid #e2dde6;border-radius:11px;background:#f0eef2;display:grid;grid-template-columns:1fr 1fr;gap:3px}
-.qa-list-tab{min-height:34px;border:0;border-radius:8px;background:transparent;color:#867e8a;font:800 11.5px/1 Pretendard,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer}
+.qa-list-tab{min-height:34px;border:0;border-radius:8px;background:transparent;color:#867e8a;font:800 11.5px/1 Pretendard,sans-serif;display:flex;align-items:center;justify-content:center;cursor:pointer}.qa-tab-inline{display:inline-flex;align-items:center;justify-content:center;gap:5px;max-width:100%;white-space:nowrap}.qa-tab-label{min-width:0}.qa-tab-count{flex:0 0 auto}
 .qa-list-tab.active{background:#fff;color:#302a34;box-shadow:0 2px 7px rgba(44,35,52,.07)}
 .qa-list-tab[data-tab="shops"].active .qa-tab-count{color:#7557d3}
 .qa-list-tab[data-tab="vending"].active .qa-tab-count{color:#b18800}

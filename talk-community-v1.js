@@ -19,11 +19,17 @@ html.funy-talk-post-mode:not(.app-shell) .portal-shell{background:#fff!important
 html.funy-talk-post-mode:not(.app-shell) main{padding-top:0!important}
 html.funy-talk-post-mode:not(.app-shell) .talk-body{padding:0!important}
 html.funy-talk-post-mode:not(.app-shell) #feed{padding:0!important}
-.talk-post-web-header{position:sticky;top:0;z-index:80;height:54px;padding:0 14px;display:grid;grid-template-columns:36px 1fr 38px;align-items:center;background:rgba(255,255,255,.97);border-bottom:1px solid #F4F4F5}
+.talk-post-web-header{position:sticky;top:0;z-index:80;height:54px;padding:0 14px;display:grid;grid-template-columns:36px 1fr 38px;align-items:center;background:rgba(255,255,255,.97);border-bottom:0;box-shadow:none}
 .talk-post-web-header button{width:36px;height:36px;border:0;background:transparent;color:#181720;display:grid;place-items:center;padding:0;cursor:pointer}
 .talk-post-web-header #talkPostBack{font:400 28px/30px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .talk-post-web-header #talkPostMore{font:800 15px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.5px}
 .talk-post-web-header strong{text-align:left;padding-left:4px;font:800 19px/24px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.35px;color:#181720}
+.talk-post-web-menu-wrap{position:relative;justify-self:end;overflow:visible}
+.talk-post-web-menu{display:block;position:absolute;right:0;top:42px;min-width:118px;padding:5px;border:1px solid #e4dfe7;border-radius:12px;background:#fff;box-shadow:0 10px 26px rgba(30,24,38,.16);z-index:2147482000}
+.talk-post-web-menu[hidden]{display:none!important}
+.talk-post-web-menu button{display:block;width:100%;height:38px;padding:0 12px;border:0;border-radius:8px;background:#fff;text-align:left;color:#504a54;font:750 11.5px Pretendard,sans-serif}
+.talk-post-web-menu button:active{background:#f1ecfb;color:#684bbf}
+.talk-post-web-menu button.danger{color:#d24a57}
 html.funy-talk-post-mode:not(.app-shell) .talk-post-page{padding:18px 16px 64px;max-width:420px;margin:0 auto}
 
 /* Form sheet: fixed chrome + independent scroll body */

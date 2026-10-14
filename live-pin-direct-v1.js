@@ -83,7 +83,15 @@
   }catch(e){if(g!==generation)return;mapEl.textContent=tr('지도를 불러오지 못했어요. 구분을 다시 선택해주세요.','Unable to load the map. Select the location type again.');activeCountry='';console.warn('[LIVE PIN direct map]',e);}
  }
  region.addEventListener('change',initMap);
- current.onclick=()=>{if(!map||!navigator.geolocation){showLocationPermissionGuide(tr('이 브라우저에서는 위치 기능을 지원하지 않습니다.','Location is not supported in this browser.'));return}const g=generation,requestedAt=Date.now();current.disabled=true;coordEl.textContent=tr('현재 위치를 확인하는 중...','Finding your current location...');
+ function anchorCurrentButton(){
+   const scroll=current.closest('.live-form-scroll')||current.closest('.sheet');
+   if(!scroll)return;
+   try{
+     const top=Math.max(0,scroll.scrollTop+(current.getBoundingClientRect().top-scroll.getBoundingClientRect().top)-8);
+     scroll.scrollTo({top,behavior:'smooth'});
+   }catch(_){try{current.scrollIntoView({block:'start',behavior:'smooth'})}catch(__){}}
+ }
+ current.onclick=()=>{anchorCurrentButton();if(!map||!navigator.geolocation){showLocationPermissionGuide(tr('이 브라우저에서는 위치 기능을 지원하지 않습니다.','Location is not supported in this browser.'));return}const g=generation,requestedAt=Date.now();current.disabled=true;coordEl.textContent=tr('현재 위치를 확인하는 중...','Finding your current location...');
  const fail=err=>{if(g!==generation)return;current.disabled=false;if(err&&Number(err.code)===1)showLocationPermissionGuide();else alert(tr('현재 위치를 확인하지 못했어요. 지도에서 직접 선택해주세요.','Unable to locate you. Select a point on the map.'));};
  const apply=p=>{if(g!==generation)return;const stamp=Number(p?.timestamp)||Date.now(),age=Date.now()-stamp;if(age>10000){navigator.geolocation.getCurrentPosition(apply,fail,{enableHighAccuracy:true,timeout:15000,maximumAge:0});return}const {latitude:lat,longitude:lng,accuracy}=p.coords||{};if(!Number.isFinite(Number(lat))||!Number.isFinite(Number(lng))){fail({code:2});return}current.disabled=false;if(!inRegion(region.value,Number(lat),Number(lng))){alert(tr('선택한 국가의 위치가 아닙니다. 국가를 확인해주세요.','Your location is outside the selected country.'));return}showCurrentLocation(Number(lat),Number(lng),accuracy);if(region.value==='KR'){map.setCenter(new naver.maps.LatLng(Number(lat),Number(lng)));try{if(map.getZoom()<16)map.setZoom(16)}catch(_){}}else{map.setCenter({lat:Number(lat),lng:Number(lng)});map.setZoom(Math.max(map.getZoom()||13,16))}coordEl.textContent=tr('현재 위치를 표시했습니다. 원하는 위치를 탭하거나 길게 눌러 선택해주세요.','Your current location is shown. Tap or long-press the map to choose a point.');};
  navigator.geolocation.getCurrentPosition(apply,fail,{enableHighAccuracy:true,timeout:15000,maximumAge:0});

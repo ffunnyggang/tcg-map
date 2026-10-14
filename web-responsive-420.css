@@ -1,0 +1,69 @@
+/* FUNY PIN WEB responsive width standard — 2026-10-14
+   Web browser only. Native app WebView (.app-shell) keeps its existing layout. */
+:root{
+  --funy-web-content-max:420px;
+  --funy-web-nav-max:394px;
+  --funy-web-edge:16px;
+}
+
+/* Top-level service frames */
+html:not(.app-shell) body > .portal-shell,
+html:not(.app-shell) body > .app,
+html:not(.app-shell) body > .root,
+html:not(.app-shell) body > .page,
+html:not(.app-shell) body > .wrap,
+html:not(.app-shell) body > .shell,
+html:not(.app-shell) body > .my-page{
+  box-sizing:border-box!important;
+  width:min(100%,var(--funy-web-content-max))!important;
+  max-width:var(--funy-web-content-max)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+/* Fixed headers/sub headers that own their own width */
+html:not(.app-shell) .funy-sub-header,
+html:not(.app-shell) .my-head.funy-sub-header,
+html:not(.app-shell) .head.funy-sub-header{
+  width:min(100%,var(--funy-web-content-max))!important;
+  max-width:var(--funy-web-content-max)!important;
+}
+
+/* Shared bottom navigation */
+html:not(.app-shell) .portal-bottom-nav,
+html:not(.app-shell) .shops-bottom-nav{
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(calc(100% - 26px),var(--funy-web-nav-max))!important;
+  max-width:var(--funy-web-nav-max)!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+}
+
+/* Floating actions follow the right edge of the 420px service frame */
+html:not(.app-shell) .live-pin-entry-wrap,
+html:not(.app-shell) .live-pin-detail-entry,
+html:not(.app-shell) .pokamo-fab,
+html:not(.app-shell) .shell > .fab{
+  left:auto!important;
+  right:max(var(--funy-web-edge),calc((100vw - var(--funy-web-content-max))/2 + var(--funy-web-edge)))!important;
+  transform:none!important;
+}
+
+/* Bottom sheets / modal sheets use the same service width */
+html:not(.app-shell) .sheet,
+html:not(.app-shell) .shop-filter-sheet,
+html:not(.app-shell) .flag-box,
+html:not(.app-shell) .talk-community-sheet{
+  width:min(100%,var(--funy-web-content-max))!important;
+  max-width:var(--funy-web-content-max)!important;
+}
+
+/* TCG MAP: neutralize desktop-only enlargement inside the 420px web frame. */
+@media (min-width:760px){
+  html:not(.app-shell) body > .app .map-wrap-hero{height:430px!important}
+  html:not(.app-shell) body > .app .list-wrap{padding-left:16px!important;padding-right:16px!important}
+  html:not(.app-shell) body > .app .shop-card{grid-template-columns:92px minmax(0,1fr) 14px!important}
+  html:not(.app-shell) body > .app .shop-thumb{width:92px!important;height:92px!important}
+  html:not(.app-shell) body > .app .hero{max-height:none!important}
+}

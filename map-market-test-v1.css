@@ -125,3 +125,67 @@ body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.c
 .market-detail-bottom{position:fixed;left:50%;bottom:0;z-index:2147481200;width:min(100%,420px);transform:translateX(-50%);padding:10px 14px max(12px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,255,255,.65),#fff 24%)}
 .market-detail-trade{height:50px;border-radius:14px;background:#FF7E36;color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;box-shadow:0 8px 22px rgba(228,103,34,.18)}
 .market-detail-trade.disabled{background:#C9C5CC;pointer-events:none}
+
+
+/* Direct buy selector */
+.market-direct-buy-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.market-direct-buy-row button{height:40px;border:1px solid #E4DFE8;border-radius:13px;background:#fff;color:#716B79;font-size:11px;font-weight:800}
+.market-direct-buy-row button.active{border-color:#8062D8;background:#F3EFFC;color:#6749BD}
+.market-direct-buy-help{margin-top:7px;color:#99919D;font-size:9px;line-height:1.45}
+.market-detail-tag.buy{background:#FFF7DA;color:#9A6C00}
+
+/* Detail CTAs */
+.market-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.market-detail-chat,.market-detail-trade{height:50px;border-radius:14px;font-size:12px;font-weight:900}
+.market-detail-chat{border:1px solid #DCCFF3;background:#F3EFFC;color:#6749BD}
+.market-detail-trade{border:0}
+.market-detail-trade.disabled{background:#C9C5CC;color:#fff}
+
+/* Chat entry in full transaction header */
+.market-overlay-chat{margin-left:auto;height:34px;padding:0 10px;border:1px solid #E5E1EB;border-radius:17px;background:#fff;color:#625B67;font-size:10px;font-weight:850;display:flex;align-items:center;gap:5px}
+.market-overlay-chat #marketChatUnreadBadge{min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#F05B68;color:#fff;font:800 9px/17px Arial,sans-serif;text-align:center}
+.market-overlay-close{margin-left:6px!important}
+
+/* Private market chat */
+.market-chat-list-overlay,.market-chat-room-overlay{position:fixed;inset:0;left:50%;right:auto;transform:translateX(-50%);width:min(100%,420px);background:#fff;z-index:2147483000;overflow:hidden}
+.market-chat-list-overlay{overflow:auto}
+.market-chat-room-overlay{display:flex;flex-direction:column}
+.market-chat-head{height:54px;min-height:54px;padding:0 14px;display:flex;align-items:center;background:#fff;border-bottom:1px solid #F1EDF3;position:sticky;top:0;z-index:5}
+.market-chat-head>button{width:36px;height:36px;border:0;background:transparent;color:#181720;font-size:28px;line-height:30px}
+.market-chat-head>strong,.market-chat-head>div strong{font-size:17px;font-weight:900;color:#28232E}
+.market-chat-head>div{display:flex;flex-direction:column;margin-left:4px}
+.market-chat-head>div span{margin-top:2px;color:#99919D;font-size:9px}
+#marketChatListCount{margin-left:auto;color:#99919D;font-size:10px}
+.market-chat-list-body{padding:10px 14px 40px}
+.market-chat-list-card{width:100%;min-height:88px;padding:10px;display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:10px;align-items:center;border:0;border-bottom:1px solid #EEEAF2;background:#fff;text-align:left}
+.market-chat-list-card img,.market-chat-list-ph{width:68px;height:68px;border-radius:12px;background:#F1EEF4}
+.market-chat-list-card img{object-fit:cover}
+.market-chat-list-ph{display:grid;place-items:center;color:#958D9A;font-size:8px}
+.market-chat-list-copy{min-width:0;display:block}
+.market-chat-list-copy strong{display:block;font-size:13px;font-weight:850;color:#28232E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-chat-list-copy span{display:block;margin-top:4px;color:#817A86;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-chat-list-copy em{display:block;margin-top:7px;color:#99919D;font-size:10px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-chat-unread{min-width:21px;height:21px;padding:0 6px;border-radius:11px;background:#F05B68;color:#fff;font:800 10px/21px Arial,sans-serif;text-align:center}
+.market-chat-list-chev{font-size:20px;color:#9B88C5}
+.market-chat-empty{padding:60px 18px;text-align:center;color:#99919D;font-size:11px;line-height:1.6}
+
+/* chat room */
+.market-chat-listing{flex:none;min-height:74px;padding:9px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #F1EDF3;background:#FAF9FC}
+.market-chat-listing img,.market-chat-listing-ph{width:54px;height:54px;border-radius:10px;background:#F1EEF4}
+.market-chat-listing img{object-fit:cover}
+.market-chat-listing-ph{display:grid;place-items:center;color:#958D9A;font-size:8px}
+.market-chat-listing span{min-width:0}
+.market-chat-listing strong{display:block;font-size:12px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-chat-listing em{display:block;margin-top:4px;color:#6749BD;font-size:11px;font-weight:850;font-style:normal}
+.market-chat-messages{flex:1;min-height:0;overflow:auto;padding:16px 14px 18px;background:#FAF9FB;display:flex;flex-direction:column;gap:9px}
+.market-chat-message{display:flex;flex-direction:column;max-width:78%}
+.market-chat-message.mine{align-self:flex-end;align-items:flex-end}
+.market-chat-message.other{align-self:flex-start;align-items:flex-start}
+.market-chat-message span{display:block;padding:9px 11px;border:1px solid #E9E4ED;border-radius:15px;background:#fff;color:#4E4853;font-size:12px;line-height:1.45;word-break:break-word}
+.market-chat-message.mine span{border-color:#DED2F4;background:#F0EBFB;color:#4C3C76;border-radius:15px 5px 15px 15px}
+.market-chat-message.other span{border-radius:5px 15px 15px 15px}
+.market-chat-message time{margin-top:3px;color:#AAA3AF;font-size:8px}
+.market-chat-composer{flex:none;padding:9px 10px max(10px,env(safe-area-inset-bottom));display:flex;gap:7px;border-top:1px solid #EEEAF2;background:#fff}
+.market-chat-composer input{min-width:0;flex:1;height:44px;border:1px solid #E4DFE8;border-radius:13px;padding:0 12px;outline:none;font-size:12px;color:#514B55}
+.market-chat-composer button{width:58px;border:0;border-radius:13px;background:#28232E;color:#fff;font-size:11px;font-weight:900}
+.market-chat-composer button:disabled{opacity:.45}

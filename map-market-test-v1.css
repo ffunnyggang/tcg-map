@@ -189,3 +189,259 @@ body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.c
 .market-chat-composer input{min-width:0;flex:1;height:44px;border:1px solid #E4DFE8;border-radius:13px;padding:0 12px;outline:none;font-size:12px;color:#514B55}
 .market-chat-composer button{width:58px;border:0;border-radius:13px;background:#28232E;color:#fff;font-size:11px;font-weight:900}
 .market-chat-composer button:disabled{opacity:.45}
+
+
+/* MARKET test refinement — map/list structure */
+html.funy-map-qa body.market-test-page:not(.country-japan) .qa-list-tabs{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  width:100%!important
+}
+html.funy-map-qa body.market-test-page:not(.country-japan) .qa-list-tab{
+  width:100%!important;min-width:0!important;padding:0 4px!important
+}
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="vending"] .qa-tab-count,
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"] .qa-tab-count{display:none!important}
+html.funy-map-qa body.market-test-page .qa-tab-inline{gap:4px!important}
+html.funy-map-qa body.market-test-page .qa-tab-label{white-space:nowrap!important;text-align:center!important}
+
+/* top layer/filter horizontal swipe */
+html.funy-map-qa body.market-test-page #filters{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  width:100%!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+  overscroll-behavior-x:contain!important;
+  scrollbar-width:none!important
+}
+html.funy-map-qa body.market-test-page #filters::-webkit-scrollbar,
+.market-sheet-tools::-webkit-scrollbar,
+.market-filter-strip::-webkit-scrollbar,
+.market-overlay-tools::-webkit-scrollbar{display:none!important}
+html.funy-map-qa body.market-test-page #filters>*{flex:0 0 auto!important}
+
+/* when MARKET tab is active, hide the original shop sort/filter row */
+body.market-tab-active .qa-shop-tools{display:none!important}
+body.market-tab-active .qa-shop-only{display:none!important}
+.market-sheet-panel{padding-top:0!important}
+.market-sheet-tools,.market-overlay-tools{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-width:0!important;
+  padding:8px 0 10px!important;
+  overflow:visible!important
+}
+.market-overlay-tools{padding:10px 14px 11px!important;overflow-x:auto!important;overflow-y:visible!important}
+.market-filter-strip{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  gap:7px!important;
+  overflow-x:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+  scrollbar-width:none!important
+}
+.market-sort{
+  position:relative!important;
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  height:34px!important;
+  padding:0 13px!important;
+  border:1px solid #e5e0e9!important;
+  border-radius:17px!important;
+  background:#fff!important;
+  color:#514a55!important;
+  font:750 10.8px/1 Pretendard,sans-serif!important;
+  text-align:left!important;
+  white-space:nowrap!important;
+  box-shadow:none!important
+}
+.market-filter-chip{
+  height:34px!important;
+  padding:0 12px!important;
+  border:1px solid #e5e0e9!important;
+  border-radius:17px!important;
+  background:#fff!important;
+  color:#514a55!important;
+  font:750 10.8px/1 Pretendard,sans-serif!important;
+  white-space:nowrap!important;
+  flex:0 0 auto!important
+}
+.market-filter-chip.active{border-color:#c9b9ee!important;background:#f5f1fc!important;color:#6849bf!important;font-weight:850!important}
+
+/* content alignment */
+.market-card,.market-popup-card{
+  text-align:left!important
+}
+.market-card-copy,.market-card-title,.market-card-price,.market-card-meta,
+.market-popup-card>span,.market-popup-title,.market-popup-price,.market-popup-meta{
+  text-align:left!important
+}
+.market-sheet-list{width:100%!important}
+.market-card{width:100%!important}
+
+/* only full 거래 page has registration entry */
+.market-sheet-register{display:none!important}
+
+/* FAB: exact + -> x, actions above */
+.market-fab-wrap{gap:9px!important}
+.market-fab-menu{display:flex;flex-direction:column;align-items:flex-end;gap:8px;margin-bottom:1px}
+.market-fab-main.open{transform:none!important}
+.market-fab-main{transition:background .16s ease,color .16s ease,box-shadow .16s ease!important}
+.market-fab-main.open{background:#28232E!important;color:#fff!important}
+.market-fab-action{min-width:124px;justify-content:center}
+.market-fab-action.market{min-width:132px}
+
+/* Full 거래 page — FUNY PIN sub-page guide */
+.market-overlay{
+  background:#fff!important;
+  color:#28232E!important
+}
+.market-overlay-head{
+  height:54px!important;
+  min-height:54px!important;
+  padding:0 14px!important;
+  background:rgba(255,255,255,.98)!important;
+  border-bottom:1px solid #f1edf3!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  backdrop-filter:blur(18px)!important
+}
+.market-overlay-title{gap:7px!important;font-size:19px!important;font-weight:800!important;letter-spacing:-.35px!important}
+.market-overlay-pin{
+  width:22px!important;height:22px!important;border-radius:7px!important;
+  display:grid!important;place-items:center!important;
+  background:#f3effc!important;color:#7557c8!important;font-size:10px!important
+}
+.market-overlay-chat{
+  height:34px!important;padding:0 11px!important;border:1px solid #e5e1eb!important;border-radius:17px!important;
+  background:#fff!important;color:#625b67!important;font-size:10px!important;font-weight:850!important
+}
+.market-overlay-close{
+  width:36px!important;height:36px!important;margin-left:6px!important;border:0!important;border-radius:0!important;
+  background:transparent!important;color:#625b67!important;font:400 25px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important
+}
+.market-overlay-body{
+  padding:0 14px 100px!important;
+  background:#fbfafc!important
+}
+.market-overlay-tools{
+  position:sticky!important;top:54px!important;z-index:4!important;
+  background:rgba(251,250,252,.98)!important;
+  border-bottom:1px solid #f0ecf2!important;
+  -webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important
+}
+.market-overlay .market-card{margin-top:9px!important}
+.market-overlay-register{
+  right:max(16px,calc((100vw - 420px)/2 + 16px))!important;
+  bottom:max(18px,env(safe-area-inset-bottom))!important;
+  height:46px!important;padding:0 16px!important;border-radius:23px!important;
+  background:linear-gradient(135deg,#8063d7,#6749bd)!important;color:#fff!important;
+  font-size:11px!important;font-weight:900!important;
+  box-shadow:0 8px 24px rgba(103,73,189,.26)!important
+}
+
+/* Registration: remove side tabs, 5 equal item types */
+.market-side-toggle{display:none!important}
+.market-type-row{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:6px!important;
+  width:100%!important
+}
+.market-type-btn{
+  width:100%!important;
+  min-width:0!important;
+  height:38px!important;
+  padding:0 2px!important;
+  border-radius:11px!important;
+  font-size:9.5px!important;
+  white-space:nowrap!important
+}
+.market-preview-images{
+  display:flex!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:none!important
+}
+.market-preview-images::-webkit-scrollbar{display:none!important}
+.market-preview-image,.market-preview-ph{
+  width:84px!important;height:92px!important;flex:0 0 84px!important;
+  border-radius:12px!important
+}
+
+/* LIVE PIN direct-location parity */
+.market-register-map-wrap{
+  height:260px!important;
+  border:1px solid #e4dfe8!important;
+  border-radius:13px!important;
+  margin-top:8px!important;
+  overflow:hidden!important
+}
+.market-register-center-pin,.market-register-location-row{display:none!important}
+.market-register-here{
+  height:43px!important;width:100%!important;
+  border:1px solid #e4dfe8!important;border-radius:13px!important;
+  background:#fff!important;color:#514b55!important;font-size:11px!important;font-weight:800!important
+}
+.market-register-coord-status{
+  margin:8px 0 0!important;
+  color:#99919d!important;
+  font-size:10px!important;
+  line-height:1.45!important
+}
+
+/* Detail image carousel */
+.market-detail-carousel{
+  position:relative;
+  margin:0 -16px;
+  aspect-ratio:1/1;
+  background:#f1eef4;
+  overflow:hidden
+}
+.market-detail-carousel-track{
+  width:100%;height:100%;
+  display:flex;
+  overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x
+}
+.market-detail-carousel-track::-webkit-scrollbar{display:none}
+.market-detail-slide{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start}
+.market-detail-slide img{display:block;width:100%;height:100%;object-fit:cover}
+.market-detail-carousel-prev,.market-detail-carousel-next{
+  position:absolute;top:50%;z-index:3;
+  width:36px;height:36px;margin-top:-18px;
+  border:1px solid rgba(255,255,255,.75);border-radius:50%;
+  background:rgba(255,255,255,.86);color:#4f4854;
+  font:400 25px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  box-shadow:0 5px 16px rgba(30,25,38,.12);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)
+}
+.market-detail-carousel-prev{left:10px}.market-detail-carousel-next{right:10px}
+.market-detail-page{
+  position:absolute;right:12px;bottom:12px;z-index:3;
+  height:26px;padding:0 9px;border-radius:13px;
+  background:rgba(30,27,34,.72);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font:750 10px/1 Pretendard,sans-serif
+}
+
+/* Detail/list text stays left aligned */
+.market-detail-title,.market-detail-price,.market-detail-meta,.market-detail-desc,
+.market-overlay .market-card-title,.market-overlay .market-card-price,.market-overlay .market-card-meta{
+  text-align:left!important
+}

@@ -126,7 +126,9 @@ Deno.serve(async (req: Request) => {
 
     const input = new URL(rawUrl);
     if (input.protocol !== "https:" || !allowedHost(input.hostname)) throw new Error("https 당근 매물 URL만 지원합니다.");
-    if (!/\/articles\/\d+/i.test(input.pathname)) throw new Error("당근 중고거래 매물 URL 형식이 아닙니다.");
+    const isArticlePath = /\/articles\/\d+/i.test(input.pathname);
+    const isBuySellPath = /\/kr\/buy-sell\/[a-z0-9-]+\/?$/i.test(input.pathname);
+    if (!isArticlePath && !isBuySellPath) throw new Error("당근 중고거래 매물 URL 형식이 아닙니다.");
 
     const { response, finalUrl } = await fetchDaangn(input);
     const html = (await response.text()).slice(0, 2_000_000);
@@ -140,7 +142,8 @@ Deno.serve(async (req: Request) => {
     const rawPrice = structured.price || meta(html, "product:price:amount") || meta(html, "og:price:amount") ||
       ((description.match(/(?:₩\s*)?([0-9][0-9,]{2,})\s*원/) || [])[1] || "");
     const currency = structured.currency || meta(html, "product:price:currency") || "KRW";
-    const articleId = (input.pathname.match(/\/articles\/(\d+)/i) || [])[1] || "";
+    const articleId = (input.pathname.match(/\/articles\/(\d+)/i) || [])[1] ||
+      (input.pathname.match(/\/kr\/buy-sell\/([a-z0-9-]+)/i) || [])[1] || "";
 
     return new Response(JSON.stringify({
       ok: true,

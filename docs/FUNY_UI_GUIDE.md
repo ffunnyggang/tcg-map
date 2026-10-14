@@ -55,3 +55,12 @@ APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞�
 
 ## Change rule
 페이지별 임의 폰트/색상/헤더 높이 추가를 피한다. 공통 UI를 바꿀 때는 먼저 APP `theme.ts`와 WEB `funy-ui-guide.css`를 동기화한 뒤 페이지는 공통 클래스를 사용한다.
+
+
+## Native parity backlog
+WEB에서 먼저 적용했으며 다음 APP 배포 시 함께 맞출 항목:
+- MY 퍼니몬 도감 No.11~15: 롱냥, 셔플링, 네온콩, 파오링, 조커비
+- MY 언어 변경 시 현재 스크롤 위치 유지 + 변경 완료 토스트
+- APP 하단 내비게이션에 MY 탭을 추가하는 시점에는 MY 헤더를 WEB 채널 헤더(심볼 + MY)와 동일하게 전환
+
+이 목록을 처리할 때도 APP `mobile/lib/theme.ts`와 WEB `funy-ui-guide.css`의 공통 수치를 유지한다.

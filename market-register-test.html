@@ -53,7 +53,7 @@
  async function loadPreview(){
    const url=$('#url').value.trim();if(!url)return;
    setError('');$('#load').disabled=true;$('#status').textContent='당근 매물 정보를 불러오는 중...';
-   try{const r=await fetch(ENDPOINT+'?url='+encodeURIComponent(url),{cache:'no-store'});const j=await r.json();if(!r.ok||!j.ok)throw Error(j.error||'매물 정보를 불러오지 못했습니다.');setPreview(j);$('#status').textContent='매물 정보를 불러왔어요. 내용을 확인하고 거래 위치를 지정해주세요.'}
+   try{const {data:j,error}=await A.client.functions.invoke('daangn-listing-preview-test',{body:{url}});if(error)throw error;if(!j?.ok)throw Error(j?.error||'매물 정보를 불러오지 못했습니다.');setPreview(j);$('#status').textContent='매물 정보를 불러왔어요. 내용을 확인하고 거래 위치를 지정해주세요.'}
    catch(e){product=null;$('#preview').classList.remove('show');$('#submit').disabled=true;setError(e.message);$('#status').textContent='매물 정보를 불러오지 못했습니다.'}
    finally{$('#load').disabled=false}
  }

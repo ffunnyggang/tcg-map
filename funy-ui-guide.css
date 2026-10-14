@@ -1,6 +1,6 @@
 /* FUNY PIN cross-platform UI guide
-   Source of truth parity: mobile/lib/theme.ts (APP)
-   Keep shared numeric tokens aligned when native theme changes. */
+   WEB current approved guide: funy-ui-guide.css
+   APP mobile/lib/theme.ts follows this guide on the next native release. */
 :root{
   --funy-bg:#FFFFFF;
   --funy-surface:#FFFFFF;

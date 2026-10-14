@@ -261,7 +261,20 @@
       const raw=String(registerProduct.price_raw||'').replace(/,/g,'').trim(),price=raw&&Number.isFinite(Number(raw))?Math.round(Number(raw)):null;
       const urls=[...(Array.isArray(registerProduct.images)?registerProduct.images:[]),registerProduct.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,8);
       const row={seller_user_id:user.id,seller_nickname:nick,provider:'daangn',external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:registerProduct.article_id||null,title:registerProduct.title||'당근 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,location_name:registerLocation,fetched_at:registerProduct.fetched_at||new Date().toISOString(),updated_at:new Date().toISOString()};
-      const {data,error}=await A.client.from('market_listings').insert(row).select('*').single();if(error)throw error;
+      let data=null,error=null;
+      if(row.external_listing_id){
+        const existing=await A.client.from('market_listings').select('id').eq('seller_user_id',user.id).eq('provider','daangn').eq('external_listing_id',row.external_listing_id).maybeSingle();
+        if(existing.error)throw existing.error;
+        if(existing.data?.id){
+          const updated=await A.client.from('market_listings').update(row).eq('id',existing.data.id).select('*').single();
+          data=updated.data;error=updated.error;
+        }
+      }
+      if(!data&&!error){
+        const inserted=await A.client.from('market_listings').insert(row).select('*').single();
+        data=inserted.data;error=inserted.error;
+      }
+      if(error)throw error;
       closeRegister();await loadRows();openDetail(data.id);
     }catch(e){setRegisterError(String(e?.message||e))}
     finally{btn.disabled=false;btn.textContent='매물 등록하기'}

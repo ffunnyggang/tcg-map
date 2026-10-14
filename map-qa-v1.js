@@ -258,7 +258,7 @@ const $=s=>document.querySelector(s);
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||sheet.querySelector('.qa-list-tabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
-    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops">TCG 카드샵 <span class="qa-tab-count" id="qaShopCount">0</span></button><button class="qa-list-tab" data-tab="vending">포켓몬 자판기 <span class="qa-tab-count" id="qaVendingCount">'+VENDING.length+'</span></button>';
+    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops"><span class="qa-tab-inline"><span class="qa-tab-label">TCG 카드샵</span><span class="qa-tab-count" id="qaShopCount">0</span></span></button><button class="qa-list-tab" data-tab="vending"><span class="qa-tab-inline"><span class="qa-tab-label">포켓몬 자판기</span><span class="qa-tab-count" id="qaVendingCount">'+VENDING.length+'</span></span></button>';
     handle?.after(tabs);
     if(handle&&!sheet.querySelector('.qa-sheet-sticky-head')){
       const sticky=document.createElement('div');sticky.className='qa-sheet-sticky-head';

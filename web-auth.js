@@ -66,7 +66,7 @@
   }
   async function signInSocial(provider,returnTo){
     if(isAppShell())throw new Error('APP_NATIVE_AUTH_ONLY');
-    await init();rememberReturn(returnTo||document.referrer||'/');
+    await init();let savedReturn='';try{savedReturn=localStorage.getItem(RETURN_KEY)||''}catch(_){}if(returnTo)rememberReturn(returnTo);else if(!savedReturn)rememberReturn(document.referrer||'/');
     const redirectTo=location.origin+'/login.html';
     const options={redirectTo};
     if(provider==='kakao')options.queryParams={scope:'profile_nickname profile_image'};

@@ -7,9 +7,9 @@ import { visualAssets } from '../lib/visualAssets';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 import { supabase } from '../lib/supabase';
 
-type Props={showAccount?:boolean;title?:string;back?:boolean;onBack?:()=>void;right?:ReactNode};
+type Props={showAccount?:boolean;title?:string;back?:boolean;onBack?:()=>void;right?:ReactNode;flat?:boolean};
 
-export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false,onBack,right}:Props){
+export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false,onBack,right,flat=false}:Props){
   const router=useRouter();
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
   const [loggedIn,setLoggedIn]=useState(false);
@@ -22,7 +22,7 @@ export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false
   },[]);
   const isHome=title==='FUNY PIN';
   const goBack=()=>{if(onBack){onBack();return;}router.back();};
-  return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'rgba(255,255,255,.96)',position:'relative',zIndex:9999,elevation:9999}}>
+  return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'rgba(255,255,255,.96)',position:'relative',zIndex:9999,elevation:flat?0:9999,borderBottomWidth:0,shadowColor:flat?'transparent':'#000',shadowOpacity:0,shadowRadius:0,shadowOffset:{width:0,height:0}}}>
     {back?<Pressable onPress={goBack} hitSlop={10} style={{width:34,height:34,alignItems:'center',justifyContent:'center',marginRight:4}}><Text style={{fontSize:27,lineHeight:29,fontWeight:'400',color:C.text}}>‹</Text></Pressable>:<Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34,marginRight:8}}/>}
     <Text allowFontScaling maxFontSizeMultiplier={1} style={{...T.header,color:C.text}}>{title}</Text>
     {!back&&isHome?<Text allowFontScaling maxFontSizeMultiplier={1} style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>:null}

@@ -74,7 +74,23 @@
     if(error)throw error;
     return data;
   }
-  async function signOut(){await init();const {error}=await client.auth.signOut();if(error)throw error;currentSession=null;emit()}
+  async function signOut(){
+    await init();
+    let error=null;
+    try{
+      const result=await client.auth.signOut({scope:'local'});
+      error=result?.error||null;
+    }catch(e){error=e}
+    try{
+      const prefix='sb-wdttzpbmqavaqfcbaywj-auth-token';
+      for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k===prefix||k.startsWith(prefix+'.')||k.startsWith(prefix+'-')))localStorage.removeItem(k)}
+    }catch(_){}
+    currentSession=null;emit();
+    if(error&&String(error?.code||error?.message||'').toLowerCase().includes('session_not_found')===false&&Number(error?.status||0)!==403){
+      console.warn('[FUNY WEB AUTH] local sign-out warning',error);
+    }
+    return{ok:true}
+  }
   async function getProfile(){
     await init();const user=currentSession?.user;if(!user)return null;
     const {data,error}=await client.from('profiles').select('nickname,avatar_url').eq('user_id',user.id).maybeSingle();

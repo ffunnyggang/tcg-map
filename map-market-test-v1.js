@@ -316,7 +316,7 @@
     try{await navigator.clipboard.writeText(value);const b=$('#marketExternalVerifyCopy');if(b){const old=b.textContent;b.textContent='복사됨';setTimeout(()=>b.textContent=old,1000)}}catch(_){prompt('인증코드를 복사해주세요.',value)}
   }
   function syncPurchaseMode(x){
-    const section=$('#marketDirectBuySection'),help=$('#marketDirectBuyHelp'),buttons=$('#marketDirectBuySection [data-direct-buy]');
+    const section=$('#marketDirectBuySection'),help=$('#marketDirectBuyHelp'),buttons=[...document.querySelectorAll('#marketDirectBuySection [data-direct-buy]')];
     if(!section)return;
     registerDirectBuy=x?.direct_buy_available===true;
     buttons.forEach(b=>{b.classList.toggle('active',(b.dataset.directBuy==='true')===registerDirectBuy);b.disabled=x?.provider!=='daangn'});

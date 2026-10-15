@@ -32,7 +32,7 @@
   let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null;
   let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
   let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerExternalVerified=false,registerChallengeId='',registerLat=null,registerLng=null,registerLocation='거래 희망 위치',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
-  let marketPanel=null,marketTabBtn=null,layerChip=null;
+  let marketPanel=null,marketTabBtn=null,layerChip=null,layerOrderObserver=null,layerOrderQueued=false;
 
   async function waitForMap(){
     for(let i=0;i<120;i++){
@@ -193,14 +193,40 @@
     });
   }
 
+  function syncLayerOrder(){
+    const track=$('#filters');if(!track||isJapan())return;
+    const desired=[
+      track.querySelector('.qa-layer-chip[data-layer="shops"]'),
+      track.querySelector('.qa-layer-chip[data-layer="events"]'),
+      track.querySelector('.qa-layer-chip[data-layer="vending"]'),
+      track.querySelector('#liveTempLayer'),
+      layerChip?.isConnected?layerChip:track.querySelector('.market-layer-chip')
+    ].filter(Boolean);
+    if(desired.length<2)return;
+    const wanted=new Set(desired),current=[...track.children].filter(el=>wanted.has(el));
+    const same=current.length===desired.length&&current.every((el,i)=>el===desired[i]);
+    if(same)return;
+    desired.forEach(el=>track.appendChild(el));
+  }
+  function observeLayerOrder(){
+    const track=$('#filters');if(!track)return;
+    if(layerOrderObserver){try{layerOrderObserver.disconnect()}catch(_){}}
+    layerOrderObserver=new MutationObserver(()=>{
+      if(layerOrderQueued)return;layerOrderQueued=true;
+      requestAnimationFrame(()=>{layerOrderQueued=false;syncLayerOrder()});
+    });
+    layerOrderObserver.observe(track,{childList:true});
+    syncLayerOrder();
+  }
+
   function ensureLayerChip(){
     const track=$('#filters');if(!track||isJapan()){layerChip?.remove();layerChip=null;return}
-    if(layerChip&&layerChip.isConnected){updateCounts();return}
+    if(layerChip&&layerChip.isConnected){updateCounts();syncLayerOrder();return}
     layerChip=document.createElement('button');layerChip.type='button';layerChip.className='market-layer-chip live-temp-layer'+(marketLayerOn?' active':'');
     layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');
     layerChip.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count qa-layer-count">0</span>';
     layerChip.onclick=e=>{e.preventDefault();e.stopPropagation();marketLayerOn=!marketLayerOn;layerChip.classList.toggle('active',marketLayerOn);layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');syncMarkers()};
-    track.appendChild(layerChip);updateCounts();
+    track.appendChild(layerChip);updateCounts();syncLayerOrder();
   }
   function sortMenuHtml(scope){
     return '<div class="market-sort-wrap '+scope+'"><button type="button" class="market-sort-button" data-market-sort-button aria-haspopup="menu" aria-expanded="false"><span data-market-sort-label>'+sortLabel()+'</span><span class="market-sort-chevron">⌄</span></button><div class="market-sort-menu" role="menu">'+sortDefs.map(([v,l])=>'<button type="button" class="'+(v===marketSort?'active':'')+'" data-market-sort-value="'+v+'">'+l+'</button>').join('')+'</div></div>';
@@ -653,15 +679,15 @@
   },true);
 
   const search=$('#map-shop-search');search?.addEventListener('input',()=>{if(marketTabActive)renderListInto($('#marketSheetList'),marketFilter);syncMarkers()});
-  window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncMarkers()});
+  window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncLayerOrder();syncMarkers()});
   new MutationObserver(()=>{ensureLayerChip();if(isJapan()&&marketTabActive){document.querySelector('.qa-list-tab[data-tab="shops"]')?.click()}syncMarkers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
 
   const map=await waitForMap();
   const tabs=await waitForQaTabs();
   if(tabs)setupMarketPanel(tabs);
   syncMarketSearchPlaceholder();syncMarketTabLabels();
-  ensureLayerChip();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
+  ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
   if(map)naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());
-  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));if(marketPanel)marketPanel.hidden=false}},700);
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));if(marketPanel)marketPanel.hidden=false}},700);
   await loadRows();
 })();

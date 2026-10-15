@@ -521,3 +521,22 @@ body.market-tab-active .qa-shop-only{display:none!important}
   font-size:9.5px;
   line-height:1.55
 }
+
+
+/* Multi-platform source preview */
+.market-preview-provider{
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  margin-bottom:9px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#f3effc;
+  color:#6749bd;
+  font-size:9px;
+  font-weight:850
+}
+.market-direct-buy-row button:disabled{
+  opacity:.62;
+  cursor:default
+}

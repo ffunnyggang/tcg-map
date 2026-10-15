@@ -445,3 +445,79 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-overlay .market-card-title,.market-overlay .market-card-price,.market-overlay .market-card-meta{
   text-align:left!important
 }
+
+
+/* MARKET v1 policy: external-platform trade only */
+.market-overlay-close{margin-left:auto!important}
+.market-overlay-chat,.market-detail-chat,
+.market-chat-list-overlay,.market-chat-room-overlay{display:none!important}
+
+.market-register-policy{
+  margin:8px 0 4px;
+  padding:12px 13px;
+  border:1px solid #e4dcf4;
+  border-radius:14px;
+  background:#f7f4fc;
+  color:#51475f
+}
+.market-register-policy strong{
+  display:block;
+  color:#6749bd;
+  font-size:12px;
+  font-weight:900
+}
+.market-register-policy span{
+  display:block;
+  margin-top:5px;
+  font-size:10px;
+  line-height:1.55;
+  color:#756e7b
+}
+.market-consent-box{
+  padding:13px;
+  border:1px solid #ece7f0;
+  border-radius:15px;
+  background:#faf9fb
+}
+.market-consent-item{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  padding:8px 0;
+  color:#625b67;
+  font-size:10px;
+  line-height:1.55;
+  cursor:pointer
+}
+.market-consent-item+.market-consent-item{border-top:1px solid #eeeaf2}
+.market-consent-item input{
+  flex:0 0 auto;
+  width:17px;
+  height:17px;
+  margin:0;
+  accent-color:#7557c8
+}
+.market-consent-item b{color:#3f3746;font-weight:850}
+
+.market-detail-actions{grid-template-columns:1fr!important}
+.market-detail-trade{width:100%!important}
+.market-detail-external-note{
+  margin-top:20px;
+  padding:13px 14px;
+  border:1px solid #e8e2ef;
+  border-radius:14px;
+  background:#f8f6fb
+}
+.market-detail-external-note strong{
+  display:block;
+  color:#51485c;
+  font-size:11px;
+  font-weight:850
+}
+.market-detail-external-note span{
+  display:block;
+  margin-top:5px;
+  color:#8d8591;
+  font-size:9.5px;
+  line-height:1.55
+}

@@ -42,8 +42,8 @@
  function changed(){seq++;clear();rows=[];sync();load()}
  async function pollRevision(){if(document.hidden)return;try{const res=await fetch(BASE+'/rest/v1/live_pin_map_revision?select=revision&id=eq.1',{headers,cache:'no-store'});if(!res.ok)return;const data=await res.json(),next=data[0]?.revision;if(revision!==null&&next!==revision)changed();revision=next}catch(_){} }
  async function realtime(){try{if(!window.supabase?.createClient)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});const db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});channel=db.channel('live-pin-map-visibility').on('postgres_changes',{event:'UPDATE',schema:'public',table:'live_pin_map_revision'},()=>{changed();pollRevision()}).on('postgres_changes',{event:'*',schema:'public',table:'live_reports'},changed).subscribe()}catch(e){console.warn('[LIVE PIN map] realtime unavailable',e)}}
- async function resolveDeepLinkTarget(){
-  const q=new URLSearchParams(location.search),reportId=q.get('liveReport'),shopId=q.get('liveShopId')||'',lat=Number(q.get('liveLat')),lng=Number(q.get('liveLng')),countryHint=q.get('liveCountry')||'';
+ async function resolveDeepLinkTarget(params){
+  const q=params||new URLSearchParams(location.search),reportId=q.get('liveReport'),shopId=q.get('liveShopId')||'',lat=Number(q.get('liveLat')),lng=Number(q.get('liveLng')),countryHint=q.get('liveCountry')||'';
   if(!reportId&&!shopId&&!(Number.isFinite(lat)&&Number.isFinite(lng)))return null;
   if(Number.isFinite(lat)&&Number.isFinite(lng))return{reportId,shopId,lat,lng,country:countryHint==='JP'?'JP':'KR'};
   if(!shopId||shopId==='KR-OTHER')return null;
@@ -79,7 +79,8 @@
   const q=new URLSearchParams(location.search);
   if(!q.has('liveReport')&&!q.has('liveShopId')&&!q.has('liveLat'))return;
   deepLinkPending=true;
-  const target=await resolveDeepLinkTarget();
+  clearDeepLinkParams();
+  const target=await resolveDeepLinkTarget(q);
   if(!target){deepLinkPending=false;return}
   enabled=true;saveLayerPref();
   try{window.FUNY_MAP_SHEET?.setMode?.('quarter',false)}catch(_){}
@@ -107,7 +108,6 @@
       try{window.FUNY_MAP_SHEET?.setMode?.('quarter',false)}catch(_){}
       sync();
       deepLinkFocused=true;deepLinkPending=false;
-      clearDeepLinkParams();
       try{window.FUNY_TRACK?.('live_pin_map_focus',{report_id:target.reportId||'',shop_id:target.shopId||'',country:target.country,zoom:21})}catch(_){}
     }catch(_){
       if(attempts<8)setTimeout(apply,180);

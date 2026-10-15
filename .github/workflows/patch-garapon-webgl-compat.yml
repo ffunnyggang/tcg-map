@@ -1,4 +1,4 @@
-# one-time compatibility patch trigger v3
+# one-time compatibility patch trigger v4
 name: Patch garapon WebGL compatibility
 
 on:

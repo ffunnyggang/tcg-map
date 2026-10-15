@@ -12,11 +12,11 @@
   pointer-events:auto!important
 }
 .funymon-find-btn{
-  width:142px!important;
+  width:126px!important;
   min-width:44px!important;
   height:44px!important;
-  padding:0 13px!important;
-  gap:6px!important;
+  padding:0 8px 0 12px!important;
+  gap:4px!important;
   justify-content:flex-start!important;
   border:1px solid rgba(132,83,228,.96)!important;
   background:rgba(255,255,255,.96)!important;
@@ -50,7 +50,7 @@
 }
 .funymon-find-arrow{
   flex:0 0 auto;
-  width:12px;
+  width:8px;
   color:#7057c7;
   font-size:18px;
   font-weight:600;
@@ -90,7 +90,7 @@
     transform:none!important
   }
   .funymon-find-btn{
-    width:140px!important;
+    width:124px!important;
     min-width:42px!important;
     height:42px!important;
     border-radius:14px!important

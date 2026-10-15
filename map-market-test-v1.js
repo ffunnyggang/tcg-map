@@ -30,7 +30,7 @@
   document.body.appendChild(watermark);
 
   let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null;
-  let markers=new Map(),popup=null,selectedMarkerId=null;
+  let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
   let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerExternalVerified=false,registerChallengeId='',registerLat=null,registerLng=null,registerLocation='거래 희망 위치',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
   let marketPanel=null,marketTabBtn=null,layerChip=null;
 
@@ -120,10 +120,15 @@
       '<span class="market-card-badge type">'+esc(types[x.item_type]||'기타')+'</span>'+
       '</span>';
   }
+  function displayAddress(x){
+    if(x?._displayAddress)return x._displayAddress;
+    if(Number.isFinite(+x?.latitude)&&Number.isFinite(+x?.longitude))return '주소 확인 중...';
+    return x?.location_name||'거래 희망 위치';
+  }
   function cardHtml(x){
     return '<button type="button" class="market-card" data-market-id="'+esc(x.id)+'">'+
       (x.thumbnail_url?'<img class="market-card-thumb" src="'+esc(x.thumbnail_url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="market-card-ph">NO IMAGE</span>')+
-      '<span class="market-card-copy">'+badgesHtml(x)+'<strong class="market-card-title">'+esc(x.title)+'</strong><span class="market-card-price">'+money(x.price)+'</span><span class="market-card-location">⌖ '+esc(x.location_name||'거래 희망 위치')+'</span></span></button>';
+      '<span class="market-card-copy">'+badgesHtml(x)+'<strong class="market-card-title">'+esc(x.title)+'</strong><span class="market-card-price">'+money(x.price)+'</span><span class="market-card-location">⌖ '+esc(displayAddress(x))+'</span></span><span class="market-card-chev" aria-hidden="true">›</span></button>';
   }
   function renderListInto(el,filter){
     if(!el)return;
@@ -140,14 +145,18 @@
 
   function markerMetrics(){
     const map=window.FUNY_NAVER_MAP_API?.getMap?.();let z=11;try{z=map?.getZoom?.()??11}catch(_){}
-    if(z<=9)return{w:18,h:25};if(z===10)return{w:21,h:29};if(z===11)return{w:24,h:34};if(z===12)return{w:27,h:38};if(z===13)return{w:30,h:42};if(z===14)return{w:33,h:46};return{w:36,h:50};
+    if(z<=9)return{pinW:16,pinH:22,markerW:20,markerH:28};
+    const sizes={10:[18,25,22,31],11:[21,29,25,35],12:[24,33,28,39],13:[27,37,31,43],14:[30,41,34,47]},v=sizes[z]||[33,45,37,51];
+    return{pinW:v[0],pinH:v[1],markerW:v[2],markerH:v[3]};
   }
   function markerIcon(selected=false){
-    const m=markerMetrics();
-    const content='<div class="market-map-pin'+(selected?' is-selected':'')+'" style="--marker-w:'+m.w+'px;--marker-h:'+m.h+'px">'+
-      '<svg viewBox="0 0 98 134" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="#17151B"/></svg>'+
-      '<span class="market-map-pin-emoji" aria-hidden="true">🃏</span></div>';
-    return{content,anchor:new naver.maps.Point(Math.round(m.w/2),m.h)};
+    const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
+    const content='<div class="market-map-pin'+(selected?' is-selected':'')+'" style="'+vars+'" aria-label="TCG 거래">'+
+      '<svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
+      '<path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="#17151b"/>'+
+      '<path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/>'+
+      '<circle cx="49" cy="52" r="14.5" fill="#fff"/></svg><span class="market-map-pin-emoji" aria-hidden="true">🃏</span></div>';
+    return{content,anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function closePopup(){
     try{popup?.close()}catch(_){}
@@ -158,7 +167,7 @@
   function popupHtml(x){
     return '<div class="market-popup-bubble"><button type="button" class="market-popup-card" data-market-popup-id="'+esc(x.id)+'">'+
       (x.thumbnail_url?'<img src="'+esc(x.thumbnail_url)+'" alt="" referrerpolicy="no-referrer">':'<span class="market-popup-ph">NO IMAGE</span>')+
-      '<span><strong class="market-popup-title">'+esc(x.title)+'</strong><span class="market-popup-price">'+money(x.price)+'</span><span class="market-popup-meta">'+esc(x.location_name||'거래 희망 위치')+'</span></span><span class="market-popup-chev">›</span></button></div>';
+      '<span><strong class="market-popup-title">'+esc(x.title)+'</strong><span class="market-popup-price">'+money(x.price)+'</span><span class="market-popup-meta">⌖ '+esc(displayAddress(x))+'</span></span><span class="market-popup-chev">›</span></button></div>';
   }
   function selectMarker(x,m){
     const map=window.FUNY_NAVER_MAP_API?.getMap?.();if(!map)return;
@@ -187,9 +196,9 @@
   function ensureLayerChip(){
     const track=$('#filters');if(!track||isJapan()){layerChip?.remove();layerChip=null;return}
     if(layerChip&&layerChip.isConnected){updateCounts();return}
-    layerChip=document.createElement('button');layerChip.type='button';layerChip.className='market-layer-chip'+(marketLayerOn?' active':'');
+    layerChip=document.createElement('button');layerChip.type='button';layerChip.className='market-layer-chip live-temp-layer'+(marketLayerOn?' active':'');
     layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');
-    layerChip.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count">0</span>';
+    layerChip.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count qa-layer-count">0</span>';
     layerChip.onclick=e=>{e.preventDefault();e.stopPropagation();marketLayerOn=!marketLayerOn;layerChip.classList.toggle('active',marketLayerOn);layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');syncMarkers()};
     track.appendChild(layerChip);updateCounts();
   }
@@ -200,7 +209,7 @@
     return '<div class="market-filter-strip '+scope+'">'+typeDefs.map(([v,l])=>'<button type="button" class="market-filter-chip'+(v==='all'?' active':'')+'" data-market-filter="'+v+'">'+l+'</button>').join('')+'</div>';
   }
   function marketSheetControlsHtml(){
-    return '<div class="market-sheet-sort-row">'+sortMenuHtml('market-sheet-sort')+'</div>'+filterStripHtml('market-sheet-filter');
+    return '<div class="market-sheet-tools">'+sortMenuHtml('market-sheet-sort')+'<span class="qa-tools-divider" aria-hidden="true"></span>'+filterStripHtml('market-sheet-filter')+'</div>';
   }
   function syncSortUI(){
     $$('[data-market-sort-label]').forEach(x=>x.textContent=sortLabel());
@@ -262,14 +271,14 @@
 
   function compactOnScroll(target,scroller){
     if(!target||!scroller)return;let timer=0;
-    scroller.addEventListener('scroll',()=>{if(target.classList.contains('open'))return;target.classList.add('is-scrolling');clearTimeout(timer);timer=setTimeout(()=>target.classList.remove('is-scrolling'),420)},{passive:true});
+    scroller.addEventListener('scroll',()=>{if(target.classList.contains('open'))return;target.classList.add('is-scrolling');clearTimeout(timer);timer=setTimeout(()=>target.classList.remove('is-scrolling'),850)},{passive:true});
   }
   function buildFab(){
     const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
     wrap.innerHTML='<div class="market-fab-dim" hidden></div><div class="market-fab-menu" hidden>'+
-      '<a class="market-fab-action" href="live-pin.html"><span>LIVE PIN</span><span>›</span></a>'+
-      '<button type="button" class="market-fab-action" data-open-market-overlay><span>TCG 거래</span><span>›</span></button></div>'+
+      '<a class="market-fab-action" href="live-pin.html"><span><b class="market-fab-action-emoji">⚡</b> LIVE PIN</span><span>›</span></a>'+
+      '<button type="button" class="market-fab-action" data-open-market-overlay><span><b class="market-fab-action-emoji">🃏</b> TCG 거래</span><span>›</span></button></div>'+
       '<button type="button" class="market-fab-main" aria-label="제보 · 매물 등록" aria-expanded="false"><span class="market-fab-plus">＋</span><span class="market-fab-label">제보 · 매물 등록</span></button>';
     home.appendChild(wrap);
     const menu=wrap.querySelector('.market-fab-menu'),main=wrap.querySelector('.market-fab-main'),dim=wrap.querySelector('.market-fab-dim');
@@ -569,10 +578,38 @@
     finally{btn.disabled=false;btn.textContent='신고 접수'}
   }
 
+  function reverseMarketAddress(row){
+    const lat=Number(row?.latitude),lng=Number(row?.longitude);
+    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!window.naver?.maps?.Service)return Promise.resolve(row?.location_name||'거래 희망 위치');
+    const key=lat.toFixed(6)+','+lng.toFixed(6);
+    if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;return Promise.resolve(v)}
+    return new Promise(resolve=>{
+      const pos=new naver.maps.LatLng(lat,lng);
+      naver.maps.Service.reverseGeocode({coords:pos,orders:[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].join(',')},(status,res)=>{
+        let label='';
+        if(status===naver.maps.Service.Status.OK){
+          const addr=res?.v2?.address||{};
+          label=String(addr.roadAddress||addr.jibunAddress||'').trim();
+          if(!label){
+            const it=res?.v2?.results?.[0],rg=it?.region,land=it?.land;
+            label=[rg?.area1?.name,rg?.area2?.name,rg?.area3?.name,land?.name,land?.number1].filter(Boolean).join(' ').trim();
+          }
+        }
+        label=label||row?.location_name||'거래 희망 위치';addressCache.set(key,label);row._displayAddress=label;resolve(label);
+      });
+    });
+  }
+  async function hydrateMarketAddresses(list){
+    const queue=(list||[]).filter(x=>Number.isFinite(+x.latitude)&&Number.isFinite(+x.longitude));let index=0;
+    const worker=async()=>{while(index<queue.length){const row=queue[index++];try{await reverseMarketAddress(row)}catch(_){row._displayAddress=row.location_name||'거래 희망 위치'}}};
+    await Promise.all([worker(),worker(),worker()]);
+  }
+
   async function loadRows(){
     const {data,error}=await A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved','sold']).order('created_at',{ascending:false});
     if(error){console.error('[MARKET TEST] load failed',error);return}
     rows=data||[];updateCounts();renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);syncMarkers();
+    hydrateMarketAddresses(rows).then(()=>{renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}}).catch(()=>{});
   }
 
   document.addEventListener('click',e=>{

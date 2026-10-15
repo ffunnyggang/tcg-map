@@ -174,6 +174,7 @@
     closePopup();selectedMarkerId=x.id;m.setIcon(markerIcon(true));
     popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});
     popup.open(map,m);
+    if(x?._addressResolved!==true)reverseMarketAddress(x).then(()=>{if(selectedMarkerId===x.id){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(map,m);renderListInto($('#marketSheetList'),marketFilter)}}).catch(()=>{});
   }
   function clearMarkers(){
     closePopup();markers.forEach(m=>m.setMap(null));markers.clear();
@@ -269,6 +270,18 @@
     bindFilterControls(marketPanel,()=>{marketFilter=marketPanel.querySelector('.market-filter-chip.active')?.dataset.marketFilter||'all';renderListInto($('#marketSheetList'),marketFilter)});
     syncMarketTabLabels();updateCounts();
   }
+  function enforceMarketTabExclusiveUI(){
+    if(!marketTabActive)return;
+    const hide=['.qa-shop-tools','.list-heading-v2','.shop-request-list-banner','#shop-list','#empty'];
+    hide.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.setProperty('display','none','important')));
+    const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
+    if(marketPanel)marketPanel.hidden=false;
+  }
+  function restoreMarketTabExclusiveUI(){
+    const restore=['.qa-shop-tools','.list-heading-v2','.shop-request-list-banner','#shop-list','#empty'];
+    restore.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.removeProperty('display')));
+  }
+
   function activateMarketTab(){
     if(isJapan())return;
     marketTabActive=true;marketLayerOn=true;layerChip?.classList.add('active');layerChip?.setAttribute('aria-pressed','true');
@@ -278,13 +291,17 @@
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.setProperty('display','none','important');
     const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
     if(marketPanel)marketPanel.hidden=false;
-    renderListInto($('#marketSheetList'),marketFilter);syncMarkers();
+    enforceMarketTabExclusiveUI();
+    renderListInto($('#marketSheetList'),marketFilter);
+    hydrateMarketAddresses(rows).then(()=>renderListInto($('#marketSheetList'),marketFilter)).catch(()=>{});
+    syncMarkers();
   }
   function exitMarketTab(){
     if(!marketTabActive)return;
     marketTabActive=false;document.body.classList.remove('market-tab-active');if(marketPanel)marketPanel.hidden=true;
     $('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.removeProperty('display');
+    restoreMarketTabExclusiveUI();
   }
   function bindFilterControls(root,onChange){
     root.addEventListener('click',async e=>{
@@ -613,54 +630,66 @@
     }
     return false;
   }
+  function makeNaverAddress(item){
+    if(!item)return '';
+    const region=item.region||{},land=item.land||{},isRoad=String(item.name||'').toLowerCase()==='roadaddr';
+    const has=v=>v!==undefined&&v!==null&&String(v).trim()!=='';
+    let sido=region.area1?.name||'',sigugun=region.area2?.name||'',dong=region.area3?.name||'',ri=region.area4?.name||'',rest='';
+    if(has(land.number1)){
+      if(has(land.type)&&String(land.type)==='2')rest+='산';
+      rest+=String(land.number1);
+      if(has(land.number2)&&String(land.number2)!=='0')rest+='-'+String(land.number2);
+    }
+    if(isRoad){
+      if(/면$/.test(dong))ri=land.name||ri;
+      else{dong=land.name||dong;ri=''}
+      if(has(land.addition0?.value))rest+=(rest?' ':'')+String(land.addition0.value);
+    }
+    return [sido,sigugun,dong,ri,rest].filter(v=>String(v||'').trim()).join(' ').replace(/\s+/g,' ').trim();
+  }
   function marketAddressFromReverseResult(res){
     const direct=res?.v2?.address||{};
-    const directLabel=String(direct.roadAddress||direct.jibunAddress||'').trim();
-    if(directLabel)return directLabel;
+    const directRoad=String(direct.roadAddress||'').trim();
+    const directJibun=String(direct.jibunAddress||'').trim();
+    if(directRoad)return directRoad;
     const results=Array.isArray(res?.v2?.results)?res.v2.results:[];
-    const regionParts=r=>[r?.area1?.name,r?.area2?.name,r?.area3?.name,r?.area4?.name].filter(Boolean);
-    const landNumber=land=>{
-      const a=String(land?.number1||'').trim(),b=String(land?.number2||'').trim();
-      return a?(b&&b!=='0'?a+'-'+b:a):'';
-    };
-    const road=results.find(x=>String(x?.name||'').toLowerCase()==='roadaddr')||results.find(x=>x?.land?.name);
-    if(road){
-      const rg=road.region||{},land=road.land||{},roadName=String(land.name||'').trim(),num=landNumber(land);
-      const base=[rg?.area1?.name,rg?.area2?.name].filter(Boolean);
-      if(!rg?.area2?.name&&rg?.area3?.name)base.push(rg.area3.name);
-      const label=[...base,roadName,num].filter(Boolean).join(' ').trim();
+    const road=results.find(x=>String(x?.name||'').toLowerCase()==='roadaddr');
+    const roadLabel=makeNaverAddress(road);
+    if(roadLabel)return roadLabel;
+    if(directJibun)return directJibun;
+    for(const item of results){
+      const label=makeNaverAddress(item);
       if(label)return label;
     }
-    const addr=results.find(x=>String(x?.name||'').toLowerCase()==='addr')||results[0];
-    if(addr){
-      const rg=addr.region||{},land=addr.land||{},num=landNumber(land);
-      const label=[...regionParts(rg),num].filter(Boolean).join(' ').trim();
-      if(label)return label;
-    }
-    return '';
+    const legacy=Array.isArray(res?.result?.items)?res.result.items:[];
+    const legacyRoad=legacy.find(x=>x?.isRoadAddress===true&&String(x?.address||'').trim());
+    if(legacyRoad)return String(legacyRoad.address).trim();
+    const legacyAny=legacy.find(x=>String(x?.address||'').trim());
+    return legacyAny?String(legacyAny.address).trim():'';
   }
   async function reverseMarketAddress(row){
     const fallback=row?.location_name||'거래 희망 위치',lat=Number(row?.latitude),lng=Number(row?.longitude);
     if(!Number.isFinite(lat)||!Number.isFinite(lng)){row._displayAddress=fallback;return fallback}
     const key=lat.toFixed(6)+','+lng.toFixed(6);
-    if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;return v}
+    if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;row._addressResolved=true;return v}
     const ready=await waitForMarketGeocoder();
-    if(!ready){row._displayAddress=fallback;return fallback}
+    if(!ready){row._displayAddress=fallback;row._addressResolved=false;return fallback}
     return await new Promise(resolve=>{
       const pos=new naver.maps.LatLng(lat,lng);
-      naver.maps.Service.reverseGeocode(
-        {coords:pos,orders:[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].join(',')},
-        (status,res)=>{
-          let label='';
-          if(status===naver.maps.Service.Status.OK)label=marketAddressFromReverseResult(res);
-          label=label||fallback;
-          addressCache.set(key,label);row._displayAddress=label;resolve(label);
+      const orders=[naver.maps.Service.OrderType.ADDR,naver.maps.Service.OrderType.ROAD_ADDR].filter(Boolean).join(',');
+      naver.maps.Service.reverseGeocode({coords:pos,orders},(status,res)=>{
+        let label='';
+        if(status!==naver.maps.Service.Status.ERROR&&res)label=marketAddressFromReverseResult(res);
+        if(label){
+          addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;resolve(label);
+        }else{
+          row._displayAddress=fallback;row._addressResolved=false;resolve(fallback);
         }
-      );
+      });
     });
   }
   async function hydrateMarketAddresses(list){
-    const queue=(list||[]).filter(x=>Number.isFinite(+x.latitude)&&Number.isFinite(+x.longitude));let index=0;
+    const queue=(list||[]).filter(x=>x?._addressResolved!==true&&Number.isFinite(+x.latitude)&&Number.isFinite(+x.longitude));let index=0;
     const worker=async()=>{while(index<queue.length){const row=queue[index++];try{await reverseMarketAddress(row)}catch(_){row._displayAddress=row.location_name||'거래 희망 위치'}}};
     await Promise.all([worker(),worker(),worker()]);
   }
@@ -669,7 +698,11 @@
     const {data,error}=await A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved','sold']).order('created_at',{ascending:false});
     if(error){console.error('[MARKET TEST] load failed',error);return}
     rows=data||[];updateCounts();renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);syncMarkers();
-    hydrateMarketAddresses(rows).then(()=>{renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}}).catch(()=>{});
+    const refreshAddresses=()=>hydrateMarketAddresses(rows).then(()=>{
+      renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
+      if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}
+    }).catch(()=>{});
+    refreshAddresses();setTimeout(refreshAddresses,1600);setTimeout(refreshAddresses,4200);
   }
 
   document.addEventListener('click',e=>{

@@ -7,7 +7,8 @@
   const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const headers={apikey:KEY,Accept:'application/json'};
-  let control=null,collapseTimer=0,lastSignature='',expandedShownThisLoad=false;
+  const isShopFocusEntry=(()=>{try{const q=new URLSearchParams(location.search);return q.get('focus')==='shop'&&/^(KR|JP)-[A-Z]{3}-\d{3}$/.test(String(q.get('shopId')||'').trim().toUpperCase())}catch(_){return false}})();
+  let control=null,collapseTimer=0,lastSignature='',expandedShownThisLoad=isShopFocusEntry;
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function get(path){
@@ -47,7 +48,7 @@
     control=document.createElement('div');
     control.id='funymonFindControl';
     control.className='funymon-find-control map-location-control';
-    control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="퍼니몬 찾기 · '+esc(shop?.name||ev.shop_id)+'" title="퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">퍼니몬 찾기</span></button>';
+    control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="퍼니몬 찾기 · '+esc(shop?.name||ev.shop_id)+'" title="퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">퍼니몬 찾기</span><span class="funymon-find-arrow" aria-hidden="true">›</span></button>';
     if(expandedShownThisLoad)control.classList.add('is-collapsed');
     wrap.appendChild(control);
     const btn=control.querySelector('#funymonFindButton');

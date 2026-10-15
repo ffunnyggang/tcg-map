@@ -429,18 +429,36 @@ export class GaraponMachine {
     this.handleGroup.add(this.knobHit);
     this.dragTargets = [this.knobHit, knob, knobEnd];
 
-    const outlet = this.mesh(
-      new RoundedBoxGeometry(0.82, 0.58, 0.72, 4, 0.13),
-      woodFrame,
-      { position: [-0.78, 1.39, 0.92], rotation: [-0.06, 0.02, 0.08] },
+
+    // The outlet is mounted directly on the lower-left face of the rotating
+    // octagonal drum. It therefore travels with the drum instead of floating
+    // independently beneath it.
+    const outletFaceAngle = -Math.PI * 3 / 4;
+    const outletApothem = radius * Math.cos(Math.PI / 8);
+    const outletGroup = new THREE.Group();
+    outletGroup.position.set(
+      Math.cos(outletFaceAngle) * (outletApothem + 0.015),
+      Math.sin(outletFaceAngle) * (outletApothem + 0.015),
+      0.42,
     );
-    this.root.add(outlet);
+    outletGroup.rotation.z = outletFaceAngle - Math.PI / 2;
+    this.drumPivot.add(outletGroup);
+
+    const outletCollar = this.mesh(
+      new THREE.CylinderGeometry(0.31, 0.31, 0.13, 32),
+      woodSide,
+      { position: [0, 0.035, 0] },
+    );
     const outletHole = this.mesh(
-      new THREE.CylinderGeometry(0.205, 0.205, 0.08, 28),
+      new THREE.CylinderGeometry(0.22, 0.22, 0.075, 32),
       dark,
-      { position: [-0.77, 1.18, 1.31], rotation: [Math.PI / 2, 0, 0.08] },
+      { position: [0, 0.115, 0] },
     );
-    this.root.add(outletHole);
+    outletGroup.add(outletCollar, outletHole);
+
+    this.outletAnchor = new THREE.Object3D();
+    this.outletAnchor.position.set(0, 0.31, 0);
+    outletGroup.add(this.outletAnchor);
 
     this.resultBall = this.mesh(
       new THREE.SphereGeometry(0.2, 22, 14),
@@ -451,13 +469,13 @@ export class GaraponMachine {
         clearcoat: 0.34,
         clearcoatRoughness: 0.24,
       }),
-      { position: [-0.77, 1.18, 1.34], scale: [0.01, 0.01, 0.01] },
+      { position: [0, 0, 0], scale: [0.01, 0.01, 0.01] },
     );
     this.resultBall.visible = false;
     this.root.add(this.resultBall);
-    this.ballStart = new THREE.Vector3(-0.77, 1.18, 1.34);
-    this.ballControl1 = new THREE.Vector3(-0.93, 1.28, 1.5);
-    this.ballControl2 = new THREE.Vector3(-1.24, 1.02, 1.55);
+    this.ballStart = new THREE.Vector3();
+    this.ballControl1 = new THREE.Vector3();
+    this.ballControl2 = new THREE.Vector3();
     this.ballEnd = this.pilePosition(0);
   }
 
@@ -613,47 +631,55 @@ export class GaraponMachine {
     this.clearPile();
   }
 
+
+  outletPosition(target = new THREE.Vector3()) {
+    this.root.updateMatrixWorld(true);
+    this.outletAnchor.getWorldPosition(target);
+    return this.root.worldToLocal(target);
+  }
+
   releaseBall(color, edge, done) {
     const targetIndex = this.pileBalls.length;
     this.resultBall.material = this.materialForBall(color, edge);
     this.resultBall.visible = true;
+
+    this.outletPosition(this.ballStart);
     this.resultBall.position.copy(this.ballStart);
     this.resultBall.scale.setScalar(0.05);
     this.ballEnd.copy(this.pilePosition(targetIndex));
+    this.ballControl1.copy(this.ballStart).add(new THREE.Vector3(-0.12, 0.18, 0.16));
+    this.ballControl2.copy(this.ballStart).lerp(this.ballEnd, 0.58);
+    this.ballControl2.y += 0.28;
+    this.ballControl2.z += 0.08;
+
     this.ballAnim = {
       start: performance.now(),
-      duration: 1080,
+      duration: 820,
       color,
       edge,
       targetIndex,
       done,
     };
-    this.targetDrumAngle = this.drumAngle + Math.PI * 0.82;
     try { navigator.vibrate?.(15); } catch (_) {}
   }
 
-  autoSequence({ onMix, onForward, onReady }) {
+  // Automatic draw now mirrors the new forward gesture: one counter-clockwise
+  // revolution produces one ball, with no mandatory reverse-mixing phase.
+  autoSequence({ onForward, onReady }) {
     const start = performance.now();
     const from = this.drumAngle;
-    const backTurns = Math.PI * 2 * 1.35;
-    const frontTurns = Math.PI * 2 * 0.92;
-    const total = 2200;
+    const fullTurn = Math.PI * 2;
+    const total = 1180;
     this.autoAnim = {
       tick: (now) => {
         const t = Math.min(1, (now - start) / total);
-        if (t < 0.54) {
-          const p = t / 0.54;
-          const eased = 1 - Math.pow(1 - p, 3);
-          this.drumAngle = from - backTurns * eased;
-          onMix?.(eased);
-        } else {
-          const p = (t - 0.54) / 0.46;
-          const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-          this.drumAngle = from - backTurns + frontTurns * eased;
-          onForward?.(eased);
-        }
+        const eased = t < 0.5
+          ? 2 * t * t
+          : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        this.drumAngle = from - fullTurn * eased;
         this.targetDrumAngle = this.drumAngle;
         this.drumPivot.rotation.z = this.drumAngle;
+        onForward?.(eased);
         if (t >= 1) {
           this.autoAnim = null;
           onReady?.();

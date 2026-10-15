@@ -1,5 +1,14 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/+esm';
-import { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/geometries/RoundedBoxGeometry.js/+esm';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.min.js';
+function RoundedBoxGeometry(width=1,height=1,depth=1,segments=4,radius=.1){
+ const hw=Math.max(.001,width/2),hh=Math.max(.001,height/2),r=Math.max(0,Math.min(radius,hw,hh));
+ const shape=new THREE.Shape();
+ shape.moveTo(-hw+r,-hh);shape.lineTo(hw-r,-hh);shape.quadraticCurveTo(hw,-hh,hw,-hh+r);
+ shape.lineTo(hw,hh-r);shape.quadraticCurveTo(hw,hh,hw-r,hh);shape.lineTo(-hw+r,hh);
+ shape.quadraticCurveTo(-hw,hh,-hw,hh-r);shape.lineTo(-hw,-hh+r);shape.quadraticCurveTo(-hw,-hh,-hw+r,-hh);
+ const bevel=Math.min(r*.42,Math.max(.001,depth*.14));
+ const geometry=new THREE.ExtrudeGeometry(shape,{depth:Math.max(.001,depth-bevel*2),steps:1,bevelEnabled:bevel>0,bevelSegments:Math.max(1,segments),bevelSize:bevel,bevelThickness:bevel,curveSegments:Math.max(2,segments)});
+ geometry.translate(0,0,-depth/2+bevel);geometry.computeVertexNormals();return geometry;
+}
 
 export class GaraponMachine{
  constructor(canvas,options){this.canvas=canvas;this.stage=options.stage;this.dragTip=options.dragTip;this.callbacks=options;this.dragging=false;this.prevPointerAngle=0;this.drumAngle=0;this.targetDrumAngle=0;this.ballAnim=null;this.autoAnim=null;this.clock=new THREE.Clock();this.pointer=new THREE.Vector2();this.raycaster=new THREE.Raycaster();this.dragTargets=[];this.init()}

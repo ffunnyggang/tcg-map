@@ -1,3 +1,4 @@
+# compatibility follow-up v2
 name: Patch garapon module cache
 
 on:
@@ -15,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Version nested garapon module
+      - name: Harden garapon startup and module cache
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,19 +24,21 @@ jobs:
 
           entry_path=Path('garapon-three-v2.js')
           entry=entry_path.read_text(encoding='utf-8')
-          entry=re.sub(r"from './garapon-three-machine-v2\.js(?:\?v=[^']*)?'", "from './garapon-three-machine-v2.js?v=20261015-webgl1compat3'", entry, count=1)
+          entry=re.sub(r"from './garapon-three-machine-v2\.js(?:\?v=[^']*)?'", "from './garapon-three-machine-v2.js?v=20261015-webgl1compat4'", entry, count=1)
+          entry=entry.replace("onReady:()=>{els.loading.style.display='none'}", "onReady:()=>{els.loading.style.display='none';els.fallback.style.display='none'}")
           entry_path.write_text(entry,encoding='utf-8')
 
           html_path=Path('garapon.html')
           html=html_path.read_text(encoding='utf-8')
-          html=re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat3', html)
-          html=re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat3', html)
+          html=html.replace('},6500);</script>', '},12000);</script>')
+          html=re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat4', html)
+          html=re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat4', html)
           html_path.write_text(html,encoding='utf-8')
           PY
-      - name: Commit cache patch
+      - name: Commit startup patch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add garapon.html garapon-three-v2.js
-          git commit -m "fix: bust nested garapon 3D module cache"
+          git commit -m "fix: avoid false unsupported message during slow 3D startup"
           git push

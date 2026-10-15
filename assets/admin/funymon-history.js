@@ -111,7 +111,7 @@ async function renderEditorGuard(){
   const pane=document.querySelector('[data-mon-pane="basic"]');if(!pane||!state.editingEventId||state.editingEventId==='new')return;
   await loadOps();
   let box=pane.querySelector('.fmh-editor-guard');
-  if(!box){box=document.createElement('div');box.className='fmh-editor-guard';const grid=pane.querySelector('.mon-config-grid');(grid||pane).insertAdjacentElement('afterend',box)}
+  if(!box){box=document.createElement('div');box.className='fmh-editor-guard';const grid=pane.querySelector('.mon-config-grid'),mapFind=pane.querySelector('.mon-map-find-box'),anchor=mapFind||grid;anchor?anchor.insertAdjacentElement('afterend',box):pane.appendChild(box)}
   const ev=state.events.find(x=>x.id===state.editingEventId);
   if(!ev){box.remove();return}
   const linked=linkedEntryInfo(ev.id),daily=Math.max(0,Number(document.getElementById('monDailyLimit')?.value??ev.daily_catch_limit)||0),success=Math.max(0,Number(document.getElementById('monCaptureSuccess')?.value??(ev.capture_success_bp/100))||0);
@@ -125,10 +125,18 @@ async function renderEditorGuard(){
     if(success<100)warn.push('응모형 리워드가 연결되어 있습니다. 포획 실패도 일일 포획 횟수에 포함되므로 포획 성공률 100%를 권장합니다.');
   }
   box.innerHTML='<div class="fmh-guard-title"><b>운영 체크</b><span>'+eventState(ev)+'</span></div>'+(notes.length?'<div class="fmh-guard-info">'+notes.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div>':'<p class="fmh-guard-muted">연결된 응모형 리워드가 없습니다.</p>')+(warn.length?'<div class="fmh-guard-warn">'+warn.map(x=>'<p>⚠ '+esc(x)+'</p>').join('')+'</div>':'<div class="fmh-guard-ok">현재 설정에서 충돌하는 참여 제한이 없습니다.</div>')+(linked.length?'<div class="fmh-guard-actions">'+linked.map(({campaign})=>'<button type="button" data-fmh-open-campaign="'+esc(campaign.id)+'">'+esc(campaign.title)+' 응모 내역 보기</button>').join('')+'</div>':'');
-  box.querySelectorAll('[data-fmh-open-campaign]').forEach(btn=>btn.onclick=()=>{
+  box.querySelectorAll('[data-fmh-open-campaign]').forEach(btn=>btn.onclick=async()=>{
     const campaign=state.campaigns.find(x=>x.id===btn.dataset.fmhOpenCampaign);if(!campaign)return;
-    document.querySelector('[data-admin-tab="event"]')?.click();
-    setTimeout(()=>window.loadEventEntries?.({id:'campaign-'+campaign.id,title:campaign.title,shopId:campaign.id,period:dt(campaign.starts_at)+' ~ '+dt(campaign.ends_at),status:'진행중',managed:true,limitMode:campaign.entry_limit_mode,limitCount:campaign.entry_limit_count}),80);
+    const tab=document.querySelector('[data-admin-tab="event"]');if(!tab)return;
+    tab.click();
+    const payload={id:'campaign-'+campaign.id,title:campaign.title,shopId:campaign.id,period:dt(campaign.starts_at)+' ~ '+dt(campaign.ends_at),startAt:campaign.starts_at,endAt:campaign.ends_at,status:'진행중',managed:true,limitMode:campaign.entry_limit_mode,limitCount:campaign.entry_limit_count};
+    for(let i=0;i<50;i++){
+      if(document.getElementById('eventCampaignNew')||document.querySelector('.event-campaign-list'))break;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    const open=window.FUNY_ADMIN_LOAD_EVENT_ENTRIES||window.loadEventEntries;
+    if(typeof open==='function')await open(payload);
+    else alert('응모 내역 화면을 열지 못했습니다. 이벤트 > 응모 내역에서 직접 확인해주세요.');
   });
   ['monDailyLimit','monCaptureSuccess'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.fmhGuard){el.dataset.fmhGuard='1';el.addEventListener('input',()=>renderEditorGuard())}});
 }

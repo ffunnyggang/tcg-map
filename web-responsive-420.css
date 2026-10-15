@@ -29,6 +29,17 @@ html:not(.app-shell) .head.funy-sub-header{
   max-width:var(--funy-web-content-max)!important;
 }
 
+/* In-app pages use the native back header, so hide matching web-only tool headers. */
+html.app-shell .tool-header{
+  display:none!important;
+  visibility:hidden!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+}
+
 /* Shared bottom navigation */
 html:not(.app-shell) .portal-bottom-nav,
 html:not(.app-shell) .shops-bottom-nav{

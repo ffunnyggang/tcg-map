@@ -1315,3 +1315,33 @@ html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"] .qa-tab-c
 .market-tab-active .market-sheet-tools{
   display:flex!important
 }
+
+
+/* MARKET MAP correction v8 */
+/* Bottom-sheet tab text: +1px only */
+.qa-list-tabs .qa-tab-label{
+  font-size:11.5px!important
+}
+.qa-list-tabs .qa-tab-count,
+.qa-list-tabs #qaShopCount,
+.qa-list-tabs #qaVendingCount,
+.qa-list-tabs #marketTestTabCount{
+  font-size:9.5px!important
+}
+
+/* TCG 거래 tab must never show card-shop recommend/category controls */
+body.market-tab-active .qa-shop-tools,
+body.market-tab-active .list-heading-v2,
+body.market-tab-active .shop-request-list-banner,
+body.market-tab-active #shop-list,
+body.market-tab-active #empty{
+  display:none!important
+}
+
+/* Keep only MARKET's intended one-line toolbar */
+body.market-tab-active .market-sheet-panel{
+  display:block!important
+}
+body.market-tab-active .market-sheet-panel .market-sheet-tools{
+  display:flex!important
+}

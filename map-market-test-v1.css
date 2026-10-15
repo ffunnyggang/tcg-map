@@ -341,9 +341,11 @@ body.market-tab-active .qa-shop-only{display:none!important}
 }
 .market-overlay .market-card{margin-top:9px!important}
 .market-overlay-register{
-  right:max(16px,calc((100vw - 420px)/2 + 16px))!important;
+  right:16px!important;
   bottom:max(18px,env(safe-area-inset-bottom))!important;
+  z-index:2147481500!important;
   height:46px!important;padding:0 16px!important;border-radius:23px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
   background:linear-gradient(135deg,#8063d7,#6749bd)!important;color:#fff!important;
   font-size:11px!important;font-weight:900!important;
   box-shadow:0 8px 24px rgba(103,73,189,.26)!important

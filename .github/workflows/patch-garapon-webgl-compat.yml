@@ -1,4 +1,4 @@
-# one-time compatibility patch trigger v2
+# one-time compatibility patch trigger v3
 name: Patch garapon WebGL compatibility
 
 on:
@@ -20,46 +20,39 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           machine_path = Path('garapon-three-machine-v2.js')
           machine = machine_path.read_text(encoding='utf-8')
 
-          old_imports = """import * as THREE from 'three';
-          import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-          import WebGL from 'three/addons/capabilities/WebGL.js';"""
-          new_imports = """import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/+esm';
-          import { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/geometries/RoundedBoxGeometry.js/+esm';"""
-          if old_imports not in machine:
-              raise SystemExit('garapon machine imports anchor not found')
-          machine = machine.replace(old_imports, new_imports, 1)
+          old_imports = "import * as THREE from 'three';\nimport { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';\nimport WebGL from 'three/addons/capabilities/WebGL.js';"
+          new_imports = "import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/+esm';\nimport { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/geometries/RoundedBoxGeometry.js/+esm';"
+          if old_imports in machine:
+              machine = machine.replace(old_imports, new_imports, 1)
+          elif new_imports not in machine:
+              raise SystemExit('garapon machine imports are in an unexpected state')
 
           old_init = "init(){if(!WebGL.isWebGL2Available())throw new Error('WEBGL2_UNAVAILABLE');this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));"
           new_init = "init(){try{this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true,powerPreference:'high-performance'})}catch(primaryError){console.warn('[GARAPON 3D] high-performance context failed; retrying compatibility mode',primaryError);this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:false,alpha:true,powerPreference:'default'})}this.rendererMode=this.renderer.capabilities.isWebGL2?'webgl2':'webgl1';this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,this.renderer.capabilities.isWebGL2?1.75:1.2));"
-          if old_init not in machine:
-              raise SystemExit('garapon machine init anchor not found')
-          machine = machine.replace(old_init, new_init, 1)
+          if old_init in machine:
+              machine = machine.replace(old_init, new_init, 1)
+          elif new_init not in machine:
+              raise SystemExit('garapon machine init is in an unexpected state')
           machine_path.write_text(machine, encoding='utf-8')
 
           html_path = Path('garapon.html')
           html = html_path.read_text(encoding='utf-8')
-          import_map = """<script type=\"importmap\">
-          {
-            \"imports\": {
-              \"three\": \"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js\",
-              \"three/addons/\": \"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/\"
-            }
-          }
-          </script>
-          """
-          if import_map not in html:
-              raise SystemExit('garapon import map anchor not found')
-          html = html.replace(import_map, '', 1)
-          html = html.replace('garapon-three-v2.js?v=20261015-three1', 'garapon-three-v2.js?v=20261015-webgl1compat1')
-          html = html.replace('garapon-three-v2.css?v=20261015-three1', 'garapon-three-v2.css?v=20261015-webgl1compat1')
+          html, _ = re.subn(r'<script type="importmap">[\s\S]*?</script>\s*', '', html, count=1)
+          html = re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat1', html)
+          html = re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat1', html)
           html_path.write_text(html, encoding='utf-8')
           PY
       - name: Commit compatibility patch
         run: |
+          if git diff --quiet -- garapon.html garapon-three-machine-v2.js; then
+            echo "Compatibility patch is already applied."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add garapon.html garapon-three-machine-v2.js

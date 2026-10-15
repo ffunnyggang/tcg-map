@@ -1,4 +1,4 @@
-import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-angle-sound-pile1';
+import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-angle-sound-pile2';
 
 const STORAGE_KEY='funypin-garapon-v1';
 const PALETTE=[

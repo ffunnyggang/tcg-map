@@ -1,0 +1,41 @@
+name: Patch garapon module cache
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-garapon-module-cache.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Version nested garapon module
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          entry_path=Path('garapon-three-v2.js')
+          entry=entry_path.read_text(encoding='utf-8')
+          entry=re.sub(r"from './garapon-three-machine-v2\.js(?:\?v=[^']*)?'", "from './garapon-three-machine-v2.js?v=20261015-webgl1compat3'", entry, count=1)
+          entry_path.write_text(entry,encoding='utf-8')
+
+          html_path=Path('garapon.html')
+          html=html_path.read_text(encoding='utf-8')
+          html=re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat3', html)
+          html=re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat3', html)
+          html_path.write_text(html,encoding='utf-8')
+          PY
+      - name: Commit cache patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add garapon.html garapon-three-v2.js
+          git commit -m "fix: bust nested garapon 3D module cache"
+          git push

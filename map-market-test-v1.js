@@ -248,7 +248,8 @@
     marketTabActive=true;marketLayerOn=true;layerChip?.classList.add('active');layerChip?.setAttribute('aria-pressed','true');
     document.body.classList.add('market-tab-active');document.body.classList.remove('qa-vending-tab-active');
     $$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));
-    $$('.qa-shop-only').forEach(el=>el.style.setProperty('display','none','important'));
+    $('.qa-shop-only').forEach(el=>el.style.setProperty('display','none','important'));
+    const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.setProperty('display','none','important');
     const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
     if(marketPanel)marketPanel.hidden=false;
     renderListInto($('#marketSheetList'),marketFilter);syncMarkers();
@@ -256,7 +257,8 @@
   function exitMarketTab(){
     if(!marketTabActive)return;
     marketTabActive=false;document.body.classList.remove('market-tab-active');if(marketPanel)marketPanel.hidden=true;
-    $$('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
+    $('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
+    const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.removeProperty('display');
   }
   function bindFilterControls(root,onChange){
     root.addEventListener('click',async e=>{
@@ -578,25 +580,57 @@
     finally{btn.disabled=false;btn.textContent='신고 접수'}
   }
 
-  function reverseMarketAddress(row){
-    const lat=Number(row?.latitude),lng=Number(row?.longitude);
-    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!window.naver?.maps?.Service)return Promise.resolve(row?.location_name||'거래 희망 위치');
+  async function waitForMarketGeocoder(){
+    for(let i=0;i<30;i++){
+      if(window.naver?.maps?.Service?.reverseGeocode)return true;
+      await sleep(100);
+    }
+    return false;
+  }
+  function marketAddressFromReverseResult(res){
+    const direct=res?.v2?.address||{};
+    const directLabel=String(direct.roadAddress||direct.jibunAddress||'').trim();
+    if(directLabel)return directLabel;
+    const results=Array.isArray(res?.v2?.results)?res.v2.results:[];
+    const regionParts=r=>[r?.area1?.name,r?.area2?.name,r?.area3?.name,r?.area4?.name].filter(Boolean);
+    const landNumber=land=>{
+      const a=String(land?.number1||'').trim(),b=String(land?.number2||'').trim();
+      return a?(b&&b!=='0'?a+'-'+b:a):'';
+    };
+    const road=results.find(x=>String(x?.name||'').toLowerCase()==='roadaddr')||results.find(x=>x?.land?.name);
+    if(road){
+      const rg=road.region||{},land=road.land||{},roadName=String(land.name||'').trim(),num=landNumber(land);
+      const base=[rg?.area1?.name,rg?.area2?.name].filter(Boolean);
+      if(!rg?.area2?.name&&rg?.area3?.name)base.push(rg.area3.name);
+      const label=[...base,roadName,num].filter(Boolean).join(' ').trim();
+      if(label)return label;
+    }
+    const addr=results.find(x=>String(x?.name||'').toLowerCase()==='addr')||results[0];
+    if(addr){
+      const rg=addr.region||{},land=addr.land||{},num=landNumber(land);
+      const label=[...regionParts(rg),num].filter(Boolean).join(' ').trim();
+      if(label)return label;
+    }
+    return '';
+  }
+  async function reverseMarketAddress(row){
+    const fallback=row?.location_name||'거래 희망 위치',lat=Number(row?.latitude),lng=Number(row?.longitude);
+    if(!Number.isFinite(lat)||!Number.isFinite(lng)){row._displayAddress=fallback;return fallback}
     const key=lat.toFixed(6)+','+lng.toFixed(6);
-    if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;return Promise.resolve(v)}
-    return new Promise(resolve=>{
+    if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;return v}
+    const ready=await waitForMarketGeocoder();
+    if(!ready){row._displayAddress=fallback;return fallback}
+    return await new Promise(resolve=>{
       const pos=new naver.maps.LatLng(lat,lng);
-      naver.maps.Service.reverseGeocode({coords:pos,orders:[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].join(',')},(status,res)=>{
-        let label='';
-        if(status===naver.maps.Service.Status.OK){
-          const addr=res?.v2?.address||{};
-          label=String(addr.roadAddress||addr.jibunAddress||'').trim();
-          if(!label){
-            const it=res?.v2?.results?.[0],rg=it?.region,land=it?.land;
-            label=[rg?.area1?.name,rg?.area2?.name,rg?.area3?.name,land?.name,land?.number1].filter(Boolean).join(' ').trim();
-          }
+      naver.maps.Service.reverseGeocode(
+        {coords:pos,orders:[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].join(',')},
+        (status,res)=>{
+          let label='';
+          if(status===naver.maps.Service.Status.OK)label=marketAddressFromReverseResult(res);
+          label=label||fallback;
+          addressCache.set(key,label);row._displayAddress=label;resolve(label);
         }
-        label=label||row?.location_name||'거래 희망 위치';addressCache.set(key,label);row._displayAddress=label;resolve(label);
-      });
+      );
     });
   }
   async function hydrateMarketAddresses(list){

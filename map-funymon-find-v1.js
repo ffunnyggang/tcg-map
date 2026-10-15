@@ -7,7 +7,7 @@
   const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const headers={apikey:KEY,Accept:'application/json'};
-  let control=null,collapseTimer=0,lastSignature='';
+  let control=null,collapseTimer=0,lastSignature='',expandedShownThisLoad=false;
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function get(path){
@@ -48,6 +48,7 @@
     control.id='funymonFindControl';
     control.className='funymon-find-control map-location-control';
     control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="퍼니몬 찾기 · '+esc(shop?.name||ev.shop_id)+'" title="퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">퍼니몬 찾기</span></button>';
+    if(expandedShownThisLoad)control.classList.add('is-collapsed');
     wrap.appendChild(control);
     const btn=control.querySelector('#funymonFindButton');
     btn.addEventListener('click',e=>{
@@ -56,8 +57,10 @@
       try{if(typeof gtag==='function')gtag('event','funymon_map_find_click',{event_id:ev.id,shop_id:ev.shop_id})}catch(_){}
       location.assign(href);
     });
-    btn.addEventListener('focus',()=>control?.classList.remove('is-collapsed'));
-    scheduleCollapse(setting.collapse_seconds);
+    if(!expandedShownThisLoad){
+      expandedShownThisLoad=true;
+      scheduleCollapse(setting.collapse_seconds);
+    }
   }
   async function refresh(){
     try{

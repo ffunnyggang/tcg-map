@@ -12,14 +12,14 @@ header{height:58px;padding:0 14px;display:flex;align-items:center;position:stick
 main{position:relative;z-index:1;padding:0 16px 18px}
 .hero{margin:0 -16px;padding:20px 16px 15px;background:linear-gradient(180deg,#fff 0%,#fbf9fd 64%,#f4f1f7 100%);position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;left:50%;bottom:-62px;width:520px;height:230px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(128,98,216,.10) 0%,rgba(128,98,216,.04) 38%,transparent 72%);pointer-events:none}
-.result-area{text-align:center;position:relative;z-index:3;min-height:165px}.result-kicker{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 10px;border-radius:999px;background:#f2eefb;color:var(--purple-dark);font-size:9px;font-weight:900}.result-text{display:block;margin-top:11px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em}.result-sub{display:block;margin-top:6px;color:#8a8390;font-size:10.5px;font-weight:650}.chance{display:block;margin:18px 0 15px;font-size:50px;line-height:1;font-weight:950;letter-spacing:-.07em;color:var(--purple-dark);text-shadow:0 3px 12px rgba(103,73,189,.10)}
+.result-area{text-align:center;position:relative;z-index:3;min-height:165px}.result-kicker{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 10px;border-radius:999px;background:#f2eefb;color:var(--purple-dark);font-size:9px;font-weight:900}.result-text{display:block;margin-top:11px;font-size:20px;line-height:1.25;font-weight:950;letter-spacing:-.045em;transform:translateX(-4px)}.result-sub{display:block;margin-top:6px;color:#8a8390;font-size:10.5px;font-weight:650}.chance{display:block;margin:18px 0 15px;font-size:50px;line-height:1;font-weight:950;letter-spacing:-.07em;color:var(--purple-dark);text-shadow:0 3px 12px rgba(103,73,189,.10)}
 .picker-area{position:relative;z-index:4;margin-top:12px;padding:0}.picker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}.picker-col{min-width:0;position:relative;padding:0 5px}.picker-col+.picker-col:before{content:"";position:absolute;left:0;top:32px;bottom:8px;width:1px;background:#f0ecf3}
 .picker-label{display:flex;align-items:center;justify-content:center;height:28px;color:#6f6874;font-size:10px;font-weight:850;white-space:nowrap}
 .wheel-wrap{position:relative;height:200px;overflow:hidden;perspective:420px}.wheel-selected{position:absolute;left:4px;right:4px;top:80px;height:40px;border-radius:13px;background:rgba(234,232,237,.82);z-index:1}
 .wheel{position:relative;z-index:2;height:200px;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;padding:80px 0;-webkit-overflow-scrolling:touch}.wheel::-webkit-scrollbar{display:none}
 .wheel-item{height:40px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;color:#bdb6c2;font-size:14px;font-weight:550;cursor:pointer;user-select:none;opacity:.30;transform:scale(.86);transform-origin:center;transition:color .14s ease,font-size .14s ease,font-weight .14s ease,opacity .14s ease,transform .14s ease}.wheel-item.active{color:#2f2934;font-size:22px;font-weight:850;opacity:1;transform:scale(1)}.wheel-item.near{color:#99909f;font-size:17px;font-weight:650;opacity:.58;transform:scale(.93)}.wheel-item.far{color:#beb7c3;font-size:14px;font-weight:550;opacity:.28;transform:scale(.86)}
 .wheel-keyin{position:absolute;left:4px;right:4px;top:80px;height:40px;z-index:8;display:none;align-items:center;justify-content:center;border-radius:13px;background:#fff;border:1px solid #b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.08)}.wheel-keyin.show{display:flex}.wheel-keyin input{width:76%;height:38px;border:0;background:transparent;text-align:center;color:#2f2934;font-size:21px;font-weight:850;outline:none;-moz-appearance:textfield}.wheel-keyin input::-webkit-outer-spin-button,.wheel-keyin input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.keyin-field{min-width:0}.keyin-field label{display:block;margin:0 0 6px;color:#6f6874;font-size:10px;font-weight:850}.keyin-box{display:flex;align-items:center;height:54px;border:1px solid #ddd7e3;border-radius:13px;background:#fff;overflow:hidden}.keyin-box input{min-width:0;flex:1;height:52px;border:0;background:transparent;color:#2f2934;padding:0 4px 0 12px;text-align:right;font-size:20px;font-weight:850;outline:none;-moz-appearance:textfield}.keyin-box input::-webkit-outer-spin-button,.keyin-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-box span{padding:0 12px 0 5px;color:#756e79;font-size:12px;font-weight:800;white-space:nowrap}.keyin-box:focus-within{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
+.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;scroll-margin-top:96px;scroll-margin-bottom:160px}.keyin-field{min-width:0;scroll-margin-top:96px;scroll-margin-bottom:160px}.keyin-field label{display:block;margin:0 0 6px;color:#6f6874;font-size:10px;font-weight:850}.keyin-box{display:flex;align-items:center;height:54px;border:1px solid #ddd7e3;border-radius:13px;background:#fff;overflow:hidden}.keyin-box input{min-width:0;flex:1;height:52px;border:0;background:transparent;color:#2f2934;padding:0 4px 0 12px;text-align:right;font-size:20px;font-weight:850;outline:none;-moz-appearance:textfield}.keyin-box input::-webkit-outer-spin-button,.keyin-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-box span{padding:0 12px 0 5px;color:#756e79;font-size:12px;font-weight:800;white-space:nowrap}.keyin-box:focus-within{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
 .price-summary{display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding:0 2px;color:#928a96;font-size:9.5px}.price-summary strong{color:#5f5865;font-size:11px}.sales-progress-head span{color:#817a86;font-size:9.5px;font-weight:800}.sales-progress-head strong{color:#5f5865;font-size:10px}.sales-track{height:7px;margin-top:8px;border-radius:99px;background:#ebe6ef;overflow:hidden}.sales-track i{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#a58be4,#7455ca);transition:width .2s ease}.sales-progress-foot{margin-top:6px;color:#a098a5;font-size:8.5px;font-weight:700}
 .error{min-height:14px;margin-top:7px;color:var(--danger);font-size:9px;font-weight:750;text-align:center}.fair-note{display:flex;align-items:flex-start;justify-content:center;gap:7px;margin:11px auto 0;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.78);color:#8f8794;font-size:9.5px;line-height:1.45}.fair-icon{flex:none;font-size:13px;line-height:1;margin-top:1px}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}.metric{padding:12px;border:1px solid #eee9f1;border-radius:14px;background:#fff}.metric-label{display:block;color:#948c98;font-size:9px;font-weight:750}.metric strong{display:block;margin-top:4px;font-size:18px;line-height:1.15;font-weight:950;letter-spacing:-.04em}
@@ -41,15 +41,15 @@ main{position:relative;z-index:1;padding:0 16px 18px}
     <div class="picker-grid">
       <div class="picker-col">
         <div class="picker-label">전체 수량</div>
-        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="totalWheel" aria-label="전체 수량"></div><div class="wheel-keyin" id="totalKeyin"><input id="totalKeyinInput" type="number" inputmode="numeric" aria-label="전체 수량 직접 입력"></div></div>
+        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="totalWheel" aria-label="전체 수량"></div><div class="wheel-keyin" id="totalKeyin"><input id="totalKeyinInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="전체 수량 직접 입력"></div></div>
       </div>
       <div class="picker-col">
         <div class="picker-label">남은 수량</div>
-        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="remainingWheel" aria-label="남은 수량"></div><div class="wheel-keyin" id="remainingKeyin"><input id="remainingKeyinInput" type="number" inputmode="numeric" aria-label="남은 수량 직접 입력"></div></div>
+        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="remainingWheel" aria-label="남은 수량"></div><div class="wheel-keyin" id="remainingKeyin"><input id="remainingKeyinInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="남은 수량 직접 입력"></div></div>
       </div>
       <div class="picker-col">
         <div class="picker-label">남은 당첨 수량</div>
-        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="winsWheel" aria-label="남은 당첨 수량"></div><div class="wheel-keyin" id="winsKeyin"><input id="winsKeyinInput" type="number" inputmode="numeric" aria-label="남은 당첨 수량 직접 입력"></div></div>
+        <div class="wheel-wrap"><div class="wheel-selected"></div><div class="wheel" id="winsWheel" aria-label="남은 당첨 수량"></div><div class="wheel-keyin" id="winsKeyin"><input id="winsKeyinInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="남은 당첨 수량 직접 입력"></div></div>
       </div>
     </div>
   </section>
@@ -124,7 +124,11 @@ main{position:relative;z-index:1;padding:0 16px 18px}
     $('total').value=state.total;$('remaining').value=state.remaining;$('wins').value=state.wins;$('buy').value=state.buy;scrollToValue(name,state[name],smooth);calc();
   }
   function openWheelKeyin(name){
-    const box=$(name+'Keyin'),input=$(name+'KeyinInput');if(!box||!input)return;input.value=String(state[name]);box.classList.add('show');requestAnimationFrame(()=>{input.focus();input.select()});
+    const box=$(name+'Keyin'),input=$(name+'KeyinInput');if(!box||!input)return;
+    input.value=String(state[name]);
+    box.classList.add('show');
+    try{input.focus({preventScroll:true})}catch(_){input.focus()}
+    try{input.select()}catch(_){}
   }
   function closeWheelKeyin(name,commit=true){
     const box=$(name+'Keyin'),input=$(name+'KeyinInput');if(!box||!input)return;
@@ -137,9 +141,27 @@ main{position:relative;z-index:1;padding:0 16px 18px}
       if(best)selectWheel(name,Number(best.dataset.value),true);
     },80)},{passive:true});
   }
+  function anchorKeyinField(input){
+    const field=input.closest('.keyin-field')||input;
+    const move=()=>{
+      try{field.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'})}catch(_){field.scrollIntoView()}
+    };
+    requestAnimationFrame(move);
+    setTimeout(move,120);
+    setTimeout(move,320);
+  }
   function syncKeyins(){
-    let buy=Math.round(Number($('buy').value)||1);buy=Math.max(1,Math.min(state.remaining,buy));state.buy=buy;$('buy').value=buy;
-    let raw=String($('price').value||'').replace(/[^0-9]/g,'');let price=Math.round(Number(raw)||0);price=Math.max(0,Math.min(100000000,price));state.price=price;$('price').value=price.toLocaleString('ko-KR');calc();
+    const buyInput=$('buy'),priceInput=$('price');
+    const buyRaw=String(buyInput.value??'').trim();
+    if(buyRaw!==''){
+      let buy=Math.round(Number(buyRaw));
+      if(Number.isFinite(buy)){buy=Math.max(1,Math.min(state.remaining,buy));state.buy=buy;buyInput.value=String(buy)}
+    }
+    let raw=String(priceInput.value||'').replace(/[^0-9]/g,'');
+    if(raw!==''){
+      let price=Math.round(Number(raw)||0);price=Math.max(0,Math.min(100000000,price));state.price=price;priceInput.value=price.toLocaleString('ko-KR');
+    }
+    calc();
   }
   function calc(){
     const total=state.total,N=state.remaining,H=state.wins,n=state.buy,err=$('err');err.textContent='';
@@ -156,8 +178,15 @@ main{position:relative;z-index:1;padding:0 16px 18px}
   buildWheel('total',1,500,state.total);buildWheel('remaining',1,state.total,state.remaining);buildWheel('wins',0,state.remaining,state.wins);
   Object.keys(wheels).forEach(bindWheel);
   ['total','remaining','wins'].forEach(name=>{const input=$(name+'KeyinInput');input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();closeWheelKeyin(name,true)}else if(e.key==='Escape'){e.preventDefault();closeWheelKeyin(name,false)}});input.addEventListener('blur',()=>setTimeout(()=>closeWheelKeyin(name,true),60));});
-  $('buy').addEventListener('input',syncKeyins);$('buy').addEventListener('blur',syncKeyins);
-  $('price').addEventListener('input',syncKeyins);$('price').addEventListener('focus',e=>{try{e.target.select()}catch(_){}});$('price').addEventListener('blur',syncKeyins);
+  $('buy').addEventListener('focus',e=>{anchorKeyinField(e.target);try{e.target.select()}catch(_){}});
+  $('buy').addEventListener('input',()=>{const raw=String($('buy').value??'').trim();if(raw===''){calc();return}syncKeyins()});
+  $('buy').addEventListener('blur',()=>{if(String($('buy').value??'').trim()===''){$('buy').value='1';state.buy=1}syncKeyins()});
+  $('price').addEventListener('focus',e=>{anchorKeyinField(e.target);try{e.target.select()}catch(_){}});
+  $('price').addEventListener('input',syncKeyins);
+  $('price').addEventListener('blur',()=>{if(String($('price').value??'').trim()===''){$('price').value='0';state.price=0}syncKeyins()});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',()=>{const active=document.activeElement;if(active&&active.closest&&active.closest('.keyin-field'))setTimeout(()=>anchorKeyinField(active),40)});
+  }
   $('price').value=state.price.toLocaleString('ko-KR');calc();
 })();
 </script><script src="funy-i18n.js?v=20261013-tools-i18n"></script></body></html>

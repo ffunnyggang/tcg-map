@@ -721,6 +721,6 @@
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
   if(map)naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());
-  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));if(marketPanel)marketPanel.hidden=false}},700);
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   await loadRows();
 })();

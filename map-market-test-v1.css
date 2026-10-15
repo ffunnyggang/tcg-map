@@ -1085,3 +1085,195 @@ body.market-tab-active .qa-shop-only{display:none!important}
 
 /* Keep legacy MARKET control rows out of final layout */
 .market-sheet-tools,.market-overlay-tools,.market-sheet-register{display:none!important}
+
+
+/* MARKET MAP focused polish v5 */
+/* 거래 ON/OFF: LIVE PIN layer chip parity */
+.market-layer-chip.live-temp-layer{
+  flex:0 0 auto!important;
+  height:38px!important;
+  padding:0 13px!important;
+  border:1.5px solid rgba(255,255,255,.68)!important;
+  border-radius:19px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,255,255,.60))!important;
+  color:#9b949f!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  font:800 11.5px/1 Pretendard,sans-serif!important;
+  box-shadow:0 6px 18px rgba(48,39,58,.09),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.26)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(155%)!important;
+  backdrop-filter:blur(18px) saturate(155%)!important;
+  transition:border-color .16s ease,color .16s ease,opacity .16s ease,box-shadow .16s ease!important
+}
+.market-layer-chip.live-temp-layer .market-layer-emoji{font-size:15px;line-height:1}
+.market-layer-chip.live-temp-layer .qa-layer-count{
+  min-width:0!important;height:auto!important;padding:0!important;border-radius:0!important;
+  background:transparent!important;color:inherit!important;font-size:10px!important;font-weight:900!important;opacity:.7!important
+}
+.market-layer-chip.live-temp-layer.active{
+  border-color:rgba(40,35,46,.68)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(248,247,249,.70))!important;
+  color:#28232e!important;
+  box-shadow:0 6px 18px rgba(40,35,46,.12),inset 0 1px 0 rgba(255,255,255,.96)!important
+}
+.market-layer-chip.live-temp-layer.active .qa-layer-count{opacity:1!important}
+@media(max-width:430px){
+  .market-layer-chip.live-temp-layer{height:36px!important;padding:0 11px!important;font-size:10.8px!important}
+}
+
+/* 거래 마커: LIVE PIN 기본 마커와 동일한 geometry / black pin */
+.market-map-pin{
+  position:relative!important;
+  width:var(--marker-w)!important;
+  height:var(--marker-h)!important;
+  filter:drop-shadow(0 3px 5px rgba(23,21,27,.24))!important;
+  transform-origin:50% 100%!important
+}
+.market-map-pin svg{
+  position:absolute!important;
+  left:50%!important;top:0!important;
+  width:var(--pin-w)!important;height:var(--pin-h)!important;
+  transform:translateX(-50%)!important;
+  overflow:visible!important;
+  filter:none!important
+}
+.market-map-pin-emoji{
+  position:absolute!important;
+  left:50%!important;
+  top:calc(var(--pin-h) * .39)!important;
+  transform:translate(-50%,-50%)!important;
+  font-size:calc(var(--pin-w) * .48)!important;
+  line-height:1!important;
+  pointer-events:none!important;
+  filter:none!important
+}
+.market-map-pin.is-selected{
+  transform:scale(1.08)!important;
+  filter:drop-shadow(0 4px 8px rgba(23,21,27,.34))!important
+}
+
+/* 바텀시트 TCG 거래 count */
+.qa-list-tab[data-tab="market"] .qa-tab-count,
+#marketTestTabCount{
+  color:#e34d5c!important;
+  font-weight:900!important
+}
+
+/* 거래 탭: 카드샵 / 자판기와 동일한 1-line controls */
+.market-sheet-tools{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:8px 0 10px!important;
+  min-width:0!important;
+  overflow:visible!important;
+  position:relative!important
+}
+.market-sheet-tools .market-sheet-sort{
+  position:relative!important;
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  z-index:140!important
+}
+.market-sheet-tools .market-sort-button{
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important;
+  height:34px!important;
+  padding:0 11px 0 13px!important;
+  box-shadow:none!important;
+  justify-content:space-between!important
+}
+.market-sheet-tools .market-sort-menu{
+  left:0!important;
+  right:auto!important;
+  top:40px!important;
+  width:118px!important;
+  min-width:118px!important
+}
+.market-sheet-tools .qa-tools-divider{
+  flex:0 0 auto!important;
+  width:1px!important;
+  height:20px!important;
+  margin:0 1px!important;
+  background:#ddd8e1!important
+}
+.market-sheet-filter{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  gap:7px!important;
+  overflow-x:auto!important;
+  padding:0!important;
+  scrollbar-width:none!important
+}
+.market-sheet-filter::-webkit-scrollbar{display:none!important}
+.market-sheet-tools .market-filter-chip{
+  height:34px!important;
+  padding:0 12px!important;
+  border:1px solid #e5e0e9!important;
+  border-radius:17px!important;
+  background:#fff!important;
+  color:#514a55!important;
+  font:750 10.8px/1 Pretendard,sans-serif!important
+}
+.market-sheet-tools .market-filter-chip.active{
+  border-color:#c9b9ee!important;
+  background:#f5f1fc!important;
+  color:#6849bf!important;
+  font-weight:850!important
+}
+
+/* 리스트 우측 chevron 복구 */
+.market-card{
+  grid-template-columns:88px minmax(0,1fr) 12px!important
+}
+.market-card-chev{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:stretch!important;
+  color:#9b94a0!important;
+  font-size:21px!important;
+  font-weight:400!important;
+  line-height:1!important
+}
+
+/* Quick action emoji */
+.market-fab-action-emoji{
+  display:inline-block;
+  margin-right:4px;
+  font-size:15px;
+  line-height:1;
+  vertical-align:-1px
+}
+
+/* MAP FAB compact animation: explicit width + slower transition */
+.market-fab-main{
+  width:146px!important;
+  min-width:46px!important;
+  padding:0 15px!important;
+  transition:
+    width .58s cubic-bezier(.22,1,.36,1),
+    min-width .58s cubic-bezier(.22,1,.36,1),
+    padding .58s cubic-bezier(.22,1,.36,1),
+    border-radius .48s ease,
+    background .22s ease,
+    color .22s ease!important
+}
+.market-fab-label{
+  transition:opacity .24s ease .06s,transform .28s ease!important
+}
+.market-fab-wrap.is-scrolling:not(.open) .market-fab-main{
+  width:46px!important;
+  min-width:46px!important;
+  padding:0!important
+}
+.market-fab-wrap.is-scrolling:not(.open) .market-fab-label{
+  opacity:0!important;
+  transform:scale(.84)!important
+}

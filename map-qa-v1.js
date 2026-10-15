@@ -121,33 +121,30 @@ const $=s=>document.querySelector(s);
   }
   async function buildVendingMarkers(){
     if(!mapReady()||!VENDING.length)return;
-    const missingBefore=VENDING.filter(v=>!v._coord).length;
-    const status=document.createElement('div');status.className='qa-geocode-status';
-    status.textContent=missingBefore?'DB 좌표 보완 중 0/'+missingBefore:'자판기 위치 불러오는 중…';
-    $('.map-wrap-hero')?.appendChild(status);
-    let done=0,idx=0,ok=0,seedDone=0;
+
+    // Render every vending machine that already has DB coordinates immediately.
+    VENDING.filter(v=>v._coord).forEach(v=>{try{makeVendingMarker(v,v._coord)}catch(_){}});
+    renderVendingList();
+
+    // Only unresolved rows are geocoded in the background so map interaction is never blocked.
+    const missing=VENDING.filter(v=>!v._coord);
+    if(!missing.length)return;
+
+    let idx=0;
     const seedRows=[];
     async function worker(){
-      while(idx<VENDING.length){
-        const i=idx++,v=VENDING[i];
+      while(idx<missing.length){
+        const v=missing[idx++];
         try{
-          const result=await geocodeOne(v,row=>{seedRows.push(row);seedDone++});
-          if(result.ok)ok++;
-          if(result.seeded){
-            if(seedDone%5===0||seedDone===missingBefore)status.textContent='DB 좌표 보완 중 '+seedDone+'/'+missingBefore;
-            await new Promise(r=>setTimeout(r,55));
-          }
+          const result=await geocodeOne(v,row=>seedRows.push(row));
+          if(result.seeded)await new Promise(r=>setTimeout(r,55));
         }catch(_){}
-        done++;
       }
     }
     await Promise.all([worker(),worker(),worker()]);
-    let saved=0;
     for(let i=0;i<seedRows.length;i+=25){
-      try{saved+=await persistVendingCoords(seedRows.slice(i,i+25))}catch(e){console.warn('[FUNY QA] coordinate persist failed',e)}
+      try{await persistVendingCoords(seedRows.slice(i,i+25))}catch(e){console.warn('[FUNY QA] coordinate persist failed',e)}
     }
-    status.textContent=missingBefore?(saved+'개 좌표 DB 저장 완료'):(ok+'개 DB 좌표 로드 완료');
-    setTimeout(()=>status.remove(),1600);
     renderVendingList();
   }
 

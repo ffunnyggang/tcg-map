@@ -286,8 +286,8 @@
     if(isJapan())return;
     marketTabActive=true;marketLayerOn=true;layerChip?.classList.add('active');layerChip?.setAttribute('aria-pressed','true');
     document.body.classList.add('market-tab-active');document.body.classList.remove('qa-vending-tab-active');
-    $$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));
-    $('.qa-shop-only').forEach(el=>el.style.setProperty('display','none','important'));
+    $document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));
+    document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.setProperty('display','none','important'));
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.setProperty('display','none','important');
     const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
     if(marketPanel)marketPanel.hidden=false;
@@ -299,7 +299,7 @@
   function exitMarketTab(){
     if(!marketTabActive)return;
     marketTabActive=false;document.body.classList.remove('market-tab-active');if(marketPanel)marketPanel.hidden=true;
-    $('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
+    document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.removeProperty('display');
     restoreMarketTabExclusiveUI();
   }
@@ -721,6 +721,6 @@
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
   if(map)naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());
-  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){$('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   await loadRows();
 })();

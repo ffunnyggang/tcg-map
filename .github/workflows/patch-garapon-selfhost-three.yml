@@ -1,0 +1,63 @@
+name: Self-host Three.js for garapon
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-garapon-selfhost-three.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download pinned Three.js and patch imports
+        run: |
+          mkdir -p vendor
+          curl --fail --location --retry 3 --silent --show-error \
+            https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.min.js \
+            -o vendor/three-r162.module.min.js
+          curl --fail --location --retry 3 --silent --show-error \
+            https://cdn.jsdelivr.net/npm/three@0.162.0/LICENSE \
+            -o vendor/three-r162.LICENSE.txt
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          machine_path=Path('garapon-three-machine-v2.js')
+          machine=machine_path.read_text(encoding='utf-8')
+          machine=re.sub(
+              r"import \* as THREE from '[^']+';",
+              "import * as THREE from './vendor/three-r162.module.min.js?v=20261015-local1';",
+              machine,
+              count=1,
+          )
+          machine_path.write_text(machine,encoding='utf-8')
+
+          entry_path=Path('garapon-three-v2.js')
+          entry=entry_path.read_text(encoding='utf-8')
+          entry=re.sub(
+              r"from './garapon-three-machine-v2\.js(?:\?v=[^']*)?'",
+              "from './garapon-three-machine-v2.js?v=20261015-local1'",
+              entry,
+              count=1,
+          )
+          entry_path.write_text(entry,encoding='utf-8')
+
+          html_path=Path('garapon.html')
+          html=html_path.read_text(encoding='utf-8')
+          html=re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-local1', html)
+          html=re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-local1', html)
+          html_path.write_text(html,encoding='utf-8')
+          PY
+      - name: Commit self-hosted runtime
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/three-r162.module.min.js vendor/three-r162.LICENSE.txt garapon.html garapon-three-v2.js garapon-three-machine-v2.js
+          git commit -m "fix: self-host pinned Three.js for reliable garapon loading"
+          git push

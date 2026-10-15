@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.min.js';
+import * as THREE from './vendor/three-r162.module.min.js?v=20261015-local1';
 function RoundedBoxGeometry(width=1,height=1,depth=1,segments=4,radius=.1){
  const hw=Math.max(.001,width/2),hh=Math.max(.001,height/2),r=Math.max(0,Math.min(radius,hw,hh));
  const shape=new THREE.Shape();

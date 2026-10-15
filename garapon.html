@@ -24,7 +24,7 @@
   <div class="machine-stage" id="machineStage" aria-label="3D 가라폰 추첨기">
     <canvas class="machine-canvas" id="garaponCanvas" aria-label="가라폰 손잡이를 돌리는 3D 화면"></canvas>
     <div class="canvas-loading" id="canvasLoading">3D 가라폰을 준비하고 있어요…</div>
-    <div class="webgl-fallback" id="webglFallback">이 기기에서는 3D 화면을 표시하기 어려워요.<br>아래 자동 추첨 버튼은 계속 사용할 수 있습니다.</div>
+    <div class="webgl-fallback" id="webglFallback">3D 화면을 불러오지 못했어요.<br>아래 자동 추첨 버튼은 계속 사용할 수 있습니다.</div>
     <div class="drag-tip" id="dragTip"><b>손잡이</b>를 잡고 반시계 방향으로 돌려주세요</div>
   </div>
   <button class="draw-button" id="drawButton" type="button">자동으로 뽑기</button>
@@ -39,7 +39,7 @@
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>window.__GARAPON_3D_READY=false;setTimeout(()=>{if(!window.__GARAPON_3D_READY){const a=document.getElementById('canvasLoading'),b=document.getElementById('webglFallback');if(a)a.style.display='none';if(b)b.style.display='flex'}},12000);</script>
-<script type="module" src="garapon-three-v2.js?v=20261015-local1"></script>
+<script type="module" src="garapon-three-v2.js?v=20261015-syntaxfix1"></script>
 <script src="funy-i18n.js?v=20261013-tools-i18n"></script>
 </body>
 </html>

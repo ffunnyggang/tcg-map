@@ -11,7 +11,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="garapon-three-v2.css?v=20261015-local1">
+<link rel="stylesheet" href="garapon-three-v2.css?v=20261016-angle-sound-pile1">
 <link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1">
 </head>
 <body>
@@ -31,6 +31,7 @@
   <div class="fair-note"><span class="fair-dot"></span><span>남은 구슬 기준 비복원 무작위 추첨</span></div>
 </section>
 <section class="stats"><div class="stat"><span>남은 구슬</span><strong id="remainingTotal">100개</strong><small id="remainingRate">100%</small></div><div class="stat"><span>추첨 횟수</span><strong id="drawCount">0회</strong><small>누적</small></div><div class="stat"><span>설정 구슬</span><strong id="configuredTotal">100개</strong><small id="configState">구성 완료</small></div></section>
+<section class="card drawn-card" aria-labelledby="drawnBallsTitle"><div class="card-head"><span class="card-title" id="drawnBallsTitle">뽑힌 구슬</span><span class="card-sub" id="drawnBallCount">0개</span></div><div class="drawn-balls" id="drawnBalls"><div class="drawn-empty">추첨한 구슬이 이곳에 쌓여요.</div></div></section>
 <section class="card"><div class="card-head"><span class="card-title">가라폰 설정</span><button class="card-action" id="resetDraw" type="button">추첨 초기화</button></div><div class="total-row"><div class="total-copy"><b>총 구슬 개수</b><span>컬러별 수량 합계와 같아야 해요</span></div><div class="number-box"><input id="totalBalls" type="number" inputmode="numeric" min="1" max="9999" value="100"><em>개</em></div></div><div class="config-list" id="configList"></div><div class="config-footer"><span class="sum-status" id="sumStatus">구성 합계 100 / 총 100</span><button class="add-row" id="addRow" type="button">＋ 컬러 추가</button></div></section>
 <section class="card"><div class="card-head"><span class="card-title">남은 구슬 현황</span><span class="card-sub">현재 확률</span></div><div class="remaining-list" id="remainingList"></div></section>
 <section class="card"><div class="card-head"><span class="card-title">최근 결과</span><span class="card-sub" id="historyCount">0회</span></div><div class="history-list" id="historyList"><div class="history-empty">아직 추첨 결과가 없어요.</div></div></section>
@@ -39,7 +40,7 @@
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>window.__GARAPON_3D_READY=false;setTimeout(()=>{if(!window.__GARAPON_3D_READY){const a=document.getElementById('canvasLoading'),b=document.getElementById('webglFallback');if(a)a.style.display='none';if(b)b.style.display='flex'}},12000);</script>
-<script type="module" src="garapon-three-v2.js?v=20261015-syntaxfix1"></script>
+<script type="module" src="garapon-three-v2.js?v=20261016-angle-sound-pile1"></script>
 <script src="funy-i18n.js?v=20261013-tools-i18n"></script>
 </body>
 </html>

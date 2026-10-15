@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FUNY PIN">
+  <defs>
+    <linearGradient id="funyPinV2Sq" x1="128" y1="16" x2="556" y2="897" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9D7AE8"/>
+      <stop offset=".5" stop-color="#8062D8"/>
+      <stop offset="1" stop-color="#6749BD"/>
+    </linearGradient>
+    <radialGradient id="funyPinButtonV2Sq" cx="32%" cy="24%" r="78%">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F0ECFB"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="#FFFFFF"/>
+  <g transform="translate(70.5 6.5) scale(.55)">
+    <path d="M337.5 5C155 5 9 145 9 326c0 238 328.5 577 328.5 577S666 564 666 326C666 145 520 5 337.5 5Z" fill="url(#funyPinV2Sq)"/>
+    <rect x="17" y="329" width="641" height="36" fill="#FFFFFF"/>
+    <circle cx="337.5" cy="347" r="118" fill="#FFFFFF"/>
+    <circle cx="337.5" cy="347" r="98" fill="url(#funyPinButtonV2Sq)"/>
+  </g>
+</svg>

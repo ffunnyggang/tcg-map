@@ -76,7 +76,21 @@
  }
  async function focusDeepLink(){
   if(deepLinkFocused||deepLinkPending)return;
-  const q=new URLSearchParams(location.search);
+  let q=new URLSearchParams(location.search);
+  if(!q.has('liveReport')&&!q.has('liveShopId')&&!q.has('liveLat')){
+    try{
+      const saved=JSON.parse(localStorage.getItem('funypin_live_map_focus')||'null');
+      if(saved&&Date.now()-Number(saved.at||0)<15000){
+        q=new URLSearchParams();
+        if(saved.reportId)q.set('liveReport',String(saved.reportId));
+        if(saved.shopId)q.set('liveShopId',String(saved.shopId));
+        if(saved.lat&&saved.lng){q.set('liveLat',String(saved.lat));q.set('liveLng',String(saved.lng))}
+        if(saved.country)q.set('liveCountry',String(saved.country));
+        q.set('liveZoom','max');
+      }
+      localStorage.removeItem('funypin_live_map_focus');
+    }catch(_){}
+  }
   if(!q.has('liveReport')&&!q.has('liveShopId')&&!q.has('liveLat'))return;
   deepLinkPending=true;
   clearDeepLinkParams();

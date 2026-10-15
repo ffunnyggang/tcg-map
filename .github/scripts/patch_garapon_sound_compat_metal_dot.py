@@ -13,11 +13,11 @@ if old in js:
 elif new not in js:
     raise SystemExit('audio context anchor not found')
 
-old_dot = "'<span class=\"color-dot\" style=\"--c:'+p.color+';--edge:'+p.edge+'\"></span>"
-new_dot = "'<span class=\"color-dot'+(p.metallic?' metallic':'')+'\" style=\"--c:'+p.color+';--edge:'+p.edge+'\"></span>"
+old_dot = '<span class="color-dot" style="--c:'+"'"+'+p.color+'+"'"+';--edge:'+"'"+'+p.edge+'+"'"+'"></span>'
+new_dot = '<span class="color-dot'+"'"+'+(p.metallic?'+"' metallic'"+':'+"''"+')+'+"'"+'" style="--c:'+"'"+'+p.color+'+"'"+';--edge:'+"'"+'+p.edge+'+"'"+'"></span>'
 if old_dot in js:
     js = js.replace(old_dot, new_dot, 1)
-elif new_dot not in js:
+elif 'color-dot'+"'"+'+(p.metallic?' not in js:
     raise SystemExit('color dot anchor not found')
 
 js = re.sub(r"from './garapon-three-machine-v2\.js\?v=[^']+'", "from './garapon-three-machine-v2.js?v=20261016-sound-silver-size1'", js, count=1)

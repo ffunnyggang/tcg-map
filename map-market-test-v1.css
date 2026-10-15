@@ -1277,3 +1277,41 @@ body.market-tab-active .qa-shop-only{display:none!important}
   opacity:0!important;
   transform:scale(.84)!important
 }
+
+
+/* MARKET MAP correction v6 */
+/* Slightly larger joker emoji inside LIVE PIN-shaped marker */
+.market-map-pin-emoji{
+  font-size:calc(var(--pin-w) * .58)!important
+}
+
+/* Force original card-shop controls off while TCG 거래 tab is active */
+body.market-tab-active .qa-shop-tools,
+body.market-tab-active .qa-shop-only{
+  display:none!important
+}
+
+/* TCG 거래 count stays visible and red; restore vending count too */
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="vending"] .qa-tab-count{
+  display:inline-flex!important
+}
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"] .qa-tab-count{
+  display:inline-flex!important;
+  color:#e34d5c!important
+}
+
+/* TCG MAP transaction filter selected state = red */
+.market-sheet-tools .market-filter-chip.active{
+  border-color:#efbdc4!important;
+  background:#fff1f3!important;
+  color:#d74657!important;
+  font-weight:850!important
+}
+
+/* Keep only the intended single transaction toolbar line */
+.market-tab-active .market-sheet-sort-row{
+  display:none!important
+}
+.market-tab-active .market-sheet-tools{
+  display:flex!important
+}

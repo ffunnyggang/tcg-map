@@ -58,6 +58,11 @@
     return Math.max(1,Math.min(max,Math.round(parsed)));
   }
 
+  async function collapseMapSheet(){
+    const api=await waitValue(()=>window.FUNY_MAP_SHEET,6000,80);
+    try{api?.collapse?.();await sleep(120);return true}catch(_){return false}
+  }
+
   async function ensureCountry(){
     const api=await waitValue(()=>window.FUNY_MAP_COUNTRY,12000);
     if(!api)return false;
@@ -136,13 +141,16 @@
   }
 
   (async()=>{
+    await collapseMapSheet();
     const ready=await ensureCountry();
     if(!ready)return;
+    await collapseMapSheet();
     const ok=targetCountry==='JP'?await focusJapan():await focusKorea();
     if(!ok){
       console.warn('[FUNY PIN] shop focus target was not ready:',shopId);
       return;
     }
+    await collapseMapSheet();
     try{
       if(typeof gtag==='function')gtag('event','map_shop_focus_deeplink',{shop_id:shopId,country:targetCountry});
     }catch(_){}

@@ -5,7 +5,7 @@
   const ENDPOINT='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/funy-mon-migrate-account';
   const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const ANON_KEY='funypin_mon_anon_id';
-  const DONE_PREFIX='funypin_mon_account_migrated_v1:';
+  const DONE_PREFIX='funypin_mon_account_migrated_v2:';
   const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   let running=null;
 

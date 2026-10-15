@@ -1,0 +1,42 @@
+name: Patch garapon final cache bump
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-garapon-cache-pile2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump complete garapon module chain
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          old='20261016-angle-sound-pile1'
+          new='20261016-angle-sound-pile2'
+          for name in ('garapon.html','garapon-three-v2.js','tcg-tools.html'):
+              p=Path(name)
+              s=p.read_text(encoding='utf-8')
+              if old in s:
+                  s=s.replace(old,new)
+              elif new not in s:
+                  raise SystemExit(f'cache version anchor not found in {name}')
+              p.write_text(s,encoding='utf-8')
+          PY
+          node --check garapon-three-v2.js
+
+      - name: Commit cache bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add garapon.html garapon-three-v2.js tcg-tools.html
+          git commit -m "chore: refresh complete garapon angle sound pile build"
+          git push

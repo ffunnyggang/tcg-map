@@ -872,19 +872,27 @@ function rewardCard(r){const type=r.reward_type||(r.is_win?'win':'lose');return 
  '<div class="mon-field"><label>노출 순서</label><input data-k="sort_order" type="number" step="1" value="'+Number(r.sort_order||0)+'"></div></div><div class="mon-actions"><button class="mon-reward-delete" data-mon-delete="'+esc(r.id)+'">삭제</button><button class="mon-save" data-mon-save="'+esc(r.id)+'">저장</button></div></article>'}
 function syncRewardType(card){if(!card)return;const type=card.querySelector('[data-k="reward_type"]').value,lose=type==='lose',entry=type==='entry';const image=card.querySelector('[data-k="image_file"]');if(image)image.disabled=lose;const url=card.querySelector('[data-k="action_url"]');if(url)url.disabled=lose;const title=card.querySelector('[data-k="title"]');if(title){title.disabled=lose;if(lose)title.value='꽝';else if(entry&&(!title.value.trim()||title.value==='꽝'))title.value='OOOO 이벤트 응모하기'}const label=card.querySelector('[data-k="result_label"]');if(label&&(!label.value.trim()||(entry&&label.value==='꽝')))label.value=entry?'응모권':type==='win'?'당첨!':'꽝';const wrap=card.querySelector('[data-entry-apply-wrap]'),toggle=card.querySelector('[data-k="entry_apply_enabled"]'),campaign=card.querySelector('[data-k="entry_campaign_id"]');if(wrap)wrap.hidden=!entry;if(toggle){toggle.disabled=!entry;toggle.onchange=()=>{if(campaign)campaign.disabled=toggle.value!=='true'}}if(campaign)campaign.disabled=!entry||toggle?.value!=='true'}
 async function saveFunyMonMapSetting(eventId,enabled,collapseSeconds){
- const seconds=Math.max(1,Math.min(30,Math.round(Number(collapseSeconds)||4))),current=funyMonMapSetting||{};
+ const seconds=Math.max(1,Math.min(30,Math.round(Number(collapseSeconds)||4))),eventKey=String(eventId||'');
+ const latestRows=await api('/rest/v1/funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds,updated_at&id=eq.default&limit=1');
+ const current=latestRows?.[0]||null;
  if(enabled){
   const payload={id:'default',is_enabled:true,event_id:eventId,collapse_seconds:seconds,updated_at:new Date().toISOString()};
-  const exists=!!funyMonMapSettingRows?.length;
-  if(exists)await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
-  else await api('/rest/v1/funy_mon_map_settings',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
-  funyMonMapSetting=payload;funyMonMapSettingRows=[payload];return;
+  const saved=current
+   ?await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)})
+   :await api('/rest/v1/funy_mon_map_settings',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
+  const row=saved?.[0];
+  if(!row||row.is_enabled!==true||String(row.event_id||'')!==eventKey)throw new Error('TCG MAP 퍼니몬 찾기 버튼 ON 저장값을 확인하지 못했습니다.');
+  funyMonMapSetting=row;funyMonMapSettingRows=[row];return;
  }
- if(String(current.event_id||'')===String(eventId)){
+ if(current?.is_enabled===true&&String(current.event_id||'')===eventKey){
   const payload={is_enabled:false,event_id:null,collapse_seconds:seconds,updated_at:new Date().toISOString()};
-  await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
-  funyMonMapSetting={...current,...payload};funyMonMapSettingRows=[funyMonMapSetting];
+  const saved=await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
+  const row=saved?.[0];
+  if(!row||row.is_enabled!==false||row.event_id!==null)throw new Error('TCG MAP 퍼니몬 찾기 버튼 OFF 저장값을 확인하지 못했습니다.');
+  funyMonMapSetting=row;funyMonMapSettingRows=[row];return;
  }
+ funyMonMapSetting=current||{id:'default',is_enabled:false,event_id:null,collapse_seconds:seconds};
+ funyMonMapSettingRows=current?[current]:[];
 }
 async function saveFunyMonEvent(id,opt={}){
  const shopId=$('monEventShop').value,start=$('monEventStart').value,end=$('monEventEnd').value,selected=[...document.querySelectorAll('[data-monster]:checked')].map(x=>x.dataset.monster),spawn=Math.max(1,Math.min(10,Number($('monSpawnCount').value)||1)),distanceEnabled=$('monDistanceEnabled').value==='true',distanceLimit=Math.max(10,Math.min(5000,Number(String($('monDistanceLimit').value).replaceAll(',',''))||100)),dailyLimit=Math.max(0,Math.min(100,Number($('monDailyLimit').value)||0)),captureSuccessBp=Math.max(0,Math.min(10000,Math.round((Number($('monCaptureSuccess').value)||0)*100))),mapFindEnabled=$('monMapFindEnabled')?.value==='true',mapFindSeconds=Math.max(1,Math.min(30,Math.round(Number($('monMapFindSeconds')?.value)||4))),btn=$('monEventSave');

@@ -1,4 +1,4 @@
-# one-time compatibility patch trigger v4
+# one-time compatibility patch trigger v5
 name: Patch garapon WebGL compatibility
 
 on:
@@ -25,12 +25,25 @@ jobs:
           machine_path = Path('garapon-three-machine-v2.js')
           machine = machine_path.read_text(encoding='utf-8')
 
-          old_imports = "import * as THREE from 'three';\nimport { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';\nimport WebGL from 'three/addons/capabilities/WebGL.js';"
-          new_imports = "import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/+esm';\nimport { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/geometries/RoundedBoxGeometry.js/+esm';"
-          if old_imports in machine:
-              machine = machine.replace(old_imports, new_imports, 1)
-          elif new_imports not in machine:
-              raise SystemExit('garapon machine imports are in an unexpected state')
+          esm_imports = "import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/+esm';\nimport { RoundedBoxGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/geometries/RoundedBoxGeometry.js/+esm';"
+          direct_import = "import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.min.js';"
+          rounded_helper = r'''
+function RoundedBoxGeometry(width=1,height=1,depth=1,segments=4,radius=.1){
+ const hw=Math.max(.001,width/2),hh=Math.max(.001,height/2),r=Math.max(0,Math.min(radius,hw,hh));
+ const shape=new THREE.Shape();
+ shape.moveTo(-hw+r,-hh);shape.lineTo(hw-r,-hh);shape.quadraticCurveTo(hw,-hh,hw,-hh+r);
+ shape.lineTo(hw,hh-r);shape.quadraticCurveTo(hw,hh,hw-r,hh);shape.lineTo(-hw+r,hh);
+ shape.quadraticCurveTo(-hw,hh,-hw,hh-r);shape.lineTo(-hw,-hh+r);shape.quadraticCurveTo(-hw,-hh,-hw+r,-hh);
+ const bevel=Math.min(r*.42,Math.max(.001,depth*.14));
+ const geometry=new THREE.ExtrudeGeometry(shape,{depth:Math.max(.001,depth-bevel*2),steps:1,bevelEnabled:bevel>0,bevelSegments:Math.max(1,segments),bevelSize:bevel,bevelThickness:bevel,curveSegments:Math.max(2,segments)});
+ geometry.translate(0,0,-depth/2+bevel);geometry.computeVertexNormals();return geometry;
+}
+'''.strip()
+          compatible_imports = direct_import + "\n" + rounded_helper
+          if esm_imports in machine:
+              machine = machine.replace(esm_imports, compatible_imports, 1)
+          elif compatible_imports not in machine:
+              raise SystemExit('garapon compatible imports are in an unexpected state')
 
           old_init = "init(){if(!WebGL.isWebGL2Available())throw new Error('WEBGL2_UNAVAILABLE');this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));"
           new_init = "init(){try{this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true,alpha:true,powerPreference:'high-performance'})}catch(primaryError){console.warn('[GARAPON 3D] high-performance context failed; retrying compatibility mode',primaryError);this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:false,alpha:true,powerPreference:'default'})}this.rendererMode=this.renderer.capabilities.isWebGL2?'webgl2':'webgl1';this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,this.renderer.capabilities.isWebGL2?1.75:1.2));"
@@ -43,8 +56,8 @@ jobs:
           html_path = Path('garapon.html')
           html = html_path.read_text(encoding='utf-8')
           html, _ = re.subn(r'<script type="importmap">[\s\S]*?</script>\s*', '', html, count=1)
-          html = re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat1', html)
-          html = re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat1', html)
+          html = re.sub(r'garapon-three-v2\.js\?v=[^"\']+', 'garapon-three-v2.js?v=20261015-webgl1compat2', html)
+          html = re.sub(r'garapon-three-v2\.css\?v=[^"\']+', 'garapon-three-v2.css?v=20261015-webgl1compat2', html)
           html_path.write_text(html, encoding='utf-8')
           PY
       - name: Commit compatibility patch
@@ -56,5 +69,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add garapon.html garapon-three-machine-v2.js
-          git commit -m "fix: support WebGL1 and legacy app WebViews in garapon"
+          git commit -m "fix: load WebGL1-compatible Three.js without import maps"
           git push

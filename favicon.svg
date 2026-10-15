@@ -1,18 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 675 908" role="img" aria-label="FUNY PIN">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FUNY PIN">
   <defs>
-    <linearGradient id="funyPinV2" x1="128" y1="16" x2="556" y2="897" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#9D7AE8"/>
-      <stop offset=".5" stop-color="#8062D8"/>
-      <stop offset="1" stop-color="#6749BD"/>
+    <linearGradient id="funyPinPurple" x1="110" y1="36" x2="388" y2="478" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9A73E7"/>
+      <stop offset=".48" stop-color="#805FD6"/>
+      <stop offset="1" stop-color="#6849BF"/>
     </linearGradient>
-    <radialGradient id="funyPinButtonV2" cx="32%" cy="24%" r="78%">
-      <stop stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#F0ECFB"/>
+    <radialGradient id="funyPinCenter" cx="38%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset=".68" stop-color="#FBFAFE"/>
+      <stop offset="1" stop-color="#EEE9FA"/>
     </radialGradient>
   </defs>
-  <rect width="675" height="908" fill="#FFFFFF"/>
-  <path d="M337.5 5C155 5 9 145 9 326c0 238 328.5 577 328.5 577S666 564 666 326C666 145 520 5 337.5 5Z" fill="url(#funyPinV2)"/>
-  <rect x="17" y="329" width="641" height="36" fill="#FFFFFF"/>
-  <circle cx="337.5" cy="347" r="118" fill="#FFFFFF"/>
-  <circle cx="337.5" cy="347" r="98" fill="url(#funyPinButtonV2)"/>
+  <path d="M256 18C137.4 18 41 114.4 41 233c0 146.7 215 261 215 261s215-114.3 215-261C471 114.4 374.6 18 256 18Z" fill="url(#funyPinPurple)"/>
+  <path d="M45 219h128.5a86 86 0 0 1 165 0H467v28H338.5a86 86 0 0 1-165 0H45v-28Z" fill="#FFFFFF"/>
+  <circle cx="256" cy="233" r="76" fill="url(#funyPinCenter)" stroke="#FFFFFF" stroke-width="18"/>
 </svg>

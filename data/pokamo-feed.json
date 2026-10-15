@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-15T13:27:08.758494+00:00",
+  "updatedAt": "2026-10-15T18:18:56.576981+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "즐겁게 모은건데 ㅎㅎ",
+      "author": "청파동주민",
+      "publishedAt": "2026-10-15T15:42:56.454992Z",
+      "excerpt": "좋은게 있는건가요? 시작한지 한달이라 ㅜㅜ",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/4a89f219-3798-4cbc-8fd0-83e7eba8930d.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/즐겁게-모은건데-ㅎㅎ-dg3qQewd",
+      "views": 29,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.29
+    },
     {
       "category": "자유 게시판",
       "title": "피카츄컬렉션 모으기",
@@ -37,10 +50,10 @@
       "excerpt": "당근에서 구매했는데 색이 달라서요 고수님들 짭인지 아닌지 구분쫌 부탁드립다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/b86f128b-e840-40f4-b080-b73d4b50d908.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/고수님들-혹시-이거짭인가요-A4Q0Qm9P",
-      "views": 74,
+      "views": 83,
       "likes": 7,
       "comments": 0,
-      "popularityScore": 21.74
+      "popularityScore": 21.83
     },
     {
       "category": "카드 자랑",
@@ -50,10 +63,10 @@
       "excerpt": "30주년 일본판이 왔습니다!!!바로 친구랑 만나서 같이 개봉했습니다ㅋㅈㅋ 리자몽이 안나온건 아쉽지만 fur등급 뮤츠가 나와서 행복하네요~",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792031131597841b42b5164ed49effd3ed1b2aa1c788d3391771cb403c2291eaa445060915150.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-개봉-PnN047WP",
-      "views": 33,
+      "views": 34,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.33
+      "popularityScore": 5.34
     },
     {
       "category": "자유 게시판",
@@ -158,19 +171,6 @@
       "likes": 1,
       "comments": 0,
       "popularityScore": 3.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "피카츄 모든종류?",
-      "author": "집안일노란띠",
-      "publishedAt": "2026-10-13T04:51:00.014223Z",
-      "excerpt": "피카츄 모든종류?",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-모든종류-dymN6rKd",
-      "views": 2,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.02
     },
     {
       "category": "정보 공유",
@@ -479,10 +479,10 @@
       "excerpt": "카드볼트에서 포켓몬 30주년 낱팩 2개만 가볍게 까봤습니다! 사실 큰 기대 없이 “두 팩만 해볼까?” 하고 시작했는데…… 두 팩째에서 갑자기 리자몽 등장!!! 🔥🔥🔥 바로 30주년 복각 리자몽이 나와버렸습니다. 이런 건 진짜 박스보다 낱팩에서 터질 때 쾌감이 미쳤네요ㅋㅋㅋ 사진으로 봐도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/129eab8f-069f-4ad8-a62f-9dd978aac528.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-30주년-낱팩-2개-깠는데-복각-여기서-🔥-d9X3Wa9P",
-      "views": 190,
+      "views": 192,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 14.9
+      "popularityScore": 14.92
     },
     {
       "category": "카드거래",
@@ -492,10 +492,10 @@
       "excerpt": "파이어로ex, 코라이돈 ex",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1789976247298fd9f8a5b9563f646ed3ffdb397448467b3ba69c69284c9a39d68d3cf232a3de30.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구합니다-P12aYD8d",
-      "views": 188,
+      "views": 189,
       "likes": 18,
       "comments": 0,
-      "popularityScore": 55.88
+      "popularityScore": 55.89
     },
     {
       "category": "카드 자랑",
@@ -518,10 +518,10 @@
       "excerpt": "리자몽 거북왕에 이어서 오늘 드디어 이상해꽃까지 오면서 1996년 초판 스타팅을 전부 수집했어요ㅎㅎ 포켓몬카드 버킷리스트를 대충 이룬 기분입니다ㅎㅎ 지금 최애는 역시 리자몽이죠ㅜㅜ 메루카리랑 이베이, break 들여다보며 다 모아서 그런지 기분 최고네요ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17897110011020a56b09f52cdb6db93b6a50c93ecd317509128b5bd3c37803362b1328b035cef0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/드디어-구판-스타팅-다-모았습니다ㅜㅜ-AqrlNRKP",
-      "views": 142,
+      "views": 143,
       "likes": 3,
       "comments": 4,
-      "popularityScore": 18.42
+      "popularityScore": 18.43
     },
     {
       "category": "카드 자랑",

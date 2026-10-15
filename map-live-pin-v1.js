@@ -42,11 +42,50 @@
  function changed(){seq++;clear();rows=[];sync();load()}
  async function pollRevision(){if(document.hidden)return;try{const res=await fetch(BASE+'/rest/v1/live_pin_map_revision?select=revision&id=eq.1',{headers,cache:'no-store'});if(!res.ok)return;const data=await res.json(),next=data[0]?.revision;if(revision!==null&&next!==revision)changed();revision=next}catch(_){} }
  async function realtime(){try{if(!window.supabase?.createClient)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});const db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});channel=db.channel('live-pin-map-visibility').on('postgres_changes',{event:'UPDATE',schema:'public',table:'live_pin_map_revision'},()=>{changed();pollRevision()}).on('postgres_changes',{event:'*',schema:'public',table:'live_reports'},changed).subscribe()}catch(e){console.warn('[LIVE PIN map] realtime unavailable',e)}}
+ async function resolveDeepLinkTarget(){
+  const q=new URLSearchParams(location.search),reportId=q.get('liveReport'),shopId=q.get('liveShopId')||'',lat=Number(q.get('liveLat')),lng=Number(q.get('liveLng')),countryHint=q.get('liveCountry')||'';
+  if(!reportId&&!shopId&&!(Number.isFinite(lat)&&Number.isFinite(lng)))return null;
+  if(Number.isFinite(lat)&&Number.isFinite(lng))return{reportId,shopId,lat,lng,country:countryHint==='JP'?'JP':'KR'};
+  if(!shopId||shopId==='KR-OTHER')return null;
+  try{
+   const table=shopId.startsWith('PKVM-')?'pokemon_card_vending_machines':'shops';
+   const params=new URLSearchParams({select:table==='shops'?'id,country_code,latitude,longitude':'id,latitude,longitude',id:'eq.'+shopId,limit:'1'});
+   const res=await fetch(BASE+'/rest/v1/'+table+'?'+params,{headers,cache:'no-store'});
+   if(!res.ok)return null;
+   const row=(await res.json())?.[0];if(!row)return null;
+   const rlat=Number(row.latitude),rlng=Number(row.longitude);if(!Number.isFinite(rlat)||!Number.isFinite(rlng))return null;
+   return{reportId,shopId,lat:rlat,lng:rlng,country:(row.country_code||countryHint)==='JP'?'JP':'KR'};
+  }catch(_){return null}
+ }
+ let deepLinkFocused=false;
+ async function focusDeepLink(){
+  if(deepLinkFocused)return;
+  const target=await resolveDeepLinkTarget();if(!target)return;
+  enabled=true;saveLayerPref();
+  try{window.FUNY_MAP_COUNTRY?.set?.(target.country)}catch(_){}
+  const apply=()=>{
+   const map=mapFor(target.country);if(!map)return false;
+   try{
+    if(target.country==='KR'){
+      map.setCenter(new naver.maps.LatLng(target.lat,target.lng));
+      map.setZoom(21);
+    }else{
+      map.setCenter({lat:target.lat,lng:target.lng});
+      map.setZoom(21);
+    }
+    sync();
+    deepLinkFocused=true;
+    try{window.FUNY_TRACK?.('live_pin_map_focus',{report_id:target.reportId||'',shop_id:target.shopId||'',country:target.country,zoom:21})}catch(_){}
+    return true;
+   }catch(_){return false}
+  };
+  setTimeout(()=>{if(!apply())setTimeout(apply,350)},180);
+ }
  document.addEventListener('click',e=>{const link=e.target?.closest?.('a.live-temp-open');if(!link||!window.ReactNativeWebView?.postMessage)return;e.preventDefault();e.stopPropagation();try{localStorage.setItem('funypin-live-focus-report',JSON.stringify({id:link.dataset.liveReport,at:Date.now()}))}catch(_){}window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/live-pin'}));},true);
  const style=document.createElement('style');style.textContent='.live-temp-pin{position:relative;width:var(--marker-w);height:var(--marker-h);filter:drop-shadow(0 3px 5px #0003);transform-origin:50% 100%}.live-temp-pin svg{position:absolute;left:50%;top:0;width:var(--pin-w);height:var(--pin-h);transform:translateX(-50%);overflow:visible}.live-temp-pin span{position:absolute;left:50%;top:39%;z-index:3;transform:translate(-50%,-50%);font-size:calc(var(--pin-w,33px) * .95);line-height:1;pointer-events:none}.live-temp-google{position:absolute;transform:translate(-50%,-100%);width:37px;height:51px;border:0;background:none;padding:0;z-index:125;cursor:pointer}.live-registered-bolt{position:absolute;left:50%;top:39%;z-index:3;transform:translate(-50%,-50%);font-size:calc(var(--pin-w,33px) * .95);line-height:1;pointer-events:none}.live-temp-popup .live-temp-card{position:relative;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) 14px;align-items:center;gap:12px;width:294px;max-width:310px;min-height:96px;box-sizing:border-box;padding:11px 12px 11px 11px;border:1px solid rgba(228,224,234,.94);border-radius:20px;background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);box-shadow:0 16px 38px rgba(39,32,52,.18),0 3px 10px rgba(39,32,52,.06),inset 0 1px 0 rgba(255,255,255,.98);overflow:hidden;text-align:left;color:#211e25;cursor:pointer;text-decoration:none;font-family:inherit}.live-temp-popup .live-temp-card.has-photo{grid-template-columns:74px minmax(0,1fr) 14px}.live-temp-popup .live-temp-title{display:flex;align-items:center;justify-content:flex-start;gap:4px;padding:0!important;text-indent:0!important;text-align:left!important;margin:0 0 7px;font-size:16px;font-weight:830;line-height:1.18;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.live-temp-popup .live-temp-bolt{flex:0 0 auto;margin:0;padding:0}.live-temp-popup .live-temp-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.live-temp-popup .live-temp-body{padding:0!important;text-indent:0!important;text-align:left!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;max-height:2.8em;overflow:hidden;text-overflow:ellipsis;overflow-wrap:anywhere;white-space:normal;color:#77717c;font-size:10.8px;line-height:1.4}@media(max-width:430px){.live-temp-popup .live-temp-card{grid-template-columns:minmax(0,1fr) 12px;gap:10px;width:274px;max-width:292px;min-height:90px;padding:10px 11px 10px 10px;border-radius:18px}.live-temp-popup .live-temp-card.has-photo{grid-template-columns:68px minmax(0,1fr) 12px}.live-temp-popup .live-temp-title{font-size:15.5px;margin-bottom:6px}.live-temp-popup .live-temp-body{font-size:10.4px}}';document.head.appendChild(style);
- window.addEventListener('funy:mapdatachange',()=>{close();sync()});window.addEventListener('funy:googlemapready',sync);
+ window.addEventListener('funy:mapdatachange',()=>{close();sync();focusDeepLink()});window.addEventListener('funy:googlemapready',()=>{sync();focusDeepLink()});
  let wiredNaver=null,wiredGoogle=null;
  setInterval(()=>{const b=time.bounds();if(b.day!==day){day=b.day;changed()}const c=country(),q=document.getElementById('map-shop-search')?.value||'';if(q!==lastSearch||c!==lastCountry){lastSearch=q;close()}sync();const metric=JSON.stringify(metrics());if(metric!==lastMetric){lastMetric=metric;markers.forEach(m=>{if(country()==='KR'){const v=metrics();m.setIcon?.({content:pin(),anchor:new naver.maps.Point(Math.round(v.markerW/2),v.markerH)})}})}const n=mapFor('KR'),g=mapFor('JP');if(n&&n!==wiredNaver){wiredNaver=n;naver.maps.Event.addListener(n,'click',close);naver.maps.Event.addListener(n,'zoom_changed',()=>{if(country()!=='KR')return;const v=metrics('KR');markers.forEach(m=>m.setIcon?.({content:pin('KR'),anchor:new naver.maps.Point(Math.round(v.markerW/2),v.markerH)}));lastMetric=JSON.stringify(v)})}if(g&&g!==wiredGoogle){wiredGoogle=g;g.addListener('click',close)}},1000);
  setInterval(pollRevision,5000);setInterval(()=>{if(!document.hidden)load()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){changed();pollRevision()}});window.addEventListener('online',()=>{changed();pollRevision()});
- window.FUNY_LIVE_MAP={refresh:changed,getRows:()=>rows.slice(),hasRegisteredLive:registeredLive,getRegisteredIds:()=>enabled?[...registeredIds()]:[],metrics};load();pollRevision();realtime();
+ window.FUNY_LIVE_MAP={refresh:changed,getRows:()=>rows.slice(),hasRegisteredLive:registeredLive,getRegisteredIds:()=>enabled?[...registeredIds()]:[],metrics};load();pollRevision();realtime();focusDeepLink();
 })();

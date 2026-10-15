@@ -225,8 +225,8 @@
       '<div class="market-register-policy"><strong>개인 판매자 전용</strong><span>FUNY PIN은 외부 플랫폼에 등록한 본인 매물을 추가 노출하는 기능만 제공합니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
-      '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">당근 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="https://www.daangn.com/articles/1263844918?share=true" placeholder="당근 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">링크를 입력하면 매물 정보를 자동으로 불러옵니다.</div><div id="marketPreview" class="market-preview"><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
-      '<div class="market-form-section"><span class="market-form-label">당근 바로구매</span><div class="market-direct-buy-row"><button type="button" class="active" data-direct-buy="false">미설정</button><button type="button" data-direct-buy="true">바로구매 가능</button></div><div class="market-direct-buy-help">당근 매물에서 바로구매가 실제로 설정된 경우에만 선택해주세요.</div></div>'+
+      '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
+      '<div class="market-form-section" id="marketDirectBuySection"><span class="market-form-label">외부 플랫폼 구매 방식</span><div class="market-direct-buy-row"><button type="button" class="active" data-direct-buy="false">일반 거래</button><button type="button" data-direct-buy="true">바로구매</button></div><div class="market-direct-buy-help" id="marketDirectBuyHelp">매물 정보를 먼저 불러오면 플랫폼에 맞게 적용됩니다.</div></div>'+
       '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div><p id="marketRegisterCoord" class="market-register-coord-status">위치를 선택해주세요.</p></div>'+
       '<div class="market-form-section market-consent-box"><span class="market-form-label">등록 확인</span>'+
       '<label class="market-consent-item"><input id="marketConsentIndividual" type="checkbox"><span>사업자가 아닌 <b>개인 판매자</b>이며 영업 목적의 판매가 아님을 확인합니다.</span></label>'+
@@ -261,16 +261,32 @@
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
   function registerConsentsOk(){return !!($('#marketConsentIndividual')?.checked&&$('#marketConsentRights')?.checked&&$('#marketConsentExternal')?.checked)}
   function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerProduct&&registerCoordinate&&registerConsentsOk())}
+  function syncPurchaseMode(x){
+    const section=$('#marketDirectBuySection'),help=$('#marketDirectBuyHelp'),buttons=$('#marketDirectBuySection [data-direct-buy]');
+    if(!section)return;
+    registerDirectBuy=x?.direct_buy_available===true;
+    buttons.forEach(b=>{b.classList.toggle('active',(b.dataset.directBuy==='true')===registerDirectBuy);b.disabled=x?.provider!=='daangn'});
+    if(x?.provider==='daangn'){
+      help.textContent='당근 바로구매 여부는 자동 판별이 어려워 실제 매물 설정과 동일하게 선택해주세요.';
+    }else if(x?.provider==='break'){
+      help.textContent=x?.direct_buy_available?'BREAK 즉시구매 상품으로 자동 확인했습니다.':'BREAK 원본 매물에서 거래합니다.';
+    }else if(x?.provider==='bunjang'){
+      help.textContent='번개장터 원본 매물에서 거래합니다. 안전결제 여부는 FUNY PIN에서 임의 판정하지 않습니다.';
+    }else{
+      help.textContent='매물 정보를 먼저 불러오면 플랫폼에 맞게 적용됩니다.';
+    }
+  }
   function renderPreview(x){
     registerProduct=x;$('#marketPreview').classList.add('show');
     const arr=[...(Array.isArray(x.images)?x.images:[]),x.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,20);
     $('#marketPreviewImages').innerHTML=arr.length?arr.map(u=>'<img class="market-preview-image" src="'+esc(u)+'" alt="" referrerpolicy="no-referrer">').join(''):'<span class="market-preview-ph">NO IMAGE</span>';
-    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';syncRegisterSubmitState();
+    $('#marketPreviewProvider').textContent='출처 · '+providerName(x);
+    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';syncPurchaseMode(x);syncRegisterSubmitState();
   }
   async function loadPreview(){
     const url=$('#marketRegisterUrl')?.value.trim();if(!url)return;
-    setRegisterError('');$('#marketRegisterLoad').disabled=true;$('#marketPreviewStatus').textContent='당근 매물 정보를 불러오는 중...';
-    try{const {data,error}=await A.client.functions.invoke('daangn-listing-preview-test',{body:{url}});if(error)throw error;if(!data?.ok)throw Error(data?.error||'매물 정보를 불러오지 못했습니다.');renderPreview(data);$('#marketPreviewStatus').textContent='자동 추출 완료 · 등록된 이미지 '+((data.images||[]).length||1)+'장'}
+    setRegisterError('');$('#marketRegisterLoad').disabled=true;$('#marketPreviewStatus').textContent='외부 매물 정보를 불러오는 중...';
+    try{const {data,error}=await A.client.functions.invoke('market-listing-preview-test',{body:{url}});if(error)throw error;if(!data?.ok)throw Error(data?.error||'매물 정보를 불러오지 못했습니다.');renderPreview(data);$('#marketPreviewStatus').textContent=providerName(data)+' · 자동 추출 완료 · 이미지 '+((data.images||[]).length||1)+'장'}
     catch(e){registerProduct=null;$('#marketPreview')?.classList.remove('show');syncRegisterSubmitState();setRegisterError(String(e?.message||e));$('#marketPreviewStatus').textContent='매물 정보를 불러오지 못했습니다.'}
     finally{$('#marketRegisterLoad').disabled=false}
   }
@@ -304,12 +320,14 @@
       const raw=String(registerProduct.price_raw||'').replace(/,/g,'').trim(),price=raw&&Number.isFinite(Number(raw))?Math.round(Number(raw)):null;
       const urls=[...(Array.isArray(registerProduct.images)?registerProduct.images:[]),registerProduct.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
       const agreedAt=new Date().toISOString();
-      const row={seller_user_id:user.id,seller_nickname:nick,seller_type:'individual',individual_seller_confirmed_at:agreedAt,rights_republish_agreed_at:agreedAt,external_trade_only_agreed_at:agreedAt,provider:'daangn',external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:registerProduct.article_id||null,title:registerProduct.title||'당근 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,location_name:registerLocation,fetched_at:registerProduct.fetched_at||agreedAt,updated_at:agreedAt};
+      const provider=registerProduct.provider||'daangn',externalListingId=registerProduct.external_listing_id||registerProduct.article_id||null;
+      const row={seller_user_id:user.id,seller_nickname:nick,seller_type:'individual',individual_seller_confirmed_at:agreedAt,rights_republish_agreed_at:agreedAt,external_trade_only_agreed_at:agreedAt,provider,external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:externalListingId,title:registerProduct.title||'외부 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,location_name:registerLocation,fetched_at:registerProduct.fetched_at||agreedAt,source_last_checked_at:registerProduct.fetched_at||agreedAt,source_refresh_count:1,source_status:registerProduct.source_status||'unknown',updated_at:agreedAt};
       let data=null,error=null;
       if(row.external_listing_id){
-        const existing=await A.client.from('market_listings').select('id').eq('seller_user_id',user.id).eq('provider','daangn').eq('external_listing_id',row.external_listing_id).maybeSingle();
+        const existing=await A.client.from('market_listings').select('id,source_refresh_count').eq('seller_user_id',user.id).eq('provider',provider).eq('external_listing_id',row.external_listing_id).maybeSingle();
         if(existing.error)throw existing.error;
         if(existing.data?.id){
+          row.source_refresh_count=(Number(existing.data.source_refresh_count)||0)+1;
           const updated=await A.client.from('market_listings').update(row).eq('id',existing.data.id).select('*').single();
           data=updated.data;error=updated.error;
         }

@@ -1,0 +1,52 @@
+name: Fix garapon entry syntax
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-garapon-entry-syntax.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove the extra closing brace
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('garapon-three-v2.js')
+          source = path.read_text(encoding='utf-8').rstrip()
+          broken_tail = "catch(_){}}"
+          fixed_tail = "catch(_){}"
+
+          if source.endswith(broken_tail):
+              source = source[:-len(broken_tail)] + fixed_tail + "\n"
+          elif source.endswith(fixed_tail):
+              print('Garapon entry syntax is already fixed.')
+          else:
+              raise SystemExit('Unexpected garapon entry file ending; refusing an unsafe patch.')
+
+          path.write_text(source, encoding='utf-8')
+          PY
+      - name: Validate JavaScript syntax
+        run: |
+          cp garapon-three-v2.js /tmp/garapon-three-v2.mjs
+          node --check /tmp/garapon-three-v2.mjs
+      - name: Commit syntax fix
+        run: |
+          if git diff --quiet -- garapon-three-v2.js; then
+            echo "No syntax change required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add garapon-three-v2.js
+          git commit -m "fix: load garapon 3D entry script"
+          git pull --rebase origin main
+          git push

@@ -303,7 +303,7 @@ export class GaraponMachine {
 
     this.pileGroup = new THREE.Group();
     this.root.add(this.pileGroup);
-    this.sharedPileGeometry = new THREE.SphereGeometry(0.19, 18, 12);
+    this.sharedPileGeometry = new THREE.SphereGeometry(0.127, 18, 12);
 
     const axisY = 3.22;
     const frontZ = 1.17;
@@ -461,7 +461,7 @@ export class GaraponMachine {
     outletGroup.add(this.outletAnchor);
 
     this.resultBall = this.mesh(
-      new THREE.SphereGeometry(0.2, 22, 14),
+      new THREE.SphereGeometry(0.133, 22, 14),
       new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
         roughness: 0.3,
@@ -570,36 +570,40 @@ export class GaraponMachine {
   materialForBall(color, edge) {
     const key = `${color}|${edge}`;
     if (!this.ballMaterials.has(key)) {
+      const normalized = String(color || '').toLowerCase();
       const colorValue = new THREE.Color(color);
       const edgeValue = new THREE.Color(edge || color);
-      const isMetallic = colorValue.r > 0.55 && colorValue.g > 0.42 && colorValue.b < 0.25;
+      const isGold = normalized === '#e1b43e';
+      const isSilver = normalized === '#c8cdd5';
+      const isMetallic = isGold || isSilver;
       this.ballMaterials.set(key, new THREE.MeshPhysicalMaterial({
         color: colorValue,
         emissive: edgeValue,
-        emissiveIntensity: 0.025,
-        roughness: isMetallic ? 0.2 : 0.31,
-        metalness: isMetallic ? 0.72 : 0.02,
-        clearcoat: isMetallic ? 0.5 : 0.32,
-        clearcoatRoughness: 0.2,
+        emissiveIntensity: isMetallic ? 0.012 : 0.025,
+        roughness: isMetallic ? (isSilver ? 0.11 : 0.15) : 0.31,
+        metalness: isMetallic ? (isSilver ? 0.94 : 0.86) : 0.02,
+        clearcoat: isMetallic ? 0.82 : 0.32,
+        clearcoatRoughness: isMetallic ? 0.08 : 0.2,
+        reflectivity: isMetallic ? 1 : 0.5,
       }));
     }
     return this.ballMaterials.get(key);
   }
 
   pilePosition(index) {
-    const columns = 8;
-    const rows = 3;
+    const columns = 11;
+    const rows = 4;
     const layerSize = columns * rows;
     const layer = Math.floor(index / layerSize);
     const local = index % layerSize;
     const col = local % columns;
     const row = Math.floor(local / columns);
-    const jitterX = (((index * 37) % 11) - 5) * 0.006;
-    const jitterZ = (((index * 19) % 9) - 4) * 0.007;
+    const jitterX = (((index * 37) % 11) - 5) * 0.004;
+    const jitterZ = (((index * 19) % 9) - 4) * 0.0045;
     return new THREE.Vector3(
-      -3.15 + col * 0.39 + jitterX,
-      0.91 + layer * 0.29 + ((col + row) % 2) * 0.028,
-      0.91 + row * 0.39 + jitterZ,
+      -3.31 + col * 0.29 + jitterX,
+      0.845 + layer * 0.205 + ((col + row) % 2) * 0.015,
+      0.83 + row * 0.285 + jitterZ,
     );
   }
 

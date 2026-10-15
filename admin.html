@@ -178,6 +178,7 @@
 </section></div></main>
 <div id="shopEditor" class="editor" aria-hidden="true"><div class="editor-panel"><div class="editor-head"><div><b id="editorTitle">카드샵 수정</b><br><span id="editorIdLabel"></span></div><button id="editorClose" class="editor-close" type="button" aria-label="닫기">×</button></div><nav id="editorTabs" class="editor-tabs"><button class="on" data-editor-tab="info" type="button">매장 정보</button><button data-editor-tab="review" type="button">방문 분석</button><button data-editor-tab="content" type="button">리뷰 콘텐츠</button><button data-editor-tab="settings" type="button">설정</button></nav><div id="editorBody" class="editor-body"></div><div class="editor-foot"><button id="editorDelete" class="editor-delete" type="button">삭제</button><button id="editorCancel" class="editor-cancel" type="button">취소</button><button id="editorSave" class="editor-save" type="button">저장</button></div></div></div>
 <script>
+window.__FUNY_ADMIN_BUILD='20261016-map-toggle-v4';
 let adminTab='dashboard';
 const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';let token='',refreshToken='';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -876,30 +877,32 @@ function rewardCard(r){const type=r.reward_type||(r.is_win?'win':'lose');return 
  '<div class="mon-field"><label>노출 순서</label><input data-k="sort_order" type="number" step="1" value="'+Number(r.sort_order||0)+'"></div></div><div class="mon-actions"><button class="mon-reward-delete" data-mon-delete="'+esc(r.id)+'">삭제</button><button class="mon-save" data-mon-save="'+esc(r.id)+'">저장</button></div></article>'}
 function syncRewardType(card){if(!card)return;const type=card.querySelector('[data-k="reward_type"]').value,lose=type==='lose',entry=type==='entry';const image=card.querySelector('[data-k="image_file"]');if(image)image.disabled=lose;const url=card.querySelector('[data-k="action_url"]');if(url)url.disabled=lose;const title=card.querySelector('[data-k="title"]');if(title){title.disabled=lose;if(lose)title.value='꽝';else if(entry&&(!title.value.trim()||title.value==='꽝'))title.value='OOOO 이벤트 응모하기'}const label=card.querySelector('[data-k="result_label"]');if(label&&(!label.value.trim()||(entry&&label.value==='꽝')))label.value=entry?'응모권':type==='win'?'당첨!':'꽝';const wrap=card.querySelector('[data-entry-apply-wrap]'),toggle=card.querySelector('[data-k="entry_apply_enabled"]'),campaign=card.querySelector('[data-k="entry_campaign_id"]');if(wrap)wrap.hidden=!entry;if(toggle){toggle.disabled=!entry;toggle.onchange=()=>{if(campaign)campaign.disabled=toggle.value!=='true'}}if(campaign)campaign.disabled=!entry||toggle?.value!=='true'}
 async function saveFunyMonMapSetting(eventId,enabled,collapseSeconds){
- const seconds=Math.max(1,Math.min(30,Math.round(Number(collapseSeconds)||4))),eventKey=String(eventId||'');
- const latestRows=await api('/rest/v1/funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds,updated_at&id=eq.default&limit=1');
- const current=latestRows?.[0]||null;
+ const eventKey=String(eventId||'').trim();
+ if(!eventKey)throw new Error('대표 이벤트 ID가 없습니다.');
+ const seconds=Math.max(1,Math.min(30,Math.round(Number(collapseSeconds)||4)));
+ const readCurrent=async()=>{const rows=await api('/rest/v1/funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds,updated_at&id=eq.default&limit=1');return rows?.[0]||null};
+ let current=await readCurrent();
  if(enabled){
-  const payload={id:'default',is_enabled:true,event_id:eventId,collapse_seconds:seconds,updated_at:new Date().toISOString()};
-  const saved=current
-   ?await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)})
-   :await api('/rest/v1/funy_mon_map_settings',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
-  const row=saved?.[0];
-  if(!row||row.is_enabled!==true||String(row.event_id||'')!==eventKey)throw new Error('TCG MAP 퍼니몬 찾기 버튼 ON 저장값을 확인하지 못했습니다.');
-  funyMonMapSetting=row;funyMonMapSettingRows=[row];return;
- }
- if(current?.is_enabled===true&&String(current.event_id||'')===eventKey){
+  const payload={id:'default',is_enabled:true,event_id:eventKey,collapse_seconds:seconds,updated_at:new Date().toISOString()};
+  if(current){
+   await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+  }else{
+   await api('/rest/v1/funy_mon_map_settings',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+  }
+  current=await readCurrent();
+  if(!current||current.is_enabled!==true||String(current.event_id||'')!==eventKey)throw new Error('TCG MAP 퍼니몬 찾기 버튼 ON 저장 검증에 실패했습니다.');
+ }else{
   const payload={is_enabled:false,event_id:null,collapse_seconds:seconds,updated_at:new Date().toISOString()};
-  const saved=await api('/rest/v1/funy_mon_map_settings?id=eq.default',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
-  const row=saved?.[0];
-  if(!row||row.is_enabled!==false||row.event_id!==null)throw new Error('TCG MAP 퍼니몬 찾기 버튼 OFF 저장값을 확인하지 못했습니다.');
-  funyMonMapSetting=row;funyMonMapSettingRows=[row];return;
+  await api('/rest/v1/funy_mon_map_settings?id=eq.default&event_id=eq.'+encodeURIComponent(eventKey),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});
+  current=await readCurrent();
+  if(current?.is_enabled===true&&String(current.event_id||'')===eventKey)throw new Error('TCG MAP 퍼니몬 찾기 버튼 OFF 저장 검증에 실패했습니다.');
  }
  funyMonMapSetting=current||{id:'default',is_enabled:false,event_id:null,collapse_seconds:seconds};
  funyMonMapSettingRows=current?[current]:[];
+ return funyMonMapSetting;
 }
 async function saveFunyMonEvent(id,opt={}){
- const draft=funyMonMapDraft?.event_id===String(id)?funyMonMapDraft:null,shopId=$('monEventShop').value,start=$('monEventStart').value,end=$('monEventEnd').value,selected=[...document.querySelectorAll('[data-monster]:checked')].map(x=>x.dataset.monster),spawn=Math.max(1,Math.min(10,Number($('monSpawnCount').value)||1)),distanceEnabled=$('monDistanceEnabled').value==='true',distanceLimit=Math.max(10,Math.min(5000,Number(String($('monDistanceLimit').value).replaceAll(',',''))||100)),dailyLimit=Math.max(0,Math.min(100,Number($('monDailyLimit').value)||0)),captureSuccessBp=Math.max(0,Math.min(10000,Math.round((Number($('monCaptureSuccess').value)||0)*100))),mapFindEnabled=draft?draft.enabled:($('monMapFindEnabled')?.selectedIndex===1),mapFindSeconds=draft?draft.seconds:Math.max(1,Math.min(30,Math.round(Number($('monMapFindSeconds')?.value)||4))),btn=$('monEventSave');
+ const mapSnapshot=opt.mapFindSnapshot||null,shopId=$('monEventShop').value,start=$('monEventStart').value,end=$('monEventEnd').value,selected=[...document.querySelectorAll('[data-monster]:checked')].map(x=>x.dataset.monster),spawn=Math.max(1,Math.min(10,Number($('monSpawnCount').value)||1)),distanceEnabled=$('monDistanceEnabled').value==='true',distanceLimit=Math.max(10,Math.min(5000,Number(String($('monDistanceLimit').value).replaceAll(',',''))||100)),dailyLimit=Math.max(0,Math.min(100,Number($('monDailyLimit').value)||0)),captureSuccessBp=Math.max(0,Math.min(10000,Math.round((Number($('monCaptureSuccess').value)||0)*100))),mapFindEnabled=mapSnapshot?mapSnapshot.enabled:($('monMapFindEnabled')?.value==='true'),mapFindSeconds=mapSnapshot?mapSnapshot.seconds:Math.max(1,Math.min(30,Math.round(Number($('monMapFindSeconds')?.value)||4))),btn=$('monEventSave');
  if(!shopId||!start||!end){alert('적용 카드샵과 이벤트 기간을 모두 설정해주세요.');return}if(!selected.length){alert('노출할 퍼니몬을 1종 이상 선택해주세요.');return}if(spawn>selected.length){alert('지도 노출 개수는 선택한 퍼니몬 수보다 많을 수 없습니다.');return}if(new Date(end)<=new Date(start)){alert('종료 일시는 시작 일시보다 뒤여야 합니다.');return}
  btn.disabled=true;try{const body={shop_id:shopId,starts_at:new Date(start).toISOString(),ends_at:new Date(end).toISOString(),selected_monsters:selected,spawn_count:spawn,distance_limit_enabled:distanceEnabled,distance_limit_m:distanceLimit,daily_catch_limit:dailyLimit,capture_success_bp:captureSuccessBp,title:'FUNY MON 이벤트'};
  let savedEventId=id;
@@ -916,8 +919,12 @@ async function saveFunyMonReward(id,opt={}){
  try{if(removeImage&&!file)imageUrl=null;if(file&&!lose)imageUrl=await uploadFunyMonRewardImage(file,id);const oldTotal=Number(old?.stock_total||0),oldRemain=Number(old?.stock_remaining||0),remain=oldTotal===0?total:Math.max(0,oldRemain+(total-oldTotal));const payload={code:null,title:lose?'꽝':String(val('title')||'').trim(),result_label:String(val('result_label')||(type==='entry'?'응모권':win?'당첨!':'꽝')).trim(),description:String(val('description')||'').trim()||null,probability_bp:Math.round(prob*100),stock_total:total,stock_remaining:remain,is_active:val('is_active')==='true',is_win:win,reward_type:type,entry_apply_enabled:type==='entry'&&val('entry_apply_enabled')==='true',entry_campaign_id:type==='entry'&&val('entry_apply_enabled')==='true'?(String(val('entry_campaign_id')||'').trim()||null):null,image_url:lose?null:imageUrl,action_url:lose?null:(String(val('action_url')||'').trim()||null),action_label:null,image_action_label:lose?null:(String(val('image_action_label')||'').trim()||null),url_action_label:lose?null:(String(val('url_action_label')||'').trim()||null),sort_order:Math.round(Number(val('sort_order'))||0),updated_at:new Date().toISOString()};if(!lose&&!payload.title)throw new Error('당첨/응모 유형은 결과명 / 상품명이 필수입니다.');if(type==='entry'&&payload.entry_apply_enabled&&!payload.entry_campaign_id)throw new Error('이벤트 응모하기가 ON이면 응모할 이벤트를 선택해주세요.');await api('/rest/v1/funy_mon_rewards?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)});if((file||removeImage)&&oldImage&&oldImage!==imageUrl){try{await deleteFunyMonRewardImage(oldImage)}catch(_){}}if(!opt.deferReload){await loadFunyMonRewards();alert('리워드 저장이 완료되었습니다.')}return true}catch(e){if(opt.throwError)throw e;alert('리워드 저장 실패: '+e.message);return false}
 }
 async function saveFunyMonAll(id){
- const btn=$('monEventSave');if(!btn||btn.disabled)return;const rewardIds=[...document.querySelectorAll('.mon-card[data-mon-id]')].map(x=>x.dataset.monId);btn.disabled=true;const oldText=btn.textContent;btn.textContent='전체 저장 중...';
- try{const savedEventId=await saveFunyMonEvent(id,{deferReload:true,throwError:true});if(!savedEventId)throw new Error('이벤트 저장에 실패했습니다.');for(const rewardId of rewardIds)await saveFunyMonReward(rewardId,{deferReload:true,throwError:true});await loadFunyMonRewards();alert('전체 설정 저장이 완료되었습니다.')}catch(e){alert('전체 저장 실패: '+e.message)}finally{const current=$('monEventSave');if(current){current.disabled=false;current.textContent=oldText}}
+ const btn=$('monEventSave');if(!btn||btn.disabled)return;
+ const mapFindEl=$('monMapFindEnabled'),mapSecondsEl=$('monMapFindSeconds');
+ const mapFindSnapshot={enabled:mapFindEl?.value==='true',seconds:Math.max(1,Math.min(30,Math.round(Number(mapSecondsEl?.value)||4)))};
+ const rewardIds=[...document.querySelectorAll('.mon-card[data-mon-id]')].map(x=>x.dataset.monId);
+ btn.disabled=true;const oldText=btn.textContent;btn.textContent='전체 저장 중...';
+ try{const savedEventId=await saveFunyMonEvent(id,{deferReload:true,throwError:true,mapFindSnapshot});if(!savedEventId)throw new Error('이벤트 저장에 실패했습니다.');for(const rewardId of rewardIds)await saveFunyMonReward(rewardId,{deferReload:true,throwError:true});await loadFunyMonRewards();alert('전체 설정 저장이 완료되었습니다.')}catch(e){alert('전체 저장 실패: '+e.message)}finally{const current=$('monEventSave');if(current){current.disabled=false;current.textContent=oldText}}
 }
 
 const EVENT_CAMPAIGNS=[{id:'cardvault-2026',title:'한가위 카드볼트 방문 인증 이벤트',shopId:'EV-CARDVAULT-2026',period:'2026.09.22 ~ 2026.09.27',status:'종료'}];

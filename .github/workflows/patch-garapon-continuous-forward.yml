@@ -1,0 +1,38 @@
+name: Patch garapon continuous forward draw
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-garapon-continuous-forward.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply continuous forward draw behavior
+        run: python .github/scripts/patch_garapon_continuous_forward.py
+
+      - name: Validate JavaScript syntax and required output
+        run: |
+          node --check garapon-three-machine-v2.js
+          node --check garapon-three-v2.js
+          grep -q "outletFaceAngle" garapon-three-machine-v2.js
+          grep -q "TURN_REQUIRED" garapon-three-v2.js
+          grep -q "반시계 방향 1바퀴마다 뽑기" garapon.html
+
+      - name: Commit patch and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-garapon-continuous-forward.yml
+          git rm .github/scripts/patch_garapon_continuous_forward.py
+          git add garapon-three-machine-v2.js garapon-three-v2.js garapon.html tcg-tools.html
+          git commit -m "refine: continuous forward garapon draws and drum-face outlet"
+          git push

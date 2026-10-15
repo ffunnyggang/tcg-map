@@ -14,6 +14,7 @@
   const typeDefs=[['all','전체'],['single','싱글카드'],['vintage','빈티지카드'],['graded','등급카드'],['box','박스제품'],['other','기타']];
   const age=v=>{const m=Math.max(0,Math.floor((Date.now()-new Date(v))/60000));if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';return Math.floor(m/1440)+'일 전'};
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const MARKET_TEST_AUTH_BYPASS=true; // PRIVATE TEST ONLY: PASS + external seller verification are forced PASS
   document.body.classList.add('market-test-page');
   const session=await A.init().catch(()=>null);
   if(!session){A.goLogin(location.pathname+location.search+location.hash);return}
@@ -226,7 +227,7 @@
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
-      '<div class="market-form-section"><span class="market-form-label">판매자 인증</span><div class="market-pass-test-note"><strong>PASS 본인인증</strong><span>PUBLIC OPEN 전 필수 · 현재 비공개 테스트에서는 아직 연결하지 않았습니다.</span></div><div class="market-external-verify-card"><div id="marketExternalVerifyStatus" class="market-external-verify-status">외부 매물을 불러온 뒤 판매자 인증을 진행해주세요.</div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button" disabled>외부 판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>아래 코드를 외부 매물 설명 마지막에 잠시 추가해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button><small>인증 완료 후 외부 매물 설명에서 코드를 삭제해도 됩니다.</small></div></div></div>'+
+      '<div class="market-form-section"><span class="market-form-label">판매자 인증</span><div class="market-test-auth-box"><div class="market-test-auth-row"><span>PASS 본인인증</span><b>TEST PASS ✓</b></div><div class="market-test-auth-row"><span>외부 플랫폼 판매자 인증</span><b id="marketExternalTestPass">TEST PASS ✓</b></div><small>비공개 테스트 전용 자동 PASS입니다. PUBLIC OPEN 전 실제 PASS + 플랫폼 인증으로 전환됩니다.</small></div><div class="market-external-verify-card market-external-verify-legacy" hidden><div id="marketExternalVerifyStatus" class="market-external-verify-status"></div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button" disabled>외부 판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>아래 코드를 외부 매물 설명 마지막에 잠시 추가해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button></div></div></div>'+
       '<div class="market-form-section" id="marketDirectBuySection"><span class="market-form-label">외부 플랫폼 구매 방식</span><div class="market-direct-buy-row"><button type="button" class="active" data-direct-buy="false">일반 거래</button><button type="button" data-direct-buy="true">바로구매</button></div><div class="market-direct-buy-help" id="marketDirectBuyHelp">매물 정보를 먼저 불러오면 플랫폼에 맞게 적용됩니다.</div></div>'+
       '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div><p id="marketRegisterCoord" class="market-register-coord-status">위치를 선택해주세요.</p></div>'+
       '<div class="market-form-section market-consent-box"><span class="market-form-label">등록 확인</span>'+
@@ -266,13 +267,14 @@
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
   function registerConsentsOk(){return !!($('#marketConsentIndividual')?.checked&&$('#marketConsentRights')?.checked&&$('#marketConsentExternal')?.checked)}
   function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}
-  function resetExternalVerification(message='외부 매물을 불러온 뒤 판매자 인증을 진행해주세요.'){
-    registerExternalVerified=false;registerChallengeId='';
-    const status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart'),challenge=$('#marketExternalVerifyChallenge'),code=$('#marketExternalVerifyCode');
-    if(status){status.textContent=message;status.classList.remove('verified')}
-    if(start)start.disabled=!registerProduct;
+  function resetExternalVerification(message='외부 매물을 확인해주세요.'){
+    registerExternalVerified=!!(MARKET_TEST_AUTH_BYPASS&&registerProduct);registerChallengeId='';
+    const status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart'),challenge=$('#marketExternalVerifyChallenge'),code=$('#marketExternalVerifyCode'),testPass=$('#marketExternalTestPass');
+    if(status){status.textContent=message;status.classList.toggle('verified',registerExternalVerified)}
+    if(start)start.disabled=MARKET_TEST_AUTH_BYPASS||!registerProduct;
     if(challenge)challenge.hidden=true;
     if(code)code.textContent='';
+    if(testPass)testPass.textContent=registerProduct?'TEST PASS ✓':'TEST PASS ✓';
     syncRegisterSubmitState();
   }
   function setExternalVerified(message){
@@ -284,6 +286,7 @@
     syncRegisterSubmitState();
   }
   async function startExternalSellerVerification(){
+    if(MARKET_TEST_AUTH_BYPASS){setExternalVerified('TEST PASS · PASS 본인인증 + 외부 플랫폼 판매자 인증');return}
     if(!registerProduct)return;
     const url=registerPreviewUrl||$('#marketRegisterUrl')?.value.trim();if(!url)return;
     const btn=$('#marketExternalVerifyStart');if(btn){btn.disabled=true;btn.textContent='인증 준비 중...'}
@@ -301,6 +304,7 @@
     finally{if(btn&&!registerExternalVerified){btn.disabled=false;btn.textContent='외부 판매자 인증 시작'}}
   }
   async function confirmExternalSellerVerification(){
+    if(MARKET_TEST_AUTH_BYPASS){setExternalVerified('TEST PASS · PASS 본인인증 + 외부 플랫폼 판매자 인증');return}
     if(!registerChallengeId)return;
     const url=registerPreviewUrl||$('#marketRegisterUrl')?.value.trim(),btn=$('#marketExternalVerifyConfirm');
     if(btn){btn.disabled=true;btn.textContent='확인 중...'}setRegisterError('');
@@ -335,7 +339,7 @@
     const arr=[...(Array.isArray(x.images)?x.images:[]),x.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,20);
     $('#marketPreviewImages').innerHTML=arr.length?arr.map(u=>'<img class="market-preview-image" src="'+esc(u)+'" alt="" referrerpolicy="no-referrer">').join(''):'<span class="market-preview-ph">NO IMAGE</span>';
     $('#marketPreviewProvider').textContent='출처 · '+providerName(x);
-    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';syncPurchaseMode(x);resetExternalVerification(providerName(x)+' 매물 확인 완료 · 판매자 인증을 진행해주세요.');
+    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';syncPurchaseMode(x);resetExternalVerification(providerName(x)+' 매물 확인 완료 · 테스트 인증 자동 PASS');if(MARKET_TEST_AUTH_BYPASS)setExternalVerified('TEST PASS · PASS 본인인증 + '+providerName(x)+' 판매자 인증');
   }
   async function loadPreview(){
     const url=$('#marketRegisterUrl')?.value.trim();if(!url)return;

@@ -35,3 +35,5 @@ jobs:
           git add garapon-three-v2.js garapon.html tcg-tools.html .github/scripts/patch_garapon_sound_compat_metal_dot.py .github/workflows/patch-garapon-sound-compat-metal-dot.yml
           git commit -m "fix: strengthen garapon audio unlock compatibility"
           git push
+
+# retry 1

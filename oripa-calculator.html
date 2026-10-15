@@ -19,7 +19,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 .wheel{position:relative;z-index:2;height:200px;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;padding:80px 0;-webkit-overflow-scrolling:touch}.wheel::-webkit-scrollbar{display:none}
 .wheel-item{height:40px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;color:#bdb6c2;font-size:14px;font-weight:550;cursor:pointer;user-select:none;opacity:.30;transform:scale(.86);transform-origin:center;transition:color .14s ease,font-size .14s ease,font-weight .14s ease,opacity .14s ease,transform .14s ease}.wheel-item.active{color:#2f2934;font-size:22px;font-weight:850;opacity:1;transform:scale(1)}.wheel-item.near{color:#99909f;font-size:17px;font-weight:650;opacity:.58;transform:scale(.93)}.wheel-item.far{color:#beb7c3;font-size:14px;font-weight:550;opacity:.28;transform:scale(.86)}
 .wheel-keyin{position:absolute;left:4px;right:4px;top:80px;height:40px;z-index:8;display:none;align-items:center;justify-content:center;border-radius:13px;background:#fff;border:1px solid #b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.08)}.wheel-keyin.show{display:flex}.wheel-keyin input{width:76%;height:38px;border:0;background:transparent;text-align:center;color:#2f2934;font-size:21px;font-weight:850;outline:none;-moz-appearance:textfield}.wheel-keyin input::-webkit-outer-spin-button,.wheel-keyin input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;scroll-margin-top:96px;scroll-margin-bottom:160px}.keyin-field{min-width:0;scroll-margin-top:96px;scroll-margin-bottom:160px}.keyin-field label{display:block;margin:0 0 6px;color:#6f6874;font-size:10px;font-weight:850}.keyin-box{display:flex;align-items:center;height:54px;border:1px solid #ddd7e3;border-radius:13px;background:#fff;overflow:hidden}.keyin-box input{min-width:0;flex:1;height:52px;border:0;background:transparent;color:#2f2934;padding:0 4px 0 12px;text-align:right;font-size:20px;font-weight:850;outline:none;-moz-appearance:textfield}.keyin-box input::-webkit-outer-spin-button,.keyin-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-box span{padding:0 12px 0 5px;color:#756e79;font-size:12px;font-weight:800;white-space:nowrap}.keyin-box:focus-within{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
+.keyin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.keyin-field{min-width:0}.keyin-field label{display:block;margin:0 0 6px;color:#6f6874;font-size:10px;font-weight:850}.keyin-box{display:flex;align-items:center;height:54px;border:1px solid #ddd7e3;border-radius:13px;background:#fff;overflow:hidden}.keyin-box input{min-width:0;flex:1;height:52px;border:0;background:transparent;color:#2f2934;padding:0 4px 0 12px;text-align:right;font-size:20px;font-weight:850;outline:none;-moz-appearance:textfield}.keyin-box input::-webkit-outer-spin-button,.keyin-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.keyin-box span{padding:0 12px 0 5px;color:#756e79;font-size:12px;font-weight:800;white-space:nowrap}.keyin-box:focus-within{border-color:#b9a7e6;box-shadow:0 0 0 3px rgba(128,98,216,.07)}
 .price-summary{display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding:0 2px;color:#928a96;font-size:9.5px}.price-summary strong{color:#5f5865;font-size:11px}.sales-progress-head span{color:#817a86;font-size:9.5px;font-weight:800}.sales-progress-head strong{color:#5f5865;font-size:10px}.sales-track{height:7px;margin-top:8px;border-radius:99px;background:#ebe6ef;overflow:hidden}.sales-track i{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#a58be4,#7455ca);transition:width .2s ease}.sales-progress-foot{margin-top:6px;color:#a098a5;font-size:8.5px;font-weight:700}
 .error{min-height:14px;margin-top:7px;color:var(--danger);font-size:9px;font-weight:750;text-align:center}.fair-note{display:flex;align-items:flex-start;justify-content:center;gap:7px;margin:11px auto 0;padding:9px 11px;border-radius:13px;background:rgba(255,255,255,.78);color:#8f8794;font-size:9.5px;line-height:1.45}.fair-icon{flex:none;font-size:13px;line-height:1;margin-top:1px}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}.metric{padding:12px;border:1px solid #eee9f1;border-radius:14px;background:#fff}.metric-label{display:block;color:#948c98;font-size:9px;font-weight:750}.metric strong{display:block;margin-top:4px;font-size:18px;line-height:1.15;font-weight:950;letter-spacing:-.04em}
@@ -92,6 +92,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 <p class="note"><b>TIP · </b>실물 오리파처럼 한 번 뽑은 상품이 재고에서 빠지는 비복원 추출 기준으로 계산합니다.</p>
 </main></div><script>
 (()=>{
+  try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(_){}
   const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
   const state={total:100,remaining:100,wins:20,buy:1,price:15000};
   const wheels={total:$('totalWheel'),remaining:$('remainingWheel'),wins:$('winsWheel')};
@@ -141,14 +142,34 @@ main{position:relative;z-index:1;padding:0 16px 18px}
       if(best)selectWheel(name,Number(best.dataset.value),true);
     },80)},{passive:true});
   }
+  let keyinRestoreY=null,keyinRestoreInput=null,keyinViewportTimer=0;
   function anchorKeyinField(input){
     const field=input.closest('.keyin-field')||input;
+    if(keyinRestoreInput!==input){
+      keyinRestoreInput=input;
+      keyinRestoreY=window.scrollY||document.documentElement.scrollTop||0;
+    }
     const move=()=>{
-      try{field.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'})}catch(_){field.scrollIntoView()}
+      const vv=window.visualViewport,rect=field.getBoundingClientRect();
+      const viewportTop=vv?vv.offsetTop:0;
+      const viewportHeight=vv?vv.height:window.innerHeight;
+      const safeTop=viewportTop+72;
+      const safeBottom=viewportTop+viewportHeight-24;
+      let delta=0;
+      if(rect.bottom>safeBottom)delta=rect.bottom-safeBottom;
+      else if(rect.top<safeTop)delta=rect.top-safeTop;
+      if(Math.abs(delta)>1)window.scrollBy({top:delta,behavior:'smooth'});
     };
     requestAnimationFrame(move);
-    setTimeout(move,120);
-    setTimeout(move,320);
+    clearTimeout(keyinViewportTimer);
+    keyinViewportTimer=setTimeout(move,180);
+  }
+  function restoreKeyinScroll(input){
+    if(keyinRestoreInput!==input||keyinRestoreY===null)return;
+    const y=keyinRestoreY;
+    keyinRestoreInput=null;keyinRestoreY=null;
+    clearTimeout(keyinViewportTimer);
+    setTimeout(()=>window.scrollTo({top:y,behavior:'smooth'}),120);
   }
   function syncKeyins(){
     const buyInput=$('buy'),priceInput=$('price');
@@ -180,12 +201,12 @@ main{position:relative;z-index:1;padding:0 16px 18px}
   ['total','remaining','wins'].forEach(name=>{const input=$(name+'KeyinInput');input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();closeWheelKeyin(name,true)}else if(e.key==='Escape'){e.preventDefault();closeWheelKeyin(name,false)}});input.addEventListener('blur',()=>setTimeout(()=>closeWheelKeyin(name,true),60));});
   $('buy').addEventListener('focus',e=>{anchorKeyinField(e.target);try{e.target.select()}catch(_){}});
   $('buy').addEventListener('input',()=>{const raw=String($('buy').value??'').trim();if(raw===''){calc();return}syncKeyins()});
-  $('buy').addEventListener('blur',()=>{if(String($('buy').value??'').trim()===''){$('buy').value='1';state.buy=1}syncKeyins()});
+  $('buy').addEventListener('blur',e=>{if(String($('buy').value??'').trim()===''){$('buy').value='1';state.buy=1}syncKeyins();restoreKeyinScroll(e.target)});
   $('price').addEventListener('focus',e=>{anchorKeyinField(e.target);try{e.target.select()}catch(_){}});
   $('price').addEventListener('input',syncKeyins);
-  $('price').addEventListener('blur',()=>{if(String($('price').value??'').trim()===''){$('price').value='0';state.price=0}syncKeyins()});
+  $('price').addEventListener('blur',e=>{if(String($('price').value??'').trim()===''){$('price').value='0';state.price=0}syncKeyins();restoreKeyinScroll(e.target)});
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',()=>{const active=document.activeElement;if(active&&active.closest&&active.closest('.keyin-field'))setTimeout(()=>anchorKeyinField(active),40)});
+    window.visualViewport.addEventListener('resize',()=>{const active=document.activeElement;if(active&&active.closest&&active.closest('.keyin-field'))anchorKeyinField(active)});
   }
   $('price').value=state.price.toLocaleString('ko-KR');calc();
 })();

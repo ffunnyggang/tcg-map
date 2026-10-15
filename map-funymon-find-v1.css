@@ -18,10 +18,10 @@
   padding:0 13px!important;
   gap:6px!important;
   justify-content:flex-start!important;
-  border:1px solid rgba(255,255,255,.55)!important;
-  background:linear-gradient(135deg,rgba(141,108,240,.97),rgba(103,72,213,.97))!important;
-  color:#fff!important;
-  box-shadow:0 8px 24px rgba(91,62,197,.28),inset 0 1px 0 rgba(255,255,255,.28)!important;
+  border:1px solid rgba(139,100,226,.78)!important;
+  background:rgba(255,255,255,.95)!important;
+  color:#7057c7!important;
+  box-shadow:0 0 0 1px rgba(172,132,255,.16),0 0 10px rgba(139,91,232,.28),0 6px 18px rgba(46,35,66,.12),inset 0 1px 0 rgba(255,255,255,.98)!important;
   -webkit-backdrop-filter:blur(18px) saturate(145%)!important;
   backdrop-filter:blur(18px) saturate(145%)!important;
   white-space:nowrap!important;
@@ -41,7 +41,7 @@
   display:block;
   max-width:84px;
   overflow:hidden;
-  color:#fff;
+  color:#5e48aa;
   font-size:10.8px;
   font-weight:850;
   line-height:1;

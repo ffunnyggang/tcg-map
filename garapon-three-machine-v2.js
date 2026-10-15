@@ -507,7 +507,10 @@ export class GaraponMachine {
       delta = THREE.MathUtils.clamp(delta, -0.34, 0.34);
       this.prevPointerAngle = angle;
       if (Math.abs(delta) < 0.002) return;
-      this.drumAngle += delta;
+      // Pointer angles use screen coordinates: clockwise gestures are positive.
+      // Three.js positive Z rotation appears counter-clockwise from this camera,
+      // so invert only the rendered angle while preserving the gesture delta.
+      this.drumAngle -= delta;
       this.targetDrumAngle = this.drumAngle;
       this.drumPivot.rotation.z = this.drumAngle;
       this.callbacks.delta(delta);
@@ -676,10 +679,35 @@ export class GaraponMachine {
         const eased = t < 0.5
           ? 2 * t * t
           : 1 - Math.pow(-2 * t + 2, 2) / 2;
-        this.drumAngle = from - fullTurn * eased;
+        this.drumAngle = from + fullTurn * eased;
         this.targetDrumAngle = this.drumAngle;
         this.drumPivot.rotation.z = this.drumAngle;
         onForward?.(eased);
+        if (t >= 1) {
+          this.autoAnim = null;
+          onReady?.();
+        }
+      },
+    };
+  }
+
+
+  // Clockwise automatic rotation only mixes the balls and never consumes one.
+  autoMixSequence({ onMix, onReady }) {
+    const start = performance.now();
+    const from = this.drumAngle;
+    const fullTurn = Math.PI * 2 * 1.25;
+    const total = 1350;
+    this.autoAnim = {
+      tick: (now) => {
+        const t = Math.min(1, (now - start) / total);
+        const eased = t < 0.5
+          ? 2 * t * t
+          : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        this.drumAngle = from - fullTurn * eased;
+        this.targetDrumAngle = this.drumAngle;
+        this.drumPivot.rotation.z = this.drumAngle;
+        onMix?.(eased);
         if (t >= 1) {
           this.autoAnim = null;
           onReady?.();

@@ -23,6 +23,21 @@ export async function getMyFunyMonIds(){
   return new Set((data??[]).map(x=>String(x.monster_id)));
 }
 
+export type MyEntryMetadata={
+  event_id?:string;
+  participation_id?:string;
+  claim_id?:string;
+  result_label?:string;
+  prize_title?:string;
+  color_hex?:string;
+  claim_required?:boolean;
+  claim_status?:string;
+  instagram_id?:string;
+  admin_memo?:string|null;
+  reveal_at?:string;
+  [key:string]:unknown;
+};
+
 export type MyEntry={
   id:string;
   title:string;
@@ -31,14 +46,25 @@ export type MyEntry={
   status:string;
   created_at:string;
   source_type:string;
+  metadata:MyEntryMetadata;
 };
 
 export async function getMyEntries(){
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)return [] as MyEntry[];
-  const {data,error}=await supabase.from('user_entries').select('id,title,description,code,status,created_at,source_type').eq('user_id',user.id).order('created_at',{ascending:false});
+  try{await supabase.rpc('garapon_get_my_claims')}catch{}
+  const {data,error}=await supabase.from('user_entries').select('id,title,description,code,status,created_at,source_type,metadata').eq('user_id',user.id).order('created_at',{ascending:false});
   if(error)throw error;
   return (data??[]) as MyEntry[];
+}
+
+export async function submitGaraponInstagram(claimId:string,instagramId:string){
+  const normalized=instagramId.trim().replace(/^@/,'').toLowerCase();
+  if(!/^[a-z0-9._]{1,30}$/.test(normalized))throw new Error('invalid_instagram_id');
+  const {data,error}=await supabase.rpc('garapon_submit_instagram',{p_claim_id:claimId,p_instagram_id:normalized});
+  if(error)throw error;
+  if(!data?.ok)throw new Error(String(data?.error||'submit_failed'));
+  return data as {ok:true;claim_id:string;instagram_id:string;status:string};
 }
 
 export type MyCoupon={

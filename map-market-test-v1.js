@@ -12,6 +12,7 @@
   const providerName=x=>providerNames[x?.provider]||'외부 플랫폼';
   const externalTradeLabel=x=>x?.provider==='daangn'&&x?.direct_buy_available?'당근에서 바로구매':providerName(x)+'에서 거래하기';
   const typeDefs=[['all','전체'],['single','싱글카드'],['vintage','빈티지카드'],['graded','등급카드'],['box','박스제품'],['other','기타']];
+  const typeEmojis={all:'✨',single:'🃏',vintage:'🏺',graded:'💎',box:'📦',other:'🎴'};
   const sortDefs=[['latest','최신 순'],['near','가까운 순'],['low','낮은 가격순'],['high','높은 가격순']];
   const categoryBadgeNames={pokemon:'포켓몬스터',onepiece:'원피스',dragonball:'드래곤볼',other:'기타'};
   const funySymbol='<img src="/favicon.svg?v=20261014-header1" alt="" aria-hidden="true">';
@@ -171,6 +172,7 @@
   }
   function selectMarker(x,m){
     const map=window.FUNY_NAVER_MAP_API?.getMap?.();if(!map)return;
+    if(selectedMarkerId===x.id){closePopup();return}
     closePopup();selectedMarkerId=x.id;m.setIcon(markerIcon(true));
     popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});
     popup.open(map,m);
@@ -230,10 +232,11 @@
     track.appendChild(layerChip);updateCounts();syncLayerOrder();
   }
   function sortMenuHtml(scope){
-    return '<div class="market-sort-wrap '+scope+'"><button type="button" class="market-sort-button" data-market-sort-button aria-haspopup="menu" aria-expanded="false"><span data-market-sort-label>'+sortLabel()+'</span><span class="market-sort-chevron">⌄</span></button><div class="market-sort-menu" role="menu">'+sortDefs.map(([v,l])=>'<button type="button" class="'+(v===marketSort?'active':'')+'" data-market-sort-value="'+v+'">'+l+'</button>').join('')+'</div></div>';
+    return '<div class="list-sort market-sort-wrap '+scope+'"><button type="button" class="list-sort-button market-sort-button" data-market-sort-button aria-haspopup="menu" aria-expanded="false"><span data-market-sort-label>'+sortLabel()+'</span><svg class="list-sort-chevron market-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div class="list-sort-menu market-sort-menu" role="menu">'+sortDefs.map(([v,l])=>'<button type="button" class="'+(v===marketSort?'active':'')+'" data-market-sort-value="'+v+'">'+l+'</button>').join('')+'</div></div>';
   }
   function filterStripHtml(scope){
-    return '<div class="market-filter-strip '+scope+'">'+typeDefs.map(([v,l])=>'<button type="button" class="market-filter-chip'+(v==='all'?' active':'')+'" data-market-filter="'+v+'">'+l+'</button>').join('')+'</div>';
+    const withEmoji=String(scope||'').includes('overlay');
+    return '<div class="market-filter-strip '+scope+'">'+typeDefs.map(([v,l])=>'<button type="button" class="market-filter-chip'+(v==='all'?' active':'')+'" data-market-filter="'+v+'">'+(withEmoji?(typeEmojis[v]+' '):'')+l+'</button>').join('')+'</div>';
   }
   function marketSheetControlsHtml(){
     return '<div class="market-sheet-tools">'+sortMenuHtml('market-sheet-sort')+'<span class="qa-tools-divider" aria-hidden="true"></span>'+filterStripHtml('market-sheet-filter')+'</div>';
@@ -259,6 +262,8 @@
     marketTabBtn=document.createElement('button');marketTabBtn.type='button';marketTabBtn.className='qa-list-tab market-list-tab';marketTabBtn.dataset.tab='market';
     marketTabBtn.innerHTML='<span class="qa-tab-inline"><span class="qa-tab-label">TCG 거래</span><span class="qa-tab-count" id="marketTestTabCount">0</span></span>';
     tabs.appendChild(marketTabBtn);
+    marketTabBtn.addEventListener('pointerdown',()=>{if(!isJapan())document.body.classList.add('market-tab-switching')});
+    marketTabBtn.addEventListener('pointercancel',()=>document.body.classList.remove('market-tab-switching'));
     marketPanel=document.createElement('section');marketPanel.className='market-sheet-panel market-test-only';marketPanel.hidden=true;
     marketPanel.innerHTML=marketSheetControlsHtml()+'<div class="market-sheet-list" id="marketSheetList"></div>';
     $('.list-wrap')?.appendChild(marketPanel);
@@ -268,6 +273,7 @@
       else exitMarketTab();
     },true);
     bindFilterControls(marketPanel,()=>{marketFilter=marketPanel.querySelector('.market-filter-chip.active')?.dataset.marketFilter||'all';renderListInto($('#marketSheetList'),marketFilter)});
+    bindHorizontalScrollers();
     syncMarketTabLabels();updateCounts();
   }
   function enforceMarketTabExclusiveUI(){
@@ -285,8 +291,8 @@
   function activateMarketTab(){
     if(isJapan())return;
     marketTabActive=true;marketLayerOn=true;layerChip?.classList.add('active');layerChip?.setAttribute('aria-pressed','true');
-    document.body.classList.add('market-tab-active');document.body.classList.remove('qa-vending-tab-active');
-    $document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));
+    document.body.classList.add('market-tab-active');document.body.classList.remove('market-tab-switching','qa-vending-tab-active');
+    document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));
     document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.setProperty('display','none','important'));
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.setProperty('display','none','important');
     const vp=$('.qa-vending-panel');if(vp)vp.hidden=true;
@@ -298,7 +304,7 @@
   }
   function exitMarketTab(){
     if(!marketTabActive)return;
-    marketTabActive=false;document.body.classList.remove('market-tab-active');if(marketPanel)marketPanel.hidden=true;
+    marketTabActive=false;document.body.classList.remove('market-tab-active','market-tab-switching');if(marketPanel)marketPanel.hidden=true;
     document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
     const shopTools=$('.qa-shop-tools');if(shopTools)shopTools.style.removeProperty('display');
     restoreMarketTabExclusiveUI();
@@ -312,6 +318,29 @@
       const sortValue=e.target.closest('[data-market-sort-value]');
       if(sortValue){e.preventDefault();e.stopPropagation();await setMarketSort(sortValue.dataset.marketSortValue);return}
     });
+  }
+
+  function enableHorizontalScroller(el){
+    if(!el||el.dataset.marketHorizontalScroll==='1')return;
+    el.dataset.marketHorizontalScroll='1';
+    let drag=false,moved=false,startX=0,startLeft=0,pointerId=null;
+    el.addEventListener('pointerdown',e=>{
+      if(e.pointerType!=='mouse'||e.button!==0)return;
+      drag=true;moved=false;pointerId=e.pointerId;startX=e.clientX;startLeft=el.scrollLeft;
+      el.setPointerCapture?.(e.pointerId);
+    });
+    el.addEventListener('pointermove',e=>{
+      if(!drag||e.pointerId!==pointerId)return;
+      const dx=e.clientX-startX;if(Math.abs(dx)>4)moved=true;
+      if(moved){e.preventDefault();el.scrollLeft=startLeft-dx}
+    },{passive:false});
+    const end=e=>{if(!drag)return;drag=false;try{el.releasePointerCapture?.(pointerId)}catch(_){}pointerId=null;setTimeout(()=>{moved=false},0)};
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+    el.addEventListener('click',e=>{if(moved){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}},true);
+    el.addEventListener('wheel',e=>{if(el.scrollWidth<=el.clientWidth+2)return;if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;e.preventDefault();el.scrollLeft+=e.deltaY},{passive:false});
+  }
+  function bindHorizontalScrollers(){
+    ['#filters','.qa-shop-tools','.qa-vending-tools','.market-sheet-filter','.market-overlay-filter'].forEach(sel=>document.querySelectorAll(sel).forEach(enableHorizontalScroller));
   }
 
   function compactOnScroll(target,scroller){
@@ -347,6 +376,7 @@
     el.querySelector('.market-overlay-close').onclick=closeOverlay;
     el.querySelector('[data-open-market-register]').onclick=openRegister;
     bindFilterControls(el,()=>{overlayFilter=el.querySelector('.market-overlay-filter .market-filter-chip.active')?.dataset.marketFilter||'all';renderListInto($('#marketOverlayList'),overlayFilter)});
+    bindHorizontalScrollers();
     compactOnScroll(el.querySelector('.market-overlay-register'),el);
   }
   function openOverlay(){
@@ -515,6 +545,7 @@
       const urls=[...(Array.isArray(registerProduct.images)?registerProduct.images:[]),registerProduct.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
       const agreedAt=new Date().toISOString();
       const provider=registerProduct.provider||'daangn',externalListingId=registerProduct.external_listing_id||registerProduct.article_id||null;
+      try{const resolved=await reverseMarketAddress({latitude:registerLat,longitude:registerLng,location_name:registerLocation});if(resolved&&resolved!=='거래 희망 위치')registerLocation=resolved}catch(_){}
       const row={seller_user_id:user.id,seller_nickname:nick,seller_type:'individual',individual_seller_confirmed_at:agreedAt,rights_republish_agreed_at:agreedAt,external_trade_only_agreed_at:agreedAt,provider,external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:externalListingId,title:registerProduct.title||'외부 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,location_name:registerLocation,fetched_at:registerProduct.fetched_at||agreedAt,source_last_checked_at:registerProduct.fetched_at||agreedAt,source_refresh_count:1,source_status:registerProduct.source_status||'unknown',updated_at:agreedAt};
       let data=null,error=null;
       if(row.external_listing_id){
@@ -554,11 +585,11 @@
         '<div class="market-detail-tags"><span class="market-detail-tag provider '+esc(x.provider||'')+'">'+esc(sourceName)+'</span><span class="market-detail-tag cat">'+esc(categoryBadgeNames[x.tcg_category]||'기타')+'</span><span class="market-detail-tag type">'+esc(types[x.item_type]||'기타')+'</span></div>'+
         '<h1 class="market-detail-title">'+esc(x.title)+'</h1>'+
         '<div class="market-detail-price">'+money(x.price)+'</div>'+
-        '<div class="market-detail-location-main">⌖ '+esc(x.location_name||'거래 희망 위치')+'</div>'+
+        '<div class="market-detail-location-main">⌖ '+esc(displayAddress(x))+'</div>'+
         '<div class="market-detail-seller">FUNY PIN · '+esc(x.seller_nickname||'회원')+' <span>· '+age(x.created_at)+'</span></div>'+
       '</div>'+
       '<section class="market-detail-section market-detail-description"><h3>내용</h3><div class="market-detail-desc">'+esc(x.description||'등록된 설명이 없습니다.')+'</div></section>'+
-      '<section class="market-detail-section"><h3>거래 희망 위치</h3><div class="market-detail-map-card"><div id="marketDetailMap" class="market-detail-map"></div><div class="market-detail-location">'+esc(x.location_name||'거래 희망 위치')+'</div></div></section>'+
+      '<section class="market-detail-section"><h3>거래 희망 위치</h3><div class="market-detail-map-card"><div id="marketDetailMap" class="market-detail-map"></div><div class="market-detail-location">'+esc(displayAddress(x))+'</div></div></section>'+
       '<section class="market-detail-guide"><strong>안내사항</strong><p>FUNY PIN은 외부 플랫폼의 매물을 연결해 보여주는 서비스이며 거래 당사자가 아닙니다. 실제 구매·결제·배송·환불은 '+esc(sourceName)+' 원본 매물에서 진행해주세요.</p><span>출처 · '+esc(sourceName)+' · 원본 마지막 확인 '+(x.source_last_checked_at?age(x.source_last_checked_at):'미확인')+'</span></section>'+
       (isOwner?'<div class="market-detail-owner-tools"><button type="button" id="marketDetailRefresh">원본 정보 새로고침</button><button type="button" id="marketDetailHide">매물 숨기기</button></div>':'')+
       '<button type="button" id="marketDetailReport" class="market-detail-report-button">신고 · 권리침해 접수</button>'+
@@ -697,7 +728,9 @@
   async function loadRows(){
     const {data,error}=await A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved','sold']).order('created_at',{ascending:false});
     if(error){console.error('[MARKET TEST] load failed',error);return}
-    rows=data||[];updateCounts();renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);syncMarkers();
+    rows=data||[];updateCounts();syncMarkers();
+    await hydrateMarketAddresses(rows).catch(()=>{});
+    renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
     const refreshAddresses=()=>hydrateMarketAddresses(rows).then(()=>{
       renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
       if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}
@@ -707,8 +740,10 @@
 
   document.addEventListener('click',e=>{
     if(!e.target.closest('.market-sort-wrap'))closeSortMenus();
+    const popupTarget=e.target.closest('[data-market-popup-id]'),markerTarget=e.target.closest('.market-map-pin');
+    if(selectedMarkerId&&!popupTarget&&!markerTarget)closePopup();
     const card=e.target.closest('[data-market-id]');if(card){e.preventDefault();openDetail(card.dataset.marketId);return}
-    const pop=e.target.closest('[data-market-popup-id]');if(pop){e.preventDefault();openDetail(pop.dataset.marketPopupId)}
+    const pop=popupTarget;if(pop){e.preventDefault();openDetail(pop.dataset.marketPopupId)}
   },true);
 
   const search=$('#map-shop-search');search?.addEventListener('input',()=>{if(marketTabActive)renderListInto($('#marketSheetList'),marketFilter);syncMarkers()});
@@ -720,7 +755,7 @@
   if(tabs)setupMarketPanel(tabs);
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
-  if(map)naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());
-  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
+  if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'click',()=>closePopup());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   await loadRows();
 })();

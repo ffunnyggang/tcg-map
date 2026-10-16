@@ -1,1 +1,63 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>응모 내역 | FUNY PIN</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><link rel="stylesheet" href="/my-web.css?v=20261014-my3"><style>.entry-card{padding:17px}.entry-title{margin-top:10px;font-size:15px;font-weight:900}.entry-desc{margin-top:6px;color:#7e7684;font-size:11px;line-height:1.55}.entry-row{margin-top:12px;display:flex;justify-content:space-between;gap:10px}.entry-status{color:#6749bd;font-size:10px;font-weight:850}.entry-code{margin-top:12px;padding:11px;border-radius:11px;background:#f7f4fc}.entry-code small{display:block;color:#938b98;font-size:9px}.entry-code b{display:block;margin-top:4px;font-size:13px;letter-spacing:1px}</style><script src="/web-auth.js?v=20261014-web-auth6"></script><script src="/funy-mon-account-migrate.js?v=20261015-entry-sync1"></script><script src="/my-web-common.js?v=20261014-my2"></script><link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2"><link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"></head><body><div class="my-page"><header class="my-head funy-sub-header"><button class="my-back funy-sub-back" onclick="FUNY_MY_WEB.back()" aria-label="뒤로가기">‹</button><div class="my-title funy-sub-title">응모 내역</div></header><main id="root" class="my-content"><div class="my-loading">응모 내역을 불러오는 중...</div></main></div><script>(async()=>{const H=FUNY_MY_WEB,A=await H.ready('/my-entries.html');if(!A)return;const root=document.getElementById('root');try{try{await window.FUNY_FUNYMON_ACCOUNT_MIGRATE?.run()}catch(e){console.warn('[FUNY MON entry sync]',e?.message||e)}const {data,error}=await A.client.from('user_entries').select('id,title,description,code,status,created_at,source_type').order('created_at',{ascending:false});if(error)throw error;if(!data?.length){root.innerHTML='<div class="my-empty"><strong>응모 내역이 없어요</strong>퍼니몬 이벤트 등에 응모하면 이곳에서 확인할 수 있어요.</div>';return}root.innerHTML='<div class="my-list">'+data.map(x=>'<article class="my-card entry-card"><span class="my-badge">응모</span><div class="entry-title">'+H.esc(x.title)+'</div>'+(x.description?'<div class="entry-desc">'+H.esc(x.description)+'</div>':'')+'<div class="entry-row"><span class="my-meta">'+H.date(x.created_at)+'</span><span class="entry-status">'+H.esc(x.status==='active'?'응모 완료':x.status)+'</span></div>'+(x.code?'<div class="entry-code"><small>응모 코드</small><b>'+H.esc(x.code)+'</b></div>':'')+'</article>').join('')+'</div>'}catch(e){root.innerHTML='<div class="my-empty"><strong>불러오지 못했어요</strong>잠시 후 다시 시도해주세요.</div>'}})();</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>응모 내역 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/my-web.css?v=20261014-my3">
+<link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2">
+<link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1">
+<style>
+.entry-card{padding:17px}.entry-title{margin-top:10px;font-size:15px;font-weight:900}.entry-desc{margin-top:6px;color:#7e7684;font-size:11px;line-height:1.55}.entry-row{margin-top:12px;display:flex;justify-content:space-between;gap:10px}.entry-status{color:#6749bd;font-size:10px;font-weight:850}.entry-code{margin-top:12px;padding:11px;border-radius:11px;background:#f7f4fc}.entry-code small{display:block;color:#938b98;font-size:9px}.entry-code b{display:block;margin-top:4px;font-size:13px;letter-spacing:1px}.garapon-badge{background:#fff3df!important;color:#9b6514!important}.garapon-result{display:flex;align-items:center;gap:9px;margin-top:11px;padding:11px;border-radius:12px;background:#faf8fc}.garapon-ball{width:24px;height:24px;flex:none;border-radius:50%;background:var(--ball,#ddd);box-shadow:inset -3px -4px 6px rgba(0,0,0,.18),inset 3px 3px 5px rgba(255,255,255,.72)}.garapon-result b{display:block;font-size:11px}.garapon-result span{display:block;margin-top:3px;color:#8c8491;font-size:9px}.claim-box{margin-top:12px;padding:12px;border:1px solid #e4ddef;border-radius:12px;background:#fff}.claim-box label{display:block;margin-bottom:7px;font-size:9px;font-weight:850}.claim-form{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:7px}.claim-form input{height:40px;padding:0 10px;border:1px solid #ddd6e5;border-radius:10px;font-size:11px;outline:none}.claim-form input:focus{border-color:#8062d8;box-shadow:0 0 0 3px rgba(128,98,216,.08)}.claim-form button{border:0;border-radius:10px;background:#8062d8;color:#fff;font-size:10px;font-weight:850}.claim-note{margin-top:7px;color:#8b8390;font-size:9px;line-height:1.5}.claim-state{margin-top:10px;padding:10px;border-radius:10px;background:#f3effb;color:#6749bd;font-size:10px;font-weight:800}.toast{position:fixed;left:50%;bottom:24px;z-index:100;transform:translate(-50%,14px);padding:10px 14px;border-radius:999px;background:rgba(38,33,43,.94);color:#fff;font-size:10px;opacity:0;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+<script src="/web-auth.js?v=20261016-auth-fix1"></script>
+<script src="/funy-mon-account-migrate.js?v=20261015-entry-sync1"></script>
+<script src="/my-web-common.js?v=20261014-my2"></script>
+</head>
+<body>
+<div class="my-page">
+  <header class="my-head funy-sub-header"><button class="my-back funy-sub-back" onclick="FUNY_MY_WEB.back()" aria-label="뒤로가기">‹</button><div class="my-title funy-sub-title">응모 내역</div></header>
+  <main id="root" class="my-content"><div class="my-loading">응모 내역을 불러오는 중...</div></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(async()=>{
+  const H=FUNY_MY_WEB,A=await H.ready('/my-entries.html');if(!A)return;
+  const root=document.getElementById('root'),toast=document.getElementById('toast');let toastTimer=0;
+  const showToast=message=>{clearTimeout(toastTimer);toast.textContent=message;toast.classList.add('show');toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)};
+  const claimLabel=value=>({awaiting_instagram:'Instagram ID 입력 필요',pending_review:'관리자 확인 대기',ready:'상품 처리 대기',verified:'확인 완료',dm_sent:'Instagram DM 발송 완료',fulfilled:'상품 전달 완료',expired:'처리 기간 만료',cancelled:'당첨 취소'}[value]||value||'처리 중');
+  async function sync(){try{await window.FUNY_FUNYMON_ACCOUNT_MIGRATE?.run()}catch(e){console.warn('[FUNY MON entry sync]',e?.message||e)}try{await A.client.rpc('garapon_get_my_claims')}catch(e){console.warn('[GARAPON entry sync]',e?.message||e)}}
+  function card(x){
+    const m=x.metadata||{},isGarapon=x.source_type==='garapon_event',claimStatus=m.claim_status||x.status;
+    const badge=isGarapon?'<span class="my-badge garapon-badge">가라폰 당첨</span>':'<span class="my-badge">응모</span>';
+    const result=isGarapon?'<div class="garapon-result"><span class="garapon-ball" style="--ball:'+H.esc(m.color_hex||'#ddd')+'"></span><div><b>'+H.esc(m.prize_title||x.description||'당첨 상품')+'</b><span>'+H.esc(m.result_label||'가라폰 이벤트')+'</span></div></div>':'';
+    let claim='';
+    if(isGarapon&&m.claim_required&&claimStatus==='awaiting_instagram'){
+      claim='<div class="claim-box" data-claim-box><label>Instagram ID 입력</label><div class="claim-form"><input data-instagram type="text" maxlength="30" autocomplete="off" placeholder="@ 제외 아이디"><button data-submit-claim="'+H.esc(m.claim_id||'')+'" type="button">제출</button></div><div class="claim-note">관리자 확인 후 입력한 계정으로 상품 발송 안내 DM을 보내드립니다.</div></div>';
+    }else if(isGarapon){
+      claim='<div class="claim-state">'+H.esc(claimLabel(claimStatus))+(m.instagram_id?' · @'+H.esc(m.instagram_id):'')+'</div>';
+    }
+    return '<article class="my-card entry-card">'+badge+'<div class="entry-title">'+H.esc(x.title)+'</div>'+(x.description?'<div class="entry-desc">'+H.esc(x.description)+'</div>':'')+result+'<div class="entry-row"><span class="my-meta">'+H.date(x.created_at)+'</span><span class="entry-status">'+H.esc(isGarapon?claimLabel(claimStatus):(x.status==='active'?'응모 완료':x.status))+'</span></div>'+(x.code?'<div class="entry-code"><small>응모 코드</small><b>'+H.esc(x.code)+'</b></div>':'')+claim+'</article>';
+  }
+  async function load(){
+    root.innerHTML='<div class="my-loading">응모 내역을 불러오는 중...</div>';
+    try{
+      await sync();
+      const {data,error}=await A.client.from('user_entries').select('id,title,description,code,status,created_at,source_type,metadata').order('created_at',{ascending:false});if(error)throw error;
+      if(!data?.length){root.innerHTML='<div class="my-empty"><strong>응모 내역이 없어요</strong>퍼니몬 이벤트나 가라폰 이벤트에 당첨되면 이곳에서 확인할 수 있어요.</div>';return}
+      root.innerHTML='<div class="my-list">'+data.map(card).join('')+'</div>';
+      root.querySelectorAll('[data-submit-claim]').forEach(button=>button.addEventListener('click',async()=>{
+        const box=button.closest('[data-claim-box]'),input=box.querySelector('[data-instagram]'),id=input.value.trim().replace(/^@/,'').toLowerCase();
+        if(!/^[a-z0-9._]{1,30}$/.test(id)){showToast('Instagram ID를 정확히 입력해주세요.');input.focus();return}
+        button.disabled=true;button.textContent='제출 중';
+        try{const {data:result,error}=await A.client.rpc('garapon_submit_instagram',{p_claim_id:button.dataset.submitClaim,p_instagram_id:id});if(error)throw error;if(!result?.ok){showToast(result?.error==='claim_locked'?'이미 확인된 당첨 내역입니다.':'ID 제출에 실패했습니다.');return}showToast('Instagram ID를 제출했습니다.');await load()}catch(e){console.warn(e);showToast('ID 제출에 실패했습니다.')}finally{button.disabled=false;button.textContent='제출'}
+      }));
+    }catch(e){console.warn(e);root.innerHTML='<div class="my-empty"><strong>불러오지 못했어요</strong>잠시 후 다시 시도해주세요.</div>'}
+  }
+  await load();
+})();
+</script>
+</body>
+</html>

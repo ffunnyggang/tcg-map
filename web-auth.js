@@ -18,7 +18,13 @@
   const emit=()=>{listeners.forEach(fn=>{try{fn(currentSession)}catch(_){}});try{window.dispatchEvent(new CustomEvent('funy:web-auth-change',{detail:{loggedIn:!!currentSession,user:currentSession?.user||null}}))}catch(_){}};
 
   function clearStoredAuth(){
-    clearStoredAuth();
+    try{
+      const prefix='sb-wdttzpbmqavaqfcbaywj-auth-token';
+      for(let i=localStorage.length-1;i>=0;i--){
+        const k=localStorage.key(i);
+        if(k&&(k===prefix||k.startsWith(prefix+'.')||k.startsWith(prefix+'-')))localStorage.removeItem(k);
+      }
+    }catch(_){}
   }
 
   function loadSdk(){
@@ -91,10 +97,7 @@
       const result=await client.auth.signOut({scope:'local'});
       error=result?.error||null;
     }catch(e){error=e}
-    try{
-      const prefix='sb-wdttzpbmqavaqfcbaywj-auth-token';
-      for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&(k===prefix||k.startsWith(prefix+'.')||k.startsWith(prefix+'-')))localStorage.removeItem(k)}
-    }catch(_){}
+    clearStoredAuth();
     currentSession=null;emit();
     if(error&&String(error?.code||error?.message||'').toLowerCase().includes('session_not_found')===false&&Number(error?.status||0)!==403){
       console.warn('[FUNY WEB AUTH] local sign-out warning',error);

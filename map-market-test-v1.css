@@ -1643,7 +1643,7 @@ body.market-test-page .market-detail-hero{
   margin-right:-14px!important
 }
 body.market-test-page .market-detail-carousel{aspect-ratio:auto!important}
-body.market-test-page .market-detail-carousel-track{align-items:flex-start!important}
+body.market-test-page .market-detail-carousel-track{align-items:flex-start!important;height:auto!important}
 body.market-test-page .market-detail-slide{
   flex:0 0 100%!important;
   width:100%!important;

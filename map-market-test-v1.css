@@ -1697,3 +1697,6 @@ body.market-test-page .market-detail-description{
   border-bottom:0!important
 }
 body.market-test-page .market-detail-description h3{display:none!important}
+
+/* Remove divider immediately above listing description */
+body.market-test-page .market-detail-info{border-bottom:0!important}

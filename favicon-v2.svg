@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FUNY PIN">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40" role="img" aria-label="FUNY PIN">
   <defs>
-    <linearGradient id="funyPinPurple" x1="110" y1="36" x2="388" y2="478" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#9A73E7"/>
-      <stop offset=".48" stop-color="#805FD6"/>
-      <stop offset="1" stop-color="#6849BF"/>
+    <linearGradient id="funyPinGrad" x1="8" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B093F4"/>
+      <stop offset=".48" stop-color="#8062D8"/>
+      <stop offset="1" stop-color="#6749BD"/>
     </linearGradient>
-    <radialGradient id="funyPinCenter" cx="38%" cy="28%" r="78%">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset=".68" stop-color="#FBFAFE"/>
-      <stop offset="1" stop-color="#EEE9FA"/>
+    <radialGradient id="funyPinButton" cx="35%" cy="25%" r="75%">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEE9FB"/>
     </radialGradient>
   </defs>
-  <path d="M256 18C137.4 18 41 114.4 41 233c0 146.7 215 261 215 261s215-114.3 215-261C471 114.4 374.6 18 256 18Z" fill="url(#funyPinPurple)"/>
-  <path d="M45 219h128.5a86 86 0 0 1 165 0H467v28H338.5a86 86 0 0 1-165 0H45v-28Z" fill="#FFFFFF"/>
-  <circle cx="256" cy="233" r="76" fill="url(#funyPinCenter)" stroke="#FFFFFF" stroke-width="18"/>
+  <ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="#7557C8" opacity=".10"/>
+  <ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="#7557C8" opacity=".16"/>
+  <path fill="url(#funyPinGrad)" d="M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z"/>
+  <path d="M7.75 13.05h6.38a4.2 4.2 0 0 1 7.74 0h6.38v1.15h-6.08a4.2 4.2 0 0 1-8.34 0H7.75Z" fill="#FFFFFF"/>
+  <circle cx="18" cy="13.65" r="3.15" fill="url(#funyPinButton)"/>
 </svg>

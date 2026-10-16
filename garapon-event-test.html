@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta name="theme-color" content="#ffffff">
+<title>가라폰 이벤트 비공개 테스트 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/garapon-three-v2.css?v=20261016-hole-release1">
+<link rel="stylesheet" href="/garapon-event-test.css?v=20261016-hidden1">
+<script src="/web-auth.js?v=20261016-auth-fix1"></script>
+</head>
+<body>
+<div class="event-shell">
+  <header class="event-head">
+    <button class="event-back" id="backButton" type="button" aria-label="뒤로가기">‹</button>
+    <strong>가라폰 이벤트</strong>
+    <span class="test-badge">PRIVATE TEST</span>
+  </header>
+
+  <main class="event-main">
+    <section class="gate" id="gate">
+      <strong id="gateTitle">비공개 이벤트를 확인하고 있어요</strong>
+      <p id="gateText">관리자 또는 테스트 계정만 접근할 수 있습니다.</p>
+      <button id="gateAction" type="button" hidden>로그인하기</button>
+    </section>
+
+    <div class="event-content" id="eventContent" hidden>
+      <section class="intro">
+        <div class="intro-kicker">FUNY PIN GARAPON EVENT</div>
+        <h1 id="eventTitle">가라폰 이벤트</h1>
+        <p id="eventDescription"></p>
+        <div class="period" id="eventPeriod"></div>
+      </section>
+
+      <section class="summary" aria-label="이벤트 현황">
+        <div class="summary-item"><span>보유 퍼니코인</span><strong id="coinBalance">-</strong><small>FUNY COIN</small></div>
+        <div class="summary-item"><span>1회 참여</span><strong id="coinCost">-</strong><small>퍼니코인</small></div>
+        <div class="summary-item"><span>남은 구슬</span><strong id="remainingBalls">-</strong><small id="remainingSub">실시간</small></div>
+        <div class="summary-item"><span>현재 대기</span><strong id="queueCount">-</strong><small>명</small></div>
+      </section>
+
+      <section class="event-machine">
+        <div class="result-area" aria-live="polite">
+          <span class="result-kicker">LIVE GARAPON</span>
+          <strong class="result-title" id="resultTitle">참여 버튼을 눌러 대기열에 들어가세요</strong>
+          <span class="result-sub" id="resultSub">내 차례가 되면 손잡이를 반시계 방향으로 한 바퀴 돌려주세요</span>
+        </div>
+        <div class="machine-stage" id="machineStage" aria-label="3D 이벤트 가라폰">
+          <canvas class="machine-canvas" id="garaponCanvas" aria-label="가라폰 손잡이를 돌리는 3D 화면"></canvas>
+          <div class="canvas-loading" id="canvasLoading">3D 가라폰을 준비하고 있어요…</div>
+          <div class="webgl-fallback" id="webglFallback">3D 화면을 불러오지 못했어요.<br>자동 진행으로 이벤트에 참여할 수 있습니다.</div>
+          <div class="drag-tip" id="dragTip"><b>내 차례가 되면</b> 반시계 방향으로 한 바퀴</div>
+        </div>
+      </section>
+
+      <section class="turn-panel">
+        <div class="turn-row">
+          <div class="turn-copy"><b id="turnTitle">참여 준비</b><span id="turnText">이벤트 참여 조건을 확인하고 있어요.</span></div>
+          <div class="turn-timer" id="turnTimer">-</div>
+        </div>
+        <div class="progress"><i id="turnProgress"></i></div>
+        <div class="event-actions">
+          <button class="join-button" id="joinButton" type="button" disabled>참여 준비 중</button>
+          <button class="sound-button" id="soundToggle" type="button" aria-label="사운드 켜기/끄기">🔊</button>
+        </div>
+      </section>
+
+      <p class="notice"><b>비공개 테스트 ·</b> 결과와 퍼니코인 차감은 서버에서 처리됩니다. 페이지를 닫아도 참여 결과는 유지됩니다.</p>
+
+      <section class="section">
+        <div class="section-head"><h2>남은 구슬 현황</h2><span id="ballSummary">실시간 반영</span></div>
+        <div class="ball-grid" id="ballList"><div class="empty">불러오는 중...</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><h2>실시간 결과</h2><span>최근 20건</span></div>
+        <div class="feed" id="recentResults"><div class="empty">아직 공개된 결과가 없어요.</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><h2>내 참여 내역</h2><a href="/my-entries.html">MY 응모 내역 ›</a></div>
+        <div id="myParticipations"><div class="empty">아직 참여 내역이 없어요.</div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="result-pop" id="resultPop" role="dialog" aria-modal="true" aria-labelledby="resultPopTitle">
+  <div class="result-box">
+    <div class="result-ball" id="resultBall"></div>
+    <small id="resultLabel">RESULT</small>
+    <h3 id="resultPopTitle">결과</h3>
+    <p id="resultPopText"></p>
+    <button id="resultClose" type="button">확인</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="/garapon-event-test.js?v=20261016-hidden1"></script>
+</body>
+</html>

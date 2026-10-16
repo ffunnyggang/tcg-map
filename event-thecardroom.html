@@ -189,56 +189,10 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
   }
 
   function webMapUrl(){
-    var u='https://funypin.kr/shops.html?event=cardroom';
-    if(campaignId)u+='&campaign='+encodeURIComponent(campaignId);
-    return u;
+    return 'https://funypin.kr/shops.html?focus=shop&shopId=KR-SEO-009&zoom=max&popup=1';
   }
 
   function openCaptureEntry(){
-    var ua=navigator.userAgent||'';
-    var isIOS=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-    var isAndroid=/Android/i.test(ua);
-
-    if(isAndroid){
-      location.href=webMapUrl();
-      return;
-    }
-
-    if(isIOS){
-      var appUrl='funypin://map?country=KR&from=cardroom-event';
-      if(campaignId)appUrl+='&campaign='+encodeURIComponent(campaignId);
-      var storeUrl='https://apps.apple.com/us/app/funy-pin/id6817652126';
-      var fallbackTimer=null;
-      var launched=false;
-
-      function cleanup(){
-        if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null}
-        document.removeEventListener('visibilitychange',onVisibility);
-        window.removeEventListener('pagehide',onPageHide);
-        window.removeEventListener('blur',onBlur);
-      }
-      function markLaunched(){
-        if(launched)return;
-        launched=true;
-        cleanup();
-      }
-      function onVisibility(){if(document.hidden)markLaunched()}
-      function onPageHide(){markLaunched()}
-      function onBlur(){markLaunched()}
-
-      document.addEventListener('visibilitychange',onVisibility);
-      window.addEventListener('pagehide',onPageHide,{once:true});
-      window.addEventListener('blur',onBlur,{once:true});
-
-      fallbackTimer=setTimeout(function(){
-        cleanup();
-        if(!launched&&!document.hidden)location.href=storeUrl;
-      },1300);
-
-      location.href=appUrl;
-      return;
-    }
-
     location.href=webMapUrl();
   }
 

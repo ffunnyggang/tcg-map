@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>가라폰 이벤트 비공개 관리자 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/admin-garapon-event-test.css?v=20261016-hidden1">
+<script src="/web-auth.js?v=20261016-auth-fix1"></script>
+</head>
+<body>
+<div class="admin-shell">
+  <header class="admin-head">
+    <strong>가라폰 이벤트 관리자</strong>
+    <span class="private-badge">PRIVATE TEST</span>
+    <span class="right" id="adminState">권한 확인 중...</span>
+  </header>
+
+  <section class="gate" id="gate">
+    <div class="gate-box"><strong id="gateTitle">관리자 권한을 확인하고 있어요</strong><p id="gateText">실사용자에게 노출되지 않는 비공개 개발 화면입니다.</p></div>
+  </section>
+
+  <div class="dashboard" id="dashboard" hidden>
+    <aside class="sidebar">
+      <div class="side-title"><b>이벤트 목록</b><button id="newEvent" type="button">＋ 새 이벤트</button></div>
+      <div class="event-list" id="eventList"><div class="empty">이벤트를 불러오는 중...</div></div>
+      <div class="side-card"><b>출시 잠금 상태</b><p>공개 기능 플래그와 회원가입 지급은 비활성 상태로 유지됩니다. 이 화면에서는 테스트 이벤트만 만들 수 있습니다.</p></div>
+    </aside>
+
+    <main class="main">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head"><h2>비공개 기능 상태</h2><span id="featureStatus">확인 중</span></div>
+          <div class="warning">실사용자 노출 방지를 위해 <b>가라폰 공개</b>, <b>퍼니코인 공개</b>, <b>회원가입 자동 지급</b>은 이 개발 단계에서 켤 수 없습니다.</div>
+          <div class="form-grid" style="margin-top:12px">
+            <div class="field"><label>출시 후 회원가입 보너스 예정값</label><input class="input" id="signupBonus" type="number" min="0" max="1000000" value="20"><span class="help">값만 저장하며 실제 지급은 계속 비활성 상태입니다.</span></div>
+            <div class="field"><label>현재 공개 상태</label><input class="input" id="publicState" value="비공개 잠금" disabled></div>
+          </div>
+          <div class="actions"><button class="btn" id="saveLockedSettings" type="button">예정 보너스 값 저장</button></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>테스트 계정 · 퍼니코인</h2><span>회원 이메일 기준</span></div>
+          <div class="form-grid">
+            <div class="field full"><label>테스트 계정 이메일</label><input class="input" id="testerEmail" type="email" placeholder="member@example.com"></div>
+            <div class="field"><label>테스트 권한</label><select class="select" id="testerActive"><option value="true">활성</option><option value="false">비활성</option></select></div>
+            <div class="field"><label>비고</label><input class="input" id="testerNote" placeholder="QA 계정"></div>
+          </div>
+          <div class="actions"><button class="btn purple" id="saveTester" type="button">테스트 계정 저장</button></div>
+          <hr style="border:0;border-top:1px solid #eeeaf1;margin:16px 0">
+          <div class="form-grid">
+            <div class="field"><label>지급·회수 수량</label><input class="input" id="coinAmount" type="number" value="100"><span class="help">음수 입력 시 회수</span></div>
+            <div class="field"><label>사유</label><input class="input" id="coinReason" value="가라폰 비공개 테스트"></div>
+          </div>
+          <div class="actions"><button class="btn primary" id="adjustCoin" type="button">퍼니코인 반영</button></div>
+        </section>
+
+        <section class="card full">
+          <div class="card-head"><h2>이벤트 기본 설정</h2><span class="status-chip" id="eventStatusChip">신규</span></div>
+          <div class="form-grid">
+            <div class="field full"><label>이벤트명</label><input class="input" id="eventTitle" maxlength="120" placeholder="비공개 테스트 가라폰 이벤트"></div>
+            <div class="field full"><label>설명</label><textarea class="textarea" id="eventDescription" placeholder="이벤트 안내 문구"></textarea></div>
+            <div class="field"><label>시작일시</label><input class="input" id="eventStarts" type="datetime-local"></div>
+            <div class="field"><label>종료일시</label><input class="input" id="eventEnds" type="datetime-local"></div>
+            <div class="field"><label>1회 퍼니코인 비용</label><input class="input" id="eventCost" type="number" min="0" value="3"></div>
+            <div class="field"><label>1인 참여 제한</label><div class="inline"><select class="select" id="limitMode"><option value="total">이벤트 전체</option><option value="daily">1일</option><option value="unlimited">무제한</option></select><input class="input" id="limitCount" type="number" min="1" value="5" style="width:90px"></div></div>
+            <div class="field"><label>1명당 진행 시간</label><input class="input" id="turnSeconds" type="number" min="3" max="30" value="8"><span class="help">대기열 한 차례의 길이</span></div>
+            <div class="field"><label>사용자 공개 정보</label><label style="font-size:9px"><input id="showRemaining" type="checkbox" checked> 남은 구슬 수</label><label style="font-size:9px"><input id="showInventory" type="checkbox" checked> 상품별 재고</label></div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="saveEvent" type="button">기본 설정 저장</button>
+            <button class="btn" id="copyTestUrl" type="button" disabled>비공개 테스트 URL 복사</button>
+            <button class="btn purple" id="activateEvent" type="button" disabled>테스트 시작</button>
+            <button class="btn" id="pauseEvent" type="button" disabled>일시 정지</button>
+            <button class="btn danger" id="endEvent" type="button" disabled>종료</button>
+          </div>
+          <div class="copy-url" id="testUrl" style="margin-top:10px">이벤트 저장 후 비공개 테스트 주소가 생성됩니다.</div>
+        </section>
+
+        <section class="card full">
+          <div class="card-head"><h2>구슬 · 상품 설정</h2><span id="ballTotal">합계 0개</span></div>
+          <div class="balls" id="ballEditor"></div>
+          <div class="actions"><button class="btn" id="addBall" type="button">＋ 컬러 추가</button><button class="btn primary" id="saveBalls" type="button" disabled>구슬 설정 저장</button></div>
+        </section>
+
+        <section class="card full">
+          <div class="card-head"><h2>실시간 운영 현황</h2><span id="lastRefresh">-</span></div>
+          <div class="stats">
+            <div class="stat"><span>총 구슬</span><b id="statTotal">0</b></div>
+            <div class="stat"><span>남은 구슬</span><b id="statRemaining">0</b></div>
+            <div class="stat"><span>누적 참여</span><b id="statParticipations">0</b></div>
+            <div class="stat"><span>현재 대기</span><b id="statQueue">0</b></div>
+            <div class="stat"><span>당첨 건</span><b id="statClaims">0</b></div>
+          </div>
+        </section>
+
+        <section class="card full">
+          <div class="card-head"><h2>최근 참여 내역</h2><span>최대 200건</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>순번</th><th>회원</th><th>상태</th><th>결과</th><th>퍼니코인</th><th>시간</th><th>관리</th></tr></thead><tbody id="participationRows"><tr><td colspan="7" class="empty">이벤트를 선택해주세요.</td></tr></tbody></table></div>
+        </section>
+
+        <section class="card full">
+          <div class="card-head"><h2>당첨 상품 처리</h2><span>Instagram DM 운영</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>회원</th><th>상품</th><th>Instagram ID</th><th>상태</th><th>당첨일</th><th>처리</th></tr></thead><tbody id="claimRows"><tr><td colspan="6" class="empty">당첨 내역이 없습니다.</td></tr></tbody></table></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module" src="/admin-garapon-event-test.js?v=20261016-hidden1"></script>
+</body>
+</html>

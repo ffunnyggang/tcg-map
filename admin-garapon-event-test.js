@@ -49,7 +49,7 @@ function renderSelectedState(event){
   const url=has?`${location.origin}/garapon-event-test.html?event=${event.id}`:'';els.testUrl.textContent=url||'이벤트 저장 후 비공개 테스트 주소가 생성됩니다.';
 }
 function loadEvent(event){
-  selectedId=event.id;els.eventTitle.value=event.title||'';els.eventDescription.value=event.description||'';els.eventStarts.value=toInputDate(event.starts_at);els.eventEnds.value=toInputDate(event.ends_at);els.eventCost.value=String(event.coin_cost??0);els.limitMode.value=event.entry_limit_mode||'total';els.limitCount.value=event.entry_limit_count==null?'':String(event.entry_limit_count);els.turnSeconds.value=String(event.turn_seconds||8);els.showRemaining.checked=event.show_remaining_count!==false;els.showInventory.checked=event.show_prize_inventory!==false;renderSelectedState(event);renderEventList();void refreshDashboard(true);
+  selectedId=event.id;els.eventTitle.value=event.title||'';els.eventDescription.value=event.description||'';els.eventStarts.value=toInputDate(event.starts_at);els.eventEnds.value=toInputDate(event.ends_at);els.eventCost.value=String(event.coin_cost??0);els.limitMode.value=event.entry_limit_mode||'total';els.limitCount.value=event.entry_limit_count==null?'':String(event.entry_limit_count);els.turnSeconds.value=String(event.turn_seconds||8);els.showRemaining.checked=event.show_remaining_count!==false;els.showInventory.checked=event.show_prize_inventory!==false;renderSelectedState(event);renderEventList();void refreshDashboard(false);
 }
 function renderEventList(){
   if(!events.length){els.eventList.innerHTML='<div class="empty">등록된 테스트 이벤트가 없습니다.</div>';return}
@@ -79,8 +79,20 @@ function renderOperational(data){
 async function refreshDashboard(keepForm=false){
   if(busy)return;busy=true;
   try{
-    const data=await rpc('admin_get_garapon_dashboard',{p_event_id:selectedId||null});if(!data?.ok)throw new Error(data?.error||'dashboard');dashboardData=data;renderFeature(data);
-    if(selectedId){const event=data.events?.[0];if(event){events=events.map(x=>x.id===event.id?event:x);if(!keepForm)loadEventFieldsOnly(event);balls=(data.balls||[]).map((x,i)=>({...x,count:x.initial_count,sort_order:i+1}));renderBalls();renderSelectedState(event)}renderOperational(data)}
+    const data=await rpc('admin_get_garapon_dashboard',{p_event_id:selectedId||null});if(!data?.ok)throw new Error(data?.error||'dashboard');dashboardData=data;if(!keepForm)renderFeature(data);
+    if(selectedId){
+      const event=data.events?.[0];
+      if(event){
+        events=events.map(x=>x.id===event.id?event:x);
+        if(!keepForm){
+          loadEventFieldsOnly(event);
+          balls=(data.balls||[]).map((x,i)=>({...x,count:x.initial_count,sort_order:i+1}));
+          renderBalls();
+        }
+        renderSelectedState(event);
+      }
+      renderOperational(data);
+    }
     else{events=data.events||[];renderEventList();clearOperational()}
   }catch(error){console.warn('[GARAPON ADMIN REFRESH]',error);showToast('관리자 데이터를 불러오지 못했습니다.')}
   finally{busy=false}

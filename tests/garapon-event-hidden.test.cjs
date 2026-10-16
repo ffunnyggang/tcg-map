@@ -10,28 +10,38 @@ const read=name=>fs.readFileSync(path.join(root,name),'utf8');
 
 const userHtml=read('garapon-event-test.html');
 const adminHtml=read('admin-garapon-event-test.html');
+const opsHtml=read('admin-garapon-ops-test.html');
 const walletHtml=read('my-funy-coin-test.html');
 const userJs=read('garapon-event-test.js');
 const adminJs=read('admin-garapon-event-test.js');
+const opsJs=read('admin-garapon-ops-test.js');
 const authJs=read('web-auth.js');
+const opsMigration=read('supabase/migrations/20261016025000_add_garapon_internal_ops_dashboard.sql');
 
 const PUBLIC_ENTRY_FILES=[
   'index.html','tcg-tools.html','my.html','app.js','cms-frontend-renderer.js',
   'cms-frontend-mount.js','cms-link-enhancements.js','funy-i18n.js'
 ].filter(name=>fs.existsSync(path.join(root,name)));
 
+const HIDDEN_URLS=[
+  'garapon-event-test.html',
+  'admin-garapon-event-test.html',
+  'admin-garapon-ops-test.html',
+  'my-funy-coin-test.html'
+];
+
 test('all development-only pages explicitly block indexing',()=>{
-  for(const [name,html] of [['user',userHtml],['admin',adminHtml],['wallet',walletHtml]]){
+  for(const [name,html] of [['user',userHtml],['admin',adminHtml],['ops',opsHtml],['wallet',walletHtml]]){
     assert.match(html,/name="robots"\s+content="noindex,nofollow,noarchive,nosnippet"/i,`${name} page must be noindex`);
   }
 });
 
-test('hidden event is not linked from public entry surfaces',()=>{
+test('hidden event and internal ops pages are not linked from public entry surfaces',()=>{
   for(const name of PUBLIC_ENTRY_FILES){
     const content=read(name);
-    assert.equal(content.includes('garapon-event-test.html'),false,`${name} must not expose user test page`);
-    assert.equal(content.includes('admin-garapon-event-test.html'),false,`${name} must not expose admin test page`);
-    assert.equal(content.includes('my-funy-coin-test.html'),false,`${name} must not expose test wallet`);
+    for(const hiddenUrl of HIDDEN_URLS){
+      assert.equal(content.includes(hiddenUrl),false,`${name} must not expose ${hiddenUrl}`);
+    }
   }
 });
 
@@ -50,6 +60,24 @@ test('admin console keeps public and signup switches locked off',()=>{
   assert.match(adminJs,/visibility:'test'/);
 });
 
+test('internal ops dashboard is admin RPC only and cannot release customer features',()=>{
+  assert.match(opsHtml,/web-auth\.js/);
+  assert.match(opsJs,/admin_get_garapon_ops/);
+  assert.match(opsJs,/admin_run_garapon_maintenance/);
+  assert.doesNotMatch(opsJs,/admin_update_funy_coin_settings/);
+  assert.doesNotMatch(opsJs,/p_garapon_public_enabled\s*:\s*true/);
+  assert.doesNotMatch(opsJs,/p_system_enabled\s*:\s*true/);
+  assert.doesNotMatch(opsJs,/p_signup_bonus_enabled\s*:\s*true/);
+});
+
+test('internal ops database RPC enforces admin checks and authenticated-only execution',()=>{
+  assert.match(opsMigration,/if not public\.is_funypin_admin\(\)/i);
+  assert.match(opsMigration,/revoke all on function public\.admin_get_garapon_ops\(uuid\) from public,anon,authenticated/i);
+  assert.match(opsMigration,/grant execute on function public\.admin_get_garapon_ops\(uuid\) to authenticated/i);
+  assert.match(opsMigration,/revoke all on function public\.admin_run_garapon_maintenance\(uuid,boolean\) from public,anon,authenticated/i);
+  assert.match(opsMigration,/release_locked/i);
+});
+
 test('web auth cleanup is finite and no longer self-recursive',()=>{
   const block=authJs.match(/function clearStoredAuth\(\)\{([\s\S]*?)\n  \}/);
   assert.ok(block,'clearStoredAuth function should exist');
@@ -60,6 +88,8 @@ test('web auth cleanup is finite and no longer self-recursive',()=>{
 test('hidden pages load only dedicated files and do not alter public garapon entry',()=>{
   assert.match(userHtml,/garapon-event-test\.js/);
   assert.match(adminHtml,/admin-garapon-event-test\.js/);
+  assert.match(opsHtml,/admin-garapon-ops-test\.js/);
+  assert.match(opsHtml,/admin-garapon-ops-test\.css/);
   assert.equal(userHtml.includes('garapon-three-v2.js'),false,'event page must not execute public local simulation logic');
   assert.match(userJs,/GaraponMachine/);
 });

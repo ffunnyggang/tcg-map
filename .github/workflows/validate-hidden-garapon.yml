@@ -12,6 +12,8 @@ on:
       - 'admin-garapon-ops-test.html'
       - 'admin-garapon-ops-test.js'
       - 'admin-garapon-ops-test.css'
+      - 'admin-garapon-auth.js'
+      - 'admin-garapon-login.html'
       - 'my-funy-coin-test.html'
       - 'my-entries.html'
       - 'web-auth.js'
@@ -30,6 +32,8 @@ on:
       - 'admin-garapon-ops-test.html'
       - 'admin-garapon-ops-test.js'
       - 'admin-garapon-ops-test.css'
+      - 'admin-garapon-auth.js'
+      - 'admin-garapon-login.html'
       - 'my-funy-coin-test.html'
       - 'my-entries.html'
       - 'web-auth.js'
@@ -53,6 +57,14 @@ jobs:
           node --check /tmp/garapon-event-test.mjs
           node --check /tmp/admin-garapon-event-test.mjs
           node --check /tmp/admin-garapon-ops-test.mjs
+          node --check admin-garapon-auth.js
           node --check web-auth.js
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('admin-garapon-login.html','utf8');
+          const scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(x=>x[1]).filter(x=>x.trim());
+          if(!scripts.length)throw new Error('admin garapon login inline script missing');
+          scripts.forEach(source=>new Function(source));
+          NODE
       - name: Validate hidden exposure rules
         run: node --test tests/garapon-event-hidden.test.cjs

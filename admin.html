@@ -843,7 +843,7 @@ function renderFunyMonEventEditor(id){
  const syncDistance=()=>{const on=distanceSelect?.value==='true';if(distanceField)distanceField.classList.toggle('is-disabled',!on);if(distanceInput)distanceInput.disabled=!on};
  if(distanceSelect)distanceSelect.onchange=syncDistance;syncDistance();
  const mapFindEnabled=$('monMapFindEnabled'),mapFindSeconds=$('monMapFindSeconds'),mapFindSave=$('monMapFindSave');
- const syncMapFind=()=>{const on=mapFindEnabled?.value==='true';if(mapFindSeconds)mapFindSeconds.disabled=isNew||!on};
+ const syncMapFind=()=>{if(mapFindSeconds)mapFindSeconds.disabled=isNew};
  if(mapFindEnabled)mapFindEnabled.onchange=syncMapFind;
  if(mapFindSave&&!isNew)mapFindSave.onclick=()=>saveFunyMonMapCard(id);
  syncMapFind();

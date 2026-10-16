@@ -11,10 +11,12 @@ const read=name=>fs.readFileSync(path.join(root,name),'utf8');
 const userHtml=read('garapon-event-test.html');
 const adminHtml=read('admin-garapon-event-test.html');
 const opsHtml=read('admin-garapon-ops-test.html');
+const adminLoginHtml=read('admin-garapon-login.html');
 const walletHtml=read('my-funy-coin-test.html');
 const userJs=read('garapon-event-test.js');
 const adminJs=read('admin-garapon-event-test.js');
 const opsJs=read('admin-garapon-ops-test.js');
+const adminAuthJs=read('admin-garapon-auth.js');
 const authJs=read('web-auth.js');
 const opsMigration=read('supabase/migrations/20261016025000_add_garapon_internal_ops_dashboard.sql');
 
@@ -27,11 +29,12 @@ const HIDDEN_URLS=[
   'garapon-event-test.html',
   'admin-garapon-event-test.html',
   'admin-garapon-ops-test.html',
+  'admin-garapon-login.html',
   'my-funy-coin-test.html'
 ];
 
 test('all development-only pages explicitly block indexing',()=>{
-  for(const [name,html] of [['user',userHtml],['admin',adminHtml],['ops',opsHtml],['wallet',walletHtml]]){
+  for(const [name,html] of [['user',userHtml],['admin',adminHtml],['ops',opsHtml],['admin-login',adminLoginHtml],['wallet',walletHtml]]){
     assert.match(html,/name="robots"\s+content="noindex,nofollow,noarchive,nosnippet"/i,`${name} page must be noindex`);
   }
 });
@@ -60,8 +63,20 @@ test('admin console keeps public and signup switches locked off',()=>{
   assert.match(adminJs,/visibility:'test'/);
 });
 
+test('hidden admin pages use isolated administrator session instead of customer web session',()=>{
+  assert.match(adminHtml,/admin-garapon-auth\.js/);
+  assert.match(opsHtml,/admin-garapon-auth\.js/);
+  assert.doesNotMatch(adminHtml,/web-auth\.js/);
+  assert.doesNotMatch(opsHtml,/web-auth\.js/);
+  assert.match(adminAuthJs,/funypin_admin_token/);
+  assert.match(adminAuthJs,/funypin_admin_refresh/);
+  assert.match(adminAuthJs,/admin-garapon-login\.html/);
+  assert.match(adminLoginHtml,/grant_type=password/);
+  assert.match(adminLoginHtml,/admin_users\?select=user_id/);
+  assert.doesNotMatch(adminAuthJs,/localStorage/);
+});
+
 test('internal ops dashboard is admin RPC only and cannot release customer features',()=>{
-  assert.match(opsHtml,/web-auth\.js/);
   assert.match(opsJs,/admin_get_garapon_ops/);
   assert.match(opsJs,/admin_run_garapon_maintenance/);
   assert.doesNotMatch(opsJs,/admin_update_funy_coin_settings/);

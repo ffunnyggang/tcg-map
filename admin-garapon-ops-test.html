@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <title>FUNY PIN | 가라폰 내부 운영 점검</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/admin-garapon-ops-test.css?v=20261016-internal1">
+</head>
+<body>
+  <div id="loadingBar" class="loading-bar"></div>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-copy">
+          <strong>가라폰 내부 운영 점검</strong>
+          <small>이벤트용 가라폰 · 퍼니코인 · 대기열 · 당첨 처리</small>
+        </div>
+        <span class="lock-badge">ADMIN ONLY · RELEASE LOCKED</span>
+      </div>
+      <div class="top-actions">
+        <a class="link-btn" href="/admin-garapon-event-test.html">이벤트 관리</a>
+        <button id="refreshButton" class="btn primary" type="button">새로고침</button>
+      </div>
+    </header>
+
+    <section id="gate" class="gate">
+      <div class="gate-card">
+        <div class="gate-icon">🔐</div>
+        <h1 id="gateTitle">관리자 권한을 확인하고 있어요</h1>
+        <p id="gateText">비공개 운영 데이터를 안전하게 불러오는 중입니다.</p>
+      </div>
+    </section>
+
+    <main id="dashboard" class="dashboard" hidden>
+      <section class="internal-notice">
+        <div class="notice-icon">🧪</div>
+        <div>
+          <b>고객 노출 제외 범위만 구현된 내부 화면입니다.</b>
+          <p>일반 서비스 메뉴에는 연결하지 않았으며, 출시 잠금이 유지되는 동안 이벤트 공개·퍼니코인 공개·회원가입 보너스 지급은 서버에서 차단됩니다.</p>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="운영 점검 도구">
+        <select id="eventFilter" class="field" aria-label="점검 이벤트 선택">
+          <option value="">전체 이벤트</option>
+        </select>
+        <label class="auto-label"><input id="autoRefresh" type="checkbox" checked> 15초 자동 갱신</label>
+        <button id="finalizeButton" class="btn purple" type="button">결과 마감 실행</button>
+        <button id="reflowButton" class="btn danger" type="button" disabled>대기열 재정렬</button>
+        <span id="adminState" class="status-chip">관리자 확인 중</span>
+        <div class="refresh-meta">
+          <span id="scopeText">전체 이벤트 기준</span>
+          <span><span id="cronState">자동 마감 확인 중</span> · <span id="refreshTime">아직 갱신되지 않음</span></span>
+        </div>
+      </section>
+
+      <section class="summary" aria-label="가라폰 운영 요약">
+        <article id="overallCard" class="summary-card overall">
+          <span>전체 운영 상태</span>
+          <strong id="overallState">확인 중</strong>
+          <small id="overallDetail">진단 항목을 불러오고 있어요.</small>
+        </article>
+        <article class="summary-card"><span>이벤트</span><strong id="eventCount">0</strong><small>선택 범위 등록 수</small></article>
+        <article class="summary-card"><span>진행 중</span><strong id="activeEventCount">0</strong><small>active 상태 이벤트</small></article>
+        <article class="summary-card"><span>총 참여</span><strong id="participationCount">0</strong><small>환불·취소 포함 기록</small></article>
+        <article class="summary-card"><span>현재 대기</span><strong id="queuedCount">0</strong><small>공개 전 대기 건</small></article>
+        <article class="summary-card"><span>처리 필요 당첨</span><strong id="claimCount">0</strong><small>ID 입력·검토·전달 대기</small></article>
+        <article class="summary-card"><span>활성 테스터</span><strong id="testerCount">0</strong><small id="walletCount">지갑 0개</small></article>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>운영 상태 자동 진단</h2>
+            <p>출시 잠금, 재고, 대기열, 당첨·응모 내역, 코인 원장, 자동 마감 작업을 서버 기준으로 점검합니다.</p>
+          </div>
+          <div class="section-actions">
+            <button id="exportHealth" class="btn" type="button">진단 CSV</button>
+          </div>
+        </div>
+        <div id="healthGrid" class="health-grid"><div class="empty">진단 결과를 불러오는 중입니다.</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>이벤트·공유 재고</h2>
+            <p>이벤트 합계와 컬러별 구슬 합계, 남은 재고, 참여·대기·당첨 건수를 대조합니다.</p>
+          </div>
+          <div class="section-actions"><button id="exportEvents" class="btn" type="button">이벤트 CSV</button></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>이벤트</th><th>상태</th><th>공개 범위</th><th>구슬 재고</th><th>참여</th><th>대기</th><th>당첨</th><th>비용</th><th>기간</th></tr></thead>
+            <tbody id="eventRows"><tr><td colspan="9" class="empty">이벤트 데이터를 불러오는 중입니다.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>비공개 테스터</h2>
+            <p>현재 테스트 권한, 퍼니코인 잔액, 참여·당첨 기록을 확인합니다.</p>
+          </div>
+          <div class="section-actions"><button id="exportTesters" class="btn" type="button">테스터 CSV</button></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>계정</th><th>권한</th><th>퍼니코인</th><th>참여</th><th>당첨</th><th>최근 로그인</th><th>메모</th></tr></thead>
+            <tbody id="testerRows"><tr><td colspan="7" class="empty">테스터 데이터를 불러오는 중입니다.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>퍼니코인 원장</h2>
+            <p>최근 200건의 적립·차감·환불 내역입니다. 지갑 잔액은 원장의 최종 잔액과 자동 대조됩니다.</p>
+          </div>
+          <div class="section-actions"><button id="exportLedger" class="btn" type="button">원장 CSV</button></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>일시</th><th>계정</th><th>구분</th><th>변동</th><th>변동 후</th><th>출처</th><th>설명</th></tr></thead>
+            <tbody id="ledgerRows"><tr><td colspan="7" class="empty">원장 데이터를 불러오는 중입니다.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>관리자 감사 로그</h2>
+            <p>최근 200건의 이벤트·재고·테스터·코인·당첨 처리 변경 기록입니다.</p>
+          </div>
+          <div class="section-actions"><button id="exportAudit" class="btn" type="button">감사 로그 CSV</button></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>일시</th><th>관리자</th><th>작업</th><th>대상</th><th>대상 ID</th><th>변경 내용</th></tr></thead>
+            <tbody id="auditRows"><tr><td colspan="6" class="empty">감사 로그를 불러오는 중입니다.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/web-auth.js?v=20261016-internal1"></script>
+  <script src="/admin-garapon-ops-test.js?v=20261016-internal1"></script>
+</body>
+</html>

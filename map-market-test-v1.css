@@ -1470,3 +1470,230 @@ body.market-test-page .market-detail-location{display:block!important;color:#625
   body.market-test-page .market-sheet-filter,
   body.market-test-page .market-overlay-filter{cursor:grab}
 }
+
+
+/* MARKET test correction v12 — control events + requested layout */
+/* Bottom-sheet MARKET: sort + filters move as one horizontal strip */
+body.market-test-page .market-sheet-tools{
+  position:relative!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  gap:7px!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:8px 0 10px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  touch-action:pan-x!important;
+  overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:none!important
+}
+body.market-test-page .market-sheet-tools::-webkit-scrollbar{display:none!important}
+body.market-test-page .market-sheet-filter{
+  display:flex!important;
+  flex:0 0 auto!important;
+  width:max-content!important;
+  min-width:max-content!important;
+  gap:7px!important;
+  padding:0!important;
+  overflow:visible!important;
+  touch-action:auto!important
+}
+body.market-test-page .market-sheet-tools .market-sheet-sort{
+  flex:0 0 104px!important;
+  width:104px!important;
+  min-width:104px!important;
+  max-width:104px!important
+}
+/* The dropdown escapes the horizontally scrolling toolbar */
+body.market-test-page .market-sheet-sort .market-sort-menu{
+  position:fixed!important;
+  right:auto!important;
+  width:118px!important;
+  min-width:118px!important;
+  z-index:2147483200!important
+}
+
+/* Full TCG 거래 sticky controls: same hide/show motion as PICK/TALK */
+body.market-test-page .market-overlay-sticky-tools{
+  position:sticky!important;
+  top:54px!important;
+  z-index:29!important;
+  background:rgba(255,255,255,.97)!important;
+  transition:transform .22s ease,opacity .22s ease!important;
+  will-change:transform,opacity
+}
+body.market-test-page .market-overlay-sticky-tools.is-hidden{
+  transform:translateY(-100%)!important;
+  opacity:0!important;
+  pointer-events:none!important
+}
+body.market-test-page .market-overlay-filter-row,
+body.market-test-page .market-overlay-listbar{
+  position:relative!important;
+  top:auto!important
+}
+
+/* TCG 거래 listbar: sort left / item count right */
+body.market-test-page .market-overlay-listbar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  height:45px!important;
+  padding:4px 14px 7px!important;
+  border-bottom:0!important
+}
+body.market-test-page .market-overlay-sort{
+  order:1!important;
+  margin:0!important;
+  flex:0 0 104px!important
+}
+body.market-test-page #marketOverlayListCount{
+  order:2!important;
+  margin-left:auto!important;
+  margin-right:0!important;
+  text-align:right!important;
+  color:#625b67!important;
+  font-size:11px!important;
+  font-weight:750!important
+}
+
+/* TCG 거래 cards: same spacing rhythm as current TCG MAP cards */
+body.market-test-page .market-overlay-body{padding-top:9px!important}
+body.market-test-page .market-sheet-list{gap:9px!important}
+body.market-test-page .market-card{
+  position:relative!important;
+  grid-template-columns:96px minmax(0,1fr)!important;
+  padding-right:30px!important
+}
+body.market-test-page .market-card-chev{
+  display:block!important;
+  position:absolute!important;
+  right:10px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  margin:0!important;
+  line-height:1!important;
+  align-self:auto!important;
+  justify-self:auto!important
+}
+
+/* + 매물 등록 remains fully fixed while the list scrolls */
+body.market-test-page .market-overlay-register,
+body.market-test-page .market-overlay-register.is-scrolling{
+  position:fixed!important;
+  min-width:98px!important;
+  width:auto!important;
+  height:46px!important;
+  padding:0 16px!important;
+  border-radius:23px!important;
+  opacity:1!important;
+  transform:none!important
+}
+body.market-test-page .market-overlay-register.is-scrolling .market-overlay-register-label{
+  position:static!important;
+  opacity:1!important;
+  pointer-events:auto!important
+}
+
+/* Registration sheet: no status/grey row under desired-location map */
+body.market-test-page .market-register-coord-status,
+body.market-test-page .market-register-location-row{display:none!important}
+body.market-test-page .market-register-map-wrap{margin-bottom:0!important}
+
+/* Listing detail: centered sub-header */
+body.market-test-page .market-detail-overlay{
+  left:0!important;
+  right:0!important;
+  margin:0 auto!important;
+  transform:none!important
+}
+body.market-test-page .market-detail-head{
+  position:sticky!important;
+  justify-content:center!important
+}
+body.market-test-page .market-detail-back{
+  position:absolute!important;
+  left:14px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  margin:0!important;
+  z-index:2!important
+}
+body.market-test-page .market-detail-head strong{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  margin:0!important;
+  width:max-content!important;
+  max-width:calc(100% - 112px)!important;
+  text-align:center!important
+}
+
+/* Detail media fills the available left/right width using the image aspect ratio */
+body.market-test-page .market-detail-carousel,
+body.market-test-page .market-detail-hero{
+  width:calc(100% + 28px)!important;
+  max-width:none!important;
+  margin-left:-14px!important;
+  margin-right:-14px!important
+}
+body.market-test-page .market-detail-carousel{aspect-ratio:auto!important}
+body.market-test-page .market-detail-carousel-track{align-items:flex-start!important}
+body.market-test-page .market-detail-slide{
+  flex:0 0 100%!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:auto!important
+}
+body.market-test-page .market-detail-slide img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  background:#f4f2f6!important
+}
+/* Exact geometric centering for image arrows */
+body.market-test-page .market-detail-carousel-prev,
+body.market-test-page .market-detail-carousel-next{
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  line-height:0!important
+}
+body.market-test-page .market-detail-carousel-prev svg,
+body.market-test-page .market-detail-carousel-next svg{
+  display:block!important;
+  width:18px!important;
+  height:18px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important
+}
+
+/* Purchase CTA truly floats at the bottom of the viewport */
+body.market-test-page .market-detail-bottom{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  margin:0 auto!important;
+  transform:none!important;
+  width:min(100%,420px)!important;
+  z-index:2147483300!important
+}
+
+/* Description has no "내용" heading or section divider */
+body.market-test-page .market-detail-description{
+  padding-top:18px!important;
+  border-bottom:0!important
+}
+body.market-test-page .market-detail-description h3{display:none!important}

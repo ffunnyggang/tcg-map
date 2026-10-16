@@ -138,7 +138,7 @@
     if(el.id==='marketOverlayList'){const count=$('#marketOverlayListCount');if(count)count.textContent='매물 '+list.length+'개'}
   }
   function updateCounts(){
-    const all=rows.filter(x=>['active','reserved'].includes(x.listing_status));
+    const all=rows.filter(x=>listingMatches(x,'all')&&['active','reserved'].includes(x.listing_status));
     if(layerChip){const count=layerChip.querySelector('.market-layer-count');if(count)count.textContent=String(all.length)}
     const tabCount=$('#marketTestTabCount');if(tabCount)tabCount.textContent=String(all.length);
     const fullCount=$('#marketOverlayCount');if(fullCount)fullCount.textContent=String(all.length);
@@ -314,7 +314,16 @@
       const f=e.target.closest('[data-market-filter]');
       if(f){root.querySelectorAll('[data-market-filter]').forEach(x=>x.classList.remove('active'));f.classList.add('active');onChange();return}
       const sortButton=e.target.closest('[data-market-sort-button]');
-      if(sortButton){e.preventDefault();e.stopPropagation();const wrap=sortButton.closest('.market-sort-wrap'),open=!wrap.classList.contains('open');closeSortMenus(open?wrap:null);wrap.classList.toggle('open',open);sortButton.setAttribute('aria-expanded',open?'true':'false');return}
+      if(sortButton){
+        e.preventDefault();e.stopPropagation();
+        const wrap=sortButton.closest('.market-sort-wrap'),open=!wrap.classList.contains('open');
+        closeSortMenus(open?wrap:null);wrap.classList.toggle('open',open);sortButton.setAttribute('aria-expanded',open?'true':'false');
+        if(open&&wrap.classList.contains('market-sheet-sort')){
+          const menu=wrap.querySelector('.market-sort-menu'),r=sortButton.getBoundingClientRect();
+          if(menu){menu.style.setProperty('left',Math.round(r.left)+'px','important');menu.style.setProperty('top',Math.round(r.bottom+6)+'px','important');}
+        }
+        return;
+      }
       const sortValue=e.target.closest('[data-market-sort-value]');
       if(sortValue){e.preventDefault();e.stopPropagation();await setMarketSort(sortValue.dataset.marketSortValue);return}
     });
@@ -323,24 +332,33 @@
   function enableHorizontalScroller(el){
     if(!el||el.dataset.marketHorizontalScroll==='1')return;
     el.dataset.marketHorizontalScroll='1';
-    let drag=false,moved=false,startX=0,startLeft=0,pointerId=null;
+    let tracking=false,dragging=false,suppressClick=false,startX=0,startLeft=0,pointerId=null;
     el.addEventListener('pointerdown',e=>{
       if(e.pointerType!=='mouse'||e.button!==0)return;
-      drag=true;moved=false;pointerId=e.pointerId;startX=e.clientX;startLeft=el.scrollLeft;
-      el.setPointerCapture?.(e.pointerId);
+      tracking=true;dragging=false;suppressClick=false;pointerId=e.pointerId;startX=e.clientX;startLeft=el.scrollLeft;
     });
     el.addEventListener('pointermove',e=>{
-      if(!drag||e.pointerId!==pointerId)return;
-      const dx=e.clientX-startX;if(Math.abs(dx)>4)moved=true;
-      if(moved){e.preventDefault();el.scrollLeft=startLeft-dx}
+      if(!tracking||e.pointerId!==pointerId)return;
+      const dx=e.clientX-startX;
+      if(!dragging&&Math.abs(dx)>6){
+        dragging=true;suppressClick=true;
+        try{el.setPointerCapture?.(e.pointerId)}catch(_){}
+      }
+      if(dragging){e.preventDefault();el.scrollLeft=startLeft-dx}
     },{passive:false});
-    const end=e=>{if(!drag)return;drag=false;try{el.releasePointerCapture?.(pointerId)}catch(_){}pointerId=null;setTimeout(()=>{moved=false},0)};
+    const end=e=>{
+      if(!tracking)return;
+      tracking=false;
+      if(dragging){try{el.releasePointerCapture?.(pointerId)}catch(_){}}
+      dragging=false;pointerId=null;
+      setTimeout(()=>{suppressClick=false},0);
+    };
     el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
-    el.addEventListener('click',e=>{if(moved){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}},true);
+    el.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}},true);
     el.addEventListener('wheel',e=>{if(el.scrollWidth<=el.clientWidth+2)return;if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;e.preventDefault();el.scrollLeft+=e.deltaY},{passive:false});
   }
   function bindHorizontalScrollers(){
-    ['#filters','.qa-shop-tools','.qa-vending-tools','.market-sheet-filter','.market-overlay-filter'].forEach(sel=>document.querySelectorAll(sel).forEach(enableHorizontalScroller));
+    ['#filters','.qa-shop-tools','.qa-vending-tools','.market-sheet-tools','.market-overlay-filter'].forEach(sel=>document.querySelectorAll(sel).forEach(enableHorizontalScroller));
   }
 
   function compactOnScroll(target,scroller){
@@ -368,8 +386,8 @@
     if($('#marketOverlay'))return;
     const el=document.createElement('section');el.id='marketOverlay';el.className='market-overlay';el.hidden=true;
     el.innerHTML='<header class="market-overlay-head"><div class="market-overlay-title"><span class="market-overlay-symbol">'+funySymbol+'</span><strong>TCG 거래</strong></div><button type="button" class="market-overlay-close" aria-label="닫기">×</button></header>'+
-      '<div class="market-overlay-filter-row">'+filterStripHtml('market-overlay-filter')+'</div>'+
-      '<div class="market-overlay-listbar"><span id="marketOverlayListCount">매물 0개</span>'+sortMenuHtml('market-overlay-sort')+'</div>'+
+      '<div class="market-overlay-sticky-tools"><div class="market-overlay-filter-row">'+filterStripHtml('market-overlay-filter')+'</div>'+
+      '<div class="market-overlay-listbar"><span id="marketOverlayListCount">매물 0개</span>'+sortMenuHtml('market-overlay-sort')+'</div></div>'+
       '<main class="market-overlay-body"><div class="market-sheet-list" id="marketOverlayList"></div></main>'+
       '<button type="button" class="market-overlay-register" data-open-market-register><span class="market-overlay-register-plus">＋</span><span class="market-overlay-register-label">매물 등록</span></button>';
     document.body.appendChild(el);
@@ -377,10 +395,22 @@
     el.querySelector('[data-open-market-register]').onclick=openRegister;
     bindFilterControls(el,()=>{overlayFilter=el.querySelector('.market-overlay-filter .market-filter-chip.active')?.dataset.marketFilter||'all';renderListInto($('#marketOverlayList'),overlayFilter)});
     bindHorizontalScrollers();
-    compactOnScroll(el.querySelector('.market-overlay-register'),el);
+    let lastY=0,ticking=false;
+    el.addEventListener('scroll',()=>{
+      if(ticking)return;ticking=true;
+      requestAnimationFrame(()=>{
+        const y=el.scrollTop,dy=y-lastY,tools=el.querySelector('.market-overlay-sticky-tools');
+        if(tools){
+          if(y<=8)tools.classList.remove('is-hidden');
+          else if(dy>4)tools.classList.add('is-hidden');
+          else if(dy<-4)tools.classList.remove('is-hidden');
+        }
+        lastY=y;ticking=false;
+      });
+    },{passive:true});
   }
   function openOverlay(){
-    buildOverlay();const el=$('#marketOverlay');el.hidden=false;document.body.style.overflow='hidden';
+    buildOverlay();const el=$('#marketOverlay');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');el.querySelector('.market-overlay-register')?.classList.remove('is-scrolling');document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
   }
   function closeOverlay(){const el=$('#marketOverlay');if(el)el.hidden=true;closeSortMenus();document.body.style.overflow=''}
@@ -394,8 +424,7 @@
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
       '<div class="market-form-section"><span class="market-form-label">판매자 인증</span><div class="market-test-auth-box"><div class="market-test-auth-row"><span>PASS 본인인증</span><b>TEST PASS ✓</b></div><div class="market-test-auth-row"><span>외부 플랫폼 판매자 인증</span><b id="marketExternalTestPass">TEST PASS ✓</b></div><small>비공개 테스트 전용 자동 PASS입니다. PUBLIC OPEN 전 실제 PASS + 플랫폼 인증으로 전환됩니다.</small></div><div class="market-external-verify-card market-external-verify-legacy" hidden><div id="marketExternalVerifyStatus" class="market-external-verify-status"></div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button" disabled>외부 판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>아래 코드를 외부 매물 설명 마지막에 잠시 추가해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button></div></div></div>'+
-      '<div class="market-form-section" id="marketDirectBuySection"><span class="market-form-label">외부 플랫폼 구매 방식</span><div class="market-direct-buy-row"><button type="button" class="active" data-direct-buy="false">일반 거래</button><button type="button" data-direct-buy="true">바로구매</button></div><div class="market-direct-buy-help" id="marketDirectBuyHelp">매물 정보를 먼저 불러오면 플랫폼에 맞게 적용됩니다.</div></div>'+
-      '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div><p id="marketRegisterCoord" class="market-register-coord-status">위치를 선택해주세요.</p></div>'+
+      '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div></div>'+
       '<div class="market-form-section market-consent-box"><span class="market-form-label">등록 확인</span>'+
       '<label class="market-consent-item"><input id="marketConsentIndividual" type="checkbox"><span>사업자가 아닌 <b>개인 판매자</b>이며 영업 목적의 판매가 아님을 확인합니다.</span></label>'+
       '<label class="market-consent-item"><input id="marketConsentRights" type="checkbox"><span>해당 외부 매물의 판매자이며, 사진·설명을 FUNY PIN에 재게시할 권한이 있음을 확인합니다.</span></label>'+
@@ -405,7 +434,6 @@
     el.querySelector('.market-register-close').onclick=closeRegister;
     el.addEventListener('click',e=>{if(e.target===el)closeRegister()});
     el.querySelectorAll('[data-register-type]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-register-type]').forEach(x=>x.classList.remove('active'));b.classList.add('active');registerType=b.dataset.registerType});
-    el.querySelectorAll('[data-direct-buy]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-direct-buy]').forEach(x=>x.classList.remove('active'));b.classList.add('active');registerDirectBuy=b.dataset.directBuy==='true'});
     $('#marketRegisterLoad').onclick=loadPreview;
     $('#marketRegisterUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadPreview()});
     $('#marketRegisterUrl').addEventListener('input',()=>{if(registerPreviewUrl&&$('#marketRegisterUrl').value.trim()!==registerPreviewUrl){registerProduct=null;$('#marketPreview')?.classList.remove('show');resetExternalVerification('URL이 변경되었습니다. 매물 정보를 다시 불러와주세요.');syncRegisterSubmitState()}});
@@ -427,7 +455,7 @@
       naver.maps.Event.addListener(registerMap,'longtap',choose);
       setTimeout(()=>naver.maps.Event.trigger(registerMap,'resize'),120);
     }else setTimeout(()=>naver.maps.Event.trigger(registerMap,'resize'),80);
-    $('#marketRegisterCoord').textContent=registerCoordinate?registerLat.toFixed(6)+', '+registerLng.toFixed(6):'위치를 선택해주세요.';syncRegisterSubmitState();
+    syncRegisterSubmitState();
   }
   function closeRegister(){const el=$('#marketRegisterOverlay');if(el)el.hidden=true;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow=''}
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
@@ -505,7 +533,7 @@
     const arr=[...(Array.isArray(x.images)?x.images:[]),x.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,20);
     $('#marketPreviewImages').innerHTML=arr.length?arr.map(u=>'<img class="market-preview-image" src="'+esc(u)+'" alt="" referrerpolicy="no-referrer">').join(''):'<span class="market-preview-ph">NO IMAGE</span>';
     $('#marketPreviewProvider').textContent='출처 · '+providerName(x);
-    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';syncPurchaseMode(x);resetExternalVerification(providerName(x)+' 매물 확인 완료 · 테스트 인증 자동 PASS');if(MARKET_TEST_AUTH_BYPASS)setExternalVerified('TEST PASS · PASS 본인인증 + '+providerName(x)+' 판매자 인증');
+    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';registerDirectBuy=false;resetExternalVerification(providerName(x)+' 매물 확인 완료 · 테스트 인증 자동 PASS');if(MARKET_TEST_AUTH_BYPASS)setExternalVerified('TEST PASS · PASS 본인인증 + '+providerName(x)+' 판매자 인증');
   }
   async function loadPreview(){
     const url=$('#marketRegisterUrl')?.value.trim();if(!url)return;
@@ -579,7 +607,7 @@
     const ended=['sold','expired','hidden'].includes(x.listing_status),sourceName=providerName(x),isOwner=A.session?.user?.id===x.seller_user_id,providerClass='provider-'+(x.provider||'external');
     const body=$('#marketDetailBody');
     const detailImages=[...(Array.isArray(x.image_urls)?x.image_urls:[]),x.thumbnail_url].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
-    const hero=detailImages.length?'<div class="market-detail-carousel"><div class="market-detail-carousel-track" id="marketDetailCarousel">'+detailImages.map((u,i)=>'<div class="market-detail-slide"><img src="'+esc(u)+'" alt="매물 이미지 '+(i+1)+'" referrerpolicy="no-referrer"></div>').join('')+'</div>'+(detailImages.length>1?'<button type="button" class="market-detail-carousel-prev" aria-label="이전 이미지">‹</button><button type="button" class="market-detail-carousel-next" aria-label="다음 이미지">›</button><div class="market-detail-page"><span id="marketDetailPageNow">1</span> / '+detailImages.length+'</div>':'')+'</div>':'<div class="market-detail-hero"><div class="market-detail-ph">NO IMAGE</div></div>';
+    const hero=detailImages.length?'<div class="market-detail-carousel"><div class="market-detail-carousel-track" id="marketDetailCarousel">'+detailImages.map((u,i)=>'<div class="market-detail-slide"><img src="'+esc(u)+'" alt="매물 이미지 '+(i+1)+'" referrerpolicy="no-referrer"></div>').join('')+'</div>'+(detailImages.length>1?'<button type="button" class="market-detail-carousel-prev" aria-label="이전 이미지"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5"/></svg></button><button type="button" class="market-detail-carousel-next" aria-label="다음 이미지"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"/></svg></button><div class="market-detail-page"><span id="marketDetailPageNow">1</span> / '+detailImages.length+'</div>':'')+'</div>':'<div class="market-detail-hero"><div class="market-detail-ph">NO IMAGE</div></div>';
     body.innerHTML=hero+
       '<div class="market-detail-info">'+
         '<div class="market-detail-tags"><span class="market-detail-tag provider '+esc(x.provider||'')+'">'+esc(sourceName)+'</span><span class="market-detail-tag cat">'+esc(categoryBadgeNames[x.tcg_category]||'기타')+'</span><span class="market-detail-tag type">'+esc(types[x.item_type]||'기타')+'</span></div>'+
@@ -588,7 +616,7 @@
         '<div class="market-detail-location-main">⌖ '+esc(displayAddress(x))+'</div>'+
         '<div class="market-detail-seller">FUNY PIN · '+esc(x.seller_nickname||'회원')+' <span>· '+age(x.created_at)+'</span></div>'+
       '</div>'+
-      '<section class="market-detail-section market-detail-description"><h3>내용</h3><div class="market-detail-desc">'+esc(x.description||'등록된 설명이 없습니다.')+'</div></section>'+
+      '<section class="market-detail-section market-detail-description"><div class="market-detail-desc">'+esc(x.description||'등록된 설명이 없습니다.')+'</div></section>'+
       '<section class="market-detail-section"><h3>거래 희망 위치</h3><div class="market-detail-map-card"><div id="marketDetailMap" class="market-detail-map"></div><div class="market-detail-location">'+esc(displayAddress(x))+'</div></div></section>'+
       '<section class="market-detail-guide"><strong>안내사항</strong><p>FUNY PIN은 외부 플랫폼의 매물을 연결해 보여주는 서비스이며 거래 당사자가 아닙니다. 실제 구매·결제·배송·환불은 '+esc(sourceName)+' 원본 매물에서 진행해주세요.</p><span>출처 · '+esc(sourceName)+' · 원본 마지막 확인 '+(x.source_last_checked_at?age(x.source_last_checked_at):'미확인')+'</span></section>'+
       (isOwner?'<div class="market-detail-owner-tools"><button type="button" id="marketDetailRefresh">원본 정보 새로고침</button><button type="button" id="marketDetailHide">매물 숨기기</button></div>':'')+
@@ -746,7 +774,7 @@
     const pop=popupTarget;if(pop){e.preventDefault();openDetail(pop.dataset.marketPopupId)}
   },true);
 
-  const search=$('#map-shop-search');search?.addEventListener('input',()=>{if(marketTabActive)renderListInto($('#marketSheetList'),marketFilter);syncMarkers()});
+  const search=$('#map-shop-search');search?.addEventListener('input',()=>{renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);updateCounts();syncMarkers()});
   window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncLayerOrder();syncMarkers()});
   new MutationObserver(()=>{ensureLayerChip();if(isJapan()&&marketTabActive){document.querySelector('.qa-list-tab[data-tab="shops"]')?.click()}syncMarkers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
 

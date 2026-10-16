@@ -1,0 +1,46 @@
+name: Validate hidden garapon event
+
+on:
+  push:
+    paths:
+      - 'garapon-event-test.html'
+      - 'garapon-event-test.js'
+      - 'garapon-event-test.css'
+      - 'admin-garapon-event-test.html'
+      - 'admin-garapon-event-test.js'
+      - 'admin-garapon-event-test.css'
+      - 'my-funy-coin-test.html'
+      - 'my-entries.html'
+      - 'web-auth.js'
+      - 'tests/garapon-event-hidden.test.cjs'
+      - '.github/workflows/validate-hidden-garapon.yml'
+  pull_request:
+    paths:
+      - 'garapon-event-test.html'
+      - 'garapon-event-test.js'
+      - 'garapon-event-test.css'
+      - 'admin-garapon-event-test.html'
+      - 'admin-garapon-event-test.js'
+      - 'admin-garapon-event-test.css'
+      - 'my-funy-coin-test.html'
+      - 'my-entries.html'
+      - 'web-auth.js'
+      - 'tests/garapon-event-hidden.test.cjs'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax
+        run: |
+          cp garapon-event-test.js /tmp/garapon-event-test.mjs
+          cp admin-garapon-event-test.js /tmp/admin-garapon-event-test.mjs
+          node --check /tmp/garapon-event-test.mjs
+          node --check /tmp/admin-garapon-event-test.mjs
+          node --check web-auth.js
+      - name: Validate hidden exposure rules
+        run: node --test tests/garapon-event-hidden.test.cjs

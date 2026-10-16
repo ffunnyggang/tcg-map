@@ -304,6 +304,14 @@ export class GaraponMachine {
     this.pileGroup = new THREE.Group();
     this.root.add(this.pileGroup);
     this.sharedPileGeometry = new THREE.SphereGeometry(0.127, 18, 12);
+    this.metallicGlintGeometry = new THREE.SphereGeometry(0.022, 10, 8);
+    this.metallicGlintMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
 
     const axisY = 3.22;
     const frontZ = 1.17;
@@ -473,6 +481,18 @@ export class GaraponMachine {
     );
     this.resultBall.visible = false;
     this.root.add(this.resultBall);
+    this.resultGlint = this.mesh(
+      this.metallicGlintGeometry,
+      this.metallicGlintMaterial,
+      {
+        position: [-0.046, 0.052, 0.108],
+        scale: [1, 0.78, 0.5],
+        cast: false,
+        receive: false,
+      },
+    );
+    this.resultGlint.visible = false;
+    this.resultBall.add(this.resultGlint);
     this.ballStart = new THREE.Vector3();
     this.ballControl1 = new THREE.Vector3();
     this.ballControl2 = new THREE.Vector3();
@@ -567,24 +587,53 @@ export class GaraponMachine {
 
   setInteractionState() {}
 
+
+  isMetallicBall(color) {
+    const normalized = String(color || '').toLowerCase();
+    return normalized === '#ffd95a' || normalized === '#f2f5fa';
+  }
+
+  addMetallicGlint(ball, color, index = 0) {
+    if (!this.isMetallicBall(color)) return;
+    const glint = this.mesh(
+      this.metallicGlintGeometry,
+      this.metallicGlintMaterial,
+      {
+        position: [-0.043 + (index % 3) * 0.004, 0.049, 0.103],
+        scale: [1, 0.76, 0.48],
+        cast: false,
+        receive: false,
+      },
+    );
+    ball.add(glint);
+  }
+
   materialForBall(color, edge) {
     const key = `${color}|${edge}`;
     if (!this.ballMaterials.has(key)) {
       const normalized = String(color || '').toLowerCase();
       const colorValue = new THREE.Color(color);
       const edgeValue = new THREE.Color(edge || color);
-      const isGold = normalized === '#e1b43e';
-      const isSilver = normalized === '#c8cdd5';
+      const isGold = normalized === '#ffd95a';
+      const isSilver = normalized === '#f2f5fa';
       const isMetallic = isGold || isSilver;
+      const emissiveColor = isGold
+        ? new THREE.Color(0xffc735)
+        : isSilver
+          ? new THREE.Color(0xe5edff)
+          : edgeValue;
       this.ballMaterials.set(key, new THREE.MeshPhysicalMaterial({
         color: colorValue,
-        emissive: edgeValue,
-        emissiveIntensity: isMetallic ? 0.012 : 0.025,
-        roughness: isMetallic ? (isSilver ? 0.11 : 0.15) : 0.31,
-        metalness: isMetallic ? (isSilver ? 0.94 : 0.86) : 0.02,
-        clearcoat: isMetallic ? 0.82 : 0.32,
-        clearcoatRoughness: isMetallic ? 0.08 : 0.2,
+        emissive: emissiveColor,
+        emissiveIntensity: isMetallic ? (isSilver ? 0.14 : 0.11) : 0.025,
+        roughness: isMetallic ? (isSilver ? 0.05 : 0.07) : 0.31,
+        metalness: isMetallic ? (isSilver ? 0.68 : 0.58) : 0.02,
+        clearcoat: isMetallic ? 1 : 0.32,
+        clearcoatRoughness: isMetallic ? 0.015 : 0.2,
         reflectivity: isMetallic ? 1 : 0.5,
+        ior: isMetallic ? 1.75 : 1.5,
+        specularIntensity: isMetallic ? 1 : 0.5,
+        specularColor: new THREE.Color(0xffffff),
       }));
     }
     return this.ballMaterials.get(key);
@@ -612,6 +661,7 @@ export class GaraponMachine {
     this.pileBalls = [];
   }
 
+
   addPileBall(color, edge, index = this.pileBalls.length) {
     const ball = this.mesh(
       this.sharedPileGeometry,
@@ -619,6 +669,7 @@ export class GaraponMachine {
       { position: this.pilePosition(index).toArray() },
     );
     ball.rotation.set(index * 0.17, index * 0.29, index * 0.11);
+    this.addMetallicGlint(ball, color, index);
     this.pileGroup.add(ball);
     this.pileBalls.push(ball);
     return ball;
@@ -635,6 +686,7 @@ export class GaraponMachine {
     this.ballAnim = null;
     this.resultBall.visible = false;
     this.resultBall.scale.setScalar(0.01);
+    if (this.resultGlint) this.resultGlint.visible = false;
     this.clearPile();
   }
 
@@ -648,6 +700,7 @@ export class GaraponMachine {
   releaseBall(color, edge, done) {
     const targetIndex = this.pileBalls.length;
     this.resultBall.material = this.materialForBall(color, edge);
+    this.resultGlint.visible = this.isMetallicBall(color);
     this.resultBall.visible = true;
 
     this.outletPosition(this.ballStart);
@@ -780,6 +833,9 @@ export class GaraponMachine {
       }
     }
 
+    if (this.metallicGlintMaterial) {
+      this.metallicGlintMaterial.opacity = 0.78 + Math.sin(now * 0.0075) * 0.17;
+    }
     this.renderer.render(this.scene, this.camera);
   }
 }

@@ -1,9 +1,9 @@
-import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-sound-silver-size1';
+import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-shiny-metal1';
 
 const STORAGE_KEY='funypin-garapon-v1';
 const PALETTE=[
- {key:'gold',name:'골드',color:'#e1b43e',edge:'#a87913',metallic:true},
- {key:'silver',name:'실버',color:'#c8cdd5',edge:'#747b86',metallic:true},
+ {key:'gold',name:'골드',color:'#ffd95a',edge:'#e6a900',metallic:true},
+ {key:'silver',name:'실버',color:'#f2f5fa',edge:'#aeb8c8',metallic:true},
  {key:'red',name:'레드',color:'#ef5c68',edge:'#b92e3b'},
  {key:'blue',name:'블루',color:'#5e9bea',edge:'#3265aa'},
  {key:'yellow',name:'옐로',color:'#f5d64b',edge:'#b79a16'},

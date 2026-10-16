@@ -1,4 +1,4 @@
-import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-shiny-metal1';
+import { GaraponMachine } from './garapon-three-machine-v2.js?v=20261016-hole-release1';
 
 const STORAGE_KEY='funypin-garapon-v1';
 const PALETTE=[

@@ -444,6 +444,7 @@ export class GaraponMachine {
     const outletFaceAngle = -Math.PI * 3 / 4;
     const outletApothem = radius * Math.cos(Math.PI / 8);
     const outletGroup = new THREE.Group();
+    this.outletGroup = outletGroup;
     outletGroup.position.set(
       Math.cos(outletFaceAngle) * (outletApothem + 0.015),
       Math.sin(outletFaceAngle) * (outletApothem + 0.015),
@@ -465,7 +466,7 @@ export class GaraponMachine {
     outletGroup.add(outletCollar, outletHole);
 
     this.outletAnchor = new THREE.Object3D();
-    this.outletAnchor.position.set(0, 0.31, 0);
+    this.outletAnchor.position.set(0, 0.15, 0);
     outletGroup.add(this.outletAnchor);
 
     this.resultBall = this.mesh(
@@ -697,24 +698,35 @@ export class GaraponMachine {
     return this.root.worldToLocal(target);
   }
 
+  outletPose(positionTarget = new THREE.Vector3(), directionTarget = new THREE.Vector3()) {
+    this.root.updateMatrixWorld(true);
+    const center = new THREE.Vector3();
+    this.outletAnchor.getWorldPosition(positionTarget);
+    this.outletGroup.getWorldPosition(center);
+    this.root.worldToLocal(positionTarget);
+    this.root.worldToLocal(center);
+    directionTarget.copy(positionTarget).sub(center).normalize();
+    return { position: positionTarget, direction: directionTarget };
+  }
+
   releaseBall(color, edge, done) {
     const targetIndex = this.pileBalls.length;
     this.resultBall.material = this.materialForBall(color, edge);
     this.resultGlint.visible = this.isMetallicBall(color);
     this.resultBall.visible = true;
+    this.resultBall.scale.setScalar(0.18);
 
-    this.outletPosition(this.ballStart);
-    this.resultBall.position.copy(this.ballStart);
-    this.resultBall.scale.setScalar(0.05);
+    const direction = new THREE.Vector3();
+    this.outletPose(this.ballStart, direction);
+    this.resultBall.position.copy(this.ballStart).addScaledVector(direction, -0.065);
     this.ballEnd.copy(this.pilePosition(targetIndex));
-    this.ballControl1.copy(this.ballStart).add(new THREE.Vector3(-0.12, 0.18, 0.16));
-    this.ballControl2.copy(this.ballStart).lerp(this.ballEnd, 0.58);
-    this.ballControl2.y += 0.28;
-    this.ballControl2.z += 0.08;
 
     this.ballAnim = {
-      start: performance.now(),
-      duration: 820,
+      phase: 'mouth',
+      phaseStart: performance.now(),
+      gateDuration: this.dragging ? 72 : 105,
+      flightDuration: 780,
+      direction,
       color,
       edge,
       targetIndex,
@@ -804,32 +816,66 @@ export class GaraponMachine {
     }
 
     if (this.ballAnim) {
-      const t = Math.min(1, (now - this.ballAnim.start) / this.ballAnim.duration);
-      const eased = t < 0.72 ? 1 - Math.pow(1 - t / 0.72, 3) : 1;
-      this.cubicBezier(
-        this.ballStart,
-        this.ballControl1,
-        this.ballControl2,
-        this.ballEnd,
-        eased,
-        this.resultBall.position,
-      );
-      const bounce = t > 0.72
-        ? Math.abs(Math.sin((t - 0.72) * Math.PI * 3.2)) * (1 - t) * 0.22
-        : 0;
-      this.resultBall.position.y += bounce;
-      const scale = Math.min(1, t / 0.22);
-      this.resultBall.scale.setScalar(scale);
-      this.resultBall.rotation.x += deltaTime * 7;
-      this.resultBall.rotation.z += deltaTime * 4;
+      const animation = this.ballAnim;
 
-      if (t >= 1) {
-        const { color, edge, targetIndex, done } = this.ballAnim;
-        this.ballAnim = null;
-        this.addPileBall(color, edge, targetIndex);
-        this.resultBall.visible = false;
-        this.resultBall.scale.setScalar(0.01);
-        done?.();
+      if (animation.phase === 'mouth') {
+        const mouthT = Math.min(1, (now - animation.phaseStart) / animation.gateDuration);
+        const emerge = mouthT * mouthT * (3 - 2 * mouthT);
+
+        // Keep the ball physically attached to the real rotating outlet for the
+        // first few frames. Even during a very fast manual turn, the ball can no
+        // longer appear from the previous outlet position.
+        this.outletPose(this.ballStart, animation.direction);
+        this.resultBall.position
+          .copy(this.ballStart)
+          .addScaledVector(animation.direction, -0.065 + emerge * 0.16);
+        this.resultBall.scale.setScalar(0.18 + emerge * 0.82);
+        this.resultBall.rotation.x += deltaTime * 3.2;
+        this.resultBall.rotation.z += deltaTime * 2.1;
+
+        if (mouthT >= 1) {
+          // Detach only after the sphere has visibly crossed the hole mouth,
+          // then preserve the outlet's current direction as the first section
+          // of the flight path toward the brass tray.
+          this.outletPose(this.ballStart, animation.direction);
+          this.ballStart.addScaledVector(animation.direction, 0.095);
+          this.resultBall.position.copy(this.ballStart);
+          this.ballEnd.copy(this.pilePosition(animation.targetIndex));
+          this.ballControl1.copy(this.ballStart).addScaledVector(animation.direction, 0.4);
+          this.ballControl1.y += 0.025;
+          this.ballControl2.copy(this.ballStart).lerp(this.ballEnd, 0.58);
+          this.ballControl2.y += 0.28;
+          this.ballControl2.z += 0.08;
+          animation.phase = 'flight';
+          animation.phaseStart = now;
+        }
+      } else {
+        const t = Math.min(1, (now - animation.phaseStart) / animation.flightDuration);
+        const eased = t < 0.72 ? 1 - Math.pow(1 - t / 0.72, 3) : 1;
+        this.cubicBezier(
+          this.ballStart,
+          this.ballControl1,
+          this.ballControl2,
+          this.ballEnd,
+          eased,
+          this.resultBall.position,
+        );
+        const bounce = t > 0.72
+          ? Math.abs(Math.sin((t - 0.72) * Math.PI * 3.2)) * (1 - t) * 0.22
+          : 0;
+        this.resultBall.position.y += bounce;
+        this.resultBall.scale.setScalar(1);
+        this.resultBall.rotation.x += deltaTime * 7;
+        this.resultBall.rotation.z += deltaTime * 4;
+
+        if (t >= 1) {
+          const { color, edge, targetIndex, done } = animation;
+          this.ballAnim = null;
+          this.addPileBall(color, edge, targetIndex);
+          this.resultBall.visible = false;
+          this.resultBall.scale.setScalar(0.01);
+          done?.();
+        }
       }
     }
 

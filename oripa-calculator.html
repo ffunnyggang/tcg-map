@@ -133,7 +133,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
   }
   function closeWheelKeyin(name,commit=true){
     const box=$(name+'Keyin'),input=$(name+'KeyinInput');if(!box||!input)return;
-    if(commit){let v=Math.round(Number(input.value));if(!Number.isFinite(v))v=state[name];if(name==='total')v=Math.max(1,Math.min(500,v));else if(name==='remaining')v=Math.max(1,Math.min(state.total,v));else v=Math.max(0,Math.min(state.remaining,v));selectWheel(name,v,false);}
+    if(commit){let v=Math.round(Number(input.value));if(!Number.isFinite(v))v=state[name];if(name==='total')v=Math.max(1,Math.min(999,v));else if(name==='remaining')v=Math.max(1,Math.min(state.total,v));else v=Math.max(0,Math.min(state.remaining,v));selectWheel(name,v,false);}
     box.classList.remove('show');
   }
   function bindWheel(name){
@@ -196,7 +196,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
     try{window.FUNY_TRACK?.('oripa_calculator_change',{total_count:total,remaining_count:N,win_count:H,buy_count:n,game_price:state.price,total_price:n*state.price})}catch(_){}
   }
 
-  buildWheel('total',1,500,state.total);buildWheel('remaining',1,state.total,state.remaining);buildWheel('wins',0,state.remaining,state.wins);
+  buildWheel('total',1,999,state.total);buildWheel('remaining',1,state.total,state.remaining);buildWheel('wins',0,state.remaining,state.wins);
   Object.keys(wheels).forEach(bindWheel);
   ['total','remaining','wins'].forEach(name=>{const input=$(name+'KeyinInput');input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();closeWheelKeyin(name,true)}else if(e.key==='Escape'){e.preventDefault();closeWheelKeyin(name,false)}});input.addEventListener('blur',()=>setTimeout(()=>closeWheelKeyin(name,true),60));});
   $('buy').addEventListener('focus',e=>{anchorKeyinField(e.target);try{e.target.select()}catch(_){}});

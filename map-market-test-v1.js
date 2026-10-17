@@ -232,8 +232,8 @@
       track.querySelector('.qa-layer-chip[data-layer="shops"]'),
       track.querySelector('.qa-layer-chip[data-layer="events"]'),
       track.querySelector('.qa-layer-chip[data-layer="vending"]'),
-      track.querySelector('#liveTempLayer'),
-      layerChip?.isConnected?layerChip:track.querySelector('.market-layer-chip')
+      layerChip?.isConnected?layerChip:track.querySelector('.market-layer-chip'),
+      track.querySelector('#liveTempLayer')
     ].filter(Boolean);
     if(desired.length<2)return;
     const wanted=new Set(desired),current=[...track.children].filter(el=>wanted.has(el));

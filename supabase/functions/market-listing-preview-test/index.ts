@@ -25,6 +25,11 @@ const meta = (html: string, key: string) => {
   return "";
 };
 
+const findVerificationCodes = (html: string) => {
+  const decoded = decodeHtml(String(html || "")).replace(/\\u002d/gi, "-");
+  return [...new Set((decoded.match(/FUNY-[A-Z0-9]{6}/gi) || []).map(x => x.toUpperCase()))].slice(0, 20);
+};
+
 const formatPrice = (raw: unknown) => {
   const s = clean(raw);
   if (!s) return "";
@@ -49,7 +54,10 @@ async function fetchHtml(start: URL, max = 6) {
     if (!allowedHost(current.hostname)) throw new Error("지원하지 않는 외부 도메인입니다.");
     const res = await fetch(current.toString(), {
       redirect: "manual",
+      cache: "no-store",
       headers: {
+        "cache-control": "no-cache, no-store, max-age=0",
+        "pragma": "no-cache",
         "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1",
         "accept": "text/html,application/xhtml+xml,application/json",
         "accept-language": "ko-KR,ko;q=0.9,en;q=0.7",
@@ -195,6 +203,7 @@ async function parseBunjang(input: URL) {
     price_raw: clean(d.transaction?.price), currency: "KRW", images,
     availability: sale, source_status: sourceStatus, direct_buy_available: null,
     seller_verification_scope: d.uid != null ? "account" : "listing",
+    verification_codes: [...new Set(((JSON.stringify(payload)||"").match(/FUNY-[A-Z0-9]{6}/gi)||[]).map((x:string)=>x.toUpperCase()))].slice(0,20),
     source_extra: { category_name: clean(d.categoryName), image_count: count }
   };
 }
@@ -222,13 +231,17 @@ async function parseBreak(input: URL) {
   if (!images.length && ogImage) images = [ogImage];
   const availability = clean(offer?.availability);
   const direct = /즉시\s*구매/.test(meta(html, "og:title") + " " + description + " " + clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]));
+  const sellerHandle = clean(offer?.seller?.name) || null;
   return {
     provider: "break", external_listing_id: String(pid), external_seller_id: null,
-    external_seller_handle: clean(offer?.seller?.name) || null, final_url: finalUrl,
+    external_seller_handle: sellerHandle, final_url: finalUrl,
     title, description, price_raw: clean(offer?.price) || (meta(html, "og:title").match(/([0-9][0-9,]*)원/) || [])[1] || "",
     currency: clean(offer?.priceCurrency) || "KRW", images,
     availability, source_status: /InStock/i.test(availability) ? "active" : availability ? "sold" : "unknown",
-    direct_buy_available: direct, seller_verification_scope: "listing"
+    direct_buy_available: direct,
+    seller_verification_scope: sellerHandle ? "account" : "listing",
+    seller_identity_source: sellerHandle ? "seller_display_name" : "listing",
+    verification_codes: typeof findVerificationCodes === "function" ? findVerificationCodes(html) : []
   };
 }
 

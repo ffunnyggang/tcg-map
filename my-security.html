@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>계정 보안 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="/web-auth.js?v=20261014-web-auth6"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#f4f2f6;color:#28232e;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.shell{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff}
+.head{height:56px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;padding:0 10px;border-bottom:1px solid #f0ecf2;background:#fff;position:sticky;top:0;z-index:10}
+.back{width:40px;height:40px;border:0;background:transparent;color:#28232e;font-size:27px;line-height:1;cursor:pointer}.title{text-align:center;font-size:16px;font-weight:900}
+.page{padding:18px 16px 40px}.intro{padding:14px;border-radius:16px;background:#f8f6fb;border:1px solid #ebe5f2}.intro strong{display:block;font-size:14px}.intro span{display:block;margin-top:6px;color:#817986;font-size:10.5px;line-height:1.55}
+.section{margin-top:22px}.section h2{margin:0 0 8px 3px;font-size:13px}.card{border:1px solid #e8e3ec;border-radius:17px;overflow:hidden;background:#fff}
+.row{min-height:68px;padding:13px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0ecf2}.row:last-child{border-bottom:0}.copy{flex:1;min-width:0}.label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:850}.sub{margin-top:4px;color:#928a97;font-size:10px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{flex:0 0 auto;padding:6px 8px;border-radius:999px;background:#f1eef4;color:#756e79;font-size:9px;font-weight:850}.badge.ok{background:#edf7f0;color:#4d8c60}.badge.future{background:#f4f1fb;color:#7356b5}
+.phone-box{margin-top:10px;padding:14px;border:1px solid #e8e3ed;border-radius:16px;background:#faf9fb}.phone-box[hidden]{display:none!important}.input-row{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:7px;margin-top:8px}.input-row:first-child{margin-top:0}.input{width:100%;height:42px;border:1px solid #ddd7e2;border-radius:11px;padding:0 11px;outline:0;font-size:12px}.input:focus{border-color:#8d76d1}.btn{height:42px;border:0;border-radius:11px;background:#28232e;color:#fff;font-size:10px;font-weight:850;cursor:pointer}.btn:disabled{opacity:.45}.message{min-height:18px;margin-top:8px;color:#766f7b;font-size:10px;line-height:1.5}.message.error{color:#b42318}
+.action{border:0;background:transparent;color:#6749bd;font-size:10px;font-weight:900;cursor:pointer;padding:8px 0}.note{margin-top:18px;padding:12px 13px;border-radius:14px;background:#f7f5f8;color:#817986;font-size:9.5px;line-height:1.6}
+.loading{padding:50px 0;text-align:center;color:#918a96;font-size:11px}
+@media(max-width:360px){.input-row{grid-template-columns:1fr}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="head"><button class="back" type="button" aria-label="이전" onclick="history.back()">‹</button><div class="title">계정 보안</div><span></span></header>
+<main id="root" class="page"><div class="loading">계정 보안 정보를 불러오는 중...</div></main>
+</div>
+<script>
+(async()=>{
+  const A=window.FUNY_WEB_AUTH,root=document.getElementById('root');
+  await A.init();
+  if(!A.session){A.goLogin('/my-security.html');return}
+  const en=localStorage.getItem('funy-pin-lang')==='en',user=A.session.user;
+  const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const provider=String(user?.app_metadata?.provider||user?.app_metadata?.providers?.[0]||'email');
+  const providerLabel={google:'Google',apple:'Apple',kakao:'Kakao',email:'Email'}[provider]||provider;
+  const normalizePhone=raw=>{
+    const digits=String(raw||'').replace(/\D/g,'');
+    if(/^010\d{8}$/.test(digits))return '+82'+digits.slice(1);
+    if(/^8210\d{8}$/.test(digits))return '+'+digits;
+    return '';
+  };
+  const maskPhone=raw=>{
+    const d=String(raw||'').replace(/\D/g,'');
+    if(d.length<4)return '';
+    return '•••• '+d.slice(-4)
+  };
+  async function verification(){
+    const {data}=await A.client.from('user_verifications')
+      .select('account_verified_at,email_verified_at,phone_verified_at,identity_verified_at,verification_level')
+      .eq('user_id',A.session.user.id).maybeSingle();
+    return data||{}
+  }
+  async function render(){
+    const fresh=(await A.client.auth.getUser()).data?.user||A.session.user;
+    const v=await verification();
+    const accountOk=Number(v.verification_level||0)>=1;
+    const phoneOk=!!v.phone_verified_at&&!!fresh.phone_confirmed_at;
+    const emailText=fresh.email||((provider==='kakao')?'OAuth 계정에서 이메일을 제공하지 않음':'이메일 정보 없음');
+    root.innerHTML=
+      '<div class="intro"><strong>계정 검증 상태</strong><span>FUNY PIN 로그인 검증과 거래용 휴대폰 인증을 분리해서 관리합니다.</span></div>'+
+      '<section class="section"><h2>계정</h2><div class="card">'+
+        '<div class="row"><div class="copy"><div class="label">로그인 계정</div><div class="sub">'+esc(providerLabel)+' 로그인</div></div><span class="badge '+(accountOk?'ok':'')+'">'+(accountOk?'검증 완료':'확인 필요')+'</span></div>'+
+        '<div class="row"><div class="copy"><div class="label">이메일</div><div class="sub">'+esc(emailText)+'</div></div><span class="badge '+(v.email_verified_at?'ok':'')+'">'+(v.email_verified_at?'인증 완료':provider!=='email'?'OAuth 확인':'미인증')+'</span></div>'+
+      '</div></section>'+
+      '<section class="section"><h2>추가 인증</h2><div class="card">'+
+        '<div class="row"><div class="copy"><div class="label">휴대폰 SMS 인증</div><div class="sub">'+(phoneOk?esc(maskPhone(fresh.phone))+' · 거래 기능 이용 가능':'거래 기능 이용 전 최초 1회 필요')+'</div></div>'+(phoneOk?'<span class="badge ok">인증 완료</span>':'<button id="phoneOpen" class="action" type="button">인증하기 ›</button>')+'</div>'+
+        '<div class="row"><div class="copy"><div class="label">PASS / KCP 본인확인</div><div class="sub">필요 시 추후 검증 레벨 3으로 도입</div></div><span class="badge future">추후 제공</span></div>'+
+      '</div></section>'+
+      '<div id="phoneBox" class="phone-box" '+(phoneOk?'hidden':'')+'>'+
+        '<div class="input-row"><input id="phone" class="input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="01012345678"><button id="send" class="btn" type="button">인증번호 받기</button></div>'+
+        '<div id="otpRow" class="input-row" hidden><input id="otp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="인증번호 6자리"><button id="verify" class="btn" type="button">인증 확인</button></div>'+
+        '<div id="msg" class="message" role="status" aria-live="polite"></div>'+
+      '</div>'+
+      '<div class="note">휴대폰 SMS 인증은 해당 번호를 실제로 사용할 수 있는지 확인하는 절차입니다. PASS/KCP와 같은 법적 본인확인과는 구분됩니다.</div>';
+    if(phoneOk)return;
+    const box=document.getElementById('phoneBox'),open=document.getElementById('phoneOpen'),phone=document.getElementById('phone'),send=document.getElementById('send'),otpRow=document.getElementById('otpRow'),otp=document.getElementById('otp'),verify=document.getElementById('verify'),msg=document.getElementById('msg');
+    const message=(t,e=false)=>{msg.textContent=t||'';msg.classList.toggle('error',!!e)};
+    if(open)open.onclick=()=>{box.hidden=false;phone.focus()};
+    phone.oninput=()=>{phone.dataset.e164='';otpRow.hidden=true;message('')};
+    send.onclick=async()=>{
+      const e164=normalizePhone(phone.value);
+      if(!e164){message('010으로 시작하는 휴대폰 번호를 정확히 입력해주세요.',true);return}
+      send.disabled=true;send.textContent='전송 중...';message('');
+      try{
+        const {error}=await A.client.auth.updateUser({phone:e164});
+        if(error)throw error;
+        phone.dataset.e164=e164;otpRow.hidden=false;message('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');otp.focus()
+      }catch(e){
+        const raw=String(e?.message||e||'');
+        message(/phone|sms|provider|unsupported|disabled/i.test(raw)?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
+      }finally{send.disabled=false;send.textContent='인증번호 받기'}
+    };
+    verify.onclick=async()=>{
+      const e164=String(phone.dataset.e164||normalizePhone(phone.value)||''),token=String(otp.value||'').replace(/\D/g,'');
+      if(!e164){message('인증번호를 먼저 요청해주세요.',true);return}
+      if(!/^\d{6}$/.test(token)){message('인증번호 6자리를 입력해주세요.',true);return}
+      verify.disabled=true;verify.textContent='확인 중...';message('');
+      try{
+        const {error}=await A.client.auth.verifyOtp({phone:e164,token,type:'phone_change'});
+        if(error)throw error;
+        try{await A.client.auth.refreshSession()}catch(_){}
+        await new Promise(r=>setTimeout(r,150));
+        await render()
+      }catch(e){message(String(e?.message||e||'인증번호 확인에 실패했습니다.'),true)}
+      finally{if(document.getElementById('verify')){verify.disabled=false;verify.textContent='인증 확인'}}
+    };
+  }
+  await render();
+})();
+</script>
+</body>
+</html>

@@ -100,7 +100,7 @@
       send.disabled=true;send.textContent='전송 중...';message('');
       let sent=false;
       try{
-        const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'send_phone_otp',phone:e164}});
+        const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'send_phone_otp',phone:e164}});
         if(error)throw error;
         if(!data?.ok)throw Error(data?.error||'인증번호를 전송하지 못했습니다.');
         if(data?.already_verified){await render();return}
@@ -116,7 +116,7 @@
       if(!/^\d{6}$/.test(token)){message('인증번호 6자리를 입력해주세요.',true);return}
       verify.disabled=true;verify.textContent='확인 중...';message('');
       try{
-        const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'verify_phone_otp',phone:e164,token}});
+        const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'verify_phone_otp',phone:e164,token}});
         if(error)throw error;
         if(!data?.ok||!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
         await render()

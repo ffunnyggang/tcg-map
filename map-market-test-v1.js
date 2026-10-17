@@ -506,8 +506,13 @@
       '<main class="market-overlay-body"><div class="market-sheet-list" id="marketOverlayList"></div></main>'+
       '<button type="button" class="market-overlay-register" data-open-market-register><span class="market-overlay-register-plus">＋</span><span class="market-overlay-register-label">매물 등록</span></button>';
     document.body.appendChild(el);
+    const floatingRegister=el.querySelector('[data-open-market-register]');
     el.querySelector('.market-overlay-close').onclick=closeOverlay;
-    el.querySelector('[data-open-market-register]').onclick=openRegister;
+    if(floatingRegister){
+      floatingRegister.onclick=openRegister;
+      floatingRegister.hidden=true;
+      document.body.appendChild(floatingRegister);
+    }
     bindFilterControls(el,()=>{overlayFilter=el.querySelector('.market-overlay-filter .market-filter-chip.active')?.dataset.marketFilter||'all';renderListInto($('#marketOverlayList'),overlayFilter)});
     bindHorizontalScrollers();
     let lastY=0,ticking=false;
@@ -525,10 +530,10 @@
     },{passive:true});
   }
   function openOverlay(){
-    buildOverlay();const el=$('#marketOverlay');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');el.querySelector('.market-overlay-register')?.classList.remove('is-scrolling');document.body.style.overflow='hidden';
+    buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
   }
-  function closeOverlay(){const el=$('#marketOverlay');if(el)el.hidden=true;closeSortMenus();document.body.style.overflow=''}
+  function closeOverlay(){const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if(registerBtn)registerBtn.hidden=true;closeSortMenus();document.body.style.overflow=''}
 
   function sanitizeExternalMarketUrl(raw){
     const text=String(raw||'').trim();
@@ -817,43 +822,37 @@
     if(window.ReactNativeWebView){try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_EXTERNAL',url}));return}catch(_){}}
     window.open(url,'_blank','noopener');
   }
-  async function focusMapCoordinateWithCollapsedSheet(lat,lng,{zoom=17,animateSheet=true}={}){
+  function marketNaverMaxZoom(map){
+    let max=19;
+    try{const value=Number(map?.getOptions?.('maxZoom'));if(Number.isFinite(value))max=value}catch(_){}
+    return max;
+  }
+  function marketRequestedFocusZoom(map){
+    let raw='max';
+    try{raw=String(new URLSearchParams(location.search).get('zoom')||'max').trim().toLowerCase()}catch(_){}
+    const max=marketNaverMaxZoom(map);
+    if(raw==='max')return max;
+    const n=Number(raw);
+    return Number.isFinite(n)?Math.max(1,Math.min(max,Math.round(n))):max;
+  }
+  async function focusMapCoordinateWithCollapsedSheet(lat,lng,{zoom=null,animateSheet=true}={}){
     const map=await waitForMap();
     if(!map||!Number.isFinite(+lat)||!Number.isFinite(+lng))return false;
+    ensureMarketSheetControlBridge();
     marketApplySheetMode('quarter',animateSheet);
-    await sleep(animateSheet?350:40);
-    const pos=new naver.maps.LatLng(+lat,+lng);
-    try{if(map.getZoom()!==zoom)map.setZoom(zoom)}catch(_){}
-    try{map.setCenter(pos)}catch(_){try{map.panTo(pos)}catch(_){}}
-    await sleep(90);
+    try{window.FUNY_MAP_SHEET?.collapse?.()}catch(_){}
+    await sleep(animateSheet?180:60);
 
-    const mapEl=document.getElementById('naver-map')||document.querySelector('.map-wrap-hero');
-    const sheet=document.querySelector('.list-wrap');
-    const search=document.querySelector('.map-search-float');
-    const filter=document.querySelector('.map-filter-bar');
-    const rect=mapEl?.getBoundingClientRect?.();
-    if(rect&&rect.height>0){
-      const sheetTop=sheet?.getBoundingClientRect?.().top??(rect.top+rect.height*.75);
-      const topSafe=Math.max(
-        rect.top,
-        search?.getBoundingClientRect?.().bottom||rect.top,
-        filter?.getBoundingClientRect?.().bottom||rect.top
-      )+8;
-      const bottomSafe=Math.max(topSafe+40,Math.min(rect.bottom,sheetTop));
-      const targetY=(topSafe+bottomSafe)/2-rect.top;
-      const centerX=rect.width/2,centerY=rect.height/2,shiftY=centerY-targetY;
-      try{
-        const projection=map.getProjection?.();
-        if(projection?.fromOffsetToCoord){
-          const centerCoord=projection.fromOffsetToCoord(new naver.maps.Point(centerX,centerY+shiftY));
-          map.setCenter(centerCoord);
-        }else if(map.panBy){
-          map.panBy(new naver.maps.Point(0,Math.round(shiftY)));
-        }
-      }catch(_){
-        try{map.panBy?.(new naver.maps.Point(0,Math.round(shiftY)))}catch(__){}
-      }
-    }
+    const pos=new naver.maps.LatLng(+lat,+lng);
+    try{naver.maps.Event.trigger(map,'resize')}catch(_){}
+    try{map.setCenter(pos)}catch(_){}
+    try{map.setZoom(Number.isFinite(Number(zoom))?Number(zoom):marketRequestedFocusZoom(map))}catch(_){}
+    await sleep(180);
+
+    // Production shop-focus 기준: popup/marker selection can never change the target coordinate.
+    try{map.setCenter(pos)}catch(_){}
+    marketApplySheetMode('quarter',false);
+    try{window.FUNY_MAP_SHEET?.collapse?.()}catch(_){}
     return true;
   }
   window.FUNY_MAP_FOCUS_WITH_SHEET=focusMapCoordinateWithCollapsedSheet;
@@ -877,12 +876,16 @@
     if(layerChip){layerChip.classList.add('active');layerChip.setAttribute('aria-pressed','true')}
     await syncMarkers();
     ensureMarketSheetControlBridge();
-    const focused=await focusMapCoordinateWithCollapsedSheet(+x.latitude,+x.longitude,{zoom:17,animateSheet:true});
+    const focused=await focusMapCoordinateWithCollapsedSheet(+x.latitude,+x.longitude,{zoom:null,animateSheet:true});
     if(!focused)return false;
     let m=markers.get(x.id);
     if(!m){await syncMarkers();m=markers.get(x.id)}
     if(selectedMarkerId===x.id)closePopup();
     if(m)selectMarker(x,m);
+    const map=await waitForMap(),pos=new naver.maps.LatLng(+x.latitude,+x.longitude);
+    try{map?.setCenter(pos)}catch(_){}
+    marketApplySheetMode('quarter',false);
+    try{window.FUNY_MAP_SHEET?.collapse?.()}catch(_){}
     if(updateUrl)history.pushState({focus:'market',marketId:x.id},'',marketMapDeepLink(x.id));
     return true;
   }

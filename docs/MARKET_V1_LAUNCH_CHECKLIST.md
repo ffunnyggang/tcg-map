@@ -68,13 +68,13 @@
 - [x] 개인정보처리방침에 휴대폰 인증 목적·보관 및 MARKET 처리 항목 반영
 - [x] SMS Provider 선정: SOLAPI
 - [x] SOLAPI Send SMS Hook Edge Function 배포 (`send-sms-solapi`)
-- [ ] SOLAPI 개인 계정 가입·실명인증
-- [ ] 발신번호 등록
-- [ ] SOLAPI API Key / API Secret 발급 및 Supabase Secret 등록
-- [ ] Supabase Authentication > Hooks > Send SMS HTTP Hook 활성화
+- [x] SOLAPI 개인 계정 가입·실명인증
+- [x] 발신번호 등록(1차 테스트는 본인 010 번호 사용, 추후 고객센터 070으로 교체)
+- [x] SOLAPI API Key / API Secret 발급 및 Supabase Secret 등록
+- [x] Supabase Authentication > Hooks > Send SMS HTTP Hook 활성화
 - [x] 개인정보처리방침에 SMS 위탁 사업자 SOLAPI(솔라피(주)) 명시
 - [ ] SOLAPI 세부 처리위탁/국외이전 여부 법무 최종 확인
-- [ ] Web / iOS WebView / AOS WebView 실제 발송·OTP 성공 QA
+- [ ] Web / iOS WebView / AOS WebView 실제 발송·OTP 성공 QA (다음 단계)
 
 > 1차 오픈의 SMS OTP는 **해당 휴대폰 번호를 사용할 수 있음을 확인하는 절차**이며 PASS/KCP와 같은 법적 본인확인으로 표시하지 않는다. PASS/KCP 본인확인은 거래 규모와 운영 필요성에 따라 추후 검증 레벨 3으로 추가한다.
 

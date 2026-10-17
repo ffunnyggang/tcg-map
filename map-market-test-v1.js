@@ -204,9 +204,9 @@
     const map=window.FUNY_NAVER_MAP_API?.getMap?.();if(!map)return;
     if(selectedMarkerId===x.id){closePopup();return}
     closePopup();selectedMarkerId=x.id;m.setIcon(markerIcon(true));
-    popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});
+    popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8),disableAutoPan:true});
     popup.open(map,m);
-    if(x?._addressResolved!==true)reverseMarketAddress(x).then(()=>{if(selectedMarkerId===x.id){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(map,m);renderListInto($('#marketSheetList'),marketFilter)}}).catch(()=>{});
+    if(x?._addressResolved!==true)reverseMarketAddress(x).then(()=>{if(selectedMarkerId===x.id){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8),disableAutoPan:true});popup.open(map,m);renderListInto($('#marketSheetList'),marketFilter)}}).catch(()=>{});
   }
   function clearMarkers(){
     closePopup();markers.forEach(m=>m.setMap(null));markers.clear();
@@ -854,9 +854,9 @@
         try{map.panBy?.(new naver.maps.Point(0,Math.round(shiftY)))}catch(__){}
       }
     }
-    window.FUNY_MAP_FOCUS_WITH_SHEET=focusMapCoordinateWithCollapsedSheet;
     return true;
   }
+  window.FUNY_MAP_FOCUS_WITH_SHEET=focusMapCoordinateWithCollapsedSheet;
 
   function marketMapDeepLink(id){
     const u=new URL(location.href);
@@ -945,7 +945,7 @@
       renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
       if(selectedMarkerId===x.id){
         const m=markers.get(x.id);
-        if(m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}
+        if(m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8),disableAutoPan:true});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}
       }
     })();
     updateMarketDetailStats(x.id,true);
@@ -1240,7 +1240,7 @@
     renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
     const refreshAddresses=()=>hydrateMarketAddresses(rows).then(()=>{
       renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
-      if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}
+      if(selectedMarkerId){const x=rows.find(r=>r.id===selectedMarkerId),m=markers.get(selectedMarkerId);if(x&&m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8),disableAutoPan:true});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}}
     }).catch(()=>{});
     refreshAddresses();setTimeout(refreshAddresses,1600);setTimeout(refreshAddresses,4200);
   }

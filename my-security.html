@@ -6,7 +6,7 @@
 <title>계정 보안 | FUNY PIN</title>
 <link rel="icon" href="/favicon.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<script src="/web-auth.js?v=20261014-web-auth6"></script>
+<script src="/web-auth.js?v=20261017-web-auth7"></script>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#f4f2f6;color:#28232e;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .shell{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff}
@@ -78,6 +78,10 @@
     if(phoneOk)return;
     const box=document.getElementById('phoneBox'),open=document.getElementById('phoneOpen'),phone=document.getElementById('phone'),send=document.getElementById('send'),otpRow=document.getElementById('otpRow'),otp=document.getElementById('otp'),verify=document.getElementById('verify'),msg=document.getElementById('msg');
     const message=(t,e=false)=>{msg.textContent=t||'';msg.classList.toggle('error',!!e)};
+    const edgeMessage=async(error,fallback)=>{
+      try{const ctx=error?.context;if(ctx?.clone){const data=await ctx.clone().json().catch(()=>null);const m=String(data?.error||data?.message||'').trim();if(m)return m}}catch(_){}
+      const m=String(error?.message||'').trim();return m&&!/Edge Function returned a non-2xx status code/i.test(m)?m:fallback;
+    };
     if(open)open.onclick=()=>{box.hidden=false;phone.focus()};
     phone.oninput=()=>{phone.dataset.e164='';otpRow.hidden=true;message('')};
     let resendTimer=0,resendLeft=0;
@@ -96,13 +100,15 @@
       send.disabled=true;send.textContent='전송 중...';message('');
       let sent=false;
       try{
-        const {error}=await A.client.auth.updateUser({phone:e164});
+        const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'send_phone_otp',phone:e164}});
         if(error)throw error;
+        if(!data?.ok)throw Error(data?.error||'인증번호를 전송하지 못했습니다.');
+        if(data?.already_verified){await render();return}
         sent=true;phone.dataset.e164=e164;otpRow.hidden=false;message('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');otp.focus();startResendCooldown()
       }catch(e){
-        const raw=String(e?.message||e||'');
-        message(/phone|sms|provider|unsupported|disabled/i.test(raw)?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
-      }finally{if(!sent){send.disabled=false;send.textContent='인증번호 받기'}}
+        const raw=await edgeMessage(e,'인증번호를 전송하지 못했습니다.');
+        message(raw,true)
+      }finally{if(!sent&&document.getElementById('send')){send.disabled=false;send.textContent='인증번호 받기'}}
     };
     verify.onclick=async()=>{
       const e164=String(phone.dataset.e164||normalizePhone(phone.value)||''),token=String(otp.value||'').replace(/\D/g,'');
@@ -110,12 +116,11 @@
       if(!/^\d{6}$/.test(token)){message('인증번호 6자리를 입력해주세요.',true);return}
       verify.disabled=true;verify.textContent='확인 중...';message('');
       try{
-        const {error}=await A.client.auth.verifyOtp({phone:e164,token,type:'phone_change'});
+        const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'verify_phone_otp',phone:e164,token}});
         if(error)throw error;
-        try{await A.client.auth.refreshSession()}catch(_){}
-        await new Promise(r=>setTimeout(r,150));
+        if(!data?.ok||!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
         await render()
-      }catch(e){message(String(e?.message||e||'인증번호 확인에 실패했습니다.'),true)}
+      }catch(e){message(await edgeMessage(e,'인증번호 확인에 실패했습니다.'),true)}
       finally{if(document.getElementById('verify')){verify.disabled=false;verify.textContent='인증 확인'}}
     };
   }

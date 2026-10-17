@@ -35,7 +35,7 @@ function normalizeSellerHandle(value: unknown) {
   return clean(value).normalize("NFKC").toLowerCase().replace(/\s+/g, " ");
 }
 
-async function sellerAccountIdentity(preview: any) {
+async function sellerAccountIdentity(preview: any, userId = "") {
   const stableSellerId = clean(preview?.external_seller_id);
   if (stableSellerId) {
     return { key: stableSellerId, source: "seller_id", reusable: true };
@@ -44,7 +44,7 @@ async function sellerAccountIdentity(preview: any) {
   const handle = normalizeSellerHandle(preview?.external_seller_handle);
   if (provider === "break" && handle) {
     return {
-      key: "handle:" + await sha256(provider + ":" + handle),
+      key: "handle:" + await sha256(provider + ":" + clean(userId) + ":" + handle),
       source: "seller_handle_fingerprint",
       reusable: true,
     };
@@ -177,7 +177,7 @@ Deno.serve(async (req: Request) => {
       const preview = await previewListing(auth, url);
       const provider = clean(preview.provider);
       const listingId = clean(preview.external_listing_id);
-      const identity = await sellerAccountIdentity(preview);
+      const identity = await sellerAccountIdentity(preview, user.id);
       if (!provider || !listingId) throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
 
       if (identity.key) {
@@ -232,7 +232,7 @@ Deno.serve(async (req: Request) => {
       const preview = await previewListing(auth, url);
       const provider = clean(preview.provider);
       const listingId = clean(preview.external_listing_id);
-      const identity = await sellerAccountIdentity(preview);
+      const identity = await sellerAccountIdentity(preview, user.id);
       const sellerId = identity.key;
       if (!provider || !listingId) throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
 
@@ -317,7 +317,7 @@ Deno.serve(async (req: Request) => {
       if (clean(preview.provider) !== challenge.provider || clean(preview.external_listing_id) !== challenge.external_listing_id) {
         throw new Error("인증을 시작한 매물과 다른 매물입니다.");
       }
-      const previewIdentity = await sellerAccountIdentity(preview);
+      const previewIdentity = await sellerAccountIdentity(preview, user.id);
       const previewSellerId = previewIdentity.key;
       if (challenge.external_seller_id && previewSellerId !== challenge.external_seller_id) {
         throw new Error("판매자 계정 정보가 변경되어 인증할 수 없습니다.");

@@ -2319,3 +2319,23 @@ body.market-test-page .market-sheet-list{
 body.market-test-page .market-overlay .market-card{
   margin-top:0!important
 }
+
+
+/* MARKET seller account status v38 */
+.market-seller-account-summary{
+  margin-bottom:9px;
+  padding:9px 10px;
+  border:1px solid #ece7f0;
+  border-radius:11px;
+  background:#fff;
+  color:#8d8591;
+  font-size:9.8px;
+  line-height:1.45;
+  font-weight:650
+}
+.market-seller-account-summary.verified{
+  border-color:#d9eadf;
+  background:#f7fbf8;
+  color:#4d8c60;
+  font-weight:850
+}

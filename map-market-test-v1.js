@@ -797,7 +797,7 @@
   }
 
   async function waitForMarketGeocoder(){
-    for(let i=0;i<80;i++){
+    for(let i=0;i<20;i++){
       if(window.naver?.maps?.Service?.reverseGeocode)return true;
       await sleep(100);
     }

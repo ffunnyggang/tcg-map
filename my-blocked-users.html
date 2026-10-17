@@ -8,28 +8,106 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#F7F4FC;color:#28232e;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
-.page{width:min(100%,420px);min-height:100dvh;margin:0 auto;background:#F7F4FC}.head{position:sticky;top:0;z-index:20;height:58px;padding:0 14px;display:flex;align-items:center;background:#fff}.back{width:36px;height:36px;border:0;background:transparent;color:#28232e;font-size:29px;display:grid;place-items:center}.title{font-size:20px;font-weight:850}.content{padding:16px 16px 36px;display:grid;gap:9px}.loading,.empty{padding:110px 34px;text-align:center;color:#8f8794;font-size:12px;line-height:19px}.empty-icon{font-size:28px;color:#6749bd}.empty-title{margin-top:12px;font-size:16px;font-weight:900;color:#28232e}.empty-text{margin-top:7px}.row{min-height:72px;padding:0 14px;border:1px solid #E3DDED;border-radius:16px;background:#fff;display:flex;align-items:center}.avatar{width:40px;height:40px;border-radius:20px;background:#EEE8FA;display:grid;place-items:center;color:#6749bd;font-size:15px;font-weight:900}.copy{flex:1;min-width:0;margin-left:11px}.name{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sub{margin-top:3px;color:#8f8794;font-size:10.5px}.unblock{height:34px;padding:0 11px;border:1px solid #DCD4E8;border-radius:10px;background:#fff;color:#6749bd;font-size:10.5px;font-weight:800}.unblock:disabled{opacity:.5}
+.page{width:min(100%,420px);min-height:100dvh;margin:0 auto;background:#F7F4FC}
+.head{position:sticky;top:0;z-index:30;height:58px;padding:0 14px;display:flex;align-items:center;background:#fff}
+.back{width:36px;height:36px;border:0;background:transparent;color:#28232e;font-size:29px;display:grid;place-items:center}
+.title{font-size:20px;font-weight:850}
+.content{padding:12px 16px 36px}
+.block-tabs{position:sticky;top:58px;z-index:20;display:flex;gap:8px;padding:8px 0 11px;background:#F7F4FC;overflow-x:auto;scrollbar-width:none}
+.block-tabs::-webkit-scrollbar{display:none}
+.block-tab{height:35px;padding:0 14px;border:1px solid #E5E1EB;border-radius:999px;background:#fff;color:#716B79;font-size:12px;font-weight:750;white-space:nowrap}
+.block-tab.active{border-color:#272331;background:#272331;color:#fff}
+.list{display:grid;gap:9px}
+.loading,.empty{padding:100px 34px;text-align:center;color:#8F8794;font-size:12px;line-height:19px}
+.empty-icon{font-size:28px;color:#6749BD}
+.empty-title{margin-top:12px;font-size:16px;font-weight:900;color:#28232e}
+.empty-text{margin-top:7px}
+.row{min-height:72px;padding:0 14px;border:1px solid #E3DDED;border-radius:16px;background:#fff;display:flex;align-items:center}
+.avatar{width:40px;height:40px;border-radius:20px;background:#EEE8FA;display:grid;place-items:center;color:#6749BD;font-size:15px;font-weight:900}
+.copy{flex:1;min-width:0;margin-left:11px}
+.name{font-size:13.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{margin-top:3px;color:#8F8794;font-size:10.5px}
+.unblock{height:34px;padding:0 11px;border:1px solid #DCD4E8;border-radius:10px;background:#fff;color:#6749BD;font-size:10.5px;font-weight:800}
+.unblock:disabled{opacity:.5}
 </style>
 <script src="/web-auth.js?v=20261014-web-auth6"></script>
-<link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2"><link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"></head>
+<link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2">
+<link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1">
+</head>
 <body>
 <div class="page">
 <header class="head funy-sub-header"><button class="back funy-sub-back" id="back" type="button" aria-label="뒤로가기">‹</button><div class="title funy-sub-title">차단한 사용자</div></header>
-<main id="root" class="content"><div class="loading">차단 목록을 불러오는 중...</div></main>
+<main class="content">
+  <div class="block-tabs" role="tablist" aria-label="차단 범위">
+    <button class="block-tab active" type="button" data-block-tab="all">전체</button>
+    <button class="block-tab" type="button" data-block-tab="posts">게시물</button>
+    <button class="block-tab" type="button" data-block-tab="market">매물</button>
+  </div>
+  <div id="root"><div class="loading">차단 목록을 불러오는 중...</div></div>
+</main>
 </div>
 <script>
 (async()=>{
- const A=window.FUNY_WEB_AUTH,root=document.getElementById('root'),back=document.getElementById('back');
+ const A=window.FUNY_WEB_AUTH,root=document.getElementById('root'),back=document.getElementById('back'),tabs=[...document.querySelectorAll('[data-block-tab]')];
  back.onclick=()=>history.length>1?history.back():location.replace('/my.html');
  if(A.isAppShell()){location.replace('/');return}
  await A.init();if(!A.session){A.goLogin('/my-blocked-users.html');return}
  const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ let current='all',postRows=[],marketRows=[];
+ const allRows=()=>{
+   const by=new Map();
+   for(const r of postRows){
+     const id=String(r.blocked_user_id),cur=by.get(id)||{blocked_user_id:id,nickname:r.nickname||'FUNY PIN 회원',post:false,market:false,blocked_at:r.blocked_at};
+     cur.post=true;if(new Date(r.blocked_at)>new Date(cur.blocked_at))cur.blocked_at=r.blocked_at;by.set(id,cur);
+   }
+   for(const r of marketRows){
+     const id=String(r.blocked_user_id),cur=by.get(id)||{blocked_user_id:id,nickname:r.nickname||'FUNY PIN 회원',post:false,market:false,blocked_at:r.blocked_at};
+     cur.market=true;if(new Date(r.blocked_at)>new Date(cur.blocked_at))cur.blocked_at=r.blocked_at;by.set(id,cur);
+   }
+   return [...by.values()].sort((a,b)=>new Date(b.blocked_at)-new Date(a.blocked_at));
+ };
+ const rowsForCurrent=()=>current==='posts'?postRows.map(r=>({...r,post:true,market:false})):current==='market'?marketRows.map(r=>({...r,post:false,market:true})):allRows();
+ function scopeLabel(r){
+   if(r.post&&r.market)return'게시물 · 매물에서 차단';
+   if(r.market)return'TCG 거래 매물에서 차단';
+   return'게시물에서 차단';
+ }
+ function emptyHtml(){
+   const msg=current==='posts'?'게시물에서 차단한 사용자가 없어요':current==='market'?'매물에서 차단한 사용자가 없어요':'차단한 사용자가 없어요';
+   return '<div class="empty"><div class="empty-icon">✓</div><div class="empty-title">'+msg+'</div><div class="empty-text">필요한 경우 게시물 또는 매물 작성자를 차단할 수 있어요.</div></div>';
+ }
+ function render(){
+   const rows=rowsForCurrent();
+   if(!rows.length){root.innerHTML=emptyHtml();return}
+   root.innerHTML='<div class="list">'+rows.map(r=>{
+     const both=!!(r.post&&r.market),button=current==='all'&&both?'전체 해제':'차단 해제';
+     return '<article class="row" data-id="'+esc(r.blocked_user_id)+'" data-post="'+(r.post?'1':'0')+'" data-market="'+(r.market?'1':'0')+'"><div class="avatar">'+esc(String(r.nickname||'?').slice(0,1).toUpperCase())+'</div><div class="copy"><div class="name">'+esc(r.nickname||'FUNY PIN 회원')+'</div><div class="sub">'+scopeLabel(r)+'</div></div><button class="unblock" type="button">'+button+'</button></article>';
+   }).join('')+'</div>';
+   root.querySelectorAll('.unblock').forEach(btn=>btn.onclick=async()=>{
+     const row=btn.closest('[data-id]'),id=row?.dataset.id,name=row?.querySelector('.name')?.textContent||'';
+     if(!id)return;
+     const removePost=current==='posts'||(current==='all'&&row.dataset.post==='1');
+     const removeMarket=current==='market'||(current==='all'&&row.dataset.market==='1');
+     if(!confirm(name+'님의 '+(removePost&&removeMarket?'전체 차단을':'차단을')+' 해제할까요?'))return;
+     btn.disabled=true;
+     try{
+       const jobs=[];
+       if(removePost)jobs.push(A.client.from('community_user_blocks').delete().eq('blocker_user_id',A.session.user.id).eq('blocked_user_id',id));
+       if(removeMarket)jobs.push(A.client.from('market_user_blocks').delete().eq('blocker_user_id',A.session.user.id).eq('blocked_user_id',id));
+       const results=await Promise.all(jobs);
+       const failed=results.find(x=>x.error);if(failed)throw failed.error;
+       await load();
+     }catch(e){btn.disabled=false;alert('차단 해제에 실패했습니다.')}
+   });
+ }
+ tabs.forEach(b=>b.onclick=()=>{current=b.dataset.blockTab;tabs.forEach(x=>x.classList.toggle('active',x===b));render()});
  async function load(){
-  const {data,error}=await A.client.rpc('list_my_blocked_users');if(error)throw error;
-  const rows=data||[];
-  if(!rows.length){root.innerHTML='<div class="empty"><div class="empty-icon">✓</div><div class="empty-title">차단한 사용자가 없어요</div><div class="empty-text">FUNY TALK 게시물에서 불편한 작성자를 차단할 수 있어요.</div></div>';return}
-  root.innerHTML=rows.map(r=>'<article class="row" data-id="'+esc(r.blocked_user_id)+'"><div class="avatar">'+esc(String(r.nickname||'?').slice(0,1).toUpperCase())+'</div><div class="copy"><div class="name">'+esc(r.nickname||'FUNY PIN 회원')+'</div><div class="sub">FUNY TALK에서 차단한 사용자</div></div><button class="unblock" type="button">차단 해제</button></article>').join('');
-  root.querySelectorAll('.unblock').forEach(btn=>btn.onclick=async()=>{const row=btn.closest('[data-id]'),id=row?.dataset.id,name=row?.querySelector('.name')?.textContent||'';if(!id)return;if(!confirm(name+'님의 차단을 해제할까요?'))return;btn.disabled=true;const {error}=await A.client.from('community_user_blocks').delete().eq('blocker_user_id',A.session.user.id).eq('blocked_user_id',id);if(error){btn.disabled=false;alert('차단 해제에 실패했습니다.');return}row.remove();if(!root.querySelector('[data-id]'))load()});
+   const [posts,market]=await Promise.all([
+     A.client.rpc('list_my_blocked_users'),
+     A.client.rpc('list_my_market_blocked_users')
+   ]);
+   if(posts.error)throw posts.error;if(market.error)throw market.error;
+   postRows=posts.data||[];marketRows=market.data||[];render();
  }
  try{await load()}catch(e){root.innerHTML='<div class="empty"><div class="empty-title">불러오지 못했어요</div><div class="empty-text">잠시 후 다시 시도해주세요.</div></div>'}
 })();

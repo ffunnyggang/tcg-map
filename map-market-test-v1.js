@@ -556,7 +556,7 @@
     const el=document.createElement('div');el.id='marketRegisterOverlay';el.className='market-register-overlay';el.hidden=true;
     el.innerHTML='<section class="market-register-sheet"><div class="market-register-handle"></div><header class="market-register-head"><strong>매물 등록</strong><button type="button" class="market-register-close" aria-label="닫기">×</button></header><div class="market-register-scroll">'+
       '<div class="market-register-policy"><strong>개인 판매자 전용</strong><span>FUNY PIN은 외부 플랫폼에 등록한 본인 매물을 추가 노출하는 기능만 제공합니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
-      '<div id="marketIdentitySection" class="market-form-section market-identity-section"><span class="market-form-label">본인인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">본인인증 상태 확인 중...</strong><span id="marketIdentityHelp">안전한 개인 거래를 위해 최초 1회 휴대폰 본인인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>PASS/SMS 본인인증</button></div></div></div>'+
+      '<div id="marketIdentitySection" class="market-form-section market-identity-section"><span class="market-form-label">휴대폰 인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">휴대폰 인증 상태 확인 중...</strong><span id="marketIdentityHelp">거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>휴대폰 인증</button></div><div id="marketIdentitySms" class="market-identity-sms" hidden><div class="market-identity-phone-row"><input id="marketIdentityPhone" class="market-identity-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="01012345678"><button id="marketIdentitySend" class="market-identity-secondary" type="button">인증번호 받기</button></div><div id="marketIdentityOtpRow" class="market-identity-phone-row" hidden><input id="marketIdentityCode" class="market-identity-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="인증번호 6자리"><button id="marketIdentityVerify" class="market-identity-secondary" type="button">인증 확인</button></div><div id="marketIdentityMessage" class="market-identity-message" role="status" aria-live="polite"></div></div></div></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div class="market-preview-meta-row"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewSellerVerified" class="market-preview-seller-verified" hidden><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.2 5.6 9.8 11 4.4"/></svg><span id="marketPreviewSellerVerifiedText"></span></div></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
@@ -570,6 +570,9 @@
     el.addEventListener('click',e=>{if(e.target===el)closeRegister()});
     el.querySelectorAll('[data-register-type]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-register-type]').forEach(x=>x.classList.remove('active'));b.classList.add('active');registerType=b.dataset.registerType});
     $('#marketIdentityStart').onclick=startMarketIdentityVerification;
+    $('#marketIdentitySend').onclick=sendMarketIdentityOtp;
+    $('#marketIdentityVerify').onclick=verifyMarketIdentityOtp;
+    $('#marketIdentityPhone').addEventListener('input',()=>{const p=$('#marketIdentityPhone');if(p)p.dataset.e164='';const row=$('#marketIdentityOtpRow');if(row)row.hidden=true;setMarketIdentityMessage('')});
     $('#marketRegisterLoad').onclick=loadPreview;
     $('#marketRegisterUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadPreview()});
     $('#marketRegisterUrl').addEventListener('paste',e=>{
@@ -625,21 +628,30 @@
     if(msg&&!/Edge Function returned a non-2xx status code/i.test(msg))return msg;
     return fallback;
   }
-  function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,configured=registerIdentityConfigured,message=''}={}){
-    const section=$('#marketIdentitySection'),status=$('#marketIdentityStatus'),help=$('#marketIdentityHelp'),btn=$('#marketIdentityStart');
+  function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,message=''}={}){
+    const section=$('#marketIdentitySection'),status=$('#marketIdentityStatus'),help=$('#marketIdentityHelp'),btn=$('#marketIdentityStart'),sms=$('#marketIdentitySms');
     if(!section)return;
     section.classList.toggle('is-verified',!!verified);
-    if(status)status.textContent=message||(loading?'본인인증 상태 확인 중...':verified?'본인인증 완료 ✓':'본인인증이 필요합니다.');
+    if(status)status.textContent=message||(loading?'휴대폰 인증 상태 확인 중...':verified?'휴대폰 인증 완료 ✓':'휴대폰 인증이 필요합니다.');
     if(help)help.textContent=verified
-      ?'이 FUNY PIN 계정은 판매자 본인인증이 완료되었습니다.'
-      :configured===false&&!loading
-        ?'PortOne PASS/SMS 인증 채널 설정 후 사용할 수 있습니다.'
-        :'안전한 개인 거래를 위해 최초 1회 휴대폰 본인인증이 필요합니다.';
+      ?'인증된 휴대폰으로 거래 기능을 이용할 수 있습니다.'
+      :'거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.';
     if(btn){
       btn.hidden=!!verified;
-      btn.disabled=!!loading||(!verified&&configured===false);
-      btn.textContent=loading?'확인 중...':'PASS/SMS 본인인증';
+      btn.disabled=!!loading;
+      btn.textContent=loading?'확인 중...':'휴대폰 인증';
     }
+    if(sms&&verified){sms.hidden=true;sms.dataset.open=''}
+  }
+  function normalizeMarketPhone(raw){
+    const digits=String(raw||'').replace(/\D/g,'');
+    if(/^010\d{8}$/.test(digits))return '+82'+digits.slice(1);
+    if(/^8210\d{8}$/.test(digits))return '+'+digits;
+    return '';
+  }
+  function setMarketIdentityMessage(message='',error=false){
+    const el=$('#marketIdentityMessage');if(!el)return;
+    el.textContent=message;el.classList.toggle('error',!!error)
   }
   async function loadMarketIdentityStatus(){
     if(registerIdentityLoading)return registerIdentityVerified;
@@ -647,20 +659,20 @@
     try{
       const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'status'}});
       if(error)throw error;
-      registerIdentityVerified=!!data?.verified;
-      registerIdentityConfigured=!!data?.configured;
-      registerIdentityVerifiedAt=data?.verified_at||'';
-      setMarketIdentityUi({loading:false,verified:registerIdentityVerified,configured:registerIdentityConfigured});
+      registerIdentityVerified=!!data?.phone_verified;
+      registerIdentityConfigured=true;
+      registerIdentityVerifiedAt=data?.phone_verified_at||'';
+      setMarketIdentityUi({loading:false,verified:registerIdentityVerified});
       syncRegisterSubmitState();
       return registerIdentityVerified;
     }catch(e){
-      registerIdentityVerified=false;registerIdentityConfigured=false;
-      setMarketIdentityUi({loading:false,verified:false,configured:false,message:'본인인증 상태를 확인하지 못했습니다.'});
+      registerIdentityVerified=false;
+      setMarketIdentityUi({loading:false,verified:false,message:'휴대폰 인증 상태를 확인하지 못했습니다.'});
       syncRegisterSubmitState();
       return false;
     }finally{registerIdentityLoading=false}
   }
-  function saveMarketIdentityDraft(identityVerificationId=''){
+  function saveMarketIdentityDraft(){
     try{
       const draft={
         category:$('#marketRegisterCategory')?.value||'pokemon',
@@ -669,8 +681,7 @@
         place:$('#marketRegisterPlaceName')?.value||'',
         consent:!!$('#marketConsentAll')?.checked,
         lat:registerCoordinate?.lat??null,
-        lng:registerCoordinate?.lng??null,
-        identityVerificationId
+        lng:registerCoordinate?.lng??null
       };
       sessionStorage.setItem('funy_market_identity_draft',JSON.stringify(draft));
     }catch(_){}
@@ -694,72 +705,68 @@
     syncRegisterSubmitState();
     try{sessionStorage.removeItem('funy_market_identity_draft')}catch(_){}
   }
-  async function completeMarketIdentityVerification(identityVerificationId){
-    const id=String(identityVerificationId||'').trim();if(!id)return false;
-    const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'complete',identity_verification_id:id}});
-    if(error)throw error;
-    if(!data?.ok||!data?.verified)throw Error(data?.error||'본인인증 완료 상태를 확인하지 못했습니다.');
-    registerIdentityVerified=true;registerIdentityConfigured=true;registerIdentityVerifiedAt=data.verified_at||'';
-    setMarketIdentityUi({verified:true,configured:true,message:'본인인증 완료 ✓'});
-    syncRegisterSubmitState();
-    return true;
-  }
   async function startMarketIdentityVerification(){
     if(registerIdentityVerified)return;
-    const btn=$('#marketIdentityStart');if(btn){btn.disabled=true;btn.textContent='인증 준비 중...'}
-    setRegisterError('');
+    const sms=$('#marketIdentitySms'),phone=$('#marketIdentityPhone');
+    if(sms){sms.hidden=false;sms.dataset.open='1'}
+    setMarketIdentityMessage('');
+    setTimeout(()=>phone?.focus(),0)
+  }
+  async function sendMarketIdentityOtp(){
+    const phoneInput=$('#marketIdentityPhone'),send=$('#marketIdentitySend'),otpRow=$('#marketIdentityOtpRow');
+    const phone=normalizeMarketPhone(phoneInput?.value);
+    if(!phone){setMarketIdentityMessage('010으로 시작하는 휴대폰 번호를 정확히 입력해주세요.',true);return}
+    if(send){send.disabled=true;send.textContent='전송 중...'}
+    setMarketIdentityMessage('');
+    saveMarketIdentityDraft();
     try{
-      const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'prepare'}});
+      const {error}=await A.client.auth.updateUser({phone});
       if(error)throw error;
-      if(data?.already_verified){
-        registerIdentityVerified=true;registerIdentityConfigured=true;setMarketIdentityUi({verified:true,configured:true,message:'본인인증 완료 ✓'});syncRegisterSubmitState();return;
-      }
-      const identityVerificationId=String(data?.identity_verification_id||'').trim();
-      if(!identityVerificationId||!data?.store_id||!data?.channel_key)throw Error(data?.error||'본인인증 설정 정보를 확인하지 못했습니다.');
-      if(!window.PortOne?.requestIdentityVerification)throw Error('본인인증 모듈을 불러오지 못했습니다. 페이지를 새로고침해주세요.');
-      registerIdentityConfigured=true;registerIdentityPendingId=identityVerificationId;
-      saveMarketIdentityDraft(identityVerificationId);
-      const redirect=new URL(location.origin+'/shops-market-test.html');
-      const currentParams=new URLSearchParams(location.search);
-      ['app','appPlatform','lang'].forEach(k=>{const v=currentParams.get(k);if(v)redirect.searchParams.set(k,v)});
-      redirect.searchParams.set('identityReturn','1');
-      const redirectUrl=redirect.toString();
-      const response=await window.PortOne.requestIdentityVerification({
-        storeId:data.store_id,
-        identityVerificationId,
-        channelKey:data.channel_key,
-        customerId:String(A.session?.user?.id||'').replace(/-/g,'').slice(0,30),
-        redirectUrl
-      });
-      if(response?.code!==undefined)throw Error(response.message||'본인인증을 완료하지 못했습니다.');
-      await completeMarketIdentityVerification(response?.identityVerificationId||identityVerificationId);
+      if(phoneInput)phoneInput.dataset.e164=phone;
+      if(otpRow)otpRow.hidden=false;
+      setMarketIdentityMessage('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');
+      setTimeout(()=>$('#marketIdentityCode')?.focus(),0)
     }catch(e){
-      setRegisterError(await marketFunctionErrorMessage(e,'PASS/SMS 본인인증을 시작하지 못했습니다.'));
-    }finally{
-      if(btn&&!registerIdentityVerified){btn.disabled=!registerIdentityConfigured;btn.textContent='PASS/SMS 본인인증'}
-    }
+      const raw=String(e?.message||e||'');
+      const provider=/phone|sms|provider|unsupported|disabled/i.test(raw);
+      setMarketIdentityMessage(provider?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
+    }finally{if(send){send.disabled=false;send.textContent='인증번호 받기'}}
+  }
+  async function verifyMarketIdentityOtp(){
+    const phoneInput=$('#marketIdentityPhone'),codeInput=$('#marketIdentityCode'),verify=$('#marketIdentityVerify');
+    const phone=String(phoneInput?.dataset?.e164||normalizeMarketPhone(phoneInput?.value)||'');
+    const token=String(codeInput?.value||'').replace(/\D/g,'');
+    if(!phone){setMarketIdentityMessage('휴대폰 번호 인증번호를 먼저 요청해주세요.',true);return}
+    if(!/^\d{6}$/.test(token)){setMarketIdentityMessage('문자로 받은 인증번호 6자리를 입력해주세요.',true);return}
+    if(verify){verify.disabled=true;verify.textContent='확인 중...'}
+    setMarketIdentityMessage('');
+    try{
+      const {error}=await A.client.auth.verifyOtp({phone,token,type:'phone_change'});
+      if(error)throw error;
+      try{await A.client.auth.refreshSession()}catch(_){}
+      const {data,error:syncError}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'sync'}});
+      if(syncError)throw syncError;
+      if(!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
+      registerIdentityVerified=true;
+      registerIdentityConfigured=true;
+      registerIdentityVerifiedAt=data?.phone_verified_at||'';
+      setMarketIdentityUi({verified:true,message:'휴대폰 인증 완료 ✓'});
+      setMarketIdentityMessage('');
+      syncRegisterSubmitState();
+      marketToast('휴대폰 인증이 완료됐어요.');
+    }catch(e){
+      setMarketIdentityMessage(String(e?.message||e||'인증번호 확인에 실패했습니다.'),true)
+    }finally{if(verify){verify.disabled=false;verify.textContent='인증 확인'}}
   }
   async function handleMarketIdentityReturn(){
-    let q;try{q=new URLSearchParams(location.search)}catch(_){return false}
-    if(q.get('identityReturn')!=='1')return false;
-    let draft=null;try{draft=JSON.parse(sessionStorage.getItem('funy_market_identity_draft')||'null')}catch(_){}
-    const identityVerificationId=q.get('identityVerificationId')||q.get('identity_verification_id')||draft?.identityVerificationId||'';
-    const errorMessage=q.get('message')||q.get('pgMessage')||'';
-    let completeError='';
-    if(errorMessage)completeError=errorMessage;
-    else{
-      try{await completeMarketIdentityVerification(identityVerificationId)}catch(e){completeError=await marketFunctionErrorMessage(e,'본인인증 완료 상태를 확인하지 못했습니다.')}
-    }
     try{
       const u=new URL(location.href);
-      ['identityReturn','identityVerificationId','identity_verification_id','code','message','pgCode','pgMessage'].forEach(k=>u.searchParams.delete(k));
-      history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);
+      if(u.searchParams.get('identityReturn')==='1'){
+        ['identityReturn','identityVerificationId','identity_verification_id','code','message','pgCode','pgMessage'].forEach(k=>u.searchParams.delete(k));
+        history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash)
+      }
     }catch(_){}
-    await openRegister();
-    await restoreMarketIdentityDraft();
-    if(completeError)setRegisterError(completeError);
-    else marketToast('본인인증이 완료됐어요.');
-    return true;
+    return false
   }
 
   function sellerAccountProviderLabel(provider){
@@ -845,7 +852,7 @@
     syncRegisterSubmitState();
   }
   async function startExternalSellerVerification(){
-    if(!registerIdentityVerified){setRegisterError('먼저 PASS/SMS 본인인증을 완료해주세요.');return}
+    if(!registerIdentityVerified){setRegisterError('먼저 휴대폰 SMS 인증을 완료해주세요.');return}
     if(!registerProduct)return;
     const url=registerPreviewUrl||normalizedExternalMarketUrl($('#marketRegisterUrl')?.value);if(!url)return;
     const btn=$('#marketExternalVerifyStart');if(btn){btn.disabled=true;btn.textContent='인증 준비 중...'}
@@ -962,7 +969,7 @@
     syncRegisterSubmitState();
   }
   async function submitRegister(){
-    if(!registerIdentityVerified){setRegisterError('PASS/SMS 본인인증을 완료해주세요.');return}
+    if(!registerIdentityVerified){setRegisterError('휴대폰 SMS 인증을 완료해주세요.');return}
     if(!registerProduct)return;if(!registerExternalVerified){setRegisterError('외부 플랫폼 판매자 인증을 완료해주세요.');return}if(!registerCoordinate){setRegisterError('지도에서 거래 희망 위치를 선택해주세요.');return}if(!registerConsentsOk()){setRegisterError('등록 확인 항목에 전체 동의해주세요.');return}setRegisterError('');const btn=$('#marketRegisterSubmit');btn.disabled=true;btn.textContent='등록 중...';
     try{
       const profile=await A.getProfile(),user=A.session.user,nick=profile?.nickname||user.user_metadata?.nickname||user.user_metadata?.name||('FUNY회원'+String(user.id).replace(/-/g,'').slice(-4).toUpperCase());

@@ -2153,3 +2153,16 @@ body.market-test-page .market-detail-map-link span{
 body.market-test-page .market-detail-more-menu{
   width:178px!important
 }
+
+
+/* MARKET test bottom-sheet interaction repair v28 */
+html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle{
+  pointer-events:auto!important;
+  touch-action:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  cursor:pointer!important
+}
+html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle span{
+  pointer-events:none!important
+}

@@ -607,6 +607,20 @@
   }
   function closeRegister(){const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if($('#marketOverlay')?.hidden===false&&floatingRegister)floatingRegister.hidden=false;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow=''}
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
+  async function marketFunctionErrorMessage(error,fallback='요청을 처리하지 못했습니다.'){
+    try{
+      const ctx=error?.context;
+      if(ctx?.clone){
+        const res=ctx.clone();
+        const data=await res.json().catch(()=>null);
+        const msg=String(data?.error||data?.message||'').trim();
+        if(msg)return msg;
+      }
+    }catch(_){}
+    const msg=String(error?.message||'').trim();
+    if(msg&&!/Edge Function returned a non-2xx status code/i.test(msg))return msg;
+    return fallback;
+  }
   function registerConsentsOk(){return !!$('#marketConsentAll')?.checked}
   function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}
   function resetExternalVerification(message='외부 매물을 확인해주세요.'){
@@ -640,7 +654,7 @@
       if(code)code.textContent=data.verification_code||'';
       if(challenge)challenge.hidden=false;
       if(status)status.textContent=(data.seller_verification_scope==='account'?'플랫폼 계정 최초 인증':'이 매물 소유 인증')+'이 필요합니다.';
-    }catch(e){setRegisterError(String(e?.message||e))}
+    }catch(e){setRegisterError(await marketFunctionErrorMessage(e,'판매자 인증을 시작하지 못했습니다.'))}
     finally{if(btn&&!registerExternalVerified){btn.disabled=false;btn.textContent='판매자 인증 시작'}}
   }
   async function confirmExternalSellerVerification(){
@@ -654,7 +668,7 @@
         data.account_verified?providerName(registerProduct)+' 판매자 계정 인증 완료 ✓':'이 외부 매물의 판매자 인증 완료 ✓',
         {accountId:data.external_account_id||'',challengeId:data.challenge_id||registerChallengeId,scope:data.seller_verification_scope||'listing'}
       );
-    }catch(e){setRegisterError(String(e?.message||e))}
+    }catch(e){setRegisterError(await marketFunctionErrorMessage(e,'판매자 인증에 실패했습니다.'))}
     finally{if(btn){btn.disabled=false;btn.textContent='인증 확인'}}
   }
   async function copyExternalVerificationCode(){
@@ -765,7 +779,7 @@
       if(!registered?.ok||!registered?.listing?.id)throw Error(registered?.error||'매물을 등록하지 못했습니다.');
       const data=registered.listing;
       resetRegisterDraft();closeRegister();await loadRows();openDetail(data.id);
-    }catch(e){setRegisterError(String(e?.message||e))}
+    }catch(e){setRegisterError(await marketFunctionErrorMessage(e,'매물을 등록하지 못했습니다.'))}
     finally{btn.disabled=false;btn.textContent='매물 등록하기'}
   }
 

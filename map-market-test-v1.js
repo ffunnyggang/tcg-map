@@ -848,6 +848,19 @@
     const legacyAny=legacy.find(x=>String(x?.address||'').trim());
     return legacyAny?String(legacyAny.address).trim():'';
   }
+  async function persistResolvedMarketAddress(row,label){
+    const value=String(label||'').trim();
+    if(!row?.id||!value||isGenericMarketLocation(value)||row.road_address===value)return;
+    try{
+      const {data,error}=await A.client.from('market_listings')
+        .update({road_address:value,location_name:value,updated_at:new Date().toISOString()})
+        .eq('id',row.id)
+        .eq('seller_user_id',A.session.user.id)
+        .select('id,road_address')
+        .maybeSingle();
+      if(!error&&data?.id){row.road_address=value;row.location_name=value}
+    }catch(_){}
+  }
   async function reverseMarketAddress(row){
     const persistedRoad=String(row?.road_address||'').trim();
     if(persistedRoad&&!isGenericMarketLocation(persistedRoad)){row._displayAddress=persistedRoad;row._addressResolved=true;return persistedRoad}
@@ -874,7 +887,9 @@
     try{label=await call(roadFirst)}catch(_){}
     if(!label){await sleep(120);try{label=await call(addrFirst)}catch(_){}}
     if(label){
-      addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;return label;
+      addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;
+      persistResolvedMarketAddress(row,label);
+      return label;
     }
     row._displayAddress='';row._addressResolved=false;return '';
   }

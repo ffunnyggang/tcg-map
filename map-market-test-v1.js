@@ -359,6 +359,31 @@
     });
   }
 
+  function ensureMarketSheetControlBridge(){
+    const sheet=document.querySelector('.list-wrap'),handle=sheet?.querySelector('.map-sheet-handle'),api=window.FUNY_MAP_SHEET;
+    if(!sheet||!handle||!api?.setMode||!api?.getMode||handle.dataset.marketSheetBridge==='1')return;
+    handle.dataset.marketSheetBridge='1';
+    let startX=0,startY=0,moved=false,pointerId=null;
+    handle.addEventListener('pointerdown',e=>{
+      if(e.isPrimary===false)return;
+      pointerId=e.pointerId;startX=e.clientX;startY=e.clientY;moved=false;
+    },true);
+    handle.addEventListener('pointermove',e=>{
+      if(pointerId!==e.pointerId)return;
+      if(Math.hypot(e.clientX-startX,e.clientY-startY)>8)moved=true;
+    },true);
+    const end=e=>{if(pointerId===e.pointerId)pointerId=null};
+    handle.addEventListener('pointerup',end,true);
+    handle.addEventListener('pointercancel',end,true);
+    handle.addEventListener('click',e=>{
+      if(!window.matchMedia('(max-width:430px)').matches)return;
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(moved){moved=false;return}
+      const mode=api.getMode();
+      api.setMode(mode==='quarter'?'half':mode==='half'?'full':'half');
+    },true);
+  }
+
   function enableHorizontalScroller(el){
     if(!el||el.dataset.marketHorizontalScroll==='1')return;
     el.dataset.marketHorizontalScroll='1';
@@ -389,6 +414,7 @@
   }
   function bindHorizontalScrollers(){
     ['#filters','.qa-shop-tools','.qa-vending-tools','.market-sheet-tools','.market-overlay-filter'].forEach(sel=>document.querySelectorAll(sel).forEach(enableHorizontalScroller));
+    ensureMarketSheetControlBridge();
   }
 
   function compactOnScroll(target,scroller){
@@ -758,6 +784,7 @@
     let m=markers.get(x.id);
     if(!m){await syncMarkers();m=markers.get(x.id)}
     if(m)selectMarker(x,m);
+    ensureMarketSheetControlBridge();
     if(updateUrl)history.pushState({focus:'market',marketId:x.id},'',marketMapDeepLink(x.id));
     return true;
   }
@@ -1136,7 +1163,7 @@
   const tabs=await waitForQaTabs();
   if(tabs)setupMarketPanel(tabs);
   syncMarketSearchPlaceholder();syncMarketTabLabels();
-  ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();
+  ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();ensureMarketSheetControlBridge();
   if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
   setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   await loadRows();

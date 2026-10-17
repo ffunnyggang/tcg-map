@@ -184,9 +184,9 @@
     const m=markerMetrics(),vars='--pin-w:'+m.pinW+'px;--pin-h:'+m.pinH+'px;--marker-w:'+m.markerW+'px;--marker-h:'+m.markerH+'px';
     const content='<div class="market-map-pin'+(selected?' is-selected':'')+'" style="'+vars+'" aria-label="TCG 거래">'+
       '<svg viewBox="0 0 98 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
-      '<path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="#17151b"/>'+
+      '<path d="M49 5C23 5 2 26 2 52c0 35 47 77 47 77s47-42 47-77C96 26 75 5 49 5Z" fill="#E34D5C"/>'+
       '<path d="M6 52h28M64 52h28" stroke="#fff" stroke-width="4" stroke-linecap="round"/>'+
-      '<circle cx="49" cy="52" r="14.5" fill="#fff"/></svg><span class="market-map-pin-emoji" aria-hidden="true">🃏</span></div>';
+      '<circle cx="49" cy="52" r="14.5" fill="#fff"/></svg></div>';
     return{content,anchor:new naver.maps.Point(Math.round(m.markerW/2),m.markerH)};
   }
   function closePopup(){
@@ -817,6 +817,47 @@
     if(window.ReactNativeWebView){try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_EXTERNAL',url}));return}catch(_){}}
     window.open(url,'_blank','noopener');
   }
+  async function focusMapCoordinateWithCollapsedSheet(lat,lng,{zoom=17,animateSheet=true}={}){
+    const map=await waitForMap();
+    if(!map||!Number.isFinite(+lat)||!Number.isFinite(+lng))return false;
+    marketApplySheetMode('quarter',animateSheet);
+    await sleep(animateSheet?350:40);
+    const pos=new naver.maps.LatLng(+lat,+lng);
+    try{if(map.getZoom()!==zoom)map.setZoom(zoom)}catch(_){}
+    try{map.setCenter(pos)}catch(_){try{map.panTo(pos)}catch(_){}}
+    await sleep(90);
+
+    const mapEl=document.getElementById('naver-map')||document.querySelector('.map-wrap-hero');
+    const sheet=document.querySelector('.list-wrap');
+    const search=document.querySelector('.map-search-float');
+    const filter=document.querySelector('.map-filter-bar');
+    const rect=mapEl?.getBoundingClientRect?.();
+    if(rect&&rect.height>0){
+      const sheetTop=sheet?.getBoundingClientRect?.().top??(rect.top+rect.height*.75);
+      const topSafe=Math.max(
+        rect.top,
+        search?.getBoundingClientRect?.().bottom||rect.top,
+        filter?.getBoundingClientRect?.().bottom||rect.top
+      )+8;
+      const bottomSafe=Math.max(topSafe+40,Math.min(rect.bottom,sheetTop));
+      const targetY=(topSafe+bottomSafe)/2-rect.top;
+      const centerX=rect.width/2,centerY=rect.height/2,shiftY=centerY-targetY;
+      try{
+        const projection=map.getProjection?.();
+        if(projection?.fromOffsetToCoord){
+          const centerCoord=projection.fromOffsetToCoord(new naver.maps.Point(centerX,centerY+shiftY));
+          map.setCenter(centerCoord);
+        }else if(map.panBy){
+          map.panBy(new naver.maps.Point(0,Math.round(shiftY)));
+        }
+      }catch(_){
+        try{map.panBy?.(new naver.maps.Point(0,Math.round(shiftY)))}catch(__){}
+      }
+    }
+    window.FUNY_MAP_FOCUS_WITH_SHEET=focusMapCoordinateWithCollapsedSheet;
+    return true;
+  }
+
   function marketMapDeepLink(id){
     const u=new URL(location.href);
     u.hash='';
@@ -835,15 +876,13 @@
     marketLayerOn=true;
     if(layerChip){layerChip.classList.add('active');layerChip.setAttribute('aria-pressed','true')}
     await syncMarkers();
-    const map=await waitForMap();if(!map)return false;
-    const pos=new naver.maps.LatLng(+x.latitude,+x.longitude);
-    try{map.panTo(pos)}catch(_){map.setCenter(pos)}
-    try{if(map.getZoom()<17)map.setZoom(17)}catch(_){}
-    await sleep(80);
+    ensureMarketSheetControlBridge();
+    const focused=await focusMapCoordinateWithCollapsedSheet(+x.latitude,+x.longitude,{zoom:17,animateSheet:true});
+    if(!focused)return false;
     let m=markers.get(x.id);
     if(!m){await syncMarkers();m=markers.get(x.id)}
+    if(selectedMarkerId===x.id)closePopup();
     if(m)selectMarker(x,m);
-    ensureMarketSheetControlBridge();
     if(updateUrl)history.pushState({focus:'market',marketId:x.id},'',marketMapDeepLink(x.id));
     return true;
   }

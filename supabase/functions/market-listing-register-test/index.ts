@@ -15,6 +15,13 @@ const ANON_KEY=Deno.env.get("SUPABASE_ANON_KEY")!;
 const admin=createClient(SUPABASE_URL,SERVICE_ROLE,{auth:{persistSession:false,autoRefreshToken:false}});
 const clean=(v:unknown)=>String(v??"").trim();
 
+function accountVerifiedAt(user:any){
+  if(user?.email_confirmed_at)return user.email_confirmed_at;
+  const provider=clean(user?.app_metadata?.provider||user?.app_metadata?.providers?.[0]);
+  if(["google","apple","kakao"].includes(provider))return user?.created_at||new Date().toISOString();
+  return null;
+}
+
 async function currentUser(req:Request){
   const auth=req.headers.get("authorization")||"";
   const token=auth.replace(/^Bearer\s+/i,"");
@@ -32,6 +39,7 @@ async function requireVerifiedPhone(user:any){
   const now=new Date().toISOString();
   const {error:vError}=await admin.from("user_verifications").upsert({
     user_id:user.id,
+    account_verified_at:accountVerifiedAt(user),
     email_verified_at:user?.email_confirmed_at||null,
     phone_verified_at:verifiedAt,
     updated_at:now

@@ -74,7 +74,10 @@
 - [x] Supabase Authentication > Hooks > Send SMS HTTP Hook 활성화
 - [x] 개인정보처리방침에 SMS 위탁 사업자 SOLAPI(솔라피(주)) 명시
 - [ ] SOLAPI 세부 처리위탁/국외이전 여부 법무 최종 확인
-- [ ] Web / iOS WebView / AOS WebView 실제 발송·OTP 성공 QA (다음 단계)
+- [x] WEB 실제 SOLAPI SMS 발송 + Supabase OTP 확인 성공
+- [x] WEB OTP 성공 후 +82/82 번호형식 비교 오류 및 중복검증 idempotent 처리
+- [ ] iOS WebView 실제 SMS 발송·OTP QA
+- [ ] AOS WebView 실제 SMS 발송·OTP QA
 
 > 1차 오픈의 SMS OTP는 **해당 휴대폰 번호를 사용할 수 있음을 확인하는 절차**이며 PASS/KCP와 같은 법적 본인확인으로 표시하지 않는다. PASS/KCP 본인확인은 거래 규모와 운영 필요성에 따라 추후 검증 레벨 3으로 추가한다.
 

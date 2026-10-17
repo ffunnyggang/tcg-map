@@ -712,25 +712,39 @@
     setMarketIdentityMessage('');
     setTimeout(()=>phone?.focus(),0)
   }
+  let marketSmsResendTimer=0,marketSmsResendLeft=0;
+  function startMarketSmsResendCooldown(){
+    const send=$('#marketIdentitySend');if(!send)return;
+    clearInterval(marketSmsResendTimer);marketSmsResendLeft=60;send.disabled=true;send.textContent='60초 후 재전송';
+    marketSmsResendTimer=setInterval(()=>{
+      marketSmsResendLeft-=1;
+      if(marketSmsResendLeft<=0){clearInterval(marketSmsResendTimer);marketSmsResendTimer=0;send.disabled=false;send.textContent='인증번호 다시 받기';return}
+      send.textContent=marketSmsResendLeft+'초 후 재전송';
+    },1000)
+  }
   async function sendMarketIdentityOtp(){
     const phoneInput=$('#marketIdentityPhone'),send=$('#marketIdentitySend'),otpRow=$('#marketIdentityOtpRow');
+    if(send?.disabled||marketSmsResendLeft>0)return;
     const phone=normalizeMarketPhone(phoneInput?.value);
     if(!phone){setMarketIdentityMessage('010으로 시작하는 휴대폰 번호를 정확히 입력해주세요.',true);return}
     if(send){send.disabled=true;send.textContent='전송 중...'}
     setMarketIdentityMessage('');
     saveMarketIdentityDraft();
+    let sent=false;
     try{
       const {error}=await A.client.auth.updateUser({phone});
       if(error)throw error;
+      sent=true;
       if(phoneInput)phoneInput.dataset.e164=phone;
       if(otpRow)otpRow.hidden=false;
       setMarketIdentityMessage('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');
+      startMarketSmsResendCooldown();
       setTimeout(()=>$('#marketIdentityCode')?.focus(),0)
     }catch(e){
       const raw=String(e?.message||e||'');
       const provider=/phone|sms|provider|unsupported|disabled/i.test(raw);
       setMarketIdentityMessage(provider?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
-    }finally{if(send){send.disabled=false;send.textContent='인증번호 받기'}}
+    }finally{if(send&&!sent){send.disabled=false;send.textContent='인증번호 받기'}}
   }
   async function verifyMarketIdentityOtp(){
     const phoneInput=$('#marketIdentityPhone'),codeInput=$('#marketIdentityCode'),verify=$('#marketIdentityVerify');

@@ -121,10 +121,15 @@
       '<span class="market-card-badge type">'+esc(types[x.item_type]||'기타')+'</span>'+
       '</span>';
   }
+  const isGenericMarketLocation=v=>!String(v||'').trim()||['거래 희망 위치','위치를 선택해주세요.','주소 확인 중...'].includes(String(v||'').trim());
   function displayAddress(x){
-    if(x?._displayAddress)return x._displayAddress;
-    if(Number.isFinite(+x?.latitude)&&Number.isFinite(+x?.longitude))return '주소 확인 중...';
-    return x?.location_name||'거래 희망 위치';
+    const lat=Number(x?.latitude),lng=Number(x?.longitude);
+    if(Number.isFinite(lat)&&Number.isFinite(lng)){
+      if(x?._displayAddress&&!isGenericMarketLocation(x._displayAddress))return x._displayAddress;
+      return '주소 확인 중...';
+    }
+    const fallback=String(x?.location_name||'').trim();
+    return !isGenericMarketLocation(fallback)?fallback:'위치 정보 없음';
   }
   function cardHtml(x){
     return '<button type="button" class="market-card" data-market-id="'+esc(x.id)+'">'+
@@ -693,6 +698,12 @@
       $('#marketDetailHide')?.addEventListener('click',()=>hideOwnedListing(x.id));
     }
     $('#marketDetailFavorite')?.addEventListener('click',()=>toggleMarketFavorite(x.id));
+    reverseMarketAddress(x).then(address=>{
+      if(!address)return;
+      const loc=$('#marketDetailBody .market-detail-location-main');
+      if(loc)loc.textContent='⌖ '+address;
+      renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
+    }).catch(()=>{});
     updateMarketDetailStats(x.id,true);
     $('#marketDetailReport')?.addEventListener('click',()=>openMarketReport(x.id));
     const more=$('#marketDetailMore'),moreMenu=$('#marketDetailMoreMenu');
@@ -799,29 +810,36 @@
     return legacyAny?String(legacyAny.address).trim():'';
   }
   async function reverseMarketAddress(row){
-    const fallback=row?.location_name||'거래 희망 위치',lat=Number(row?.latitude),lng=Number(row?.longitude);
-    if(!Number.isFinite(lat)||!Number.isFinite(lng)){row._displayAddress=fallback;return fallback}
+    const lat=Number(row?.latitude),lng=Number(row?.longitude);
+    const plainFallback=String(row?.location_name||'').trim();
+    if(!Number.isFinite(lat)||!Number.isFinite(lng)){
+      const fallback=!isGenericMarketLocation(plainFallback)?plainFallback:'위치 정보 없음';
+      row._displayAddress=fallback;row._addressResolved=true;return fallback;
+    }
     const key=lat.toFixed(6)+','+lng.toFixed(6);
     if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;row._addressResolved=true;return v}
     const ready=await waitForMarketGeocoder();
-    if(!ready){row._displayAddress=fallback;row._addressResolved=false;return fallback}
-    return await new Promise(resolve=>{
-      const pos=new naver.maps.LatLng(lat,lng);
-      const orders=[naver.maps.Service.OrderType.ADDR,naver.maps.Service.OrderType.ROAD_ADDR].filter(Boolean).join(',');
+    if(!ready){row._displayAddress='';row._addressResolved=false;return ''}
+    const pos=new naver.maps.LatLng(lat,lng);
+    const call=orders=>new Promise(resolve=>{
       naver.maps.Service.reverseGeocode({coords:pos,orders},(status,res)=>{
-        let label='';
-        if(status!==naver.maps.Service.Status.ERROR&&res)label=marketAddressFromReverseResult(res);
-        if(label){
-          addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;resolve(label);
-        }else{
-          row._displayAddress=fallback;row._addressResolved=false;resolve(fallback);
-        }
+        if(status===naver.maps.Service.Status.ERROR||!res){resolve('');return}
+        resolve(marketAddressFromReverseResult(res)||'');
       });
     });
+    let label='';
+    const roadFirst=[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].filter(Boolean).join(',');
+    const addrFirst=[naver.maps.Service.OrderType.ADDR,naver.maps.Service.OrderType.ROAD_ADDR].filter(Boolean).join(',');
+    try{label=await call(roadFirst)}catch(_){}
+    if(!label){await sleep(120);try{label=await call(addrFirst)}catch(_){}}
+    if(label){
+      addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;return label;
+    }
+    row._displayAddress='';row._addressResolved=false;return '';
   }
   async function hydrateMarketAddresses(list){
     const queue=(list||[]).filter(x=>x?._addressResolved!==true&&Number.isFinite(+x.latitude)&&Number.isFinite(+x.longitude));let index=0;
-    const worker=async()=>{while(index<queue.length){const row=queue[index++];try{await reverseMarketAddress(row)}catch(_){row._displayAddress=row.location_name||'거래 희망 위치'}}};
+    const worker=async()=>{while(index<queue.length){const row=queue[index++];try{await reverseMarketAddress(row)}catch(_){row._displayAddress='';row._addressResolved=false}}};
     await Promise.all([worker(),worker(),worker()]);
   }
 

@@ -758,7 +758,6 @@
       '<section class="market-detail-section"><h3>거래 희망 위치</h3><div class="market-detail-map-card"><div id="marketDetailMap" class="market-detail-map"></div></div></section>'+
       '<section class="market-detail-guide"><strong>안내사항</strong><p>FUNY PIN은 외부 플랫폼의 매물을 연결해 보여주는 서비스이며 거래 당사자가 아닙니다. 실제 구매·결제·배송·환불은 '+esc(sourceName)+' 원본 매물에서 진행해주세요.</p><span>출처 · '+esc(sourceName)+' · 원본 마지막 확인 '+(x.source_last_checked_at?age(x.source_last_checked_at):'미확인')+'</span></section>'+
       (isOwner?'<div class="market-detail-owner-tools"><button type="button" id="marketDetailRefresh">원본 정보 새로고침</button><button type="button" id="marketDetailHide">매물 숨기기</button></div>':'')+
-      '<button type="button" id="marketDetailReport" class="market-detail-report-button">신고 · 권리침해 접수</button>'+
       '<div class="market-detail-bottom"><a id="marketDetailTrade" class="market-detail-trade '+providerClass+(ended?' disabled':'')+'" href="'+esc(x.external_url)+'" target="_blank" rel="noopener">'+(ended?'판매가 종료된 매물입니다':esc(sourceName)+'에서 구매하기')+'</a></div>';
     overlay.hidden=false;document.body.style.overflow='hidden';
     overlay.scrollTop=0;
@@ -798,7 +797,6 @@
       }
     })();
     updateMarketDetailStats(x.id,true);
-    $('#marketDetailReport')?.addEventListener('click',()=>openMarketReport(x.id));
     const more=$('#marketDetailMore'),moreMenu=$('#marketDetailMoreMenu');
     if(moreMenu)moreMenu.innerHTML=isOwner
       ?'<button type="button" class="danger" data-market-more-delete>삭제하기</button>'

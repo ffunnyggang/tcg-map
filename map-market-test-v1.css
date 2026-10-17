@@ -2309,3 +2309,13 @@ body.market-test-page> .market-overlay-register{
   transform:none!important
 }
 body.market-test-page> .market-overlay-register[hidden]{display:none!important}
+
+
+/* MARKET list spacing + layer order polish v35 */
+/* Match TCG MAP card-shop list spacing: one 9px parent gap, no per-card extra margin. */
+body.market-test-page .market-sheet-list{
+  gap:9px!important
+}
+body.market-test-page .market-overlay .market-card{
+  margin-top:0!important
+}

@@ -17,6 +17,13 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
 
 const clean = (v: unknown) => String(v ?? "").trim();
 
+function accountVerifiedAt(user:any){
+  if(user?.email_confirmed_at)return user.email_confirmed_at;
+  const provider=clean(user?.app_metadata?.provider||user?.app_metadata?.providers?.[0]);
+  if(["google","apple","kakao"].includes(provider))return user?.created_at||new Date().toISOString();
+  return null;
+}
+
 async function currentUser(req: Request) {
   const auth = req.headers.get("authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
@@ -43,12 +50,14 @@ async function syncVerification(user: any) {
   const { data:verification, error:verificationError } = await admin
     .from("user_verifications")
     .upsert({
-      user_id: user.id,
-      email_verified_at: emailVerifiedAt,
+      user_id:user.id,
+      account_verified_at:accountVerifiedAt(user),
+      account_verified_at: verification?.account_verified_at || accountVerifiedAt(user),
+    email_verified_at: emailVerifiedAt,
       phone_verified_at: phoneVerifiedAt,
       updated_at: now,
     }, { onConflict: "user_id" })
-    .select("email_verified_at,phone_verified_at,identity_verified_at,verification_level")
+    .select("account_verified_at,email_verified_at,phone_verified_at,identity_verified_at,verification_level")
     .single();
   if (verificationError) throw verificationError;
 

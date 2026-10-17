@@ -568,7 +568,7 @@
     else{registerPin.setPosition(pos);registerPin.setMap(registerMap)}
     syncRegisterSubmitState();
     clearTimeout(reverseTimer);reverseTimer=setTimeout(async()=>{
-      try{registerLocation=await reverseMarketRoadAddress(registerLat,registerLng)||''}catch(_){registerLocation=''}
+      try{registerLocation=(await reverseMarketRegistrationAddress(registerLat,registerLng)).displayAddress||''}catch(_){registerLocation=''}
       syncRegisterSubmitState();
     },180);
   }
@@ -595,10 +595,10 @@
       const urls=[...(Array.isArray(registerProduct.images)?registerProduct.images:[]),registerProduct.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
       const agreedAt=new Date().toISOString();
       const provider=registerProduct.provider||'daangn',externalListingId=registerProduct.external_listing_id||registerProduct.article_id||null;
-      const roadAddress=await reverseMarketRoadAddress(registerLat,registerLng);
-      if(!roadAddress)throw new Error('선택한 위치의 도로명 주소를 확인하지 못했습니다. 도로와 가까운 위치로 핀을 조금 이동한 뒤 다시 등록해주세요.');
-      registerLocation=roadAddress;
-      const row={seller_user_id:user.id,seller_nickname:nick,seller_type:'individual',individual_seller_confirmed_at:agreedAt,rights_republish_agreed_at:agreedAt,external_trade_only_agreed_at:agreedAt,provider,external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:externalListingId,title:registerProduct.title||'외부 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,road_address:roadAddress,location_name:roadAddress,fetched_at:registerProduct.fetched_at||agreedAt,source_last_checked_at:registerProduct.fetched_at||agreedAt,source_refresh_count:1,source_status:registerProduct.source_status||'unknown',updated_at:agreedAt};
+      const resolvedLocation=await reverseMarketRegistrationAddress(registerLat,registerLng);
+      if(!resolvedLocation.displayAddress)throw new Error('선택한 위치의 주소를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.');
+      registerLocation=resolvedLocation.displayAddress;
+      const row={seller_user_id:user.id,seller_nickname:nick,seller_type:'individual',individual_seller_confirmed_at:agreedAt,rights_republish_agreed_at:agreedAt,external_trade_only_agreed_at:agreedAt,provider,external_url:registerProduct.final_url||registerProduct.source_url||$('#marketRegisterUrl').value.trim(),external_listing_id:externalListingId,title:registerProduct.title||'외부 매물',description:registerProduct.description||null,price,currency:registerProduct.currency||'KRW',thumbnail_url:urls[0]||null,image_urls:urls,external_status:registerProduct.availability||null,direct_buy_available:registerDirectBuy,listing_status:'active',listing_side:'sell',tcg_category:$('#marketRegisterCategory').value,item_type:registerType,country_code:'KR',latitude:registerLat,longitude:registerLng,road_address:resolvedLocation.roadAddress||null,location_name:resolvedLocation.displayAddress,fetched_at:registerProduct.fetched_at||agreedAt,source_last_checked_at:registerProduct.fetched_at||agreedAt,source_refresh_count:1,source_status:registerProduct.source_status||'unknown',updated_at:agreedAt};
       let data=null,error=null;
       if(row.external_listing_id){
         const existing=await A.client.from('market_listings').select('id,source_refresh_count').eq('seller_user_id',user.id).eq('provider',provider).eq('external_listing_id',row.external_listing_id).maybeSingle();
@@ -831,13 +831,51 @@
       });
     });
     let label='';
-    try{label=await call(naver.maps.Service.OrderType.ROAD_ADDR)}catch(_){}
+    try{label=await call(naver.maps.Service.OrderType.ROAD_ADDR||'roadaddr')}catch(_){}
     if(!label){
       await sleep(120);
-      const orders=[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].filter(Boolean).join(',');
-      try{label=await call(orders)}catch(_){}
+      try{label=await call('roadaddr,addr,admcode,legalcode')}catch(_){}
     }
     return label||'';
+  }
+  function marketRegionAddressFromReverseResult(res){
+    const results=Array.isArray(res?.v2?.results)?res.v2.results:[];
+    const pick=names=>results.find(x=>names.includes(String(x?.name||'').toLowerCase()));
+    const item=pick(['addr','admcode','legalcode'])||results[0];
+    const region=item?.region||{};
+    const parts=[
+      region.area1?.name||'',
+      region.area2?.name||'',
+      region.area3?.name||'',
+      region.area4?.name||''
+    ].filter(Boolean);
+    return formatMarketRoadAddress(parts.join(' '));
+  }
+  function marketRoadLevelAddressFromReverseResult(res){
+    const results=Array.isArray(res?.v2?.results)?res.v2.results:[];
+    const road=results.find(x=>String(x?.name||'').toLowerCase()==='roadaddr');
+    if(!road)return '';
+    const region=road.region||{},land=road.land||{};
+    const parts=[region.area1?.name||'',region.area2?.name||''];
+    if(/(읍|면)$/.test(String(region.area3?.name||'')))parts.push(region.area3.name);
+    if(land.name)parts.push(land.name);
+    return formatMarketRoadAddress(parts.filter(Boolean).join(' '));
+  }
+  async function reverseMarketRegistrationAddress(lat,lng){
+    const a=Number(lat),b=Number(lng);
+    if(!Number.isFinite(a)||!Number.isFinite(b))return {displayAddress:'',roadAddress:''};
+    const ready=await waitForMarketGeocoder();if(!ready)return {displayAddress:'',roadAddress:''};
+    const pos=new naver.maps.LatLng(a,b);
+    const res=await new Promise(resolve=>{
+      naver.maps.Service.reverseGeocode({coords:pos,orders:'roadaddr,addr,admcode,legalcode'},(status,response)=>{
+        if(status===naver.maps.Service.Status.ERROR||!response){resolve(null);return}
+        resolve(response);
+      });
+    });
+    if(!res)return {displayAddress:'',roadAddress:''};
+    const roadAddress=marketRoadLevelAddressFromReverseResult(res);
+    const displayAddress=roadAddress||marketRegionAddressFromReverseResult(res);
+    return {displayAddress,roadAddress};
   }
   function marketAddressFromReverseResult(res){
     const direct=res?.v2?.address||{};
@@ -859,17 +897,20 @@
     const legacyAny=legacy.find(x=>String(x?.address||'').trim());
     return legacyAny?String(legacyAny.address).trim():'';
   }
-  async function persistResolvedMarketAddress(row,label){
-    const value=formatMarketRoadAddress(label);
-    if(!row?.id||!value||isGenericMarketLocation(value)||formatMarketRoadAddress(row.road_address)===value)return;
+  async function persistResolvedMarketLocation(row,displayAddress,roadAddress=''){
+    const display=formatMarketRoadAddress(displayAddress),road=formatMarketRoadAddress(roadAddress);
+    if(!row?.id||!display||isGenericMarketLocation(display))return;
+    if(formatMarketRoadAddress(row.location_name)===display&&formatMarketRoadAddress(row.road_address)===road)return;
     try{
+      const update={location_name:display,updated_at:new Date().toISOString()};
+      if(road)update.road_address=road;
       const {data,error}=await A.client.from('market_listings')
-        .update({road_address:value,location_name:value,updated_at:new Date().toISOString()})
+        .update(update)
         .eq('id',row.id)
         .eq('seller_user_id',A.session.user.id)
-        .select('id,road_address')
+        .select('id,road_address,location_name')
         .maybeSingle();
-      if(!error&&data?.id){row.road_address=value;row.location_name=value}
+      if(!error&&data?.id){row.location_name=display;if(road)row.road_address=road}
     }catch(_){}
   }
   async function reverseMarketAddress(row){
@@ -886,11 +927,11 @@
     const ready=await waitForMarketGeocoder();
     if(!ready){row._displayAddress='';row._addressResolved=false;return ''}
     try{
-      const road=await reverseMarketRoadAddress(lat,lng);
-      if(road){
-        addressCache.set(key,road);row._displayAddress=road;row._addressResolved=true;
-        persistResolvedMarketAddress(row,road);
-        return road;
+      const resolved=await reverseMarketRegistrationAddress(lat,lng);
+      if(resolved.displayAddress){
+        addressCache.set(key,resolved.displayAddress);row._displayAddress=resolved.displayAddress;row._addressResolved=true;
+        persistResolvedMarketLocation(row,resolved.displayAddress,resolved.roadAddress);
+        return resolved.displayAddress;
       }
     }catch(_){}
     const pos=new naver.maps.LatLng(lat,lng);

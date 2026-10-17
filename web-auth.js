@@ -143,7 +143,18 @@
     });
     const data=await res.json().catch(()=>({}));
     if(!res.ok){
-      const error=new Error(String(data?.error||data?.message||'요청을 처리하지 못했습니다.'));
+      const pickMessage=value=>{
+        if(value==null)return '';
+        if(typeof value==='string')return value;
+        if(typeof value==='object'){
+          const nested=value.message||value.error_description||value.error||value.msg;
+          if(nested&&nested!==value)return pickMessage(nested);
+          try{return JSON.stringify(value)}catch(_){return ''}
+        }
+        return String(value);
+      };
+      const message=pickMessage(data?.error)||pickMessage(data?.message)||pickMessage(data)||'요청을 처리하지 못했습니다.';
+      const error=new Error(message);
       error.status=res.status;error.data=data;throw error;
     }
     return data;

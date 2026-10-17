@@ -65,6 +65,17 @@ Secret은 저장소에 커밋하지 않는다.
    `https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/send-sms-solapi`
 6. Hook Secret 설정
 7. 동일한 Hook Secret을 Edge Function Secret `SEND_SMS_HOOK_SECRETS`에도 입력
+8. 실제 테스트 전에 DB 기능 플래그를 ON
+
+```sql
+update public.account_verification_settings
+set phone_sms_enabled = true,
+    sms_provider = 'solapi',
+    updated_at = now()
+where id = 1;
+```
+
+현재 운영 DB 기본값은 `false`이며, SOLAPI 계정/발신번호/API Key/Hook 설정이 모두 끝나기 전까지 사용자 화면에는 **준비 중**으로 노출된다.
 
 ## SMS 문구
 
@@ -122,3 +133,4 @@ Secret은 저장소에 커밋하지 않는다.
 - [ ] 이미 다른 FUNY PIN 계정에서 인증된 번호 차단
 - [ ] 10분 이상 미완료 인증 예약 정리
 - [ ] 개인정보처리방침 SOLAPI 위탁 내용 최종 확인
+- [ ] `account_verification_settings.phone_sms_enabled = true` 전환

@@ -22,6 +22,8 @@
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const MARKET_TEST_AUTH_BYPASS=false; // Real external seller ownership verification is enabled
   document.body.classList.add('market-test-page');
+  const marketEn=localStorage.getItem('funy-pin-lang')==='en';
+  const marketTr=(ko,enText)=>marketEn?enText:ko;
   const session=await A.init().catch(()=>null);
   if(!session){A.goLogin(location.pathname+location.search+location.hash);return}
   document.documentElement.classList.remove('market-test-locked');
@@ -556,7 +558,7 @@
     const el=document.createElement('div');el.id='marketRegisterOverlay';el.className='market-register-overlay';el.hidden=true;
     el.innerHTML='<section class="market-register-sheet"><div class="market-register-handle"></div><header class="market-register-head"><strong>매물 등록</strong><button type="button" class="market-register-close" aria-label="닫기">×</button></header><div class="market-register-scroll">'+
       '<div class="market-register-policy"><strong>개인 판매자 전용</strong><span>FUNY PIN은 외부 플랫폼에 등록한 본인 매물을 추가 노출하는 기능만 제공합니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
-      '<div id="marketIdentitySection" class="market-form-section market-identity-section" hidden><span class="market-form-label">휴대폰 인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">휴대폰 인증 상태 확인 중...</strong><span id="marketIdentityHelp">거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>휴대폰 인증</button></div><div id="marketIdentitySms" class="market-identity-sms" hidden><div class="market-identity-phone-row"><input id="marketIdentityPhone" class="market-identity-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="01012345678"><button id="marketIdentitySend" class="market-identity-secondary" type="button">인증번호 받기</button></div><div id="marketIdentityOtpRow" class="market-identity-phone-row" hidden><input id="marketIdentityCode" class="market-identity-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="인증번호 6자리"><button id="marketIdentityVerify" class="market-identity-secondary" type="button">인증 확인</button></div><div id="marketIdentityMessage" class="market-identity-message" role="status" aria-live="polite"></div></div></div></div>'+
+      '<div id="marketIdentitySection" class="market-form-section market-identity-section" hidden><span class="market-form-label">휴대폰 인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">휴대폰 인증 상태 확인 중...</strong><span id="marketIdentityHelp">거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>휴대폰 인증</button></div><div id="marketIdentitySms" class="market-identity-sms" hidden><div class="market-identity-phone-row"><input id="marketIdentityPhone" class="market-identity-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="휴대폰 번호 입력"><button id="marketIdentitySend" class="market-identity-secondary" type="button">인증번호 받기</button></div><div id="marketIdentityOtpRow" class="market-identity-phone-row" hidden><input id="marketIdentityCode" class="market-identity-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="인증번호 6자리"><button id="marketIdentityVerify" class="market-identity-secondary" type="button">인증 확인</button></div><div id="marketIdentityMessage" class="market-identity-message" role="status" aria-live="polite"></div></div></div></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div class="market-preview-meta-row"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewSellerVerified" class="market-preview-seller-verified" hidden><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.2 5.6 9.8 11 4.4"/></svg><span id="marketPreviewSellerVerifiedText"></span></div></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
@@ -637,12 +639,14 @@
       if(ctx?.clone){
         const res=ctx.clone();
         const data=await res.json().catch(()=>null);
-        const msg=String(data?.error||data?.message||'').trim();
-        if(msg)return msg;
+        const localized=String(marketEn?data?.error_en:data?.error||data?.message||'').trim();
+        if(localized)return localized;
       }
     }catch(_){}
-    const msg=String(error?.message||'').trim();
-    if(msg&&!/Edge Function returned a non-2xx status code/i.test(msg))return msg;
+    const raw=String(error?.message||'').trim();
+    if(/Token has expired or is invalid|otp_expired/i.test(raw))return marketTr('인증번호가 올바르지 않거나 만료되었습니다. 새 인증번호를 받아 다시 시도해주세요.','The verification code is incorrect or has expired. Request a new code and try again.');
+    if(/rate.?limit/i.test(raw))return marketTr('인증번호 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.','Too many verification code requests. Please try again later.');
+    if(raw&&!/Edge Function returned a non-2xx status code/i.test(raw)&&!/PHONE_[A-Z_]+/.test(raw))return raw;
     return fallback;
   }
   function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,configured=registerIdentityConfigured,message=''}={}){
@@ -748,7 +752,7 @@
   }
   async function startMarketIdentityVerification(){
     if(registerIdentityVerified)return;
-    if(!registerIdentityConfigured){setRegisterError('휴대폰 SMS 인증은 현재 준비 중입니다.');return}
+    if(!registerIdentityConfigured){setRegisterError(marketTr('휴대폰 SMS 인증을 준비 중입니다. 잠시 후 다시 시도해주세요.','Phone SMS verification is being prepared. Please try again later.'));return}
     const sms=$('#marketIdentitySms'),phone=$('#marketIdentityPhone');
     if(sms){sms.hidden=false;sms.dataset.open='1'}
     setMarketIdentityMessage('');
@@ -768,7 +772,7 @@
     const phoneInput=$('#marketIdentityPhone'),send=$('#marketIdentitySend'),otpRow=$('#marketIdentityOtpRow');
     if(send?.disabled||marketSmsResendLeft>0)return;
     const phone=normalizeMarketPhone(phoneInput?.value);
-    if(!phone){setMarketIdentityMessage('010으로 시작하는 휴대폰 번호를 정확히 입력해주세요.',true);return}
+    if(!phone){setMarketIdentityMessage(marketTr('휴대폰 번호를 정확히 입력해주세요.','Please enter a valid phone number.'),true);return}
     if(send){send.disabled=true;send.textContent='전송 중...'}
     setMarketIdentityMessage('');
     saveMarketIdentityDraft();
@@ -787,15 +791,15 @@
       startMarketSmsResendCooldown();
       setTimeout(()=>$('#marketIdentityCode')?.focus(),0)
     }catch(e){
-      setMarketIdentityMessage(await marketFunctionErrorMessage(e,'인증번호를 전송하지 못했습니다.'),true)
+      setMarketIdentityMessage(await marketFunctionErrorMessage(e,marketTr('인증번호를 전송하지 못했습니다. 잠시 후 다시 시도해주세요.','We couldn\'t send the verification code. Please try again shortly.')),true)
     }finally{if(send&&!sent&&!registerIdentityVerified){send.disabled=false;send.textContent='인증번호 받기'}}
   }
   async function verifyMarketIdentityOtp(){
     const phoneInput=$('#marketIdentityPhone'),codeInput=$('#marketIdentityCode'),verify=$('#marketIdentityVerify');
     const phone=String(phoneInput?.dataset?.e164||normalizeMarketPhone(phoneInput?.value)||'');
     const token=String(codeInput?.value||'').replace(/\D/g,'');
-    if(!phone){setMarketIdentityMessage('휴대폰 번호 인증번호를 먼저 요청해주세요.',true);return}
-    if(!/^\d{6}$/.test(token)){setMarketIdentityMessage('문자로 받은 인증번호 6자리를 입력해주세요.',true);return}
+    if(!phone){setMarketIdentityMessage(marketTr('먼저 인증번호를 요청해주세요.','Please request a verification code first.'),true);return}
+    if(!/^\d{6}$/.test(token)){setMarketIdentityMessage(marketTr('문자로 받은 인증번호 6자리를 입력해주세요.','Enter the 6-digit verification code from the text message.'),true);return}
     if(verify){verify.disabled=true;verify.textContent='확인 중...'}
     setMarketIdentityMessage('');
     try{
@@ -809,7 +813,7 @@
       syncRegisterSubmitState();
       marketToast('휴대폰 인증이 완료됐어요.');
     }catch(e){
-      setMarketIdentityMessage(String(e?.message||e||'인증번호 확인에 실패했습니다.'),true)
+      setMarketIdentityMessage(await marketFunctionErrorMessage(e,marketTr('인증번호를 확인하지 못했습니다. 다시 시도해주세요.','We couldn\'t verify the code. Please try again.')),true)
     }finally{if(verify){verify.disabled=false;verify.textContent='인증 확인'}}
   }
   async function handleMarketIdentityReturn(){

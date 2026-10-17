@@ -88,14 +88,16 @@
 - [ ] iOS/AOS WebView 인증 왕복 QA
 
 ### P0 — 외부 플랫폼 계정 소유 확인
-- [ ] 플랫폼별 최초 외부 판매자 계정 인증
-- [ ] 인증코드를 본인 외부 매물 설명에 임시 기재
-- [ ] FUNY PIN 서버 재조회로 인증코드 확인
-- [ ] 성공 시 `provider + external_seller_id + FUNY PIN user_id` 연결
-- [ ] `provider + external_seller_id` UNIQUE 처리
-- [ ] 동일 외부 계정이 다른 FUNY PIN 계정에 중복 연결되지 않도록 차단
-- [ ] 인증된 외부 계정의 추가 매물은 seller ID 일치 시 재인증 생략
-- [ ] 외부 seller ID가 안정적으로 확인되지 않는 플랫폼은 매물별 인증 유지
+- [x] 플랫폼별 최초 외부 판매자 계정 인증
+- [x] 인증코드를 본인 외부 매물 설명에 임시 기재
+- [x] FUNY PIN 서버 재조회로 인증코드 확인
+- [x] 성공 시 `provider + seller identity + FUNY PIN user_id` 연결
+- [x] `provider + external_seller_id` UNIQUE 처리
+- [x] 동일 외부 계정이 다른 FUNY PIN 계정에 중복 연결되지 않도록 차단(고유 seller ID 제공 플랫폼)
+- [x] 인증된 외부 계정의 추가 매물은 매물 불러오기 시 자동 판정하여 재인증 생략
+- [x] 매물 등록 서버에서도 기존 인증 계정을 자동 재조회하여 프론트 상태에 의존하지 않음
+- [x] BREAK는 seller ID 미노출 시 동일 FUNY PIN 사용자 + 판매자 핸들 fingerprint로 최초 인증 이력 재사용
+- [ ] iOS/AOS WebView에서 플랫폼별 최초 1회 판매자 인증 재사용 QA
 
 플랫폼별 현재 판단:
 - 번개장터: 고유 `uid` 확인 가능 → 계정 1회 인증 구조 적용 가능

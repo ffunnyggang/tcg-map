@@ -2339,3 +2339,64 @@ body.market-test-page .market-overlay .market-card{
   color:#4d8c60;
   font-weight:850
 }
+
+
+/* MARKET seller verification flow v39 */
+.market-preview-meta-row{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  min-width:0!important;
+  margin-bottom:9px!important
+}
+.market-preview-meta-row .market-preview-provider{
+  flex:0 0 auto!important;
+  margin-bottom:0!important
+}
+.market-preview-seller-verified{
+  min-width:0!important;
+  margin-left:auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:4px!important;
+  color:#4d8c60!important;
+  font-size:9.2px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+  white-space:nowrap!important
+}
+.market-preview-seller-verified[hidden]{display:none!important}
+.market-preview-seller-verified svg{
+  width:12px!important;
+  height:12px!important;
+  flex:0 0 12px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important
+}
+.market-seller-verify-section[hidden]{display:none!important}
+.market-seller-verify-section .market-external-verify-card{padding:12px!important}
+.market-seller-verify-section .market-external-verify-status{
+  color:#756e7b!important;
+  font-size:10px!important;
+  line-height:1.5!important
+}
+.market-seller-verify-section .market-external-verify-challenge{
+  margin-top:0!important;
+  padding-top:0!important;
+  border-top:0!important
+}
+.market-seller-verify-section .market-external-code-row{margin-top:9px!important}
+.market-seller-verify-section .market-external-verify-challenge small{
+  margin-top:9px!important;
+  color:#8d8591!important;
+  font-size:9px!important;
+  line-height:1.55!important
+}
+.market-seller-verify-section .market-external-verify-confirm{
+  margin-top:10px!important
+}

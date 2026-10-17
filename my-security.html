@@ -18,7 +18,7 @@
 .badge{flex:0 0 auto;padding:6px 8px;border-radius:999px;background:#f1eef4;color:#756e79;font-size:9px;font-weight:850}.badge.ok{background:#edf7f0;color:#4d8c60}.badge.future{background:#f4f1fb;color:#7356b5}
 .phone-box{margin-top:10px;padding:14px;border:1px solid #e8e3ed;border-radius:16px;background:#faf9fb}.phone-box[hidden]{display:none!important}.input-row{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:7px;margin-top:8px}.input-row:first-child{margin-top:0}.input{width:100%;height:42px;border:1px solid #ddd7e2;border-radius:11px;padding:0 11px;outline:0;font-size:12px}.input:focus{border-color:#8d76d1}.btn{height:42px;border:0;border-radius:11px;background:#28232e;color:#fff;font-size:10px;font-weight:850;cursor:pointer}.btn:disabled{opacity:.45}.message{min-height:18px;margin-top:8px;color:#766f7b;font-size:10px;line-height:1.5}.message.error{color:#b42318}
 .action{border:0;background:transparent;color:#6749bd;font-size:10px;font-weight:900;cursor:pointer;padding:8px 0}.note{margin-top:18px;padding:12px 13px;border-radius:14px;background:#f7f5f8;color:#817986;font-size:9.5px;line-height:1.6}
-.loading{padding:50px 0;text-align:center;color:#918a96;font-size:11px}
+.loading{padding:50px 0;text-align:center;color:#918a96;font-size:11px}html.app-shell .head{display:none!important}html.app-shell .page{padding-top:18px}
 @media(max-width:360px){.input-row{grid-template-columns:1fr}.btn{width:100%}}
 </style>
 </head>
@@ -54,7 +54,7 @@
     return data||{}
   }
   async function render(){
-    const fresh=(await A.client.auth.getUser()).data?.user||A.session.user;
+    const fresh=(await A.getUser())||A.session.user;
     const v=await verification();
     const accountOk=Number(v.verification_level||0)>=1;
     const phoneOk=!!v.phone_verified_at&&!!fresh.phone_confirmed_at;

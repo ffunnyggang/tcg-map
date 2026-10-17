@@ -717,12 +717,24 @@
       $('#marketDetailHide')?.addEventListener('click',()=>hideOwnedListing(x.id));
     }
     $('#marketDetailFavorite')?.addEventListener('click',()=>toggleMarketFavorite(x.id));
-    reverseMarketAddress(x).then(address=>{
+    (async()=>{
+      let address=await reverseMarketAddress(x).catch(()=> '');
+      if(!address||isGenericMarketLocation(address)){
+        const resolved=await reverseMarketRegistrationAddress(x.latitude,x.longitude,true).catch(()=>({displayAddress:'',roadAddress:''}));
+        if(resolved.displayAddress){
+          address=resolved.displayAddress;x._displayAddress=address;x._addressResolved=true;
+          persistResolvedMarketLocation(x,address,resolved.roadAddress);
+        }
+      }
       if(!address)return;
       const loc=$('#marketDetailBody .market-detail-location-main');
       if(loc)loc.textContent='⌖ '+address;
       renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
-    }).catch(()=>{});
+      if(selectedMarkerId===x.id){
+        const m=markers.get(x.id);
+        if(m){try{popup?.close()}catch(_){}popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8)});popup.open(window.FUNY_NAVER_MAP_API?.getMap?.(),m)}
+      }
+    })();
     updateMarketDetailStats(x.id,true);
     $('#marketDetailReport')?.addEventListener('click',()=>openMarketReport(x.id));
     const more=$('#marketDetailMore'),moreMenu=$('#marketDetailMoreMenu');
@@ -861,21 +873,38 @@
     if(land.name)parts.push(land.name);
     return formatMarketRoadAddress(parts.filter(Boolean).join(' '));
   }
-  async function reverseMarketRegistrationAddress(lat,lng){
+  async function reverseMarketRegistrationAddress(lat,lng,allowServerFallback=true){
     const a=Number(lat),b=Number(lng);
-    if(!Number.isFinite(a)||!Number.isFinite(b))return {displayAddress:'',roadAddress:''};
-    const ready=await waitForMarketGeocoder();if(!ready)return {displayAddress:'',roadAddress:''};
-    const pos=new naver.maps.LatLng(a,b);
-    const res=await new Promise(resolve=>{
-      naver.maps.Service.reverseGeocode({coords:pos,orders:'roadaddr,addr,admcode,legalcode'},(status,response)=>{
-        if(status===naver.maps.Service.Status.ERROR||!response){resolve(null);return}
-        resolve(response);
-      });
-    });
-    if(!res)return {displayAddress:'',roadAddress:''};
-    const roadAddress=marketRoadLevelAddressFromReverseResult(res);
-    const displayAddress=roadAddress||marketRegionAddressFromReverseResult(res);
-    return {displayAddress,roadAddress};
+    if(!Number.isFinite(a)||!Number.isFinite(b))return {displayAddress:'',roadAddress:'',source:''};
+    let displayAddress='',roadAddress='',source='';
+    const ready=await waitForMarketGeocoder();
+    if(ready){
+      try{
+        const pos=new naver.maps.LatLng(a,b);
+        const res=await new Promise(resolve=>{
+          naver.maps.Service.reverseGeocode({coords:pos,orders:'roadaddr,addr,admcode,legalcode'},(status,response)=>{
+            if(status===naver.maps.Service.Status.ERROR||!response){resolve(null);return}
+            resolve(response);
+          });
+        });
+        if(res){
+          roadAddress=marketRoadLevelAddressFromReverseResult(res);
+          displayAddress=roadAddress||marketRegionAddressFromReverseResult(res);
+          if(displayAddress)source='naver';
+        }
+      }catch(_){}
+    }
+    if(!displayAddress&&allowServerFallback){
+      try{
+        const {data,error}=await A.client.functions.invoke('market-reverse-geocode-test',{body:{lat:a,lng:b}});
+        if(!error&&data?.ok){
+          displayAddress=formatMarketRoadAddress(data.display_address||'');
+          roadAddress=formatMarketRoadAddress(data.road_address||'');
+          if(displayAddress)source=data.source||'server';
+        }
+      }catch(_){}
+    }
+    return {displayAddress,roadAddress,source};
   }
   function marketAddressFromReverseResult(res){
     const direct=res?.v2?.address||{};
@@ -927,7 +956,7 @@
     const ready=await waitForMarketGeocoder();
     if(!ready){row._displayAddress='';row._addressResolved=false;return ''}
     try{
-      const resolved=await reverseMarketRegistrationAddress(lat,lng);
+      const resolved=await reverseMarketRegistrationAddress(lat,lng,false);
       if(resolved.displayAddress){
         addressCache.set(key,resolved.displayAddress);row._displayAddress=resolved.displayAddress;row._addressResolved=true;
         persistResolvedMarketLocation(row,resolved.displayAddress,resolved.roadAddress);

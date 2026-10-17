@@ -128,6 +128,26 @@
       return user||currentSession?.user||null;
     }catch(_){return currentSession?.user||null}
   }
+  async function invokeFunction(name,body){
+    await init();
+    const token=nativeAccessToken||currentSession?.access_token||'';
+    if(!token)throw new Error('LOGIN_REQUIRED');
+    const res=await fetch(SUPABASE_URL+'/functions/v1/'+encodeURIComponent(String(name||'')),{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+token,
+        'apikey':SUPABASE_KEY,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(body||{})
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){
+      const error=new Error(String(data?.error||data?.message||'요청을 처리하지 못했습니다.'));
+      error.status=res.status;error.data=data;throw error;
+    }
+    return data;
+  }
   async function getProfile(){
     await init();const user=await getUser();if(!user)return null;
     const {data,error}=await client.from('profiles').select('nickname,avatar_url').eq('user_id',user.id).maybeSingle();
@@ -138,7 +158,7 @@
 
   window.FUNY_WEB_AUTH={
     init,get client(){return client},get session(){return currentSession},getSession:async()=>{await init();return currentSession},
-    getUser,getProfile,signInSocial,signOut,goLogin,requireLogin,
+    getUser,getProfile,invokeFunction,signInSocial,signOut,goLogin,requireLogin,
     consumeReturn,rememberReturn,isAppShell,onChange(fn){listeners.add(fn);return()=>listeners.delete(fn)}
   };
   init().catch(e=>console.warn('[FUNY WEB AUTH] init failed',e));

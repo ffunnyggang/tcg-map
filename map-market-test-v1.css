@@ -2288,14 +2288,14 @@ body.market-test-page .market-detail-description .market-detail-desc{
 
 /* MARKET layer + floating register polish v33 */
 body.market-test-page .market-layer-chip.live-temp-layer.active{
-  border-color:#e34d5c!important;
-  background:#e34d5c!important;
-  color:#fff!important;
-  box-shadow:0 7px 20px rgba(227,77,92,.24),inset 0 1px 0 rgba(255,255,255,.20)!important
+  border-color:rgba(227,77,92,.72)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(255,246,247,.72))!important;
+  color:#d74657!important;
+  box-shadow:0 6px 18px rgba(205,70,86,.12),inset 0 1px 0 rgba(255,255,255,.96)!important
 }
 body.market-test-page .market-layer-chip.live-temp-layer.active .market-layer-emoji,
 body.market-test-page .market-layer-chip.live-temp-layer.active .qa-layer-count{
-  color:#fff!important;
+  color:#d74657!important;
   opacity:1!important
 }
 

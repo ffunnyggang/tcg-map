@@ -26,7 +26,7 @@ function aggregateFaceSamples(samples){
  return {features:Object.fromEntries(Object.keys(samples[0].features).map(k=>[k,median(samples.map(s=>s.features[k]))])),rgb:[0,1,2].map(i=>Math.round(median(samples.map(s=>s.rgb[i]))))};
 }
 class LiveFaceScan{
- constructor(hooks){this.hooks=hooks;this.epoch=0;this.active=false;this.stream=null;this.samples=[];this.misses=0;this.timer=null;this.deadline=null;this.now=hooks.now||(()=>performance.now());this.schedule=hooks.schedule||((fn,ms)=>setTimeout(fn,ms));this.cancel=hooks.cancel||clearTimeout;}
+ constructor(hooks){this.hooks=hooks;this.epoch=0;this.active=false;this.stream=null;this.samples=[];this.misses=0;this.timer=null;this.deadline=null;this.now=hooks.now||(()=>performance.now());this.schedule=hooks.schedule||((fn,ms)=>setTimeout(fn,ms));this.cancel=hooks.cancel||(id=>clearTimeout(id));}
  valid(token){return this.active&&token===this.epoch;}
  stop(){this.active=false;this.epoch++;if(this.timer!==null)this.cancel(this.timer);if(this.deadline!==null)this.cancel(this.deadline);this.timer=this.deadline=null;const stream=this.stream;this.stream=null;if(stream)stream.getTracks().forEach(t=>t.stop());this.samples=[];this.misses=0;this.hooks.close();}
  fail(error,token){if(!this.valid(token))return;this.stop();this.hooks.onError(error);}
@@ -39,7 +39,7 @@ class LiveFaceScan{
    await this.hooks.open(stream);if(!this.valid(token))return;
    this.hooks.onUpdate({stage:'loading',progress:0,text:'얼굴 측정 도구를 준비하고 있어요…'});
    await this.hooks.prepare(text=>{if(this.valid(token))this.hooks.onUpdate({stage:'loading',progress:0,text});});if(!this.valid(token))return;
-   this.cancel(this.deadline);this.deadline=this.schedule(()=>this.fail(new Error('측정이 오래 걸리고 있어요. 밝은 곳에서 얼굴을 정면으로 맞춘 뒤 다시 시도해주세요.'),token),45000);
+   this.hooks.onDiagnostic?.({stage:'MODELS_READY'});this.cancel(this.deadline);this.deadline=this.schedule(()=>this.fail(new Error('측정이 오래 걸리고 있어요. 밝은 곳에서 얼굴을 정면으로 맞춘 뒤 다시 시도해주세요.'),token),45000);
    this.hooks.onUpdate({stage:'guide',progress:0,text:'얼굴을 가이드 안에 넣어주세요.'});this.timer=this.schedule(()=>this.tick(token),0);
   }catch(error){this.fail(error,token);}
  }

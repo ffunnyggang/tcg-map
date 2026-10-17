@@ -659,8 +659,7 @@
     if(registerIdentityLoading)return registerIdentityVerified;
     registerIdentityLoading=true;setMarketIdentityUi({loading:true});
     try{
-      const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'status'}});
-      if(error)throw error;
+      const data=await A.invokeFunction('account-verification',{action:'status'});
       registerIdentityVerified=!!data?.phone_verified;
       registerIdentityConfigured=data?.phone_sms_enabled===true;
       registerIdentityVerifiedAt=data?.phone_verified_at||'';
@@ -735,8 +734,7 @@
     saveMarketIdentityDraft();
     let sent=false;
     try{
-      const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'send_phone_otp',phone}});
-      if(error)throw error;
+      const data=await A.invokeFunction('account-verification',{action:'send_phone_otp',phone});
       if(!data?.ok)throw Error(data?.error||'인증번호를 전송하지 못했습니다.');
       if(data?.already_verified){
         registerIdentityVerified=true;registerIdentityConfigured=true;registerIdentityVerifiedAt=data?.phone_verified_at||'';
@@ -761,8 +759,7 @@
     if(verify){verify.disabled=true;verify.textContent='확인 중...'}
     setMarketIdentityMessage('');
     try{
-      const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'verify_phone_otp',phone,token}});
-      if(error)throw error;
+      const data=await A.invokeFunction('account-verification',{action:'verify_phone_otp',phone,token});
       if(!data?.ok||!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
       registerIdentityVerified=true;
       registerIdentityConfigured=true;

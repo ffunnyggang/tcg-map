@@ -31,6 +31,27 @@ async function sha256(value: string) {
   return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+function normalizeSellerHandle(value: unknown) {
+  return clean(value).normalize("NFKC").toLowerCase().replace(/\s+/g, " ");
+}
+
+async function sellerAccountIdentity(preview: any) {
+  const stableSellerId = clean(preview?.external_seller_id);
+  if (stableSellerId) {
+    return { key: stableSellerId, source: "seller_id", reusable: true };
+  }
+  const provider = clean(preview?.provider);
+  const handle = normalizeSellerHandle(preview?.external_seller_handle);
+  if (provider === "break" && handle) {
+    return {
+      key: "handle:" + await sha256(provider + ":" + handle),
+      source: "seller_handle_fingerprint",
+      reusable: true,
+    };
+  }
+  return { key: null, source: "listing", reusable: false };
+}
+
 function makeCode() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const a = new Uint32Array(6);
@@ -101,7 +122,7 @@ async function previewListing(auth: string, url: string) {
 async function accountConflict(provider: string, sellerId: string, userId: string) {
   const { data, error } = await admin
     .from("market_external_seller_accounts")
-    .select("id,user_id,verification_status")
+    .select("id,user_id,provider,external_seller_id,external_seller_handle,verification_status,verified_at,last_checked_at")
     .eq("provider", provider)
     .eq("external_seller_id", sellerId)
     .maybeSingle();
@@ -130,7 +151,7 @@ Deno.serve(async (req: Request) => {
           .eq("user_id", user.id)
           .maybeSingle(),
         admin.from("market_external_seller_accounts")
-          .select("id,provider,external_seller_id,verification_status,verified_at,last_checked_at")
+          .select("id,provider,external_seller_id,external_seller_handle,verification_status,verified_at,last_checked_at")
           .eq("user_id", user.id)
           .eq("verification_status", "verified")
           .order("verified_at", { ascending: false }),
@@ -145,8 +166,54 @@ Deno.serve(async (req: Request) => {
       }), { headers: cors });
     }
 
-    if ((action === "start" || action === "verify") && !phoneState.verified) {
+    if ((action === "start" || action === "verify" || action === "resolve") && !phoneState.verified) {
       throw new Error("판매자 인증 전 휴대폰 SMS 인증을 완료해주세요.");
+    }
+
+    if (action === "resolve") {
+      const url = clean(body?.url);
+      if (!url) throw new Error("외부 매물 URL을 입력해주세요.");
+
+      const preview = await previewListing(auth, url);
+      const provider = clean(preview.provider);
+      const listingId = clean(preview.external_listing_id);
+      const identity = await sellerAccountIdentity(preview);
+      if (!provider || !listingId) throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
+
+      if (identity.key) {
+        const existing = await accountConflict(provider, identity.key, user.id);
+        if (existing?.user_id === user.id && existing.verification_status === "verified") {
+          const now = new Date().toISOString();
+          await admin.from("market_external_seller_accounts")
+            .update({
+              external_seller_handle: clean(preview.external_seller_handle) || existing.external_seller_handle || null,
+              last_checked_at: now,
+              updated_at: now,
+            })
+            .eq("id", existing.id);
+          return new Response(JSON.stringify({
+            ok: true,
+            already_verified: true,
+            verified: true,
+            provider,
+            external_listing_id: listingId,
+            seller_verification_scope: "account",
+            seller_identity_source: identity.source,
+            external_account_id: existing.id,
+          }), { headers: cors });
+        }
+      }
+
+      return new Response(JSON.stringify({
+        ok: true,
+        already_verified: false,
+        verified: false,
+        provider,
+        external_listing_id: listingId,
+        seller_verification_scope: identity.reusable ? "account" : "listing",
+        seller_identity_source: identity.source,
+        account_reuse_supported: identity.reusable,
+      }), { headers: cors });
     }
 
     if (action === "start") {
@@ -165,7 +232,8 @@ Deno.serve(async (req: Request) => {
       const preview = await previewListing(auth, url);
       const provider = clean(preview.provider);
       const listingId = clean(preview.external_listing_id);
-      const sellerId = clean(preview.external_seller_id) || null;
+      const identity = await sellerAccountIdentity(preview);
+      const sellerId = identity.key;
       if (!provider || !listingId) throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
 
       if (sellerId) {
@@ -218,7 +286,8 @@ Deno.serve(async (req: Request) => {
         expires_at: expiresAt,
         provider,
         external_listing_id: listingId,
-        seller_verification_scope: sellerId ? "account" : "listing",
+        seller_verification_scope: identity.reusable ? "account" : "listing",
+        seller_identity_source: identity.source,
         instructions: "외부 매물 설명 마지막에 인증코드를 잠시 추가한 뒤 인증 확인을 눌러주세요."
       }), { headers: cors });
     }
@@ -248,7 +317,8 @@ Deno.serve(async (req: Request) => {
       if (clean(preview.provider) !== challenge.provider || clean(preview.external_listing_id) !== challenge.external_listing_id) {
         throw new Error("인증을 시작한 매물과 다른 매물입니다.");
       }
-      const previewSellerId = clean(preview.external_seller_id) || null;
+      const previewIdentity = await sellerAccountIdentity(preview);
+      const previewSellerId = previewIdentity.key;
       if (challenge.external_seller_id && previewSellerId !== challenge.external_seller_id) {
         throw new Error("판매자 계정 정보가 변경되어 인증할 수 없습니다.");
       }

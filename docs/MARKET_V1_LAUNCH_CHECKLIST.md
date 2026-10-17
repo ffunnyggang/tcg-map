@@ -66,8 +66,14 @@
 - [x] 10분 이상 지난 미완료 `phone_change` 정리
 - [x] iOS/AOS WebView native access token을 Web Supabase 요청에 연결하는 브리지 적용
 - [x] 개인정보처리방침에 휴대폰 인증 목적·보관 및 MARKET 처리 항목 반영
-- [ ] 운영 SMS Provider 설정
-- [ ] SMS 위탁 사업자명/국외이전 여부 확정 후 개인정보처리방침 최종 사업자명 반영
+- [x] SMS Provider 선정: SOLAPI
+- [x] SOLAPI Send SMS Hook Edge Function 배포 (`send-sms-solapi`)
+- [ ] SOLAPI 개인 계정 가입·실명인증
+- [ ] 발신번호 등록
+- [ ] SOLAPI API Key / API Secret 발급 및 Supabase Secret 등록
+- [ ] Supabase Authentication > Hooks > Send SMS HTTP Hook 활성화
+- [x] 개인정보처리방침에 SMS 위탁 사업자 SOLAPI(솔라피(주)) 명시
+- [ ] SOLAPI 세부 처리위탁/국외이전 여부 법무 최종 확인
 - [ ] Web / iOS WebView / AOS WebView 실제 발송·OTP 성공 QA
 
 > 1차 오픈의 SMS OTP는 **해당 휴대폰 번호를 사용할 수 있음을 확인하는 절차**이며 PASS/KCP와 같은 법적 본인확인으로 표시하지 않는다. PASS/KCP 본인확인은 거래 규모와 운영 필요성에 따라 추후 검증 레벨 3으로 추가한다.
@@ -262,8 +268,11 @@ PUBLIC OPEN은 별도 명시적 승인 작업으로 진행한다.
 - [x] app-mvp 다음 버전용 네이티브 MY > 계정 보안 진입 소스 준비
 - [x] 서버 OTP 재요청/시간당 제한 및 동일 번호 인증 예약 방어
 - [x] 이용약관/개인정보처리방침 MARKET·SMS 조항 문안 반영
-- [ ] 운영 SMS Provider 설정
-- [ ] SMS 사업자 상세 처리위탁/국외이전 고지 확정
+- [x] SMS Provider 선정: SOLAPI
+- [x] `send-sms-solapi` Hook 구현/배포
+- [ ] SOLAPI 가입·발신번호 등록·API Key 발급
+- [ ] Supabase Edge Function Secret + Send SMS Hook 활성화
+- [ ] SOLAPI 세부 처리위탁/국외이전 고지 최종 확인
 - [ ] Web / iOS WebView / AOS WebView 실제 SMS 발송·OTP QA
 - [ ] 이용약관/개인정보처리방침 최종 법무 검토
 - [ ] PASS/KCP 본인확인은 추후 검증 레벨 3으로 도입

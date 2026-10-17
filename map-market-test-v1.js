@@ -876,13 +876,14 @@
   async function reverseMarketRegistrationAddress(lat,lng,allowServerFallback=true){
     const a=Number(lat),b=Number(lng);
     if(!Number.isFinite(a)||!Number.isFinite(b))return {displayAddress:'',roadAddress:'',source:''};
-    let displayAddress='',roadAddress='',source='';
+    let displayAddress='',roadAddress='',source='',naverStatus='';
     const ready=await waitForMarketGeocoder();
     if(ready){
       try{
         const pos=new naver.maps.LatLng(a,b);
         const res=await new Promise(resolve=>{
           naver.maps.Service.reverseGeocode({coords:pos,orders:'roadaddr,addr,admcode,legalcode'},(status,response)=>{
+            naverStatus=String(status??'');
             if(status===naver.maps.Service.Status.ERROR||!response){resolve(null);return}
             resolve(response);
           });
@@ -892,11 +893,11 @@
           displayAddress=roadAddress||marketRegionAddressFromReverseResult(res);
           if(displayAddress)source='naver';
         }
-      }catch(_){}
-    }
+      }catch(e){naverStatus=naverStatus||String(e?.message||e||'exception')}
+    }else naverStatus='service_unavailable';
     if(!displayAddress&&allowServerFallback){
       try{
-        const {data,error}=await A.client.functions.invoke('market-reverse-geocode-test',{body:{lat:a,lng:b}});
+        const {data,error}=await A.client.functions.invoke('market-reverse-geocode-test',{body:{lat:a,lng:b,naver_status:naverStatus}});
         if(!error&&data?.ok){
           displayAddress=formatMarketRoadAddress(data.display_address||'');
           roadAddress=formatMarketRoadAddress(data.road_address||'');

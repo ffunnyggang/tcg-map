@@ -118,8 +118,18 @@
     }
     return{ok:true}
   }
+  async function getUser(){
+    await init();
+    try{
+      const token=nativeAccessToken||currentSession?.access_token||'';
+      const result=token?await client.auth.getUser(token):await client.auth.getUser();
+      const user=result?.data?.user||null;
+      if(user&&currentSession)currentSession={...currentSession,user};
+      return user||currentSession?.user||null;
+    }catch(_){return currentSession?.user||null}
+  }
   async function getProfile(){
-    await init();const user=currentSession?.user;if(!user)return null;
+    await init();const user=await getUser();if(!user)return null;
     const {data,error}=await client.from('profiles').select('nickname,avatar_url').eq('user_id',user.id).maybeSingle();
     if(error)return null;return data||null;
   }
@@ -128,7 +138,7 @@
 
   window.FUNY_WEB_AUTH={
     init,get client(){return client},get session(){return currentSession},getSession:async()=>{await init();return currentSession},
-    getUser:async()=>{await init();return currentSession?.user||null},getProfile,signInSocial,signOut,goLogin,requireLogin,
+    getUser,getProfile,signInSocial,signOut,goLogin,requireLogin,
     consumeReturn,rememberReturn,isAppShell,onChange(fn){listeners.add(fn);return()=>listeners.delete(fn)}
   };
   init().catch(e=>console.warn('[FUNY WEB AUTH] init failed',e));

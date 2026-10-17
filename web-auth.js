@@ -6,7 +6,7 @@
   const SDK='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js';
   const RETURN_KEY='funy-web-auth-return';
   const listeners=new Set();
-  let client=null,readyPromise=null,currentSession=null;
+  let client=null,readyPromise=null,currentSession=null,nativeAccessToken='';
 
   const isAppShell=()=>{
     try{
@@ -15,6 +15,7 @@
     }catch(_){return !!window.ReactNativeWebView}
   };
   const lang=()=>{try{return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}catch(_){return'ko'}};
+  const injectedAccessToken=()=>{try{return String(window.__FUNY_ACCESS_TOKEN||'').trim()}catch(_){return''}};
   const emit=()=>{listeners.forEach(fn=>{try{fn(currentSession)}catch(_){}});try{window.dispatchEvent(new CustomEvent('funy:web-auth-change',{detail:{loggedIn:!!currentSession,user:currentSession?.user||null}}))}catch(_){}};
 
   function clearStoredAuth(){
@@ -41,7 +42,10 @@
     if(readyPromise)return readyPromise;
     readyPromise=(async()=>{
       const sdk=await loadSdk();
-      client=sdk.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'}});
+      nativeAccessToken=isAppShell()?injectedAccessToken():'';
+      const clientOptions={auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'}};
+      if(nativeAccessToken)clientOptions.global={headers:{Authorization:'Bearer '+nativeAccessToken}};
+      client=sdk.createClient(SUPABASE_URL,SUPABASE_KEY,clientOptions);
       try{
         const u=new URL(location.href),code=u.searchParams.get('code');
         if(code){
@@ -50,15 +54,25 @@
           u.searchParams.delete('code');history.replaceState(history.state,'',u.pathname+(u.search||'')+u.hash);
         }
       }catch(e){console.warn('[FUNY WEB AUTH] callback exchange failed',e)}
-      const {data}=await client.auth.getSession();
-      currentSession=data?.session||null;
-      if(currentSession){
+      if(nativeAccessToken){
         try{
-          const {data:userData,error:userError}=await client.auth.getUser();
-          if(userError||!userData?.user){clearStoredAuth();currentSession=null}
-        }catch(_){clearStoredAuth();currentSession=null}
+          const {data:userData,error:userError}=await client.auth.getUser(nativeAccessToken);
+          currentSession=(!userError&&userData?.user)?{access_token:nativeAccessToken,token_type:'bearer',user:userData.user}:null;
+        }catch(_){currentSession=null}
+      }else{
+        const {data}=await client.auth.getSession();
+        currentSession=data?.session||null;
+        if(currentSession){
+          try{
+            const {data:userData,error:userError}=await client.auth.getUser();
+            if(userError||!userData?.user){clearStoredAuth();currentSession=null}
+          }catch(_){clearStoredAuth();currentSession=null}
+        }
       }
-      client.auth.onAuthStateChange((_event,session)=>{currentSession=session||null;emit()});
+      client.auth.onAuthStateChange((_event,session)=>{
+        if(nativeAccessToken&&!session)return;
+        currentSession=session||null;emit()
+      });
       emit();
       return currentSession;
     })();
@@ -109,7 +123,7 @@
     const {data,error}=await client.from('profiles').select('nickname,avatar_url').eq('user_id',user.id).maybeSingle();
     if(error)return null;return data||null;
   }
-  function goLogin(returnTo){rememberReturn(returnTo||location.href);location.href='/login.html';}
+  function goLogin(returnTo){rememberReturn(returnTo||location.href);if(isAppShell()){location.href='funypin://account';return}location.href='/login.html';}
   async function requireLogin(returnTo){await init();if(currentSession)return currentSession;goLogin(returnTo||location.href);return null}
 
   window.FUNY_WEB_AUTH={

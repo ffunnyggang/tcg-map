@@ -1,0 +1,233 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2.57.4";
+
+const cors={
+  "Access-Control-Allow-Origin":"*",
+  "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods":"POST,OPTIONS",
+  "Content-Type":"application/json; charset=utf-8",
+  "Cache-Control":"no-store",
+};
+
+const SUPABASE_URL=Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON_KEY=Deno.env.get("SUPABASE_ANON_KEY")!;
+const admin=createClient(SUPABASE_URL,SERVICE_ROLE,{auth:{persistSession:false,autoRefreshToken:false}});
+const clean=(v:unknown)=>String(v??"").trim();
+
+async function currentUser(req:Request){
+  const auth=req.headers.get("authorization")||"";
+  const token=auth.replace(/^Bearer\s+/i,"");
+  if(!token)throw new Error("로그인이 필요합니다.");
+  const {data,error}=await admin.auth.getUser(token);
+  if(error||!data?.user)throw new Error("로그인 정보를 확인할 수 없습니다.");
+  return {user:data.user,auth};
+}
+
+async function requireVerifiedPhone(user:any){
+  const verifiedAt=clean(user?.phone_confirmed_at);
+  if(!clean(user?.phone)||!verifiedAt){
+    throw new Error("매물 등록 전 휴대폰 SMS 인증을 완료해주세요.");
+  }
+  const now=new Date().toISOString();
+  const {error:vError}=await admin.from("user_verifications").upsert({
+    user_id:user.id,
+    email_verified_at:user?.email_confirmed_at||null,
+    phone_verified_at:verifiedAt,
+    updated_at:now
+  },{onConflict:"user_id"});
+  if(vError)throw vError;
+
+  const {error:sellerError}=await admin.from("market_seller_verifications").upsert({
+    user_id:user.id,
+    verification_provider:"supabase_auth",
+    verification_status:"verified",
+    phone_verified:true,
+    verified_at:verifiedAt,
+    revoked_at:null,
+    verification_method:"SMS_OTP",
+    identity_channel:"supabase_phone",
+    updated_at:now
+  },{onConflict:"user_id"});
+  if(sellerError)throw sellerError;
+  return verifiedAt;
+}
+
+async function previewListing(auth:string,url:string){
+  const res=await fetch(SUPABASE_URL+"/functions/v1/market-listing-preview-test",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":auth,"apikey":ANON_KEY},
+    body:JSON.stringify({url}),
+  });
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||!data?.ok)throw new Error(data?.error||"외부 매물 정보를 확인하지 못했습니다.");
+  return data;
+}
+
+function priceNumber(raw:unknown){
+  const s=clean(raw).replace(/,/g,"");
+  const m=s.match(/[0-9]+(?:\.[0-9]+)?/);
+  if(!m)return null;
+  const n=Number(m[0]);
+  return Number.isFinite(n)?Math.round(n):null;
+}
+
+function uniqueImages(preview:any){
+  const arr=[...(Array.isArray(preview?.images)?preview.images:[]),preview?.image]
+    .map(clean).filter(Boolean);
+  return [...new Set(arr)].slice(0,20);
+}
+
+Deno.serve(async(req:Request)=>{
+  if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
+  if(req.method!=="POST")return new Response(JSON.stringify({ok:false,error:"POST만 지원합니다."}),{status:405,headers:cors});
+
+  try{
+    const {user,auth}=await currentUser(req);
+    const body=await req.json().catch(()=>({}));
+    const phoneVerifiedAt=await requireVerifiedPhone(user);
+    const input=body?.listing||{};
+    const externalUrl=clean(input?.external_url);
+    const externalAccountId=clean(body?.external_account_id)||null;
+    const challengeId=clean(body?.challenge_id)||null;
+    if(!externalUrl)throw new Error("외부 매물 URL이 없습니다.");
+
+    const preview=await previewListing(auth,externalUrl);
+    const provider=clean(preview?.provider);
+    const externalListingId=clean(preview?.external_listing_id);
+    const externalSellerId=clean(preview?.external_seller_id)||null;
+    if(!provider||!externalListingId)throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
+
+    let verificationScope:"account"|"listing";
+    let verifiedAccountId:string|null=null;
+    let verifiedChallengeId:string|null=null;
+    let verifiedAt=new Date().toISOString();
+
+    if(externalAccountId){
+      const {data:account,error}=await admin.from("market_external_seller_accounts")
+        .select("id,user_id,provider,external_seller_id,verification_status,verified_at,revoked_at")
+        .eq("id",externalAccountId)
+        .eq("user_id",user.id)
+        .eq("verification_status","verified")
+        .is("revoked_at",null)
+        .maybeSingle();
+      if(error)throw error;
+      if(!account)throw new Error("유효한 외부 판매자 계정 인증을 확인할 수 없습니다.");
+      if(account.provider!==provider)throw new Error("인증된 플랫폼과 등록하려는 매물 플랫폼이 다릅니다.");
+      if(!externalSellerId||clean(account.external_seller_id)!==externalSellerId){
+        throw new Error("인증된 외부 판매자 계정과 현재 매물의 판매자 정보가 일치하지 않습니다.");
+      }
+      verificationScope="account";
+      verifiedAccountId=account.id;
+      verifiedAt=account.verified_at||verifiedAt;
+    }else{
+      if(!challengeId)throw new Error("판매자 인증을 완료해주세요.");
+      const {data:challenge,error}=await admin.from("market_external_verification_challenges")
+        .select("id,user_id,provider,external_listing_id,external_seller_id,status,verified_at")
+        .eq("id",challengeId)
+        .eq("user_id",user.id)
+        .eq("status","verified")
+        .maybeSingle();
+      if(error)throw error;
+      if(!challenge)throw new Error("완료된 판매자 인증을 확인할 수 없습니다.");
+      if(challenge.provider!==provider||clean(challenge.external_listing_id)!==externalListingId){
+        throw new Error("인증을 완료한 매물과 등록하려는 매물이 다릅니다.");
+      }
+      if(challenge.external_seller_id&&clean(challenge.external_seller_id)!==clean(externalSellerId)){
+        throw new Error("인증 당시 판매자 정보와 현재 판매자 정보가 다릅니다.");
+      }
+      verificationScope="listing";
+      verifiedChallengeId=challenge.id;
+      verifiedAt=challenge.verified_at||verifiedAt;
+    }
+
+    const category=clean(input?.tcg_category);
+    const itemType=clean(input?.item_type);
+    if(!["pokemon","onepiece","dragonball","other"].includes(category))throw new Error("카테고리를 확인해주세요.");
+    if(!["single","vintage","graded","box","other"].includes(itemType))throw new Error("상품 구분을 확인해주세요.");
+
+    const lat=Number(input?.latitude),lng=Number(input?.longitude);
+    if(!Number.isFinite(lat)||!Number.isFinite(lng))throw new Error("거래 희망 위치를 확인해주세요.");
+    const locationName=clean(input?.location_name);
+    if(!locationName)throw new Error("거래 희망 주소를 확인해주세요.");
+
+    const now=new Date().toISOString();
+    const urls=uniqueImages(preview);
+    const sellerNickname=clean(input?.seller_nickname)||
+      clean(user.user_metadata?.nickname)||clean(user.user_metadata?.name)||
+      ("FUNY회원"+user.id.replace(/-/g,"").slice(-4).toUpperCase());
+
+    const row={
+      seller_user_id:user.id,
+      seller_nickname:sellerNickname,
+      seller_type:"individual",
+      individual_seller_confirmed_at:phoneVerifiedAt,
+      rights_republish_agreed_at:now,
+      external_trade_only_agreed_at:now,
+      provider,
+      external_url:clean(preview?.final_url)||externalUrl,
+      external_listing_id:externalListingId,
+      title:clean(preview?.title)||"외부 매물",
+      description:clean(preview?.description)||null,
+      price:priceNumber(preview?.price_raw),
+      currency:clean(preview?.currency)||"KRW",
+      thumbnail_url:urls[0]||null,
+      image_urls:urls,
+      external_status:clean(preview?.availability)||null,
+      direct_buy_available:preview?.direct_buy_available===true,
+      listing_status:"active",
+      listing_side:"sell",
+      tcg_category:category,
+      item_type:itemType,
+      country_code:"KR",
+      latitude:lat,
+      longitude:lng,
+      road_address:clean(input?.road_address)||null,
+      location_name:locationName,
+      place_name:clean(input?.place_name).slice(0,30)||null,
+      external_account_id:verifiedAccountId,
+      seller_verified_at:verifiedAt,
+      seller_verification_scope:verificationScope,
+      seller_verification_challenge_id:verifiedChallengeId,
+      fetched_at:preview?.fetched_at||now,
+      source_last_checked_at:preview?.fetched_at||now,
+      source_status:clean(preview?.source_status)||"unknown",
+      updated_at:now,
+    };
+
+    const {data:existing,error:existingError}=await admin.from("market_listings")
+      .select("id,source_refresh_count")
+      .eq("seller_user_id",user.id)
+      .eq("provider",provider)
+      .eq("external_listing_id",externalListingId)
+      .maybeSingle();
+    if(existingError)throw existingError;
+
+    let saved:any=null;
+    if(existing?.id){
+      const {data,error}=await admin.from("market_listings")
+        .update({...row,source_refresh_count:(Number(existing.source_refresh_count)||0)+1})
+        .eq("id",existing.id)
+        .eq("seller_user_id",user.id)
+        .select("*").single();
+      if(error)throw error;
+      saved=data;
+    }else{
+      const {data,error}=await admin.from("market_listings")
+        .insert({...row,source_refresh_count:1})
+        .select("*").single();
+      if(error)throw error;
+      saved=data;
+    }
+
+    return new Response(JSON.stringify({
+      ok:true,
+      listing:saved,
+      verification_scope:verificationScope,
+      external_account_id:verifiedAccountId,
+      challenge_id:verifiedChallengeId
+    }),{headers:cors});
+  }catch(e){
+    return new Response(JSON.stringify({ok:false,error:e instanceof Error?e.message:String(e)}),{status:400,headers:cors});
+  }
+});

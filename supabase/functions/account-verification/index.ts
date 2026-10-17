@@ -1,13 +1,21 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2.57.4";
 
-const cors = {
+const baseCors = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST,OPTIONS",
+  "Access-Control-Max-Age": "86400",
   "Content-Type": "application/json; charset=utf-8",
   "Cache-Control": "no-store",
 };
+
+function corsHeaders(req: Request) {
+  const requested = clean(req.headers.get("access-control-request-headers"));
+  return {
+    ...baseCors,
+    "Access-Control-Allow-Headers": requested || "authorization, x-client-info, apikey, content-type",
+  };
+}
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -120,9 +128,9 @@ async function releaseReservation(userId: string, phoneHash: string) {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders(req) });
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ ok: false, error: "POST만 지원합니다." }), { status: 405, headers: cors });
+    return new Response(JSON.stringify({ ok: false, error: "POST만 지원합니다." }), { status: 405, headers: corsHeaders(req) });
   }
 
   try {
@@ -136,7 +144,7 @@ Deno.serve(async (req: Request) => {
         syncVerification(fresh),
         verificationSettings(),
       ]);
-      return new Response(JSON.stringify({ ok: true, ...state, ...settings }), { headers: cors });
+      return new Response(JSON.stringify({ ok: true, ...state, ...settings }), { headers: corsHeaders(req) });
     }
 
     if (action === "send_phone_otp") {
@@ -149,7 +157,7 @@ Deno.serve(async (req: Request) => {
 
       if (user.phone === phone && user.phone_confirmed_at) {
         const state = await syncVerification(user);
-        return new Response(JSON.stringify({ ok: true, already_verified: true, ...state }), { headers: cors });
+        return new Response(JSON.stringify({ ok: true, already_verified: true, ...state }), { headers: corsHeaders(req) });
       }
 
       const phoneHash = await sha256(phone);
@@ -179,7 +187,7 @@ Deno.serve(async (req: Request) => {
         ok: true,
         sent: true,
         resend_after_seconds: 60,
-      }), { headers: cors });
+      }), { headers: corsHeaders(req) });
     }
 
     if (action === "verify_phone_otp") {
@@ -214,7 +222,7 @@ Deno.serve(async (req: Request) => {
 
       const state = await syncVerification(fresh);
       await releaseReservation(user.id, phoneHash);
-      return new Response(JSON.stringify({ ok: true, ...state }), { headers: cors });
+      return new Response(JSON.stringify({ ok: true, ...state }), { headers: corsHeaders(req) });
     }
 
     throw new Error("지원하지 않는 계정 인증 작업입니다.");
@@ -222,6 +230,6 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({
       ok: false,
       error: friendlyError(e instanceof Error ? e.message : String(e)),
-    }), { status: 400, headers: cors });
+    }), { status: 400, headers: corsHeaders(req) });
   }
 });

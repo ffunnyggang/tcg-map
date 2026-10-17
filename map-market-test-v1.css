@@ -2065,3 +2065,91 @@ body.market-test-page .market-detail-more-menu button.danger{
 body.market-test-page .market-detail-more-menu button.danger:active{
   background:#fff1f2!important;
 }
+
+
+/* MARKET detail meta + map deep-link polish v27 */
+body.market-test-page .market-detail-seller{
+  margin-top:7px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  min-width:0!important;
+  color:#8d8993!important
+}
+body.market-test-page .market-user-icon{
+  width:13px!important;
+  height:13px!important;
+  flex:0 0 13px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.7!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  color:#96909b!important
+}
+body.market-test-page .market-detail-seller-name{
+  min-width:0!important;
+  max-width:58%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  color:#8d8993!important;
+  font-size:10px!important;
+  font-weight:650!important
+}
+body.market-test-page .market-detail-seller-age{
+  color:#aaa3af!important;
+  font-size:10px!important;
+  font-weight:550!important;
+  white-space:nowrap!important
+}
+
+/* 조회/관심 ↔ divider ↔ detail text: symmetric 18px spacing */
+body.market-test-page .market-detail-info{
+  padding-bottom:18px!important;
+  border-bottom:0!important
+}
+body.market-test-page .market-detail-description{
+  padding-top:18px!important;
+  border-top:1px solid #f2eff4!important;
+  border-bottom:0!important
+}
+body.market-test-page .market-detail-stats{
+  margin-bottom:0!important
+}
+
+/* Location section label + deep-link action */
+body.market-test-page .market-detail-section-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin:0 0 9px!important
+}
+body.market-test-page .market-detail-section-head h3{
+  margin:0!important
+}
+body.market-test-page .market-detail-map-link{
+  flex:0 0 auto!important;
+  height:28px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#6749bd!important;
+  font-size:10.5px!important;
+  font-weight:800!important;
+  line-height:28px!important;
+  cursor:pointer!important
+}
+body.market-test-page .market-detail-map-link span{
+  display:inline-block!important;
+  margin-left:2px!important;
+  font-size:16px!important;
+  line-height:1!important;
+  vertical-align:-1px!important
+}
+
+/* Owner menu can contain three actions without layout drift. */
+body.market-test-page .market-detail-more-menu{
+  width:178px!important
+}

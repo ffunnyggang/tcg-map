@@ -593,7 +593,7 @@
     $('#marketRegisterSubmit').onclick=submitRegister;
   }
   async function openRegister(){
-    buildRegister();const el=$('#marketRegisterOverlay');el.hidden=false;document.body.style.overflow='hidden';
+    buildRegister();const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;el.hidden=false;document.body.style.overflow='hidden';
     if(!registerMap){
       const main=await waitForMap(),center=main?.getCenter?.();
       const initial=center?new naver.maps.LatLng(center.lat(),center.lng()):new naver.maps.LatLng(37.5665,126.9780);
@@ -605,7 +605,7 @@
     }else setTimeout(()=>naver.maps.Event.trigger(registerMap,'resize'),80);
     syncRegisterSubmitState();
   }
-  function closeRegister(){const el=$('#marketRegisterOverlay');if(el)el.hidden=true;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow=''}
+  function closeRegister(){const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if($('#marketOverlay')?.hidden===false&&floatingRegister)floatingRegister.hidden=false;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow=''}
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
   function registerConsentsOk(){return !!$('#marketConsentAll')?.checked}
   function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}

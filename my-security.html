@@ -80,18 +80,29 @@
     const message=(t,e=false)=>{msg.textContent=t||'';msg.classList.toggle('error',!!e)};
     if(open)open.onclick=()=>{box.hidden=false;phone.focus()};
     phone.oninput=()=>{phone.dataset.e164='';otpRow.hidden=true;message('')};
+    let resendTimer=0,resendLeft=0;
+    const startResendCooldown=()=>{
+      clearInterval(resendTimer);resendLeft=60;send.disabled=true;send.textContent='60초 후 재전송';
+      resendTimer=setInterval(()=>{
+        resendLeft-=1;
+        if(resendLeft<=0){clearInterval(resendTimer);resendTimer=0;send.disabled=false;send.textContent='인증번호 다시 받기';return}
+        send.textContent=resendLeft+'초 후 재전송';
+      },1000);
+    };
     send.onclick=async()=>{
+      if(send.disabled||resendLeft>0)return;
       const e164=normalizePhone(phone.value);
       if(!e164){message('010으로 시작하는 휴대폰 번호를 정확히 입력해주세요.',true);return}
       send.disabled=true;send.textContent='전송 중...';message('');
+      let sent=false;
       try{
         const {error}=await A.client.auth.updateUser({phone:e164});
         if(error)throw error;
-        phone.dataset.e164=e164;otpRow.hidden=false;message('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');otp.focus()
+        sent=true;phone.dataset.e164=e164;otpRow.hidden=false;message('인증번호를 전송했습니다. 문자로 받은 6자리 번호를 입력해주세요.');otp.focus();startResendCooldown()
       }catch(e){
         const raw=String(e?.message||e||'');
         message(/phone|sms|provider|unsupported|disabled/i.test(raw)?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
-      }finally{send.disabled=false;send.textContent='인증번호 받기'}
+      }finally{if(!sent){send.disabled=false;send.textContent='인증번호 받기'}}
     };
     verify.onclick=async()=>{
       const e164=String(phone.dataset.e164||normalizePhone(phone.value)||''),token=String(otp.value||'').replace(/\D/g,'');

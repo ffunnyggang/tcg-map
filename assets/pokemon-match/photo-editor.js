@@ -1,0 +1,3 @@
+'use strict';
+function photoGeometry(sourceWidth,sourceHeight,viewportWidth,viewportHeight,pose){const base=Math.max(viewportWidth/sourceWidth,viewportHeight/sourceHeight),scale=base*Math.max(1,Math.min(3,pose.zoom));const width=sourceWidth*scale,height=sourceHeight*scale,panX=Math.max(-(width-viewportWidth)/2,Math.min((width-viewportWidth)/2,pose.panX)),panY=Math.max(-(height-viewportHeight)/2,Math.min((height-viewportHeight)/2,pose.panY));return {width,height,scale,panX,panY,sx:((width-viewportWidth)/2-panX)/scale,sy:((height-viewportHeight)/2-panY)/scale,sw:viewportWidth/scale,sh:viewportHeight/scale};}
+function resizedPhotoPose(pose,previousWidth,previousHeight,width,height){return {...pose,panX:pose.panX*width/previousWidth,panY:pose.panY*height/previousHeight};}

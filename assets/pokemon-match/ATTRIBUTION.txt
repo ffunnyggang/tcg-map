@@ -1,0 +1,19 @@
+V8: anniversary-inspired original metallic/foil CSS frame; supplied card photographs are reference-only and are not displayed. No official anniversary logo, HP/energy symbols or card rules layout copied.
+Pokémon illustrations restored from PokeAPI/sprites official-artwork for the owner-private prototype at the user's request. Pokémon © Nintendo / Creatures / GAME FREAK.
+
+Original visual assets: FUNY PIN geometric collection signals, independently drawn in SVG. The earlier abstract signals remain unused in V8. These abstract markers are decorative and do not depict the named Pokémon.
+
+Pokémon names, types, evolution chains: PokeAPI/pokeapi data/v2/csv.
+Pokémon names are used descriptively for the recommendation function.
+This private prototype is not an official Pokémon service.
+
+Local face detection / 68-point landmark inference: face-api.js 0.22.2 (MIT), justadudewhohacks/face-api.js.
+Tiny Face Detector and FaceLandmark68 weights from the upstream repository.
+Library license is bundled in vendor/face-api-LICENSE.
+No face recognition descriptors, age/gender or expression classifier models are loaded.
+
+Matching profiles and score weights are editorial settings for entertainment, not a validated scientific similarity metric.
+
+Pixel typography: Galmuri11 Condensed and Galmuri11 Bold by quiple, SIL Open Font License 1.1. Original license bundled at fonts/Galmuri-OFL.txt.
+
+Share-card typeface: subset of Noto Sans KR (Google Fonts), SIL OFL 1.1. License bundled at fonts/CollectionSans-OFL.txt.

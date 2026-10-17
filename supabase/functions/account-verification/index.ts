@@ -41,6 +41,16 @@ function normalizeKrPhone(v: unknown) {
   return "";
 }
 
+function phoneDigits(v: unknown) {
+  return clean(v).replace(/\D/g, "");
+}
+
+function samePhone(a: unknown, b: unknown) {
+  const left = phoneDigits(a);
+  const right = phoneDigits(b);
+  return !!left && left === right;
+}
+
 async function sha256(value: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -156,7 +166,7 @@ Deno.serve(async (req: Request) => {
       const phone = normalizeKrPhone(body?.phone);
       if (!phone) throw new Error("INVALID_PHONE_VERIFICATION_REQUEST");
 
-      if (user.phone === phone && user.phone_confirmed_at) {
+      if (samePhone(user.phone, phone) && user.phone_confirmed_at) {
         const state = await syncVerification(user);
         return new Response(JSON.stringify({ ok: true, already_verified: true, ...state }), { headers: corsHeaders(req) });
       }
@@ -197,6 +207,12 @@ Deno.serve(async (req: Request) => {
       if (!phone) throw new Error("INVALID_PHONE_VERIFICATION_REQUEST");
       if (!/^\d{6}$/.test(otp)) throw new Error("인증번호 6자리를 확인해주세요.");
 
+      const current = (await admin.auth.getUser(token)).data?.user || user;
+      if (samePhone(current.phone, phone) && current.phone_confirmed_at) {
+        const state = await syncVerification(current);
+        return new Response(JSON.stringify({ ok: true, already_verified: true, ...state }), { headers: corsHeaders(req) });
+      }
+
       const phoneHash = await sha256(phone);
       const res = await fetch(SUPABASE_URL + "/auth/v1/verify", {
         method: "POST",
@@ -213,13 +229,19 @@ Deno.serve(async (req: Request) => {
       });
       const payload = await res.json().catch(() => ({}));
       if (!res.ok) {
+        const afterFailure = (await admin.auth.getUser(token)).data?.user || null;
+        if (afterFailure && samePhone(afterFailure.phone, phone) && afterFailure.phone_confirmed_at) {
+          const state = await syncVerification(afterFailure);
+          await releaseReservation(user.id, phoneHash);
+          return new Response(JSON.stringify({ ok: true, already_verified: true, ...state }), { headers: corsHeaders(req) });
+        }
         throw new Error(clean(payload?.msg || payload?.message || payload?.error_description || payload?.error) || "인증번호가 올바르지 않거나 만료되었습니다.");
       }
 
       const { data: freshData, error: freshError } = await admin.auth.getUser(token);
       if (freshError || !freshData?.user) throw new Error("휴대폰 인증 완료 상태를 확인하지 못했습니다.");
       const fresh = freshData.user;
-      if (fresh.phone !== phone || !fresh.phone_confirmed_at) throw new Error("휴대폰 인증 완료 상태를 확인하지 못했습니다.");
+      if (!samePhone(fresh.phone, phone) || !fresh.phone_confirmed_at) throw new Error("휴대폰 인증 완료 상태를 확인하지 못했습니다.");
 
       const state = await syncVerification(fresh);
       await releaseReservation(user.id, phoneHash);

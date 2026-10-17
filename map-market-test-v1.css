@@ -1975,3 +1975,84 @@ body.market-test-page .market-detail-map-card>.market-detail-location{display:no
   width:auto!important;height:auto!important;
   object-fit:contain!important
 }
+
+
+/* MARKET registration/location polish v25 */
+/* Reuse the card-shop address pin geometry in a neutral tone. */
+body.market-test-page .market-card-location,
+body.market-test-page .market-popup-meta,
+body.market-test-page .market-detail-location-main{
+  display:flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  min-width:0!important;
+  color:#8e8794!important
+}
+body.market-test-page .market-card-location>span,
+body.market-test-page .market-popup-meta>span,
+body.market-test-page .market-detail-location-main>span{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important
+}
+body.market-test-page .market-address-icon{
+  width:13px!important;
+  height:13px!important;
+  flex:0 0 13px!important;
+  margin:0!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+  color:#8e8794!important
+}
+body.market-test-page .market-detail-location-main{
+  color:#716b79!important
+}
+body.market-test-page .market-detail-location-main .market-address-icon{color:#8d8993!important}
+
+/* Optional meeting-place name below the map. */
+body.market-test-page .market-place-input-wrap{
+  position:relative!important;
+  margin-top:9px!important
+}
+body.market-test-page .market-place-input{
+  width:100%!important;
+  height:43px!important;
+  padding:0 54px 0 11px!important;
+  border:1px solid #e4dfe8!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  color:#514b55!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  outline:none!important
+}
+body.market-test-page .market-place-input::placeholder{color:#aaa3af!important;font-weight:550!important}
+body.market-test-page .market-place-input:focus{
+  border-color:#b8a6e3!important;
+  box-shadow:0 0 0 3px rgba(128,98,216,.08)!important
+}
+body.market-test-page .market-place-count{
+  position:absolute!important;
+  right:11px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  color:#aaa3af!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  pointer-events:none!important
+}
+
+/* Registration confirmation is a single all-agree row. */
+body.market-test-page .market-consent-box{padding-bottom:13px!important}
+body.market-test-page .market-consent-all{
+  border-top:0!important;
+  padding-top:11px!important;
+  padding-bottom:11px!important
+}
+body.market-test-page .market-consent-all span{
+  line-height:1.55!important
+}

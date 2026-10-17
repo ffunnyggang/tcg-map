@@ -697,13 +697,15 @@
     $('#marketDetailReport')?.addEventListener('click',()=>openMarketReport(x.id));
     const more=$('#marketDetailMore'),moreMenu=$('#marketDetailMoreMenu');
     if(moreMenu)moreMenu.innerHTML='<button type="button" data-market-more-original>원본 매물 보기</button><button type="button" data-market-more-report>신고 · 권리침해 접수</button>';
-    more?.addEventListener('click',e=>{e.stopPropagation();if(moreMenu)moreMenu.hidden=!moreMenu.hidden});
-    moreMenu?.querySelector('[data-market-more-original]')?.addEventListener('click',()=>{moreMenu.hidden=true;openExternalMarketUrl(x.external_url)});
-    moreMenu?.querySelector('[data-market-more-report]')?.addEventListener('click',()=>{moreMenu.hidden=true;openMarketReport(x.id)});
-    $('#marketDetailShare')?.addEventListener('click',async()=>{
+    if(more)more.onclick=e=>{e.stopPropagation();if(moreMenu)moreMenu.hidden=!moreMenu.hidden};
+    const moreOriginal=moreMenu?.querySelector('[data-market-more-original]'),moreReport=moreMenu?.querySelector('[data-market-more-report]');
+    if(moreOriginal)moreOriginal.onclick=()=>{moreMenu.hidden=true;openExternalMarketUrl(x.external_url)};
+    if(moreReport)moreReport.onclick=()=>{moreMenu.hidden=true;openMarketReport(x.id)};
+    const shareBtn=$('#marketDetailShare');
+    if(shareBtn)shareBtn.onclick=async()=>{
       const url=marketShareUrl(x.id);
       try{if(navigator.share)await navigator.share({title:x.title,text:x.title,url});else{await navigator.clipboard.writeText(url);marketToast('매물 링크를 복사했어요.')}}catch(_){}
-    });
+    };
     $('#marketDetailTrade')?.addEventListener('click',e=>{if(ended){e.preventDefault();return}if(window.ReactNativeWebView){e.preventDefault();openExternalMarketUrl(x.external_url)}});
   }
   function closeDetail(){

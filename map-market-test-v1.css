@@ -2056,3 +2056,12 @@ body.market-test-page .market-consent-all{
 body.market-test-page .market-consent-all span{
   line-height:1.55!important
 }
+
+
+/* MARKET detail menu policy v26 */
+body.market-test-page .market-detail-more-menu button.danger{
+  color:#c63d43!important;
+}
+body.market-test-page .market-detail-more-menu button.danger:active{
+  background:#fff1f2!important;
+}

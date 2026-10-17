@@ -194,7 +194,7 @@ async function parseDaangn(input: URL) {
   const { html, finalUrl } = await fetchHtml(input);
   const product = findProductLd(html) || {};
   const title = clean(product.name) || meta(html, "og:title") || clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]);
-  const rawDescription = clean(product.description) || meta(html, "og:description") || meta(html, "description");
+  const description = clean(product.description) || meta(html, "og:description") || meta(html, "description");
   const offer = Array.isArray(product.offers) ? product.offers[0] : (product.offers || {});
   const image0 = typeof product.image === "string" ? product.image : productImages(product)[0] || meta(html, "og:image");
   const images = daangnImages(html, clean(image0));
@@ -290,7 +290,7 @@ async function parseBreak(input: URL) {
   const offer = Array.isArray(product.offers) ? product.offers[0] : (product.offers || {});
   const title = clean(product.name) || meta(html, "og:title").replace(/\s+[0-9,]+원.*$/,"") ||
     clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]).replace(/\s+[0-9,]+원.*$/,"");
-  const description = clean(product.description) || meta(html, "og:description") || meta(html, "description");
+  const rawDescription = clean(product.description) || meta(html, "og:description") || meta(html, "description");
   let images = productImages(product);
   const ogImage = meta(html, "og:image");
   if (!images.length && ogImage) images = [ogImage];

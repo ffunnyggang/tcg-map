@@ -62,6 +62,7 @@ function friendlyError(raw: unknown) {
   if (message.includes("PHONE_OTP_COOLDOWN")) return "인증번호는 60초 후 다시 요청할 수 있습니다.";
   if (message.includes("PHONE_OTP_RATE_LIMIT")) return "인증번호 요청이 너무 많습니다. 1시간 후 다시 시도해주세요.";
   if (message.includes("INVALID_PHONE_VERIFICATION_REQUEST")) return "휴대폰 번호 형식을 확인해주세요.";
+  if (message.includes("PHONE_SMS_NOT_ENABLED")) return "휴대폰 SMS 인증은 현재 준비 중입니다.";
   return message || "휴대폰 인증 요청을 처리하지 못했습니다.";
 }
 
@@ -96,6 +97,19 @@ async function syncVerification(user: any) {
   };
 }
 
+async function verificationSettings() {
+  const { data, error } = await admin
+    .from("account_verification_settings")
+    .select("phone_sms_enabled,sms_provider")
+    .eq("id", 1)
+    .maybeSingle();
+  if (error) throw error;
+  return {
+    phone_sms_enabled: data?.phone_sms_enabled === true,
+    sms_provider: clean(data?.sms_provider) || "solapi",
+  };
+}
+
 async function releaseReservation(userId: string, phoneHash: string) {
   try {
     await admin.rpc("release_phone_verification_reservation", {
@@ -118,11 +132,18 @@ Deno.serve(async (req: Request) => {
 
     if (action === "status" || action === "sync") {
       const fresh = (await admin.auth.getUser(token)).data?.user || user;
-      const state = await syncVerification(fresh);
-      return new Response(JSON.stringify({ ok: true, ...state }), { headers: cors });
+      const [state, settings] = await Promise.all([
+        syncVerification(fresh),
+        verificationSettings(),
+      ]);
+      return new Response(JSON.stringify({ ok: true, ...state, ...settings }), { headers: cors });
     }
 
     if (action === "send_phone_otp") {
+      const settings = await verificationSettings();
+      if (!settings.phone_sms_enabled) {
+        throw new Error("PHONE_SMS_NOT_ENABLED");
+      }
       const phone = normalizeKrPhone(body?.phone);
       if (!phone) throw new Error("INVALID_PHONE_VERIFICATION_REQUEST");
 

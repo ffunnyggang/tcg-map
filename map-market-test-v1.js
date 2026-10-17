@@ -34,7 +34,7 @@
 
   let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null,marketBlockedUserIds=new Set();
   let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
-  let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerExternalVerified=false,registerChallengeId='',registerVerifiedChallengeId='',registerExternalAccountId='',registerVerificationScope='',registerVerifiedAccounts=[],registerSellerStatusLoading=false,registerLat=null,registerLng=null,registerLocation='',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
+  let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerIdentityVerified=false,registerIdentityLoading=false,registerIdentityConfigured=false,registerIdentityVerifiedAt='',registerIdentityPendingId='',registerExternalVerified=false,registerChallengeId='',registerVerifiedChallengeId='',registerExternalAccountId='',registerVerificationScope='',registerVerifiedAccounts=[],registerSellerStatusLoading=false,registerLat=null,registerLng=null,registerLocation='',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
   let marketPanel=null,marketTabBtn=null,layerChip=null,layerOrderObserver=null,layerOrderQueued=false;
 
   async function waitForMap(){
@@ -556,6 +556,7 @@
     const el=document.createElement('div');el.id='marketRegisterOverlay';el.className='market-register-overlay';el.hidden=true;
     el.innerHTML='<section class="market-register-sheet"><div class="market-register-handle"></div><header class="market-register-head"><strong>매물 등록</strong><button type="button" class="market-register-close" aria-label="닫기">×</button></header><div class="market-register-scroll">'+
       '<div class="market-register-policy"><strong>개인 판매자 전용</strong><span>FUNY PIN은 외부 플랫폼에 등록한 본인 매물을 추가 노출하는 기능만 제공합니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
+      '<div id="marketIdentitySection" class="market-form-section market-identity-section"><span class="market-form-label">본인인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">본인인증 상태 확인 중...</strong><span id="marketIdentityHelp">안전한 개인 거래를 위해 최초 1회 휴대폰 본인인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>PASS/SMS 본인인증</button></div></div></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
       '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div class="market-preview-meta-row"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewSellerVerified" class="market-preview-seller-verified" hidden><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.2 5.6 9.8 11 4.4"/></svg><span id="marketPreviewSellerVerifiedText"></span></div></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
@@ -568,6 +569,7 @@
     el.querySelector('.market-register-close').onclick=closeRegister;
     el.addEventListener('click',e=>{if(e.target===el)closeRegister()});
     el.querySelectorAll('[data-register-type]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-register-type]').forEach(x=>x.classList.remove('active'));b.classList.add('active');registerType=b.dataset.registerType});
+    $('#marketIdentityStart').onclick=startMarketIdentityVerification;
     $('#marketRegisterLoad').onclick=loadPreview;
     $('#marketRegisterUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadPreview()});
     $('#marketRegisterUrl').addEventListener('paste',e=>{
@@ -594,6 +596,7 @@
   }
   async function openRegister(){
     buildRegister();const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;el.hidden=false;document.body.style.overflow='hidden';
+    loadMarketIdentityStatus();
     loadSellerVerificationStatus();
     if(!registerMap){
       const main=await waitForMap(),center=main?.getCenter?.();
@@ -622,6 +625,139 @@
     if(msg&&!/Edge Function returned a non-2xx status code/i.test(msg))return msg;
     return fallback;
   }
+  function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,configured=registerIdentityConfigured,message=''}={}){
+    const section=$('#marketIdentitySection'),status=$('#marketIdentityStatus'),help=$('#marketIdentityHelp'),btn=$('#marketIdentityStart');
+    if(!section)return;
+    section.classList.toggle('is-verified',!!verified);
+    if(status)status.textContent=message||(loading?'본인인증 상태 확인 중...':verified?'본인인증 완료 ✓':'본인인증이 필요합니다.');
+    if(help)help.textContent=verified
+      ?'이 FUNY PIN 계정은 판매자 본인인증이 완료되었습니다.'
+      :configured===false&&!loading
+        ?'PortOne PASS/SMS 인증 채널 설정 후 사용할 수 있습니다.'
+        :'안전한 개인 거래를 위해 최초 1회 휴대폰 본인인증이 필요합니다.';
+    if(btn){
+      btn.hidden=!!verified;
+      btn.disabled=!!loading||(!verified&&configured===false);
+      btn.textContent=loading?'확인 중...':'PASS/SMS 본인인증';
+    }
+  }
+  async function loadMarketIdentityStatus(){
+    if(registerIdentityLoading)return registerIdentityVerified;
+    registerIdentityLoading=true;setMarketIdentityUi({loading:true});
+    try{
+      const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'status'}});
+      if(error)throw error;
+      registerIdentityVerified=!!data?.verified;
+      registerIdentityConfigured=!!data?.configured;
+      registerIdentityVerifiedAt=data?.verified_at||'';
+      setMarketIdentityUi({loading:false,verified:registerIdentityVerified,configured:registerIdentityConfigured});
+      syncRegisterSubmitState();
+      return registerIdentityVerified;
+    }catch(e){
+      registerIdentityVerified=false;registerIdentityConfigured=false;
+      setMarketIdentityUi({loading:false,verified:false,configured:false,message:'본인인증 상태를 확인하지 못했습니다.'});
+      syncRegisterSubmitState();
+      return false;
+    }finally{registerIdentityLoading=false}
+  }
+  function saveMarketIdentityDraft(identityVerificationId=''){
+    try{
+      const draft={
+        category:$('#marketRegisterCategory')?.value||'pokemon',
+        type:registerType||'single',
+        url:$('#marketRegisterUrl')?.value||'',
+        place:$('#marketRegisterPlaceName')?.value||'',
+        consent:!!$('#marketConsentAll')?.checked,
+        lat:registerCoordinate?.lat??null,
+        lng:registerCoordinate?.lng??null,
+        identityVerificationId
+      };
+      sessionStorage.setItem('funy_market_identity_draft',JSON.stringify(draft));
+    }catch(_){}
+  }
+  async function restoreMarketIdentityDraft(){
+    let draft=null;
+    try{draft=JSON.parse(sessionStorage.getItem('funy_market_identity_draft')||'null')}catch(_){}
+    if(!draft)return;
+    const category=$('#marketRegisterCategory');if(category&&draft.category)category.value=draft.category;
+    registerType=types[draft.type]?draft.type:'single';
+    document.querySelectorAll('#marketRegisterOverlay [data-register-type]').forEach(b=>b.classList.toggle('active',b.dataset.registerType===registerType));
+    const url=$('#marketRegisterUrl');if(url)url.value=draft.url||'';
+    const place=$('#marketRegisterPlaceName');if(place)place.value=String(draft.place||'').slice(0,30);
+    const count=$('#marketRegisterPlaceCount');if(count)count.textContent=String(place?.value.length||0)+'/30';
+    const consent=$('#marketConsentAll');if(consent)consent.checked=!!draft.consent;
+    if(Number.isFinite(Number(draft.lat))&&Number.isFinite(Number(draft.lng))){
+      selectRegisterLocation(Number(draft.lat),Number(draft.lng));
+      try{registerMap?.setCenter(new naver.maps.LatLng(Number(draft.lat),Number(draft.lng)))}catch(_){}
+    }
+    if(draft.url)await loadPreview();
+    syncRegisterSubmitState();
+    try{sessionStorage.removeItem('funy_market_identity_draft')}catch(_){}
+  }
+  async function completeMarketIdentityVerification(identityVerificationId){
+    const id=String(identityVerificationId||'').trim();if(!id)return false;
+    const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'complete',identity_verification_id:id}});
+    if(error)throw error;
+    if(!data?.ok||!data?.verified)throw Error(data?.error||'본인인증 완료 상태를 확인하지 못했습니다.');
+    registerIdentityVerified=true;registerIdentityConfigured=true;registerIdentityVerifiedAt=data.verified_at||'';
+    setMarketIdentityUi({verified:true,configured:true,message:'본인인증 완료 ✓'});
+    syncRegisterSubmitState();
+    return true;
+  }
+  async function startMarketIdentityVerification(){
+    if(registerIdentityVerified)return;
+    const btn=$('#marketIdentityStart');if(btn){btn.disabled=true;btn.textContent='인증 준비 중...'}
+    setRegisterError('');
+    try{
+      const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'prepare'}});
+      if(error)throw error;
+      if(data?.already_verified){
+        registerIdentityVerified=true;registerIdentityConfigured=true;setMarketIdentityUi({verified:true,configured:true,message:'본인인증 완료 ✓'});syncRegisterSubmitState();return;
+      }
+      const identityVerificationId=String(data?.identity_verification_id||'').trim();
+      if(!identityVerificationId||!data?.store_id||!data?.channel_key)throw Error(data?.error||'본인인증 설정 정보를 확인하지 못했습니다.');
+      if(!window.PortOne?.requestIdentityVerification)throw Error('본인인증 모듈을 불러오지 못했습니다. 페이지를 새로고침해주세요.');
+      registerIdentityConfigured=true;registerIdentityPendingId=identityVerificationId;
+      saveMarketIdentityDraft(identityVerificationId);
+      const redirectUrl=location.origin+'/shops-market-test.html?identityReturn=1';
+      const response=await window.PortOne.requestIdentityVerification({
+        storeId:data.store_id,
+        identityVerificationId,
+        channelKey:data.channel_key,
+        customerId:String(A.session?.user?.id||'').replace(/-/g,'').slice(0,30),
+        redirectUrl
+      });
+      if(response?.code!==undefined)throw Error(response.message||'본인인증을 완료하지 못했습니다.');
+      await completeMarketIdentityVerification(response?.identityVerificationId||identityVerificationId);
+    }catch(e){
+      setRegisterError(await marketFunctionErrorMessage(e,'PASS/SMS 본인인증을 시작하지 못했습니다.'));
+    }finally{
+      if(btn&&!registerIdentityVerified){btn.disabled=!registerIdentityConfigured;btn.textContent='PASS/SMS 본인인증'}
+    }
+  }
+  async function handleMarketIdentityReturn(){
+    let q;try{q=new URLSearchParams(location.search)}catch(_){return false}
+    if(q.get('identityReturn')!=='1')return false;
+    let draft=null;try{draft=JSON.parse(sessionStorage.getItem('funy_market_identity_draft')||'null')}catch(_){}
+    const identityVerificationId=q.get('identityVerificationId')||q.get('identity_verification_id')||draft?.identityVerificationId||'';
+    const errorMessage=q.get('message')||q.get('pgMessage')||'';
+    let completeError='';
+    if(errorMessage)completeError=errorMessage;
+    else{
+      try{await completeMarketIdentityVerification(identityVerificationId)}catch(e){completeError=await marketFunctionErrorMessage(e,'본인인증 완료 상태를 확인하지 못했습니다.')}
+    }
+    try{
+      const u=new URL(location.href);
+      ['identityReturn','identityVerificationId','identity_verification_id','code','message','pgCode','pgMessage'].forEach(k=>u.searchParams.delete(k));
+      history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);
+    }catch(_){}
+    await openRegister();
+    await restoreMarketIdentityDraft();
+    if(completeError)setRegisterError(completeError);
+    else marketToast('본인인증이 완료됐어요.');
+    return true;
+  }
+
   function sellerAccountProviderLabel(provider){
     return providerName({provider})||String(provider||'외부 플랫폼');
   }
@@ -679,7 +815,7 @@
     }
   }
   function registerConsentsOk(){return !!$('#marketConsentAll')?.checked}
-  function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}
+  function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerIdentityVerified&&registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}
   function resetExternalVerification(message='외부 매물을 확인해주세요.'){
     registerExternalVerified=false;registerChallengeId='';registerVerifiedChallengeId='';registerExternalAccountId='';registerVerificationScope='';
     const status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart'),challenge=$('#marketExternalVerifyChallenge'),code=$('#marketExternalVerifyCode');
@@ -705,6 +841,7 @@
     syncRegisterSubmitState();
   }
   async function startExternalSellerVerification(){
+    if(!registerIdentityVerified){setRegisterError('먼저 PASS/SMS 본인인증을 완료해주세요.');return}
     if(!registerProduct)return;
     const url=registerPreviewUrl||normalizedExternalMarketUrl($('#marketRegisterUrl')?.value);if(!url)return;
     const btn=$('#marketExternalVerifyStart');if(btn){btn.disabled=true;btn.textContent='인증 준비 중...'}
@@ -821,6 +958,7 @@
     syncRegisterSubmitState();
   }
   async function submitRegister(){
+    if(!registerIdentityVerified){setRegisterError('PASS/SMS 본인인증을 완료해주세요.');return}
     if(!registerProduct)return;if(!registerExternalVerified){setRegisterError('외부 플랫폼 판매자 인증을 완료해주세요.');return}if(!registerCoordinate){setRegisterError('지도에서 거래 희망 위치를 선택해주세요.');return}if(!registerConsentsOk()){setRegisterError('등록 확인 항목에 전체 동의해주세요.');return}setRegisterError('');const btn=$('#marketRegisterSubmit');btn.disabled=true;btn.textContent='등록 중...';
     try{
       const profile=await A.getProfile(),user=A.session.user,nick=profile?.nickname||user.user_metadata?.nickname||user.user_metadata?.name||('FUNY회원'+String(user.id).replace(/-/g,'').slice(-4).toUpperCase());
@@ -1357,11 +1495,14 @@
     requestAnimationFrame(()=>marketApplySheetMode(mode,false));
   });
   await loadRows();
-  const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId');
-  if(focus==='market'&&marketId){
-    await focusMarketOnMap(marketId,{updateUrl:false});
-  }else{
-    const directMarket=location.hash.match(/^#market\/([0-9a-f-]{36})$/i);
-    if(directMarket)openDetail(directMarket[1]);
+  const identityReturned=await handleMarketIdentityReturn();
+  if(!identityReturned){
+    const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId');
+    if(focus==='market'&&marketId){
+      await focusMarketOnMap(marketId,{updateUrl:false});
+    }else{
+      const directMarket=location.hash.match(/^#market\/([0-9a-f-]{36})$/i);
+      if(directMarket)openDetail(directMarket[1]);
+    }
   }
 })();

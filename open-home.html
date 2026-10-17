@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FUNY PIN 홈 열기</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="robots" content="noindex,follow">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#f8f7fd;color:#111015;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Pretendard,sans-serif}
+body{background:radial-gradient(circle at 50% 46%,rgba(128,98,216,.055) 0,rgba(128,98,216,0) 34%),#f8f7fd}
+.wrap{min-height:100dvh;display:grid;place-items:center;padding:max(30px,env(safe-area-inset-top)) 30px max(30px,env(safe-area-inset-bottom))}
+.card{width:min(100%,456px);padding:31px 28px 34px;border:1px solid #e7e2ef;border-radius:29px;background:rgba(255,255,255,.985);text-align:center;box-shadow:0 18px 46px rgba(72,54,105,.075)}
+.app-icon{display:block;width:94px;height:94px;margin:0 auto 22px;border-radius:22px;object-fit:cover}
+h1{margin:0;color:#0c0b0e;font-size:26px;font-weight:800;line-height:1.24;letter-spacing:-.045em;word-break:keep-all}
+p{margin:14px 0 0;color:#8f8996;font-size:15px;font-weight:600;line-height:1.55;letter-spacing:-.025em}
+.actions{display:grid;gap:12px;margin-top:28px}
+.btn{height:64px;border:0;border-radius:15px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;font-weight:800;letter-spacing:-.025em;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.995)}
+.primary{background:#805fdf;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.secondary{border:1.5px solid #dfd4f2;background:#fff;color:#6749bd}
+.muted{background:#f3f1f5;color:#655f6b}
+.note{margin-top:18px;color:#aaa4ae;font-size:12px;font-weight:500;line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
+@media(max-width:420px){
+  .wrap{padding-left:20px;padding-right:20px}
+  .card{padding:28px 24px 30px;border-radius:26px}
+  .app-icon{width:88px;height:88px;margin-bottom:20px;border-radius:21px}
+  h1{font-size:22px}
+  p{font-size:14px}
+  .actions{margin-top:25px;gap:10px}
+  .btn{height:56px;font-size:15px;border-radius:14px}
+  .note{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <img class="app-icon" src="data:image/webp;base64,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" alt="FUNY PIN 앱 아이콘">
+    <h1>FUNY PIN에서<br>내 취향의 카드샵을 찾아보세요</h1>
+    <p id="status">사용 중인 기기에 맞는 화면을 열고 있어요.</p>
+    <div class="actions">
+      <button class="btn primary" id="openAppBtn" type="button">FUNY PIN 앱 열기</button>
+      <a class="btn secondary" id="webHomeBtn" href="https://funypin.kr/">Web FUNY PIN 홈 열기</a>
+      <a class="btn muted" id="storeBtn" href="https://apps.apple.com/us/app/funy-pin/id6817652126">App Store에서 설치하기</a>
+    </div>
+    <div class="note">iPhone에서는 FUNY PIN이 설치되어 있으면 앱이 열리고, 설치되어 있지 않으면 App Store로 이동합니다.</div>
+  </main>
+</div>
+<script>
+(function(){
+  var APP_STORE='https://apps.apple.com/us/app/funy-pin/id6817652126';
+  var qs=new URLSearchParams(location.search);
+  var event=qs.get('event')||'';
+  var campaign=qs.get('campaign')||'';
+  var from=qs.get('from')||'pokemon-match-share';
+
+  function webUrl(){
+    var u=new URL('https://funypin.kr/');
+    
+    u.searchParams.set('from',from);
+    if(event)u.searchParams.set('event',event);
+    if(campaign)u.searchParams.set('campaign',campaign);
+    return u.toString();
+  }
+  function appUrl(){
+    var q=new URLSearchParams();
+    
+    q.set('from',from);
+    if(event)q.set('event',event);
+    if(campaign)q.set('campaign',campaign);
+    return 'funypin:///?'+q.toString();
+  }
+
+  var ua=navigator.userAgent||'';
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAndroid=/Android/i.test(ua);
+  var status=document.getElementById('status');
+  var openBtn=document.getElementById('openAppBtn');
+  var webBtn=document.getElementById('webHomeBtn');
+  var storeBtn=document.getElementById('storeBtn');
+  webBtn.href=webUrl();
+  storeBtn.href=APP_STORE;
+
+  function openIOSApp(){
+    var launched=false;
+    var timer;
+    function cleanup(){
+      if(timer)clearTimeout(timer);
+      document.removeEventListener('visibilitychange',onVisibility);
+      window.removeEventListener('pagehide',onGone);
+      window.removeEventListener('blur',onGone);
+    }
+    function onGone(){launched=true;cleanup()}
+    function onVisibility(){if(document.hidden)onGone()}
+    document.addEventListener('visibilitychange',onVisibility);
+    window.addEventListener('pagehide',onGone,{once:true});
+    window.addEventListener('blur',onGone,{once:true});
+    timer=setTimeout(function(){
+      cleanup();
+      if(!launched&&!document.hidden)location.replace(APP_STORE);
+    },1300);
+    location.href=appUrl();
+  }
+
+  openBtn.onclick=function(){
+    if(isIOS){openIOSApp();return}
+    if(isAndroid){location.href=webUrl();return}
+    location.href=webUrl();
+  };
+
+  if(isAndroid){
+    status.textContent='Android에서는 Web FUNY PIN 홈으로 이동합니다.';
+    openBtn.textContent='Web FUNY PIN 홈 열기';
+    storeBtn.style.display='none';
+    setTimeout(function(){location.replace(webUrl())},250);
+  }else if(isIOS){
+    status.textContent='FUNY PIN 앱을 확인하고 있어요.';
+    setTimeout(openIOSApp,250);
+  }else{
+    status.textContent='Web FUNY PIN 홈으로 이동합니다.';
+    openBtn.textContent='Web FUNY PIN 홈 열기';
+    storeBtn.style.display='none';
+    setTimeout(function(){location.replace(webUrl())},250);
+  }
+})();
+</script>
+</body>
+</html>

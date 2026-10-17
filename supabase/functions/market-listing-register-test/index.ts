@@ -22,12 +22,12 @@ async function sha256(value:string){
 function normalizeSellerHandle(value:unknown){
   return clean(value).normalize("NFKC").toLowerCase().replace(/\s+/g," ");
 }
-async function sellerAccountIdentity(preview:any){
+async function sellerAccountIdentity(preview:any,userId=""){
   const stableSellerId=clean(preview?.external_seller_id);
   if(stableSellerId)return {key:stableSellerId,source:"seller_id",reusable:true};
   const provider=clean(preview?.provider),handle=normalizeSellerHandle(preview?.external_seller_handle);
   if(provider==="break"&&handle){
-    return {key:"handle:"+await sha256(provider+":"+handle),source:"seller_handle_fingerprint",reusable:true};
+    return {key:"handle:"+await sha256(provider+":"+clean(userId)+":"+handle),source:"seller_handle_fingerprint",reusable:true};
   }
   return {key:null,source:"listing",reusable:false};
 }
@@ -120,7 +120,7 @@ Deno.serve(async(req:Request)=>{
     const preview=await previewListing(auth,externalUrl);
     const provider=clean(preview?.provider);
     const externalListingId=clean(preview?.external_listing_id);
-    const sellerIdentity=await sellerAccountIdentity(preview);
+    const sellerIdentity=await sellerAccountIdentity(preview, user.id);
     const externalSellerId=sellerIdentity.key;
     if(!provider||!externalListingId)throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
 

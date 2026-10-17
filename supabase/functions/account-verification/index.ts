@@ -73,16 +73,51 @@ function maskedPhone(phone: unknown) {
 
 function friendlyError(raw: unknown) {
   const message = clean(raw);
-  if (message.includes("PHONE_ALREADY_USED")) return "이미 다른 FUNY PIN 계정에서 인증된 휴대폰 번호입니다.";
-  if (message.includes("PHONE_VERIFICATION_IN_PROGRESS") || message.includes("PHONE_VERIFICATION_RESERVED")) {
-    return "다른 계정에서 인증이 진행 중인 휴대폰 번호입니다. 잠시 후 다시 시도해주세요.";
+  const item = (code: string, ko: string, en: string) => ({ code, ko, en });
+
+  if (message.includes("PHONE_ALREADY_USED")) {
+    return item("PHONE_ALREADY_USED", "이미 다른 FUNY PIN 계정에서 인증된 휴대폰 번호입니다.", "This phone number is already verified on another FUNY PIN account.");
   }
-  if (message.includes("PHONE_OTP_COOLDOWN")) return "인증번호는 60초 후 다시 요청할 수 있습니다.";
-  if (message.includes("PHONE_OTP_RATE_LIMIT")) return "인증번호 요청이 너무 많습니다. 1시간 후 다시 시도해주세요.";
-  if (message.includes("INVALID_PHONE_VERIFICATION_REQUEST")) return "휴대폰 번호 형식을 확인해주세요.";
-  if (message.includes("PHONE_SMS_NOT_ENABLED")) return "휴대폰 SMS 인증은 현재 준비 중입니다.";
-  if (message.includes("Unexpected status code returned from hook")) return "문자 발송사 연결 설정을 확인해주세요. 잠시 후 다시 시도해주세요.";
-  return message || "휴대폰 인증 요청을 처리하지 못했습니다.";
+  if (message.includes("PHONE_VERIFICATION_IN_PROGRESS") || message.includes("PHONE_VERIFICATION_RESERVED")) {
+    return item("PHONE_VERIFICATION_IN_PROGRESS", "다른 계정에서 인증이 진행 중인 휴대폰 번호입니다. 잠시 후 다시 시도해주세요.", "Verification for this phone number is already in progress on another account. Please try again shortly.");
+  }
+  if (message.includes("PHONE_OTP_COOLDOWN")) {
+    return item("PHONE_OTP_COOLDOWN", "인증번호는 60초 후 다시 요청할 수 있습니다.", "You can request another verification code after 60 seconds.");
+  }
+  if (message.includes("PHONE_OTP_RATE_LIMIT") || /rate.?limit/i.test(message)) {
+    return item("PHONE_OTP_RATE_LIMIT", "인증번호 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", "Too many verification code requests. Please try again later.");
+  }
+  if (message.includes("INVALID_PHONE_VERIFICATION_REQUEST")) {
+    return item("INVALID_PHONE", "휴대폰 번호를 다시 확인해주세요.", "Please check your phone number and try again.");
+  }
+  if (message.includes("PHONE_SMS_NOT_ENABLED")) {
+    return item("PHONE_SMS_NOT_ENABLED", "휴대폰 SMS 인증을 준비 중입니다. 잠시 후 다시 시도해주세요.", "Phone SMS verification is being prepared. Please try again later.");
+  }
+  if (
+    message.includes("Unexpected status code returned from hook") ||
+    message.includes("SMS 발송 요청에 실패") ||
+    message.includes("문자 발송사")
+  ) {
+    return item("SMS_SEND_FAILED", "인증번호 전송에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.", "We couldn't send the verification code. Please try again shortly.");
+  }
+  if (
+    message.includes("Token has expired or is invalid") ||
+    message.includes("otp_expired") ||
+    message.includes("인증번호가 올바르지 않거나 만료") ||
+    message.includes("인증번호 6자리를 확인")
+  ) {
+    return item("OTP_INVALID_OR_EXPIRED", "인증번호가 올바르지 않거나 만료되었습니다. 새 인증번호를 받아 다시 시도해주세요.", "The verification code is incorrect or has expired. Request a new code and try again.");
+  }
+  if (message.includes("로그인이 필요") || message.includes("로그인 정보를 확인할 수 없")) {
+    return item("AUTH_REQUIRED", "로그인 정보가 만료되었습니다. 다시 로그인해주세요.", "Your sign-in session has expired. Please sign in again.");
+  }
+  if (message.includes("휴대폰 인증 완료 상태를 확인하지 못했습니다")) {
+    return item("VERIFICATION_STATUS_FAILED", "인증 상태를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.", "We couldn't confirm your verification status. Please try again shortly.");
+  }
+  if (message.includes("지원하지 않는 계정 인증 작업")) {
+    return item("UNSUPPORTED_ACTION", "요청을 처리하지 못했습니다. 잠시 후 다시 시도해주세요.", "We couldn't process this request. Please try again shortly.");
+  }
+  return item("PHONE_VERIFICATION_FAILED", "휴대폰 인증을 처리하지 못했습니다. 잠시 후 다시 시도해주세요.", "We couldn't complete phone verification. Please try again shortly.");
 }
 
 async function syncVerification(user: any) {
@@ -250,9 +285,12 @@ Deno.serve(async (req: Request) => {
 
     throw new Error("지원하지 않는 계정 인증 작업입니다.");
   } catch (e) {
+    const friendly = friendlyError(e instanceof Error ? e.message : String(e));
     return new Response(JSON.stringify({
       ok: false,
-      error: friendlyError(e instanceof Error ? e.message : String(e)),
+      error: friendly.ko,
+      error_en: friendly.en,
+      error_code: friendly.code,
     }), { status: 400, headers: corsHeaders(req) });
   }
 });

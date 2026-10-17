@@ -48,16 +48,25 @@
     return '•••• '+d.slice(-4)
   };
   async function verification(){
-    const {data}=await A.client.from('user_verifications')
-      .select('account_verified_at,email_verified_at,phone_verified_at,identity_verified_at,verification_level')
-      .eq('user_id',A.session.user.id).maybeSingle();
-    return data||{}
+    const [rowResult,statusResult]=await Promise.all([
+      A.client.from('user_verifications')
+        .select('account_verified_at,email_verified_at,phone_verified_at,identity_verified_at,verification_level')
+        .eq('user_id',A.session.user.id).maybeSingle(),
+      A.client.functions.invoke('account-verification',{body:{action:'status'}}).catch(()=>({data:null,error:true}))
+    ]);
+    return {
+      ...(rowResult?.data||{}),
+      ...(statusResult?.data?.ok?statusResult.data:{}),
+      phone_sms_enabled:statusResult?.data?.phone_sms_enabled===true,
+      sms_provider:String(statusResult?.data?.sms_provider||'solapi')
+    }
   }
   async function render(){
     const fresh=(await A.getUser())||A.session.user;
     const v=await verification();
     const accountOk=Number(v.verification_level||0)>=1;
     const phoneOk=!!v.phone_verified_at&&!!fresh.phone_confirmed_at;
+    const phoneAvailable=v.phone_sms_enabled===true;
     const emailText=fresh.email||((provider==='kakao')?'OAuth 계정에서 이메일을 제공하지 않음':'이메일 정보 없음');
     root.innerHTML=
       '<div class="intro"><strong>계정 검증 상태</strong><span>FUNY PIN 로그인 검증과 거래용 휴대폰 인증을 분리해서 관리합니다.</span></div>'+
@@ -66,7 +75,7 @@
         '<div class="row"><div class="copy"><div class="label">이메일</div><div class="sub">'+esc(emailText)+'</div></div><span class="badge '+(v.email_verified_at?'ok':'')+'">'+(v.email_verified_at?'인증 완료':provider!=='email'?'OAuth 확인':'미인증')+'</span></div>'+
       '</div></section>'+
       '<section class="section"><h2>추가 인증</h2><div class="card">'+
-        '<div class="row"><div class="copy"><div class="label">휴대폰 SMS 인증</div><div class="sub">'+(phoneOk?esc(maskPhone(fresh.phone))+' · 거래 기능 이용 가능':'거래 기능 이용 전 최초 1회 필요')+'</div></div>'+(phoneOk?'<span class="badge ok">인증 완료</span>':'<button id="phoneOpen" class="action" type="button">인증하기 ›</button>')+'</div>'+
+        '<div class="row"><div class="copy"><div class="label">휴대폰 SMS 인증</div><div class="sub">'+(phoneOk?esc(maskPhone(fresh.phone))+' · 거래 기능 이용 가능':phoneAvailable?'거래 기능 이용 전 최초 1회 필요':'SOLAPI 문자 인증 연동 준비 중')+'</div></div>'+(phoneOk?'<span class="badge ok">인증 완료</span>':phoneAvailable?'<button id="phoneOpen" class="action" type="button">인증하기 ›</button>':'<span class="badge future">준비 중</span>')+'</div>'+
         '<div class="row"><div class="copy"><div class="label">PASS / KCP 본인확인</div><div class="sub">필요 시 추후 검증 레벨 3으로 도입</div></div><span class="badge future">추후 제공</span></div>'+
       '</div></section>'+
       '<div id="phoneBox" class="phone-box" '+(phoneOk?'hidden':'')+'>'+
@@ -75,7 +84,7 @@
         '<div id="msg" class="message" role="status" aria-live="polite"></div>'+
       '</div>'+
       '<div class="note">휴대폰 SMS 인증은 해당 번호를 실제로 사용할 수 있는지 확인하는 절차입니다. PASS/KCP와 같은 법적 본인확인과는 구분됩니다.</div>';
-    if(phoneOk)return;
+    if(phoneOk||!phoneAvailable)return;
     const box=document.getElementById('phoneBox'),open=document.getElementById('phoneOpen'),phone=document.getElementById('phone'),send=document.getElementById('send'),otpRow=document.getElementById('otpRow'),otp=document.getElementById('otp'),verify=document.getElementById('verify'),msg=document.getElementById('msg');
     const message=(t,e=false)=>{msg.textContent=t||'';msg.classList.toggle('error',!!e)};
     const edgeMessage=async(error,fallback)=>{

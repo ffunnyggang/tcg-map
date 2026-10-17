@@ -41,7 +41,7 @@
   <div class="block-tabs" role="tablist" aria-label="차단 범위">
     <button class="block-tab active" type="button" data-block-tab="all">전체</button>
     <button class="block-tab" type="button" data-block-tab="posts">게시물</button>
-    <button class="block-tab" type="button" data-block-tab="market">매물</button>
+    <button class="block-tab" type="button" data-block-tab="market">거래</button>
   </div>
   <div id="root"><div class="loading">차단 목록을 불러오는 중...</div></div>
 </main>
@@ -68,13 +68,13 @@
  };
  const rowsForCurrent=()=>current==='posts'?postRows.map(r=>({...r,post:true,market:false})):current==='market'?marketRows.map(r=>({...r,post:false,market:true})):allRows();
  function scopeLabel(r){
-   if(r.post&&r.market)return'게시물 · 매물에서 차단';
-   if(r.market)return'TCG 거래 매물에서 차단';
+   if(r.post&&r.market)return'게시물 · 거래에서 차단';
+   if(r.market)return'TCG 거래에서 차단';
    return'게시물에서 차단';
  }
  function emptyHtml(){
-   const msg=current==='posts'?'게시물에서 차단한 사용자가 없어요':current==='market'?'매물에서 차단한 사용자가 없어요':'차단한 사용자가 없어요';
-   return '<div class="empty"><div class="empty-icon">✓</div><div class="empty-title">'+msg+'</div><div class="empty-text">필요한 경우 게시물 또는 매물 작성자를 차단할 수 있어요.</div></div>';
+   const msg=current==='posts'?'게시물에서 차단한 사용자가 없어요':current==='market'?'거래에서 차단한 사용자가 없어요':'차단한 사용자가 없어요';
+   return '<div class="empty"><div class="empty-icon">✓</div><div class="empty-title">'+msg+'</div><div class="empty-text">필요한 경우 게시물 또는 거래 작성자를 차단할 수 있어요.</div></div>';
  }
  function render(){
    const rows=rowsForCurrent();

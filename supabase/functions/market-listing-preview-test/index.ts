@@ -106,6 +106,57 @@ function productImages(product: any) {
   return [...new Set(list.map((x: any) => typeof x === "string" ? clean(x) : clean(x?.url)).filter(Boolean))];
 }
 
+function koreaCoord(lat: unknown, lng: unknown) {
+  const a = Number(lat), b = Number(lng);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  if (a < 30 || a > 40 || b < 120 || b > 132) return null;
+  return { lat: a, lng: b };
+}
+
+function coordFrom(value: any, depth = 0): {lat:number,lng:number}|null {
+  if (!value || depth > 2) return null;
+  if (Array.isArray(value) && value.length >= 2) {
+    return koreaCoord(value[1], value[0]) || koreaCoord(value[0], value[1]);
+  }
+  if (typeof value !== "object") return null;
+  const direct =
+    koreaCoord(value.latitude, value.longitude) ||
+    koreaCoord(value.lat, value.lng) ||
+    koreaCoord(value.lat, value.lon) ||
+    koreaCoord(value.y, value.x);
+  if (direct) return direct;
+  for (const key of ["geo","location","center","point","coordinate","coordinates","position"]) {
+    const nested = coordFrom(value?.[key], depth + 1);
+    if (nested) return nested;
+  }
+  return null;
+}
+
+function firstCoord(...values: any[]) {
+  for (const value of values) {
+    const point = coordFrom(value);
+    if (point) return point;
+  }
+  return null;
+}
+
+function sanitizeBreakDescription(raw: unknown, title: string) {
+  let text = clean(decodeHtml(String(raw ?? ""))).replace(/\s+/g, " ").trim();
+  const hasGeneratedPrefix = /^\s*\[#?\d+\]/i.test(text);
+  text = text.replace(/\bFUNY-[A-Z0-9]{6}\b/gi, " ");
+  text = text.replace(/\s*BREAK\s*마켓플레이스에서\s*안전하게\s*거래하세요\.?\s*$/i, "");
+  if (hasGeneratedPrefix) {
+    text = text.replace(/^\s*\[#?\d+\]\s*/i, "");
+    text = text.replace(/^.*?가격\s*[0-9][0-9,]*\s*원\.\s*/i, "");
+    text = text.replace(/^배송비\s*[0-9][0-9,]*\s*원\.\s*/i, "");
+    text = text.replace(/^판매자\s+[^.]+?\.\s*/i, "");
+  }
+  if (title && text.startsWith(title)) {
+    text = text.slice(title.length).replace(/^\s*[-–—:·]\s*/, "");
+  }
+  return text.replace(/\s{2,}/g, " ").trim();
+}
+
 function daangnImages(html: string, primary: string) {
   const urls: string[] = [];
   const re = /https:\/\/img\.kr\.gcp-karroter\.net\/origin\/article\/[^"'<>\\\s]+/gi;
@@ -143,7 +194,7 @@ async function parseDaangn(input: URL) {
   const { html, finalUrl } = await fetchHtml(input);
   const product = findProductLd(html) || {};
   const title = clean(product.name) || meta(html, "og:title") || clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]);
-  const description = clean(product.description) || meta(html, "og:description") || meta(html, "description");
+  const rawDescription = clean(product.description) || meta(html, "og:description") || meta(html, "description");
   const offer = Array.isArray(product.offers) ? product.offers[0] : (product.offers || {});
   const image0 = typeof product.image === "string" ? product.image : productImages(product)[0] || meta(html, "og:image");
   const images = daangnImages(html, clean(image0));
@@ -160,11 +211,21 @@ async function parseDaangn(input: URL) {
   const articleId = (input.pathname.match(/\/articles\/(\d+)/i) || [])[1] ||
     (new URL(finalUrl).pathname.match(/\/kr\/buy-sell\/([a-z0-9-]+)/i) || [])[1] || "";
   const availability = clean(offer?.availability);
+  const sellerLocation = firstCoord(
+    offer?.availableAtOrFrom,
+    offer?.seller?.location,
+    product?.availableAtOrFrom,
+    product?.contentLocation,
+    product?.location,
+    product?.seller?.location
+  );
   return {
     provider: "daangn", external_listing_id: articleId, external_seller_id: sellerId || null,
     external_seller_handle: sellerHandle || null, final_url: finalUrl, title, description,
     price_raw: clean(offer?.price), currency: clean(offer?.priceCurrency) || "KRW",
     images, availability, source_status: /InStock/i.test(availability) ? "active" : "unknown",
+    seller_location_latitude: sellerLocation?.lat ?? null,
+    seller_location_longitude: sellerLocation?.lng ?? null,
     direct_buy_available: null, seller_verification_scope: sellerId ? "account" : "listing"
   };
 }
@@ -196,12 +257,16 @@ async function parseBunjang(input: URL) {
   if (template && count) for (let i = 1; i <= count; i++) images.push(template.replace("{cnt}", String(i)).replace("{res}", "1200"));
   const sale = clean(d.saleStatus);
   const sourceStatus = sale === "SELLING" || sale === "RESERVED" ? "active" : sale === "SOLD_OUT" ? "sold" : sale === "DELETED" ? "deleted" : "unknown";
+  const sellerLocation = firstCoord(d.location, d.common?.location, d.transaction?.location);
   return {
     provider: "bunjang", external_listing_id: String(pid), external_seller_id: d.uid != null ? String(d.uid) : null,
     external_seller_handle: null, final_url: "https://m.bunjang.co.kr/products/" + pid,
     title: clean(d.common?.name), description: clean(d.common?.description),
     price_raw: clean(d.transaction?.price), currency: "KRW", images,
-    availability: sale, source_status: sourceStatus, direct_buy_available: null,
+    availability: sale, source_status: sourceStatus,
+    seller_location_latitude: sellerLocation?.lat ?? null,
+    seller_location_longitude: sellerLocation?.lng ?? null,
+    direct_buy_available: null,
     seller_verification_scope: d.uid != null ? "account" : "listing",
     verification_codes: [...new Set(((JSON.stringify(payload)||"").match(/FUNY-[A-Z0-9]{6}/gi)||[]).map((x:string)=>x.toUpperCase()))].slice(0,20),
     source_extra: { category_name: clean(d.categoryName), image_count: count }
@@ -230,14 +295,25 @@ async function parseBreak(input: URL) {
   const ogImage = meta(html, "og:image");
   if (!images.length && ogImage) images = [ogImage];
   const availability = clean(offer?.availability);
-  const direct = /즉시\s*구매/.test(meta(html, "og:title") + " " + description + " " + clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]));
+  const direct = /즉시\s*구매/.test(meta(html, "og:title") + " " + rawDescription + " " + clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]));
   const sellerHandle = clean(offer?.seller?.name) || null;
+  const description = sanitizeBreakDescription(rawDescription, title);
+  const sellerLocation = firstCoord(
+    offer?.availableAtOrFrom,
+    offer?.seller?.location,
+    product?.availableAtOrFrom,
+    product?.contentLocation,
+    product?.location,
+    product?.seller?.location
+  );
   return {
     provider: "break", external_listing_id: String(pid), external_seller_id: null,
     external_seller_handle: sellerHandle, final_url: finalUrl,
     title, description, price_raw: clean(offer?.price) || (meta(html, "og:title").match(/([0-9][0-9,]*)원/) || [])[1] || "",
     currency: clean(offer?.priceCurrency) || "KRW", images,
     availability, source_status: /InStock/i.test(availability) ? "active" : availability ? "sold" : "unknown",
+    seller_location_latitude: sellerLocation?.lat ?? null,
+    seller_location_longitude: sellerLocation?.lng ?? null,
     direct_buy_available: direct,
     seller_verification_scope: sellerHandle ? "account" : "listing",
     seller_identity_source: sellerHandle ? "seller_display_name" : "listing",

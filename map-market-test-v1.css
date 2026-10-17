@@ -2400,3 +2400,67 @@ body.market-test-page .market-overlay .market-card{
 .market-seller-verify-section .market-external-verify-confirm{
   margin-top:10px!important
 }
+
+
+/* MARKET PASS/SMS identity verification v40 */
+.market-identity-section{
+  padding-top:14px!important;
+  padding-bottom:14px!important
+}
+.market-identity-card{
+  padding:12px;
+  border:1px solid #e8e3ed;
+  border-radius:14px;
+  background:#faf9fb
+}
+.market-identity-row{
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+.market-identity-row>div{
+  min-width:0;
+  flex:1
+}
+.market-identity-row strong{
+  display:block;
+  color:#3f3944;
+  font-size:11px;
+  line-height:1.35;
+  font-weight:850
+}
+.market-identity-row span{
+  display:block;
+  margin-top:4px;
+  color:#918a96;
+  font-size:9px;
+  line-height:1.5
+}
+.market-identity-start{
+  flex:0 0 auto;
+  min-width:116px;
+  height:38px;
+  padding:0 12px;
+  border:0;
+  border-radius:11px;
+  background:#28232e;
+  color:#fff;
+  font-size:9.8px;
+  font-weight:850;
+  white-space:nowrap
+}
+.market-identity-start:disabled{opacity:.42}
+.market-identity-section.is-verified .market-identity-card{
+  border-color:#d8e9de;
+  background:#f7fbf8
+}
+.market-identity-section.is-verified .market-identity-row strong{
+  color:#4d8c60
+}
+.market-identity-section.is-verified .market-identity-row span{
+  color:#71927a
+}
+@media(max-width:360px){
+  .market-identity-row{align-items:flex-start;flex-direction:column}
+  .market-identity-start{width:100%}
+}

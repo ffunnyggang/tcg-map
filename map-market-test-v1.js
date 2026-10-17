@@ -732,8 +732,13 @@
     saveMarketIdentityDraft();
     let sent=false;
     try{
-      const {error}=await A.client.auth.updateUser({phone});
+      const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'send_phone_otp',phone}});
       if(error)throw error;
+      if(!data?.ok)throw Error(data?.error||'인증번호를 전송하지 못했습니다.');
+      if(data?.already_verified){
+        registerIdentityVerified=true;registerIdentityConfigured=true;registerIdentityVerifiedAt=data?.phone_verified_at||'';
+        setMarketIdentityUi({verified:true,message:'휴대폰 인증 완료 ✓'});syncRegisterSubmitState();return
+      }
       sent=true;
       if(phoneInput)phoneInput.dataset.e164=phone;
       if(otpRow)otpRow.hidden=false;
@@ -741,10 +746,8 @@
       startMarketSmsResendCooldown();
       setTimeout(()=>$('#marketIdentityCode')?.focus(),0)
     }catch(e){
-      const raw=String(e?.message||e||'');
-      const provider=/phone|sms|provider|unsupported|disabled/i.test(raw);
-      setMarketIdentityMessage(provider?'SMS 발송 설정을 확인해주세요. 잠시 후 다시 시도해주세요.':raw||'인증번호를 전송하지 못했습니다.',true)
-    }finally{if(send&&!sent){send.disabled=false;send.textContent='인증번호 받기'}}
+      setMarketIdentityMessage(await marketFunctionErrorMessage(e,'인증번호를 전송하지 못했습니다.'),true)
+    }finally{if(send&&!sent&&!registerIdentityVerified){send.disabled=false;send.textContent='인증번호 받기'}}
   }
   async function verifyMarketIdentityOtp(){
     const phoneInput=$('#marketIdentityPhone'),codeInput=$('#marketIdentityCode'),verify=$('#marketIdentityVerify');
@@ -755,12 +758,9 @@
     if(verify){verify.disabled=true;verify.textContent='확인 중...'}
     setMarketIdentityMessage('');
     try{
-      const {error}=await A.client.auth.verifyOtp({phone,token,type:'phone_change'});
+      const {data,error}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'verify_phone_otp',phone,token}});
       if(error)throw error;
-      try{await A.client.auth.refreshSession()}catch(_){}
-      const {data,error:syncError}=await A.client.functions.invoke('market-identity-verify-test',{body:{action:'sync'}});
-      if(syncError)throw syncError;
-      if(!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
+      if(!data?.ok||!data?.phone_verified)throw Error(data?.error||'휴대폰 인증 완료 상태를 확인하지 못했습니다.');
       registerIdentityVerified=true;
       registerIdentityConfigured=true;
       registerIdentityVerifiedAt=data?.phone_verified_at||'';

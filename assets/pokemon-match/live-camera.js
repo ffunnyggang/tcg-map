@@ -33,7 +33,7 @@ class LiveFaceScan{
    this.stream=stream;stream.getVideoTracks().forEach(t=>t.addEventListener?.('ended',()=>this.fail(new Error('카메라 연결이 끊겼어요. 다시 측정해주세요.'),token),{once:true}));
    await this.hooks.open(stream);if(!this.valid(token))return;
    this.hooks.onUpdate({stage:'loading',progress:0,text:'얼굴 측정 도구를 준비하고 있어요…'});
-   await this.hooks.prepare();if(!this.valid(token))return;
+   await this.hooks.prepare(text=>{if(this.valid(token))this.hooks.onUpdate({stage:'loading',progress:0,text});});if(!this.valid(token))return;
    this.cancel(this.deadline);this.deadline=this.schedule(()=>this.fail(new Error('측정이 오래 걸리고 있어요. 밝은 곳에서 얼굴을 정면으로 맞춘 뒤 다시 시도해주세요.'),token),45000);
    this.hooks.onUpdate({stage:'guide',progress:0,text:'얼굴을 가이드 안에 넣어주세요.'});this.timer=this.schedule(()=>this.tick(token),0);
   }catch(error){this.fail(error,token);}

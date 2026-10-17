@@ -1,12 +1,45 @@
 'use strict';
-let faceModelPromise=null;
-async function ensureFaceModels(){
- if(!window.faceapi)throw Error('얼굴 분석 도구를 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
- if(!faceModelPromise)faceModelPromise=(async()=>{
-  await faceapi.tf.setBackend('cpu');await faceapi.tf.ready();
-  await Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri('assets/pokemon-match/models'),faceapi.nets.faceLandmark68Net.loadFromUri('assets/pokemon-match/models')]);
- })().catch(e=>{faceModelPromise=null;throw e;});
- return faceModelPromise;
+let faceModelPromise=null,faceModelsReady=false;
+const faceModelListeners=new Set();
+function faceModelStatus(text){for(const fn of faceModelListeners)try{fn(text);}catch{}}
+function faceModelDeadline(promise,ms,message,abort){let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{try{abort?.();}catch{}reject(Error(message));},ms);});return Promise.race([promise,deadline]).finally(()=>clearTimeout(timer));}
+async function fetchFaceModelAsset(url,asJson){
+ const controller=new AbortController();
+ const request=(async()=>{const response=await fetch(url,{signal:controller.signal,cache:'no-cache',credentials:'same-origin'});if(!response.ok)throw Error('얼굴 분석 파일을 불러오지 못했어요. 네트워크를 확인하고 다시 눌러주세요.');return asJson?await response.json():await response.arrayBuffer();})();
+ try{return await faceModelDeadline(request,20000,'분석 파일 다운로드가 지연되고 있어요. 네트워크를 확인하고 다시 눌러주세요.',()=>controller.abort());}
+ catch(error){if(error.name==='SyntaxError')throw Error('분석 파일을 읽지 못했어요. 새로고침 후 다시 눌러주세요.');if(error.name==='TypeError')throw Error('분석 파일에 연결하지 못했어요. 네트워크를 확인하고 다시 눌러주세요.');if(error.name==='AbortError')throw Error('분석 파일 다운로드가 지연되고 있어요. 다시 눌러주세요.');throw error;}
+}
+async function initializeFaceModels(){
+ const api=window.faceapi;if(!api)throw Error('얼굴 분석 도구를 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
+ faceModelStatus('얼굴 측정 엔진을 시작하고 있어요…');
+ // Verify the selected CPU backend with a real tensor instead of relying on
+ // the legacy global readiness promise in the bundled TFJS 1.7 runtime.
+ const selected=await faceModelDeadline(Promise.resolve(api.tf.setBackend('cpu')),8000,'측정 엔진을 시작하지 못했어요. 새로고침 후 다시 눌러주세요.');
+ if(selected===false||api.tf.getBackend()!=='cpu')throw Error('측정 엔진을 시작하지 못했어요. 새로고침 후 다시 눌러주세요.');
+ const probe=api.tf.zeros([1]);try{probe.dataSync();}finally{probe.dispose();}
+ const base=new URL('/assets/pokemon-match/models/',document.baseURI),descriptors=[['tiny_face_detector_model',api.nets.tinyFaceDetector],['face_landmark_68_model',api.nets.faceLandmark68Net]];let downloaded=0;
+ const assetUrl=name=>{const url=new URL(name,base);url.searchParams.set('v','loader-2');return url.href;};
+ const read=async(name,json)=>{const value=await fetchFaceModelAsset(assetUrl(name),json);downloaded++;faceModelStatus('얼굴 분석 모델을 불러오고 있어요… ('+downloaded+'/4)');return value;};
+ faceModelStatus('얼굴 분석 모델을 불러오고 있어요… (0/4)');
+ const models=await Promise.all(descriptors.map(async([name,net])=>{
+  const manifest=await read(name+'-weights_manifest.json',true);
+  if(!Array.isArray(manifest)||!manifest.length||manifest.some(group=>!Array.isArray(group.paths)||!Array.isArray(group.weights)||group.paths.some(path=>!/^[\w.-]+$/.test(path))))throw Error('분석 파일 형식을 확인하지 못했어요. 새로고침 후 다시 시도해주세요.');
+  const buffers=await Promise.all(manifest.flatMap(group=>group.paths).map(path=>read(path,false)));
+  const size=buffers.reduce((n,b)=>n+b.byteLength,0);if(!size)throw Error('분석 파일이 비어 있어요. 다시 눌러주세요.');
+  const joined=new Uint8Array(size);let offset=0;for(const buffer of buffers){joined.set(new Uint8Array(buffer),offset);offset+=buffer.byteLength;}
+  return {net,buffer:joined.buffer,weights:manifest.flatMap(group=>group.weights)};
+ }));
+ faceModelStatus('얼굴 특징 모델을 적용하고 있어요…');
+ const loaded=[];try{for(const model of models){const weights=api.tf.io.decodeWeights(model.buffer,model.weights);try{model.net.loadFromWeightMap(weights);loaded.push(model.net);}catch(error){api.tf.dispose(weights);throw error;}}}catch(error){for(const net of loaded)net.dispose();throw Error('얼굴 분석 모델을 준비하지 못했어요. 새로고침 후 다시 눌러주세요.');}
+ faceModelStatus('측정 준비를 마쳤어요. 정면을 봐주세요.');
+}
+async function ensureFaceModels(onProgress){
+ if(typeof onProgress==='function')faceModelListeners.add(onProgress);
+ try{
+  if(faceModelsReady)return;
+  if(!faceModelPromise)faceModelPromise=initializeFaceModels().then(()=>{faceModelsReady=true;}).catch(error=>{faceModelPromise=null;throw error;});
+  await faceModelPromise;
+ }finally{faceModelListeners.delete(onProgress);}
 }
 async function analyzeSelfie(image){
  await ensureFaceModels();

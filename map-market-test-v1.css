@@ -2260,3 +2260,27 @@ html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle span{
     z-index:70!important;
   }
 }
+
+
+/* MARKET visual/deeplink polish v32 */
+/* Transaction marker no longer carries an emoji. */
+body.market-test-page .market-map-pin-emoji{display:none!important}
+
+/* TCG 거래 count: neutral when inactive, red only for selected tab. */
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"]:not(.active) .qa-tab-count,
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"]:not(.active) #marketTestTabCount{
+  color:#9a94a0!important;
+  font-weight:800!important
+}
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"].active .qa-tab-count,
+html.funy-map-qa body.market-test-page .qa-list-tab[data-tab="market"].active #marketTestTabCount{
+  color:#e34d5c!important;
+  font-weight:900!important
+}
+
+/* Keep a single divider between stats and description. */
+body.market-test-page .market-detail-description .market-detail-desc{
+  margin-top:0!important;
+  padding-top:0!important;
+  border-top:0!important
+}

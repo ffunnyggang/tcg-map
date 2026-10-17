@@ -558,8 +558,8 @@
       '<div class="market-register-policy"><strong>개인 판매자 전용</strong><span>FUNY PIN은 외부 플랫폼에 등록한 본인 매물을 추가 노출하는 기능만 제공합니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
-      '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
-      '<div class="market-form-section"><span class="market-form-label">판매자 인증</span><div class="market-external-verify-card"><div id="marketSellerAccountSummary" class="market-seller-account-summary">판매자 인증 현황 확인 중...</div><div id="marketExternalVerifyStatus" class="market-external-verify-status">외부 매물을 불러오면 판매자 인증을 시작할 수 있어요.</div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button" disabled>판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>아래 인증코드를 외부 매물 설명 마지막에 잠시 추가하고 저장해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button><small>인증이 끝난 뒤 코드는 원본 매물 설명에서 삭제해도 됩니다. 판매자 계정을 식별할 수 있는 플랫폼은 최초 인증 후 같은 계정의 다음 매물부터 재인증을 생략합니다.</small></div></div></div>'+
+      '<div class="market-form-section"><label class="market-form-label" for="marketRegisterUrl">외부 플랫폼 매물 링크</label><div class="market-url-row"><input id="marketRegisterUrl" class="market-url-input" value="" placeholder="당근 · 번개장터 · BREAK 매물 URL"><button id="marketRegisterLoad" class="market-url-load" type="button">불러오기</button></div><div id="marketPreviewStatus" class="market-preview-status">지원 플랫폼의 본인 매물 링크를 입력해주세요.</div><div id="marketPreview" class="market-preview"><div class="market-preview-meta-row"><div id="marketPreviewProvider" class="market-preview-provider"></div><div id="marketPreviewSellerVerified" class="market-preview-seller-verified" hidden><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7.2 5.6 9.8 11 4.4"/></svg><span id="marketPreviewSellerVerifiedText"></span></div></div><div id="marketPreviewImages" class="market-preview-images"></div><div id="marketPreviewTitle" class="market-preview-title"></div><div id="marketPreviewPrice" class="market-preview-price"></div><div id="marketPreviewDesc" class="market-preview-desc"></div></div></div>'+
+      '<div id="marketSellerVerifySection" class="market-form-section market-seller-verify-section" hidden><span class="market-form-label">판매자 인증</span><div class="market-external-verify-card"><div id="marketExternalVerifyStatus" class="market-external-verify-status">현재 매물의 판매자 인증이 필요합니다.</div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button">판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>발급된 인증코드를 외부 플랫폼 게시글 설명 마지막에 추가하고 저장해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><small>외부 플랫폼에 저장이 완료된 뒤 아래 인증 확인 버튼을 눌러주세요. 인증 완료 후 코드는 원본 게시글에서 삭제해도 됩니다.</small><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button></div></div></div>'+
       '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div><div class="market-place-input-wrap"><input id="marketRegisterPlaceName" class="market-place-input" type="text" maxlength="30" placeholder="(선택) 장소명을 입력해주세요" autocomplete="off"><span id="marketRegisterPlaceCount" class="market-place-count">0/30</span></div></div>'+
       '<div class="market-form-section market-consent-box"><span class="market-form-label">등록 확인</span>'+
       '<label class="market-consent-item market-consent-all"><input id="marketConsentAll" type="checkbox"><span>개인 판매자임을 확인하며, 외부 매물의 사진·설명을 FUNY PIN에 재게시할 권리가 있고 실제 거래·결제·배송·환불은 원본 외부 플랫폼에서 진행되는 것에 모두 동의합니다.</span></label></div>'+
@@ -625,12 +625,25 @@
   function sellerAccountProviderLabel(provider){
     return providerName({provider})||String(provider||'외부 플랫폼');
   }
-  function renderSellerAccountSummary(){
-    const el=$('#marketSellerAccountSummary');if(!el)return;
-    if(registerSellerStatusLoading){el.classList.remove('verified');el.textContent='판매자 인증 현황 확인 중...';return}
-    if(!registerVerifiedAccounts.length){el.classList.remove('verified');el.textContent='인증된 판매자 계정이 없습니다.';return}
-    el.classList.add('verified');
-    el.textContent=registerVerifiedAccounts.map(x=>sellerAccountProviderLabel(x.provider)+' 판매자 인증 완료 ✓').join(' · ');
+  function hidePreviewSellerVerification(){
+    const el=$('#marketPreviewSellerVerified'),text=$('#marketPreviewSellerVerifiedText');
+    if(el)el.hidden=true;
+    if(text)text.textContent='';
+  }
+  function showPreviewSellerVerification(provider){
+    const el=$('#marketPreviewSellerVerified'),text=$('#marketPreviewSellerVerifiedText');
+    if(text)text.textContent=sellerAccountProviderLabel(provider)+' 판매자 인증 완료';
+    if(el)el.hidden=false;
+  }
+  function showSellerVerificationSection(message='현재 매물의 판매자 인증이 필요합니다.'){
+    const section=$('#marketSellerVerifySection'),status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart');
+    if(section)section.hidden=false;
+    if(status){status.textContent=message;status.classList.remove('verified')}
+    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='판매자 인증 시작'}
+  }
+  function hideSellerVerificationSection(){
+    const section=$('#marketSellerVerifySection');
+    if(section)section.hidden=true;
   }
   function matchingVerifiedAccount(product){
     if(!product)return null;
@@ -640,22 +653,29 @@
   }
   function applyCachedSellerAccountVerification(product){
     const account=matchingVerifiedAccount(product);if(!account)return false;
-    setExternalVerified(sellerAccountProviderLabel(account.provider)+' 판매자 계정 인증 완료 ✓ · 추가 인증 없이 등록할 수 있습니다.',{accountId:account.id||'',scope:'account'});
+    setExternalVerified(sellerAccountProviderLabel(account.provider)+' 판매자 인증 완료',{accountId:account.id||'',scope:'account'});
     return true;
+  }
+  function syncSellerVerificationForProduct(product=registerProduct){
+    if(!product)return false;
+    if(applyCachedSellerAccountVerification(product))return true;
+    hidePreviewSellerVerification();
+    showSellerVerificationSection(sellerAccountProviderLabel(product.provider)+' 판매자 인증이 필요합니다.');
+    return false;
   }
   async function loadSellerVerificationStatus(){
     if(registerSellerStatusLoading)return;
-    registerSellerStatusLoading=true;renderSellerAccountSummary();
+    registerSellerStatusLoading=true;
     try{
       const {data,error}=await A.client.functions.invoke('market-external-seller-verify-test',{body:{action:'status'}});
       if(error)throw error;
       registerVerifiedAccounts=Array.isArray(data?.external_accounts)?data.external_accounts.filter(x=>x?.verification_status==='verified'):[];
-      registerSellerStatusLoading=false;renderSellerAccountSummary();
-      if(registerProduct&&!registerExternalVerified)applyCachedSellerAccountVerification(registerProduct);
+      registerSellerStatusLoading=false;
+      if(registerProduct&&!registerExternalVerified)syncSellerVerificationForProduct(registerProduct);
     }catch(_){
       registerVerifiedAccounts=[];
       registerSellerStatusLoading=false;
-      const el=$('#marketSellerAccountSummary');if(el){el.classList.remove('verified');el.textContent='판매자 인증 현황을 불러오지 못했습니다.'}
+      if(registerProduct&&!registerExternalVerified)showSellerVerificationSection(sellerAccountProviderLabel(registerProduct.provider)+' 판매자 인증이 필요합니다.');
     }
   }
   function registerConsentsOk(){return !!$('#marketConsentAll')?.checked}
@@ -663,8 +683,10 @@
   function resetExternalVerification(message='외부 매물을 확인해주세요.'){
     registerExternalVerified=false;registerChallengeId='';registerVerifiedChallengeId='';registerExternalAccountId='';registerVerificationScope='';
     const status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart'),challenge=$('#marketExternalVerifyChallenge'),code=$('#marketExternalVerifyCode');
+    hidePreviewSellerVerification();
+    hideSellerVerificationSection();
     if(status){status.textContent=message;status.classList.remove('verified')}
-    if(start){start.disabled=!registerProduct;start.textContent='판매자 인증 시작'}
+    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='판매자 인증 시작'}
     if(challenge)challenge.hidden=true;
     if(code)code.textContent='';
     syncRegisterSubmitState();
@@ -673,12 +695,13 @@
     registerExternalVerified=true;registerChallengeId='';registerExternalAccountId=accountId||'';registerVerifiedChallengeId=challengeId||'';registerVerificationScope=scope||'';
     if(accountId&&registerProduct?.provider&&registerProduct?.external_seller_id&&!registerVerifiedAccounts.some(x=>String(x.id)===String(accountId))){
       registerVerifiedAccounts.unshift({id:accountId,provider:registerProduct.provider,external_seller_id:registerProduct.external_seller_id,verification_status:'verified'});
-      renderSellerAccountSummary();
     }
     const status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart'),challenge=$('#marketExternalVerifyChallenge');
     if(status){status.textContent=message;status.classList.add('verified')}
-    if(start){start.disabled=true;start.textContent='판매자 인증 완료 ✓'}
+    if(start){start.hidden=true;start.disabled=true}
     if(challenge)challenge.hidden=true;
+    showPreviewSellerVerification(registerProduct?.provider);
+    hideSellerVerificationSection();
     syncRegisterSubmitState();
   }
   async function startExternalSellerVerification(){
@@ -691,12 +714,13 @@
       if(error)throw error;if(!data?.ok)throw Error(data?.error||'판매자 인증을 시작하지 못했습니다.');
       if(data.already_verified){setExternalVerified(providerName(registerProduct)+' 판매자 계정 인증 완료 ✓ · 추가 인증 없이 등록할 수 있습니다.',{accountId:data.external_account_id||'',scope:'account'});return}
       registerChallengeId=data.challenge_id||'';
-      const code=$('#marketExternalVerifyCode'),challenge=$('#marketExternalVerifyChallenge'),status=$('#marketExternalVerifyStatus');
+      const code=$('#marketExternalVerifyCode'),challenge=$('#marketExternalVerifyChallenge'),status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart');
       if(code)code.textContent=data.verification_code||'';
+      if(start)start.hidden=true;
       if(challenge)challenge.hidden=false;
-      if(status)status.textContent=(data.seller_verification_scope==='account'?'플랫폼 계정 최초 인증':'이 매물 소유 인증')+'이 필요합니다.';
+      if(status)status.textContent='인증코드를 외부 플랫폼 게시글에 추가하고 저장한 뒤 인증 확인을 눌러주세요.';
     }catch(e){setRegisterError(await marketFunctionErrorMessage(e,'판매자 인증을 시작하지 못했습니다.'))}
-    finally{if(btn&&!registerExternalVerified){btn.disabled=false;btn.textContent='판매자 인증 시작'}}
+    finally{if(btn&&!registerExternalVerified&&!registerChallengeId){btn.hidden=false;btn.disabled=false;btn.textContent='판매자 인증 시작'}}
   }
   async function confirmExternalSellerVerification(){
     if(!registerChallengeId)return;
@@ -736,8 +760,10 @@
     const arr=[...(Array.isArray(x.images)?x.images:[]),x.image].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,20);
     $('#marketPreviewImages').innerHTML=arr.length?arr.map(u=>'<img class="market-preview-image" src="'+esc(u)+'" alt="" referrerpolicy="no-referrer">').join(''):'<span class="market-preview-ph">NO IMAGE</span>';
     $('#marketPreviewProvider').textContent='출처 · '+providerName(x);
-    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';registerDirectBuy=false;resetExternalVerification(providerName(x)+' 매물 확인 완료 · 판매자 인증을 진행해주세요.');
-    if(!applyCachedSellerAccountVerification(x)&&!registerSellerStatusLoading&&!registerVerifiedAccounts.length)loadSellerVerificationStatus();
+    $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';registerDirectBuy=false;resetExternalVerification(providerName(x)+' 매물 확인 완료');
+    if(registerSellerStatusLoading)return;
+    if(registerVerifiedAccounts.length)syncSellerVerificationForProduct(x);
+    else loadSellerVerificationStatus();
   }
   async function loadPreview(){
     const raw=$('#marketRegisterUrl')?.value||'',cleanUrl=sanitizeExternalMarketUrl(raw),url=normalizedExternalMarketUrl(raw);

@@ -871,12 +871,13 @@
     if(!x||!Number.isFinite(+x.latitude)||!Number.isFinite(+x.longitude))return false;
     const detail=$('#marketDetailOverlay');if(detail?.hidden===false)closeDetail();
     const overlay=$('#marketOverlay');if(overlay?.hidden===false)closeOverlay();
-    exitMarketTab();
+    activateMarketTab();
     marketLayerOn=true;
     if(layerChip){layerChip.classList.add('active');layerChip.setAttribute('aria-pressed','true')}
     await syncMarkers();
     ensureMarketSheetControlBridge();
-    const focused=await focusMapCoordinateWithCollapsedSheet(+x.latitude,+x.longitude,{zoom:null,animateSheet:true});
+    const focusMap=await waitForMap();
+    const focused=await focusMapCoordinateWithCollapsedSheet(+x.latitude,+x.longitude,{zoom:marketNaverMaxZoom(focusMap),animateSheet:true});
     if(!focused)return false;
     let m=markers.get(x.id);
     if(!m){await syncMarkers();m=markers.get(x.id)}
@@ -886,6 +887,8 @@
     try{map?.setCenter(pos)}catch(_){}
     marketApplySheetMode('quarter',false);
     try{window.FUNY_MAP_SHEET?.collapse?.()}catch(_){}
+    activateMarketTab();
+    renderListInto($('#marketSheetList'),marketFilter);
     if(updateUrl)history.pushState({focus:'market',marketId:x.id},'',marketMapDeepLink(x.id));
     return true;
   }

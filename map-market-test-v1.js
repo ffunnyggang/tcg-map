@@ -122,8 +122,19 @@
       '</span>';
   }
   const isGenericMarketLocation=v=>!String(v||'').trim()||['거래 희망 위치','위치를 선택해주세요.','주소 확인 중...'].includes(String(v||'').trim());
+  function formatMarketRoadAddress(value){
+    let v=String(value||'').replace(/\s+/g,' ').trim();
+    if(!v)return '';
+    const pairs=[
+      ['서울특별시','서울'],['부산광역시','부산'],['대구광역시','대구'],['인천광역시','인천'],
+      ['광주광역시','광주'],['대전광역시','대전'],['울산광역시','울산'],['세종특별자치시','세종'],
+      ['제주특별자치도','제주']
+    ];
+    for(const [from,to] of pairs){if(v.startsWith(from+' ')){v=to+v.slice(from.length);break}}
+    return v;
+  }
   function displayAddress(x){
-    const dbRoad=String(x?.road_address||'').trim();
+    const dbRoad=formatMarketRoadAddress(x?.road_address);
     if(dbRoad&&!isGenericMarketLocation(dbRoad))return dbRoad;
     const dbLocation=String(x?.location_name||'').trim();
     if(dbLocation&&!isGenericMarketLocation(dbLocation))return dbLocation;
@@ -798,15 +809,15 @@
     return [sido,sigugun,dong,ri,rest].filter(v=>String(v||'').trim()).join(' ').replace(/\s+/g,' ').trim();
   }
   function marketRoadAddressFromReverseResult(res){
-    const direct=String(res?.v2?.address?.roadAddress||'').trim();
+    const direct=formatMarketRoadAddress(res?.v2?.address?.roadAddress);
     if(direct)return direct;
     const results=Array.isArray(res?.v2?.results)?res.v2.results:[];
     const road=results.find(x=>String(x?.name||'').toLowerCase()==='roadaddr');
-    const label=makeNaverAddress(road);
+    const label=formatMarketRoadAddress(makeNaverAddress(road));
     if(label)return label;
     const legacy=Array.isArray(res?.result?.items)?res.result.items:[];
     const legacyRoad=legacy.find(x=>x?.isRoadAddress===true&&String(x?.address||'').trim());
-    return legacyRoad?String(legacyRoad.address).trim():'';
+    return legacyRoad?formatMarketRoadAddress(legacyRoad.address):'';
   }
   async function reverseMarketRoadAddress(lat,lng){
     const a=Number(lat),b=Number(lng);
@@ -849,8 +860,8 @@
     return legacyAny?String(legacyAny.address).trim():'';
   }
   async function persistResolvedMarketAddress(row,label){
-    const value=String(label||'').trim();
-    if(!row?.id||!value||isGenericMarketLocation(value)||row.road_address===value)return;
+    const value=formatMarketRoadAddress(label);
+    if(!row?.id||!value||isGenericMarketLocation(value)||formatMarketRoadAddress(row.road_address)===value)return;
     try{
       const {data,error}=await A.client.from('market_listings')
         .update({road_address:value,location_name:value,updated_at:new Date().toISOString()})
@@ -862,7 +873,7 @@
     }catch(_){}
   }
   async function reverseMarketAddress(row){
-    const persistedRoad=String(row?.road_address||'').trim();
+    const persistedRoad=formatMarketRoadAddress(row?.road_address);
     if(persistedRoad&&!isGenericMarketLocation(persistedRoad)){row._displayAddress=persistedRoad;row._addressResolved=true;return persistedRoad}
     const lat=Number(row?.latitude),lng=Number(row?.longitude);
     const plainFallback=String(row?.location_name||'').trim();
@@ -874,6 +885,14 @@
     if(addressCache.has(key)){const v=addressCache.get(key);row._displayAddress=v;row._addressResolved=true;return v}
     const ready=await waitForMarketGeocoder();
     if(!ready){row._displayAddress='';row._addressResolved=false;return ''}
+    try{
+      const road=await reverseMarketRoadAddress(lat,lng);
+      if(road){
+        addressCache.set(key,road);row._displayAddress=road;row._addressResolved=true;
+        persistResolvedMarketAddress(row,road);
+        return road;
+      }
+    }catch(_){}
     const pos=new naver.maps.LatLng(lat,lng);
     const call=orders=>new Promise(resolve=>{
       naver.maps.Service.reverseGeocode({coords:pos,orders},(status,res)=>{
@@ -887,8 +906,8 @@
     try{label=await call(roadFirst)}catch(_){}
     if(!label){await sleep(120);try{label=await call(addrFirst)}catch(_){}}
     if(label){
+      label=formatMarketRoadAddress(label);
       addressCache.set(key,label);row._displayAddress=label;row._addressResolved=true;
-      persistResolvedMarketAddress(row,label);
       return label;
     }
     row._displayAddress='';row._addressResolved=false;return '';

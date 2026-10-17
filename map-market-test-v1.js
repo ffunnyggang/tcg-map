@@ -399,7 +399,7 @@
     handle.dataset.marketSheetController='1';
     delete handle.dataset.marketSheetBridge;
     let pointerId=null,startX=0,startY=0,startTop=0,startMode='half',moved=false;
-    const enabled=()=>window.matchMedia('(max-width:430px)').matches;
+    const enabled=()=>document.body.classList.contains('market-test-page');
     handle.addEventListener('pointerdown',e=>{
       if(!enabled()||e.isPrimary===false)return;
       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
@@ -1226,7 +1226,7 @@
   if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
   setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();ensureMarketSheetControlBridge();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   window.addEventListener('resize',()=>{
-    if(!window.matchMedia('(max-width:430px)').matches)return;
+    if(!document.body.classList.contains('market-test-page'))return;
     const sheet=document.querySelector('.list-wrap'),mode=sheet?.dataset.sheet||'half';
     requestAnimationFrame(()=>marketApplySheetMode(mode,false));
   });

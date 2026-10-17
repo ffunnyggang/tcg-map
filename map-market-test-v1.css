@@ -2304,7 +2304,7 @@ body.market-test-page> .market-overlay-register{
   position:fixed!important;
   right:max(16px,calc((100vw - 420px)/2 + 16px))!important;
   bottom:max(18px,env(safe-area-inset-bottom))!important;
-  z-index:2147483500!important;
+  z-index:2147481500!important;
   margin:0!important;
   transform:none!important
 }

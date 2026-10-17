@@ -28,7 +28,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 .target-list{display:grid;gap:8px;margin-top:12px}.target-row{position:relative;min-height:44px;border-radius:12px;background:#f8f6fa;overflow:hidden}.target-fill{position:absolute;left:0;top:0;bottom:0;border-radius:12px;transition:width .2s ease}.target-content{position:relative;z-index:2;display:flex;align-items:center;min-height:44px;padding:0 12px}.target-content b{font-size:10.5px}.target-content span{margin-left:auto;color:var(--purple-dark);font-size:11px;font-weight:900}
 .note{margin:13px 2px 0;color:#9a929e;font-size:9.5px;line-height:1.55;text-align:center}.note b{color:#766e7b;font-weight:850}
 @media(max-width:360px){.chance{font-size:43px}.input-card{padding:12px}.stepper{grid-template-columns:44px minmax(0,1fr) 44px}.metric strong{font-size:16px}}
-</style><link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"></head><body><div class="shell"><header><button class="back" onclick="history.length>1?history.back():location.href='tcg-tools.html'" aria-label="뒤로가기">‹</button><div class="brand">오리파 확률 계산기</div><div class="spacer"></div></header><main>
+</style><link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"><link rel="stylesheet" href="/tool-share.css?v=20261017-1"></head><body><div class="shell"><header><button class="back" onclick="history.length>1?history.back():location.href='tcg-tools.html'" aria-label="뒤로가기">‹</button><div class="brand">오리파 확률 계산기</div><div class="spacer"></div></header><main>
 <section class="hero">
   <div class="result-area" aria-live="polite">
     <span class="result-kicker">오리파 당첨 확률</span>
@@ -90,7 +90,7 @@ main{position:relative;z-index:1;padding:0 16px 18px}
 </section>
 
 <p class="note"><b>TIP · </b>실물 오리파처럼 한 번 뽑은 상품이 재고에서 빠지는 비복원 추출 기준으로 계산합니다.</p>
-</main></div><script>
+<section class="tool-share" data-tool-share data-share-url="https://funypin.kr/oripa-calculator.html" data-share-title="오리파 확률 계산기 | FUNY PIN" data-share-text="몇 개를 구매하면 당첨될까? 퍼니핀에서 오리파 당첨 확률을 계산해보세요." aria-label="오리파 확률 계산기 공유"><button type="button" class="tool-share-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>공유하기</span></button><p class="tool-share-status" role="status" aria-live="polite"></p><input class="tool-share-link" type="text" readonly hidden aria-label="공유할 페이지 링크"></section></main></div><script>
 (()=>{
   try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(_){}
   const $=id=>document.getElementById(id),targets=[50,70,80,90,95];
@@ -210,4 +210,4 @@ main{position:relative;z-index:1;padding:0 16px 18px}
   }
   $('price').value=state.price.toLocaleString('ko-KR');calc();
 })();
-</script><script src="funy-i18n.js?v=20261013-tools-i18n"></script></body></html>
+</script><script src="funy-i18n.js?v=20261013-tools-i18n"></script><script src="/tool-share.js?v=20261017-1"></script></body></html>

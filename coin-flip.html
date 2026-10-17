@@ -51,7 +51,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <meta name="application-name" content="FUNY PIN">
 <meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
-<link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"></head>
+<link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"><link rel="stylesheet" href="/tool-share.css?v=20261017-1"></head>
 <body data-coin-build="20261013-1954">
 <div class="shell">
 <header><button class="back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
@@ -92,7 +92,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <div class="history-list" id="historyList"><div class="history-empty">아직 결과가 없습니다.</div></div>
 </section>
 <p class="tip"><b>TIP</b> · 코인 또는 아래 버튼을 눌러 다시 던질 수 있어요.</p>
-</main>
+<section class="tool-share" data-tool-share data-share-url="https://funypin.kr/coin-flip.html" data-share-title="코인플립 | FUNY PIN" data-share-text="앞면일까, 뒷면일까? 퍼니핀 코인플립으로 가볍게 정해보세요." aria-label="코인플립 공유"><button type="button" class="tool-share-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>공유하기</span></button><p class="tool-share-status" role="status" aria-live="polite"></p><input class="tool-share-link" type="text" readonly hidden aria-label="공유할 페이지 링크"></section></main>
 </div>
 <div class="skin-modal" id="skinModal" aria-hidden="true">
   <div class="skin-sheet" id="skinSheet" role="dialog" aria-modal="true" aria-labelledby="skinTitle">
@@ -560,6 +560,6 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   restoreDeviceSkinsSync();syncSoundButton();syncDurationFromStorage();loadSkins();window.addEventListener('funy:auth-ready',()=>{cloudAuthCache=undefined;syncDurationFromStorage();loadSkins()});ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);showToast(isEnglish()?'A new day of results has started.':'새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',()=>{syncDurationFromStorage();restoreDeviceSkinsSync();loadSkins()});window.addEventListener('focus',()=>{syncDurationFromStorage();restoreDeviceSkinsSync()});
 })();
 </script>
-<script src="funy-i18n.js?v=20261014-coin-face1"></script></body>
+<script src="funy-i18n.js?v=20261014-coin-face1"></script><script src="/tool-share.js?v=20261017-1"></script></body>
 </html>
 

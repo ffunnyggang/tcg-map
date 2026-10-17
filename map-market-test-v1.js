@@ -556,7 +556,7 @@
   async function confirmExternalSellerVerification(){
     if(MARKET_TEST_AUTH_BYPASS){setExternalVerified('TEST PASS · PASS 본인인증 + 외부 플랫폼 판매자 인증');return}
     if(!registerChallengeId)return;
-    const url=registerPreviewUrl||$('#marketRegisterUrl')?.value.trim(),btn=$('#marketExternalVerifyConfirm');
+    const url=registerPreviewUrl||normalizedExternalMarketUrl($('#marketRegisterUrl')?.value),btn=$('#marketExternalVerifyConfirm');
     if(btn){btn.disabled=true;btn.textContent='확인 중...'}setRegisterError('');
     try{
       const {data,error}=await A.client.functions.invoke('market-external-seller-verify-test',{body:{action:'verify',challenge_id:registerChallengeId,url}});

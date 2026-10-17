@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "jsr:@supabase/supabase-js@2.57.4";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -40,6 +40,41 @@ async function currentUser(req: Request) {
   return { user: data.user, auth };
 }
 
+async function syncPhoneVerification(user: any) {
+  const verifiedAt = clean(user?.phone_confirmed_at);
+  const verified = !!(clean(user?.phone) && verifiedAt);
+  const now = new Date().toISOString();
+
+  const { error: verificationError } = await admin
+    .from("user_verifications")
+    .upsert({
+      user_id: user.id,
+      email_verified_at: user?.email_confirmed_at || null,
+      phone_verified_at: verified ? verifiedAt : null,
+      updated_at: now,
+    }, { onConflict: "user_id" });
+  if (verificationError) throw verificationError;
+
+  if (verified) {
+    const { error } = await admin
+      .from("market_seller_verifications")
+      .upsert({
+        user_id: user.id,
+        verification_provider: "supabase_auth",
+        verification_status: "verified",
+        phone_verified: true,
+        verified_at: verifiedAt,
+        revoked_at: null,
+        verification_method: "SMS_OTP",
+        identity_channel: "supabase_phone",
+        updated_at: now,
+      }, { onConflict: "user_id" });
+    if (error) throw error;
+  }
+
+  return { verified, verified_at: verified ? verifiedAt : null };
+}
+
 async function previewListing(auth: string, url: string) {
   const res = await fetch(SUPABASE_URL + "/functions/v1/market-listing-preview-test", {
     method: "POST",
@@ -78,6 +113,7 @@ Deno.serve(async (req: Request) => {
     const { user, auth } = await currentUser(req);
     const body = await req.json().catch(() => ({}));
     const action = clean(body?.action || "status");
+    const phoneState = await syncPhoneVerification(user);
 
     if (action === "status") {
       const [sellerResult, accountResult] = await Promise.all([
@@ -86,7 +122,7 @@ Deno.serve(async (req: Request) => {
           .eq("user_id", user.id)
           .maybeSingle(),
         admin.from("market_external_seller_accounts")
-          .select("provider,verification_status,verified_at,last_checked_at")
+          .select("id,provider,external_seller_id,verification_status,verified_at,last_checked_at")
           .eq("user_id", user.id)
           .eq("verification_status", "verified")
           .order("verified_at", { ascending: false }),
@@ -97,8 +133,12 @@ Deno.serve(async (req: Request) => {
         ok: true,
         identity: sellerResult.data || { verification_status: "pending", phone_verified: false },
         external_accounts: accountResult.data || [],
-        public_open_gate: { pass_required: true }
+        public_open_gate: { pass_required: false, phone_sms_required: true, phone_sms_verified: phoneState.verified, external_seller_verification_required: true }
       }), { headers: cors });
+    }
+
+    if ((action === "start" || action === "verify") && !phoneState.verified) {
+      throw new Error("판매자 인증 전 휴대폰 SMS 인증을 완료해주세요.");
     }
 
     if (action === "start") {
@@ -131,7 +171,8 @@ Deno.serve(async (req: Request) => {
             already_verified: true,
             provider,
             external_listing_id: listingId,
-            seller_verification_scope: "account"
+            seller_verification_scope: "account",
+            external_account_id: existing.id
           }), { headers: cors });
         }
       }
@@ -204,33 +245,42 @@ Deno.serve(async (req: Request) => {
         throw new Error("판매자 계정 정보가 변경되어 인증할 수 없습니다.");
       }
 
-      const attempts = Number(challenge.attempts || 0) + 1;
-      const codes = (clean(preview.description).match(/FUNY-[A-Z0-9]{6}/gi) || []).map((x: string) => x.toUpperCase());
+      const currentAttempts = Number(challenge.attempts || 0);
+      const descriptionCodes = (clean(preview.description).match(/FUNY-[A-Z0-9]{6}/gi) || []).map((x: string) => x.toUpperCase());
+      const rawCodes = Array.isArray(preview.verification_codes)
+        ? preview.verification_codes.map((x: unknown) => clean(x).toUpperCase()).filter((x: string) => /^FUNY-[A-Z0-9]{6}$/.test(x))
+        : [];
+      const codes = [...new Set([...descriptionCodes, ...rawCodes])];
       let matched = false;
       for (const code of codes) {
         if (await sha256(code) === challenge.challenge_code_hash) { matched = true; break; }
       }
 
       if (!matched) {
+        if (!codes.length) {
+          throw new Error("원본 게시글의 최신 본문에서 인증코드를 아직 확인하지 못했습니다. 외부 플랫폼에 저장이 완료됐는지 확인한 뒤 잠시 후 다시 시도해주세요.");
+        }
+        const attempts = currentAttempts + 1;
         await admin.from("market_external_verification_challenges")
           .update({ attempts, status: attempts >= 5 ? "failed" : "pending" })
           .eq("id", challenge.id);
         throw new Error(attempts >= 5
-          ? "인증코드를 확인하지 못했습니다. 새 인증코드를 발급해주세요."
-          : "외부 매물 설명에서 인증코드를 찾지 못했습니다. 설명을 저장한 뒤 다시 확인해주세요.");
+          ? "다른 인증코드가 확인되었습니다. 새 인증코드를 발급해주세요."
+          : "원본 게시글에서 다른 인증코드가 확인되었습니다. 현재 발급된 코드를 다시 확인해주세요.");
       }
 
       const now = new Date().toISOString();
       await admin.from("market_external_verification_challenges")
-        .update({ status: "verified", attempts, verified_at: now })
+        .update({ status: "verified", attempts: currentAttempts, verified_at: now })
         .eq("id", challenge.id);
 
       let accountVerified = false;
+      let externalAccountId: string | null = null;
       const sellerId = previewSellerId || challenge.external_seller_id;
       if (sellerId) {
         const existing = await accountConflict(challenge.provider, sellerId, user.id);
         if (existing?.id) {
-          const { error: updateError } = await admin.from("market_external_seller_accounts")
+          const { data: updatedAccount, error: updateError } = await admin.from("market_external_seller_accounts")
             .update({
               user_id: user.id,
               external_seller_handle: clean(preview.external_seller_handle) || null,
@@ -242,10 +292,13 @@ Deno.serve(async (req: Request) => {
               revoked_at: null,
               updated_at: now,
             })
-            .eq("id", existing.id);
+            .eq("id", existing.id)
+            .select("id")
+            .single();
           if (updateError) throw updateError;
+          externalAccountId = updatedAccount?.id || existing.id;
         } else {
-          const { error: insertError } = await admin.from("market_external_seller_accounts").insert({
+          const { data: insertedAccount, error: insertError } = await admin.from("market_external_seller_accounts").insert({
             user_id: user.id,
             provider: challenge.provider,
             external_seller_id: sellerId,
@@ -255,8 +308,9 @@ Deno.serve(async (req: Request) => {
             verified_listing_external_id: challenge.external_listing_id,
             verified_at: now,
             last_checked_at: now,
-          });
+          }).select("id").single();
           if (insertError) throw insertError;
+          externalAccountId = insertedAccount?.id || null;
         }
         accountVerified = true;
       }
@@ -267,7 +321,10 @@ Deno.serve(async (req: Request) => {
         provider: challenge.provider,
         external_listing_id: challenge.external_listing_id,
         account_verified: accountVerified,
-        seller_verification_scope: accountVerified ? "account" : "listing"
+        seller_verification_scope: accountVerified ? "account" : "listing",
+        external_account_id: externalAccountId,
+        challenge_id: challenge.id,
+        verified_at: now
       }), { headers: cors });
     }
 

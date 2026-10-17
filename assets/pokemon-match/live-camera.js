@@ -48,9 +48,9 @@ class LiveFaceScan{
   if(!this.valid(token))return;
   try{
    if(this.pending){try{await this.pending;}catch{}if(!this.valid(token))return;}
-   const pending=Promise.resolve().then(()=>this.hooks.analyze(this.hooks.frame()));this.pending=pending;let result;try{result=await pending;}finally{if(this.pending===pending)this.pending=null;}if(!this.valid(token))return;
-   const issue=liveGuideIssue(result);
-   if(issue){this.guide('얼굴 인식됨 · '+issue);}
+   this.hooks.onDiagnostic?.({stage:'FRAME_REQUEST'});const pending=Promise.resolve().then(()=>this.hooks.analyze(this.hooks.frame()));this.pending=pending;let result;try{result=await pending;}finally{if(this.pending===pending)this.pending=null;}if(!this.valid(token))return;
+   this.hooks.onDiagnostic?.({stage:'FEATURES_READY'});const issue=liveGuideIssue(result);
+   if(issue){this.hooks.onDiagnostic?.({stage:'GUIDE_REJECTED',detail:issue});this.guide('얼굴 인식됨 · '+issue);}
    else{
     this.samples=this.samples.filter(sample=>this.now()-sample.time<30000);if(!stableFaceSamples(this.samples,result))this.samples=[];
     this.misses=0;this.samples.push({...result,time:this.now()});
@@ -58,7 +58,7 @@ class LiveFaceScan{
     this.hooks.onUpdate({stage:'measuring',progress,text:'얼굴 인식됨 · '+Math.round(progress*100)+'% 측정 중 · 잠시 그대로 있어주세요.'});
     if(this.samples.length>=6&&elapsed>=2200){const aggregate=aggregateFaceSamples(this.samples.slice(-6));this.stop();this.hooks.onComplete(aggregate);return;}
    }
-  }catch(error){if(!this.valid(token))return;if(['TypeError','ReferenceError','RangeError'].includes(error.name)){this.fail(new Error('얼굴 측정 도구에서 오류가 발생했어요. 새로고침 후 다시 시도해주세요.'),token);return;}this.guide(error.message||'얼굴을 확인하지 못했어요. 정면을 봐주세요.',error.code==='MULTIPLE_FACES');}
+  }catch(error){if(!this.valid(token))return;this.hooks.onDiagnostic?.({stage:error.code||error.name||'ANALYSIS_ERROR',detail:error.message});if(['TypeError','ReferenceError','RangeError'].includes(error.name)){this.fail(new Error('얼굴 측정 도구에서 오류가 발생했어요. 새로고침 후 다시 시도해주세요.'),token);return;}this.guide(error.message||'얼굴을 확인하지 못했어요. 정면을 봐주세요.',error.code==='MULTIPLE_FACES');}
   if(this.valid(token))this.timer=this.schedule(()=>this.tick(token),350);
  }
 }

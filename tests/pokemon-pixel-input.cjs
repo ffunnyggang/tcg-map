@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const source=fs.readFileSync('assets/pokemon-match/face-analysis.js','utf8');
+(async()=>{let disposed=0,blank=false,fail=false,calls=0;const events=[];
+ const api={tf:{tensor3d(data,shape,type){assert.ok(data instanceof Uint8Array);assert.deepEqual(Array.from(shape),[2,2,3]);assert.equal(type,'int32');return {tensor:true,dispose(){disposed++}}}},TinyFaceDetectorOptions:class{},detectAllFaces(input){assert.equal(input.tensor,true);calls++;return {withFaceLandmarks:async()=>{if(fail)throw Error('inference failed');return []}}}};
+ const c=vm.createContext({Uint8Array,window:{faceapi:api},faceapi:api,document:{createElement:()=>({getContext:()=>({drawImage(){},getImageData(){return {data:blank?new Uint8Array(16):new Uint8Array([10,80,120,255,20,90,130,255,30,100,140,255,40,110,150,255])}}})})}});vm.runInContext(source,c);vm.runInContext('faceModelsReady=true',c);
+ await assert.rejects(c.analyzeSelfie({width:2,height:2},e=>events.push(e)),e=>e.code==='NO_FACE');assert.equal(disposed,1);assert.ok(events.some(e=>e.stage==='PIXELS_READY'));assert.ok(events.some(e=>e.stage==='DETECTION_FINISHED'&&e.detail==='0'));
+ fail=true;await assert.rejects(c.analyzeSelfie({width:2,height:2}),/inference failed/);assert.equal(disposed,2);
+ blank=true;await assert.rejects(c.analyzeSelfie({width:2,height:2}),e=>e.code==='EMPTY_FRAME');assert.equal(calls,2);assert.equal(disposed,2);
+ console.log('PASS: explicit RGB tensor, dimensions, diagnostic stages, disposal on success/failure and blank frame rejection');
+})().catch(e=>{console.error(e);process.exitCode=1});

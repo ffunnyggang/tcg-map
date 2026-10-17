@@ -41,17 +41,28 @@ async function ensureFaceModels(onProgress){
   await faceModelPromise;
  }finally{faceModelListeners.delete(onProgress);}
 }
-async function analyzeSelfie(image){
+async function analyzeSelfie(image,onDiagnostic){
+ const report=(stage,detail)=>{try{onDiagnostic?.({stage,detail});}catch{}};
  await ensureFaceModels();
  const iw=image.naturalWidth||image.videoWidth||image.width,ih=image.naturalHeight||image.videoHeight||image.height;if(!iw||!ih)throw Error('카메라 화면을 준비하고 있어요.');const canvas=document.createElement('canvas'),scale=Math.min(1,800/iw,800/ih);canvas.width=Math.round(iw*scale);canvas.height=Math.round(ih*scale);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
- const detected=await faceapi.detectAllFaces(canvas,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.3})).withFaceLandmarks(false);
+ // Feed the same explicit RGB tensor path used in model verification. This
+ // avoids legacy browser/canvas environment detection inside TFJS fromPixels.
+ const pixelsForInput=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,canvas.width,canvas.height).data;
+ const rgbInput=new Uint8Array(canvas.width*canvas.height*3);let minimum=255,maximum=0;
+ for(let i=0,j=0;i<pixelsForInput.length;i+=4,j+=3){for(let k=0;k<3;k++){const value=pixelsForInput[i+k];rgbInput[j+k]=value;minimum=Math.min(minimum,value);maximum=Math.max(maximum,value);}}
+ report('PIXELS_READY',canvas.width+'×'+canvas.height);
+ if(maximum-minimum<3){const error=Error('카메라 화면에서 얼굴을 읽을 수 없어요. 렌즈와 조명을 확인해주세요.');error.code='EMPTY_FRAME';throw error;}
+ const input=faceapi.tf.tensor3d(rgbInput,[canvas.height,canvas.width,3],'int32');let detected;
+ report('DETECTING');try{detected=await faceapi.detectAllFaces(input,new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.3})).withFaceLandmarks(false);}finally{input.dispose();}
+ report('DETECTION_FINISHED',String(detected.length));
  const detections=detected.filter(face=>face.detection.score>=.35);
- if(!detections.length)throw Error('얼굴을 찾지 못했어요. 밝은 곳에서 정면을 봐주세요.');
+ if(!detections.length){const error=Error('얼굴을 찾지 못했어요. 밝은 곳에서 정면을 봐주세요.');error.code='NO_FACE';throw error;}
  if(detections.length>1){const error=Error('얼굴이 여러 개 보여요. 한 명만 가이드에 들어와 주세요.');error.code='MULTIPLE_FACES';throw error;}
  const result=detections[0],box=result.detection.box;
  const quality=document.createElement('canvas');quality.width=quality.height=48;const qctx=quality.getContext('2d',{willReadFrequently:true});qctx.drawImage(canvas,box.x,box.y,box.width,box.height,0,0,48,48);const qp=qctx.getImageData(0,0,48,48).data;let luminance=0,extreme=0;for(let i=0;i<qp.length;i+=4){const l=.2126*qp[i]+.7152*qp[i+1]+.0722*qp[i+2];luminance+=l;if(l<12||l>248)extreme++;}luminance/=2304;
  if(luminance<38||luminance>235||extreme/2304>.65)throw Error('얼굴이 너무 어둡거나 밝게 보여요. 조명을 조절해주세요.');
  if(box.width/canvas.width<.14||box.height/canvas.height<.14||result.detection.score<.35)throw Error('얼굴이 작거나 흐릿해요. 조금 더 가까이 와주세요.');
+ report('LANDMARKS_READY',String(result.landmarks.positions.length));
  const features=extractFaceFeatures(result.landmarks.positions);
  if(features.roll>25)throw Error('고개를 조금 더 반듯하게 하고 정면을 봐주세요.');
  const points=result.landmarks.positions;const left=Math.hypot(points[30].x-points[0].x,points[30].y-points[0].y),right=Math.hypot(points[30].x-points[16].x,points[30].y-points[16].y);

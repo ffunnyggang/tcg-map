@@ -2402,7 +2402,7 @@ body.market-test-page .market-overlay .market-card{
 }
 
 
-/* MARKET PASS/SMS identity verification v40 */
+/* MARKET phone SMS verification v41 */
 .market-identity-section{
   padding-top:14px!important;
   padding-bottom:14px!important
@@ -2450,6 +2450,53 @@ body.market-test-page .market-overlay .market-card{
   white-space:nowrap
 }
 .market-identity-start:disabled{opacity:.42}
+.market-identity-sms{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #ece8ef
+}
+.market-identity-sms[hidden]{display:none!important}
+.market-identity-phone-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 106px;
+  gap:7px;
+  margin-top:7px
+}
+.market-identity-phone-row:first-child{margin-top:0}
+.market-identity-input{
+  width:100%;
+  min-width:0;
+  height:40px;
+  padding:0 11px;
+  border:1px solid #ddd7e2;
+  border-radius:11px;
+  background:#fff;
+  color:#332e38;
+  font-size:11px;
+  font-weight:700;
+  outline:0
+}
+.market-identity-input:focus{border-color:#8f7acb}
+.market-identity-secondary{
+  height:40px;
+  padding:0 10px;
+  border:1px solid #d9d2df;
+  border-radius:11px;
+  background:#fff;
+  color:#4c4551;
+  font-size:9.5px;
+  font-weight:850;
+  white-space:nowrap
+}
+.market-identity-secondary:disabled{opacity:.45}
+.market-identity-message{
+  min-height:15px;
+  margin-top:8px;
+  color:#766f7b;
+  font-size:9px;
+  line-height:1.5
+}
+.market-identity-message.error{color:#b42318}
 .market-identity-section.is-verified .market-identity-card{
   border-color:#d8e9de;
   background:#f7fbf8
@@ -2463,4 +2510,6 @@ body.market-test-page .market-overlay .market-card{
 @media(max-width:360px){
   .market-identity-row{align-items:flex-start;flex-direction:column}
   .market-identity-start{width:100%}
+  .market-identity-phone-row{grid-template-columns:1fr}
+  .market-identity-secondary{width:100%}
 }

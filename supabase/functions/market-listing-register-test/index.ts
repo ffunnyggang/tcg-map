@@ -15,6 +15,23 @@ const ANON_KEY=Deno.env.get("SUPABASE_ANON_KEY")!;
 const admin=createClient(SUPABASE_URL,SERVICE_ROLE,{auth:{persistSession:false,autoRefreshToken:false}});
 const clean=(v:unknown)=>String(v??"").trim();
 
+async function sha256(value:string){
+  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function normalizeSellerHandle(value:unknown){
+  return clean(value).normalize("NFKC").toLowerCase().replace(/\s+/g," ");
+}
+async function sellerAccountIdentity(preview:any){
+  const stableSellerId=clean(preview?.external_seller_id);
+  if(stableSellerId)return {key:stableSellerId,source:"seller_id",reusable:true};
+  const provider=clean(preview?.provider),handle=normalizeSellerHandle(preview?.external_seller_handle);
+  if(provider==="break"&&handle){
+    return {key:"handle:"+await sha256(provider+":"+handle),source:"seller_handle_fingerprint",reusable:true};
+  }
+  return {key:null,source:"listing",reusable:false};
+}
+
 function accountVerifiedAt(user:any){
   if(user?.email_confirmed_at)return user.email_confirmed_at;
   const provider=clean(user?.app_metadata?.provider||user?.app_metadata?.providers?.[0]);
@@ -103,18 +120,33 @@ Deno.serve(async(req:Request)=>{
     const preview=await previewListing(auth,externalUrl);
     const provider=clean(preview?.provider);
     const externalListingId=clean(preview?.external_listing_id);
-    const externalSellerId=clean(preview?.external_seller_id)||null;
+    const sellerIdentity=await sellerAccountIdentity(preview);
+    const externalSellerId=sellerIdentity.key;
     if(!provider||!externalListingId)throw new Error("외부 매물 식별정보를 확인하지 못했습니다.");
+
+    let resolvedExternalAccountId=externalAccountId;
+    if(!resolvedExternalAccountId&&externalSellerId){
+      const {data:autoAccount,error:autoAccountError}=await admin.from("market_external_seller_accounts")
+        .select("id")
+        .eq("user_id",user.id)
+        .eq("provider",provider)
+        .eq("external_seller_id",externalSellerId)
+        .eq("verification_status","verified")
+        .is("revoked_at",null)
+        .maybeSingle();
+      if(autoAccountError)throw autoAccountError;
+      if(autoAccount?.id)resolvedExternalAccountId=autoAccount.id;
+    }
 
     let verificationScope:"account"|"listing";
     let verifiedAccountId:string|null=null;
     let verifiedChallengeId:string|null=null;
     let verifiedAt=new Date().toISOString();
 
-    if(externalAccountId){
+    if(resolvedExternalAccountId){
       const {data:account,error}=await admin.from("market_external_seller_accounts")
         .select("id,user_id,provider,external_seller_id,verification_status,verified_at,revoked_at")
-        .eq("id",externalAccountId)
+        .eq("id",resolvedExternalAccountId)
         .eq("user_id",user.id)
         .eq("verification_status","verified")
         .is("revoked_at",null)

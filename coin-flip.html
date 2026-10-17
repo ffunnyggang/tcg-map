@@ -168,6 +168,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function applyDuration(){
     const b=$('durationToggle');if(b){b.textContent=isEnglish()?flipSeconds+'s':flipSeconds+'초';b.setAttribute('aria-label',isEnglish()?'Flip duration '+flipSeconds+' seconds · tap to change':'회전 시간 '+flipSeconds+'초 · 눌러서 변경')};
   }
+  function syncSoundButton(){const button=$('soundToggle');if(!button)return;button.textContent=soundOn?'🔊':'🔇';button.setAttribute('aria-pressed',String(soundOn));button.setAttribute('aria-label',isEnglish()?(soundOn?'Sound on':'Sound off'):(soundOn?'효과음 켜짐':'효과음 꺼짐'));}
   function syncDurationFromStorage(){flipSeconds=loadDuration();applyDuration()}
   function cycleDuration(){
     if(busy)return;flipSeconds=loadDuration();flipSeconds=flipSeconds===1.5?3:flipSeconds===3?4.5:1.5;

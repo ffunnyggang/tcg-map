@@ -2176,8 +2176,8 @@ html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle span{
   }
   html.funy-map-qa body.market-test-page .app{
     position:relative!important;
-    width:min(100%,760px)!important;
-    max-width:760px!important;
+    width:min(100%,420px)!important;
+    max-width:420px!important;
     height:100dvh!important;
     min-height:100dvh!important;
     overflow:hidden!important;

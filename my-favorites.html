@@ -21,7 +21,7 @@
        const s=x.data,imgs=Array.isArray(s.images)?s.images:[],im=imgs.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0],src=H.img(im?.storage_path||im?.source_path||''),station=s.nearest_station?(s.nearest_station+(s.walk_minutes!=null?' 도보 '+s.walk_minutes+'분':'')):'카드샵';
        return '<article class="my-card fav-card" data-kind="shops" data-id="'+H.esc(x.id)+'">'+(src?'<img class="fav-img" src="'+H.esc(src)+'" alt="">':'<div class="fav-fallback">FUNY PIN</div>')+'<a class="fav-copy" href="/shops.html#/shop/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+H.esc(s.name)+'</div><div class="fav-meta">'+H.esc((s.area||s.city||'카드샵')+' · '+station)+'</div><div class="fav-address">'+H.esc(s.address||'')+'</div></a><button class="fav-remove" type="button" aria-label="관심 카드샵 해제">'+heart+'</button></article>';
      }
-     const m=x.data,src=m.thumbnail_url||'',provider=providerNames[m.provider]||'외부 플랫폼',loc=(m.location_name&&m.location_name!=='거래 희망 위치')?m.location_name:'TCG 거래 매물';
+     const m=x.data,src=m.thumbnail_url||'',provider=providerNames[m.provider]||'외부 플랫폼',loc=(m.road_address||((m.location_name&&m.location_name!=='거래 희망 위치')?m.location_name:''))||'TCG 거래 매물';
      return '<article class="my-card fav-card" data-kind="market" data-id="'+H.esc(x.id)+'">'+(src?'<img class="fav-img" src="'+H.esc(src)+'" alt="" referrerpolicy="no-referrer">':'<div class="fav-fallback">TCG 거래</div>')+'<a class="fav-copy" href="/shops-market-test.html#market/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+H.esc(m.title||'매물')+'</div><div class="fav-meta"><span class="fav-market-provider">'+H.esc(provider)+'</span>'+H.esc(money(m.price))+'</div><div class="fav-address">'+H.esc(loc)+'</div></a><button class="fav-remove market" type="button" aria-label="관심 매물 해제">'+heart+'</button></article>';
    }).join('')+'</div>';
    root.querySelectorAll('.fav-remove').forEach(btn=>btn.onclick=async()=>{
@@ -43,7 +43,7 @@
    const shopFavs=shopFavRes.data||[],marketFavs=marketFavRes.data||[],shopIds=shopFavs.map(x=>x.shop_id),marketIds=marketFavs.map(x=>x.listing_id);
    const [shopsRes,marketRes]=await Promise.all([
      shopIds.length?A.client.from('v_app_shops').select('*').in('id',shopIds):Promise.resolve({data:[],error:null}),
-     marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,location_name,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null})
+     marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,road_address,location_name,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null})
    ]);
    if(shopsRes.error)throw shopsRes.error;if(marketRes.error)throw marketRes.error;
    const shopBy=new Map((shopsRes.data||[]).map(x=>[String(x.id),x])),marketBy=new Map((marketRes.data||[]).map(x=>[String(x.id),x]));

@@ -818,11 +818,11 @@
     if(text)text.textContent=sellerAccountProviderLabel(provider)+' 판매자 인증 완료';
     if(el)el.hidden=false;
   }
-  function showSellerVerificationSection(message='현재 매물의 판매자 인증이 필요합니다.'){
+  function showSellerVerificationSection(message='플랫폼 판매자 인증은 최초 1회만 필요합니다.'){
     const section=$('#marketSellerVerifySection'),status=$('#marketExternalVerifyStatus'),start=$('#marketExternalVerifyStart');
     if(section)section.hidden=false;
     if(status){status.textContent=message;status.classList.remove('verified')}
-    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='판매자 인증 시작'}
+    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='최초 판매자 인증'}
   }
   function hideSellerVerificationSection(){
     const section=$('#marketSellerVerifySection');
@@ -839,12 +839,35 @@
     setExternalVerified(sellerAccountProviderLabel(account.provider)+' 판매자 인증 완료',{accountId:account.id||'',scope:'account'});
     return true;
   }
-  function syncSellerVerificationForProduct(product=registerProduct){
+  async function syncSellerVerificationForProduct(product=registerProduct){
     if(!product)return false;
     if(applyCachedSellerAccountVerification(product))return true;
     hidePreviewSellerVerification();
-    showSellerVerificationSection(sellerAccountProviderLabel(product.provider)+' 판매자 인증이 필요합니다.');
-    return false;
+    const url=registerPreviewUrl||normalizedExternalMarketUrl($('#marketRegisterUrl')?.value);
+    if(!url){
+      showSellerVerificationSection(sellerAccountProviderLabel(product.provider)+' 판매자 인증이 필요합니다.');
+      return false;
+    }
+    try{
+      const {data,error}=await A.client.functions.invoke('market-external-seller-verify-test',{body:{action:'resolve',url}});
+      if(error)throw error;
+      if(data?.ok&&data?.already_verified){
+        setExternalVerified(
+          sellerAccountProviderLabel(product.provider)+' 판매자 인증 완료 ✓ · 최초 인증 이력을 사용합니다.',
+          {accountId:data.external_account_id||'',scope:'account'}
+        );
+        return true;
+      }
+      showSellerVerificationSection(
+        data?.account_reuse_supported
+          ?sellerAccountProviderLabel(product.provider)+' 판매자 인증은 최초 1회만 필요합니다.'
+          :sellerAccountProviderLabel(product.provider)+' 현재 매물의 판매자 인증이 필요합니다.'
+      );
+      return false;
+    }catch(_){
+      showSellerVerificationSection(sellerAccountProviderLabel(product.provider)+' 판매자 인증이 필요합니다.');
+      return false;
+    }
   }
   async function loadSellerVerificationStatus(){
     if(registerSellerStatusLoading)return;
@@ -854,7 +877,7 @@
       if(error)throw error;
       registerVerifiedAccounts=Array.isArray(data?.external_accounts)?data.external_accounts.filter(x=>x?.verification_status==='verified'):[];
       registerSellerStatusLoading=false;
-      if(registerProduct&&!registerExternalVerified)syncSellerVerificationForProduct(registerProduct);
+      if(registerProduct&&!registerExternalVerified)syncSellerVerificationForProduct(registerProduct).catch(()=>{});
     }catch(_){
       registerVerifiedAccounts=[];
       registerSellerStatusLoading=false;
@@ -869,7 +892,7 @@
     hidePreviewSellerVerification();
     hideSellerVerificationSection();
     if(status){status.textContent=message;status.classList.remove('verified')}
-    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='판매자 인증 시작'}
+    if(start){start.hidden=false;start.disabled=!registerProduct;start.textContent='최초 판매자 인증'}
     if(challenge)challenge.hidden=true;
     if(code)code.textContent='';
     syncRegisterSubmitState();
@@ -904,7 +927,7 @@
       if(challenge)challenge.hidden=false;
       if(status)status.textContent='인증코드를 외부 플랫폼 게시글에 추가하고 저장한 뒤 인증 확인을 눌러주세요.';
     }catch(e){setRegisterError(await marketFunctionErrorMessage(e,'판매자 인증을 시작하지 못했습니다.'))}
-    finally{if(btn&&!registerExternalVerified&&!registerChallengeId){btn.hidden=false;btn.disabled=false;btn.textContent='판매자 인증 시작'}}
+    finally{if(btn&&!registerExternalVerified&&!registerChallengeId){btn.hidden=false;btn.disabled=false;btn.textContent='최초 판매자 인증'}}
   }
   async function confirmExternalSellerVerification(){
     if(!registerChallengeId)return;
@@ -946,8 +969,8 @@
     $('#marketPreviewProvider').textContent='출처 · '+providerName(x);
     $('#marketPreviewTitle').textContent=x.title||'상품명 없음';$('#marketPreviewPrice').textContent=x.price||'가격 정보 없음';$('#marketPreviewDesc').textContent=x.description||'상품 설명 없음';registerDirectBuy=false;resetExternalVerification(providerName(x)+' 매물 확인 완료');
     if(registerSellerStatusLoading)return;
-    if(registerVerifiedAccounts.length)syncSellerVerificationForProduct(x);
-    else loadSellerVerificationStatus();
+    syncSellerVerificationForProduct(x).catch(()=>{});
+    if(!registerVerifiedAccounts.length)loadSellerVerificationStatus();
   }
   async function loadPreview(){
     const raw=$('#marketRegisterUrl')?.value||'',cleanUrl=sanitizeExternalMarketUrl(raw),url=normalizedExternalMarketUrl(raw);

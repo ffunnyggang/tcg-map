@@ -1321,7 +1321,7 @@
       const {data,error}=await A.client.functions.invoke('market-listing-owner-action-test',{body:{action:'refresh',listing_id:id}});
       if(error)throw error;if(!data?.ok)throw Error(data?.error||'원본 정보를 새로고침하지 못했습니다.');
       await loadRows();openDetail(id);marketToast('원본 정보를 새로고침했어요.');
-    }catch(e){alert(String(e?.message||e))}
+    }catch(e){alert(await marketFunctionErrorMessage(e,'원본 정보를 새로고침하지 못했습니다.'))}
     finally{if(btn){btn.disabled=false;btn.textContent='원본 정보 새로고침'}}
   }
   async function hideOwnedListing(id,btn=null){

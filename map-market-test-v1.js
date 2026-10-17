@@ -659,18 +659,40 @@
     if(registerIdentityLoading)return registerIdentityVerified;
     registerIdentityLoading=true;setMarketIdentityUi({loading:true});
     try{
-      const data=await A.invokeFunction('account-verification',{action:'status'});
-      registerIdentityVerified=!!data?.phone_verified;
-      registerIdentityConfigured=data?.phone_sms_enabled===true;
-      registerIdentityVerifiedAt=data?.phone_verified_at||'';
+      const userId=A.session?.user?.id;
+      const [verificationResult,settingsResult]=await Promise.all([
+        userId
+          ?A.client.from('user_verifications').select('phone_verified_at,verification_level').eq('user_id',userId).maybeSingle()
+          :Promise.resolve({data:null,error:null}),
+        A.client.from('account_verification_settings').select('phone_sms_enabled,sms_provider').eq('id',1).maybeSingle()
+      ]);
+      if(verificationResult?.error)throw verificationResult.error;
+      if(settingsResult?.error)throw settingsResult.error;
+
+      registerIdentityVerified=!!verificationResult?.data?.phone_verified_at&&Number(verificationResult?.data?.verification_level||0)>=2;
+      registerIdentityConfigured=settingsResult?.data?.phone_sms_enabled===true;
+      registerIdentityVerifiedAt=verificationResult?.data?.phone_verified_at||'';
+
       setMarketIdentityUi({loading:false,verified:registerIdentityVerified,configured:registerIdentityConfigured});
       syncRegisterSubmitState();
+
+      A.invokeFunction('account-verification',{action:'status'}).catch(()=>{});
       return registerIdentityVerified;
     }catch(e){
-      registerIdentityVerified=false;registerIdentityConfigured=false;
-      setMarketIdentityUi({loading:false,verified:false,configured:false,message:'휴대폰 인증 상태를 확인하지 못했습니다.'});
-      syncRegisterSubmitState();
-      return false;
+      try{
+        const data=await A.invokeFunction('account-verification',{action:'status'});
+        registerIdentityVerified=!!data?.phone_verified;
+        registerIdentityConfigured=data?.phone_sms_enabled===true;
+        registerIdentityVerifiedAt=data?.phone_verified_at||'';
+        setMarketIdentityUi({loading:false,verified:registerIdentityVerified,configured:registerIdentityConfigured});
+        syncRegisterSubmitState();
+        return registerIdentityVerified;
+      }catch(_){
+        registerIdentityVerified=false;registerIdentityConfigured=false;
+        setMarketIdentityUi({loading:false,verified:false,configured:false,message:'휴대폰 인증 상태를 확인하지 못했습니다.'});
+        syncRegisterSubmitState();
+        return false;
+      }
     }finally{registerIdentityLoading=false}
   }
   function saveMarketIdentityDraft(){

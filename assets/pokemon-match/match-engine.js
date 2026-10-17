@@ -36,7 +36,7 @@ function extractFaceFeatures(points){
 function rankPokemon(preference,rgb,face=null){
  const weights=face?{face:85,color:5,mood:7,element:3}:{face:0,color:25,mood:50,element:25};
  return CATALOG.map(p=>{
-  const mood=p.moods.includes(preference.mood)?weights.mood:0;
+  const mood=preference.mood==='any'||p.moods.includes(preference.mood)?weights.mood:0;
   const element=preference.element==='any'||p.elements.includes(preference.element)?weights.element:p.elements.includes('any')?weights.element*.35:0;
   const distance=Math.hypot(...p.color.map((v,i)=>v-rgb[i]));const color=weights.color*Math.max(0,1-distance/441.68);
   const faceScore=face?weights.face*(1-Math.sqrt(FACE_METRICS.reduce((sum,m)=>sum+((face[m.key]??.5)-p.face[m.index])**2*m.weight,0))):0;

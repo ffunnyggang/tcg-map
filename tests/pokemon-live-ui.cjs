@@ -1,0 +1,21 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+let clock=0,id=0,stopped=0,permissionCount=0;const timers=new Map(),els=new Map(),docEvents={},winEvents={},draws=[];
+const make=id=>({id,hidden:false,disabled:false,style:{},children:[],classList:{add(){},remove(){},toggle(){}},textContent:'',innerHTML:'',setAttribute(k,v){this[k]=v},removeAttribute(k){delete this[k]},replaceChildren(){this.children=[]},append(...children){this.children.push(...children)},focus(){},scrollIntoView(){},addEventListener(){},querySelector(tag){return el(id+'-'+tag)},getBoundingClientRect:()=>({width:400,height:255}),checkValidity:()=>true,reportValidity:()=>true,pause(){},play:async()=>{},videoWidth:1280,videoHeight:720});
+function el(id){if(!els.has(id))els.set(id,make(id));return els.get(id)}
+const doc={getElementById:el,querySelector:()=>el('main'),body:{style:{}},addEventListener:(e,fn)=>docEvents[e]=fn,createElement:tag=>tag==='canvas'?{width:0,height:0,getContext:()=>({drawImage(...args){draws.push(args)}})}:make(tag),hidden:false};
+let failPermission=false;const track={stop(){stopped++},addEventListener(){}};const stream={getTracks:()=>[track],getVideoTracks:()=>[track]};
+const ctx=vm.createContext({document:doc,window:{isSecureContext:true,history:{back(){}},addEventListener:(e,fn)=>winEvents[e]=fn},navigator:{mediaDevices:{getUserMedia:async c=>{permissionCount++;assert.equal(c.audio,false);assert.equal(c.video.facingMode.ideal,'user');if(failPermission)throw {name:'NotAllowedError'};return stream}}},performance:{now:()=>clock},setTimeout:(fn,ms)=>{timers.set(++id,{fn,ms});return id},clearTimeout:i=>timers.delete(i),URL:{revokeObjectURL(){}},matchMedia:()=>({matches:true}),FormData:class{*[Symbol.iterator](){yield ['mood','any'];yield ['style','single'];yield ['element','any']}},ensureFaceModels:async()=>{},console});
+for(const file of ['catalog.js','match-engine.js','live-camera.js'])vm.runInContext(fs.readFileSync('assets/pokemon-match/'+file,'utf8'),ctx);
+const html=fs.readFileSync('pokemon-match.html','utf8');vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],ctx);
+vm.runInContext("runAudition=async()=>true;prepareShareAsset=async()=>{};analyzeSelfie=async()=>({features:Object.fromEntries(FACE_METRICS.map(m=>[m.key,.5])),rgb:[120,130,140],box:{x:.35,y:.18,width:.3,height:.64},frontal:.9})",ctx);
+async function flush(){for(let i=0;i<15;i++)await Promise.resolve()}
+(async()=>{
+ assert.equal(permissionCount,0,'camera must not open on page load');assert.equal(el('submit').disabled,false);
+ el('frameTrigger').onclick();await flush();assert.equal(permissionCount,1);assert.equal(el('liveVideo').srcObject,stream);assert.equal(el('frameTrigger').hidden,true);
+ for(let i=0;i<6;i++){clock+=500;const entry=[...timers].find(([,v])=>v.ms<=350);assert.ok(entry);timers.delete(entry[0]);await entry[1].fn();await flush()}
+ assert.equal(stopped,1);assert.equal(el('liveVideo').srcObject,null);assert.equal(el('liveVideo').hidden,true);assert.equal(el('faceInfo').hidden,false);assert.equal(el('results').hidden,false);assert.ok(el('hero').innerHTML.includes('나의 대표 포켓몬'));assert.ok(draws.length>=6);assert.equal(draws[0][1],(1280-720*(400/255))/2);assert.equal(el('submit').disabled,false);
+ el('frameTrigger').onclick();await flush();doc.hidden=true;docEvents.visibilitychange();assert.equal(stopped,2);assert.equal(el('liveVideo').srcObject,null);assert.equal(el('results').hidden,true);assert.equal(el('frameTrigger').hidden,false);assert.equal(el('submit').disabled,false);
+ doc.hidden=false;failPermission=true;el('frameTrigger').onclick();await flush();assert.ok(el('faceInfo').textContent.includes('카메라 권한'));assert.equal(el('frameTrigger').hidden,false);assert.equal(el('clearPhoto').hidden,true);assert.equal(el('submit').disabled,false);
+ failPermission=false;el('frameTrigger').onclick();await flush();el('clearPhoto').onclick({stopPropagation(){}});assert.equal(stopped,3);assert.equal(el('faceInfo').hidden,true);assert.equal(timers.size,0);winEvents.pagehide();assert.equal(el('liveVideo').srcObject,null);
+ console.log('PASS: gesture-only permission, non-mirrored cover crop, auto results, completed camera release, visibility/cancel cleanup, permission error and retry UI');
+})().catch(e=>{console.error(e);process.exitCode=1});

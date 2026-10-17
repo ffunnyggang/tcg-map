@@ -628,20 +628,22 @@
     if(msg&&!/Edge Function returned a non-2xx status code/i.test(msg))return msg;
     return fallback;
   }
-  function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,message=''}={}){
+  function setMarketIdentityUi({loading=false,verified=registerIdentityVerified,configured=registerIdentityConfigured,message=''}={}){
     const section=$('#marketIdentitySection'),status=$('#marketIdentityStatus'),help=$('#marketIdentityHelp'),btn=$('#marketIdentityStart'),sms=$('#marketIdentitySms');
     if(!section)return;
     section.classList.toggle('is-verified',!!verified);
-    if(status)status.textContent=message||(loading?'휴대폰 인증 상태 확인 중...':verified?'휴대폰 인증 완료 ✓':'휴대폰 인증이 필요합니다.');
+    if(status)status.textContent=message||(loading?'휴대폰 인증 상태 확인 중...':verified?'휴대폰 인증 완료 ✓':configured?'휴대폰 인증이 필요합니다.':'휴대폰 인증 준비 중');
     if(help)help.textContent=verified
       ?'인증된 휴대폰으로 거래 기능을 이용할 수 있습니다.'
-      :'거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.';
+      :configured
+        ?'거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.'
+        :'SOLAPI 문자 인증 연결이 완료되면 이용할 수 있습니다.';
     if(btn){
       btn.hidden=!!verified;
-      btn.disabled=!!loading;
-      btn.textContent=loading?'확인 중...':'휴대폰 인증';
+      btn.disabled=!!loading||!configured;
+      btn.textContent=loading?'확인 중...':configured?'휴대폰 인증':'준비 중';
     }
-    if(sms&&verified){sms.hidden=true;sms.dataset.open=''}
+    if(sms&&(verified||!configured)){sms.hidden=true;sms.dataset.open=''}
   }
   function normalizeMarketPhone(raw){
     const digits=String(raw||'').replace(/\D/g,'');
@@ -660,14 +662,14 @@
       const {data,error}=await A.client.functions.invoke('account-verification',{body:{action:'status'}});
       if(error)throw error;
       registerIdentityVerified=!!data?.phone_verified;
-      registerIdentityConfigured=true;
+      registerIdentityConfigured=data?.phone_sms_enabled===true;
       registerIdentityVerifiedAt=data?.phone_verified_at||'';
-      setMarketIdentityUi({loading:false,verified:registerIdentityVerified});
+      setMarketIdentityUi({loading:false,verified:registerIdentityVerified,configured:registerIdentityConfigured});
       syncRegisterSubmitState();
       return registerIdentityVerified;
     }catch(e){
-      registerIdentityVerified=false;
-      setMarketIdentityUi({loading:false,verified:false,message:'휴대폰 인증 상태를 확인하지 못했습니다.'});
+      registerIdentityVerified=false;registerIdentityConfigured=false;
+      setMarketIdentityUi({loading:false,verified:false,configured:false,message:'휴대폰 인증 상태를 확인하지 못했습니다.'});
       syncRegisterSubmitState();
       return false;
     }finally{registerIdentityLoading=false}
@@ -707,6 +709,7 @@
   }
   async function startMarketIdentityVerification(){
     if(registerIdentityVerified)return;
+    if(!registerIdentityConfigured){setRegisterError('휴대폰 SMS 인증은 현재 준비 중입니다.');return}
     const sms=$('#marketIdentitySms'),phone=$('#marketIdentityPhone');
     if(sms){sms.hidden=false;sms.dataset.open='1'}
     setMarketIdentityMessage('');

@@ -2284,3 +2284,28 @@ body.market-test-page .market-detail-description .market-detail-desc{
   padding-top:0!important;
   border-top:0!important
 }
+
+
+/* MARKET layer + floating register polish v33 */
+body.market-test-page .market-layer-chip.live-temp-layer.active{
+  border-color:#e34d5c!important;
+  background:#e34d5c!important;
+  color:#fff!important;
+  box-shadow:0 7px 20px rgba(227,77,92,.24),inset 0 1px 0 rgba(255,255,255,.20)!important
+}
+body.market-test-page .market-layer-chip.live-temp-layer.active .market-layer-emoji,
+body.market-test-page .market-layer-chip.live-temp-layer.active .qa-layer-count{
+  color:#fff!important;
+  opacity:1!important
+}
+
+/* Portalized TCG 거래 register FAB: fixed to the 420px service frame, never the scroll container. */
+body.market-test-page> .market-overlay-register{
+  position:fixed!important;
+  right:max(16px,calc((100vw - 420px)/2 + 16px))!important;
+  bottom:max(18px,env(safe-area-inset-bottom))!important;
+  z-index:2147483500!important;
+  margin:0!important;
+  transform:none!important
+}
+body.market-test-page> .market-overlay-register[hidden]{display:none!important}

@@ -18,6 +18,13 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
 
 const clean = (v: unknown) => String(v ?? "").trim();
 
+function accountVerifiedAt(user:any){
+  if(user?.email_confirmed_at)return user.email_confirmed_at;
+  const provider=clean(user?.app_metadata?.provider||user?.app_metadata?.providers?.[0]);
+  if(["google","apple","kakao"].includes(provider))return user?.created_at||new Date().toISOString();
+  return null;
+}
+
 async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -48,7 +55,8 @@ async function syncPhoneVerification(user: any) {
   const { error: verificationError } = await admin
     .from("user_verifications")
     .upsert({
-      user_id: user.id,
+      user_id:user.id,
+      account_verified_at:accountVerifiedAt(user),
       email_verified_at: user?.email_confirmed_at || null,
       phone_verified_at: verified ? verifiedAt : null,
       updated_at: now,

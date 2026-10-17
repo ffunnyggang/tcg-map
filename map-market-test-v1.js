@@ -813,12 +813,20 @@
     if(!Number.isFinite(a)||!Number.isFinite(b))return '';
     const ready=await waitForMarketGeocoder();if(!ready)return '';
     const pos=new naver.maps.LatLng(a,b);
-    return await new Promise(resolve=>{
-      naver.maps.Service.reverseGeocode({coords:pos,orders:naver.maps.Service.OrderType.ROAD_ADDR},(status,res)=>{
+    const call=orders=>new Promise(resolve=>{
+      naver.maps.Service.reverseGeocode({coords:pos,orders},(status,res)=>{
         if(status===naver.maps.Service.Status.ERROR||!res){resolve('');return}
         resolve(marketRoadAddressFromReverseResult(res)||'');
       });
     });
+    let label='';
+    try{label=await call(naver.maps.Service.OrderType.ROAD_ADDR)}catch(_){}
+    if(!label){
+      await sleep(120);
+      const orders=[naver.maps.Service.OrderType.ROAD_ADDR,naver.maps.Service.OrderType.ADDR].filter(Boolean).join(',');
+      try{label=await call(orders)}catch(_){}
+    }
+    return label||'';
   }
   function marketAddressFromReverseResult(res){
     const direct=res?.v2?.address||{};

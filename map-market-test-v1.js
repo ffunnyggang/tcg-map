@@ -719,7 +719,11 @@
       if(!window.PortOne?.requestIdentityVerification)throw Error('본인인증 모듈을 불러오지 못했습니다. 페이지를 새로고침해주세요.');
       registerIdentityConfigured=true;registerIdentityPendingId=identityVerificationId;
       saveMarketIdentityDraft(identityVerificationId);
-      const redirectUrl=location.origin+'/shops-market-test.html?identityReturn=1';
+      const redirect=new URL(location.origin+'/shops-market-test.html');
+      const currentParams=new URLSearchParams(location.search);
+      ['app','appPlatform','lang'].forEach(k=>{const v=currentParams.get(k);if(v)redirect.searchParams.set(k,v)});
+      redirect.searchParams.set('identityReturn','1');
+      const redirectUrl=redirect.toString();
       const response=await window.PortOne.requestIdentityVerification({
         storeId:data.store_id,
         identityVerificationId,

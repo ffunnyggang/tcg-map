@@ -71,6 +71,7 @@ function friendlyError(raw: unknown) {
   if (message.includes("PHONE_OTP_RATE_LIMIT")) return "인증번호 요청이 너무 많습니다. 1시간 후 다시 시도해주세요.";
   if (message.includes("INVALID_PHONE_VERIFICATION_REQUEST")) return "휴대폰 번호 형식을 확인해주세요.";
   if (message.includes("PHONE_SMS_NOT_ENABLED")) return "휴대폰 SMS 인증은 현재 준비 중입니다.";
+  if (message.includes("Unexpected status code returned from hook")) return "문자 발송사 연결 설정을 확인해주세요. 잠시 후 다시 시도해주세요.";
   return message || "휴대폰 인증 요청을 처리하지 못했습니다.";
 }
 

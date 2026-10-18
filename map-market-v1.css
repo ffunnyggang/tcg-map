@@ -2582,3 +2582,24 @@ html.app-shell body.market-page .market-fab-wrap.app-trade-only.is-scrolling .ap
   padding:0 16px!important;
   border-radius:23px!important;
 }
+
+/* App TCG trade FAB follows the native LIVE PIN vertical geometry.
+   Native LIVE PIN: bottom = max(safe-area,10) + 54(nav) + 10(gap), height = 46. */
+html.app-shell body.market-page{
+  --funy-native-live-pin-bottom:calc(max(env(safe-area-inset-bottom,0px),10px) + 64px);
+  --funy-native-live-pin-height:46px;
+  --funy-market-live-pin-gap:8px;
+}
+html.app-shell body.market-page .market-fab-wrap.app-trade-only{
+  bottom:calc(var(--funy-native-live-pin-bottom) + var(--funy-native-live-pin-height) + var(--funy-market-live-pin-gap))!important;
+}
+html.app-shell body.market-page .market-fab-wrap.app-trade-only .market-fab-arrow{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin-left:-1px!important;
+  font-size:19px!important;
+  line-height:20px!important;
+  font-weight:500!important;
+  color:#fff!important;
+}

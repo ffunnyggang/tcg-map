@@ -2513,3 +2513,29 @@ body.market-test-page .market-overlay .market-card{
   .market-identity-phone-row{grid-template-columns:1fr}
   .market-identity-secondary{width:100%}
 }
+
+
+/* MARKET test desktop sheet handle hardening v33 */
+@media(min-width:431px){
+  html.funy-map-qa body.market-test-page .map-shop-sheet>.qa-sheet-sticky-head{
+    display:block!important;
+    width:100%!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    min-height:23px!important;
+    flex:0 0 auto!important;
+    pointer-events:auto!important;
+    touch-action:none!important;
+    cursor:ns-resize!important;
+  }
+  html.funy-map-qa body.market-test-page .map-shop-sheet .map-sheet-handle span{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+}

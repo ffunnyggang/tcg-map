@@ -72,3 +72,27 @@
   window.FUNY_INSTAGRAM_FEED={refresh};
   refresh();
 })();
+
+/* Run after detail-funy-v2 so all DB-backed TCG types remain visible in shop detail. */
+(function(){
+  'use strict';
+  const apply=()=>{
+    try{
+      if(typeof compHTML!=='function'||typeof icon!=='function'||!window.FUNY_TCG_LABEL)return false;
+      compHTML=function(s,rv){
+        const en=window.FUNY_IS_ENGLISH?.()===true;
+        const tcg=[
+          s.tcg?.pokemon&&window.FUNY_TCG_LABEL('pokemon'),
+          s.tcg?.onePiece&&window.FUNY_TCG_LABEL('onePiece'),
+          s.tcg?.dragonBall&&window.FUNY_TCG_LABEL('dragonBall'),
+          s.tcg?.riftbound&&window.FUNY_TCG_LABEL('riftbound'),
+          s.tcg?.other&&window.FUNY_TCG_LABEL('other')
+        ].filter(Boolean).join(' · ');
+        const bars=en?[['Singles',rv.single],['Graded Cards',rv.graded],['Boxes',rv.box],['Oripa',rv.oripa]]:[['싱글카드',rv.single],['등급카드',rv.graded],['박스제품',rv.box],['오리파',rv.oripa]];
+        return `<div class="comp-card"><h3 class="sub-title">${en?'Product Mix':'상품 구성 상세'}</h3>${tcg?`<div class="tcg-line"><span class="tcg-label">${en?'TCG Titles':'취급 TCG'}</span><span class="tcg-value">${tcg}</span></div>`:''}<div class="bar-list">${bars.map(([l,v],idx)=>`<div class="bar-row"><div class="bar-label">${l}</div><div class="bar-track"><div class="bar-fill" style="--bar-width:${v/5*100}%;--bar-delay:${120+idx*90}ms"></div></div></div>`).join('')}</div></div>`;
+      };
+      return true;
+    }catch(_){return false}
+  };
+  if(!apply()){let tries=0;const timer=setInterval(()=>{tries++;if(apply()||tries>80)clearInterval(timer)},50)}
+})();

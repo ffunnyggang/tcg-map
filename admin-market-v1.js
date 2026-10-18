@@ -56,8 +56,8 @@ function currentReportCount(id){
 async function renderMarketSellerAccess(){
  const f=feed();if(!f)return;
  document.getElementById('marketSellerAccessBox')?.remove();
- let data={rows:[]};
- try{data=await adminAction({action:'list_seller_access'})}catch(err){console.warn('[MARKET ADMIN] seller access load failed',err)}
+ let data={rows:[]},loadError='';
+ try{data=await adminAction({action:'list_seller_access'})}catch(err){loadError=err?.message||String(err);console.warn('[MARKET ADMIN] seller access load failed',err)}
  const rows=Array.isArray(data?.rows)?data.rows:[];
  const box=document.createElement('section');box.id='marketSellerAccessBox';box.className='market-access-box';
  box.innerHTML=`<h3>매물 등록 허용 계정</h3>
@@ -65,7 +65,7 @@ async function renderMarketSellerAccess(){
    <input id="marketAccessEmail" class="input" type="email" placeholder="FUNY PIN 회원 이메일">
    <button id="marketAccessAdd" class="shop-edit" type="button">등록 허용</button>
   </div>
-  <div class="market-access-list">${rows.length?rows.map(r=>`<div class="market-access-row">
+  <div class="market-access-list">${loadError?'<div class="empty error">허용 계정 조회 실패: '+e(loadError)+'</div>':rows.length?rows.map(r=>`<div class="market-access-row">
    <div class="copy"><b>${e(r.email||r.nickname||r.user_id)}</b><span>${e(r.nickname||'닉네임 없음')} · ${r.is_active?'등록 허용':'등록 중지'}</span></div>
    <button class="${r.is_active?'on':''}" data-market-access-user="${e(r.user_id)}" data-active="${r.is_active?'1':'0'}">${r.is_active?'허용 중':'중지됨'}</button>
   </div>`).join(''):'<div class="empty">등록 허용 계정이 없습니다.</div>'}</div>`;

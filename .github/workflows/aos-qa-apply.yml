@@ -6,6 +6,7 @@ on:
       - qa/aos-web-sync-20261019
     paths:
       - scripts/apply-aos-qa-update.py
+      - .github/workflows/aos-qa-apply.yml
   workflow_dispatch:
 
 permissions:
@@ -39,7 +40,27 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
 
       - name: Apply guarded AOS QA patch
-        run: python scripts/apply-aos-qa-update.py
+        id: patch
+        continue-on-error: true
+        run: |
+          set +e
+          python scripts/apply-aos-qa-update.py 2>&1 | tee /tmp/aos-qa-patch.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Upload patch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-patch-log-${{ github.run_number }}
+          path: /tmp/aos-qa-patch.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Stop after patch failure
+        if: steps.patch.outcome != 'success'
+        run: exit 1
 
       - name: Install Expo SDK-compatible native modules
         working-directory: mobile

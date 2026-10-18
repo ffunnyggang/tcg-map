@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<title>MY TEST | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg?v=20261016-app-logo1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+</head>
+<body><div class="test-shell">
+<header class="test-head"><button class="test-back" id="back" aria-label="뒤로가기">‹</button><div class="test-title">MY TEST</div><span></span></header>
+<main class="test-main"><div class="test-banner"><span class="test-pill">PRIVATE TEST</span>실서비스 MY와 분리된 테스트 화면입니다. 신규 기능을 검증한 뒤 정식 MY에 반영합니다.</div><div id="root"><div class="loading">계정 정보를 불러오는 중...</div></div></main>
+</div>
+<script>
+(async()=>{
+ const A=window.FUNY_WEB_AUTH,root=document.getElementById('root'),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ document.getElementById('back').onclick=()=>history.length>1?history.back():location.assign('/my.html');
+ await A.init();if(!A.session){A.goLogin('/my-test.html');return}
+ const u=A.session.user,{data:p}=await A.client.from('profiles').select('nickname,avatar_url,created_at').eq('user_id',u.id).maybeSingle();
+ const name=p?.nickname||u.user_metadata?.nickname||u.user_metadata?.name||'FUNY 회원',avatar=p?.avatar_url||u.user_metadata?.avatar_url||u.user_metadata?.picture||'',initial=String(name).trim().slice(0,1)||'F';
+ root.innerHTML=
+ '<section class="card profile-card"><div class="avatar">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':esc(initial))+'</div><div class="profile-copy"><div class="profile-name">'+esc(name)+'</div><div class="profile-sub">신규 MY 기능 통합 테스트</div></div></section>'+
+ '<section class="section"><div class="section-head"><h2>내 활동</h2><span class="section-note">활동 기록 관리</span></div><div class="card menu-card">'+
+ '<a class="menu-row" href="/my-community-test.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>게시글 관리</b><span>작성 게시글 · 댓글 · 좋아요한 게시물</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-market-test.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>거래 매물 관리</b><span>판매중 · 숨김/만료 · 판매완료 매물 관리</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-favorites.html"><span class="menu-icon">⭐</span><span class="menu-copy"><b>관심 목록</b><span>관심 카드샵과 저장한 항목 확인</span></span><span class="chev">›</span></a></div></section>'+
+ '<section class="section"><div class="section-head"><h2>리워드 & 컬렉션</h2><span class="section-note">재방문 · 수집 요소</span></div><div class="card menu-card">'+
+ '<a class="menu-row" href="/my-funy-coin-test.html"><span class="menu-icon">🪙</span><span class="menu-copy"><b>퍼니코인</b><span>보유 코인 · 소멸 예정 · 적립/사용 내역</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/ranking-test.html"><span class="menu-icon">🏆</span><span class="menu-copy"><b>랭킹</b><span>출석 · 카드샵 방문 · 퍼니몬 포획 랭킹</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-badges-test.html"><span class="menu-icon">🎖️</span><span class="menu-copy"><b>배지</b><span>미션과 활동으로 획득한 배지 컬렉션</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-funymon.html"><span class="menu-icon">👾</span><span class="menu-copy"><b>퍼니몬 도감</b><span>포획한 퍼니몬 컬렉션</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-entries.html"><span class="menu-icon">🎟️</span><span class="menu-copy"><b>응모 내역</b><span>참여한 이벤트와 응모 내역</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-coupons.html"><span class="menu-icon">🎫</span><span class="menu-copy"><b>쿠폰함</b><span>발급받은 쿠폰과 사용 상태</span></span><span class="chev">›</span></a></div></section>'+
+ '<section class="section"><div class="section-head"><h2>설정</h2></div><div class="card menu-card">'+
+ '<a class="menu-row" href="/my-security.html"><span class="menu-icon">🔐</span><span class="menu-copy"><b>계정 보안</b><span>로그인 및 본인인증 설정</span></span><span class="chev">›</span></a>'+
+ '<a class="menu-row" href="/my-blocked-users.html"><span class="menu-icon">🚫</span><span class="menu-copy"><b>차단한 사용자</b><span>TALK 차단 목록 관리</span></span><span class="chev">›</span></a></div></section>';
+})().catch(e=>{document.getElementById('root').innerHTML='<div class="error"><strong>불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
+</script></body></html>

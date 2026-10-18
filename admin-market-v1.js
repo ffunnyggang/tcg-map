@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 const providerNames={daangn:'당근',bunjang:'번개장터',break:'BREAK'};
-const listingStatusNames={active:'노출중',reserved:'예약중',sold:'판매완료',hidden:'비노출',expired:'만료'};
+const listingStatusNames={active:'노출중',reserved:'예약중',sold:'판매완료',hidden:'비노출',expired:'만료',deleted:'판매자 삭제'};
 const sourceStatusNames={unknown:'미확인',active:'판매중',sold:'판매완료',deleted:'삭제됨',unavailable:'접근불가'};
 const reportTypeNames={rights:'권리침해',fraud:'사기 의심',prohibited:'부적절한 매물',sold_or_unavailable:'판매완료·접근불가',other:'기타'};
 const reportStatusNames={received:'접수',reviewing:'조사중',hidden:'비노출',resolved:'처리완료',dismissed:'문제없음'};
@@ -33,6 +33,17 @@ function ensureStyle(){
  .market-admin-actions button.primary{border-color:#d9cef0;background:#f5f1fc;color:#6749bd}
  .market-admin-actions button:disabled{opacity:.45}
  .market-report-reason{margin-top:9px;white-space:pre-wrap;color:#59525e;font-size:11px;line-height:1.6}
+ .market-access-box{margin:0 0 14px;padding:14px;border:1px solid #e6e0eb;border-radius:14px;background:#fbf9fd}
+ .market-access-box h3{margin:0 0 8px;font-size:13px;color:#342e39}
+ .market-access-add{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+ .market-access-add .input{min-width:250px;flex:1}
+ .market-access-list{display:grid;gap:7px;margin-top:10px}
+ .market-access-row{display:flex;gap:8px;align-items:center;padding:9px 10px;border-radius:10px;background:#fff;border:1px solid #eee9f1;font-size:10px}
+ .market-access-row .copy{min-width:0;flex:1}
+ .market-access-row .copy b{display:block;font-size:11px;color:#3c3541;overflow:hidden;text-overflow:ellipsis}
+ .market-access-row .copy span{display:block;margin-top:2px;color:#8d8591}
+ .market-access-row button{height:30px;padding:0 10px;border:1px solid #e2dce6;border-radius:9px;background:#fff;font-size:10px;font-weight:800}
+ .market-access-row button.on{background:#f0f8f2;color:#47815a;border-color:#d4e9da}
  @media(max-width:699px){.market-admin-toolbar>*{width:100%;min-width:0!important}.market-admin-time{width:100%;margin-left:0}}
  `;document.head.appendChild(s);
 }
@@ -41,6 +52,37 @@ async function adminAction(body){
 }
 function currentReportCount(id){
  return marketAdminReports.filter(r=>r.listing_id===id&&['received','reviewing'].includes(r.status)).length;
+}
+async function renderMarketSellerAccess(){
+ const f=feed();if(!f)return;
+ document.getElementById('marketSellerAccessBox')?.remove();
+ let data={rows:[]};
+ try{data=await adminAction({action:'list_seller_access'})}catch(err){console.warn('[MARKET ADMIN] seller access load failed',err)}
+ const rows=Array.isArray(data?.rows)?data.rows:[];
+ const box=document.createElement('section');box.id='marketSellerAccessBox';box.className='market-access-box';
+ box.innerHTML=`<h3>매물 등록 허용 계정</h3>
+  <div class="market-access-add">
+   <input id="marketAccessEmail" class="input" type="email" placeholder="FUNY PIN 회원 이메일">
+   <button id="marketAccessAdd" class="shop-edit" type="button">등록 허용</button>
+  </div>
+  <div class="market-access-list">${rows.length?rows.map(r=>`<div class="market-access-row">
+   <div class="copy"><b>${e(r.email||r.nickname||r.user_id)}</b><span>${e(r.nickname||'닉네임 없음')} · ${r.is_active?'등록 허용':'등록 중지'}</span></div>
+   <button class="${r.is_active?'on':''}" data-market-access-user="${e(r.user_id)}" data-active="${r.is_active?'1':'0'}">${r.is_active?'허용 중':'중지됨'}</button>
+  </div>`).join(''):'<div class="empty">등록 허용 계정이 없습니다.</div>'}</div>`;
+ const toolbar=f.querySelector('.market-admin-toolbar');if(toolbar)toolbar.before(box);else f.prepend(box);
+ document.getElementById('marketAccessAdd')?.addEventListener('click',async()=>{
+  const input=document.getElementById('marketAccessEmail'),email=input?.value?.trim();if(!email){alert('허용할 FUNY PIN 회원 이메일을 입력해주세요.');return}
+  const btn=document.getElementById('marketAccessAdd');btn.disabled=true;
+  try{const d=await adminAction({action:'set_seller_access',email,is_active:true,note:'Admin approved'});if(!d?.ok)throw new Error(d?.error||'등록 허용 처리에 실패했습니다.');await renderMarketSellerAccess()}
+  catch(err){alert('등록 허용 실패: '+err.message);btn.disabled=false}
+ });
+ box.querySelectorAll('[data-market-access-user]').forEach(b=>b.addEventListener('click',async()=>{
+  const next=b.dataset.active!=='1';
+  if(!confirm(next?'이 계정의 매물 등록을 허용할까요?':'이 계정의 신규 매물 등록을 중지할까요?\n기존 노출 매물은 유지됩니다.'))return;
+  b.disabled=true;
+  try{const d=await adminAction({action:'set_seller_access',user_id:b.dataset.marketAccessUser,is_active:next,note:next?'Admin approved':'Admin registration disabled'});if(!d?.ok)throw new Error(d?.error||'처리에 실패했습니다.');await renderMarketSellerAccess()}
+  catch(err){alert('등록 권한 변경 실패: '+err.message);b.disabled=false}
+ }));
 }
 function renderMarketListings(){
  const f=feed(),q=(document.getElementById('marketAdminSearch')?.value||'').trim().toLowerCase(),provider=document.getElementById('marketAdminProvider')?.value||'',status=document.getElementById('marketAdminStatus')?.value||'';
@@ -72,9 +114,10 @@ window.loadAdminMarketListings=async function(){
   ]);
   marketAdminListings=listings||[];marketAdminReports=reports||[];
   const n=s=>marketAdminListings.filter(x=>x.listing_status===s).length,open=marketAdminReports.filter(x=>['received','reviewing'].includes(x.status)).length;
-  f.innerHTML='<div class="shop-stats stats-grid"><div class="shop-stat"><b>'+marketAdminListings.length+'</b><span>전체 매물</span></div><div class="shop-stat"><b>'+n('active')+'</b><span>노출중</span></div><div class="shop-stat"><b>'+n('hidden')+'</b><span>비노출</span></div><div class="shop-stat"><b>'+open+'</b><span>미처리 신고</span></div></div><div class="market-admin-toolbar"><input id="marketAdminSearch" class="input" placeholder="상품명 · 판매자 · 위치 검색"><select id="marketAdminProvider" class="select"><option value="">전체 플랫폼</option><option value="daangn">당근</option><option value="bunjang">번개장터</option><option value="break">BREAK</option></select><select id="marketAdminStatus" class="select"><option value="">전체 상태</option><option value="active">노출중</option><option value="reserved">예약중</option><option value="sold">판매완료</option><option value="hidden">비노출</option><option value="expired">만료</option></select></div><div id="marketAdminList" class="market-admin-list"></div>';
+  f.innerHTML='<div class="shop-stats stats-grid"><div class="shop-stat"><b>'+marketAdminListings.length+'</b><span>전체 매물</span></div><div class="shop-stat"><b>'+n('active')+'</b><span>노출중</span></div><div class="shop-stat"><b>'+n('hidden')+'</b><span>비노출</span></div><div class="shop-stat"><b>'+open+'</b><span>미처리 신고</span></div></div><div class="market-admin-toolbar"><input id="marketAdminSearch" class="input" placeholder="상품명 · 판매자 · 위치 검색"><select id="marketAdminProvider" class="select"><option value="">전체 플랫폼</option><option value="daangn">당근</option><option value="bunjang">번개장터</option><option value="break">BREAK</option></select><select id="marketAdminStatus" class="select"><option value="">전체 상태</option><option value="active">노출중</option><option value="reserved">예약중</option><option value="sold">판매완료</option><option value="hidden">비노출</option><option value="expired">만료</option><option value="deleted">판매자 삭제</option></select></div><div id="marketAdminList" class="market-admin-list"></div>';
   ['marketAdminSearch','marketAdminProvider','marketAdminStatus'].forEach(id=>document.getElementById(id)?.addEventListener(id==='marketAdminSearch'?'input':'change',renderMarketListings));
   renderMarketListings();
+  await renderMarketSellerAccess();
  }catch(err){f.innerHTML='<div class="empty error">MARKET 매물 조회 실패: '+e(err.message)+'</div>'}
 };
 

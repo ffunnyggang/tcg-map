@@ -23,13 +23,13 @@
   document.body.classList.add('market-page');
   const marketEn=localStorage.getItem('funy-pin-lang')==='en';
   const marketTr=(ko,enText)=>marketEn?enText:ko;
-  const session=await A.init().catch(()=>null);
 
   let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null,marketBlockedUserIds=new Set();
   let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
   let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerIdentityVerified=false,registerIdentityLoading=false,registerIdentityConfigured=false,registerIdentityVerifiedAt='',registerIdentityPendingId='',registerExternalVerified=false,registerChallengeId='',registerVerifiedChallengeId='',registerExternalAccountId='',registerVerificationScope='',registerVerifiedAccounts=[],registerSellerStatusLoading=false,registerLat=null,registerLng=null,registerLocation='',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
   let marketSellerAllowed=false,marketSellerAccessLoaded=false;
   let marketPanel=null,marketTabBtn=null,layerChip=null,layerOrderObserver=null,layerOrderQueued=false;
+  const authReady=A.init().catch(()=>null);
 
   async function waitForMap(){
     for(let i=0;i<120;i++){
@@ -1681,11 +1681,12 @@
   const sheetRecoveryRoot=document.querySelector('.list-wrap');
   if(sheetRecoveryRoot)sheetRecoveryObserver.observe(sheetRecoveryRoot,{childList:true,subtree:true});
 
-  const map=await waitForMap();
-  const tabs=await waitForQaTabs();
-  if(tabs)setupMarketPanel(tabs);
+  const mapReadyPromise=waitForMap();
+  const tabsReadyPromise=waitForQaTabs().then(tabs=>{if(tabs)setupMarketPanel(tabs);return tabs});
+  const tabs=await tabsReadyPromise;
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();ensureMarketSheetControlBridge();
+  const [map]=await Promise.all([mapReadyPromise,authReady]);
   if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
   setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();ensureMarketSheetControlBridge();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   window.addEventListener('resize',()=>{

@@ -97,13 +97,17 @@ jobs:
         if: steps.patch.outcome != 'success'
         run: exit 1
 
+      - name: Install locked mobile dependencies
+        working-directory: mobile
+        run: npm ci
+
       - name: Install Expo SDK-compatible native modules
         id: deps
         continue-on-error: true
         working-directory: mobile
         run: |
           set +e
-          npx expo install expo-file-system expo-sharing 2>&1 | tee /tmp/aos-qa-deps.log
+          npx --no-install expo install expo-file-system expo-sharing 2>&1 | tee /tmp/aos-qa-deps.log
           code=${PIPESTATUS[0]}
           echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
           exit "$code"

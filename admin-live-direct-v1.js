@@ -13,3 +13,24 @@
   }catch(e){if(version===renderVersion)root.innerHTML='<div class="empty error">조회 실패: '+h(e.message)+'</div>'}
  };
 })();
+
+/* Card-shop request import compatibility for DB-backed TCG types. */
+(function(){
+ 'use strict';
+ if(window.__FUNY_ADMIN_TCG_REQUEST_V2)return;
+ const install=()=>{
+  const base=window.requestItemMappings;
+  if(typeof base!=='function')return false;
+  window.__FUNY_ADMIN_TCG_REQUEST_V2=true;
+  window.requestItemMappings=function(items){
+   const result=base(items),set=new Set(items||[]);
+   result.tcg=result.tcg||{};
+   result.tcg.riftbound=set.has('리프트바운드')||set.has('Riftbound');
+   result.tcg.other=set.has('기타')||set.has('기타 TCG')||set.has('Other TCG');
+   result.otherTcg=result.tcg.other;
+   return result;
+  };
+  return true;
+ };
+ let tries=0;const timer=setInterval(()=>{tries++;if(install()||tries>100)clearInterval(timer)},50);
+})();

@@ -67,7 +67,7 @@
  }
  function thumbHtml(post){
    const src=imageMap.get(String(post.id))||'';
-   return src?'<img class="community-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'';
+   return src?'<img class="community-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'<span class="community-ph">NO IMAGE</span>';
  }
  function postCard(post,mode){
    const img=thumbHtml(post),mine=String(post.user_id)===uid;
@@ -75,7 +75,7 @@
     ?'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="report" data-id="'+esc(post.id)+'">신고하기</button><button type="button" class="danger" data-act="block" data-id="'+esc(post.id)+'" '+(mine?'disabled':'')+'>차단하기</button>'
     :'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="delete-post" data-id="'+esc(post.id)+'">삭제하기</button>';
    return '<article class="community-card" data-post-card="'+esc(post.id)+'">'+
-    '<div class="community-main '+(img?'':'no-thumb')+'"><div class="community-copy"><span class="community-badge">'+esc(post.category||'TALK')+'</span><strong class="community-title">'+esc(post.title||'제목 없음')+'</strong><div class="community-body">'+esc(post.body||'')+'</div></div>'+img+'</div>'+
+    '<div class="community-main">'<div class="community-copy"><span class="community-badge">'+esc(post.category||'TALK')+'</span><strong class="community-title">'+esc(post.title||'제목 없음')+'</strong><div class="community-body">'+esc(post.body||'')+'</div></div>'+img+'</div>'+
     '<button class="community-more funy-kebab-button" type="button" data-more="'+esc(post.id)+'" aria-label="더보기" aria-expanded="false">⋮</button>'+
     '<div class="community-menu" data-menu="'+esc(post.id)+'" hidden>'+menu+'</div>'+
     '<div class="community-footer"><div class="community-stats"><span>등록 '+fullDate(post.created_at)+'</span><span class="sep">·</span><span>조회 '+Number(post.view_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>좋아요 '+Number(post.like_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>댓글 '+Number(post.comment_count||0).toLocaleString('ko-KR')+'</span></div>'+

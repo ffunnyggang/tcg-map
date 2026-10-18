@@ -157,3 +157,27 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   font:800 19px/24px var(--funy-system-font)!important;
   letter-spacing:-.35px!important;color:var(--funy-text)!important;
 }
+
+
+/* FUNY PIN overflow menu guide
+   Standard: use vertical kebab (⋮), not horizontal ellipsis (⋯), for item-level more/actions menus. */
+.funy-kebab-button{
+  box-sizing:border-box!important;
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#746C78!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-family:var(--funy-system-font)!important;
+  font-size:24px!important;
+  line-height:1!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+  cursor:pointer!important;
+}
+.funy-kebab-button:active{background:#F3F0F5!important}

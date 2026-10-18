@@ -22,3 +22,29 @@ body{padding:0}.test-shell{width:min(100%,420px);min-height:100dvh;margin:0 auto
 .switch-row{margin-top:12px;padding:12px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px}.switch-copy b{display:block;font-size:11px}.switch-copy span{display:block;margin-top:3px;color:#918A95;font-size:9px;line-height:1.4}.switch{width:46px;height:27px;border:0;border-radius:999px;background:#D6D1D9;padding:3px;cursor:pointer}.switch:before{content:'';display:block;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .18s ease}.switch.on{background:#8062D8}.switch.on:before{transform:translateX(19px)}
 .visit-box{margin-top:12px;padding:14px}.visit-status{color:#817985;font-size:10px;line-height:1.55}.nearby{display:grid;gap:7px;margin-top:10px}.nearby-row{padding:10px 11px;border:1px solid #E9E4ED;border-radius:12px;display:flex;align-items:center;gap:10px}.nearby-copy{min-width:0;flex:1}.nearby-copy b{display:block;font-size:10.5px}.nearby-copy span{display:block;margin-top:3px;color:#99919D;font-size:8.8px}.toast{position:fixed;left:50%;bottom:22px;z-index:500;transform:translate(-50%,10px);padding:10px 13px;border-radius:999px;background:rgba(35,31,40,.94);color:#fff;font-size:10px;font-weight:800;opacity:0;pointer-events:none;transition:.18s}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:360px){.test-main{padding-left:12px;padding-right:12px}.menu-copy span{font-size:9.5px}.badge-grid{grid-template-columns:1fr}.rank-row{grid-template-columns:27px 31px minmax(0,1fr) auto}}
+
+/* MY test hub parity with production MY */
+body.my-test-hub .test-main{padding-bottom:118px}
+body.my-test-hub .portal-header{position:sticky!important;top:0!important;z-index:55!important;height:54px!important;padding:0 14px!important;display:flex!important;align-items:center!important;background:rgba(255,255,255,.97)!important;border:0!important;box-shadow:none!important}
+body.my-test-hub .portal-brand{height:100%!important;display:flex!important;align-items:center!important;gap:0!important}
+body.my-test-hub .portal-logo{width:30px!important;height:34px!important;display:block!important}
+body.my-test-hub .portal-logo img{width:30px!important;height:34px!important;display:block!important}
+body.my-test-hub .portal-brand strong{font-size:19px!important;font-weight:800!important;letter-spacing:-.025em!important}
+.test-settings-card,.test-support-card{overflow:hidden}
+.test-language-row{min-height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #EEEAF1}
+.test-support-label{font-size:13.5px;font-weight:700;color:#514B56}
+.test-language-toggle{height:34px;padding:2px;border-radius:17px;background:#F1EDF6;display:flex;align-items:center}
+.test-language-option{height:30px;min-width:52px;padding:0 10px;border:0;border-radius:15px;background:transparent;color:#8F8794;font-size:11px;font-weight:800;cursor:pointer}
+.test-language-option.is-on{background:#6749BD;color:#fff}
+.test-support-row{min-height:52px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;color:inherit;text-decoration:none;border-bottom:1px solid #EEEAF1}
+.test-support-row:last-child{border-bottom:0}
+.test-account-actions{margin-top:18px;display:flex;flex-direction:column;align-items:center}
+.test-logout-button{width:100%;height:54px;border:0;border-radius:16px;background:#6749BD;color:#fff;font-size:13px;font-weight:900;cursor:pointer}
+.test-delete-button{margin-top:8px;min-height:34px;padding:0 12px;border:0;background:transparent;color:#B42318;font-size:12px;font-weight:800;cursor:pointer}
+.test-logout-button:disabled,.test-delete-button:disabled{opacity:.55}
+.test-message{margin-top:10px;color:#B42318;text-align:center;font-size:11px;line-height:1.5}
+.test-legal-links{margin-top:22px;display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}
+.test-legal-links a{color:#8F8794;text-decoration:none;font-size:10.5px;font-weight:700}
+.test-legal-divider{color:#C5BDC9;font-size:10px}
+.test-hub-toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:2147483600;transform:translate(-50%,12px);max-width:calc(100% - 36px);padding:10px 14px;border-radius:999px;background:rgba(32,29,36,.92);color:#fff;font-size:11px;font-weight:750;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .2s ease}
+.test-hub-toast.show{opacity:1;transform:translate(-50%,0)}

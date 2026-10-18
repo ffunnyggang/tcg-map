@@ -1018,6 +1018,21 @@
         $('#marketPreviewStatus').textContent=marketTr('등록할 수 없는 매물입니다.','This listing cannot be registered.');
         return;
       }
+      if(data?.provider==='break'&&data?.break_transaction_mode!=='instant'){
+        registerProduct=null;registerPreviewUrl='';
+        $('#marketPreview')?.classList.remove('show');
+        const auction=data?.break_transaction_mode==='auction';
+        resetExternalVerification(marketTr("BREAK는 '즉시 거래' 상품만 등록할 수 있습니다.","Only BREAK instant-sale listings can be registered."));
+        syncRegisterSubmitState();
+        setRegisterError(auction
+          ?marketTr("BREAK는 '즉시 거래' 상품만 등록할 수 있어요. 경매 상품은 등록할 수 없습니다.","Only BREAK instant-sale listings can be registered. Auction listings are not supported.")
+          :marketTr("BREAK 거래 방식을 확인할 수 없습니다. '즉시 거래' 상품 링크인지 확인해주세요.","We couldn't confirm the BREAK transaction type. Please use an instant-sale listing.")
+        );
+        $('#marketPreviewStatus').textContent=auction
+          ?marketTr('BREAK 경매 상품은 등록할 수 없습니다.','BREAK auction listings cannot be registered.')
+          :marketTr('BREAK 즉시 거래 상품 여부를 확인해주세요.','Please confirm this is a BREAK instant-sale listing.');
+        return;
+      }
       renderPreview(data);
       $('#marketPreviewStatus').textContent=providerName(data)+' · '+marketTr('TCG 매물 확인 완료','TCG listing confirmed')+' · '+marketTr('이미지','Images')+' '+((data.images||[]).length||1)+'장'
     }

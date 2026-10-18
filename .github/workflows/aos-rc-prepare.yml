@@ -1,0 +1,137 @@
+name: Prepare clean AOS closed-test RC
+
+on:
+  push:
+    branches:
+      - qa/aos-web-sync-20261019
+    paths:
+      - .github/workflows/aos-rc-prepare.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aos-rc-prepare
+  cancel-in-progress: false
+
+jobs:
+  prepare-rc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: qa/aos-web-sync-20261019
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Create clean RC worktree from app-mvp baseline
+        run: |
+          git fetch origin app-mvp qa/aos-web-sync-20261019 rc/aos-closed-test-20261019
+          rm -rf /tmp/funy-aos-rc
+          git worktree add --force -B rc/aos-closed-test-20261019 /tmp/funy-aos-rc origin/rc/aos-closed-test-20261019
+
+      - name: Copy validated production files only
+        run: |
+          cd /tmp/funy-aos-rc
+          git checkout origin/qa/aos-web-sync-20261019 -- \
+            'mobile/app/(tabs)/index.tsx' \
+            'mobile/app/(tabs)/pick.tsx' \
+            mobile/app/account.tsx \
+            mobile/app/live-pin.tsx \
+            mobile/app/my/profile-edit.tsx \
+            'mobile/app/shop/[id].tsx' \
+            mobile/components/FunyBackButton.tsx \
+            mobile/components/FunyHeader.tsx \
+            mobile/components/FunyWebView.tsx \
+            mobile/components/MySubHeader.tsx \
+            mobile/lib/shops.ts \
+            mobile/package.json \
+            mobile/package-lock.json \
+            mobile/QA_AOS_PREBUILD_20261019.md \
+            mobile/scripts/check-injected-js.mjs \
+            mobile/scripts/qa-aos-local.ps1
+
+      - name: Verify RC file boundary before commit
+        run: |
+          cd /tmp/funy-aos-rc
+          python - <<'PY'
+          import subprocess
+          expected={
+            'mobile/QA_AOS_PREBUILD_20261019.md',
+            'mobile/app/(tabs)/index.tsx',
+            'mobile/app/(tabs)/pick.tsx',
+            'mobile/app/account.tsx',
+            'mobile/app/live-pin.tsx',
+            'mobile/app/my/profile-edit.tsx',
+            'mobile/app/shop/[id].tsx',
+            'mobile/components/FunyBackButton.tsx',
+            'mobile/components/FunyHeader.tsx',
+            'mobile/components/FunyWebView.tsx',
+            'mobile/components/MySubHeader.tsx',
+            'mobile/lib/shops.ts',
+            'mobile/package-lock.json',
+            'mobile/package.json',
+            'mobile/scripts/check-injected-js.mjs',
+            'mobile/scripts/qa-aos-local.ps1',
+          }
+          changed=set(subprocess.check_output(['git','diff','--name-only','origin/app-mvp'],text=True).splitlines())
+          unexpected=sorted(changed-expected)
+          missing=sorted(expected-changed)
+          if unexpected: raise SystemExit('Unexpected RC files: '+', '.join(unexpected))
+          if missing: raise SystemExit('Missing RC files: '+', '.join(missing))
+          print('RC file boundary OK:',len(changed),'files')
+          PY
+
+      - name: Commit clean RC candidate locally
+        run: |
+          cd /tmp/funy-aos-rc
+          git config user.name "FUNY PIN QA Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add mobile
+          if ! git diff --cached --quiet; then
+            git commit -m "rc(android): prepare closed-test web-sync candidate"
+          fi
+
+      - name: Run complete non-build QA on clean RC
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
+        run: |
+          cp mobile/scripts/qa-aos-ci.sh /tmp/funy-aos-rc/mobile/scripts/qa-aos-ci.sh
+          cd /tmp/funy-aos-rc
+          bash mobile/scripts/qa-aos-ci.sh
+          rm -f mobile/scripts/qa-aos-ci.sh
+          git diff --exit-code -- mobile/components/FunyWebView.tsx
+          test -z "$(git status --porcelain)"
+
+      - name: Push validated clean RC branch
+        run: |
+          cd /tmp/funy-aos-rc
+          git fetch origin rc/aos-closed-test-20261019
+          git rebase origin/rc/aos-closed-test-20261019
+          git push origin HEAD:rc/aos-closed-test-20261019
+
+      - name: Write RC QA evidence
+        run: |
+          cp /tmp/AOS_FINAL_QA_RESULT.md /tmp/AOS_CLEAN_RC_QA_RESULT.md
+          cat >> /tmp/AOS_CLEAN_RC_QA_RESULT.md <<'EOF'
+
+          - Clean RC branch contains only validated mobile production files and local QA helpers
+          - QA-only workflows, temporary patch scripts, and admin.html were excluded
+          - RC branch: rc/aos-closed-test-20261019
+          EOF
+
+      - name: Upload clean RC evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-clean-rc-non-build-qa-${{ github.run_number }}
+          path: |
+            /tmp/AOS_CLEAN_RC_QA_RESULT.md
+            /tmp/funy-expo-config.json
+          retention-days: 7

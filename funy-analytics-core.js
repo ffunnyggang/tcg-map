@@ -50,4 +50,70 @@
     if(layer){const name=layer.id==='liveTempLayer'?'live_pin':layer.dataset.layer;setTimeout(()=>track('map_layer_toggle',{layer_name:name,enabled:layer.classList.contains('active')}),0);}
     const popup=t.closest('.live-temp-popup');if(popup)track('live_pin_map_open');
   },true);
+
+  /* Dynamic TCG type compatibility: Riftbound + Other TCG. */
+  const pathname=String(location.pathname||'').toLowerCase();
+  const english=()=>{try{return localStorage.getItem('funy-pin-lang')==='en'}catch(_){return false}};
+
+  function installShopRequestTcgOptions(){
+    const root=document.getElementById('items');if(!root)return false;
+    let other=[...root.querySelectorAll('.chip')].find(x=>['기타 TCG','기타','Other TCG'].includes(String(x.dataset.value||x.textContent||'').trim()));
+    if(other){other.dataset.value='기타';other.textContent=english()?'Other TCG':'기타'}
+    if(!root.querySelector('[data-value="리프트바운드"]')){
+      const btn=document.createElement('button');btn.className='chip';btn.type='button';btn.dataset.value='리프트바운드';btn.textContent=english()?'Riftbound':'리프트바운드';btn.onclick=()=>btn.classList.toggle('on');
+      if(other)root.insertBefore(btn,other);else root.appendChild(btn);
+    }
+    return true;
+  }
+  if(/\/shop-request\.html$/.test(pathname)){
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installShopRequestTcgOptions,{once:true});else installShopRequestTcgOptions();
+  }
+
+  if(/\/shops\.html$/.test(pathname)){
+    let installed=false,loading=false,loaded=false;
+    const API='https://wdttzpbmqavaqfcbaywj.supabase.co';
+    const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+    const label=key=>{
+      const ko={pokemon:'포켓몬',onePiece:'원피스',dragonBall:'드래곤볼',riftbound:'리프트바운드',other:'기타'};
+      const en={pokemon:'Pokémon',onePiece:'One Piece',dragonBall:'Dragon Ball',riftbound:'Riftbound',other:'Other TCG'};
+      return (english()?en:ko)[key]||key;
+    };
+    const refresh=()=>{
+      try{if(typeof renderFilters==='function')renderFilters()}catch(_){}
+      try{if(typeof renderList==='function')renderList()}catch(_){}
+      try{if(typeof syncMapMarkers==='function')syncMapMarkers(false)}catch(_){}
+      try{if(typeof state!=='undefined'&&state.current&&typeof openDetail==='function')openDetail(state.current)}catch(_){}
+    };
+    const enrichFallback=()=>{
+      try{SHOPS.forEach(s=>{s.tcg=s.tcg||{};if(!Object.prototype.hasOwnProperty.call(s.tcg,'riftbound'))s.tcg.riftbound=null;if(!Object.prototype.hasOwnProperty.call(s.tcg,'other'))s.tcg.other=s.otherTcg?true:null})}catch(_){}
+    };
+    const loadStatuses=async()=>{
+      if(loading||loaded)return;loading=true;
+      try{
+        const res=await fetch(API+'/rest/v1/v_app_shops?select=id,tcg,other_tcg_note',{headers:{apikey:KEY,Authorization:'Bearer '+KEY},cache:'no-store'});if(!res.ok)throw new Error('TCG '+res.status);
+        const rows=await res.json(),by=new Map((rows||[]).map(x=>[String(x.id),x]));
+        SHOPS.forEach(s=>{const row=by.get(String(s.id)),raw=row?.tcg||{};s.tcg=s.tcg||{};s.tcg.riftbound=raw.riftbound?.status??null;s.tcg.other=raw.other?.status??(row?.other_tcg_note?true:null)});
+        loaded=true;refresh();
+      }catch(e){console.warn('[FUNY PIN] extended TCG fallback:',e?.message||e)}finally{loading=false}
+    };
+    const install=()=>{
+      try{
+        if(typeof FILTERS==='undefined'||typeof SHOPS==='undefined')return false;
+        if(!installed){
+          const baseLabel=window.FUNY_TCG_LABEL;
+          window.FUNY_TCG_LABEL=key=>['riftbound','other'].includes(key)?label(key):(typeof baseLabel==='function'?baseLabel(key):label(key));
+          const insertAt=Math.max(0,FILTERS.findIndex(x=>x.id==='dragonBall')+1);
+          if(!FILTERS.some(x=>x.id==='riftbound'))FILTERS.splice(insertAt,0,{id:'riftbound',label:label('riftbound'),test:s=>s.tcg?.riftbound===true});
+          const otherAt=Math.max(0,FILTERS.findIndex(x=>x.id==='riftbound')+1);
+          if(!FILTERS.some(x=>x.id==='other'))FILTERS.splice(otherAt,0,{id:'other',label:label('other'),test:s=>s.tcg?.other===true});
+          const extendedComp=(s,rv)=>{const en=window.FUNY_IS_ENGLISH?.()===true;const tcg=[s.tcg?.pokemon&&window.FUNY_TCG_LABEL('pokemon'),s.tcg?.onePiece&&window.FUNY_TCG_LABEL('onePiece'),s.tcg?.dragonBall&&window.FUNY_TCG_LABEL('dragonBall'),s.tcg?.riftbound&&window.FUNY_TCG_LABEL('riftbound'),s.tcg?.other&&window.FUNY_TCG_LABEL('other')].filter(Boolean).join(' · ');const bars=en?[['Singles',rv.single],['Graded Cards',rv.graded],['Boxes',rv.box],['Oripa',rv.oripa]]:[['싱글카드',rv.single],['등급카드',rv.graded],['박스제품',rv.box],['오리파',rv.oripa]];return '<div class="comp-card"><h3 class="sub-title with-icon"><span class="sub-icon">'+icon('cards')+'</span>'+(en?'Product Mix':'상품 구성 상세')+'</h3>'+(tcg?'<div class="tcg-line"><span class="tcg-label">'+(en?'TCG Titles':'취급 TCG')+'</span><span class="tcg-value">'+tcg+'</span></div>':'')+'<div class="bar-list">'+bars.map(([l,v])=>'<div class="bar-row"><div class="bar-label">'+l+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/5*100)+'%"></div></div></div>').join('')+'</div></div>'};
+          try{compHTML=extendedComp}catch(_){window.compHTML=extendedComp}
+          installed=true;
+        }
+        enrichFallback();refresh();loadStatuses();return true;
+      }catch(_){return false}
+    };
+    let tries=0;const timer=setInterval(()=>{tries++;if(install()||tries>120)clearInterval(timer)},50);
+    window.addEventListener('funy:shops-source',()=>{loaded=false;setTimeout(install,0)});
+  }
 })();

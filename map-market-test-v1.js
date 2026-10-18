@@ -37,6 +37,7 @@
   let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null,marketBlockedUserIds=new Set();
   let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
   let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerIdentityVerified=false,registerIdentityLoading=false,registerIdentityConfigured=false,registerIdentityVerifiedAt='',registerIdentityPendingId='',registerExternalVerified=false,registerChallengeId='',registerVerifiedChallengeId='',registerExternalAccountId='',registerVerificationScope='',registerVerifiedAccounts=[],registerSellerStatusLoading=false,registerLat=null,registerLng=null,registerLocation='',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
+  let marketSellerAllowed=false,marketSellerAccessLoaded=false;
   let marketPanel=null,marketTabBtn=null,layerChip=null,layerOrderObserver=null,layerOrderQueued=false;
 
   async function waitForMap(){
@@ -631,7 +632,22 @@
       ?'외부 플랫폼에서 확인 가능한 판매자 위치를 기준으로 지도를 표시했습니다. 실제 거래 위치를 지도에서 선택해주세요.'
       :'판매자 위치를 확인할 수 없어 서울·수도권 기준으로 표시했습니다. 실제 거래 위치를 지도에서 선택해주세요.';
   }
+  async function loadMarketSellerAccess(force=false){
+    if(!A.session?.user?.id){marketSellerAllowed=false;marketSellerAccessLoaded=true;return false}
+    if(marketSellerAccessLoaded&&!force)return marketSellerAllowed;
+    try{
+      const data=await A.invokeFunction('market-listing-register-test',{action:'access'});
+      marketSellerAllowed=data?.allowed===true;
+    }catch(_){marketSellerAllowed=false}
+    marketSellerAccessLoaded=true;
+    return marketSellerAllowed;
+  }
   async function openRegister(){
+    if(!A.session){A.goLogin(location.pathname+location.search+location.hash);return}
+    if(!(await loadMarketSellerAccess(true))){
+      marketToast(marketTr('현재 매물 등록은 허용된 계정만 이용할 수 있어요.','Listing registration is currently available only to approved accounts.'));
+      return;
+    }
     buildRegister();const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;el.hidden=false;document.body.style.overflow='hidden';
     const scroll=el.querySelector('.market-register-scroll');if(scroll){scroll.scrollTop=0;requestAnimationFrame(()=>scroll.scrollTo({top:0,left:0,behavior:'auto'}))}
 
@@ -1355,10 +1371,10 @@
 
   async function deleteOwnedListing(x){
     if(!x?.id||x.seller_user_id!==A.session?.user?.id)return;
-    if(!confirm('이 매물을 삭제할까요?\n삭제한 매물은 복구할 수 없습니다.'))return;
+    if(!confirm('이 매물을 삭제할까요?\n삭제 후 FUNY PIN에서는 더 이상 노출되지 않습니다.'))return;
     try{
-      const {error}=await A.client.from('market_listings').delete().eq('id',x.id).eq('seller_user_id',A.session.user.id);
-      if(error)throw error;
+      const {data,error}=await A.client.functions.invoke('market-listing-owner-action-test',{body:{action:'delete',listing_id:x.id}});
+      if(error)throw error;if(!data?.ok)throw Error(data?.error||'매물을 삭제하지 못했습니다.');
       closeDetail();await loadRows();marketToast('매물을 삭제했어요.');
     }catch(_){marketToast('매물 삭제에 실패했습니다.')}
   }

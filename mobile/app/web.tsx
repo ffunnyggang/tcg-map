@@ -11,7 +11,8 @@ export default function WebPage(){
   let url='https://funypin.kr/';
   try{if(raw)url=decodeURIComponent(raw);}catch{if(raw)url=raw;}
   const shopDetail=isShopDetail(url);
+  const waitForAuth=/\/(?:my-community|my-market|my-favorites|my-funy-coin|ranking|my-badges|my-funymon|my-entries|my-coupons|my-security|my-blocked-users|my-profile)\.html(?:[?#]|$)/i.test(url);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    <FunyWebView url={url} title="FUNY PIN" showBackHeader={!shopDetail} backTitle={titleValue||"MY"} backOnlyHeader={params.backOnly==="1"} onNativeBack={goBack} surface="page"/>
+    <FunyWebView url={url} title="FUNY PIN" showBackHeader={!shopDetail} backTitle={titleValue||"MY"} backOnlyHeader={params.backOnly==="1"} onNativeBack={goBack} surface="page" waitForAuth={waitForAuth}/>
   </SafeAreaView>;
 }

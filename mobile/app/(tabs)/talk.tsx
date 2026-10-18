@@ -9,9 +9,11 @@ import { getTabBarStyle } from '../../lib/tabBar';
 
 export default function Talk(){
   const [webBack,setWebBack]=useState(false);
-  const [scrolling,setScrolling]=useState(false);
-  const {__tabRefresh}=useLocalSearchParams<{__tabRefresh?:string}>();
+  const {__tabRefresh,postId,editPost}=useLocalSearchParams<{__tabRefresh?:string;postId?:string;editPost?:string}>();
   const navigation=useNavigation();
+  const talkQuery=editPost==='1'&&postId?`?editPost=${encodeURIComponent(postId)}`:'';
+  const talkHash=postId?`#/post/${encodeURIComponent(postId)}`:'';
+  const talkUrl=`https://funypin.kr/talk.html${talkQuery}${talkHash}`;
   const insets=useSafeAreaInsets();
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
@@ -22,6 +24,6 @@ export default function Talk(){
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="TALK"/></View>:null}
-    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url="https://funypin.kr/talk.html" title="FUNY PIN TALK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TALK" onWebScrollChange={setScrolling}/>
+    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url={talkUrl} title="FUNY PIN TALK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TALK"/>
   </SafeAreaView>;
 }

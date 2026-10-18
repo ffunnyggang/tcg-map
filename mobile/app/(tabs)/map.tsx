@@ -3,16 +3,18 @@ import type { ReactNode } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import FunyWebView from '../../components/FunyWebView';
+import FunyWebView,{isWebBackPage} from '../../components/FunyWebView';
 
 export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
-  const {country,from}=useLocalSearchParams<{country?:string;from?:string}>();
+  const {country,from,marketId,marketRegister}=useLocalSearchParams<{country?:string;from?:string;marketId?:string;marketRegister?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
-  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}`;
+  const commandQuery=marketRegister==='1'?'&marketRegister=1':marketId?`&marketId=${encodeURIComponent(marketId)}`:'';
+  const commandHash=marketId?`#market/${encodeURIComponent(marketId)}`:'';
+  const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${commandQuery}${commandHash}`;
   const onRoute=useCallback((url:string)=>{
-    const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();
+    const back=isWebBackPage(url);
     setWebBack(back);
   },[]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>

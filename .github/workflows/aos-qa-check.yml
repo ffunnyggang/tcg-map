@@ -1,0 +1,108 @@
+name: AOS QA checks
+
+on:
+  push:
+    branches:
+      - aos-local-qa-20261019
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-and-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      EXPO_NO_TELEMETRY: '1'
+      CI: '1'
+      GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
+    steps:
+      - name: Checkout QA branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies and refresh lockfile
+        run: npm install --no-audit --no-fund
+
+      - name: Verify Expo dependency compatibility
+        run: npx expo install --check
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Expo Doctor
+        run: npx expo-doctor
+
+      - name: Resolve production app config
+        run: npx expo config --type public > qa-expo-config.json
+
+      - name: Regression invariants
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const read=p=>fs.readFileSync(p,'utf8');
+          const checks=[];
+          const assert=(ok,msg)=>{checks.push({ok,msg});if(!ok)process.exitCode=1};
+          const web=read('components/FunyWebView.tsx');
+          const home=read('app/(tabs)/index.tsx');
+          const map=read('app/(tabs)/map.tsx');
+          const pick=read('app/(tabs)/pick.tsx');
+          const talk=read('app/(tabs)/talk.tsx');
+          const live=read('app/live-pin.tsx');
+          const account=read('app/account.tsx');
+          const shops=read('lib/shops.ts');
+          const header=read('components/FunyHeader.tsx');
+          const sub=read('components/MySubHeader.tsx');
+          assert(!home.includes('LivePinButton'),'HOME native floating button removed');
+          assert(!pick.includes('LivePinButton'),'PICK native floating button removed');
+          assert(!map.includes('LivePinButton'),'MAP has no native floating button');
+          assert(!talk.includes('LivePinButton'),'TALK has no native floating button');
+          assert(live.includes('https://funypin.kr/live-pin.html'),'LIVE PIN uses production URL');
+          assert(!live.includes('live-pin-test.html'),'LIVE PIN test URL removed');
+          assert(web.includes('FUNY_TALK_HANDLE_BLOCKED_OWNER'),'TALK block direct close handler retained');
+          assert(web.includes('SAVE_FUNYMON_IMAGE'),'Android FUNY MON image bridge present');
+          assert(web.includes('--funy-native-safe-bottom'),'native safe-area CSS bridge present');
+          assert(web.includes("mediaPlaybackRequiresUserAction={!isCoinFlipPage}"),'coin-flip media exception scoped by URL');
+          assert(web.includes('keepMapAlive=isMapWebView'),'MAP WebView keep-alive retained');
+          assert(web.includes('Number(e.nativeEvent.progress)>=0.35'),'Android early MAP reveal retained');
+          assert(map.includes("#market/${encodeURIComponent(marketId)}"),'market detail routes to current production hash');
+          assert(!map.includes('focus=market'),'market detail does not degrade to pin-only focus');
+          assert(account.includes('my-community.html')&&account.includes('my-market.html')&&account.includes('my-favorites.html'),'MY routes to current web management screens');
+          assert(account.includes('is_my_feature_tester'),'MY coming-soon tester gate retained');
+          assert(shops.includes('event_url'),'native shop event URL query present');
+          assert(header.includes('NativeBackButton')&&sub.includes('NativeBackButton'),'native back-button guide shared');
+          console.log(checks.map(x=>(x.ok?'PASS ':'FAIL ')+x.msg).join('\n'));
+          if(process.exitCode)process.exit(process.exitCode);
+          NODE
+
+      - name: Export Android JS bundle
+        run: npx expo export --platform android --output-dir dist-qa
+
+      - name: Collect QA report
+        shell: bash
+        run: |
+          node -e "const p=require('./package-lock.json'); const deps=p.packages['']?.dependencies||{}; console.log(JSON.stringify({expoFileSystem:deps['expo-file-system'],expoSharing:deps['expo-sharing']},null,2));" > qa-native-dependencies.json
+          git diff -- package.json package-lock.json > qa-lockfile.patch || true
+
+      - name: Upload QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-evidence
+          path: |
+            mobile/qa-expo-config.json
+            mobile/qa-native-dependencies.json
+            mobile/qa-lockfile.patch
+            mobile/package-lock.json
+            mobile/dist-qa
+          retention-days: 3

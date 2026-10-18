@@ -16,6 +16,6 @@ export default function LivePin(){
     }catch{}
   },[router]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    <FunyWebView url="https://funypin.kr/live-pin-test.html" title="FUNY PIN LIVE PIN" onWebRouteChange={onRouteChange}/>
+    <FunyWebView url="https://funypin.kr/live-pin.html" title="FUNY PIN LIVE PIN" onWebRouteChange={onRouteChange}/>
   </SafeAreaView>;
 }

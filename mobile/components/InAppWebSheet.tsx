@@ -8,6 +8,7 @@ type Props={visible:boolean;url:string|null;title?:string;onClose:()=>void};
 export default function InAppWebSheet({visible,url,title='FUNY PIN',onClose}:Props){
   const {height}=useWindowDimensions();
   const sheetHeight=height*.84;
+  const isCoinFlip=!!url&&/\/coin-flip\.html(?:[?#]|$)/i.test(url);
   const translate=useRef(new Animated.Value(1)).current;
   const backdrop=useRef(new Animated.Value(0)).current;
 
@@ -32,7 +33,7 @@ export default function InAppWebSheet({visible,url,title='FUNY PIN',onClose}:Pro
       <Animated.View style={[styles.panel,{height:sheetHeight,transform:[{translateY:translate.interpolate({inputRange:[0,1],outputRange:[0,sheetHeight]})}]}]}>
         <View style={styles.handle}/>
         <View style={styles.header}><Text numberOfLines={1} style={styles.title}>{title}</Text><Pressable onPress={close} hitSlop={10} style={styles.close}><Text style={styles.closeText}>×</Text></Pressable></View>
-        {url?<WebView source={{uri:url}} style={styles.web} javaScriptEnabled domStorageEnabled allowsInlineMediaPlayback onShouldStartLoadWithRequest={request=>{
+        {url?<WebView source={{uri:url}} style={styles.web} javaScriptEnabled mediaPlaybackRequiresUserAction={!isCoinFlip} domStorageEnabled allowsInlineMediaPlayback injectedJavaScriptBeforeContentLoaded={isCoinFlip?`(function(){var u=function(){try{var C=window.AudioContext||window.webkitAudioContext;if(C){var c=window.__FUNY_AUDIO_CONTEXT||(window.__FUNY_AUDIO_CONTEXT=new C());if(c.state==='suspended')c.resume().catch(function(){});}}catch(_){}};document.addEventListener('touchstart',u,{once:true,passive:true});document.addEventListener('pointerdown',u,{once:true,passive:true});})();true;`:undefined} onShouldStartLoadWithRequest={request=>{
           const target=request.url;
           if(target.startsWith('http://')||target.startsWith('https://')||target==='about:blank')return true;
           if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}

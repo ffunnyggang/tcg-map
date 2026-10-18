@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { signInSocial } from '../lib/socialAuth';
 import { signInWithApple } from '../lib/appleAuth';
 import { C,T,UI } from '../lib/theme';
+import NativeBackButton from '../components/NativeBackButton';
 
 const LOGIN_GRAPHIC=require('../assets/login_graphic.png');
 
@@ -88,9 +89,7 @@ export default function Login(){
 
   return <SafeAreaView style={styles.root}>
     <View style={styles.header}>
-      <Pressable onPress={goHome} hitSlop={10} style={styles.back}>
-        <Text style={styles.backText}>‹</Text>
-      </Pressable>
+      <NativeBackButton onPress={goHome}/>
       <Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>로그인</Text>
     </View>
 
@@ -171,19 +170,6 @@ const styles=StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     backgroundColor:'#FFFFFF',
-  },
-  back:{
-    width:36,
-    height:36,
-    alignItems:'center',
-    justifyContent:'center',
-    marginRight:4,
-  },
-  backText:{
-    fontSize:29,
-    lineHeight:31,
-    fontWeight:'400',
-    color:C.text,
   },
   headerTitle:{
     ...T.header,

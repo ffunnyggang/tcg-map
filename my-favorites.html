@@ -13,7 +13,9 @@
 .fav-map-card{position:relative;border:1px solid #E6DFE8;border-radius:17px;background:#fff;box-shadow:0 3px 13px rgba(42,34,54,.035);overflow:visible}
 .fav-card-link{position:relative;display:block;color:inherit;text-decoration:none!important}
 .fav-shop-card{height:128px}
-.fav-shop-card .fav-card-link{height:100%;padding:15px 47px 13px 14px}
+.fav-shop-card .fav-card-link{height:100%;padding:11px 47px 11px 11px;display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:center}
+.fav-shop-thumb,.fav-market-thumb{width:90px;height:90px;border-radius:13px;background:#F1EEF4;object-fit:cover;display:block}
+.fav-shop-copy{min-width:0}
 .fav-shop-name{margin:0 0 5px;color:#211E24;font-size:16px;font-weight:800;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fav-meta-line{margin:0;display:flex;align-items:center;gap:5px;min-width:0;color:#847C88;font-size:10.8px;line-height:16px}
 .fav-meta-line+.fav-meta-line{margin-top:1px;color:#706978}
@@ -22,7 +24,7 @@
 .fav-tag-row{display:flex;gap:5px;margin-top:8px;max-height:42px;overflow:hidden;flex-wrap:wrap}
 .fav-tag{height:21px;padding:0 7px;display:inline-flex;align-items:center;border-radius:999px;background:#F2ECEF;color:#6D5D6A;font-size:9.8px;font-weight:650;white-space:nowrap}
 .fav-market-card{min-height:122px}
-.fav-market-card .fav-card-link{min-height:122px;padding:13px 47px 12px 14px;display:flex;align-items:center}
+.fav-market-card .fav-card-link{min-height:122px;padding:13px 47px 12px 11px;display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:center}
 .fav-market-copy{min-width:0;width:100%}
 .fav-market-badges{display:flex;align-items:center;gap:4px;min-width:0;margin-bottom:6px;overflow:hidden}
 .fav-market-badge{height:18px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;flex:0 0 auto;background:#F4F2F6;color:#716B79;font-size:8px;font-weight:800;line-height:1}
@@ -56,6 +58,7 @@
  const uid=A.session.user.id;
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
+ const img=v=>!v?'':/^https?:\/\//i.test(v)?v:'/'+String(v).replace(/^\//,'');
  const providerNames={daangn:'당근',bunjang:'번개장터',break:'BREAK'};
  const categoryNames={pokemon:'포켓몬스터',onepiece:'원피스',dragonball:'드래곤볼',other:'기타'};
  const typeNames={single:'싱글카드',vintage:'빈티지카드',graded:'등급카드',box:'박스제품',other:'기타'};
@@ -103,12 +106,12 @@
  }
  function marketAddress(m){return String(m.road_address||m.location_name||'거래 희망 위치').replace(/\s+/g,' ').trim()||'거래 희망 위치'}
  function shopCard(x){
-   const s=x.data,tags=shopTags(s),shown=tags.slice(0,3),extra=tags.length-shown.length;
-   return '<article class="fav-map-card fav-shop-card" data-kind="shops" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/shops.html#/shop/'+encodeURIComponent(x.id)+'"><h3 class="fav-shop-name">'+esc(s.name||'카드샵')+'</h3><p class="fav-meta-line">'+pin+'<span>'+esc(shopLocation(s))+'</span></p><p class="fav-meta-line">'+clock+'<span>'+esc(todayHours(s))+'</span></p><div class="fav-tag-row">'+shown.map(t=>'<span class="fav-tag">'+esc(t)+'</span>').join('')+(extra>0?'<span class="fav-tag">+'+extra+'</span>':'')+'</div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 카드샵 해제">'+heart+'</button></article>';
+   const s=x.data,tags=shopTags(s),shown=tags.slice(0,3),extra=tags.length-shown.length,imgs=Array.isArray(s.images)?s.images:[],im=imgs.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0],src=img(im?.storage_path||im?.source_path||'');
+   return '<article class="fav-map-card fav-shop-card" data-kind="shops" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/shops.html#/shop/'+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-shop-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'<span class="fav-shop-thumb"></span>')+'<div class="fav-shop-copy"><h3 class="fav-shop-name">'+esc(s.name||'카드샵')+'</h3><p class="fav-meta-line">'+pin+'<span>'+esc(shopLocation(s))+'</span></p><p class="fav-meta-line">'+clock+'<span>'+esc(todayHours(s))+'</span></p><div class="fav-tag-row">'+shown.map(t=>'<span class="fav-tag">'+esc(t)+'</span>').join('')+(extra>0?'<span class="fav-tag">+'+extra+'</span>':'')+'</div></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 카드샵 해제">'+heart+'</button></article>';
  }
  function marketCard(x){
-   const m=x.data;
-   return '<article class="fav-map-card fav-market-card" data-kind="market" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/shops.html#market/'+encodeURIComponent(x.id)+'"><div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge provider '+esc(m.provider||'')+'">'+esc(providerNames[m.provider]||'외부 플랫폼')+'</span><span class="fav-market-badge category">'+esc(categoryNames[m.tcg_category]||'기타')+'</span><span class="fav-market-badge">'+esc(typeNames[m.item_type]||'기타')+'</span></div><strong class="fav-market-title">'+esc(m.title||'거래')+'</strong><span class="fav-market-price">'+money(m.price)+'</span><span class="fav-market-location">'+pin+'<span>'+esc(marketAddress(m))+'</span></span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
+   const m=x.data,src=m.thumbnail_url||'';
+   return '<article class="fav-map-card fav-market-card" data-kind="market" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/shops.html#market/'+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-market-thumb" src="'+esc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge provider '+esc(m.provider||'')+'">'+esc(providerNames[m.provider]||'외부 플랫폼')+'</span><span class="fav-market-badge category">'+esc(categoryNames[m.tcg_category]||'기타')+'</span><span class="fav-market-badge">'+esc(typeNames[m.item_type]||'기타')+'</span></div><strong class="fav-market-title">'+esc(m.title||'거래')+'</strong><span class="fav-market-price">'+money(m.price)+'</span><span class="fav-market-location">'+pin+'<span>'+esc(marketAddress(m))+'</span></span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
  }
  function syncCounts(){
    $('#shopCount').textContent=String(items.filter(x=>x.kind==='shops').length);
@@ -144,7 +147,7 @@
    const shopFavs=shopFavRes.data||[],marketFavs=marketFavRes.data||[],shopIds=shopFavs.map(x=>x.shop_id),marketIds=marketFavs.map(x=>x.listing_id);
    const [shopsRes,marketRes]=await Promise.all([
      shopIds.length?A.client.from('v_app_shops').select('*').in('id',shopIds):Promise.resolve({data:[],error:null}),
-     marketIds.length?A.client.from('market_listings').select('id,title,price,provider,tcg_category,item_type,road_address,location_name,place_name,seller_user_id,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null})
+     marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,tcg_category,item_type,road_address,location_name,place_name,seller_user_id,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null})
    ]);
    if(shopsRes.error)throw shopsRes.error;if(marketRes.error)throw marketRes.error;
    const shopBy=new Map((shopsRes.data||[]).map(x=>[String(x.id),x])),marketBy=new Map((marketRes.data||[]).filter(x=>!blockedMarketUsers.has(String(x.seller_user_id))).map(x=>[String(x.id),x]));

@@ -67,11 +67,11 @@
  const joined=p?.created_at||user.created_at||null;
 
  root.innerHTML=
- '<section class="card profile-card"><div class="avatar">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':esc(initial))+'</div><div class="profile-copy"><div class="profile-name">'+esc(name)+'</div><div class="profile-sub">'+T.joined+' '+esc(date(joined))+'</div></div></section>'+
+ '<section class="card profile-card"><div class="test-profile-main"><div class="avatar">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':esc(initial))+'</div><div class="profile-copy"><div class="profile-name">'+esc(name)+'</div><div class="profile-sub">'+T.joined+' '+esc(date(joined))+'</div></div></div><a class="test-profile-edit" href="/my-profile.html">'+(en?'Edit profile':'프로필 편집')+'</a></section>'+
  '<section class="section"><div class="section-head"><h2>'+T.activity+'</h2></div><div class="card menu-card">'+
  '<a class="menu-row" href="/my-community-test.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>'+T.community+'</b><span>'+T.communitySub+'</span></span><span class="chev">›</span></a>'+
  '<a class="menu-row" href="/my-market-test.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>'+T.market+'</b><span>'+T.marketSub+'</span></span><span class="chev">›</span></a>'+
- '<a class="menu-row" href="/my-favorites.html"><span class="menu-icon">⭐</span><span class="menu-copy"><b>'+T.favorites+'</b><span>'+T.favoritesSub+'</span></span><span class="chev">›</span></a></div></section>'+
+ '<a class="menu-row" href="/my-favorites-test.html"><span class="menu-icon">⭐</span><span class="menu-copy"><b>'+T.favorites+'</b><span>'+T.favoritesSub+'</span></span><span class="chev">›</span></a></div></section>'+
  '<section class="section"><div class="section-head"><h2>'+T.reward+'</h2></div><div class="card menu-card">'+
  '<a class="menu-row" href="/my-funy-coin-test.html"><span class="menu-icon">🪙</span><span class="menu-copy"><b>'+T.coin+'</b><span>'+T.coinSub+'</span></span><span class="chev">›</span></a>'+
  '<a class="menu-row" href="/ranking-test.html"><span class="menu-icon">🏆</span><span class="menu-copy"><b>'+T.ranking+'</b><span>'+T.rankingSub+'</span></span><span class="chev">›</span></a>'+
@@ -80,9 +80,9 @@
  '<a class="menu-row" href="/my-entries.html"><span class="menu-icon">🎟️</span><span class="menu-copy"><b>'+T.entries+'</b><span>'+T.entriesSub+'</span></span><span class="chev">›</span></a>'+
  '<a class="menu-row" href="/my-coupons.html"><span class="menu-icon">🎫</span><span class="menu-copy"><b>'+T.coupons+'</b><span>'+T.couponsSub+'</span></span><span class="chev">›</span></a></div></section>'+
  '<section class="section"><div class="section-head"><h2>'+T.settings+'</h2></div><div class="card test-settings-card">'+
- '<div class="test-language-row"><span class="test-support-label">'+T.language+'</span><div class="test-language-toggle"><button class="test-language-option '+(!en?'is-on':'')+'" data-lang="ko" type="button">한국어</button><button class="test-language-option '+(en?'is-on':'')+'" data-lang="en" type="button">EN</button></div></div>'+
- '<a class="test-support-row" href="/my-security.html?v=20261018-sms3"><span class="test-support-label">'+T.security+'</span><span class="chev">›</span></a>'+
- '<a class="test-support-row" href="/my-blocked-users.html"><span class="test-support-label">'+T.blocked+'</span><span class="chev">›</span></a></div></section>'+
+ '<div class="test-setting-row test-setting-language"><span class="menu-icon">🌐</span><span class="menu-copy"><b>'+T.language+'</b><span>'+(en?'Change the display language':'서비스 표시 언어를 변경해요')+'</span></span><div class="test-language-toggle"><button class="test-language-option '+(!en?'is-on':'')+'" data-lang="ko" type="button">한국어</button><button class="test-language-option '+(en?'is-on':'')+'" data-lang="en" type="button">EN</button></div></div>'+
+ '<a class="test-setting-row" href="/my-security.html?v=20261018-sms3"><span class="menu-icon">🔐</span><span class="menu-copy"><b>'+T.security+'</b><span>'+(en?'Manage login and account security':'로그인 및 계정 보안 설정을 관리해요')+'</span></span><span class="chev">›</span></a>'+
+ '<a class="test-setting-row" href="/my-blocked-users.html"><span class="menu-icon">🚫</span><span class="menu-copy"><b>'+T.blocked+'</b><span>'+(en?'Manage blocked users in FUNY TALK':'FUNY TALK 차단 목록을 관리해요')+'</span></span><span class="chev">›</span></a></div></section>'+
  '<section class="section"><div class="section-head"><h2>'+T.support+'</h2></div><div class="card test-support-card">'+
  '<a class="test-support-row" href="/notice.html"><span class="test-support-label">'+T.notice+'</span><span class="chev">›</span></a>'+
  '<a class="test-support-row" href="/faq.html"><span class="test-support-label">'+T.faq+'</span><span class="chev">›</span></a>'+

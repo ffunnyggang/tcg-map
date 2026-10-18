@@ -44,8 +44,8 @@ label.form-label{display:block;margin:14px 0 6px;font-size:12px;font-weight:800}
 (()=>{
 const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
 const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
-const DOC_HASH='1d0e3e172f8009c760687502de2bae584c35325d8b125fa6bc1b6c6a9e4f19fc';
-const DOC_VERSION='FUNY-PILOT-INVEST-20261018-v2';
+const DOC_HASH='2f2ab61ca5c810f4a2d1360123f79ae1068dd54e10316722de3e29f89bc6cb73';
+const DOC_VERSION='FUNY-PILOT-INVEST-20261018-v3';
 const token=new URLSearchParams(location.search).get('token')||'';
 const roleName=r=>r==='investor'?'투자자':'운영자';
 const fmt=d=>d?new Date(d).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'-';
@@ -89,9 +89,24 @@ return `
   </div>
 
   <div class="sec"><h2>3. 4주차 성과보고와 2차 집행 기준</h2>
-    <p>4주차 종료 후 3일 이내에 신규 회원, 앱 설치, 미션 참여율, FUNY DRAW 참여, D7 재방문, 유료 카드샵 광고주 등 핵심 지표와 예산 집행 내역을 보고합니다.</p>
-    <ul><li>목표의 70% 이상 달성: 2차 투자금 150만 원 전액 집행</li><li>50% 이상 70% 미만: 구성 조정 후 2차 투자금 규모를 협의하여 일부 또는 전액 집행</li><li>50% 미만: 2차 투자금 미집행</li></ul>
-    <div class="note">2차 투자금이 전액 집행되지 않는 경우에도 이익배분율은 실제 누적 집행 투자금에 비례하여 조정됩니다. 1차 150만 원만 집행된 경우 이익배분율은 5%입니다.</div>
+    <p>4주차 종료 후 3일 이내에 아래 핵심 지표와 예산 집행 내역을 보고합니다. 목표치는 8주 파일럿 KPI를 4주 기준으로 환산한 값이며, 경품 구매 영수증과 주요 이체 내역 등 집행 근거를 함께 보관합니다.</p>
+    <table>
+      <tr><th>지표</th><th>4주 목표</th><th>확인 방법</th></tr>
+      <tr><td>신규 회원</td><td>+100~150명</td><td>Supabase 회원 수</td></tr>
+      <tr><td>앱 설치</td><td>200~300건</td><td>App Store / Google Play</td></tr>
+      <tr><td>미션 참여율</td><td>40% 이상</td><td>서비스 내부 데이터</td></tr>
+      <tr><td>FUNY DRAW 참여</td><td>100명 이상</td><td>서비스 내부 데이터</td></tr>
+      <tr><td>D7 재방문</td><td>25% 이상</td><td>GA4</td></tr>
+      <tr><td>유료 카드샵 광고주</td><td>2~3곳</td><td>계약 또는 입금 내역</td></tr>
+    </table>
+    <p><b>2차 집행 판단 기준</b></p>
+    <table>
+      <tr><th>종합 KPI 달성률</th><th>2차 투자금 집행</th><th>누적 투자금</th><th>적용 이익배분율</th></tr>
+      <tr><td>70% 이상</td><td>150만 원 전액 집행</td><td>300만 원</td><td>10%</td></tr>
+      <tr><td>50% 이상 ~ 70% 미만</td><td>경품·미션 구성 조정 후 0~150만 원 범위 협의</td><td>150~300만 원</td><td>실제 집행액 비례 5~10%</td></tr>
+      <tr><td>50% 미만</td><td>미집행</td><td>150만 원</td><td>5%</td></tr>
+    </table>
+    <div class="note">2차 투자금이 전액 집행되지 않는 경우에도 이익배분율은 실제 누적 집행 투자금에 비례하여 자동 조정합니다. 1차 150만 원만 집행된 경우 이익배분율은 5%입니다.</div>
   </div>
 
   <div class="sec"><h2>4. 이익배분 조건</h2>

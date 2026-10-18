@@ -1593,7 +1593,7 @@
 
   async function loadRows(){
     const [listingRes,blockRes]=await Promise.all([
-      A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved','sold']).order('created_at',{ascending:false}),
+      A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved']).gt('expires_at',new Date().toISOString()).order('published_at',{ascending:false}),
       A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',A.session.user.id)
     ]);
     if(listingRes.error){console.error('[MARKET TEST] load failed',listingRes.error);return}

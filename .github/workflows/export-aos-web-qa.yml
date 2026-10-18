@@ -1,0 +1,33 @@
+name: Export AOS web QA files
+
+on:
+  push:
+    branches:
+      - aos-web-qa-20261019
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare selected web files
+        shell: bash
+        run: |
+          mkdir -p export/assets/admin
+          cp funy-mon-v1.js export/funy-mon-v1.js
+          cp admin.html export/admin.html
+          cp assets/admin/funymon-history.js export/assets/admin/funymon-history.js
+          cp coin-flip.html export/coin-flip.html
+          cp map-market-v1.js export/map-market-v1.js
+          cp map-market-v1.css export/map-market-v1.css
+          cp shops.html export/shops.html
+          printf '%s\n' "$(git rev-parse HEAD)" > export/QA_BASE_COMMIT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tcg-map-aos-web-qa
+          path: export
+          retention-days: 1

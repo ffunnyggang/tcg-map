@@ -269,8 +269,27 @@
     $$('[data-market-sort-label]').forEach(x=>x.textContent=sortLabel());
     $$('[data-market-sort-value]').forEach(x=>x.classList.toggle('active',x.dataset.marketSortValue===marketSort));
   }
+  let marketSortPortal=null;
+  function showMarketSortMenu(wrap,button){
+    const menu=wrap.querySelector('.market-sort-menu');if(!menu)return;
+    const host=document.createElement('div');host.id='marketSortPortal';host.className='market-sort-wrap market-sort-portal open';
+    const originalStyle=menu.getAttribute('style');
+    document.body.appendChild(host);host.appendChild(menu);marketSortPortal={host,wrap,menu,button,originalStyle};
+    const set=(el,key,value)=>el.style.setProperty(key,value,'important');
+    set(host,'position','fixed');set(host,'z-index','2147483300');set(host,'width','118px');
+    set(menu,'position','absolute');set(menu,'left','0');set(menu,'right','auto');set(menu,'top','0');set(menu,'display','grid');set(menu,'width','118px');set(menu,'min-width','118px');set(menu,'max-height',Math.max(40,window.innerHeight-16)+'px');set(menu,'overflow-y','auto');
+    const r=button.getBoundingClientRect(),height=menu.getBoundingClientRect().height||166;
+    const left=Math.max(8,Math.min(r.left,window.innerWidth-126));
+    const top=r.bottom+6+height<=window.innerHeight-8?r.bottom+6:Math.max(8,r.top-height-6);
+    set(host,'left',Math.round(left)+'px');set(host,'top',Math.round(top)+'px');
+    host.addEventListener('click',async e=>{const option=e.target.closest('[data-market-sort-value]');if(!option)return;e.preventDefault();e.stopPropagation();await setMarketSort(option.dataset.marketSortValue)});
+  }
   function closeSortMenus(except=null){
-    $$('.market-sort-wrap.open').forEach(w=>{if(w===except)return;w.classList.remove('open');w.querySelector('[data-market-sort-button]')?.setAttribute('aria-expanded','false')});
+    if(marketSortPortal&&marketSortPortal.wrap!==except){
+      const {host,wrap,menu,originalStyle}=marketSortPortal;marketSortPortal=null;
+      wrap.appendChild(menu);if(originalStyle===null)menu.removeAttribute('style');else menu.setAttribute('style',originalStyle);host.remove();
+    }
+    $$('.market-sort-wrap.open').forEach(w=>{if(w===except||w===marketSortPortal?.host)return;w.classList.remove('open');w.querySelector('[data-market-sort-button]')?.setAttribute('aria-expanded','false')});
   }
   async function setMarketSort(value){
     if(value==='near'){
@@ -362,6 +381,7 @@
     syncMarkers();
   }
   function exitMarketTab(){
+    closeSortMenus();
     clearMarketTabSwitching();
     marketTabActive=false;document.body.classList.remove('market-tab-active');if(marketPanel)marketPanel.hidden=true;
     document.querySelectorAll('.qa-shop-only').forEach(el=>el.style.removeProperty('display'));
@@ -377,10 +397,7 @@
         e.preventDefault();e.stopPropagation();
         const wrap=sortButton.closest('.market-sort-wrap'),open=!wrap.classList.contains('open');
         closeSortMenus(open?wrap:null);wrap.classList.toggle('open',open);sortButton.setAttribute('aria-expanded',open?'true':'false');
-        if(open&&wrap.classList.contains('market-sheet-sort')){
-          const menu=wrap.querySelector('.market-sort-menu'),r=sortButton.getBoundingClientRect();
-          if(menu){menu.style.setProperty('left',Math.round(r.left)+'px','important');menu.style.setProperty('top',Math.round(r.bottom+6)+'px','important');}
-        }
+        if(open)showMarketSortMenu(wrap,sortButton);
         return;
       }
       const sortValue=e.target.closest('[data-market-sort-value]');
@@ -1700,6 +1717,10 @@
     refreshAddresses();setTimeout(refreshAddresses,1600);setTimeout(refreshAddresses,4200);
   }
 
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&marketSortPortal){const button=marketSortPortal.button;closeSortMenus();button.focus();}});
+  window.addEventListener('resize',()=>closeSortMenus());
+  window.addEventListener('scroll',e=>{if(marketSortPortal&&!marketSortPortal.host.contains(e.target))closeSortMenus();},{passive:true,capture:true});
+  window.addEventListener('pagehide',()=>closeSortMenus());
   document.addEventListener('click',e=>{
     if(!e.target.closest('.market-sort-wrap'))closeSortMenus();
     const popupTarget=e.target.closest('[data-market-popup-id]'),markerTarget=e.target.closest('.market-map-pin');

@@ -113,8 +113,7 @@
     const m=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!m)return;
     const shopId=m[1].toUpperCase(),ev=window.FUNY_FUNYMON_ACTIVE_EVENTS.get(shopId);if(!ev)return;
     const summary=document.querySelector('#detail .summary-card');if(!summary)return;
-    const eventUrls={'KR-SEO-009':'https://funypin.kr/event-thecardroom.html'};
-    const eventUrl=eventUrls[shopId]||'';
+    const eventUrl=String(ev.event_url||'').trim();
     const box=document.createElement(eventUrl?'a':'div');box.className='funymon-detail-banner';
     if(eventUrl){box.href=eventUrl;box.setAttribute('aria-label','FUNY MON 이벤트 자세히 보기')}
     const end=ev.ends_at?new Date(ev.ends_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
@@ -347,7 +346,7 @@
     const entryInput=reward.querySelector('#funyMonEntryInstagram');
     entryInput?.addEventListener('keydown',e=>{if(e.key==='Enter')submitEventEntry(data)});
     bindEntryKeyboardMode(entryInput);
-    save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};setTimeout(()=>reward.classList.remove('is-flashing'),900);
+    save.disabled=false;save.onclick=async()=>{if(save.disabled)return;save.disabled=true;try{await savePrizeImage(data,def);resultNeedsSave=false}finally{save.disabled=false}};setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover');if(!reward||!cover)return;
@@ -370,7 +369,7 @@
     if(hasReward){
       rewardResult.innerHTML=rewardMarkup(data);reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';save.disabled=true;save.onclick=null;
     }else{
-      reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
+      reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{if(save.disabled)return;save.disabled=true;try{await savePrizeImage(data,def);resultNeedsSave=false}finally{save.disabled=false}};
     }
     document.getElementById('funyMonModal').hidden=false;document.body.classList.add('funy-mon-open');document.body.style.overflow='hidden';
     if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){if(eventCaption){eventCaption.textContent='';eventCaption.hidden=true}savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
@@ -420,6 +419,18 @@
   function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){const words=String(text||'').split(' ');let line='',lines=[];for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight))}
   function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
   function notifyImageSaved(){let n=document.getElementById('funyMonSaveNotice');if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}n.textContent='이미지 저장이 완료되었습니다.';n.classList.add('show');clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200)}
+  function savePrizeImageWithNative(canvas,mime,fileName){
+    return new Promise((resolve,reject)=>{
+      if(!window.ReactNativeWebView?.postMessage){reject(new Error('native_bridge_unavailable'));return}
+      let settled=false,timer=0;
+      const finish=(ok,error)=>{if(settled)return;settled=true;clearTimeout(timer);window.removeEventListener('funy:native-image-save-result',onResult);ok?resolve(true):reject(new Error(error||'이미지를 저장하지 못했습니다.'))};
+      const onResult=e=>{const detail=e?.detail||{};finish(detail.ok===true,detail.error)};
+      window.addEventListener('funy:native-image-save-result',onResult);
+      timer=setTimeout(()=>finish(false,'이미지 저장 응답 시간이 초과되었습니다.'),90000);
+      try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'SAVE_FUNYMON_IMAGE',dataUrl:canvas.toDataURL(mime,.94),filename:fileName}))}
+      catch(e){finish(false,e?.message||'이미지 데이터를 전달하지 못했습니다.')}
+    })
+  }
   async function savePrizeImage(data,def){
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
     const fxMap={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']};
@@ -431,14 +442,16 @@
     ctx.fillStyle='#2d2832';ctx.font='950 64px "DotGothic16",monospace';ctx.fillText(monText(def.name),540,650);
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
     const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,monText(def.type),tc[0],tc[1]);ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText(monText('📍 '+data.shop_name+'에서 포획했어요'),540,790);ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
-    const isAndroid=/Android/i.test(navigator.userAgent);const mime=isAndroid?'image/jpeg':'image/png';const ext=isAndroid?'jpg':'png';const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
+    const isAndroid=/Android/i.test(navigator.userAgent);const mime=isAndroid?'image/jpeg':'image/png';const ext=isAndroid?'jpg':'png';const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;
+    if(isAndroid&&window.ReactNativeWebView?.postMessage){try{await savePrizeImageWithNative(canvas,mime,fileName);notifyImageSaved();return}catch(e){if(String(e?.message||'')!=='share_cancelled')alert(e?.message||'이미지를 저장하지 못했습니다.');return}}
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
     if(blob){const file=new File([blob],fileName,{type:mime});if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:monText('FUNY MON 이미지')});notifyImageSaved();return}catch(e){if(e&&e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved()}
   }
 
   function pageAnonKey(){return SUPABASE_KEY}
   async function spawn(){
     if(started)return;const key=pageAnonKey();if(!key){if(tries++<80)setTimeout(spawn,250);return}if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){if(tries++<80)setTimeout(spawn,250);return}
-    let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,title,shop_id,target_type,selected_monsters,spawn_count,ends_at,daily_catch_limit,distance_limit_enabled,distance_limit_m,capture_success_bp&is_force_paused=eq.false&is_archived=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json();syncActiveEventShops(events)}catch(_){return}
+    let events=[];try{const now=new Date().toISOString();const r=await fetch(SUPABASE_URL+'/rest/v1/funy_mon_events?select=id,title,event_url,shop_id,target_type,selected_monsters,spawn_count,ends_at,daily_catch_limit,distance_limit_enabled,distance_limit_m,capture_success_bp&is_force_paused=eq.false&is_archived=eq.false&starts_at=lte.'+encodeURIComponent(now)+'&ends_at=gte.'+encodeURIComponent(now)+'&order=starts_at.desc',{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});if(!r.ok)return;events=await r.json();syncActiveEventShops(events)}catch(_){return}
     if(!events.length){clear();syncActiveEventShops([]);return}const shops=typeof SHOPS!=='undefined'?SHOPS:[],mapEvents=events.filter(ev=>ev?.shop_id&&ev.target_type!=='schedule');if(!mapEvents.length){clear();started=true;return}const ready=mapEvents.every(ev=>shops.some(s=>s.id===ev.shop_id&&s._coord));if(!ready){if(tries++<240)setTimeout(spawn,500);return}started=true;clear();
     mapEvents.forEach((ev,eventIndex)=>{const shop=shops.find(s=>s.id===ev.shop_id&&s._coord);if(!shop)return;const ids=Array.isArray(ev.selected_monsters)&&ev.selected_monsters.length?ev.selected_monsters:defs.slice(0,5).map(x=>x.id);const selected=ids.map(defById).filter(Boolean),count=Math.max(1,Math.min(Number(ev.spawn_count)||5,selected.length,10));const visible=selected.length>count?[...selected].sort(()=>Math.random()-.5).slice(0,count):selected.slice(0,count);
       visible.forEach((d,i)=>{const ring=Math.floor(i/offsets.length),base=offsets[i%offsets.length],mul=1+ring*.7,off={lat:base.lat*mul,lng:base.lng*mul};const lat=Number(shop._coord.lat)+off.lat,lng=Number(shop._coord.lng)+off.lng;const markerHtml='<div class="funy-mon-marker '+d.cls+' move-'+(i%3)+'" role="button" aria-label="'+d.name+' 포획"><span class="funy-mon-sprite"><img src="'+d.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:120+eventIndex,icon:{content:markerHtml,anchor:new naver.maps.Point(24,34)}});const meta={marker,shop,def:d,event:ev,eventId:ev.id,key:ev.id+'|'+shop.id+'|'+d.id};if(markerKeys.has(meta.key)){try{marker.setMap(null)}catch(_){}return}markerKeys.add(meta.key);marker.__funyMonKey=meta.key;markers.push(marker);if(hiddenKeys.has(meta.key))try{marker.setMap(null)}catch(_){}

@@ -422,6 +422,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     if(!soundOn)return null;
     try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
   }
+  function unlockCoinAudio(){const ctx=audio();if(ctx&&ctx.state==='suspended')ctx.resume().catch(()=>{})}
+  document.addEventListener('touchstart',unlockCoinAudio,{once:true,passive:true});
+  document.addEventListener('pointerdown',unlockCoinAudio,{once:true,passive:true});
   function makeNoise(duration=.045,delay=0,volume=.035,low=900,high=9200){
     const ctx=audio();if(!ctx)return;const len=Math.max(1,Math.floor(ctx.sampleRate*duration)),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);
     for(let i=0;i<len;i++){const env=Math.exp(-i/(ctx.sampleRate*(duration*.11)));data[i]=(Math.random()*2-1)*env}

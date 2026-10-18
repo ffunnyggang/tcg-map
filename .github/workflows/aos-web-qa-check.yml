@@ -1,0 +1,54 @@
+name: AOS web integration QA
+
+on:
+  push:
+    branches:
+      - aos-web-qa-20261019
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-invariants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check standalone JavaScript
+        run: node --check funy-mon-v1.js
+      - name: Check executable inline scripts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, subprocess, tempfile, sys
+          for name in ['admin.html','coin-flip.html','shops.html']:
+              text=pathlib.Path(name).read_text(encoding='utf-8')
+              scripts=[]
+              for m in re.finditer(r'<script([^>]*)>([\s\S]*?)</script>',text,re.I):
+                  attrs=m.group(1)
+                  if re.search(r'\bsrc\s*=',attrs,re.I) or 'application/ld+json' in attrs.lower():
+                      continue
+                  code=m.group(2).strip()
+                  if code: scripts.append(code)
+              for i,code in enumerate(scripts,1):
+                  p=pathlib.Path(tempfile.gettempdir())/f'{name.replace("/","_")}-{i}.js'
+                  p.write_text(code,encoding='utf-8')
+                  r=subprocess.run(['node','--check',str(p)],capture_output=True,text=True)
+                  if r.returncode:
+                      print(f'{name} script {i}: {r.stderr}',file=sys.stderr)
+                      sys.exit(r.returncode)
+              print(f'PASS {name}: {len(scripts)} executable inline scripts')
+          PY
+      - name: Verify integration invariants
+        shell: bash
+        run: |
+          grep -q 'SAVE_FUNYMON_IMAGE' funy-mon-v1.js
+          grep -q 'event_url' funy-mon-v1.js
+          grep -q 'event_url' admin.html
+          grep -q 'AudioContext' coin-flip.html
+          grep -q 'funy-mon-v1.js?v=20261019-aos-save1' shops.html
+          ! grep -q 'live-pin-test.html' funy-mon-v1.js

@@ -73,7 +73,7 @@
    const img=thumbHtml(post),mine=String(post.user_id)===uid;
    const menu=mode==='liked'
     ?'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="report" data-id="'+esc(post.id)+'">신고하기</button><button type="button" class="danger" data-act="block" data-id="'+esc(post.id)+'" '+(mine?'disabled':'')+'>차단하기</button>'
-    :'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="delete-post" data-id="'+esc(post.id)+'">삭제하기</button>';
+    :'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" data-act="edit-post" data-id="'+esc(post.id)+'">수정하기</button><button type="button" class="danger" data-act="delete-post" data-id="'+esc(post.id)+'">삭제하기</button>';
    return '<article class="community-card" data-post-card="'+esc(post.id)+'">'+
     '<div class="community-main"><div class="community-copy"><span class="community-badge">'+esc(post.category||'TALK')+'</span><strong class="community-title">'+esc(post.title||'제목 없음')+'</strong><div class="community-body">'+esc(post.body||'')+'</div></div>'+img+'</div>'+
     '<button class="community-more funy-kebab-button" type="button" data-more="'+esc(post.id)+'" aria-label="더보기" aria-expanded="false">⋮</button>'+

@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-test-gate.js?v=20261018-mytest1"></script>
 <style>
 .coin-hero{margin-top:12px;padding:21px 18px;border-radius:20px;background:linear-gradient(145deg,#2B2630,#6047A1);color:#fff}.coin-hero small{font-size:10px;opacity:.72}.coin-hero strong{display:block;margin-top:6px;font-size:34px}.coin-hero span{font-size:10px;opacity:.8}.coin-expire{margin-top:10px;padding:11px 12px;border:1px solid #E8E2EC;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:space-between}.coin-expire span{color:#8F8793;font-size:10px}.coin-expire b{font-size:14px}.tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:13px;border:1px solid #EAE5EE;border-radius:14px;background:#fff}.tx b{display:block;font-size:11px}.tx span{display:block;margin-top:4px;color:#958D99;font-size:9px;line-height:1.45}.tx strong{font-size:12px}.plus{color:#368554}.minus{color:#B34D5C}
 </style></head><body><div class="test-shell">
@@ -18,7 +19,7 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),date=v=>v?new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
  const labels={signup_bonus:'회원가입 보너스',mission_reward:'미션 보상',event_reward:'이벤트 보상',garapon_spend:'가라폰 참여',garapon_refund:'가라폰 환불',admin_grant:'관리자 지급',admin_deduct:'관리자 회수'};
- await A.init();if(!A.session){A.goLogin('/my-funy-coin-test.html');return}const uid=A.session.user.id;
+ if(!await FUNY_MY_TEST_GATE.ensure(A))returnconst uid=A.session.user.id;
  const [w,l]=await Promise.all([A.client.from('funy_coin_wallets').select('balance').eq('user_id',uid).maybeSingle(),A.client.from('funy_coin_ledger').select('id,amount,balance_after,transaction_type,source_type,source_id,description,metadata,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(100)]);
  if(w.error)throw w.error;if(l.error)throw l.error;const rows=l.data||[],balance=Number(w.data?.balance||0),now=Date.now(),limit=now+30*86400000;
  const expiring=rows.filter(x=>Number(x.amount)>0&&x.metadata?.expires_at&&Date.parse(x.metadata.expires_at)>now&&Date.parse(x.metadata.expires_at)<=limit).reduce((s,x)=>s+Number(x.amount||0),0);

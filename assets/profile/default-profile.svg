@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="기본 프로필">
+  <circle cx="64" cy="64" r="63" fill="#F1F1F3" stroke="#D9D9DE" stroke-width="2"/>
+  <circle cx="64" cy="48" r="21" fill="#A9A9B0"/>
+  <path d="M27 108c3.8-22.8 18.2-36 37-36s33.2 13.2 37 36" fill="#A9A9B0"/>
+</svg>

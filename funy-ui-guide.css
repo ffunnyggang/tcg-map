@@ -22,6 +22,7 @@
   --funy-button-radius:12px;
   --funy-content-max:420px;
   --funy-system-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --funy-sub-header-font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 /* Channel headers: HOME / PICK / TALK / MY */
 .portal-header{
@@ -74,7 +75,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 .portal-shell .talk-body>.filters{top:54px!important}
 .portal-shell .popular-sort.show{top:104px!important}
 
-/* Common sub-page header: ‹ + left-aligned title */
+/* Common titled sub-page header: ‹ + title, matching 게시글 관리 */
 .funy-sub-header{
   box-sizing:border-box!important;
   position:sticky!important;
@@ -123,11 +124,12 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 .funy-sub-header .funy-sub-title,
 .funy-sub-header>h1{
   flex:0 1 auto!important;
+  min-width:0!important;
   margin:0!important;
   padding:0!important;
   border:0!important;
   color:var(--funy-text)!important;
-  font-family:var(--funy-system-font)!important;
+  font-family:var(--funy-sub-header-font)!important;
   font-size:19px!important;
   line-height:24px!important;
   font-weight:800!important;
@@ -148,16 +150,28 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 /* MY web detail pages */
 .my-head.funy-sub-header,.head.funy-sub-header{width:min(100%,420px)!important}
 .my-head.funy-sub-header .my-back,.head.funy-sub-header .back{
-  flex:0 0 36px!important;width:36px!important;height:36px!important;margin-right:4px!important;
-  border:0!important;background:transparent!important;color:var(--funy-text)!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 36px!important;
+  width:36px!important;
+  height:36px!important;
+  margin-right:4px!important;
+  border:0!important;
+  background:transparent!important;
+  color:var(--funy-text)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
   font:400 28px/30px var(--funy-system-font)!important;
 }
 .my-head.funy-sub-header .my-title,.head.funy-sub-header .title{
-  font:800 19px/24px var(--funy-system-font)!important;
-  letter-spacing:-.35px!important;color:var(--funy-text)!important;
+  min-width:0!important;
+  font-family:var(--funy-sub-header-font)!important;
+  font-size:19px!important;
+  line-height:24px!important;
+  font-weight:800!important;
+  letter-spacing:-.35px!important;
+  color:var(--funy-text)!important;
+  text-align:left!important;
 }
-
 
 /* FUNY PIN overflow menu guide
    Standard: use vertical kebab (⋮), not horizontal ellipsis (⋯), for item-level more/actions menus. */
@@ -182,10 +196,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 }
 .funy-kebab-button:active{background:#F3F0F5!important}
 
-
-/* FUNY PIN titled back-header standard v2
-   When a subpage header has both a back control and a title, the title sits immediately
-   to the right of the back control and is left-aligned. Titleless headers are unchanged. */
+/* Titleless back headers are intentionally left unchanged. */
 .funy-sub-header .funy-sub-back + .funy-sub-title,
 .funy-sub-header .funy-sub-back + h1.funy-sub-title{
   margin-left:0!important;

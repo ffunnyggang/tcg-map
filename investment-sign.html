@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FUNY PIN 투자 조건 전자서명</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.svg">
+<style>
+:root{--p:#7653e8;--p2:#5d3fc2;--ink:#241d2d;--muted:#746b7c;--line:#e8e1ef;--soft:#f8f5fc}
+*{box-sizing:border-box}body{margin:0;background:#f4f1f8;color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 14px 48px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-weight:900;color:var(--p2);letter-spacing:-.02em}.status{font-size:12px;color:var(--muted)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 35px rgba(39,25,64,.06);overflow:hidden}
+.hero{padding:30px 28px 24px;background:linear-gradient(135deg,#fbf9ff,#f0eaff)}
+.kicker{font-size:11px;font-weight:850;color:var(--p);letter-spacing:.08em}.hero h1{margin:8px 0 8px;font-size:28px;line-height:1.2;letter-spacing:-.04em}
+.hero p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}.meta{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 9px;border-radius:999px;background:#fff;border:1px solid #e5ddf0;font-size:11px;color:#5f536b}
+.doc{padding:24px 28px}.sec{margin:0 0 22px}.sec h2{margin:0 0 8px;font-size:16px;color:#573d9e}.sec p,.sec li{font-size:13px;line-height:1.7;color:#403848}
+.sec ul{margin:7px 0 0;padding-left:19px}.note{padding:12px 14px;border-radius:12px;background:#f7f3fd;border:1px solid #e8dff5;font-size:12px;line-height:1.65;color:#5a4d67}
+table{width:100%;border-collapse:collapse;margin:10px 0 0;font-size:12px}th{background:#7454d7;color:#fff;text-align:left;padding:9px}td{border-bottom:1px solid #eee8f2;padding:9px;vertical-align:top}td:first-child{font-weight:750;color:#564965;background:#faf8fc}
+.sign{padding:24px 28px;border-top:8px solid #f5f1f8}.sign h2{margin:0 0 6px;font-size:18px}.sign-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.info{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fbf9fd}
+.info span{display:block;font-size:10px;color:#93889d}.info b{display:block;margin-top:4px;font-size:13px}
+label.form-label{display:block;margin:14px 0 6px;font-size:12px;font-weight:800}.name-input{width:100%;height:44px;border:1px solid #d9d1e2;border-radius:11px;padding:0 12px;font:inherit}
+.canvas-wrap{border:1px solid #d9d1e2;border-radius:12px;overflow:hidden;background:#fff}.canvas-head{height:38px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;background:#faf8fc;border-bottom:1px solid #eee8f2;font-size:11px;color:#756a7f}
+#sigCanvas{display:block;width:100%;height:180px;touch-action:none;cursor:crosshair}.clear{border:0;background:none;color:var(--p);font-weight:800;cursor:pointer}
+.agree{display:flex;gap:9px;align-items:flex-start;margin:14px 0;font-size:12px;line-height:1.6;color:#504657}.agree input{margin-top:3px}
+.actions{display:flex;gap:8px}.btn{height:46px;border-radius:12px;padding:0 16px;font-weight:850;cursor:pointer}.print{border:1px solid #ddd5e6;background:#fff;color:#5d526a}.submit{flex:1;border:0;background:var(--p);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}.result{margin-top:14px;padding:13px;border-radius:12px;background:#f7f4fb;color:#5d5368;font-size:12px;line-height:1.6}
+.result.ok{background:#eef9f1;color:#326d45}.result.err{background:#fff0f2;color:#a33b50}
+.legal{margin-top:14px;font-size:10px;line-height:1.55;color:#948a9d}
+.loading{padding:50px 20px;text-align:center;color:#766b80}
+@media(max-width:640px){.hero,.doc,.sign{padding-left:17px;padding-right:17px}.hero h1{font-size:23px}.info-grid{grid-template-columns:1fr}.actions{flex-direction:column}.print{order:2}}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0}.top,.sign{display:none}.card{border:0;box-shadow:none}.hero{background:#fff}.doc{padding:12mm}.sec{break-inside:avoid}.card{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">FUNY PIN</div><div class="status" id="topStatus">전자서명 문서를 확인하는 중...</div></div>
+  <div class="card" id="mainCard"><div class="loading">서명 요청 정보를 불러오는 중입니다.</div></div>
+</div>
+<script>
+(()=>{
+const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
+const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const DOC_HASH='4cb43a0ce945cb4dd3f81a0ad6b2dffc849d9a90690205a3923a6da79947e72b';
+const DOC_VERSION='FUNY-PILOT-INVEST-20261018-v2';
+const token=new URLSearchParams(location.search).get('token')||'';
+const roleName=r=>r==='investor'?'투자자':'운영자';
+const fmt=d=>d?new Date(d).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'-';
+
+async function rpc(name,body){
+  const r=await fetch(BASE+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body),cache:'no-store'});
+  const data=await r.json().catch(()=>null);
+  if(!r.ok)throw new Error(data?.message||data?.error||'요청 처리 실패');
+  return data;
+}
+function contractHtml(){
+return `
+<section class="hero">
+  <div class="kicker">FUNY PIN · PILOT INVESTMENT TERMS</div>
+  <h1>FUNY PIN 파일럿 사업<br>투자 및 이익배분 조건서</h1>
+  <p>2026년 10월 18일 · 8주 파일럿 · 문서 버전 ${DOC_VERSION}</p>
+  <div class="meta"><span class="chip">총 투자한도 300만 원</span><span class="chip">1차 150만 원</span><span class="chip">이익배분 5~10%</span><span class="chip">최대 36개월</span></div>
+</section>
+<section class="doc">
+  <div class="sec"><h2>1. 투자 개요</h2>
+    <p>본 조건서는 FUNY PIN 자체 이벤트 8주 파일럿 운영을 위한 투자금 집행 및 이익배분 조건을 정합니다. 총 투자한도는 300만 원이며, 1차 150만 원을 우선 집행하고 2차 투자금은 4주차 성과보고 결과에 따라 결정합니다. 원금 상환 의무는 없습니다.</p>
+    <table><tr><th>항목</th><th>내용</th></tr>
+    <tr><td>투자자 / 운영자</td><td>김효연 / 김동환</td></tr>
+    <tr><td>투자 대상</td><td>FUNY PIN 자체 이벤트 8주 파일럿</td></tr>
+    <tr><td>총 투자한도</td><td>최대 300만 원</td></tr>
+    <tr><td>1차 / 2차</td><td>1차 150만 원 · 2차 최대 150만 원(4주차 성과보고 후 결정)</td></tr>
+    <tr><td>원금 상환</td><td>없음</td></tr>
+    <tr><td>이익배분율</td><td>실제 누적 집행 투자금 ÷ 300만 원 × 10% · 150만 원 집행 시 5%, 300만 원 전액 집행 시 10%</td></tr>
+    <tr><td>이익배분 기간</td><td>순이익이 처음 발생한 달부터 36개월</td></tr></table>
+    <div class="note">최종 이익배분율은 실제 집행 투자금에 비례하여 자동 조정합니다. 예: 150만 원 5%, 225만 원 7.5%, 300만 원 10%.</div>
+  </div>
+
+  <div class="sec"><h2>2. 1차 집행: 4주 이벤트 예산 150만 원</h2>
+    <p>예산은 파일럿 이벤트 및 회원 활성화 목적에 한해 사용하며, 항목별 예산은 운영 상황에 따라 ±20% 범위 내에서 조정할 수 있습니다.</p>
+    <table><tr><th>항목</th><th>금액</th><th>비중</th></tr>
+    <tr><td>신규 가입 · 앱 설치 메인 경품</td><td>48만 원</td><td>32%</td></tr>
+    <tr><td>FUNY DRAW 경품</td><td>42만 원</td><td>28%</td></tr>
+    <tr><td>주간 미션 · 랭킹 리워드</td><td>21만 원</td><td>14%</td></tr>
+    <tr><td>콘텐츠 · SNS 확산</td><td>21만 원</td><td>14%</td></tr>
+    <tr><td>배송 · CS · 예비 운영비</td><td>18만 원</td><td>12%</td></tr></table>
+  </div>
+
+  <div class="sec"><h2>3. 4주차 성과보고와 2차 집행 기준</h2>
+    <p>4주차 종료 후 3일 이내에 신규 회원, 앱 설치, 미션 참여율, FUNY DRAW 참여, D7 재방문, 유료 카드샵 광고주 등 핵심 지표와 예산 집행 내역을 보고합니다.</p>
+    <ul><li>목표의 70% 이상 달성: 2차 투자금 150만 원 전액 집행</li><li>50% 이상 70% 미만: 구성 조정 후 2차 투자금 규모를 협의하여 일부 또는 전액 집행</li><li>50% 미만: 2차 투자금 미집행</li></ul>
+    <div class="note">2차 투자금이 전액 집행되지 않는 경우에도 이익배분율은 실제 누적 집행 투자금에 비례하여 조정됩니다. 1차 150만 원만 집행된 경우 이익배분율은 5%입니다.</div>
+  </div>
+
+  <div class="sec"><h2>4. 이익배분 조건</h2>
+    <p>“이익배분금”은 지분 배당이 아닌, 본 조건에 따라 투자자에게 지급하는 성과 연동 금액입니다. 운영자는 순이익이 처음 발생한 달부터 최대 36개월 동안 해당 시점의 적용 이익배분율에 따라 매월 이익배분금을 지급합니다.</p>
+    <ul><li>순이익 = 월매출 - 서버·API·SaaS·마케팅·경품·결제/플랫폼 수수료·배송·CS·세금 및 기타 합리적인 운영비</li><li>운영자 업무보수는 월매출의 20% 이내에서 운영비로 반영 가능</li><li>순이익이 0원 이하인 달에는 이익배분금 없음</li><li>지급일은 월말 성과보고 후 다음 달 10일까지</li><li>2027년 12월까지 순이익이 한 번도 발생하지 않는 경우 이후 조건을 재협의</li></ul>
+  </div>
+
+  <div class="sec"><h2>5. 투자자의 권리 범위 및 사업 변경 시 처리</h2>
+    <p>투자자는 본 조건서에 따른 이익배분금 지급 청구권만을 보유하며, FUNY PIN 사업 또는 관련 법인의 지분·주식·의결권·경영권·인사권·상표권·저작권·소스코드·데이터베이스·서비스 IP 기타 소유권을 취득하지 않습니다.</p>
+    <p>외부 투자 유치, 법인 전환, 사업 양도·매각 또는 이에 준하는 중대한 구조 변경이 발생하는 경우 운영자는 남은 이익배분 권리에 대한 조기 정산을 제안할 수 있습니다. 조기 정산은 양측의 서면 또는 전자적 합의가 있는 경우에만 확정되며, 정산 기준은 최근 6개월 평균 월 이익배분금 × 잔여 개월 수 × 70%를 기본 산식으로 합니다. 최근 6개월 실적이 없거나 해당 산식이 현저히 부적절한 경우에는 별도 합의합니다.</p>
+    <div class="note">본 조건서는 FUNY PIN의 지분 투자계약이 아니며, 투자자는 운영 의사결정에 대한 승인권 또는 거부권을 갖지 않습니다. 다만 투자금 사용 및 이익배분 산정과 관련한 합리적인 증빙을 요청할 수 있습니다.</div>
+  </div>
+
+  <div class="sec"><h2>6. 운영 및 기록 원칙</h2>
+    <ul><li>투자금은 본 파일럿 이벤트와 회원 활성화 목적에 한해 사용</li><li>매월 말일까지 매출·지출·순이익·이익배분금 산정 내역 공유</li><li>주요 매출·지출 증빙 보관</li><li>퍼니코인은 현금 판매 및 현금 환전하지 않음</li><li>종이 또는 전자서명 방식으로 체결 가능하며 전자서명 시 문서 버전·동의 문구·서명 일시·서명 기록을 함께 보관</li></ul>
+  </div>
+
+  <div class="sec"><h2>7. 일정</h2>
+    <table><tr><th>날짜</th><th>내용</th></tr>
+    <tr><td>2026.10.18</td><td>조건서 체결 · 1차 150만 원 집행 · 파일럿 시작</td></tr>
+    <tr><td>2026.11.15</td><td>4주차 종료</td></tr>
+    <tr><td>2026.11.18</td><td>4주차 성과보고</td></tr>
+    <tr><td>2026.11.20</td><td>2차 투자금 집행 여부 및 금액 확정</td></tr>
+    <tr><td>2026.12.13</td><td>8주 파일럿 종료</td></tr>
+    <tr><td>2026.12.16</td><td>파일럿 최종 성과보고</td></tr></table>
+  </div>
+
+  <div class="sec"><h2>8. 서명</h2><p>투자자와 운영자는 위 내용을 충분히 확인하였으며, 본 조건에 동의하여 서명합니다.</p></div>
+</section>`;
+}
+function setupCanvas(){
+  const canvas=document.getElementById('sigCanvas'),ctx=canvas.getContext('2d');
+  let drawing=false,drawn=false;
+  function resize(){const r=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;const snap=drawn?canvas.toDataURL('image/png'):null;canvas.width=Math.floor(r.width*dpr);canvas.height=Math.floor(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineWidth=2.2;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#302739';if(snap){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=snap}}
+  const pt=e=>{const r=canvas.getBoundingClientRect(),t=e.touches?.[0]||e;return{x:t.clientX-r.left,y:t.clientY-r.top}};
+  const start=e=>{e.preventDefault();drawing=true;drawn=true;const p=pt(e);ctx.beginPath();ctx.moveTo(p.x,p.y)};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pt(e);ctx.lineTo(p.x,p.y);ctx.stroke()};
+  const end=e=>{if(drawing){e.preventDefault();drawing=false}};
+  canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
+  window.addEventListener('resize',resize);resize();
+  document.getElementById('clearSig').onclick=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);drawn=false};
+  return {canvas,has:()=>drawn};
+}
+async function init(){
+  const card=document.getElementById('mainCard'),top=document.getElementById('topStatus');
+  if(!token){card.innerHTML='<div class="loading">유효한 서명 링크가 아닙니다.</div>';top.textContent='서명 링크 오류';return}
+  try{
+    const req=await rpc('get_investment_signature_request',{p_token:token});
+    if(!req?.ok)throw new Error(req?.error||'서명 요청을 찾을 수 없습니다.');
+    if(req.document_hash!==DOC_HASH){throw new Error('문서 버전이 일치하지 않아 서명을 진행할 수 없습니다.')}
+    top.textContent=(req.signed?'서명 완료':'서명 대기')+' · '+roleName(req.signer_role)+' '+req.signer_name;
+    card.innerHTML=contractHtml()+`
+    <section class="sign">
+      <h2>전자서명</h2>
+      <div class="sign-sub">아래 정보와 계약 내용을 다시 확인한 뒤 서명해 주세요. 서명 완료 후에는 같은 링크로 재서명할 수 없습니다.</div>
+      <div class="info-grid">
+        <div class="info"><span>서명자 역할</span><b>${roleName(req.signer_role)}</b></div>
+        <div class="info"><span>서명자</span><b>${req.signer_name}</b></div>
+        <div class="info"><span>문서 버전</span><b>${DOC_VERSION}</b></div>
+        <div class="info"><span>상대방 서명</span><b>${req.counterpart_signed?'완료':'대기'}</b></div>
+      </div>
+      ${req.signed?'<div class="result ok"><b>전자서명이 완료되었습니다.</b><br>서명 일시: '+fmt(req.signed_at)+'</div>':`
+      <label class="form-label" for="signerName">서명자 이름 확인</label>
+      <input class="name-input" id="signerName" autocomplete="off" placeholder="${req.signer_name} 입력">
+      <label class="form-label">자필 서명</label>
+      <div class="canvas-wrap"><div class="canvas-head"><span>마우스 또는 손가락으로 서명해 주세요.</span><button id="clearSig" class="clear" type="button">지우기</button></div><canvas id="sigCanvas"></canvas></div>
+      <label class="agree"><input id="agree" type="checkbox"><span>${req.consent_text}<br><b>본 전자서명은 별도의 PASS/KCP 본인확인 절차를 포함하지 않는 간편 전자서명 방식임을 확인합니다.</b></span></label>
+      <div class="actions"><button class="btn print" id="printBtn" type="button">문서 인쇄 / PDF 저장</button><button class="btn submit" id="submitBtn" type="button">동의하고 전자서명 완료</button></div>
+      <div id="resultBox"></div>`}
+      <div class="legal">전자서명 기록에는 서명 일시, 문서 버전과 SHA-256 문서 해시, 브라우저/기기 환경 정보가 함께 보관됩니다. 중요 계약의 법적·세무적 효력은 필요시 변호사·세무사 등 전문가의 검토를 권장합니다.</div>
+    </section>`;
+    if(req.signed)return;
+    const sig=setupCanvas(),result=document.getElementById('resultBox');
+    document.getElementById('printBtn').onclick=()=>window.print();
+    document.getElementById('submitBtn').onclick=async()=>{
+      const btn=document.getElementById('submitBtn'),name=document.getElementById('signerName').value.trim(),agreed=document.getElementById('agree').checked;
+      result.className='result err';
+      if(name!==req.signer_name){result.textContent='서명자 이름을 정확히 입력해 주세요.';return}
+      if(!sig.has()){result.textContent='자필 서명을 입력해 주세요.';return}
+      if(!agreed){result.textContent='계약 내용 및 전자서명 동의 항목을 확인해 주세요.';return}
+      btn.disabled=true;btn.textContent='서명 저장 중...';
+      try{
+        const out=await rpc('submit_investment_signature',{
+          p_token:token,p_signer_name:name,p_signature_data:sig.canvas.toDataURL('image/png'),
+          p_user_agent:navigator.userAgent||'',p_timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',
+          p_locale:navigator.language||'',p_agreed:true,p_document_hash:DOC_HASH
+        });
+        if(!out?.ok)throw new Error(out?.error||'서명 저장 실패');
+        result.className='result ok';result.innerHTML='<b>전자서명이 완료되었습니다.</b><br>'+fmt(out.signed_at)+(out.all_signed?'<br>양측 서명이 모두 완료되었습니다.':'<br>상대방 서명 대기 중입니다.');
+        btn.remove();document.getElementById('signerName').disabled=true;document.getElementById('agree').disabled=true;
+        top.textContent='서명 완료 · '+roleName(req.signer_role)+' '+req.signer_name;
+      }catch(e){result.className='result err';result.textContent='전자서명 저장 실패: '+e.message;btn.disabled=false;btn.textContent='동의하고 전자서명 완료'}
+    };
+  }catch(e){
+    top.textContent='서명 요청 오류';card.innerHTML='<div class="loading">'+String(e.message||e)+'</div>';
+  }
+}
+init();
+})();
+</script>
+</body>
+</html>

@@ -98,8 +98,28 @@ jobs:
         run: exit 1
 
       - name: Install Expo SDK-compatible native modules
+        id: deps
+        continue-on-error: true
         working-directory: mobile
-        run: npx expo install expo-file-system expo-sharing --npm
+        run: |
+          set +e
+          npx expo install expo-file-system expo-sharing 2>&1 | tee /tmp/aos-qa-deps.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Upload dependency diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-deps-log-${{ github.run_number }}
+          path: /tmp/aos-qa-deps.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Stop after dependency failure
+        if: steps.deps.outcome != 'success'
+        run: exit 1
 
       - name: Verify reproducible dependency install
         working-directory: mobile

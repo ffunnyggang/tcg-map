@@ -338,7 +338,15 @@ async function parseBreak(input: URL) {
   const ogImage = meta(html, "og:image");
   if (!images.length && ogImage) images = [ogImage];
   const availability = clean(offer?.availability);
-  const direct = /즉시\s*구매/.test(meta(html, "og:title") + " " + rawDescription + " " + clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]));
+  const transactionText = [
+    meta(html, "og:title"),
+    rawDescription,
+    clean((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1])
+  ].filter(Boolean).join(" ");
+  const isAuction = /(경매|입찰|auction|bidding|bid\s*now)/i.test(transactionText);
+  const isInstant = !isAuction && /(즉시\s*(?:거래|구매)|바로\s*구매|fixed\s*price|buy\s*now)/i.test(transactionText);
+  const breakTransactionMode = isAuction ? "auction" : isInstant ? "instant" : "unknown";
+  const direct = breakTransactionMode === "instant";
   const sellerHandle = clean(offer?.seller?.name) || null;
   const description = sanitizeBreakDescription(rawDescription, title);
   const sellerLocation = firstCoord(
@@ -358,6 +366,8 @@ async function parseBreak(input: URL) {
     seller_location_latitude: sellerLocation?.lat ?? null,
     seller_location_longitude: sellerLocation?.lng ?? null,
     direct_buy_available: direct,
+    break_transaction_mode: breakTransactionMode,
+    break_instant_only_eligible: breakTransactionMode === "instant",
     seller_verification_scope: sellerHandle ? "account" : "listing",
     seller_identity_source: sellerHandle ? "seller_display_name" : "listing",
     verification_codes: typeof findVerificationCodes === "function" ? findVerificationCodes(html) : []

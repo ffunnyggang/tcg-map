@@ -110,6 +110,16 @@ const isAppShell=()=>document.documentElement.classList.contains('app-shell')||n
 let currentPost=null;const viewedPosts=new Set();
 function renderAppPostPage(x,pushHash=true){
   if(!x)return;
+  if(x.source==='funy'&&blockedOwners.has(String(x.ownerUserId||''))){
+    currentPost=null;
+    document.documentElement.classList.remove('funy-talk-post-mode');
+    if(fab)fab.style.removeProperty('display');
+    document.querySelector('.filters')?.removeAttribute('hidden');
+    if(popularSort)popularSort.hidden=false;
+    if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+    render();
+    return;
+  }
   currentPost=x;
   try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'TALK_POST_CONTEXT',postId:x.id,mine:x.ownerUserId===uid()}))}catch(_){}
   if(pushHash&&location.hash!=='#/post/'+x.id)location.hash='#/post/'+x.id;

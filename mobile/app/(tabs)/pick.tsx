@@ -25,7 +25,7 @@ export default function Pick(){
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
     <View style={{flex:1}}>
       <FunyWebView key={Platform.OS==='android'?'pick-android-stable':`pick-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="PICK" onWebScrollChange={setScrolling}/>
-      {!webBack?<LivePinButton scrolling={scrolling}/>:null}
+      {Platform.OS!=='android'&&!webBack?<LivePinButton scrolling={scrolling}/>:null}
     </View>
   </SafeAreaView>;
 }

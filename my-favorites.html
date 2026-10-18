@@ -1,28 +1,56 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>관심 목록 | FUNY PIN</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"><link rel="stylesheet" href="/my-web.css?v=20261014-my3"><style>
-.my-content{padding-top:12px}.favorite-tabs{position:sticky;top:54px;z-index:12;display:flex;gap:8px;padding:10px 0 10px;background:#f7f4fc;overflow-x:auto;scrollbar-width:none}.favorite-tabs::-webkit-scrollbar{display:none}.favorite-tab{height:35px;padding:0 14px;border:1px solid #e5e1eb;border-radius:999px;background:#fff;color:#716b79;font-size:12px;font-weight:750;white-space:nowrap}.favorite-tab.active{border-color:#272331;background:#272331;color:#fff}.favorite-section{display:none}.favorite-section.active{display:block}.favorite-list{display:flex;flex-direction:column;gap:12px}.fav-card{position:relative;display:flex;min-height:112px;overflow:hidden;color:inherit}.fav-img{width:112px;min-width:112px;height:112px;background:#eee;object-fit:cover}.fav-fallback{width:112px;min-width:112px;height:112px;display:grid;place-items:center;background:#EEE8FA;color:#6749bd;font-size:11px;font-weight:900}.fav-copy{min-width:0;flex:1;padding:15px 42px 15px 15px;display:flex;flex-direction:column;justify-content:center;text-decoration:none!important;color:inherit!important}.fav-name{font-size:16px;line-height:20px;font-weight:900;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-decoration:none!important}.fav-meta{margin-top:7px;color:#6749bd;font-size:11.5px;line-height:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none!important}.fav-address{margin-top:5px;color:#8D8993;font-size:11px;line-height:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-decoration:none!important}.fav-remove{position:absolute;right:9px;top:9px;width:30px;height:30px;border:0;border-radius:50%;background:#fff;color:#8062d8;font-size:21px;line-height:1;cursor:pointer}.fav-remove svg{width:24px;height:24px;display:block}.fav-remove.market{color:#8062d8}.fav-market-provider{display:inline-flex;align-items:center;height:18px;padding:0 6px;margin-right:5px;border-radius:999px;background:#f3effc;color:#6749bd;font-size:8px;font-weight:850;vertical-align:1px}.favorite-empty{padding:88px 24px 40px;text-align:center;color:#8d8993;font-size:12px;line-height:1.65}.favorite-empty strong{display:block;margin-bottom:7px;color:#28232e;font-size:15px}.favorite-empty .my-btn{margin-top:18px;display:inline-flex;align-items:center;padding:0 17px;text-decoration:none}.favorite-loading{padding:80px 20px;text-align:center;color:#99919d;font-size:12px}
-</style><script src="/web-auth.js?v=20261014-web-auth6"></script><script src="/my-web-common.js?v=20261014-my2"></script><link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2"><link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"></head><body><div class="my-page"><header class="my-head funy-sub-header"><button class="my-back funy-sub-back" onclick="FUNY_MY_WEB.back()" aria-label="뒤로가기">‹</button><div class="my-title funy-sub-title">관심 목록</div></header><main class="my-content"><div class="favorite-tabs" role="tablist" aria-label="관심 목록 구분"><button class="favorite-tab active" type="button" data-fav-tab="all">전체</button><button class="favorite-tab" type="button" data-fav-tab="shops">카드샵</button><button class="favorite-tab" type="button" data-fav-tab="market">거래</button></div><div id="root"><div class="favorite-loading">관심 목록을 불러오는 중...</div></div></main></div><script>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>관심 목록 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest3">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<style>
+.favorite-list{display:flex;flex-direction:column;gap:10px;margin-top:11px}
+.fav-card{position:relative;display:flex;min-height:108px;overflow:hidden;color:inherit}
+.fav-img,.fav-fallback{width:108px;min-width:108px;height:108px}
+.fav-img{background:#eee;object-fit:cover}.fav-fallback{display:grid;place-items:center;background:#EEE8FA;color:#6749BD;font-size:10px;font-weight:900}
+.fav-copy{min-width:0;flex:1;padding:14px 41px 14px 14px;display:flex;flex-direction:column;justify-content:center;text-decoration:none!important;color:inherit!important}
+.fav-name{font-size:14px;line-height:19px;font-weight:900;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fav-meta{margin-top:6px;color:#6749BD;font-size:10.5px;line-height:15px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav-address{margin-top:4px;color:#8D8993;font-size:10px;line-height:15px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fav-remove{position:absolute;right:8px;top:8px;width:30px;height:30px;border:0;border-radius:50%;background:#fff;color:#8062D8;display:grid;place-items:center;cursor:pointer}
+.fav-remove svg{width:23px;height:23px;display:block}.fav-provider{display:inline-flex;align-items:center;height:18px;padding:0 6px;margin-right:5px;border-radius:999px;background:#F3EFFC;color:#6749BD;font-size:8px;font-weight:850;vertical-align:1px}
+.favorite-empty{padding:74px 22px 36px;text-align:center;color:#8D8993;font-size:11px;line-height:1.65}.favorite-empty strong{display:block;margin-bottom:7px;color:#28232E;font-size:14px}.favorite-empty .btn{margin-top:16px}
+</style>
+</head>
+<body><div class="test-shell">
+<header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">관심 목록</div><span></span></header>
+<main class="test-main">
+<div class="tabs" role="tablist" aria-label="관심 목록 구분"><button class="tab on" type="button" data-fav-tab="shops">카드샵</button><button class="tab" type="button" data-fav-tab="market">거래</button></div>
+<div id="root"><div class="loading">관심 목록을 불러오는 중...</div></div>
+</main></div>
+<script>
 (async()=>{
- const H=FUNY_MY_WEB,A=await H.ready('/my-favorites.html');if(!A)return;
- const root=document.getElementById('root'),tabs=[...document.querySelectorAll('[data-fav-tab]')];
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root');
+ await A.init();if(!A.session){A.goLogin('/my-favorites.html');return}
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const img=v=>!v?'':/^https?:\/\//i.test(v)?v:'/'+String(v).replace(/^\//,'');
  const providerNames={daangn:'당근',bunjang:'번개장터',break:'BREAK'};
  const money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
  const heart='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.2-4.35-9.55-8.36C.48 9.27 1.53 5.1 5.2 3.74 7.54 2.87 10.08 3.7 12 5.7c1.92-2 4.46-2.83 6.8-1.96 3.67 1.36 4.72 5.53 2.75 8.9C19.2 16.65 12 21 12 21Z"/></svg>';
- let current='all',items=[];
+ let current=location.hash.replace('#','')||'shops';if(!['shops','market'].includes(current))current='shops';let items=[];
  const emptyHtml=tab=>tab==='shops'
-   ?'<div class="favorite-empty"><strong>아직 관심 카드샵이 없어요</strong>카드샵 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/shops.html" class="my-btn">TCG MAP 둘러보기</a></div>'
-   :tab==='market'
-     ?'<div class="favorite-empty"><strong>아직 관심 거래가 없어요</strong>거래 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/shops.html" class="my-btn">TCG 거래 둘러보기</a></div>'
-     :'<div class="favorite-empty"><strong>아직 관심 목록이 비어 있어요</strong>좋아하는 카드샵과 거래를 모아보세요.</div>';
+  ?'<div class="favorite-empty"><strong>아직 관심 카드샵이 없어요</strong>카드샵 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/shops.html" class="btn primary">TCG MAP 둘러보기</a></div>'
+  :'<div class="favorite-empty"><strong>아직 관심 거래가 없어요</strong>거래 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/shops.html" class="btn primary">TCG 거래 둘러보기</a></div>';
  function render(){
-   const list=current==='all'?items:items.filter(x=>x.kind===current);
+   $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.favTab===current));
+   const list=items.filter(x=>x.kind===current);
    if(!list.length){root.innerHTML=emptyHtml(current);return}
    root.innerHTML='<div class="favorite-list">'+list.map(x=>{
      if(x.kind==='shops'){
-       const s=x.data,imgs=Array.isArray(s.images)?s.images:[],im=imgs.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0],src=H.img(im?.storage_path||im?.source_path||''),station=s.nearest_station?(s.nearest_station+(s.walk_minutes!=null?' 도보 '+s.walk_minutes+'분':'')):'카드샵';
-       return '<article class="my-card fav-card" data-kind="shops" data-id="'+H.esc(x.id)+'">'+(src?'<img class="fav-img" src="'+H.esc(src)+'" alt="">':'<div class="fav-fallback">FUNY PIN</div>')+'<a class="fav-copy" href="/shops.html#/shop/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+H.esc(s.name)+'</div><div class="fav-meta">'+H.esc((s.area||s.city||'카드샵')+' · '+station)+'</div><div class="fav-address">'+H.esc(s.address||'')+'</div></a><button class="fav-remove" type="button" aria-label="관심 카드샵 해제">'+heart+'</button></article>';
+       const s=x.data,imgs=Array.isArray(s.images)?s.images:[],im=imgs.slice().sort((a,b)=>Number(b.is_primary)-Number(a.is_primary))[0],src=img(im?.storage_path||im?.source_path||''),station=s.nearest_station?(s.nearest_station+(s.walk_minutes!=null?' 도보 '+s.walk_minutes+'분':'')):'카드샵';
+       return '<article class="card fav-card" data-kind="shops" data-id="'+esc(x.id)+'">'+(src?'<img class="fav-img" src="'+esc(src)+'" alt="">':'<div class="fav-fallback">FUNY PIN</div>')+'<a class="fav-copy" href="/shops.html#/shop/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+esc(s.name)+'</div><div class="fav-meta">'+esc((s.area||s.city||'카드샵')+' · '+station)+'</div><div class="fav-address">'+esc(s.address||'')+'</div></a><button class="fav-remove" type="button" aria-label="관심 카드샵 해제">'+heart+'</button></article>';
      }
      const m=x.data,src=m.thumbnail_url||'',provider=providerNames[m.provider]||'외부 플랫폼',loc=(m.road_address||((m.location_name&&m.location_name!=='거래 희망 위치')?m.location_name:''))||'TCG 거래';
-     return '<article class="my-card fav-card" data-kind="market" data-id="'+H.esc(x.id)+'">'+(src?'<img class="fav-img" src="'+H.esc(src)+'" alt="" referrerpolicy="no-referrer">':'<div class="fav-fallback">TCG 거래</div>')+'<a class="fav-copy" href="/shops-market-test.html#market/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+H.esc(m.title||'거래')+'</div><div class="fav-meta"><span class="fav-market-provider">'+H.esc(provider)+'</span>'+H.esc(money(m.price))+'</div><div class="fav-address">'+H.esc(loc)+'</div></a><button class="fav-remove market" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
+     return '<article class="card fav-card" data-kind="market" data-id="'+esc(x.id)+'">'+(src?'<img class="fav-img" src="'+esc(src)+'" alt="" referrerpolicy="no-referrer">':'<div class="fav-fallback">TCG 거래</div>')+'<a class="fav-copy" href="/shops.html#market/'+encodeURIComponent(x.id)+'"><div class="fav-name">'+esc(m.title||'거래')+'</div><div class="fav-meta"><span class="fav-provider">'+esc(provider)+'</span>'+esc(money(m.price))+'</div><div class="fav-address">'+esc(loc)+'</div></a><button class="fav-remove" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
    }).join('')+'</div>';
    root.querySelectorAll('.fav-remove').forEach(btn=>btn.onclick=async()=>{
      const card=btn.closest('[data-id]'),id=card?.dataset.id,kind=card?.dataset.kind;if(!id||!kind)return;btn.disabled=true;
@@ -33,12 +61,13 @@
      items=items.filter(x=>!(x.kind===kind&&x.id===id));render();
    });
  }
- tabs.forEach(b=>b.onclick=()=>{current=b.dataset.favTab;tabs.forEach(x=>x.classList.toggle('active',x===b));render()});
+ $$('.tab').forEach(b=>b.onclick=()=>{current=b.dataset.favTab;history.replaceState(null,'','#'+current);render()});
  async function load(){
+   const uid=A.session.user.id;
    const [shopFavRes,marketFavRes,marketBlockRes]=await Promise.all([
-     A.client.from('shop_favorites').select('shop_id,created_at').eq('user_id',A.session.user.id).order('created_at',{ascending:false}),
-     A.client.from('market_listing_favorites').select('listing_id,created_at').eq('user_id',A.session.user.id).order('created_at',{ascending:false}),
-     A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',A.session.user.id)
+     A.client.from('shop_favorites').select('shop_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
+     A.client.from('market_listing_favorites').select('listing_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
+     A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',uid)
    ]);
    if(shopFavRes.error)throw shopFavRes.error;if(marketFavRes.error)throw marketFavRes.error;
    const blockedMarketUsers=new Set((marketBlockRes.data||[]).map(x=>String(x.blocked_user_id)));

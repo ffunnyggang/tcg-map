@@ -48,6 +48,8 @@ jobs:
           s=s.replace('if count != 1:\n        raise RuntimeError(f"{path}: expected one match, found {count}: {old[:120]!r}")', 'if count < 1:\n        raise RuntimeError(f"{path}: expected at least one match, found {count}: {old[:120]!r}")')
           s=s.replace('"              ref.current?.injectJavaScript(`window.dispatchEvent', '"ref.current?.injectJavaScript(`window.dispatchEvent')
           s=s.replace('"              exitBlockedTalkPost(ownerId,postId);\\n"', '"exitBlockedTalkPost(ownerId,postId);\\n"')
+          s=s.replace("fontWeight:'850'", "fontWeight:'800'")
+          s=s.replace("fontWeight:'750'", "fontWeight:'700'")
           p.write_text(s,encoding='utf-8')
           PY
 
@@ -132,8 +134,28 @@ jobs:
           npm ci
 
       - name: TypeScript
+        id: typescript
+        continue-on-error: true
         working-directory: mobile
-        run: npx tsc --noEmit
+        run: |
+          set +e
+          npx tsc --noEmit 2>&1 | tee /tmp/aos-qa-typescript.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Upload TypeScript diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-typescript-log-${{ github.run_number }}
+          path: /tmp/aos-qa-typescript.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Stop after TypeScript failure
+        if: steps.typescript.outcome != 'success'
+        run: exit 1
 
       - name: Expo public config
         working-directory: mobile

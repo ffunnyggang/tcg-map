@@ -19,7 +19,7 @@
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root'),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const date=v=>v?new Date(v).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,''):'';
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)};
- if(!await FUNY_MY_TEST_GATE.ensure(A))returnconst uid=A.session.user.id;
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return;const uid=A.session.user.id;
  let posts=[],comments=[],likes=[],postMap={};
  async function load(){
   root.innerHTML='<div class="loading">활동 내역을 불러오는 중...</div>';

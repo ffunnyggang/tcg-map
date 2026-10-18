@@ -1683,10 +1683,9 @@
 
   const mapReadyPromise=waitForMap();
   const tabsReadyPromise=waitForQaTabs().then(tabs=>{if(tabs)setupMarketPanel(tabs);return tabs});
-  const tabs=await tabsReadyPromise;
+  const [map,tabs]=await Promise.all([mapReadyPromise,tabsReadyPromise,authReady]).then(([readyMap,readyTabs])=>[readyMap,readyTabs]);
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();ensureMarketSheetControlBridge();
-  const [map]=await Promise.all([mapReadyPromise,authReady]);
   if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
   setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();ensureMarketSheetControlBridge();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}},700);
   window.addEventListener('resize',()=>{

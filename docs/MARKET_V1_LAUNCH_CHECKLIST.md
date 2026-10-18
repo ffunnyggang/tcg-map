@@ -1,14 +1,14 @@
 # FUNY PIN MARKET 1차 오픈 기준 및 Launch Gate
 
-> 상태: **비공개 테스트 전용**
+> 상태: **운영 제한 베타 (등록 허용계정제)**
 >
-> **중요:** 아래 P0 항목이 모두 완료되기 전에는 운영 `shops.html`, HOME, PICK, TALK, MY, 운영 내비게이션, 공개 CMS/배너/팝업 어디에도 MARKET/거래 링크·탭·버튼을 연결하지 않는다.
+> 운영 TCG MAP `/shops.html`에는 MARKET 조회 기능을 반영했다. 매물 조회는 일반 이용자에게 제공하되, **신규 매물 등록은 관리자 allowlist에서 허용한 FUNY PIN 계정만 가능**하다. 일반 판매자 등록 개방은 별도 승인 전까지 금지한다.
 >
-> 테스트 진입점: `/shops-market-test.html`
+> 테스트 진입점 `/shops-market-test.html`은 QA 전용으로 유지한다.
 > - 로그인 필수
 > - `noindex,nofollow`
-> - 운영 TCG MAP과 분리
-> - MARKET runtime은 `/shops-market-test.html` 이외 경로에서 실행 금지
+> - 운영 최신 MAP을 테스트 페이지로 덮어쓰지 않음
+> - 운영은 `map-market-v1.js/css`, 테스트는 `map-market-test-v1.js/css`로 분리
 
 ## 1. 확정 서비스 컨셉
 
@@ -214,19 +214,18 @@
 ## 12. 배포 안전장치 — 절대 조건
 
 ### 현재 적용
-- [x] 운영 `shops.html`에 MARKET runtime 미연결
-- [x] 운영 페이지에 `shops-market-test.html` 링크 없음
-- [x] 테스트 페이지 로그인 필수
-- [x] 테스트 페이지 `noindex,nofollow`
-- [x] MARKET runtime에 테스트 경로 하드가드 적용
-- [x] 비공개 TEST 워터마크 유지
+- [x] 운영 `shops.html` 최신본에 MARKET 전용 runtime만 선택 병합
+- [x] 운영 MARKET 조회는 `active/reserved + expires_at > now()`만 RLS 허용
+- [x] 매물 등록은 관리자 허용계정 allowlist + 로그인 + SMS + 외부 판매자 인증을 서버에서 재검증
+- [x] 테스트 페이지 로그인 필수 / `noindex,nofollow` / TEST 워터마크 유지
+- [x] 운영과 테스트 MARKET JS/CSS 분리
+- [x] 기존 최신 MAP / LIVE PIN / 지도 복귀 기능 버전 유지
 
-### 공개 전 금지
-- [ ] P0 완료 전 운영 TCG MAP의 “거래” 칩/탭 노출 금지
-- [ ] P0 완료 전 HOME/PICK/TALK/MY 링크 노출 금지
-- [ ] P0 완료 전 CMS 배너/팝업/공지로 MARKET 공개 금지
-- [ ] P0 완료 전 anon MARKET 조회 정책 개방 금지
-- [ ] P0 완료 전 iOS/AOS 운영 앱에 MARKET 진입점 연결 금지
+### 일반 판매자 공개 전 금지
+- [ ] 법무·외부 플랫폼 정책 검토 완료 전 allowlist 없는 일반 회원의 매물 등록 허용 금지
+- [ ] 검토 완료 전 HOME/PICK/TALK/MY 대규모 프로모션 노출 금지
+- [ ] 검토 완료 전 CMS 대형 배너/팝업으로 공개 판매자 모집 금지
+- [ ] iOS/AOS 실기기 SMS·판매자 인증 QA 완료 전 등록 권한 대규모 확대 금지
 
 ## 13. Launch Gate
 
@@ -238,8 +237,8 @@
 4. 신고·삭제·권리침해·분쟁 처리 체계
 5. 정보 최신성/로그/보존 정책
 
-PUBLIC OPEN은 별도 명시적 승인 작업으로 진행한다.
-테스트 기능 구현 완료나 `main` 웹 배포는 PUBLIC OPEN 승인으로 간주하지 않는다.
+현재 운영 반영은 **등록 허용계정 기반 제한 베타**이며 일반 판매자 PUBLIC OPEN으로 간주하지 않는다.
+allowlist 없는 일반 회원의 등록 개방은 법무·외부 플랫폼 정책·iOS/AOS 실기기 QA 완료 후 별도 명시적 승인으로 진행한다.
 
 
 ## 구현 진행 현황 — 2026-10-17
@@ -265,7 +264,7 @@ PUBLIC OPEN은 별도 명시적 승인 작업으로 진행한다.
 - [x] Admin 즉시 비노출 / 재노출
 - [x] 관리자 조치 및 판매자 새로고침/숨김 감사로그
 - [x] MARKET 관련 Supabase RLS / 보안 어드바이저 점검
-- [x] 운영 `shops.html` MARKET 미연결 재확인
+- [x] 운영 `shops.html` 최신본에 MARKET 전용 변경분만 병합
 - [x] 테스트 페이지 로그인 필수 / noindex,nofollow / 경로 하드가드 유지
 
 ### PUBLIC OPEN 전 아직 미완료
@@ -296,4 +295,5 @@ PUBLIC OPEN은 별도 명시적 승인 작업으로 진행한다.
 - [ ] 비회원 권리자의 권리침해 신고 접수 경로
 - [ ] 신고/분쟁 처리 SLA 및 운영 프로세스 최종 확정
 - [x] 매물 노출 기간 14일 / 일 10개 / 월 30개 정책 적용
-- [ ] PUBLIC OPEN 승인
+- [x] 허용계정 기반 운영 제한 베타 반영
+- [ ] 일반 판매자 PUBLIC OPEN 승인

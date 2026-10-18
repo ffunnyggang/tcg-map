@@ -4,39 +4,129 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><title>거래 매물 관리 TEST | FUNY PIN</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
+<link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest3">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
 <script src="/my-test-gate.js?v=20261018-mytest1"></script>
 <style>
-.market-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:11px}.thumb{width:74px;height:82px;border-radius:12px;background:#F0EDF3;overflow:hidden;display:grid;place-items:center;color:#9A929E;font-size:9px}.thumb img{width:100%;height:100%;object-fit:cover}.copy{min-width:0}.price{margin-top:5px;font-size:14px;font-weight:900}.reason{margin-top:6px;padding:7px 8px;border-radius:9px;background:#FAF8FB;color:#8C8490;font-size:9px;line-height:1.45}.fab-add{position:fixed;right:max(16px,calc((100vw - 420px)/2 + 16px));bottom:18px;z-index:70;height:44px;padding:0 16px;border:0;border-radius:22px;background:#28232E;color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;box-shadow:0 8px 22px rgba(40,35,46,.18)}
+.market-manage-list{display:flex;flex-direction:column;gap:9px;margin-top:11px}
+.market-manage-card{position:relative;border:1px solid rgba(230,226,235,.9);border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(45,37,57,.035)}
+.market-card-main{min-height:122px;padding:9px 43px 9px 9px;display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center}
+.market-thumb,.market-ph{width:96px;height:96px;border-radius:12px;background:#F1EEF4}
+.market-thumb{display:block;object-fit:cover}.market-ph{display:grid;place-items:center;color:#968D9B;font-size:9px;font-weight:800}
+.market-copy{display:block;min-width:0}.market-badges{display:flex;align-items:center;gap:4px;min-width:0;margin-bottom:6px;overflow:hidden}
+.market-badge{height:18px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;flex:0 0 auto;background:#F4F2F6;color:#716B79;font-size:8px;font-weight:800;line-height:1}
+.market-badge.provider.daangn{background:#FFF0E8;color:#DC5B08}.market-badge.provider.bunjang{background:#FFF0F2;color:#D94050}.market-badge.provider.break{background:#EEF4FF;color:#2F67D8}.market-badge.category{background:#F3EFFC;color:#6749BD}
+.market-title{display:block;margin:0;color:#29252D;font-size:15px;font-weight:780;line-height:1.28;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.market-price{display:block;margin-top:4px;color:#29252D;font-size:14px;font-weight:900}
+.market-location{display:flex;align-items:center;gap:4px;min-width:0;margin-top:5px;color:#8E8794;font-size:9.5px}
+.market-location svg{width:12px;height:12px;flex:0 0 12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.market-location span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.market-more{position:absolute;right:8px;top:8px;z-index:4;width:34px;height:34px;border:0;border-radius:10px;background:transparent;color:#746C78;font-size:23px;font-weight:800;line-height:1;display:grid;place-items:center;cursor:pointer}
+.market-more:active{background:#F3F0F5}
+.market-more-menu{position:absolute;right:8px;top:42px;z-index:20;width:176px;padding:6px;border:1px solid #E4DFE8;border-radius:13px;background:#fff;box-shadow:0 12px 30px rgba(38,31,46,.16)}
+.market-more-menu[hidden]{display:none}.market-more-menu button{width:100%;height:39px;padding:0 10px;border:0;border-radius:9px;background:#fff;color:#4F4853;text-align:left;font-size:10.5px;font-weight:800;cursor:pointer}.market-more-menu button:active{background:#F7F4F9}.market-more-menu button.danger{color:#B84E5C}.market-more-menu button:disabled{color:#BBB5BE;cursor:default}
+.market-card-footer{min-height:42px;padding:0 11px;border-top:1px solid #F0ECF2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.market-stats{display:flex;align-items:center;gap:11px;color:#958D99;font-size:9.5px;font-weight:750}.market-stats span{white-space:nowrap}
+.market-detail-link{height:32px;padding:0 2px;color:#6749BD;text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:900;white-space:nowrap}
+.market-empty{padding:70px 22px;text-align:center;color:#958D99;font-size:11px;line-height:1.65}.market-empty strong{display:block;margin-bottom:6px;color:#3D3741;font-size:14px}
+.fab-add{position:fixed;right:max(16px,calc((100vw - 420px)/2 + 16px));bottom:18px;z-index:70;height:44px;padding:0 16px;border:0;border-radius:22px;background:#28232E;color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;box-shadow:0 8px 22px rgba(40,35,46,.18)}
+@media(max-width:360px){.market-card-main{grid-template-columns:88px minmax(0,1fr);padding-right:41px}.market-thumb,.market-ph{width:88px;height:88px}.market-title{font-size:14px}}
 </style>
 </head><body><div class="test-shell">
 <header class="test-head"><button class="test-back" onclick="location.href='/my-test.html'" aria-label="뒤로가기">‹</button><div class="test-title">거래 매물 관리</div><span></span></header>
-<main class="test-main"><div class="test-banner"><span class="test-pill">TEST</span>등록한 TCG 거래 매물의 상태와 원본 매물 연결 상태를 관리합니다.</div>
-<div class="tabs"><button class="tab on" data-tab="active">판매중</button><button class="tab" data-tab="hidden">숨김·만료</button><button class="tab" data-tab="sold">판매완료</button></div>
+<main class="test-main"><div class="test-banner"><span class="test-pill">TEST</span>등록한 TCG 거래 매물의 노출 상태와 원본 정보를 관리합니다.</div>
+<div class="tabs"><button class="tab on" data-tab="active">판매중</button><button class="tab" data-tab="ended">비노출·종료</button></div>
 <div id="root"><div class="loading">매물을 불러오는 중...</div></div></main>
 <a class="fab-add" href="/market-register-test.html"><span>＋</span><span>매물 등록</span></a>
 </div><div id="toast" class="toast"></div>
 <script>
 (async()=>{
- const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root'),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
- const date=v=>v?new Date(v).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,''):'';
- const provider={daangn:'당근',bunjang:'번개장터',break:'BREAK'},reason={seller_hidden:'내가 숨김',seller_deleted:'삭제한 매물',listing_expired:'노출 기간 만료',source_sold:'원본 판매완료',source_unavailable:'원본 접근불가',break_not_instant:'바로구매 불가',report_action:'신고 처리',admin_manual:'관리자 비노출'};
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root');
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const money=n=>n==null?'가격 정보 없음':Number(n).toLocaleString('ko-KR')+'원';
+ const providerNames={daangn:'당근',bunjang:'번개장터',break:'BREAK'};
+ const categoryNames={pokemon:'포켓몬스터',onepiece:'원피스',dragonball:'드래곤볼',other:'기타'};
+ const typeNames={single:'싱글카드',vintage:'빈티지카드',graded:'등급카드',box:'박스제품',other:'기타'};
+ const pin='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)};
- if(!await FUNY_MY_TEST_GATE.ensure(A))return;const uid=A.session.user.id;
- let rows=[],current=location.hash.replace('#','')||'active';if(!['active','hidden','sold'].includes(current))current='active';
- async function load(){
-  root.innerHTML='<div class="loading">매물을 불러오는 중...</div>';
-  const {data,error}=await A.client.from('market_listings').select('id,provider,title,price,thumbnail_url,listing_status,source_status,location_name,external_url,created_at,expires_at,hidden_reason,source_last_checked_at').eq('seller_user_id',uid).order('created_at',{ascending:false});
-  if(error)throw error;rows=data||[];render(current);
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return;
+ const uid=A.session.user.id;
+ let rows=[],statsMap=new Map(),current=location.hash.replace('#','')||'active';if(!['active','ended'].includes(current))current='active';
+
+ function group(x){return ['active','reserved'].includes(x.listing_status)?'active':'ended'}
+ function address(x){
+   const v=String(x.road_address||x.location_name||'거래 희망 위치').replace(/\s+/g,' ').trim();
+   return v||'거래 희망 위치';
  }
- function group(x){if(['active','reserved'].includes(x.listing_status))return'active';if(x.listing_status==='sold')return'sold';return'hidden'}
- function status(x){const m={active:'판매중',reserved:'예약중',sold:'판매완료',hidden:'비노출',expired:'만료',deleted:'삭제'};return m[x.listing_status]||x.listing_status}
+ function badges(x){
+   return '<span class="market-badges">'+
+    '<span class="market-badge provider '+esc(x.provider||'')+'">'+esc(providerNames[x.provider]||'외부 플랫폼')+'</span>'+
+    '<span class="market-badge category">'+esc(categoryNames[x.tcg_category]||'기타')+'</span>'+
+    '<span class="market-badge">'+esc(typeNames[x.item_type]||'기타')+'</span>'+
+   '</span>';
+ }
+ function card(x){
+   const stats=statsMap.get(String(x.id))||{},active=group(x)==='active';
+   return '<article class="market-manage-card" data-card-id="'+esc(x.id)+'">'+
+    '<div class="market-card-main">'+
+      (x.thumbnail_url?'<img class="market-thumb" src="'+esc(x.thumbnail_url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="market-ph">NO IMAGE</span>')+
+      '<div class="market-copy">'+badges(x)+'<strong class="market-title">'+esc(x.title||'매물')+'</strong><span class="market-price">'+money(x.price)+'</span><span class="market-location">'+pin+'<span>'+esc(address(x))+'</span></span></div>'+
+    '</div>'+
+    '<button class="market-more" type="button" data-more="'+esc(x.id)+'" aria-label="매물 관리 메뉴" aria-expanded="false">⋯</button>'+
+    '<div class="market-more-menu" data-menu="'+esc(x.id)+'" hidden>'+
+      '<button type="button" data-action="open" data-id="'+esc(x.id)+'">원본 열기</button>'+
+      '<button type="button" data-action="refresh" data-id="'+esc(x.id)+'">원본 정보 새로고침</button>'+
+      '<button type="button" data-action="hide" data-id="'+esc(x.id)+'" '+(active?'':'disabled')+'>매물 숨기기</button>'+
+      '<button type="button" class="danger" data-action="delete" data-id="'+esc(x.id)+'">삭제하기</button>'+
+    '</div>'+
+    '<div class="market-card-footer"><div class="market-stats"><span>조회 '+Number(stats.view_count||0).toLocaleString('ko-KR')+'</span><span>관심 '+Number(stats.favorite_count||0).toLocaleString('ko-KR')+'</span></div><a class="market-detail-link" href="/market-detail-test.html?id='+encodeURIComponent(x.id)+'">상세보기 <span aria-hidden="true">›</span></a></div>'+
+   '</article>';
+ }
+ function closeMenus(except=''){
+   $$('[data-menu]').forEach(m=>{if(m.dataset.menu===except)return;m.hidden=true});
+   $$('[data-more]').forEach(b=>{if(b.dataset.more===except)return;b.setAttribute('aria-expanded','false')});
+ }
  function render(tab){
-  current=tab;history.replaceState(null,'','#'+tab);$$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));const list=rows.filter(x=>group(x)===tab);
-  root.innerHTML='<div class="list">'+(list.length?list.map(x=>'<article class="item"><div class="market-row"><div class="thumb">'+(x.thumbnail_url?'<img src="'+esc(x.thumbnail_url)+'" alt="" referrerpolicy="no-referrer">':'NO IMAGE')+'</div><div class="copy"><div class="item-head"><span class="badge">'+esc(provider[x.provider]||x.provider)+'</span><span class="badge '+(tab==='active'?'green':tab==='sold'?'gray':'red')+'">'+esc(status(x))+'</span><span class="time">'+date(x.created_at)+'</span></div><div class="item-title">'+esc(x.title)+'</div><div class="price">'+money(x.price)+'</div><div class="item-meta">'+esc(x.location_name||'거래 희망 위치')+(x.source_last_checked_at?' · 원본 확인 '+date(x.source_last_checked_at):'')+'</div>'+(tab==='hidden'?'<div class="reason">'+esc(reason[x.hidden_reason]||x.hidden_reason||'비노출 상태')+'</div>':'')+'</div></div><div class="actions"><a class="primary" href="/market-detail-test.html?id='+encodeURIComponent(x.id)+'">상세보기</a><a href="'+esc(x.external_url)+'" target="_blank" rel="noopener">원본 열기</a>'+(tab==='active'?'<button data-act="refresh" data-id="'+esc(x.id)+'">원본 새로고침</button><button class="danger" data-act="hide" data-id="'+esc(x.id)+'">숨기기</button>':tab==='hidden'&&x.listing_status!=='deleted'?'<button data-act="refresh" data-id="'+esc(x.id)+'">원본 상태 확인</button>':'')+'</div></article>').join(''):'<div class="empty"><strong>해당 상태의 매물이 없어요</strong>등록한 매물이 이곳에 상태별로 표시됩니다.</div>')+'</div>';bind();
+   current=tab;history.replaceState(null,'','#'+tab);$$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+   const list=rows.filter(x=>group(x)===tab);
+   root.innerHTML=list.length?'<div class="market-manage-list">'+list.map(card).join('')+'</div>':'<div class="market-empty"><strong>'+(tab==='active'?'판매중인 매물이 없어요':'비노출·종료된 매물이 없어요')+'</strong>등록한 매물이 상태에 따라 이곳에 표시됩니다.</div>';
+   bind();
  }
- function bind(){$$('[data-act]').forEach(b=>b.onclick=async()=>{const action=b.dataset.act,id=b.dataset.id;if(action==='hide'&&!confirm('이 매물을 숨길까요?'))return;b.disabled=true;const {data,error}=await A.client.functions.invoke('market-listing-owner-action-test',{body:{action,listing_id:id}});if(error||data?.ok===false){alert(data?.error||error?.message||'처리하지 못했습니다.');b.disabled=false;return}toast(action==='hide'?'매물을 숨겼습니다.':'원본 상태를 새로고침했습니다.');await load()})}
- $$('.tab').forEach(b=>b.onclick=()=>render(b.dataset.tab));await load();
+ async function load(){
+   root.innerHTML='<div class="loading">매물을 불러오는 중...</div>';
+   const [listingRes,statsRes]=await Promise.all([
+     A.client.from('market_listings').select('id,provider,title,price,thumbnail_url,listing_status,source_status,tcg_category,item_type,road_address,location_name,place_name,external_url,created_at,expires_at,hidden_reason,source_last_checked_at').eq('seller_user_id',uid).neq('listing_status','deleted').order('created_at',{ascending:false}),
+     A.client.rpc('get_my_market_listing_stats_test')
+   ]);
+   if(listingRes.error)throw listingRes.error;
+   if(statsRes.error||statsRes.data?.ok===false)throw new Error(statsRes.data?.error||statsRes.error?.message||'stats_failed');
+   rows=listingRes.data||[];
+   statsMap=new Map((statsRes.data?.rows||[]).map(x=>[String(x.listing_id),x]));
+   render(current);
+ }
+ function openExternal(url){
+   if(!url)return;
+   if(window.ReactNativeWebView){try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_EXTERNAL',url}));return}catch(_){}}
+   window.open(url,'_blank','noopener');
+ }
+ async function ownerAction(action,id,button){
+   const row=rows.find(x=>String(x.id)===String(id));if(!row)return;
+   if(action==='open'){openExternal(row.external_url);closeMenus();return}
+   if(action==='hide'&&!confirm('이 매물을 숨길까요?'))return;
+   if(action==='delete'&&!confirm('이 매물을 삭제할까요?\n삭제한 매물은 이 관리 화면에서도 제거됩니다.'))return;
+   button.disabled=true;
+   const {data,error}=await A.client.functions.invoke('market-listing-owner-action-test',{body:{action,listing_id:id}});
+   if(error||data?.ok===false){alert(data?.error||error?.message||'처리하지 못했습니다.');button.disabled=false;return}
+   closeMenus();
+   toast(action==='refresh'?'원본 정보를 새로고침했습니다.':action==='hide'?'매물을 숨겼습니다.':'매물을 삭제했습니다.');
+   await load();
+ }
+ function bind(){
+   $$('[data-more]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.more,menu=document.querySelector('[data-menu="'+CSS.escape(id)+'"]'),opening=!!menu?.hidden;closeMenus(opening?id:'');if(menu)menu.hidden=!opening;b.setAttribute('aria-expanded',opening?'true':'false')});
+   $$('[data-action]').forEach(b=>b.onclick=e=>{e.stopPropagation();if(!b.disabled)ownerAction(b.dataset.action,b.dataset.id,b)});
+ }
+ document.addEventListener('click',e=>{if(!e.target.closest('.market-more')&&!e.target.closest('.market-more-menu'))closeMenus()});
+ $$('.tab').forEach(b=>b.onclick=()=>render(b.dataset.tab));
+ await load();
 })().catch(e=>{document.getElementById('root').innerHTML='<div class="error"><strong>불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
 </script></body></html>

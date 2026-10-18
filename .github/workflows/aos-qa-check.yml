@@ -31,8 +31,11 @@ jobs:
           cache: npm
           cache-dependency-path: mobile/package-lock.json
 
-      - name: Install dependencies and refresh lockfile
-        run: npm install --no-audit --no-fund
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify lockfile is unchanged
+        run: git diff --exit-code -- package.json package-lock.json
 
       - name: Verify Expo dependency compatibility
         run: npx expo install --check
@@ -93,7 +96,7 @@ jobs:
         shell: bash
         run: |
           node -e "const p=require('./package-lock.json'); const deps=p.packages['']?.dependencies||{}; console.log(JSON.stringify({expoFileSystem:deps['expo-file-system'],expoSharing:deps['expo-sharing']},null,2));" > qa-native-dependencies.json
-          git diff -- package.json package-lock.json > qa-lockfile.patch || true
+          git diff -- package.json package-lock.json > qa-lockfile.patch
 
       - name: Upload QA evidence
         uses: actions/upload-artifact@v4

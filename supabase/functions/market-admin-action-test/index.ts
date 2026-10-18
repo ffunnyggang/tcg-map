@@ -19,7 +19,13 @@ async function adminUser(req:Request){
  if(!token)throw new Error("관리자 로그인이 필요합니다.");
  const {data,error}=await admin.auth.getUser(token);
  if(error||!data.user)throw new Error("관리자 로그인 정보를 확인할 수 없습니다.");
- const {data:row,error:adminError}=await admin.from("admin_users").select("user_id").eq("user_id",data.user.id).maybeSingle();
+ const email=clean(data.user.email).toLowerCase();
+ if(!email)throw new Error("관리자 이메일을 확인할 수 없습니다.");
+ const {data:row,error:adminError}=await admin.from("admin_accounts")
+  .select("email")
+  .eq("email",email)
+  .eq("is_active",true)
+  .maybeSingle();
  if(adminError||!row)throw new Error("관리자 권한이 없습니다.");
  return data.user;
 }

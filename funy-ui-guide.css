@@ -181,3 +181,13 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   cursor:pointer!important;
 }
 .funy-kebab-button:active{background:#F3F0F5!important}
+
+
+/* FUNY PIN titled back-header standard v2
+   When a subpage header has both a back control and a title, the title sits immediately
+   to the right of the back control and is left-aligned. Titleless headers are unchanged. */
+.funy-sub-header .funy-sub-back + .funy-sub-title,
+.funy-sub-header .funy-sub-back + h1.funy-sub-title{
+  margin-left:0!important;
+  text-align:left!important;
+}

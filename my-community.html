@@ -10,12 +10,12 @@
 <style>
 .community-list{display:flex;flex-direction:column;gap:9px;margin-top:11px}
 .community-card{position:relative;border:1px solid #E8E3EC;border-radius:16px;background:#fff;box-shadow:0 4px 16px rgba(45,37,57,.035);overflow:visible}
-.community-main{min-height:96px;padding:12px 42px 12px 13px;display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:12px;align-items:center}
+.community-main{height:112px;min-height:112px;padding:12px 42px 12px 13px;display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:12px;align-items:center}
 .community-main.no-thumb{grid-template-columns:1fr}
 .community-copy{min-width:0}
 .community-badge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:999px;background:#F0EBFB;color:#6749BD;font-size:8.5px;font-weight:850}
-.community-title{display:block;margin-top:7px;color:#29252D;font-size:14px;font-weight:850;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.community-body{margin-top:5px;color:#716A75;font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.community-title{display:block;height:19px;margin-top:7px;color:#29252D;font-size:14px;font-weight:850;line-height:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.community-body{height:32px;min-height:32px;margin-top:5px;color:#716A75;font-size:10.5px;line-height:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .community-thumb,.community-ph{width:58px;height:58px;border-radius:10px;background:#F1EEF4;align-self:end}
 .community-thumb{display:block;object-fit:cover}.community-ph{display:grid;place-items:center;color:#9A929E;font-size:9px;font-weight:800}
 .community-more{position:absolute;right:7px;top:7px;z-index:5}
@@ -25,7 +25,6 @@
 .community-stats{display:flex;align-items:center;gap:5px;min-width:0;color:#958D99;font-size:9.3px;font-weight:750;white-space:nowrap}
 .community-stats .sep{color:#B7AFBA}
 .community-footer-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}
-.community-delete{height:32px;padding:0 3px;border:0;background:transparent;color:#B84E5C;font-size:10px;font-weight:850;cursor:pointer}
 .community-detail{height:32px;padding:0 2px;color:#6749BD;text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:900;white-space:nowrap}
 .comment-card{padding:13px 13px 0}.comment-body{color:#3F3944;font-size:12px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .comment-meta{margin-top:8px;color:#958D99;font-size:9.5px;font-weight:750}
@@ -59,6 +58,7 @@
 
  function publicImage(path){if(!path)return'';try{return A.client.storage.from('community-posts').getPublicUrl(path).data.publicUrl||''}catch(_){return''}}
  function detailUrl(id){return '/talk.html#/post/'+encodeURIComponent(id)}
+ function editUrl(id){return '/talk.html?editPost='+encodeURIComponent(id)+'#/post/'+encodeURIComponent(id)}
  function shareUrl(id){return location.origin+detailUrl(id)}
  function syncCounts(){
    $('#postCount').textContent=String(posts.length);
@@ -79,7 +79,7 @@
     '<button class="community-more funy-kebab-button" type="button" data-more="'+esc(post.id)+'" aria-label="더보기" aria-expanded="false">⋮</button>'+
     '<div class="community-menu" data-menu="'+esc(post.id)+'" hidden>'+menu+'</div>'+
     '<div class="community-footer"><div class="community-stats"><span>등록 '+fullDate(post.created_at)+'</span><span class="sep">·</span><span>조회 '+Number(post.view_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>좋아요 '+Number(post.like_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>댓글 '+Number(post.comment_count||0).toLocaleString('ko-KR')+'</span></div>'+
-    '<div class="community-footer-actions">'+(mode==='mine'?'<button class="community-delete" type="button" data-act="delete-post" data-id="'+esc(post.id)+'">삭제</button>':'')+'<a class="community-detail" href="'+detailUrl(post.id)+'">상세보기 <span aria-hidden="true">›</span></a></div></div>'+
+    '<div class="community-footer-actions"><a class="community-detail" href="'+detailUrl(post.id)+'">상세보기 <span aria-hidden="true">›</span></a></div></div>'+
    '</article>';
  }
  function commentCard(c){
@@ -151,7 +151,7 @@
  }
  function bind(){
    $$('[data-more]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.more,menu=document.querySelector('[data-menu="'+CSS.escape(id)+'"]'),opening=!!menu?.hidden;closeMenus(opening?id:'');if(menu)menu.hidden=!opening;b.setAttribute('aria-expanded',opening?'true':'false')});
-   $$('[data-act]').forEach(b=>b.onclick=async e=>{e.stopPropagation();closeMenus();const a=b.dataset.act,id=b.dataset.id;if(a==='share')await sharePost(id);else if(a==='delete-post')await deletePost(id);else if(a==='report')openReportSheet(id);else if(a==='block')await blockPostOwner(id)});
+   $$('[data-act]').forEach(b=>b.onclick=async e=>{e.stopPropagation();closeMenus();const a=b.dataset.act,id=b.dataset.id;if(a==='share')await sharePost(id);else if(a==='edit-post')location.href=editUrl(id);else if(a==='delete-post')await deletePost(id);else if(a==='report')openReportSheet(id);else if(a==='block')await blockPostOwner(id)});
  }
  document.addEventListener('click',e=>{if(!e.target.closest('.community-more')&&!e.target.closest('.community-menu'))closeMenus()});
  $$('.tab').forEach(b=>b.onclick=()=>render(b.dataset.tab));

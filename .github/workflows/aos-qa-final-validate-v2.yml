@@ -1,0 +1,61 @@
+name: AOS final QA without build v2
+
+on:
+  push:
+    branches:
+      - qa/aos-web-sync-20261019
+    paths:
+      - .github/workflows/aos-qa-final-validate-v2.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aos-final-qa-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  final-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: qa/aos-web-sync-20261019
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Run final Android QA without AAB
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
+        run: bash mobile/scripts/qa-aos-ci.sh
+
+      - name: Upload non-build QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-final-non-build-qa-v2-${{ github.run_number }}
+          path: |
+            /tmp/AOS_FINAL_QA_RESULT.md
+            /tmp/funy-expo-config.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Commit route cleanup only
+        if: success()
+        run: |
+          git config user.name "FUNY PIN QA Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add mobile/components/FunyWebView.tsx
+          if git diff --cached --quiet; then
+            echo "No cleanup changes to commit."
+            exit 0
+          fi
+          git commit -m "qa(android): clean validated route set"
+          git push origin HEAD:qa/aos-web-sync-20261019

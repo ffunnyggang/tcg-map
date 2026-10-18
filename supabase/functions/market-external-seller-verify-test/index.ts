@@ -68,6 +68,15 @@ async function currentUser(req: Request) {
   return { user: data.user, auth };
 }
 
+async function sellerAllowed(userId:string){
+  const {data,error}=await admin.from("market_seller_allowlist")
+    .select("is_active")
+    .eq("user_id",userId)
+    .maybeSingle();
+  if(error)throw error;
+  return data?.is_active===true;
+}
+
 async function syncPhoneVerification(user: any) {
   const verifiedAt = clean(user?.phone_confirmed_at);
   const verified = !!(clean(user?.phone) && verifiedAt);
@@ -142,6 +151,17 @@ Deno.serve(async (req: Request) => {
     const { user, auth } = await currentUser(req);
     const body = await req.json().catch(() => ({}));
     const action = clean(body?.action || "status");
+    const allowed = await sellerAllowed(user.id);
+
+    if (!allowed) {
+      return new Response(JSON.stringify({
+        ok:false,
+        error:"현재 매물 등록은 허용된 계정만 이용할 수 있어요.",
+        error_en:"Listing registration is currently available only to approved accounts.",
+        error_code:"MARKET_SELLER_NOT_ALLOWED"
+      }), { status:403, headers:cors });
+    }
+
     const phoneState = await syncPhoneVerification(user);
 
     if (action === "status") {

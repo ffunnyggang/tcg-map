@@ -157,6 +157,49 @@ function sanitizeBreakDescription(raw: unknown, title: string) {
   return text.replace(/\s{2,}/g, " ").trim();
 }
 
+function tcgRelevance(data: any) {
+  const norm = (v: unknown) => clean(v).normalize("NFKC").toLowerCase();
+  const title = norm(data?.title);
+  const description = norm(data?.description);
+  const sourceCategory = norm(data?.source_extra?.category_name);
+  const provider = norm(data?.provider);
+  const text = [title, description, sourceCategory].filter(Boolean).join(" ");
+
+  let score = 0;
+  const signals: string[] = [];
+  const add = (points: number, signal: string) => { score += points; signals.push(signal); };
+
+  if (provider === "break") add(5, "tcg_marketplace");
+  if (/(tcg|트레이딩\s*카드|trading\s*cards?|카드\s*게임|card\s*game)/i.test(sourceCategory)) add(5, "tcg_category");
+
+  if (/(포켓몬\s*카드|포켓몬카드|pokemon\s*(?:tcg|cards?)|원피스\s*카드|원피스카드|one\s*piece\s*(?:tcg|cards?)|드래곤볼\s*카드|dragon\s*ball\s*(?:tcg|cards?)|유희왕|yu-?gi-?oh|디지몬\s*카드|digimon\s*(?:tcg|cards?)|magic\s*[: ]?the\s*gathering|\bmtg\b|weiss\s*schwarz|바이스\s*슈바르츠|union\s*arena|유니온\s*아레나|lorcana|로카나|flesh\s*and\s*blood|카드파이트\s*뱅가드|cardfight\s*vanguard|battle\s*spirits|배틀\s*스피리츠|듀얼\s*마스터즈|duel\s*masters)/i.test(text)) {
+    add(6, "tcg_title_or_description");
+  }
+
+  if (/(카드\s*슬리브|슬리브\s*프로텍터|deck\s*box|덱\s*케이스|플레이\s*매트|playmat|카드\s*바인더|card\s*binder|탑로더|toploader|카드\s*로더|카드\s*프로텍터|card\s*sleeves?)/i.test(text)) {
+    add(6, "tcg_accessory");
+  }
+
+  if (/(포켓몬|pokemon|원피스|one\s*piece|드래곤볼|dragon\s*ball|유희왕|yu-?gi-?oh|디지몬|digimon|weiss|바이스|union\s*arena|유니온\s*아레나|lorcana|로카나|뱅가드|vanguard)/i.test(text)) add(2, "tcg_brand");
+  if (/(\bcard\b|\bcards\b|카드|deck|덱|booster|부스터|팩|\bpack\b|\bbox\b|박스)/i.test(text)) add(2, "card_product");
+  if (/(\bpsa\s*(?:10|9|8)\b|\bbgs\s*(?:10|9\.5|9)\b|\bcgc\s*(?:10|9\.5|9)\b|그레이딩|graded)/i.test(text)) add(2, "grading");
+  if (/\b(?:op|eb|st|prb|sv|sm|xy|bw|swsh|dp|cp|bt|fb|fs|ua)[- ]?[a-z0-9]{1,4}[-\/][a-z0-9]{1,4}\b/i.test(text) || /\b(?:xy|sm|sv|s|swsh)[- ]?p\b/i.test(text)) add(3, "set_code");
+  if (/\b\d{1,4}\s*\/\s*\d{1,4}\b/.test(text)) add(3, "card_number");
+  if (/(\bsar\b|\bsr\b|\bur\b|\bar\b|\brrr\b|\brr\b|\bcsr\b|\bchr\b|\bsec\b|\bsp\b|alt\s*art|alternate\s*art|holo|홀로|프로모|promo)/i.test(text)) add(2, "card_rarity");
+  if (/(미개봉|sealed|booster\s*box|스타터\s*덱|starter\s*deck|구축덱)/i.test(text)) add(1, "sealed_or_deck");
+
+  if (/(포토\s*카드|포토카드|photocard|photo\s*card|신용\s*카드|credit\s*card)/i.test(text)) add(-8, "non_tcg_card");
+  if (/(피규어|figure|인형|plush|봉제|키링|keyring|keychain|아크릴|acrylic|스티커|sticker|포스터|poster|티셔츠|t-?shirt|의류|신발|shoes?|가방|\bbag\b|머그|mug|텀블러|완구|\btoy\b|프라모델|model\s*kit|닌텐도|nintendo|switch\s*(?:게임|console)|게임기|앨범|\balbum\b)/i.test(text)) add(-6, "merchandise");
+  if (/(야구|baseball|농구|basketball|축구|soccer|\btopps\b|\bpanini\b)/i.test(text)) add(-6, "sports_card");
+
+  return {
+    allowed: score >= 5,
+    score,
+    confidence: score >= 8 ? "high" : score >= 5 ? "medium" : "low",
+    signals: signals.slice(0, 10),
+  };
+}
+
 function daangnImages(html: string, primary: string) {
   const urls: string[] = [];
   const re = /https:\/\/img\.kr\.gcp-karroter\.net\/origin\/article\/[^"'<>\\\s]+/gi;
@@ -343,9 +386,14 @@ Deno.serve(async (req: Request) => {
     }
 
     const images = [...new Set((data.images || []).filter(Boolean))];
+    const tcg = tcgRelevance(data);
     return new Response(JSON.stringify({
       ok: true,
       ...data,
+      tcg_allowed: tcg.allowed,
+      tcg_score: tcg.score,
+      tcg_confidence: tcg.confidence,
+      tcg_signals: tcg.signals,
       source_url: input.toString(),
       image: images[0] || "",
       images,

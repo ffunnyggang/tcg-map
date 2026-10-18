@@ -1,0 +1,33 @@
+name: Apply web FAB compatibility
+
+on:
+  push:
+    branches:
+      - aos-web-qa-20261019
+    paths:
+      - .github/workflows/apply-web-webfab.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply web FAB compatibility patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .qa/web-webfab.patch.gz.b64 | gzip -d > /tmp/web-webfab.patch
+          git apply --check /tmp/web-webfab.patch
+          git apply --index /tmp/web-webfab.patch
+          rm -rf .qa
+          rm -f .github/workflows/apply-web-webfab.yml
+          git add -A
+          git config user.name 'FUNY PIN QA'
+          git config user.email 'ffunnyggang@gmail.com'
+          git commit -m 'fix(web): use full launcher only for new AOS shell'
+          git push origin HEAD:aos-web-qa-20261019

@@ -108,7 +108,7 @@
    const a=$('#activeCount'),e=$('#endedCount');if(a)a.textContent=String(activeCount);if(e)e.textContent=String(endedCount);
  }
  function render(tab){
-   current=tab;history.replaceState(null,'','#'+tab);$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));syncTabCounts();
+   current=tab;history.replaceState(null,'','#'+tab);$$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));syncTabCounts();
    const list=rows.filter(x=>group(x)===tab);
    root.innerHTML=list.length?'<div class="market-manage-list">'+list.map(card).join('')+'</div>':'<div class="market-empty"><strong>'+(tab==='active'?'판매중인 매물이 없어요':'비노출·종료된 매물이 없어요')+'</strong>등록한 매물이 상태에 따라 이곳에 표시됩니다.</div>';
    bind();

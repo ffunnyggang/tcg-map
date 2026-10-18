@@ -118,6 +118,14 @@ Deno.serve(async(req:Request)=>{
     if(!externalUrl)throw new Error("외부 매물 URL이 없습니다.");
 
     const preview=await previewListing(auth,externalUrl);
+    if(preview?.tcg_allowed===false){
+      return new Response(JSON.stringify({
+        ok:false,
+        error:"TCG 관련 매물만 등록할 수 있어요. 입력한 매물이 트레이딩 카드 또는 TCG 관련 상품인지 확인해주세요.",
+        error_en:"Only TCG-related listings can be registered. Please check that this listing is for trading cards or a TCG-related product.",
+        error_code:"TCG_LISTING_REQUIRED"
+      }),{status:422,headers:cors});
+    }
     const provider=clean(preview?.provider);
     const externalListingId=clean(preview?.external_listing_id);
     const sellerIdentity=await sellerAccountIdentity(preview, user.id);

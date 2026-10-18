@@ -396,8 +396,24 @@
     return Object.keys(t).reduce((a,b)=>Math.abs(t[b]-top)<Math.abs(t[a]-top)?b:a,'half');
   }
   function ensureMarketSheetControlBridge(){
-    const sheet=document.querySelector('.list-wrap'),handle=sheet?.querySelector('.map-sheet-handle');
-    if(!sheet||!handle||handle.dataset.marketSheetController==='1')return;
+    const sheet=document.querySelector('.list-wrap');
+    if(!sheet)return;
+    let handle=sheet.querySelector('.map-sheet-handle');
+    if(!handle){
+      handle=document.createElement('div');
+      handle.className='map-sheet-handle';
+      handle.innerHTML='<span></span>';
+      const sticky=sheet.querySelector('.qa-sheet-sticky-head');
+      if(sticky&&!document.body.classList.contains('country-japan'))sticky.prepend(handle);
+      else sheet.prepend(handle);
+    }else if(!handle.querySelector('span')){
+      handle.innerHTML='<span></span>';
+    }
+    const sticky=sheet.querySelector('.qa-sheet-sticky-head');
+    if(sticky&&!document.body.classList.contains('country-japan')&&handle.parentNode!==sticky)sticky.prepend(handle);
+    handle.hidden=false;
+    handle.style.removeProperty('display');
+    if(handle.dataset.marketSheetController==='1')return;
     handle.dataset.marketSheetController='1';
     delete handle.dataset.marketSheetBridge;
     let pointerId=null,startX=0,startY=0,startTop=0,startMode='half',moved=false;
@@ -1620,6 +1636,10 @@
   const search=$('#map-shop-search');search?.addEventListener('input',()=>{renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);updateCounts();syncMarkers()});
   window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncLayerOrder();syncMarkers()});
   new MutationObserver(()=>{ensureLayerChip();if(isJapan()&&marketTabActive){document.querySelector('.qa-list-tab[data-tab="shops"]')?.click()}syncMarkers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
+
+  const sheetRecoveryObserver=new MutationObserver(()=>ensureMarketSheetControlBridge());
+  const sheetRecoveryRoot=document.querySelector('.list-wrap');
+  if(sheetRecoveryRoot)sheetRecoveryObserver.observe(sheetRecoveryRoot,{childList:true,subtree:true});
 
   const map=await waitForMap();
   const tabs=await waitForQaTabs();

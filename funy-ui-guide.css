@@ -23,6 +23,7 @@
   --funy-content-max:420px;
   --funy-system-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --funy-sub-header-font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --funy-back-glyph-font:Arial,Helvetica,sans-serif;
 }
 /* Channel headers: HOME / PICK / TALK / MY */
 .portal-header{
@@ -75,7 +76,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 .portal-shell .talk-body>.filters{top:54px!important}
 .portal-shell .popular-sort.show{top:104px!important}
 
-/* Common titled sub-page header: ‹ + title, matching 게시글 관리 */
+/* Common titled sub-page header: exact back-button style from 게시글 관리 */
 .funy-sub-header{
   box-sizing:border-box!important;
   position:sticky!important;
@@ -110,17 +111,16 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   border:0!important;
   border-radius:0!important;
   background:transparent!important;
-  color:var(--funy-text)!important;
+  color:#302A35!important;
   text-decoration:none!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  font-family:var(--funy-system-font)!important;
-  font-size:28px!important;
-  line-height:30px!important;
+  display:grid!important;
+  place-items:center!important;
+  font-family:var(--funy-back-glyph-font)!important;
+  font-size:29px!important;
+  line-height:1!important;
   font-weight:400!important;
   cursor:pointer!important;
-  transform:translateY(-1px)!important;
+  transform:none!important;
 }
 .funy-sub-header .funy-sub-title,
 .funy-sub-header>h1{
@@ -139,7 +139,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   text-align:left!important;
-  transform:translateY(-1px)!important;
+  transform:none!important;
 }
 .funy-sub-header>.brand,
 .funy-sub-header>p,
@@ -152,17 +152,24 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 /* MY web detail pages */
 .my-head.funy-sub-header,.head.funy-sub-header{width:min(100%,420px)!important}
 .my-head.funy-sub-header .my-back,.head.funy-sub-header .back{
+  box-sizing:border-box!important;
   flex:0 0 36px!important;
   width:36px!important;
   height:36px!important;
-  margin-right:4px!important;
+  min-width:36px!important;
+  margin:0 4px 0 0!important;
+  padding:0!important;
   border:0!important;
+  border-radius:0!important;
   background:transparent!important;
-  color:var(--funy-text)!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  font:400 28px/30px var(--funy-system-font)!important;
+  color:#302A35!important;
+  display:grid!important;
+  place-items:center!important;
+  font-family:var(--funy-back-glyph-font)!important;
+  font-size:29px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  transform:none!important;
 }
 .my-head.funy-sub-header .my-title,.head.funy-sub-header .title{
   min-width:0!important;
@@ -173,6 +180,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   letter-spacing:-.35px!important;
   color:var(--funy-text)!important;
   text-align:left!important;
+  transform:none!important;
 }
 
 /* FUNY PIN overflow menu guide
@@ -220,10 +228,20 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   content:url('/assets/profile/default-profile.svg?v=20261018-neutral2')!important;
 }
 .menu-row[href="/my-favorites.html"] .menu-icon{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
   font-size:0!important;
+  line-height:1!important;
 }
 .menu-row[href="/my-favorites.html"] .menu-icon::before{
   content:'💜';
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
   font-size:18px;
   line-height:1;
+  transform:translateY(1px);
 }

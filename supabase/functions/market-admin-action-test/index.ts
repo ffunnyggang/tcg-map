@@ -13,13 +13,30 @@ const SERVICE=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const admin=createClient(URL,SERVICE,{auth:{persistSession:false,autoRefreshToken:false}});
 const clean=(v:unknown)=>String(v??"").trim();
 
+function jwtSubject(token:string){
+ try{
+  const part=token.split(".")[1]||"";
+  const base64=part.replace(/-/g,"+").replace(/_/g,"/").padEnd(Math.ceil(part.length/4)*4,"=");
+  const payload=JSON.parse(atob(base64));
+  return clean(payload?.sub);
+ }catch{return "";}
+}
 async function adminUser(req:Request){
  const auth=req.headers.get("authorization")||"";
  const token=auth.replace(/^Bearer\s+/i,"");
  if(!token)throw new Error("관리자 로그인이 필요합니다.");
- const {data,error}=await admin.auth.getUser(token);
- if(error||!data.user)throw new Error("관리자 로그인 정보를 확인할 수 없습니다.");
- const email=clean(data.user.email).toLowerCase();
+
+ // This function is deployed with verify_jwt=true, so the gateway has already
+ // verified signature/expiry. Use the verified JWT subject to resolve the
+ // canonical Auth user and then check the separate admin_accounts registry.
+ const userId=jwtSubject(token);
+ if(!userId)throw new Error("관리자 로그인 정보를 확인할 수 없습니다.");
+
+ const {data:userData,error:userError}=await admin.auth.admin.getUserById(userId);
+ const user=userData?.user;
+ if(userError||!user)throw new Error("관리자 로그인 정보를 확인할 수 없습니다.");
+
+ const email=clean(user.email).toLowerCase();
  if(!email)throw new Error("관리자 이메일을 확인할 수 없습니다.");
  const {data:row,error:adminError}=await admin.from("admin_accounts")
   .select("email")
@@ -27,7 +44,7 @@ async function adminUser(req:Request){
   .eq("is_active",true)
   .maybeSingle();
  if(adminError||!row)throw new Error("관리자 권한이 없습니다.");
- return data.user;
+ return user;
 }
 async function audit(listingId:string|null,userId:string,eventType:string,eventData:Record<string,unknown>={}){
  await admin.from("market_listing_audit_logs").insert({listing_id:listingId,actor_user_id:userId,event_type:eventType,event_data:eventData});
@@ -165,6 +182,8 @@ Deno.serve(async(req:Request)=>{
 
   throw new Error("지원하지 않는 관리자 작업입니다.");
  }catch(e){
-  return new Response(JSON.stringify({ok:false,error:e instanceof Error?e.message:String(e)}),{status:400,headers:cors});
+  const message=e instanceof Error?e.message:String(e);
+  console.error("[MARKET ADMIN]",message,e);
+  return new Response(JSON.stringify({ok:false,error:message}),{status:400,headers:cors});
  }
 });

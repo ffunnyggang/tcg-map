@@ -1753,8 +1753,14 @@
   await loadRows();
   const identityReturned=await handleMarketIdentityReturn();
   if(!identityReturned){
-    const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId');
-    if(focus==='market'&&marketId){
+    const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId'),marketRegister=params.get('marketRegister');
+    if(marketRegister==='1'){
+      await openRegister();
+      try{
+        const u=new URL(location.href);u.searchParams.delete('marketRegister');
+        history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);
+      }catch(_){}
+    }else if(focus==='market'&&marketId){
       await focusMarketOnMap(marketId,{updateUrl:false});
     }else{
       const directMarket=location.hash.match(/^#market\/([0-9a-f-]{36})$/i);

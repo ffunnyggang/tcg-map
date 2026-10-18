@@ -23,7 +23,7 @@
  const date=v=>v?new Date(v).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,''):'';
  const provider={daangn:'당근',bunjang:'번개장터',break:'BREAK'},reason={seller_hidden:'내가 숨김',seller_deleted:'삭제한 매물',listing_expired:'노출 기간 만료',source_sold:'원본 판매완료',source_unavailable:'원본 접근불가',break_not_instant:'바로구매 불가',report_action:'신고 처리',admin_manual:'관리자 비노출'};
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)};
- if(!await FUNY_MY_TEST_GATE.ensure(A))returnconst uid=A.session.user.id;
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return;const uid=A.session.user.id;
  let rows=[],current=location.hash.replace('#','')||'active';if(!['active','hidden','sold'].includes(current))current='active';
  async function load(){
   root.innerHTML='<div class="loading">매물을 불러오는 중...</div>';

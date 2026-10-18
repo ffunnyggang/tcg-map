@@ -120,6 +120,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   line-height:30px!important;
   font-weight:400!important;
   cursor:pointer!important;
+  transform:translateY(-1px)!important;
 }
 .funy-sub-header .funy-sub-title,
 .funy-sub-header>h1{
@@ -138,6 +139,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   text-align:left!important;
+  transform:translateY(-1px)!important;
 }
 .funy-sub-header>.brand,
 .funy-sub-header>p,
@@ -201,4 +203,27 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 .funy-sub-header .funy-sub-back + h1.funy-sub-title{
   margin-left:0!important;
   text-align:left!important;
+}
+
+/* MY profile refinements */
+.profile-edit-inline{
+  border-color:#D8D6DC!important;
+  background:#FFFFFF!important;
+  color:#5F5B63!important;
+  box-shadow:none!important;
+}
+.profile-edit-inline:active{background:#F5F4F6!important}
+.avatar:has(>img.default-profile-icon){
+  background:#F1F1F3 url('/assets/profile/default-profile.svg?v=20261018-neutral2') center/cover no-repeat!important;
+}
+.avatar>img.default-profile-icon{
+  content:url('/assets/profile/default-profile.svg?v=20261018-neutral2')!important;
+}
+.menu-row[href="/my-favorites.html"] .menu-icon{
+  font-size:0!important;
+}
+.menu-row[href="/my-favorites.html"] .menu-icon::before{
+  content:'💜';
+  font-size:18px;
+  line-height:1;
 }

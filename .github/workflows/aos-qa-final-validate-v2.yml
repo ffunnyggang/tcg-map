@@ -6,6 +6,10 @@ on:
       - qa/aos-web-sync-20261019
     paths:
       - .github/workflows/aos-qa-final-validate-v2.yml
+      - mobile/scripts/qa-aos-ci.sh
+      - mobile/scripts/check-injected-js.mjs
+      - mobile/scripts/harden-aos-webview.py
+      - mobile/components/FunyWebView.tsx
   workflow_dispatch:
 
 permissions:

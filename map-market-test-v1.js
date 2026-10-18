@@ -1002,8 +1002,32 @@
     if(cleanUrl&&$('#marketRegisterUrl'))$('#marketRegisterUrl').value=cleanUrl;
     if(!url){setRegisterError('http 또는 www로 시작하는 외부 매물 링크를 입력해주세요.');return}
     setRegisterError('');registerProduct=null;registerPreviewUrl='';resetExternalVerification('매물 정보를 확인하는 중...');$('#marketRegisterLoad').disabled=true;$('#marketPreviewStatus').textContent='외부 매물 정보를 불러오는 중...';
-    try{const {data,error}=await A.client.functions.invoke('market-listing-preview-test',{body:{url}});if(error)throw error;if(!data?.ok)throw Error(data?.error||'매물 정보를 불러오지 못했습니다.');renderPreview(data);$('#marketPreviewStatus').textContent=providerName(data)+' · 자동 추출 완료 · 이미지 '+((data.images||[]).length||1)+'장'}
-    catch(e){registerProduct=null;$('#marketPreview')?.classList.remove('show');syncRegisterSubmitState();setRegisterError(String(e?.message||e));$('#marketPreviewStatus').textContent='매물 정보를 불러오지 못했습니다.'}
+    try{
+      const {data,error}=await A.client.functions.invoke('market-listing-preview-test',{body:{url}});
+      if(error)throw error;
+      if(!data?.ok)throw Error(data?.error||marketTr('매물 정보를 불러오지 못했습니다.','We couldn\'t load the listing.'));
+      if(data?.tcg_allowed===false){
+        registerProduct=null;registerPreviewUrl='';
+        $('#marketPreview')?.classList.remove('show');
+        resetExternalVerification(marketTr('TCG 관련 매물만 등록할 수 있습니다.','Only TCG-related listings can be registered.'));
+        syncRegisterSubmitState();
+        setRegisterError(marketTr(
+          'TCG 관련 매물만 등록할 수 있어요. 입력한 매물이 트레이딩 카드 또는 TCG 관련 상품인지 확인해주세요.',
+          'Only TCG-related listings can be registered. Please check that this listing is for trading cards or a TCG-related product.'
+        ));
+        $('#marketPreviewStatus').textContent=marketTr('등록할 수 없는 매물입니다.','This listing cannot be registered.');
+        return;
+      }
+      renderPreview(data);
+      $('#marketPreviewStatus').textContent=providerName(data)+' · '+marketTr('TCG 매물 확인 완료','TCG listing confirmed')+' · '+marketTr('이미지','Images')+' '+((data.images||[]).length||1)+'장'
+    }
+    catch(e){
+      registerProduct=null;
+      $('#marketPreview')?.classList.remove('show');
+      syncRegisterSubmitState();
+      setRegisterError(await marketFunctionErrorMessage(e,marketTr('매물 정보를 불러오지 못했습니다.','We couldn\'t load the listing.')));
+      $('#marketPreviewStatus').textContent=marketTr('매물 정보를 불러오지 못했습니다.','We couldn\'t load the listing.')
+    }
     finally{$('#marketRegisterLoad').disabled=false}
   }
   function selectRegisterLocation(lat,lng){

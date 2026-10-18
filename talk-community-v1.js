@@ -129,6 +129,16 @@ function renderAppPostPage(x,pushHash=true){
   }
   window.scrollTo(0,0);
   hydratePostDetail(x);
+  maybeOpenRequestedPostEdit(x);
+}
+function maybeOpenRequestedPostEdit(x){
+  try{
+    const u=new URL(location.href),editId=u.searchParams.get('editPost');
+    if(!editId||String(editId)!==String(x?.id)||String(x?.ownerUserId||'')!==String(uid()||''))return;
+    u.searchParams.delete('editPost');
+    history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);
+    setTimeout(()=>openPostEdit(),0);
+  }catch(_){}
 }
 function exitAppPostPage(){
   currentPost=null;

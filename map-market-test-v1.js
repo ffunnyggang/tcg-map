@@ -549,8 +549,13 @@
     },{passive:true});
   }
   function openOverlay(){
-    buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
+    buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=true;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
+    if(A.session&&registerBtn){
+      loadMarketSellerAccess(true).then(allowed=>{
+        if($('#marketOverlay')?.hidden===false)registerBtn.hidden=!allowed;
+      }).catch(()=>{registerBtn.hidden=true});
+    }
   }
   function closeOverlay(){const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if(registerBtn)registerBtn.hidden=true;closeSortMenus();document.body.style.overflow=''}
 

@@ -503,6 +503,17 @@
   function buildFab(){
     const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
+    const appMode=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell');
+
+    if(appMode){
+      wrap.classList.add('app-trade-only');
+      wrap.innerHTML='<button type="button" class="market-fab-main app-market-trade-button" aria-label="TCG 거래"><span class="market-fab-action-emoji">🃏</span><span class="market-fab-label">TCG 거래</span></button>';
+      home.appendChild(wrap);
+      const main=wrap.querySelector('.market-fab-main');
+      main.onclick=()=>openOverlay();
+      return;
+    }
+
     wrap.innerHTML='<div class="market-fab-dim" hidden></div><div class="market-fab-menu" hidden>'+
       '<a class="market-fab-action" href="live-pin.html"><span><b class="market-fab-action-emoji">⚡</b> LIVE PIN</span><span>›</span></a>'+
       '<button type="button" class="market-fab-action" data-open-market-overlay><span><b class="market-fab-action-emoji">🃏</b> TCG 거래</span><span>›</span></button></div>'+
@@ -512,13 +523,7 @@
     const setOpen=open=>{menu.hidden=!open;dim.hidden=!open;wrap.classList.toggle('open',open);main.classList.toggle('open',open);main.setAttribute('aria-expanded',open?'true':'false');wrap.classList.remove('is-scrolling');wrap.querySelector('.market-fab-plus').textContent=open?'×':'＋'};
     main.onclick=()=>setOpen(menu.hidden);
     dim.onclick=()=>setOpen(false);
-    wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',e=>{
-      setOpen(false);
-      if(window.ReactNativeWebView){
-        e.preventDefault();
-        try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/live-pin'}))}catch(_){}
-      }
-    });
+    wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',()=>setOpen(false));
     wrap.querySelector('[data-open-market-overlay]').onclick=()=>{setOpen(false);openOverlay()};
     compactOnScroll(wrap,window);compactOnScroll(wrap,$('.list-wrap'));
   }

@@ -2547,3 +2547,38 @@ html.app-shell body.market-page .market-overlay-register{
   right:16px!important;
   bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 16px)!important;
 }
+
+
+/* MARKET app temporary trade-only launcher v45 */
+html.app-shell body.market-page .market-fab-wrap.app-trade-only{
+  right:16px!important;
+  bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 116px)!important;
+  z-index:2147480400!important;
+}
+html.app-shell body.market-page .market-fab-wrap.app-trade-only .app-market-trade-button{
+  width:auto!important;
+  min-width:104px!important;
+  height:46px!important;
+  padding:0 16px!important;
+  border-radius:23px!important;
+  background:#17151b!important;
+  color:#fff!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  box-shadow:0 8px 24px rgba(17,16,21,.24)!important;
+}
+html.app-shell body.market-page .market-fab-wrap.app-trade-only .market-fab-label{
+  position:static!important;
+  opacity:1!important;
+  transform:none!important;
+  display:inline!important;
+  pointer-events:auto!important;
+}
+html.app-shell body.market-page .market-fab-wrap.app-trade-only.is-scrolling .app-market-trade-button{
+  width:auto!important;
+  min-width:104px!important;
+  padding:0 16px!important;
+  border-radius:23px!important;
+}

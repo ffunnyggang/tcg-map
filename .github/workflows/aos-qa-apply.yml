@@ -39,6 +39,17 @@ jobs:
           cache: npm
           cache-dependency-path: mobile/package-lock.json
 
+      - name: Normalize guarded patch script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/apply-aos-qa-update.py')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('"              ref.current?.injectJavaScript(`window.dispatchEvent', '"ref.current?.injectJavaScript(`window.dispatchEvent')
+          s=s.replace('"              exitBlockedTalkPost(ownerId,postId);\\n"', '"exitBlockedTalkPost(ownerId,postId);\\n"')
+          p.write_text(s,encoding='utf-8')
+          PY
+
       - name: Apply guarded AOS QA patch
         id: patch
         continue-on-error: true

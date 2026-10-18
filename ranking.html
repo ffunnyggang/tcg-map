@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><title>랭킹 | FUNY PIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/my-v2.css?v=20261018-feature1">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-feature-gate.js?v=20261018-feature1"></script>
+</head><body><div class="test-shell">
+<header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">랭킹</div><span></span></header>
+<main class="test-main">
+<div id="summary"><div class="loading">내 활동을 불러오는 중...</div></div>
+<section class="card switch-row"><div class="switch-copy"><b>랭킹 공개 참여</b><span>닉네임·프로필 이미지·활동 수치만 순위표에 표시됩니다.</span></div><button id="publicToggle" class="switch" type="button" aria-label="랭킹 공개 참여"></button></section>
+<section class="section"><div class="section-head"><h2>오늘의 활동</h2><span class="section-note">KST 기준</span></div><div class="card visit-box"><div id="attendanceStatus" class="visit-status">오늘 출석 여부를 확인하는 중...</div><div class="actions"><button id="attendanceBtn" class="primary">오늘 출석체크</button></div></div>
+<div class="card visit-box"><div class="visit-status"><b>카드샵 방문 인증</b><br>현재 위치와 매장 좌표를 비교하며, 정확한 위치 좌표는 저장하지 않습니다.</div><div class="actions"><button id="nearbyBtn" class="primary">주변 카드샵 찾기</button></div><div id="nearby" class="nearby"></div></div></section>
+<section class="section"><div class="section-head"><h2>랭킹</h2><span class="section-note">TOP 100</span></div>
+<div class="segment" id="categoryChips">
+<button class="chip on" data-category="attendance">출석</button><button class="chip" data-category="visit_total">방문 횟수</button><button class="chip" data-category="visit_unique">방문 카드샵 수</button><button class="chip" data-category="funymon_catches">퍼니몬 포획</button><button class="chip" data-category="funymon_unique">퍼니몬 종류</button>
+</div>
+<div class="tabs"><button class="tab on" data-period="month">이번 달</button><button class="tab" data-period="all">누적</button></div>
+<div id="ranking"><div class="loading">랭킹을 불러오는 중...</div></div>
+</section></main></div><div id="toast" class="toast"></div>
+<script>
+(async()=>{
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)};
+ const dist=(a,b)=>{const R=6371000,rad=x=>x*Math.PI/180,dLat=rad(a.lat-b.lat),dLng=rad(a.lng-b.lng),q=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
+ if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;const uid=A.session.user.id;
+ let category='attendance',period='month',publicOn=false,lastPos=null;
+ async function refreshSummary(){
+  const [d,v,f,p]=await Promise.all([
+    A.client.from('daily_checkins').select('checkin_date_kst').eq('user_id',uid).order('checkin_date_kst',{ascending:false}),
+    A.client.from('shop_visit_checkins').select('shop_id,visit_date_kst').eq('user_id',uid),
+    A.client.from('funy_mon_catches').select('monster_id,result,caught_at').eq('user_id',uid).neq('result','failed'),
+    A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle()
+  ]);
+  if(d.error)throw d.error;if(v.error)throw v.error;if(f.error)throw f.error;if(p.error)throw p.error;
+  const ds=d.data||[],vs=v.data||[],fs=f.data||[],uniqShop=new Set(vs.map(x=>x.shop_id)).size,uniqMon=new Set(fs.map(x=>x.monster_id)).size;
+  const today=new Date(Date.now()+9*3600000).toISOString().slice(0,10),checked=ds.some(x=>x.checkin_date_kst===today);
+  $('#summary').innerHTML='<div class="stat-grid"><div class="stat"><span>출석</span><b>'+ds.length+'회</b><small>'+(checked?'오늘 출석 완료':'오늘 미출석')+'</small></div><div class="stat"><span>카드샵 방문</span><b>'+vs.length+'회</b><small>서로 다른 매장 '+uniqShop+'곳</small></div><div class="stat"><span>퍼니몬 포획</span><b>'+fs.length+'회</b><small>서로 다른 퍼니몬 '+uniqMon+'종</small></div><div class="stat"><span>랭킹 공개</span><b>'+(p.data?.is_public?'ON':'OFF')+'</b><small>언제든 변경 가능</small></div></div>';
+  $('#attendanceStatus').textContent=checked?'오늘 출석체크를 완료했어요.':'오늘 아직 출석하지 않았어요.';
+  $('#attendanceBtn').disabled=checked;$('#attendanceBtn').textContent=checked?'오늘 출석 완료':'오늘 출석체크';
+  publicOn=!!p.data?.is_public;$('#publicToggle').classList.toggle('on',publicOn);
+ }
+ async function loadRanking(){
+  $('#ranking').innerHTML='<div class="loading">랭킹을 불러오는 중...</div>';
+  const {data,error}=await A.client.rpc('get_activity_rankings_test',{p_category:category,p_period:period,p_limit:100});if(error)throw error;if(!data?.ok)throw new Error(data?.error||'ranking');
+  publicOn=!!data.is_public;$('#publicToggle').classList.toggle('on',publicOn);
+  const rows=Array.isArray(data.rows)?data.rows:[],top=rows.slice(0,3),rest=rows.slice(3),unit={attendance:'회',visit_total:'회',visit_unique:'곳',funymon_catches:'회',funymon_unique:'종'}[category]||'';
+  const avatar=x=>x.avatar_url?'<img src="'+esc(x.avatar_url)+'" alt="">':'<img src="/assets/profile/default-profile.svg?v=20261018-neutral1" alt="">';
+  const medals=['🥇','🥈','🥉'];
+  $('#ranking').innerHTML=(rows.length?'<div class="rank-top">'+top.map((x,i)=>'<div class="rank-podium"><div class="medal">'+medals[i]+'</div><b>'+esc(x.nickname)+'</b><strong>'+Number(x.value).toLocaleString('ko-KR')+unit+'</strong></div>').join('')+'</div><div class="card rank-list">'+rest.map(x=>'<div class="rank-row"><span class="rank-no">'+x.rank+'</span><span class="rank-avatar">'+avatar(x)+'</span><span class="rank-name">'+esc(x.nickname)+'</span><span class="rank-value">'+Number(x.value).toLocaleString('ko-KR')+unit+'</span></div>').join('')+'</div>':'<div class="empty"><strong>아직 공개 랭킹이 없어요</strong>랭킹 공개 참여자가 생기면 순위가 표시됩니다.</div>')+'<div class="my-rank"><span>내 기록 '+Number(data.my_value||0).toLocaleString('ko-KR')+unit+'</span><span>'+(data.is_public?(data.my_rank?'현재 '+data.my_rank+'위':'순위 집계 대기'):'공개 OFF')+'</span></div>';
+ }
+ $('#publicToggle').onclick=async()=>{const next=!publicOn;const {error}=await A.client.from('ranking_preferences').upsert({user_id:uid,is_public:next,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error){alert(error.message);return}publicOn=next;toast(next?'랭킹 공개에 참여합니다.':'랭킹 공개를 해제했습니다.');await Promise.all([refreshSummary(),loadRanking()])};
+ $('#attendanceBtn').onclick=async()=>{const b=$('#attendanceBtn');b.disabled=true;const {data,error}=await A.client.rpc('my_daily_checkin_test');if(error||!data?.ok){alert(data?.error||error?.message||'출석 처리 실패');b.disabled=false;return}toast(data.new?'오늘 출석 완료!':'이미 오늘 출석했어요.');await Promise.all([refreshSummary(),loadRanking()])};
+ $('#nearbyBtn').onclick=()=>{const b=$('#nearbyBtn');b.disabled=true;b.textContent='위치 확인 중...';navigator.geolocation.getCurrentPosition(async pos=>{try{lastPos={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy||0};const {data,error}=await A.client.from('shops').select('id,name,area,latitude,longitude').eq('is_active',true).not('latitude','is',null).not('longitude','is',null);if(error)throw error;const rows=(data||[]).map(x=>({...x,distance:dist(lastPos,{lat:+x.latitude,lng:+x.longitude})})).sort((a,b)=>a.distance-b.distance).slice(0,5);$('#nearby').innerHTML=rows.map(x=>'<div class="nearby-row"><div class="nearby-copy"><b>'+esc(x.name)+'</b><span>'+esc(x.area||'')+' · '+(x.distance<1000?Math.round(x.distance)+'m':(x.distance/1000).toFixed(1)+'km')+'</span></div><button class="btn primary" data-visit="'+esc(x.id)+'" '+(x.distance>500?'disabled':'')+'>방문 인증</button></div>').join('')||'<div class="empty">주변 카드샵을 찾지 못했어요.</div>';bindVisit()}catch(e){alert(String(e?.message||e))}finally{b.disabled=false;b.textContent='주변 카드샵 다시 찾기'}},()=>{alert('위치 권한을 확인해주세요.');b.disabled=false;b.textContent='주변 카드샵 찾기'},{enableHighAccuracy:true,timeout:9000,maximumAge:15000})};
+ function bindVisit(){$$('[data-visit]').forEach(b=>b.onclick=async()=>{if(!lastPos)return;b.disabled=true;const {data,error}=await A.client.rpc('my_shop_visit_checkin_test',{p_shop_id:b.dataset.visit,p_lat:lastPos.lat,p_lng:lastPos.lng,p_accuracy:lastPos.accuracy});if(error||!data?.ok){const code=data?.error||error?.message||'visit_failed',msg=code==='too_far'?'매장과 너무 멀리 떨어져 있어요.':code==='low_accuracy'?'GPS 정확도가 낮습니다. 잠시 후 다시 시도해주세요.':code;alert(msg);b.disabled=false;return}toast(data.new?data.shop_name+' 방문 인증 완료!':'오늘 이미 이 매장을 인증했어요.');await Promise.all([refreshSummary(),loadRanking()])})}
+ $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;$$('#categoryChips .chip').forEach(x=>x.classList.toggle('on',x===b));loadRanking().catch(e=>alert(e.message))});
+ $$('[data-period]').forEach(b=>b.onclick=()=>{period=b.dataset.period;$$('[data-period]').forEach(x=>x.classList.toggle('on',x===b));loadRanking().catch(e=>alert(e.message))});
+ await Promise.all([refreshSummary(),loadRanking()]);
+})().catch(e=>{document.getElementById('ranking').innerHTML='<div class="error"><strong>랭킹을 불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
+</script></body></html>

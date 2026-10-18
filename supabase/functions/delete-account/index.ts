@@ -98,6 +98,23 @@ Deno.serve(async (req: Request) => {
   });
 
   try {
+    const normalizedEmail = String(user.email || "").trim().toLowerCase();
+    if (normalizedEmail) {
+      const { data: adminAccount, error: adminAccountError } = await admin
+        .from("admin_accounts")
+        .select("email,is_active")
+        .eq("email", normalizedEmail)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (adminAccountError) throw adminAccountError;
+      if (adminAccount) {
+        return json({
+          error: "ADMIN_ACCOUNT_PROTECTED",
+          message: "관리자 계정은 일반 FUNY PIN 회원 탈퇴 대상에서 제외됩니다."
+        }, 403, req);
+      }
+    }
+
     const [profilePaths, communityPaths] = await Promise.all([
       listUserStoragePaths(admin, "profile-images", user.id, false),
       listUserStoragePaths(admin, "community-posts", user.id, true),

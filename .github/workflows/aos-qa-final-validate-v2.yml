@@ -58,4 +58,6 @@ jobs:
             exit 0
           fi
           git commit -m "qa(android): clean validated route set"
+          git fetch origin qa/aos-web-sync-20261019
+          git rebase origin/qa/aos-web-sync-20261019
           git push origin HEAD:qa/aos-web-sync-20261019

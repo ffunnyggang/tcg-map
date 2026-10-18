@@ -107,6 +107,7 @@ Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
   if(req.method!=="POST")return new Response(JSON.stringify({ok:false,error:"POST만 지원합니다."}),{status:405,headers:cors});
 
+  let quotaEventId:string|null=null;
   try{
     const {user,auth}=await currentUser(req);
     const body=await req.json().catch(()=>({}));
@@ -140,6 +141,15 @@ Deno.serve(async(req:Request)=>{
       }),{status:422,headers:cors});
     }
     const provider=clean(preview?.provider);
+    const sourceStatus=clean(preview?.source_status)||"unknown";
+    if(["sold","deleted","unavailable"].includes(sourceStatus)){
+      return new Response(JSON.stringify({
+        ok:false,
+        error:"판매가 종료되었거나 원본에서 확인할 수 없는 매물은 등록할 수 없어요.",
+        error_en:"Listings that are sold or no longer available on the original platform cannot be registered.",
+        error_code:"SOURCE_LISTING_UNAVAILABLE"
+      }),{status:422,headers:cors});
+    }
     const externalListingId=clean(preview?.external_listing_id);
     const sellerIdentity=await sellerAccountIdentity(preview, user.id);
     const externalSellerId=sellerIdentity.key;
@@ -237,6 +247,8 @@ Deno.serve(async(req:Request)=>{
       external_status:clean(preview?.availability)||null,
       direct_buy_available:preview?.direct_buy_available===true,
       listing_status:"active",
+      hidden_reason:null,
+      hidden_at:null,
       listing_side:"sell",
       tcg_category:category,
       item_type:itemType,
@@ -252,22 +264,47 @@ Deno.serve(async(req:Request)=>{
       seller_verification_challenge_id:verifiedChallengeId,
       fetched_at:preview?.fetched_at||now,
       source_last_checked_at:preview?.fetched_at||now,
-      source_status:clean(preview?.source_status)||"unknown",
+      source_status:sourceStatus,
       updated_at:now,
     };
 
     const {data:existing,error:existingError}=await admin.from("market_listings")
-      .select("id,source_refresh_count")
+      .select("id,source_refresh_count,listing_status,published_at,expires_at")
       .eq("seller_user_id",user.id)
       .eq("provider",provider)
       .eq("external_listing_id",externalListingId)
       .maybeSingle();
     if(existingError)throw existingError;
 
+    const nowMs=Date.now();
+    const existingExpiresAt=existing?.expires_at?Date.parse(existing.expires_at):NaN;
+    const existingStillVisible=!!existing?.id
+      && ["active","reserved"].includes(clean(existing.listing_status))
+      && Number.isFinite(existingExpiresAt)
+      && existingExpiresAt>nowMs;
+    const startsNewPublication=!existingStillVisible;
+
+    if(startsNewPublication){
+      const {data:eventId,error:quotaError}=await admin.rpc("claim_market_listing_publication_quota",{
+        p_user_id:user.id,
+        p_provider:provider,
+        p_external_listing_id:externalListingId,
+        p_publication_kind:existing?.id?"republish":"new"
+      });
+      if(quotaError)throw quotaError;
+      quotaEventId=clean(eventId)||null;
+    }
+
+    const publishedAt=startsNewPublication?now:(clean(existing?.published_at)||now);
+    const expiresAt=startsNewPublication
+      ?new Date(Date.now()+14*24*60*60*1000).toISOString()
+      :(clean(existing?.expires_at)||new Date(Date.now()+14*24*60*60*1000).toISOString());
+    const publicationRow={...row,published_at:publishedAt,expires_at:expiresAt};
+
     let saved:any=null;
     if(existing?.id){
       const {data,error}=await admin.from("market_listings")
-        .update({...row,source_refresh_count:(Number(existing.source_refresh_count)||0)+1})
+        .update({...publicationRow,source_refresh_count:(Number(existing.source_refresh_count)||0)+1})
         .eq("id",existing.id)
         .eq("seller_user_id",user.id)
         .select("*").single();
@@ -275,10 +312,17 @@ Deno.serve(async(req:Request)=>{
       saved=data;
     }else{
       const {data,error}=await admin.from("market_listings")
-        .insert({...row,source_refresh_count:1})
+        .insert({...publicationRow,source_refresh_count:1})
         .select("*").single();
       if(error)throw error;
       saved=data;
+    }
+
+    if(quotaEventId&&saved?.id){
+      await admin.from("market_listing_publication_events")
+        .update({listing_id:saved.id})
+        .eq("id",quotaEventId)
+        .eq("user_id",user.id);
     }
 
     return new Response(JSON.stringify({
@@ -289,6 +333,23 @@ Deno.serve(async(req:Request)=>{
       challenge_id:verifiedChallengeId
     }),{headers:cors});
   }catch(e){
-    return new Response(JSON.stringify({ok:false,error:e instanceof Error?e.message:String(e)}),{status:400,headers:cors});
+    if(quotaEventId){
+      try{await admin.from("market_listing_publication_events").delete().eq("id",quotaEventId)}catch(_){}
+    }
+    const raw=e instanceof Error?e.message:String(e);
+    let error=raw||"매물 등록을 처리하지 못했습니다.";
+    let errorEn="We couldn't register this listing. Please try again.";
+    let errorCode="MARKET_REGISTER_FAILED";
+    let status=400;
+    if(raw.includes("MARKET_DAILY_LIMIT_REACHED")){
+      error="하루에 새로 등록할 수 있는 매물은 최대 10개예요. 내일 다시 등록해주세요.";
+      errorEn="You can publish up to 10 new listings per day. Please try again tomorrow.";
+      errorCode="MARKET_DAILY_LIMIT_REACHED";status=429;
+    }else if(raw.includes("MARKET_MONTHLY_LIMIT_REACHED")){
+      error="한 달에 새로 등록할 수 있는 매물은 최대 30개예요. 다음 달에 다시 등록해주세요.";
+      errorEn="You can publish up to 30 new listings per month. Please try again next month.";
+      errorCode="MARKET_MONTHLY_LIMIT_REACHED";status=429;
+    }
+    return new Response(JSON.stringify({ok:false,error,error_en:errorEn,error_code:errorCode}),{status,headers:cors});
   }
 });

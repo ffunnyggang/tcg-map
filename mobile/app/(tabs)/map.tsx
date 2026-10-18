@@ -7,7 +7,7 @@ import FunyWebView from '../../components/FunyWebView';
 
 export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
-  const {__tabRefresh,country,shop,from}=useLocalSearchParams<{__tabRefresh?:string;country?:string;shop?:string;from?:string}>();
+  const {__tabRefresh,country,from}=useLocalSearchParams<{__tabRefresh?:string;country?:string;from?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
   const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}`;

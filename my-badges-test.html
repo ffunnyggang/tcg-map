@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-test-gate.js?v=20261018-mytest1"></script>
 </head><body><div class="test-shell">
 <header class="test-head"><button class="test-back" onclick="location.href='/my-test.html'" aria-label="뒤로가기">‹</button><div class="test-title">배지</div><span></span></header>
 <main class="test-main"><div class="test-banner"><span class="test-pill">TEST</span>미션·활동 기록을 기준으로 획득 가능한 배지를 자동 판정합니다.</div>
@@ -15,7 +16,7 @@
 <script>
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- await A.init();if(!A.session){A.goLogin('/my-badges-test.html');return}
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return
  const {data,error}=await A.client.rpc('sync_my_badges_test');if(error)throw error;if(!data?.ok)throw new Error(data?.error||'badge_error');
  const badges=Array.isArray(data.badges)?data.badges:[],earned=badges.filter(x=>x.earned).length;
  $('#summary').innerHTML='<div class="stat-grid"><div class="stat"><span>획득 배지</span><b>'+earned+'</b><small>전체 '+badges.length+'개</small></div><div class="stat"><span>달성률</span><b>'+Math.round((earned/Math.max(1,badges.length))*100)+'%</b><small>활동할수록 컬렉션이 채워져요</small></div></div>';

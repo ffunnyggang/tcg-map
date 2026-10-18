@@ -63,6 +63,63 @@ jobs:
           echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
           exit "$code"
 
+      - name: Apply Android-only location startup optimization
+        if: steps.patch.outcome == 'success'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('mobile/components/FunyWebView.tsx')
+          s=p.read_text(encoding='utf-8')
+          pattern=r"  const requestNativeLocation=useCallback\(async\(once=false\)=>\{.*?\},\[injectEvent,stopNativeLocation\]\);"
+          replacement="""  const requestNativeLocation=useCallback(async(once=false)=>{
+            try{
+              let permission;
+              if(Platform.OS==='ios'){
+                permission=await Location.getForegroundPermissionsAsync();
+                if(permission.status!=='granted')permission=await Location.requestForegroundPermissionsAsync();
+              }else permission=await Location.requestForegroundPermissionsAsync();
+              if(permission.status!=='granted'){
+                stopNativeLocation();
+                injectEvent('funy:nativelocationerror',{code:1,message:'위치 권한을 허용하면 내 위치를 표시할 수 있어요.'});
+                return;
+              }
+              let lastSentTimestamp=0,bestAccuracy=Number.POSITIVE_INFINITY;
+              const send=(pos:Location.LocationObject,force=false)=>{
+                const ts=Number(pos.timestamp)||Date.now(),accuracy=Number(pos.coords.accuracy)||Number.POSITIVE_INFINITY;
+                if(!force&&ts<lastSentTimestamp)return;
+                if(!force&&lastSentTimestamp>0&&accuracy>bestAccuracy*1.8&&ts-lastSentTimestamp<5000)return;
+                lastSentTimestamp=Math.max(lastSentTimestamp,ts);bestAccuracy=Math.min(bestAccuracy,accuracy);
+                injectEvent('funy:nativelocation',{latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy:pos.coords.accuracy??0,altitude:pos.coords.altitude??null,altitudeAccuracy:pos.coords.altitudeAccuracy??null,heading:pos.coords.heading??null,speed:pos.coords.speed??null,timestamp:ts});
+              };
+              if(Platform.OS==='ios'){
+                if(!once){
+                  const cachedPromise=Location.getLastKnownPositionAsync({maxAge:30000,requiredAccuracy:150}).catch(()=>null);
+                  stopNativeLocation();
+                  locationSub.current=await Location.watchPositionAsync({accuracy:Location.Accuracy.High,distanceInterval:2,timeInterval:1000},send);
+                  const cached=await cachedPromise;if(cached)send(cached,true);return;
+                }
+                const first=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High});send(first,true);stopNativeLocation();return;
+              }
+              const cached=await Location.getLastKnownPositionAsync({maxAge:30000,requiredAccuracy:150}).catch(()=>null);
+              if(cached)send(cached,true);
+              if(once&&cached){stopNativeLocation();return;}
+              if(!cached){
+                const first=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});send(first,true);
+                if(once){stopNativeLocation();return;}
+              }
+              stopNativeLocation();
+              locationSub.current=await Location.watchPositionAsync({accuracy:Location.Accuracy.High,distanceInterval:3,timeInterval:1800},send);
+            }catch(e:any){
+              stopNativeLocation();
+              injectEvent('funy:nativelocationerror',{code:2,message:String(e?.message||'현재 위치를 확인하지 못했습니다.')});
+            }
+          },[injectEvent,stopNativeLocation]);"""
+          s,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
+          if n!=1: raise SystemExit(f'location bridge replacement count={n}')
+          p.write_text(s,encoding='utf-8')
+          PY
+
       - name: Upload patch diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -91,7 +148,6 @@ jobs:
             mobile/lib/shops.ts
             mobile/QA_AOS_PREBUILD_20261019.md
             admin.html
-            scripts/apply-aos-qa-update.py
           if-no-files-found: warn
           retention-days: 3
 
@@ -167,18 +223,45 @@ jobs:
         working-directory: mobile
         run: npx expo-doctor
 
-      - name: Critical web JavaScript syntax
+      - name: Current production web JavaScript syntax
+        id: websyntax
+        continue-on-error: true
         run: |
-          node --check talk-community-v1.js
-          node --check talk-safety-v1.js
-          node --check funy-mon-v1.js
-          node --check map-market-v1.js
+          set +e
+          code=0
+          mkdir -p /tmp/funy-current-web
+          for file in talk-community-v1.js talk-safety-v1.js funy-mon-v1.js map-market-v1.js; do
+            echo "=== ${file} ===" | tee -a /tmp/aos-qa-web-syntax.log
+            if ! curl -fsSL "https://raw.githubusercontent.com/ffunnyggang/tcg-map/main/${file}" -o "/tmp/funy-current-web/${file}"; then
+              echo "download failed" | tee -a /tmp/aos-qa-web-syntax.log
+              code=1
+              continue
+            fi
+            node --check "/tmp/funy-current-web/${file}" 2>&1 | tee -a /tmp/aos-qa-web-syntax.log
+            test_code=${PIPESTATUS[0]}
+            if [ "$test_code" -ne 0 ]; then code="$test_code"; fi
+          done
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Upload current-web syntax diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-web-syntax-log-${{ github.run_number }}
+          path: /tmp/aos-qa-web-syntax.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Stop after current-web syntax failure
+        if: steps.websyntax.outcome != 'success'
+        run: exit 1
 
       - name: Commit validated QA changes
         run: |
           git config user.name "FUNY PIN QA Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add mobile admin.html scripts/apply-aos-qa-update.py .github/workflows/aos-qa-apply.yml
+          git add mobile admin.html
           if git diff --cached --quiet; then
             echo "No validated changes to commit."
             exit 0

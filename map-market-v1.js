@@ -507,7 +507,7 @@
 
     if(appMode){
       wrap.classList.add('app-trade-only');
-      wrap.innerHTML='<button type="button" class="market-fab-main app-market-trade-button" aria-label="TCG 거래"><span class="market-fab-action-emoji">🃏</span><span class="market-fab-label">TCG 거래</span></button>';
+      wrap.innerHTML='<button type="button" class="market-fab-main app-market-trade-button" aria-label="TCG 거래"><span class="market-fab-action-emoji">🃏</span><span class="market-fab-label">TCG 거래</span><span class="market-fab-arrow" aria-hidden="true">›</span></button>';
       home.appendChild(wrap);
       const main=wrap.querySelector('.market-fab-main');
       main.onclick=()=>openOverlay();

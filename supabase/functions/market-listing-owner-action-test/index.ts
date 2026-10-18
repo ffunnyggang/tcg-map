@@ -73,10 +73,17 @@ Deno.serve(async(req:Request)=>{
       let listingStatus=listing.listing_status;
       let hiddenReason=listing.hidden_reason;
       let hiddenAt=listing.hidden_at;
+      const expired=!!listing.expires_at&&Date.parse(listing.expires_at)<=Date.now();
+      const breakNotInstant=listing.provider==="break"&&clean(p.break_transaction_mode)!=="instant";
 
-      if(sourceStatus==="sold")listingStatus="sold";
-      else if(sourceStatus==="deleted"||sourceStatus==="unavailable"){
+      if(expired){
+        listingStatus="expired";hiddenReason="listing_expired";hiddenAt=hiddenAt||now;
+      }else if(sourceStatus==="sold"){
+        listingStatus="sold";hiddenReason="source_sold";hiddenAt=now;
+      }else if(sourceStatus==="deleted"||sourceStatus==="unavailable"){
         listingStatus="hidden";hiddenReason="source_unavailable";hiddenAt=now;
+      }else if(breakNotInstant){
+        listingStatus="hidden";hiddenReason="break_not_instant";hiddenAt=now;
       }else if(sourceStatus==="active"&&listing.hidden_reason!=="seller_hidden"){
         listingStatus="active";hiddenReason=null;hiddenAt=null;
       }

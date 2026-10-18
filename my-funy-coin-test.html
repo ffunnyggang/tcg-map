@@ -1,27 +1,30 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
-<title>퍼니코인 비공개 테스트 | FUNY PIN</title>
-<link rel="icon" href="/favicon.svg">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><title>퍼니코인 TEST | FUNY PIN</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/my-web.css?v=20261014-my3">
-<link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui2">
+<link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
 <style>
-.wallet-hero{padding:25px 19px;background:linear-gradient(145deg,#2b2630,#5e459d);color:#fff}.wallet-hero small{font-size:10px;opacity:.7}.wallet-hero strong{display:block;margin-top:8px;font-size:34px}.wallet-hero span{font-size:11px;opacity:.8}.private{display:inline-block;margin-top:14px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.14);font-size:8px;font-weight:900}.section{padding:19px}.section h2{margin:0 0 12px;font-size:15px}.ledger{display:grid;gap:8px}.tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px;border:1px solid #ece8ef;border-radius:13px}.tx b{display:block;font-size:11px}.tx span{display:block;margin-top:4px;color:#918996;font-size:9px}.tx strong{font-size:12px}.tx strong.plus{color:#348554}.tx strong.minus{color:#b42318}.empty{padding:30px;text-align:center;color:#9a929e;font-size:10px}
-</style>
-<script src="/web-auth.js?v=20261016-auth-fix1"></script>
-<script src="/my-web-common.js?v=20261014-my2"></script>
-</head>
-<body>
-<div class="my-page">
-<header class="my-head funy-sub-header"><button class="my-back funy-sub-back" onclick="FUNY_MY_WEB.back()" aria-label="뒤로가기">‹</button><div class="my-title funy-sub-title">퍼니코인</div></header>
-<main id="root" class="my-content"><div class="my-loading">퍼니코인을 불러오는 중...</div></main>
-</div>
+.coin-hero{margin-top:12px;padding:21px 18px;border-radius:20px;background:linear-gradient(145deg,#2B2630,#6047A1);color:#fff}.coin-hero small{font-size:10px;opacity:.72}.coin-hero strong{display:block;margin-top:6px;font-size:34px}.coin-hero span{font-size:10px;opacity:.8}.coin-expire{margin-top:10px;padding:11px 12px;border:1px solid #E8E2EC;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:space-between}.coin-expire span{color:#8F8793;font-size:10px}.coin-expire b{font-size:14px}.tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:13px;border:1px solid #EAE5EE;border-radius:14px;background:#fff}.tx b{display:block;font-size:11px}.tx span{display:block;margin-top:4px;color:#958D99;font-size:9px;line-height:1.45}.tx strong{font-size:12px}.plus{color:#368554}.minus{color:#B34D5C}
+</style></head><body><div class="test-shell">
+<header class="test-head"><button class="test-back" onclick="location.href='/my-test.html'" aria-label="뒤로가기">‹</button><div class="test-title">퍼니코인</div><span></span></header>
+<main class="test-main"><div class="test-banner"><span class="test-pill">TEST</span>보유 코인과 적립·사용 내역을 실제 계정 데이터로 확인합니다. 소멸 정책은 테스트 화면에서 우선 표시 구조만 검증합니다.</div>
+<div id="summary"><div class="loading">퍼니코인을 불러오는 중...</div></div>
+<div class="segment"><button class="chip on" data-filter="all">전체</button><button class="chip" data-filter="earn">적립</button><button class="chip" data-filter="spend">사용</button></div>
+<div id="root"></div></main></div>
 <script>
-(async()=>{const H=FUNY_MY_WEB,A=await H.ready('/my-funy-coin-test.html');if(!A)return;const root=document.getElementById('root');const labels={signup_bonus:'회원가입 보너스',mission_reward:'미션 보상',event_reward:'이벤트 보상',garapon_spend:'가라폰 참여',garapon_refund:'가라폰 환불',admin_grant:'관리자 지급',admin_deduct:'관리자 회수'};try{const {data,error}=await A.client.rpc('get_my_funy_coin_wallet');if(error)throw error;if(!data?.ok)throw new Error(data?.error||'wallet');const rows=data.transactions||[];root.innerHTML='<section class="wallet-hero"><small>보유 퍼니코인</small><strong>'+Number(data.balance||0).toLocaleString('ko-KR')+'</strong><span>FUNY COIN</span><div class="private">PRIVATE TEST</div></section><section class="section"><h2>사용·적립 내역</h2><div class="ledger">'+(rows.length?rows.map(x=>'<article class="tx"><div><b>'+H.esc(x.description||labels[x.type]||x.type)+'</b><span>'+H.date(x.created_at)+' · 잔액 '+Number(x.balance_after||0).toLocaleString('ko-KR')+'개</span></div><strong class="'+(Number(x.amount)>0?'plus':'minus')+'">'+(Number(x.amount)>0?'+':'')+Number(x.amount).toLocaleString('ko-KR')+'</strong></article>').join(''):'<div class="empty">아직 퍼니코인 내역이 없어요.</div>')+'</div></section>'}catch(e){console.warn(e);root.innerHTML='<div class="my-empty"><strong>불러오지 못했어요</strong>테스트 계정 권한과 로그인 상태를 확인해주세요.</div>'}})();
-</script>
-</body>
-</html>
+(async()=>{
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),date=v=>v?new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+ const labels={signup_bonus:'회원가입 보너스',mission_reward:'미션 보상',event_reward:'이벤트 보상',garapon_spend:'가라폰 참여',garapon_refund:'가라폰 환불',admin_grant:'관리자 지급',admin_deduct:'관리자 회수'};
+ await A.init();if(!A.session){A.goLogin('/my-funy-coin-test.html');return}const uid=A.session.user.id;
+ const [w,l]=await Promise.all([A.client.from('funy_coin_wallets').select('balance').eq('user_id',uid).maybeSingle(),A.client.from('funy_coin_ledger').select('id,amount,balance_after,transaction_type,source_type,source_id,description,metadata,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(100)]);
+ if(w.error)throw w.error;if(l.error)throw l.error;const rows=l.data||[],balance=Number(w.data?.balance||0),now=Date.now(),limit=now+30*86400000;
+ const expiring=rows.filter(x=>Number(x.amount)>0&&x.metadata?.expires_at&&Date.parse(x.metadata.expires_at)>now&&Date.parse(x.metadata.expires_at)<=limit).reduce((s,x)=>s+Number(x.amount||0),0);
+ $('#summary').innerHTML='<section class="coin-hero"><small>현재 사용 가능한 코인</small><strong>'+balance.toLocaleString('ko-KR')+'</strong><span>FUNY COIN</span></section><div class="coin-expire"><span>30일 내 소멸 예정</span><b>'+expiring.toLocaleString('ko-KR')+' C</b></div>';
+ let filter='all';
+ function render(){const list=rows.filter(x=>filter==='all'||(filter==='earn'?Number(x.amount)>0:Number(x.amount)<0));$('#root').innerHTML='<div class="list">'+(list.length?list.map(x=>'<article class="tx"><div><b>'+esc(x.description||labels[x.transaction_type]||x.transaction_type||'퍼니코인')+'</b><span>'+date(x.created_at)+' · 잔액 '+Number(x.balance_after||0).toLocaleString('ko-KR')+' C'+(x.source_type?' · '+esc(x.source_type):'')+'</span></div><strong class="'+(Number(x.amount)>0?'plus':'minus')+'">'+(Number(x.amount)>0?'+':'')+Number(x.amount||0).toLocaleString('ko-KR')+' C</strong></article>').join(''):'<div class="empty"><strong>해당 내역이 없어요</strong>적립하거나 사용한 퍼니코인이 이곳에 표시됩니다.</div>')+'</div>'}
+ $$('.chip').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});render();
+})().catch(e=>{document.getElementById('summary').innerHTML='<div class="error"><strong>퍼니코인을 불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
+</script></body></html>

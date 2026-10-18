@@ -27,7 +27,7 @@
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)};
  const dist=(a,b)=>{const R=6371000,rad=x=>x*Math.PI/180,dLat=rad(a.lat-b.lat),dLng=rad(a.lng-b.lng),q=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
- if(!await FUNY_MY_TEST_GATE.ensure(A))returnconst uid=A.session.user.id;
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return;const uid=A.session.user.id;
  let category='attendance',period='month',publicOn=false,lastPos=null;
  async function refreshSummary(){
   const [d,v,f,p]=await Promise.all([

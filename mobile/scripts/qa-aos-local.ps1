@@ -11,13 +11,14 @@ Write-Host "[FUNY PIN] AOS local QA — no AAB build" -ForegroundColor Cyan
 Write-Host "Project: $RepoRoot"
 
 $branch = git branch --show-current
-if ($branch -ne 'qa/aos-web-sync-20261019') {
-  throw "QA branch required. Current branch: $branch"
+$allowedBranches = @('qa/aos-web-sync-20261019','rc/aos-closed-test-20261019')
+if ($allowedBranches -notcontains $branch) {
+  throw "AOS QA/RC branch required. Current branch: $branch"
 }
 
 git fetch origin app-mvp --quiet
 
-Write-Host "1/7 Locked native files"
+Write-Host "1/8 Locked native files"
 $locked = @(
   'mobile/app/(tabs)/map.tsx',
   'mobile/app/(tabs)/_layout.tsx',
@@ -32,24 +33,29 @@ $locked = @(
 git diff --exit-code origin/app-mvp -- $locked
 
 Set-Location $MobileRoot
-Write-Host "2/7 Reproducible dependency install"
+Write-Host "2/8 Reproducible dependency install"
 npm ci
 
-Write-Host "3/7 TypeScript"
+Write-Host "3/8 TypeScript"
 npx tsc --noEmit
 
-Write-Host "4/7 Expo Doctor"
+Write-Host "4/8 Expo Doctor"
 npx expo-doctor
 
-Write-Host "5/7 Expo public config"
+Write-Host "5/8 Expo public config"
 npx expo config --type public | Out-File -Encoding utf8 (Join-Path $MobileRoot '.qa-expo-config.json')
 
-Write-Host "6/7 Android Metro export (not an AAB build)"
+Set-Location $RepoRoot
+Write-Host "6/8 WebView injected JavaScript syntax"
+node mobile/scripts/check-injected-js.mjs
+
+Set-Location $MobileRoot
+Write-Host "7/8 Android Metro export (not an AAB build)"
 $ExportPath = Join-Path $MobileRoot '.qa-android-export'
 if (Test-Path $ExportPath) { Remove-Item $ExportPath -Recurse -Force }
 npx expo export --platform android --output-dir $ExportPath --clear
 
-Write-Host "7/7 Temporary Android prebuild (no Gradle assemble/bundle)"
+Write-Host "8/8 Temporary Android prebuild (no Gradle assemble/bundle)"
 $TempRoot = Join-Path $env:TEMP 'funy-mobile-prebuild'
 if (Test-Path $TempRoot) { Remove-Item $TempRoot -Recurse -Force }
 New-Item -ItemType Directory -Path $TempRoot | Out-Null

@@ -126,6 +126,19 @@ Deno.serve(async(req:Request)=>{
         error_code:"TCG_LISTING_REQUIRED"
       }),{status:422,headers:cors});
     }
+    if(clean(preview?.provider)==="break"&&clean(preview?.break_transaction_mode)!=="instant"){
+      const auction=clean(preview?.break_transaction_mode)==="auction";
+      return new Response(JSON.stringify({
+        ok:false,
+        error:auction
+          ?"BREAK는 '즉시 거래' 상품만 등록할 수 있어요. 경매 상품은 등록할 수 없습니다."
+          :"BREAK 거래 방식을 확인할 수 없습니다. '즉시 거래' 상품 링크인지 확인해주세요.",
+        error_en:auction
+          ?"Only BREAK instant-sale listings can be registered. Auction listings are not supported."
+          :"We couldn't confirm the BREAK transaction type. Please use an instant-sale listing.",
+        error_code:auction?"BREAK_AUCTION_NOT_ALLOWED":"BREAK_INSTANT_ONLY"
+      }),{status:422,headers:cors});
+    }
     const provider=clean(preview?.provider);
     const externalListingId=clean(preview?.external_listing_id);
     const sellerIdentity=await sellerAccountIdentity(preview, user.id);

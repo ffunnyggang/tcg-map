@@ -20,7 +20,7 @@ if s.count(single)<1:
 p.write_text(s,encoding='utf-8')
 PY
 
-echo '[1/10] Locked native files'
+echo '[1/11] Locked native files'
 git diff --exit-code origin/app-mvp -- \
   'mobile/app/(tabs)/map.tsx' \
   'mobile/app/(tabs)/_layout.tsx' \
@@ -32,7 +32,7 @@ git diff --exit-code origin/app-mvp -- \
   mobile/app.config.js \
   mobile/eas.json
 
-echo '[2/10] Intended changed-file boundary'
+echo '[2/11] Intended changed-file boundary'
 python - <<'PY'
 import subprocess
 allowed={
@@ -54,6 +54,7 @@ allowed={
   'mobile/lib/shops.ts',
   'mobile/package-lock.json',
   'mobile/package.json',
+  'mobile/scripts/check-injected-js.mjs',
   'mobile/scripts/harden-aos-webview.py',
   'mobile/scripts/qa-aos-ci.sh',
   'mobile/scripts/qa-aos-local.ps1',
@@ -66,21 +67,21 @@ if unexpected:
 print('Changed-file boundary OK:',len(changed),'files')
 PY
 
-echo '[3/10] Reproducible dependency install'
+echo '[3/11] Reproducible dependency install'
 cd "$MOBILE_ROOT"
 npm ci
 
-echo '[4/10] TypeScript'
+echo '[4/11] TypeScript'
 npx tsc --noEmit
 
-echo '[5/10] Expo Doctor'
+echo '[5/11] Expo Doctor'
 npx expo-doctor
 
-echo '[6/10] Expo public config'
+echo '[6/11] Expo public config'
 npx expo config --type public > /tmp/funy-expo-config.json
 
 cd "$REPO_ROOT"
-echo '[7/10] Static regression assertions'
+echo '[7/11] Static regression assertions'
 python - <<'PY'
 from pathlib import Path
 web=Path('mobile/components/FunyWebView.tsx').read_text(encoding='utf-8')
@@ -109,18 +110,21 @@ for name,ok in checks.items(): print(('PASS' if ok else 'FAIL'),name)
 if failed: raise SystemExit('Static assertions failed: '+', '.join(failed))
 PY
 
-echo '[8/10] Current production web syntax'
+echo '[8/11] WebView injected JavaScript syntax'
+node mobile/scripts/check-injected-js.mjs
+
+echo '[9/11] Current production web syntax'
 mkdir -p /tmp/funy-current-web
 for file in talk-community-v1.js talk-safety-v1.js funy-mon-v1.js map-market-v1.js; do
   curl -fsSL "https://raw.githubusercontent.com/ffunnyggang/tcg-map/main/${file}" -o "/tmp/funy-current-web/${file}"
   node --check "/tmp/funy-current-web/${file}"
 done
 
-echo '[9/10] Android Metro export (no AAB)'
+echo '[10/11] Android Metro export (no AAB)'
 cd "$MOBILE_ROOT"
 CI=1 npx expo export --platform android --output-dir /tmp/funy-android-export --clear
 
-echo '[10/10] Temporary Android prebuild (no Gradle build)'
+echo '[11/11] Temporary Android prebuild (no Gradle build)'
 cd "$REPO_ROOT"
 rm -rf /tmp/funy-mobile-prebuild
 mkdir -p /tmp/funy-mobile-prebuild
@@ -140,6 +144,7 @@ cat > /tmp/AOS_FINAL_QA_RESULT.md <<'EOF'
 - TypeScript passed
 - Expo Doctor passed
 - Expo public config passed
+- WebView injected JavaScript syntax passed
 - Current production web JavaScript syntax passed
 - Android Metro export passed
 - Temporary Android Expo prebuild passed

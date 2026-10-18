@@ -243,5 +243,29 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   place-items:center;
   font-size:18px;
   line-height:1;
-  transform:translateY(1px);
+  transform:translateY(2px);
+}
+
+/* One canonical back glyph for both 게시글 관리 (.test-back) and all guided subpages. */
+.test-back,
+.funy-sub-header .funy-sub-back,
+.funy-sub-header>.back,
+.funy-sub-header .top>.back,
+.my-head.funy-sub-header .my-back,
+.head.funy-sub-header .back{
+  box-sizing:border-box!important;
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#302A35!important;
+  display:grid!important;
+  place-items:center!important;
+  font-family:var(--funy-back-glyph-font)!important;
+  font-size:29px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  transform:none!important;
 }

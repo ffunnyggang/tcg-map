@@ -490,6 +490,16 @@
     if(!target||!scroller)return;let timer=0;
     scroller.addEventListener('scroll',()=>{if(target.classList.contains('open'))return;target.classList.add('is-scrolling');clearTimeout(timer);timer=setTimeout(()=>target.classList.remove('is-scrolling'),850)},{passive:true});
   }
+  function postNativeMarketOverlayState(open){
+    if(!window.ReactNativeWebView)return;
+    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:'market'}))}catch(_){}
+  }
+  function syncNativeMarketOverlayState(){
+    const ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
+    const open=ids.some(id=>{const el=$('#'+id);return !!el&&el.hidden===false});
+    postNativeMarketOverlayState(open);
+  }
+
   function buildFab(){
     const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
@@ -502,7 +512,13 @@
     const setOpen=open=>{menu.hidden=!open;dim.hidden=!open;wrap.classList.toggle('open',open);main.classList.toggle('open',open);main.setAttribute('aria-expanded',open?'true':'false');wrap.classList.remove('is-scrolling');wrap.querySelector('.market-fab-plus').textContent=open?'×':'＋'};
     main.onclick=()=>setOpen(menu.hidden);
     dim.onclick=()=>setOpen(false);
-    wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',()=>setOpen(false));
+    wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',e=>{
+      setOpen(false);
+      if(window.ReactNativeWebView){
+        e.preventDefault();
+        try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/live-pin'}))}catch(_){}
+      }
+    });
     wrap.querySelector('[data-open-market-overlay]').onclick=()=>{setOpen(false);openOverlay()};
     compactOnScroll(wrap,window);compactOnScroll(wrap,$('.list-wrap'));
   }
@@ -540,15 +556,11 @@
     },{passive:true});
   }
   function openOverlay(){
-    buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=true;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
+    buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
-    if(A.session&&registerBtn){
-      loadMarketSellerAccess(true).then(allowed=>{
-        if($('#marketOverlay')?.hidden===false)registerBtn.hidden=!allowed;
-      }).catch(()=>{registerBtn.hidden=true});
-    }
+    postNativeMarketOverlayState(true);
   }
-  function closeOverlay(){const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if(registerBtn)registerBtn.hidden=true;closeSortMenus();document.body.style.overflow=''}
+  function closeOverlay(){const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if(registerBtn)registerBtn.hidden=true;closeSortMenus();document.body.style.overflow='';requestAnimationFrame(syncNativeMarketOverlayState)}
 
   function sanitizeExternalMarketUrl(raw){
     const text=String(raw||'').trim();
@@ -645,6 +657,7 @@
       return;
     }
     buildRegister();const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;el.hidden=false;document.body.style.overflow='hidden';
+    postNativeMarketOverlayState(true);
     const scroll=el.querySelector('.market-register-scroll');if(scroll){scroll.scrollTop=0;requestAnimationFrame(()=>scroll.scrollTo({top:0,left:0,behavior:'auto'}))}
 
     loadMarketIdentityStatus();
@@ -659,7 +672,7 @@
     }else setTimeout(()=>{naver.maps.Event.trigger(registerMap,'resize');focusRegisterMapForProduct(registerProduct)},80);
     syncRegisterSubmitState();
   }
-  function closeRegister(){const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if($('#marketOverlay')?.hidden===false&&floatingRegister)floatingRegister.hidden=false;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow=''}
+  function closeRegister(){const el=$('#marketRegisterOverlay'),floatingRegister=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if($('#marketOverlay')?.hidden===false&&floatingRegister)floatingRegister.hidden=false;if($('#marketOverlay')?.hidden!==false)document.body.style.overflow='';requestAnimationFrame(syncNativeMarketOverlayState)}
   function setRegisterError(msg){const el=$('#marketRegisterError');if(!el)return;el.textContent=msg||'';el.style.display=msg?'block':'none'}
   async function marketFunctionErrorMessage(error,fallback='요청을 처리하지 못했습니다.'){
     try{
@@ -1306,6 +1319,7 @@
       '<div class="market-detail-bottom"><a id="marketDetailTrade" class="market-detail-trade '+providerClass+(ended?' disabled':'')+'" href="'+esc(x.external_url)+'" target="_blank" rel="noopener">'+(ended?'판매가 종료된 매물입니다':esc(sourceName)+'에서 구매하기')+'</a></div>';
     const floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;
     overlay.hidden=false;document.body.style.overflow='hidden';
+    postNativeMarketOverlayState(true);
     overlay.scrollTop=0;
     requestAnimationFrame(()=>{overlay.scrollTo({top:0,left:0,behavior:'auto'});const track=$('#marketDetailCarousel');if(track)track.scrollLeft=0});
     setTimeout(()=>overlay.scrollTo({top:0,left:0,behavior:'auto'}),0);
@@ -1364,6 +1378,7 @@
     if(floatingRegister)floatingRegister.hidden=$('#marketOverlay')?.hidden!==false;
     if(location.hash.startsWith('#market/'))history.replaceState(null,'',location.pathname+location.search);
     if($('#marketOverlay')?.hidden!==false&&$('#marketRegisterOverlay')?.hidden!==false)document.body.style.overflow='';
+    requestAnimationFrame(syncNativeMarketOverlayState);
   }
 
   async function deleteOwnedListing(x){
@@ -1419,9 +1434,9 @@
   let marketReportListingId='';
   function openMarketReport(id){
     if(!A.session){A.goLogin(location.pathname+location.search+location.hash);return}
-    buildMarketReport();marketReportListingId=id;$('#marketReportOverlay').hidden=false;document.body.style.overflow='hidden'
+    buildMarketReport();marketReportListingId=id;$('#marketReportOverlay').hidden=false;document.body.style.overflow='hidden';postNativeMarketOverlayState(true)
   }
-  function closeMarketReport(){const el=$('#marketReportOverlay');if(el)el.hidden=true;marketReportListingId='';if($('#marketDetailOverlay')?.hidden!==false)document.body.style.overflow='hidden';else document.body.style.overflow=''}
+  function closeMarketReport(){const el=$('#marketReportOverlay');if(el)el.hidden=true;marketReportListingId='';if($('#marketDetailOverlay')?.hidden!==false)document.body.style.overflow='hidden';else document.body.style.overflow='';requestAnimationFrame(syncNativeMarketOverlayState)}
   async function submitMarketReport(){
     if(!marketReportListingId)return;const btn=$('#marketReportSubmit');btn.disabled=true;btn.textContent='접수 중...';
     try{
@@ -1673,6 +1688,7 @@
     const sheet=document.querySelector('.list-wrap'),mode=sheet?.dataset.sheet||'half';
     requestAnimationFrame(()=>marketApplySheetMode(mode,false));
   });
+  window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
   await loadRows();
   const identityReturned=await handleMarketIdentityReturn();
   if(!identityReturned){

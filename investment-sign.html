@@ -44,7 +44,7 @@ label.form-label{display:block;margin:14px 0 6px;font-size:12px;font-weight:800}
 (()=>{
 const BASE='https://wdttzpbmqavaqfcbaywj.supabase.co';
 const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
-const DOC_HASH='4cb43a0ce945cb4dd3f81a0ad6b2dffc849d9a90690205a3923a6da79947e72b';
+const DOC_HASH='1d0e3e172f8009c760687502de2bae584c35325d8b125fa6bc1b6c6a9e4f19fc';
 const DOC_VERSION='FUNY-PILOT-INVEST-20261018-v2';
 const token=new URLSearchParams(location.search).get('token')||'';
 const roleName=r=>r==='investor'?'투자자':'운영자';
@@ -96,7 +96,7 @@ return `
 
   <div class="sec"><h2>4. 이익배분 조건</h2>
     <p>“이익배분금”은 지분 배당이 아닌, 본 조건에 따라 투자자에게 지급하는 성과 연동 금액입니다. 운영자는 순이익이 처음 발생한 달부터 최대 36개월 동안 해당 시점의 적용 이익배분율에 따라 매월 이익배분금을 지급합니다.</p>
-    <ul><li>순이익 = 월매출 - 서버·API·SaaS·마케팅·경품·결제/플랫폼 수수료·배송·CS·세금 및 기타 합리적인 운영비</li><li>운영자 업무보수는 월매출의 20% 이내에서 운영비로 반영 가능</li><li>순이익이 0원 이하인 달에는 이익배분금 없음</li><li>지급일은 월말 성과보고 후 다음 달 10일까지</li><li>2027년 12월까지 순이익이 한 번도 발생하지 않는 경우 이후 조건을 재협의</li></ul>
+    <ul><li>순이익 = 월매출 - 서버·API·SaaS·마케팅·경품·결제/플랫폼 수수료·배송·CS·세금 및 기타 합리적인 운영비</li><li>운영자 업무보수는 월매출에서 서버·마케팅·경품·수수료·세금 등 일반 운영비를 차감한 잔여액의 50% 미만 범위에서 운영비로 반영 가능</li><li>순이익이 0원 이하인 달에는 이익배분금 없음</li><li>지급일은 월말 성과보고 후 다음 달 10일까지</li><li>2027년 12월까지 순이익이 한 번도 발생하지 않는 경우 이후 조건을 재협의</li></ul>
   </div>
 
   <div class="sec"><h2>5. 투자자의 권리 범위 및 사업 변경 시 처리</h2>

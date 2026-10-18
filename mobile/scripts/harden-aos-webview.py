@@ -6,10 +6,13 @@ text = PATH.read_text(encoding="utf-8")
 
 def replace_once(old: str, new: str, marker: str) -> None:
     global text
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif marker not in text:
+    # The final QA workflow can run repeatedly. Once the marker exists, leave the
+    # validated source untouched instead of reapplying a prefix-based replacement.
+    if marker in text:
+        return
+    if old not in text:
         raise RuntimeError(f"Missing hardening anchor: {marker}")
+    text = text.replace(old, new, 1)
 
 
 replace_once(

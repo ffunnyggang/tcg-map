@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-test-gate.js?v=20261018-mytest1"></script>
 <style>
 .market-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:11px}.thumb{width:74px;height:82px;border-radius:12px;background:#F0EDF3;overflow:hidden;display:grid;place-items:center;color:#9A929E;font-size:9px}.thumb img{width:100%;height:100%;object-fit:cover}.copy{min-width:0}.price{margin-top:5px;font-size:14px;font-weight:900}.reason{margin-top:6px;padding:7px 8px;border-radius:9px;background:#FAF8FB;color:#8C8490;font-size:9px;line-height:1.45}.fab-add{position:fixed;right:max(16px,calc((100vw - 420px)/2 + 16px));bottom:18px;z-index:70;height:44px;padding:0 16px;border:0;border-radius:22px;background:#28232E;color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;box-shadow:0 8px 22px rgba(40,35,46,.18)}
 </style>
@@ -22,7 +23,7 @@
  const date=v=>v?new Date(v).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,''):'';
  const provider={daangn:'당근',bunjang:'번개장터',break:'BREAK'},reason={seller_hidden:'내가 숨김',seller_deleted:'삭제한 매물',listing_expired:'노출 기간 만료',source_sold:'원본 판매완료',source_unavailable:'원본 접근불가',break_not_instant:'바로구매 불가',report_action:'신고 처리',admin_manual:'관리자 비노출'};
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)};
- await A.init();if(!A.session){A.goLogin('/my-market-test.html');return}const uid=A.session.user.id;
+ if(!await FUNY_MY_TEST_GATE.ensure(A))returnconst uid=A.session.user.id;
  let rows=[],current=location.hash.replace('#','')||'active';if(!['active','hidden','sold'].includes(current))current='active';
  async function load(){
   root.innerHTML='<div class="loading">매물을 불러오는 중...</div>';

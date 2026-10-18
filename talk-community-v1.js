@@ -249,7 +249,20 @@ window.addEventListener('funy:native-talk-edit',()=>openPostEdit());
 window.addEventListener('funy:native-talk-delete',()=>deleteCurrentPost());
 window.addEventListener('funy:native-talk-report',()=>{if(currentPost?.id)openReportSheet(currentPost.id)});
 window.addEventListener('funy:native-talk-block',(e)=>{const postId=String(e?.detail?.postId||currentPost?.id||'');if(postId&&window.FUNY_TALK_BLOCK_POST)window.FUNY_TALK_BLOCK_POST(postId)});
-window.addEventListener('funy:native-talk-blocked',e=>{const owner=String(e?.detail?.ownerId||'');if(!owner)return;blockedOwners.add(owner);if(currentPost&&String(currentPost.ownerUserId||'')===owner){location.hash='';exitAppPostPage();return}render()});/* funy:native-talk-blocked-feed */
+function handleBlockedOwner(owner,postId=''){
+  owner=String(owner||'');postId=String(postId||'');if(!owner)return;
+  blockedOwners.add(owner);
+  const viewingBlocked=currentPost&&(String(currentPost.ownerUserId||'')===owner||(postId&&String(currentPost.id||'')===postId));
+  if(viewingBlocked){
+    try{history.replaceState(null,'',location.pathname+location.search.replace(/([?&])editPost=[^&]*&?/,'$1').replace(/[?&]$/,''))}catch(_){if(location.hash)location.hash=''}
+    exitAppPostPage();
+    window.scrollTo(0,0);
+    return;
+  }
+  render();
+}
+window.FUNY_TALK_HANDLE_BLOCKED_OWNER=handleBlockedOwner;
+window.addEventListener('funy:native-talk-blocked',e=>handleBlockedOwner(e?.detail?.ownerId,e?.detail?.postId));/* funy:native-talk-blocked-feed */
 function openReportSheet(postId){
   if(!token()||!uid()){requestLogin('게시물 신고는 로그인 후 이용할 수 있어요.');return}
   const reasons=[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']];

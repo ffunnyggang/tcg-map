@@ -1372,13 +1372,8 @@ html.funy-map-qa body.market-page .qa-operator-strip{
   overflow:visible!important
 }
 
-/* Prevent a one-frame flash of shop controls while switching to MARKET */
-body.market-tab-switching .qa-shop-tools,
-body.market-tab-switching .qa-shop-only,
-body.market-tab-switching .list-heading-v2,
-body.market-tab-switching .shop-request-list-banner,
-body.market-tab-switching #shop-list,
-body.market-tab-switching #empty,
+/* Hide shop controls only after MARKET is actually active.
+   Do not hide them during pointerdown: iOS can cancel the tap and leave a transient state behind. */
 body.market-tab-active .qa-shop-tools,
 body.market-tab-active .qa-shop-only,
 body.market-tab-active .list-heading-v2,

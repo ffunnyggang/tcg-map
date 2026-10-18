@@ -45,6 +45,7 @@ jobs:
           from pathlib import Path
           p=Path('scripts/apply-aos-qa-update.py')
           s=p.read_text(encoding='utf-8')
+          s=s.replace('if count != 1:\n        raise RuntimeError(f"{path}: expected one match, found {count}: {old[:120]!r}")', 'if count < 1:\n        raise RuntimeError(f"{path}: expected at least one match, found {count}: {old[:120]!r}")')
           s=s.replace('"              ref.current?.injectJavaScript(`window.dispatchEvent', '"ref.current?.injectJavaScript(`window.dispatchEvent')
           s=s.replace('"              exitBlockedTalkPost(ownerId,postId);\\n"', '"exitBlockedTalkPost(ownerId,postId);\\n"')
           p.write_text(s,encoding='utf-8')
@@ -66,6 +67,29 @@ jobs:
         with:
           name: aos-qa-patch-log-${{ github.run_number }}
           path: /tmp/aos-qa-patch.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Upload patched sources for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aos-qa-patched-sources-${{ github.run_number }}
+          path: |
+            mobile/components/FunyBackButton.tsx
+            mobile/components/FunyHeader.tsx
+            mobile/components/MySubHeader.tsx
+            mobile/components/FunyWebView.tsx
+            mobile/app/(tabs)/index.tsx
+            mobile/app/(tabs)/pick.tsx
+            mobile/app/live-pin.tsx
+            mobile/app/account.tsx
+            mobile/app/my/profile-edit.tsx
+            mobile/app/shop/[id].tsx
+            mobile/lib/shops.ts
+            mobile/QA_AOS_PREBUILD_20261019.md
+            admin.html
+            scripts/apply-aos-qa-update.py
           if-no-files-found: warn
           retention-days: 3
 

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/my-test-v1.css?v=20261018-mytest1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-test-gate.js?v=20261018-mytest1"></script>
 </head>
 <body><div class="test-shell">
 <header class="test-head"><button class="test-back" id="back" aria-label="뒤로가기">‹</button><div class="test-title">MY TEST</div><span></span></header>
@@ -17,7 +18,7 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,root=document.getElementById('root'),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  document.getElementById('back').onclick=()=>history.length>1?history.back():location.assign('/my.html');
- await A.init();if(!A.session){A.goLogin('/my-test.html');return}
+ if(!await FUNY_MY_TEST_GATE.ensure(A))return
  const u=A.session.user,{data:p}=await A.client.from('profiles').select('nickname,avatar_url,created_at').eq('user_id',u.id).maybeSingle();
  const name=p?.nickname||u.user_metadata?.nickname||u.user_metadata?.name||'FUNY 회원',avatar=p?.avatar_url||u.user_metadata?.avatar_url||u.user_metadata?.picture||'',initial=String(name).trim().slice(0,1)||'F';
  root.innerHTML=

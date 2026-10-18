@@ -49,9 +49,11 @@ Deno.serve(async(req:Request)=>{
 
   if(action==="show_listing"){
    const listingId=clean(body?.listing_id);if(!listingId)throw new Error("매물 ID가 없습니다.");
-   const {data:before,error:beforeError}=await admin.from("market_listings").select("source_status").eq("id",listingId).single();
+   const {data:before,error:beforeError}=await admin.from("market_listings").select("source_status,listing_status,expires_at,hidden_reason").eq("id",listingId).single();
    if(beforeError)throw beforeError;
    if(["sold","deleted","unavailable"].includes(clean(before?.source_status)))throw new Error("원본 매물 상태가 판매완료/접근불가입니다. 원본 상태 확인 후 다시 시도해주세요.");
+   if(clean(before?.listing_status)==="deleted"||clean(before?.hidden_reason)==="seller_deleted")throw new Error("판매자가 삭제한 매물은 관리자가 재노출할 수 없습니다.");
+   if(before?.expires_at&&Date.parse(before.expires_at)<=Date.now())throw new Error("14일 노출 기간이 만료된 매물입니다. 판매자가 다시 등록해야 합니다.");
    const {data,error}=await admin.from("market_listings").update({
     listing_status:"active",hidden_reason:null,hidden_at:null,updated_at:now
    }).eq("id",listingId).select("*").single();
@@ -79,6 +81,80 @@ Deno.serve(async(req:Request)=>{
    if(error)throw error;
    await audit(report.listing_id,user.id,"report_status_changed",{report_id:reportId,from:report.status,to:status});
    return new Response(JSON.stringify({ok:true,report:data}),{headers:cors});
+  }
+
+  if(action==="list_seller_access"){
+   const {data:allowRows,error:allowError}=await admin.from("market_seller_allowlist")
+    .select("user_id,is_active,note,created_at,updated_at")
+    .order("updated_at",{ascending:false});
+   if(allowError)throw allowError;
+
+   const ids=(allowRows||[]).map((x:any)=>x.user_id);
+   let nicknameById=new Map<string,string>();
+   if(ids.length){
+    const {data:profiles,error:profileError}=await admin.from("profiles")
+      .select("user_id,nickname")
+      .in("user_id",ids);
+    if(profileError)throw profileError;
+    nicknameById=new Map((profiles||[]).map((x:any)=>[x.user_id,clean(x.nickname)]));
+   }
+
+   const emailById=new Map<string,string>();
+   let page=1;
+   for(;;){
+    const {data:usersData,error:usersError}=await admin.auth.admin.listUsers({page,perPage:1000});
+    if(usersError)throw usersError;
+    const users=usersData?.users||[];
+    users.forEach((x:any)=>emailById.set(x.id,clean(x.email)));
+    if(users.length<1000||page>=10)break;
+    page++;
+   }
+
+   const rows=(allowRows||[]).map((x:any)=>({
+    ...x,
+    email:emailById.get(x.user_id)||null,
+    nickname:nicknameById.get(x.user_id)||null
+   }));
+   return new Response(JSON.stringify({ok:true,rows}),{headers:cors});
+  }
+
+  if(action==="set_seller_access"){
+   const requestedUserId=clean(body?.user_id);
+   const email=clean(body?.email).toLowerCase();
+   const isActive=body?.is_active!==false;
+   const note=clean(body?.note)||null;
+   let targetUserId=requestedUserId;
+
+   if(!targetUserId&&email){
+    let page=1,found:any=null;
+    for(;;){
+     const {data:usersData,error:usersError}=await admin.auth.admin.listUsers({page,perPage:1000});
+     if(usersError)throw usersError;
+     const users=usersData?.users||[];
+     found=users.find((x:any)=>clean(x.email).toLowerCase()===email)||null;
+     if(found||users.length<1000||page>=10)break;
+     page++;
+    }
+    targetUserId=clean(found?.id);
+   }
+   if(!targetUserId)throw new Error("허용할 FUNY PIN 회원 계정을 찾을 수 없습니다.");
+
+   const {data:target,error:targetError}=await admin.auth.admin.getUserById(targetUserId);
+   if(targetError||!target?.user)throw new Error("FUNY PIN 회원 계정을 찾을 수 없습니다.");
+
+   const {data:row,error}=await admin.from("market_seller_allowlist").upsert({
+    user_id:targetUserId,
+    is_active:isActive,
+    note,
+    created_by:user.id,
+    updated_at:now
+   },{onConflict:"user_id"}).select("*").single();
+   if(error)throw error;
+   await audit(null,user.id,"seller_access_changed",{target_user_id:targetUserId,is_active:isActive,note});
+   return new Response(JSON.stringify({
+    ok:true,
+    row:{...row,email:clean(target.user.email)||null}
+   }),{headers:cors});
   }
 
   throw new Error("지원하지 않는 관리자 작업입니다.");

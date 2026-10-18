@@ -4,50 +4,157 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>게시글 관리 | FUNY PIN</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/my-v2.css?v=20261018-live1">
+<link rel="stylesheet" href="/my-v2.css?v=20261018-community2">
+<link rel="stylesheet" href="/funy-ui-guide.css?v=20261018-kebab1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
-</head><body><div class="test-shell">
+<style>
+.community-list{display:flex;flex-direction:column;gap:9px;margin-top:11px}
+.community-card{position:relative;border:1px solid #E8E3EC;border-radius:16px;background:#fff;box-shadow:0 4px 16px rgba(45,37,57,.035);overflow:visible}
+.community-main{min-height:118px;padding:12px 42px 12px 13px;display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:12px;align-items:center}
+.community-main.no-thumb{grid-template-columns:1fr}
+.community-copy{min-width:0}
+.community-badge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:999px;background:#F0EBFB;color:#6749BD;font-size:8.5px;font-weight:850}
+.community-title{display:block;margin-top:7px;color:#29252D;font-size:14px;font-weight:850;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.community-body{margin-top:5px;color:#716A75;font-size:10.5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.community-thumb,.community-ph{width:92px;height:92px;border-radius:12px;background:#F1EEF4;align-self:center}
+.community-thumb{display:block;object-fit:cover}.community-ph{display:grid;place-items:center;color:#9A929E;font-size:9px;font-weight:800}
+.community-more{position:absolute;right:7px;top:7px;z-index:5}
+.community-menu{position:absolute;right:8px;top:42px;z-index:30;width:150px;padding:5px;border:1px solid #E4DFE8;border-radius:12px;background:#fff;box-shadow:0 12px 30px rgba(38,31,46,.16)}
+.community-menu[hidden]{display:none}.community-menu button{width:100%;height:38px;padding:0 10px;border:0;border-radius:8px;background:#fff;color:#4F4853;text-align:left;font-size:10.5px;font-weight:800;cursor:pointer}.community-menu button:active{background:#F7F4F9}.community-menu button.danger{color:#B84E5C}
+.community-footer{min-height:43px;padding:0 12px;border-top:1px solid #F0ECF2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.community-stats{display:flex;align-items:center;gap:5px;min-width:0;color:#958D99;font-size:9.3px;font-weight:750;white-space:nowrap}
+.community-stats .sep{color:#B7AFBA}
+.community-footer-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.community-delete{height:32px;padding:0 3px;border:0;background:transparent;color:#B84E5C;font-size:10px;font-weight:850;cursor:pointer}
+.community-detail{height:32px;padding:0 2px;color:#6749BD;text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:900;white-space:nowrap}
+.comment-card{padding:13px 13px 0}.comment-body{color:#3F3944;font-size:12px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.comment-meta{margin-top:8px;color:#958D99;font-size:9.5px;font-weight:750}
+.comment-origin{min-height:43px;margin-top:11px;border-top:1px solid #F0ECF2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.comment-origin-title{min-width:0;flex:1;color:#5F5863;font-size:10.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comment-origin-link{flex:0 0 auto;color:#6749BD;text-decoration:none;font-size:10.5px;font-weight:900;white-space:nowrap}
+.manage-tab-count{margin-left:5px;color:inherit;font-size:9.5px;font-weight:900;opacity:.72}
+.report-backdrop{position:fixed;inset:0;z-index:2147483600;background:rgba(25,21,30,.36);display:flex;align-items:flex-end;justify-content:center}.report-sheet{width:min(100%,420px);padding:10px 14px calc(18px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;background:#fff}.report-handle{width:42px;height:5px;margin:0 auto 10px;border-radius:99px;background:#D8D2DD}.report-sheet h3{margin:8px 2px 12px;font-size:15px}.report-options{display:grid;grid-template-columns:1fr 1fr;gap:7px}.report-options button{height:42px;border:1px solid #E3DEE7;border-radius:11px;background:#fff;color:#5C5560;font-size:10.5px;font-weight:800}.report-cancel{width:100%;height:42px;margin-top:9px;border:0;border-radius:11px;background:#F3F0F5;color:#69616D;font-size:10.5px;font-weight:850}
+@media(max-width:360px){.community-main{grid-template-columns:minmax(0,1fr) 84px}.community-thumb,.community-ph{width:84px;height:84px}.community-stats{font-size:8.7px}.community-footer-actions{gap:6px}}
+</style>
+</head>
+<body><div class="test-shell">
 <header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">게시글 관리</div><span></span></header>
 <main class="test-main">
-<div class="tabs"><button class="tab on" data-tab="posts">내 게시글</button><button class="tab" data-tab="comments">내 댓글</button><button class="tab" data-tab="likes">좋아요</button></div>
+<div class="tabs">
+ <button class="tab on" data-tab="posts"><span>내 게시글</span><span class="manage-tab-count" id="postCount">0</span></button>
+ <button class="tab" data-tab="comments"><span>내 댓글</span><span class="manage-tab-count" id="commentCount">0</span></button>
+ <button class="tab" data-tab="likes"><span>좋아요</span><span class="manage-tab-count" id="likeCount">0</span></button>
+</div>
 <div id="root"><div class="loading">활동 내역을 불러오는 중...</div></div>
 </main></div><div id="toast" class="toast"></div>
 <script>
 (async()=>{
- const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root'),esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const date=v=>v?new Date(v).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,''):'';
- const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)};
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root');
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const fullDate=v=>{if(!v)return'-';const d=new Date(v);if(Number.isNaN(d.getTime()))return'-';return String(d.getFullYear()).slice(-2)+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')};
+ const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)};
  await A.init();if(!A.session){A.goLogin('/my-community.html');return}const uid=A.session.user.id;
- let posts=[],comments=[],likes=[],postMap={};
- async function load(){
-  root.innerHTML='<div class="loading">활동 내역을 불러오는 중...</div>';
-  const [p,c,l]=await Promise.all([
-   A.client.from('community_posts').select('id,title,category,status,view_count,like_count,comment_count,created_at,updated_at').eq('user_id',uid).order('created_at',{ascending:false}),
-   A.client.from('community_comments').select('id,post_id,body,status,created_at,updated_at').eq('user_id',uid).order('created_at',{ascending:false}),
-   A.client.from('community_post_likes').select('post_id,created_at').eq('user_id',uid).order('created_at',{ascending:false})
-  ]);
-  if(p.error)throw p.error;if(c.error)throw c.error;if(l.error)throw l.error;
-  posts=p.data||[];comments=c.data||[];likes=l.data||[];
-  const ids=[...new Set([...comments.map(x=>x.post_id),...likes.map(x=>x.post_id)].filter(Boolean))];
-  postMap={};
-  if(ids.length){const q=await A.client.from('community_posts').select('id,title,category,status,author_nickname,created_at').in('id',ids);if(q.error)throw q.error;(q.data||[]).forEach(x=>postMap[x.id]=x)}
-  render(current);
+ let posts=[],comments=[],likes=[],postMap=new Map(),imageMap=new Map(),blockedOwners=new Set(),current=location.hash.replace('#','')||'posts';
+ if(!['posts','comments','likes'].includes(current))current='posts';
+
+ function publicImage(path){if(!path)return'';try{return A.client.storage.from('community-posts').getPublicUrl(path).data.publicUrl||''}catch(_){return''}}
+ function detailUrl(id){return '/talk.html#/post/'+encodeURIComponent(id)}
+ function shareUrl(id){return location.origin+detailUrl(id)}
+ function syncCounts(){
+   $('#postCount').textContent=String(posts.length);
+   $('#commentCount').textContent=String(comments.length);
+   $('#likeCount').textContent=String(likes.filter(x=>postMap.has(String(x.post_id))&&!blockedOwners.has(String(postMap.get(String(x.post_id))?.user_id||''))).length);
  }
- let current=location.hash.replace('#','')||'posts';if(!['posts','comments','likes'].includes(current))current='posts';
- function statusBadge(s){const map={published:['공개','green'],deleted:['삭제','gray'],hidden:['비공개','red']},v=map[s]||[s||'상태','gray'];return '<span class="badge '+v[1]+'">'+esc(v[0])+'</span>'}
+ function thumbHtml(post){
+   const src=imageMap.get(String(post.id))||'';
+   return src?'<img class="community-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'';
+ }
+ function postCard(post,mode){
+   const img=thumbHtml(post),mine=String(post.user_id)===uid;
+   const menu=mode==='liked'
+    ?'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="report" data-id="'+esc(post.id)+'">신고하기</button><button type="button" class="danger" data-act="block" data-id="'+esc(post.id)+'" '+(mine?'disabled':'')+'>차단하기</button>'
+    :'<button type="button" data-act="share" data-id="'+esc(post.id)+'">공유하기</button><button type="button" class="danger" data-act="delete-post" data-id="'+esc(post.id)+'">삭제하기</button>';
+   return '<article class="community-card" data-post-card="'+esc(post.id)+'">'+
+    '<div class="community-main '+(img?'':'no-thumb')+'"><div class="community-copy"><span class="community-badge">'+esc(post.category||'TALK')+'</span><strong class="community-title">'+esc(post.title||'제목 없음')+'</strong><div class="community-body">'+esc(post.body||'')+'</div></div>'+img+'</div>'+
+    '<button class="community-more funy-kebab-button" type="button" data-more="'+esc(post.id)+'" aria-label="더보기" aria-expanded="false">⋮</button>'+
+    '<div class="community-menu" data-menu="'+esc(post.id)+'" hidden>'+menu+'</div>'+
+    '<div class="community-footer"><div class="community-stats"><span>등록 '+fullDate(post.created_at)+'</span><span class="sep">·</span><span>조회 '+Number(post.view_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>좋아요 '+Number(post.like_count||0).toLocaleString('ko-KR')+'</span><span class="sep">·</span><span>댓글 '+Number(post.comment_count||0).toLocaleString('ko-KR')+'</span></div>'+
+    '<div class="community-footer-actions">'+(mode==='mine'?'<button class="community-delete" type="button" data-act="delete-post" data-id="'+esc(post.id)+'">삭제</button>':'')+'<a class="community-detail" href="'+detailUrl(post.id)+'">상세보기 <span aria-hidden="true">›</span></a></div></div>'+
+   '</article>';
+ }
+ function commentCard(c){
+   const p=postMap.get(String(c.post_id))||{};
+   return '<article class="community-card comment-card"><div class="comment-body">'+esc(c.body||'')+'</div><div class="comment-meta">등록 '+fullDate(c.created_at)+' · 좋아요 '+Number(c.like_count||0).toLocaleString('ko-KR')+'</div><div class="comment-origin"><div class="comment-origin-title">'+esc(p.title||'삭제되거나 확인할 수 없는 원문')+'</div>'+(p.id?'<a class="comment-origin-link" href="'+detailUrl(p.id)+'">원문 상세보기 ›</a>':'')+'</div></article>';
+ }
+ function closeMenus(except=''){
+   $$('[data-menu]').forEach(m=>{if(m.dataset.menu!==except)m.hidden=true});
+   $$('[data-more]').forEach(b=>{if(b.dataset.more!==except)b.setAttribute('aria-expanded','false')});
+ }
  function render(tab){
-  current=tab;history.replaceState(null,'','#'+tab);$$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
-  let html='';
-  if(tab==='posts') html=posts.length?posts.map(x=>'<article class="item"><div class="item-head">'+statusBadge(x.status)+'<span class="badge gray">'+esc(x.category||'TALK')+'</span><span class="time">'+date(x.created_at)+'</span></div><div class="item-title">'+esc(x.title||'제목 없음')+'</div><div class="item-meta">조회 '+Number(x.view_count||0)+' · 좋아요 '+Number(x.like_count||0)+' · 댓글 '+Number(x.comment_count||0)+'</div><div class="actions"><a class="primary" href="/talk.html#/post/'+esc(x.id)+'">게시글 보기</a>'+(x.status!=='deleted'?'<button class="danger" data-delete-post="'+esc(x.id)+'">삭제</button>':'')+'</div></article>').join(''):'<div class="empty"><strong>작성한 게시글이 없어요</strong>TALK에서 첫 이야기를 남겨보세요.</div>';
-  if(tab==='comments') html=comments.length?comments.map(x=>{const p=postMap[x.post_id]||{};return '<article class="item"><div class="item-head">'+statusBadge(x.status)+'<span class="time">'+date(x.created_at)+'</span></div><div class="item-title">'+esc(p.title||'게시글')+'</div><div class="item-body">'+esc(x.body||'')+'</div><div class="actions"><a class="primary" href="/talk.html#/post/'+esc(x.post_id)+'">원문 보기</a><button class="danger" data-delete-comment="'+esc(x.id)+'">댓글 삭제</button></div></article>'}).join(''):'<div class="empty"><strong>작성한 댓글이 없어요</strong>관심 있는 게시물에 의견을 남겨보세요.</div>';
-  if(tab==='likes') html=likes.length?likes.map(x=>{const p=postMap[x.post_id]||{};return '<article class="item"><div class="item-head"><span class="badge">좋아요</span><span class="badge gray">'+esc(p.category||'TALK')+'</span><span class="time">'+date(x.created_at)+'</span></div><div class="item-title">'+esc(p.title||'삭제되거나 확인할 수 없는 게시글')+'</div><div class="actions">'+(p.id?'<a class="primary" href="/talk.html#/post/'+esc(x.post_id)+'">게시글 보기</a>':'')+'<button data-unlike="'+esc(x.post_id)+'">좋아요 취소</button></div></article>'}).join(''):'<div class="empty"><strong>좋아요한 게시물이 없어요</strong>마음에 드는 게시물을 저장해보세요.</div>';
-  root.innerHTML='<div class="list">'+html+'</div>';bind();
+   current=tab;history.replaceState(null,'','#'+tab);$$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));syncCounts();
+   let html='';
+   if(tab==='posts') html=posts.length?posts.map(x=>postCard(x,'mine')).join(''):'<div class="empty"><strong>작성한 게시글이 없어요</strong>TALK에서 첫 이야기를 남겨보세요.</div>';
+   if(tab==='comments') html=comments.length?comments.map(commentCard).join(''):'<div class="empty"><strong>작성한 댓글이 없어요</strong>관심 있는 게시물에 의견을 남겨보세요.</div>';
+   if(tab==='likes'){
+     const list=likes.map(x=>postMap.get(String(x.post_id))).filter(Boolean).filter(x=>!blockedOwners.has(String(x.user_id||'')));
+     html=list.length?list.map(x=>postCard(x,'liked')).join(''):'<div class="empty"><strong>좋아요한 게시물이 없어요</strong>마음에 드는 게시물에 좋아요를 눌러보세요.</div>';
+   }
+   root.innerHTML='<div class="community-list">'+html+'</div>';bind();
+ }
+ async function load(){
+   root.innerHTML='<div class="loading">활동 내역을 불러오는 중...</div>';
+   const [mineRes,commentRes,likeRes,blockRes]=await Promise.all([
+     A.client.from('community_posts').select('id,user_id,author_nickname,category,title,body,status,view_count,like_count,comment_count,created_at,updated_at').eq('user_id',uid).neq('status','deleted').order('created_at',{ascending:false}),
+     A.client.from('community_comments').select('id,post_id,user_id,body,status,like_count,created_at,updated_at').eq('user_id',uid).order('created_at',{ascending:false}),
+     A.client.from('community_post_likes').select('post_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
+     A.client.from('community_user_blocks').select('blocked_user_id').eq('blocker_user_id',uid)
+   ]);
+   if(mineRes.error)throw mineRes.error;if(commentRes.error)throw commentRes.error;if(likeRes.error)throw likeRes.error;
+   posts=mineRes.data||[];comments=commentRes.data||[];likes=likeRes.data||[];blockedOwners=new Set((blockRes.data||[]).map(x=>String(x.blocked_user_id)));
+   const ids=[...new Set([...posts.map(x=>x.id),...comments.map(x=>x.post_id),...likes.map(x=>x.post_id)].filter(Boolean).map(String))];
+   postMap=new Map(posts.map(x=>[String(x.id),x]));
+   if(ids.length){
+     const p=await A.client.from('community_posts').select('id,user_id,author_nickname,category,title,body,status,view_count,like_count,comment_count,created_at,updated_at').in('id',ids);
+     if(p.error)throw p.error;(p.data||[]).forEach(x=>postMap.set(String(x.id),x));
+     const im=await A.client.from('community_post_images').select('post_id,storage_path,sort_order').in('post_id',ids).order('sort_order',{ascending:true});
+     if(im.error)throw im.error;imageMap=new Map();
+     (im.data||[]).forEach(x=>{const k=String(x.post_id);if(!imageMap.has(k))imageMap.set(k,publicImage(x.storage_path))});
+   }else imageMap=new Map();
+   syncCounts();render(current);
+ }
+ async function sharePost(id){
+   const p=postMap.get(String(id)),url=shareUrl(id);
+   try{
+     if(navigator.share){await navigator.share({title:p?.title||'FUNY TALK',url});return}
+     await navigator.clipboard.writeText(url);toast('게시물 링크를 복사했습니다.');
+   }catch(e){if(e?.name!=='AbortError')toast('공유 링크를 복사하지 못했습니다.')}
+ }
+ async function deletePost(id){
+   if(!confirm('이 게시글을 삭제할까요?'))return;
+   const {error}=await A.client.from('community_posts').update({status:'deleted',updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',uid);
+   if(error){alert(error.message);return}toast('게시글을 삭제했습니다.');await load();
+ }
+ function openReportSheet(id){
+   document.querySelector('.report-backdrop')?.remove();
+   const el=document.createElement('div');el.className='report-backdrop';
+   const reasons=[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']];
+   el.innerHTML='<section class="report-sheet"><div class="report-handle"></div><h3>게시물 신고</h3><div class="report-options">'+reasons.map(x=>'<button type="button" data-reason="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><button class="report-cancel" type="button">취소</button></section>';
+   document.body.appendChild(el);el.querySelector('.report-cancel').onclick=()=>el.remove();el.onclick=e=>{if(e.target===el)el.remove()};
+   el.querySelectorAll('[data-reason]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await A.client.from('community_post_reports').insert({post_id:id,reporter_user_id:uid,reason:b.dataset.reason});if(error){alert(error.code==='23505'?'이미 신고한 게시물이에요.':'신고 처리에 실패했습니다.');b.disabled=false;return}el.remove();toast('신고가 접수되었습니다.')});
+ }
+ async function blockPostOwner(id){
+   const p=postMap.get(String(id));if(!p?.user_id)return;if(String(p.user_id)===uid){toast('내 게시물은 차단할 수 없어요.');return}
+   if(!confirm('이 작성자를 차단할까요?\n차단한 사용자의 게시물은 TALK에서 보이지 않습니다.'))return;
+   const {error}=await A.client.from('community_user_blocks').insert({blocker_user_id:uid,blocked_user_id:p.user_id});
+   if(error&&error.code!=='23505'){alert('차단 처리에 실패했습니다.');return}
+   blockedOwners.add(String(p.user_id));toast('작성자를 차단했습니다.');render(current);
  }
  function bind(){
-  $$('[data-delete-post]').forEach(b=>b.onclick=async()=>{if(!confirm('이 게시글을 삭제할까요?'))return;b.disabled=true;const {error}=await A.client.from('community_posts').update({status:'deleted',updated_at:new Date().toISOString()}).eq('id',b.dataset.deletePost).eq('user_id',uid);if(error){alert(error.message);b.disabled=false;return}toast('게시글을 삭제했습니다.');await load()});
-  $$('[data-delete-comment]').forEach(b=>b.onclick=async()=>{if(!confirm('이 댓글을 삭제할까요?'))return;b.disabled=true;const {error}=await A.client.from('community_comments').delete().eq('id',b.dataset.deleteComment).eq('user_id',uid);if(error){alert(error.message);b.disabled=false;return}toast('댓글을 삭제했습니다.');await load()});
-  $$('[data-unlike]').forEach(b=>b.onclick=async()=>{b.disabled=true;const {error}=await A.client.from('community_post_likes').delete().eq('post_id',b.dataset.unlike).eq('user_id',uid);if(error){alert(error.message);b.disabled=false;return}toast('좋아요를 취소했습니다.');await load()});
+   $$('[data-more]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.more,menu=document.querySelector('[data-menu="'+CSS.escape(id)+'"]'),opening=!!menu?.hidden;closeMenus(opening?id:'');if(menu)menu.hidden=!opening;b.setAttribute('aria-expanded',opening?'true':'false')});
+   $$('[data-act]').forEach(b=>b.onclick=async e=>{e.stopPropagation();closeMenus();const a=b.dataset.act,id=b.dataset.id;if(a==='share')await sharePost(id);else if(a==='delete-post')await deletePost(id);else if(a==='report')openReportSheet(id);else if(a==='block')await blockPostOwner(id)});
  }
- $$('.tab').forEach(b=>b.onclick=()=>render(b.dataset.tab));await load();
+ document.addEventListener('click',e=>{if(!e.target.closest('.community-more')&&!e.target.closest('.community-menu'))closeMenus()});
+ $$('.tab').forEach(b=>b.onclick=()=>render(b.dataset.tab));
+ await load();
 })().catch(e=>{document.getElementById('root').innerHTML='<div class="error"><strong>불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
 </script></body></html>

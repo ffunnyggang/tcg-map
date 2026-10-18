@@ -1,0 +1,85 @@
+name: AOS QA apply and validate
+
+on:
+  push:
+    branches:
+      - qa/aos-web-sync-20261019
+    paths:
+      - scripts/apply-aos-qa-update.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aos-qa-apply-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: qa/aos-web-sync-20261019
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.4'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Apply guarded AOS QA patch
+        run: python scripts/apply-aos-qa-update.py
+
+      - name: Install Expo SDK-compatible native modules
+        working-directory: mobile
+        run: npx expo install expo-file-system expo-sharing --npm
+
+      - name: Verify reproducible dependency install
+        working-directory: mobile
+        run: |
+          rm -rf node_modules
+          npm ci
+
+      - name: TypeScript
+        working-directory: mobile
+        run: npx tsc --noEmit
+
+      - name: Expo public config
+        working-directory: mobile
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
+        run: npx expo config --type public > /tmp/funy-expo-config.json
+
+      - name: Expo doctor
+        working-directory: mobile
+        run: npx expo-doctor
+
+      - name: Critical web JavaScript syntax
+        run: |
+          node --check talk-community-v1.js
+          node --check talk-safety-v1.js
+          node --check funy-mon-v1.js
+          node --check map-market-v1.js
+
+      - name: Commit validated QA changes
+        run: |
+          git config user.name "FUNY PIN QA Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add mobile admin.html scripts/apply-aos-qa-update.py .github/workflows/aos-qa-apply.yml
+          if git diff --cached --quiet; then
+            echo "No validated changes to commit."
+            exit 0
+          fi
+          git commit -m "qa(android): sync native shell with current web service"
+          git push origin HEAD:qa/aos-web-sync-20261019

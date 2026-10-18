@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/portal.css?v=20261005-android-shell">
 <link rel="stylesheet" href="/nav-liquid-v2.css?v=20261014-my-png3">
-<link rel="stylesheet" href="/my-v2.css?v=20261018-live1">
+<link rel="stylesheet" href="/my-v2.css?v=20261018-profile2">
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261014-ui3">
 <link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
@@ -60,14 +60,17 @@
  };
  const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const date=v=>{if(!v)return'-';const d=new Date(v);if(Number.isNaN(d.getTime()))return'-';return d.toLocaleDateString(en?'en-US':'ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,'')};
- const {data:p}=await A.client.from('profiles').select('nickname,avatar_url,created_at').eq('user_id',user.id).maybeSingle();
+ const [{data:p},{data:wallet}]=await Promise.all([
+   A.client.from('profiles').select('nickname,avatar_url,created_at').eq('user_id',user.id).maybeSingle(),
+   A.client.from('funy_coin_wallets').select('balance').eq('user_id',user.id).maybeSingle()
+ ]);
  const name=p?.nickname||user.user_metadata?.nickname||user.user_metadata?.name||'FUNY 회원';
- const avatar=p?.avatar_url||user.user_metadata?.avatar_url||user.user_metadata?.picture||'';
- const initial=String(name).trim().slice(0,1)||'F';
+ const avatar=p?(p.avatar_url||''):(user.user_metadata?.avatar_url||user.user_metadata?.picture||'');
  const joined=p?.created_at||user.created_at||null;
+ const coinBalance=Number(wallet?.balance||0);
 
  root.innerHTML=
- '<section class="card profile-card"><div class="test-profile-main"><div class="avatar">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':esc(initial))+'</div><div class="profile-copy"><div class="profile-name">'+esc(name)+'</div><div class="profile-sub">'+T.joined+' '+esc(date(joined))+'</div></div></div><a class="test-profile-edit" href="/my-profile.html">'+(en?'Edit profile':'프로필 편집')+'</a></section>'+
+ '<section class="card profile-card"><div class="avatar">'+(avatar?'<img src="'+esc(avatar)+'" alt="">':'<img class="default-profile-icon" src="/favicon.svg?v=20261016-app-logo1" alt="">')+'</div><div class="profile-copy"><div class="profile-name-row"><div class="profile-name">'+esc(name)+'</div><a class="profile-edit-inline" href="/my-profile.html">'+(en?'Edit profile':'프로필 편집')+'</a></div><div class="profile-sub">'+T.joined+' '+esc(date(joined))+'</div><div class="profile-coin">FUNY COIN '+coinBalance.toLocaleString(en?'en-US':'ko-KR')+'</div></div></section>'+
  '<section class="section"><div class="section-head"><h2>'+T.activity+'</h2></div><div class="card menu-card">'+
  '<a class="menu-row" href="/my-community.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>'+T.community+'</b><span>'+T.communitySub+'</span></span><span class="chev">›</span></a>'+
  '<a class="menu-row" href="/my-market.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>'+T.market+'</b><span>'+T.marketSub+'</span></span><span class="chev">›</span></a>'+

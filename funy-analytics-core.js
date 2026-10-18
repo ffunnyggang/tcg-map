@@ -58,7 +58,7 @@
   function installShopRequestTcgOptions(){
     const root=document.getElementById('items');if(!root)return false;
     let other=[...root.querySelectorAll('.chip')].find(x=>['기타 TCG','기타','Other TCG'].includes(String(x.dataset.value||x.textContent||'').trim()));
-    if(other){other.dataset.value='기타';other.textContent=english()?'Other TCG':'기타'}
+    if(other){other.dataset.value='기타 TCG';other.textContent=english()?'Other TCG':'기타 TCG'}
     if(!root.querySelector('[data-value="리프트바운드"]')){
       const btn=document.createElement('button');btn.className='chip';btn.type='button';btn.dataset.value='리프트바운드';btn.textContent=english()?'Riftbound':'리프트바운드';btn.onclick=()=>btn.classList.toggle('on');
       if(other)root.insertBefore(btn,other);else root.appendChild(btn);
@@ -74,7 +74,7 @@
     const API='https://wdttzpbmqavaqfcbaywj.supabase.co';
     const KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
     const label=key=>{
-      const ko={pokemon:'포켓몬',onePiece:'원피스',dragonBall:'드래곤볼',riftbound:'리프트바운드',other:'기타'};
+      const ko={pokemon:'포켓몬',onePiece:'원피스',dragonBall:'드래곤볼',riftbound:'리프트바운드',other:'기타 TCG'};
       const en={pokemon:'Pokémon',onePiece:'One Piece',dragonBall:'Dragon Ball',riftbound:'Riftbound',other:'Other TCG'};
       return (english()?en:ko)[key]||key;
     };

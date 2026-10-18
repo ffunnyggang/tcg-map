@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><title>배지 | FUNY PIN</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/my-v2.css?v=20261018-feature1">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/my-feature-gate.js?v=20261018-feature1"></script>
+</head><body><div class="test-shell">
+<header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">배지</div><span></span></header>
+<main class="test-main">
+<div id="summary"></div>
+<div class="segment"><button class="chip on" data-filter="all">전체</button><button class="chip" data-filter="earned">획득</button><button class="chip" data-filter="locked">미획득</button></div>
+<div id="root"><div class="loading">배지를 확인하는 중...</div></div></main></div>
+<script>
+(async()=>{
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;
+ const {data,error}=await A.client.rpc('sync_my_badges_test');if(error)throw error;if(!data?.ok)throw new Error(data?.error||'badge_error');
+ const badges=Array.isArray(data.badges)?data.badges:[],earned=badges.filter(x=>x.earned).length;
+ $('#summary').innerHTML='<div class="stat-grid"><div class="stat"><span>획득 배지</span><b>'+earned+'</b><small>전체 '+badges.length+'개</small></div><div class="stat"><span>달성률</span><b>'+Math.round((earned/Math.max(1,badges.length))*100)+'%</b><small>활동할수록 컬렉션이 채워져요</small></div></div>';
+ let filter='all';
+ function render(){const rows=badges.filter(x=>filter==='all'||(filter==='earned'?x.earned:!x.earned));$('#root').innerHTML='<div class="badge-grid">'+(rows.length?rows.map(x=>{const cur=Number(x.current||0),th=Number(x.threshold||1),pct=Math.min(100,Math.round(cur/th*100));return '<article class="badge-card '+(x.earned?'':'locked')+'"><div class="badge-icon">'+esc(x.icon)+'</div><div class="badge-name">'+esc(x.name)+'</div><div class="badge-desc">'+esc(x.description)+'</div><div class="progress"><span style="width:'+pct+'%"></span></div><div class="badge-progress">'+(x.earned?'획득 완료':Math.min(cur,th)+' / '+th)+'</div></article>'}).join(''):'<div class="empty"><strong>표시할 배지가 없어요</strong></div>')+'</div>'}
+ $$('.chip').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});render();
+})().catch(e=>{document.getElementById('root').innerHTML='<div class="error"><strong>배지를 불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
+</script></body></html>

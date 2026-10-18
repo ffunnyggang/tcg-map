@@ -62,6 +62,19 @@ Deno.serve(async(req:Request)=>{
       return new Response(JSON.stringify({ok:true,listing:data}),{headers:cors});
     }
 
+    if(action==="delete"){
+      const now=new Date().toISOString();
+      const {data,error:updateError}=await admin.from("market_listings").update({
+        listing_status:"deleted",
+        hidden_reason:"seller_deleted",
+        hidden_at:now,
+        updated_at:now
+      }).eq("id",listing.id).eq("seller_user_id",user.id).select("*").single();
+      if(updateError)throw updateError;
+      await log(listing.id,user.id,"seller_deleted",{});
+      return new Response(JSON.stringify({ok:true,listing:data}),{headers:cors});
+    }
+
     if(action==="refresh"){
       const p=await preview(auth,listing.external_url);
       if(clean(p.provider)!==listing.provider)throw new Error("원본 플랫폼 정보가 일치하지 않습니다.");
@@ -84,7 +97,11 @@ Deno.serve(async(req:Request)=>{
         listingStatus="hidden";hiddenReason="source_unavailable";hiddenAt=now;
       }else if(breakNotInstant){
         listingStatus="hidden";hiddenReason="break_not_instant";hiddenAt=now;
-      }else if(sourceStatus==="active"&&listing.hidden_reason!=="seller_hidden"){
+      }else if(
+        sourceStatus==="active"
+        && listing.listing_status!=="deleted"
+        && !["seller_hidden","seller_deleted","listing_expired"].includes(clean(listing.hidden_reason))
+      ){
         listingStatus="active";hiddenReason=null;hiddenAt=null;
       }
 

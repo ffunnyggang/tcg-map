@@ -2,7 +2,7 @@
 (()=>{
   'use strict';
 
-  const SCRIPT_VERSION='20261019-integrated1';
+  const SCRIPT_VERSION='20261020-random-rotation1';
   const MISSION_TYPES={
     daily_checkin:'출석 체크',
     profile_complete:'프로필 완성',

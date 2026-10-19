@@ -548,7 +548,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
             const market=u.hash.match(/^#\/?market\/([^/?#]+)$/i);
             const post=u.hash.match(/^#\/post\/([^/?#]+)/i);
             if(/\/shops\.html$/.test(p)&&shop){setWebOverlayOpen(false);router.push({pathname:'/shop/[id]',params:{id:shop[1].toUpperCase(),from:'my'}} as any);return false;}
-            if(/\/shops\.html$/.test(p)&&market){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:market[1],from:'my',__tabRefresh:String(Date.now())}} as any);return false;}
+            if(/\/shops\.html$/.test(p)&&market){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:market[1],marketDetail:'1',from:'my',__tabRefresh:String(Date.now())}} as any);return false;}
             if(/\/shops\.html$/.test(p)&&u.searchParams.get('marketRegister')==='1'){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/map',params:{country:'KR',marketRegister:'1',from:'my',__tabRefresh:String(Date.now())}} as any);return false;}
             if(/\/talk\.html$/.test(p)&&post){const id=decodeURIComponent(post[1]);setWebOverlayOpen(false);router.push({pathname:'/(tabs)/talk',params:{postId:id,editPost:u.searchParams.get('editPost')===id?'1':'0',__tabRefresh:String(Date.now())}} as any);return false;}
           }

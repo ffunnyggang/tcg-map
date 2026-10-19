@@ -7,10 +7,10 @@ import FunyWebView from '../../components/FunyWebView';
 
 export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
-  const {country,from,marketId,marketRegister,__tabRefresh}=useLocalSearchParams<{country?:string;from?:string;marketId?:string;marketRegister?:string;__tabRefresh?:string}>();
+  const {country,from,marketId,marketRegister,marketDetail,__tabRefresh}=useLocalSearchParams<{country?:string;from?:string;marketId?:string;marketRegister?:string;marketDetail?:string;__tabRefresh?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
-  const marketQuery=marketId?`&focus=market&marketId=${encodeURIComponent(marketId)}`:marketRegister==='1'?'&marketRegister=1':'';
+  const marketQuery=marketId?(marketDetail==='1'?`&marketDetail=1&marketId=${encodeURIComponent(marketId)}`:`&focus=market&marketId=${encodeURIComponent(marketId)}`):marketRegister==='1'?'&marketRegister=1':'';
   const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}${marketQuery}`;
   const onRoute=useCallback((url:string)=>{
     const back=(()=>{try{const u=new URL(url);const host=u.hostname.toLowerCase();if(host!=='funypin.kr'&&host!=='www.funypin.kr')return false;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/i.test(u.pathname)}catch{return false}})();

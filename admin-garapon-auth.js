@@ -8,6 +8,8 @@
   const TOKEN_KEY='funypin_admin_token';
   const REFRESH_KEY='funypin_admin_refresh';
   const RETURN_KEY='funypin_admin_return';
+  const HANDOFF_KEY='funypin_admin_handoff_v1';
+  const HANDOFF_MAX_AGE=2*60*1000;
 
   let token='';
   let refreshToken='';
@@ -23,6 +25,39 @@
     }catch(_){return '/admin.html'}
   }
 
+  function readHandoff(){
+    let payload=null;
+    try{
+      const raw=localStorage.getItem(HANDOFF_KEY)||'';
+      if(raw)payload=JSON.parse(raw);
+      localStorage.removeItem(HANDOFF_KEY);
+    }catch(_){}
+    if(!payload){
+      try{
+        const prefix='FUNYPIN_ADMIN_HANDOFF:';
+        if(String(window.name||'').startsWith(prefix))payload=JSON.parse(decodeURIComponent(String(window.name).slice(prefix.length)));
+      }catch(_){}
+    }
+    try{if(String(window.name||'').startsWith('FUNYPIN_ADMIN_HANDOFF:'))window.name=''}catch(_){}
+    if(!payload||!payload.access_token)return null;
+    const age=Date.now()-Number(payload.created_at||0);
+    if(!Number.isFinite(age)||age<0||age>HANDOFF_MAX_AGE)return null;
+    return payload;
+  }
+
+  function adoptHandoff(){
+    const payload=readHandoff();
+    if(!payload)return false;
+    token=String(payload.access_token||'').trim();
+    refreshToken=String(payload.refresh_token||'').trim();
+    if(!token)return false;
+    try{
+      sessionStorage.setItem(TOKEN_KEY,token);
+      if(refreshToken)sessionStorage.setItem(REFRESH_KEY,refreshToken);
+    }catch(_){}
+    return true;
+  }
+
   function clearSession(){
     token='';
     refreshToken='';
@@ -30,7 +65,9 @@
     try{
       sessionStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(REFRESH_KEY);
+      localStorage.removeItem(HANDOFF_KEY);
     }catch(_){}
+    try{if(String(window.name||'').startsWith('FUNYPIN_ADMIN_HANDOFF:'))window.name=''}catch(_){}
   }
 
   function rememberReturn(value){
@@ -101,9 +138,12 @@
         token=sessionStorage.getItem(TOKEN_KEY)||'';
         refreshToken=sessionStorage.getItem(REFRESH_KEY)||'';
       }catch(_){}
+      if(!token)adoptHandoff();
       if(!token)return null;
       try{
         const user=await request('/auth/v1/user');
+        const allowed=await request('/rest/v1/rpc/is_funypin_admin',{method:'POST',body:'{}'});
+        if(allowed!==true)throw new Error('ADMIN_REQUIRED');
         currentSession={access_token:token,refresh_token:refreshToken,user};
         return currentSession;
       }catch(error){

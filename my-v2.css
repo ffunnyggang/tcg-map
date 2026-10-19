@@ -57,3 +57,9 @@ body.my-test-hub .test-setting-row{min-height:69px;padding:0 14px;display:flex;a
 body.my-test-hub .test-setting-row:last-child{border-bottom:0}
 body.my-test-hub .test-setting-row .menu-icon{flex:0 0 auto}
 body.my-test-hub .test-setting-language .test-language-toggle{margin-left:8px;flex:0 0 auto}
+
+/* Common back-header optical alignment fallback for MY pages that only load my-v2.css */
+.test-head{align-items:center!important}
+.test-back{position:relative!important;font-size:0!important;line-height:0!important;display:grid!important;place-items:center!important}
+.test-back::before{content:"";box-sizing:border-box;display:block;width:10px;height:10px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(135deg);transform-origin:center;margin-left:3px}
+.test-title{align-self:center!important;line-height:24px!important}

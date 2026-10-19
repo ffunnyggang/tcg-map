@@ -1,0 +1,56 @@
+name: Validate MY missions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'my.html'
+      - 'my-dashboard-v3.js'
+      - 'my-dashboard-v3.css'
+      - 'admin-missions.html'
+      - 'admin-missions.js'
+      - 'admin-missions.css'
+      - 'admin-garapon-auth.js'
+      - 'admin-garapon-login.html'
+      - 'supabase/migrations/*mission*.sql'
+      - '.github/workflows/validate-my-missions.yml'
+  pull_request:
+    paths:
+      - 'my.html'
+      - 'my-dashboard-v3.js'
+      - 'my-dashboard-v3.css'
+      - 'admin-missions.html'
+      - 'admin-missions.js'
+      - 'admin-missions.css'
+      - 'admin-garapon-auth.js'
+      - 'admin-garapon-login.html'
+      - 'supabase/migrations/*mission*.sql'
+      - '.github/workflows/validate-my-missions.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check my-dashboard-v3.js
+          node --check admin-missions.js
+          node --check admin-garapon-auth.js
+      - name: MY structure and private-gate checks
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('my.html','utf8');
+          const js=fs.readFileSync('my-dashboard-v3.js','utf8');
+          const admin=fs.readFileSync('admin-missions.html','utf8');
+          if(!html.includes('my-dashboard-v3.js'))throw new Error('MY dashboard script missing');
+          if(!js.includes("/my-funy-coin.html"))throw new Error('FUNY COIN link missing');
+          if(!js.includes('get_my_dashboard_v1'))throw new Error('MY dashboard RPC missing');
+          if(!js.includes('mission_checkin'))throw new Error('mission check-in RPC missing');
+          if(!admin.includes('noindex,nofollow,noarchive,nosnippet'))throw new Error('mission admin must be noindex');
+          if(!admin.includes('admin-garapon-auth.js'))throw new Error('private admin auth missing');
+          NODE

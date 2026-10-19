@@ -1,14 +1,12 @@
 import { useEffect,useRef,useState } from 'react';
-import { Animated,Easing,Pressable,StyleSheet,Text,View } from 'react-native';
+import { Animated,Easing,Platform,Pressable,StyleSheet,Text,View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
-import { C,UI } from '../lib/theme';
+import { resolveFloatingActionBottom } from '../lib/tabMetrics';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 import { supabase } from '../lib/supabase';
 
-const NAV_HEIGHT=54;
-const NAV_GAP=10;
 
 export default function LivePinButton({withNav=true,scrolling=false,bottomOffset=0}:{withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
   const router=useRouter();
@@ -17,8 +15,7 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
   const [badge,setBadge]=useState(0);
   const progress=useRef(new Animated.Value(0)).current;
-  const navBottom=Math.max(insets.bottom,UI.navBottomGap);
-  const bottom=withNav?navBottom+NAV_HEIGHT+NAV_GAP+bottomOffset:insets.bottom+16+bottomOffset;
+  const bottom=resolveFloatingActionBottom(insets.bottom,Platform.OS==='android',withNav,bottomOffset);
 
   useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
   useEffect(()=>{

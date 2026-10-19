@@ -8,6 +8,7 @@ import type { ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C,UI } from '../../lib/theme';
 import { TAB_INACTIVE } from '../../lib/tabBar';
+import { TAB_BAR_HEIGHT as NAV_HEIGHT } from '../../lib/tabMetrics';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
 import { useAppLanguage } from '../../lib/i18n';
 
@@ -15,7 +16,6 @@ type IconKind='home'|'map'|'pick'|'talk';
 
 const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk'};
 const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK'};
-const NAV_HEIGHT=58;
 const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSourcePropType}>={
   home:{
     active:require('../../assets/nav-icons-final/funypin_nav_home_on.png'),

@@ -246,6 +246,19 @@
                 <label class="mission-field wide"><span>세트 제목</span><input id="missionCampaignTitle" maxlength="120" placeholder="오늘의 미션"></label>
                 <label class="mission-field wide"><span>안내 문구</span><textarea id="missionCampaignDescription" placeholder="미션을 완료하고 퍼니코인을 모아보세요"></textarea></label>
                 <label class="mission-field"><span>주기</span><select id="missionPeriodType"><option value="daily">일간</option><option value="weekly">주간</option><option value="monthly">월간</option></select></label>
+                <label class="mission-field">
+                  <span>미션 노출 방식</span>
+                  <select id="missionDisplayMode">
+                    <option value="all">등록 미션 전체 노출</option>
+                    <option value="random_daily">매일 랜덤 N개 노출</option>
+                  </select>
+                  <small>랜덤 노출은 일간 세트에서만 사용할 수 있습니다.</small>
+                </label>
+                <label id="missionRandomCountField" class="mission-field" hidden>
+                  <span>하루 노출 개수</span>
+                  <input id="missionRandomCount" type="number" min="1" max="100" value="3">
+                  <small>활성 미션 풀에서 KST 날짜별로 N개를 자동 편성합니다.</small>
+                </label>
                 <label class="mission-field"><span>노출 우선순위</span><input id="missionPriority" type="number" value="100"></label>
                 <label class="mission-field"><span>시작 일시</span><input id="missionStartsAt" type="datetime-local"></label>
                 <label class="mission-field"><span>종료 일시</span><input id="missionEndsAt" type="datetime-local"></label>
@@ -316,7 +329,7 @@
       <button type="button" class="mission-campaign-row ${campaign.id===state.selectedId&&!state.newMode?'on':''}" data-mission-campaign="${campaign.id}">
         <span class="mission-campaign-copy">
           <b>${esc(campaign.title)}</b>
-          <small>${periodName(campaign.period_type)} · 미션 ${number(campaign.active_item_count)}개 · ${esc(statusName(campaign.status))}</small>
+          <small>${periodName(campaign.period_type)} · 미션 ${number(campaign.active_item_count)}개${campaign.display_mode==='random_daily'?' · 매일 랜덤 '+number(campaign.random_count||1)+'개':''} · ${esc(statusName(campaign.status))}</small>
         </span>
         <span class="mission-campaign-state ${campaign.status}">${esc(statusName(campaign.status))}</span>
       </button>`).join('');
@@ -331,6 +344,8 @@
     getEl('missionCampaignTitle').value=campaign?.title||'';
     getEl('missionCampaignDescription').value=campaign?.description||'미션을 완료하고 퍼니코인을 모아보세요';
     getEl('missionPeriodType').value=campaign?.period_type||'daily';
+    getEl('missionDisplayMode').value=campaign?.display_mode||'all';
+    getEl('missionRandomCount').value=String(campaign?.random_count||3);
     getEl('missionPriority').value=String(campaign?.priority??100);
     getEl('missionStartsAt').value=campaign?toInputDate(campaign.starts_at):toInputDate(new Date());
     getEl('missionEndsAt').value=campaign?toInputDate(campaign.ends_at):toInputDate(new Date(Date.now()+30*86400000));
@@ -349,6 +364,25 @@
       deleteButton.disabled=!isExisting||status!=='ended';
     }
     getEl('missionSaveItems').disabled=!isExisting;
+    syncRandomUi();
+  }
+
+  function syncRandomUi(){
+    const mode=getEl('missionDisplayMode');
+    const period=getEl('missionPeriodType');
+    const field=getEl('missionRandomCountField');
+    const count=getEl('missionRandomCount');
+    if(!mode||!period||!field||!count)return;
+    const random=mode.value==='random_daily';
+    field.hidden=!random;
+    if(random){
+      period.value='daily';
+      period.disabled=true;
+      count.disabled=false;
+    }else{
+      period.disabled=false;
+      count.disabled=true;
+    }
   }
 
   function itemTemplate(item,index){
@@ -362,6 +396,7 @@
       <div class="mission-item-editor" data-mission-item-index="${index}">
         <div class="mission-item-editor-head">
           <b>미션 ${index+1}</b>
+          ${currentCampaign()?.display_mode==='random_daily'&&item.selected_today?'<span class="mission-selected-today">오늘 노출</span>':''}
           <label class="mission-switch"><input data-key="is_active" type="checkbox" ${item.is_active!==false?'checked':''}><span>사용</span></label>
           <button type="button" class="mission-remove-item" data-remove-item="${index}" aria-label="미션 삭제">×</button>
         </div>
@@ -546,6 +581,8 @@
       title,
       description:getEl('missionCampaignDescription').value.trim(),
       period_type:getEl('missionPeriodType').value,
+      display_mode:getEl('missionDisplayMode').value,
+      random_count:getEl('missionDisplayMode').value==='random_daily'?Math.max(1,Math.min(100,Number(getEl('missionRandomCount').value)||1)):null,
       starts_at:startsAt,
       ends_at:endsAt,
       status:existing?.status||'draft',
@@ -561,7 +598,8 @@
         p_payload:payload
       });
       if(!result?.ok){
-        if(result?.error==='campaign_config_locked')throw new Error('진행 이력이 있어 기간과 주기를 변경할 수 없습니다.');
+        if(result?.error==='campaign_config_locked')throw new Error('진행 이력이 있어 기간·주기·랜덤 편성 설정을 변경할 수 없습니다.');
+        if(result?.error==='random_daily_requires_daily')throw new Error('매일 랜덤 노출은 주기를 일간으로 설정해야 합니다.');
         throw new Error(result?.error||'저장 실패');
       }
       state.selectedId=result.campaign.id;
@@ -671,6 +709,8 @@
     getEl('missionNewCampaign').onclick=newCampaign;
     getEl('missionSaveFeature').onclick=saveFeature;
     getEl('missionSaveCampaign').onclick=saveCampaign;
+    getEl('missionDisplayMode').onchange=syncRandomUi;
+    getEl('missionPeriodType').onchange=syncRandomUi;
     getEl('missionAddItem').onclick=()=>{state.items.push(blankItem(state.items.length));renderItems()};
     getEl('missionSaveItems').onclick=saveItems;
     getEl('missionActivate').onclick=()=>setStatus('active');

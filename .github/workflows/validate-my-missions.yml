@@ -57,11 +57,10 @@ jobs:
           const js=fs.readFileSync('my-dashboard-v3.js','utf8');
           const stable=fs.readFileSync('my-stable.html','utf8');
           const admin=fs.readFileSync('admin-missions.html','utf8');
-          if(!html.includes('my-dashboard-router.js'))throw new Error('MY dashboard router missing');
-          if(html.includes('<script src="/my-dashboard-v3.js'))throw new Error('MY dashboard must load through router');
-          if(router.includes('is_my_feature_tester'))throw new Error('tester-only gate must not remain after public rollout');
-          if(!router.includes('/my-dashboard-v3.js'))throw new Error('public MY dashboard loader missing');
-          if(!router.includes('/my-stable.html'))throw new Error('stable error fallback missing');
+          if(!html.includes('my-stable.js'))throw new Error('stable MY production script missing');
+          if(!html.includes('my-v2.css'))throw new Error('stable MY production styles missing');
+          if(!html.includes('my-dashboard-v3.css'))throw new Error('profile/mission enhancement styles missing');
+          if(html.includes('my-dashboard-router.js'))throw new Error('full redesigned MY router must not load in production');
           if(!stable.includes('my-v2.css'))throw new Error('stable MY styles missing');
           if(!js.includes("/my-funy-coin.html"))throw new Error('FUNY COIN link missing');
           if(!js.includes('get_my_dashboard_v1'))throw new Error('MY dashboard RPC missing');

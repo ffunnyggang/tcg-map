@@ -13,6 +13,8 @@ import FunyHeader from './FunyHeader';
 import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
+import type { FloatingMode } from '../lib/floatingActions';
+import { TAB_BAR_HEIGHT,resolveFloatingActionBottom } from '../lib/tabMetrics';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
 const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261019-web-floating-v1');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
@@ -25,6 +27,10 @@ const isTopLayerToolPage=(target:string)=>{try{const p=new URL(target).pathname.
 const APP_SHELL_BEFORE=String.raw`(function(){
 try{
   var path=String(location.pathname||'').toLowerCase();
+  var floatingMode=String(window.__FUNY_FLOATING_ACTION_MODE||'web');
+  if(!/^(native|web|off)$/.test(floatingMode))floatingMode='web';
+  document.documentElement.classList.remove('app-floating-native','app-floating-web','app-floating-off');
+  document.documentElement.classList.add('app-floating-'+floatingMode);
   var style=document.createElement('style');
   try{var vp=document.querySelector('meta[name="viewport"]');if(!vp){vp=document.createElement('meta');vp.name='viewport';document.head&&document.head.appendChild(vp)}vp.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover')}catch(_){}
   style.id='__funy_app_shell_critical__';
@@ -39,13 +45,14 @@ try{
     'html.app-shell input:not([type="checkbox"]):not([type="radio"]),html.app-shell textarea{font-size:16px!important;-webkit-text-size-adjust:100%!important}',
     'html.app-shell .country-filter-select{font-size:12px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{bottom:var(--funy-native-floating-bottom,88px)!important}',
-    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:var(--funy-native-floating-bottom,88px)!important;right:16px!important}',
+    'html.app-shell .pokamo-fab{bottom:var(--funy-native-floating-bottom,88px)!important;right:16px!important}',
     'html.app-shell.app-shop-detail-open #home-view{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #naver-map,html.app-shell.app-shop-detail-open #google-map,html.app-shell.app-shop-detail-open .map-wrap-hero,html.app-shell.app-shop-detail-open .map-shop-sheet{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
     'html.app-shell.app-shop-detail-open body{overflow:auto!important;background:#fff!important}'
   ].join('');
-  if(/^(?:\/|\/index\.html|\/reviews\.html)$/.test(path))style.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
+  style.textContent+='html.app-shell.app-floating-native body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap),html.app-shell.app-floating-off body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
+  if(floatingMode==='web'&&/^(?:\/|\/index\.html|\/reviews\.html)$/.test(path))style.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin(?:-test)?\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
   if(/\/talk\.html$/.test(path))document.documentElement.classList.add('talk-page');
@@ -145,6 +152,10 @@ try{
 const APP_SHELL_AFTER=String.raw`(function(){
 try{
   var post=function(data){try{if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify(data));}catch(e){}};
+  var floatingMode=String(window.__FUNY_FLOATING_ACTION_MODE||'web');
+  if(!/^(native|web|off)$/.test(floatingMode))floatingMode='web';
+  document.documentElement.classList.remove('app-floating-native','app-floating-web','app-floating-off');
+  document.documentElement.classList.add('app-floating-'+floatingMode);
   var reportRoute=function(){post({type:'WEB_ROUTE',url:location.href});};
   try{
     var shellFix=document.getElementById('__funy_app_shell_after_fix__');
@@ -156,7 +167,8 @@ try{
       'html.app-shell body .market-fab-wrap{bottom:var(--funy-native-floating-bottom,88px)!important}',
       'html.app-shell body .market-overlay-register{bottom:calc(var(--funy-native-safe-bottom,0px) + 18px)!important}'
     ].join('');
-    if(/^(?:\/|\/index\.html|\/reviews\.html)$/.test(String(location.pathname||'').toLowerCase()))shellFix.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
+    if(floatingMode!=='web')shellFix.textContent+='html.app-shell.app-floating-native body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap),html.app-shell.app-floating-off body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
+    if(floatingMode==='web'&&/^(?:\/|\/index\.html|\/reviews\.html)$/.test(String(location.pathname||'').toLowerCase()))shellFix.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
   }catch(_){}
   if(/\/shops\.html$/i.test(location.pathname)&&!window.__FUNY_MAP_BLUR_OUTSIDE){
     window.__FUNY_MAP_BLUR_OUTSIDE=true;
@@ -270,9 +282,9 @@ try{
 })();true;`;
 
 type NativeLocationOptions={enableHighAccuracy?:boolean;timeout?:number;maximumAge?:number};
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string;floatingActionMode?:FloatingMode};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken,floatingActionMode='web'}:Props){
   const router=useRouter();
   const {language}=useAppLanguage();
   const isFocused=useIsFocused();
@@ -304,6 +316,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const {height:windowHeight}=useWindowDimensions();
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
   const isCoinFlipWebView=(()=>{try{return /\/coin-flip\.html$/i.test(new URL(url).pathname)}catch{return false}})();
+  const effectiveFloatingActionMode:FloatingMode=Platform.OS==='android'?floatingActionMode:'web';
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
   const isTalkPost=(()=>{try{const u=new URL(currentTarget);return /\/talk\.html$/.test(u.pathname.toLowerCase())&&/^#\/post\//.test(u.hash)}catch{return false}})();
@@ -513,6 +526,11 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     ref.current?.injectJavaScript(tokenScript);
   },[accessToken,authReady,currentTarget,url]);
   useEffect(()=>{
+    const mode=effectiveFloatingActionMode;
+    const js=`(function(){try{var mode=${JSON.stringify(mode)};window.__FUNY_FLOATING_ACTION_MODE=mode;document.documentElement.classList.remove('app-floating-native','app-floating-web','app-floating-off');document.documentElement.classList.add('app-floating-'+mode);var style=document.getElementById('__funy_floating_mode_runtime__');if(!style){style=document.createElement('style');style.id='__funy_floating_mode_runtime__';document.head&&document.head.appendChild(style)}style.textContent=mode==='web'?'':'html.app-shell body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';window.dispatchEvent(new CustomEvent('funy:floating-action-mode',{detail:{mode:mode}}));}catch(_){}})();true;`;
+    ref.current?.injectJavaScript(js);
+  },[effectiveFloatingActionMode]);
+  useEffect(()=>{
     if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;
@@ -690,16 +708,17 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const keepMapAlive=isMapWebView;
   if(!isFocused&&!keepMapAlive)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
-  const nativeNavHeight=surface==='tab'?58:0;
-  const nativeFloatingBottom=Platform.OS==='android'?(insets.bottom+nativeNavHeight+(surface==='tab'?10:16)):(surface==='tab'?Math.max(insets.bottom,10)+nativeNavHeight+10:Math.max(insets.bottom,12)+16);
-  const nativeCapabilities={saveFunyMonImage:Platform.OS==='android',coinAudioUnlock:true,webFloatingActions:true};
-  const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language,safeBottom:insets.bottom,nativeNavHeight,nativeFloatingBottom,capabilities:nativeCapabilities};
+  const nativeNavHeight=surface==='tab'?TAB_BAR_HEIGHT:0;
+  const nativeFloatingBottom=Platform.OS==='android'?resolveFloatingActionBottom(insets.bottom,true,surface==='tab'):(surface==='tab'?Math.max(insets.bottom,10)+nativeNavHeight+10:Math.max(insets.bottom,12)+16);
+  const nativeCapabilities={saveFunyMonImage:Platform.OS==='android',coinAudioUnlock:true,webFloatingActions:effectiveFloatingActionMode==='web'};
+  const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language,safeBottom:insets.bottom,nativeNavHeight,nativeFloatingBottom,floatingActionMode:effectiveFloatingActionMode,capabilities:nativeCapabilities};
+  const floatingModeInjection=`\n(function(){try{var mode=${JSON.stringify(effectiveFloatingActionMode)};window.__FUNY_FLOATING_ACTION_MODE=mode;document.documentElement.classList.remove('app-floating-native','app-floating-web','app-floating-off');document.documentElement.classList.add('app-floating-'+mode);}catch(e){}})(); true;`;
   const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};window.__FUNY_NATIVE_CAPABILITIES=${JSON.stringify(nativeCapabilities)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});document.documentElement.style.setProperty('--funy-native-safe-bottom',${JSON.stringify(`${insets.bottom}px`)});document.documentElement.style.setProperty('--funy-native-nav-height',${JSON.stringify(`${nativeNavHeight}px`)});document.documentElement.style.setProperty('--funy-native-floating-bottom',${JSON.stringify(`${nativeFloatingBottom}px`)});}catch(e){}})(); true;`;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={styles.container} accessibilityLabel={title}>
     {showBackHeader?<FunyHeader title={backOnlyHeader?'':pageTitleFromUrl(currentTarget,backTitle||title)} showAccount={false} back onBack={goBack} right={isTalkPost?<View style={styles.headerMenuWrap}><Pressable onPress={()=>setTalkMenuOpen(v=>!v)} hitSlop={10} style={styles.headerMenuButton}><Text style={styles.headerMenuDots}>⋮</Text></Pressable>{talkMenuOpen?<View style={styles.headerDropdown}><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('share')}><Text style={styles.headerDropdownText}>공유하기</Text></Pressable>{talkPostMine?<><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('edit')}><Text style={styles.headerDropdownText}>수정하기</Text></Pressable><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('delete')}><Text style={styles.headerDropdownDanger}>삭제하기</Text></Pressable></>:<><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('report')}><Text style={styles.headerDropdownDanger}>신고하기</Text></Pressable><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('block')}><Text style={styles.headerDropdownDanger}>차단하기</Text></Pressable></>}</View>:null}</View>:null}/>:null}
-    <WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={[styles.webview,Platform.OS==='android'&&!androidPageReady&&styles.webviewPreparing]} androidLayerType="none" javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback mediaPlaybackRequiresUserAction={!isCoinFlipWebView} automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+(isCoinFlipWebView?COIN_AUDIO_UNLOCK:'')+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true);if(Platform.OS==='android'&&!androidPageReady&&reloadAttempts.current===0)setAndroidPageReady(false)}} onLoadProgress={(e)=>{if(Platform.OS==='android'&&isMapWebView&&!androidFirstPaintDone.current&&Number(e.nativeEvent.progress)>=0.35){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false);if(Platform.OS==='android'&&!androidFirstPaintDone.current){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>
+    <WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={[styles.webview,Platform.OS==='android'&&!androidPageReady&&styles.webviewPreparing]} androidLayerType="none" javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback mediaPlaybackRequiresUserAction={!isCoinFlipWebView} automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={floatingModeInjection+APP_SHELL_BEFORE+(isCoinFlipWebView?COIN_AUDIO_UNLOCK:'')+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true);if(Platform.OS==='android'&&!androidPageReady&&reloadAttempts.current===0)setAndroidPageReady(false)}} onLoadProgress={(e)=>{if(Platform.OS==='android'&&isMapWebView&&!androidFirstPaintDone.current&&Number(e.nativeEvent.progress)>=0.35){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false);if(Platform.OS==='android'&&!androidFirstPaintDone.current){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>
     <Modal visible={sheetOpen} transparent animationType="none" onRequestClose={closeSheet}><View style={styles.sheetModal}><Animated.View pointerEvents="none" style={[styles.sheetBackdrop,{opacity:backdropOpacity}]}/><Pressable style={styles.sheetDismissArea} onPress={closeSheet}/><Animated.View style={[styles.sheetPanel,{height:sheetHeight,transform:[{translateY:sheetY.interpolate({inputRange:[0,1],outputRange:[0,sheetHeight]})}]}]}><View style={styles.sheetHandle}/><View style={styles.sheetHeader}><Text numberOfLines={1} style={styles.sheetTitle}>FUNY PIN</Text><Pressable hitSlop={10} onPress={closeSheet}><Text style={styles.sheetClose}>×</Text></Pressable></View>{sheetUrl?<WebView source={{uri:sheetUrl}} style={styles.sheetWebview} javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces injectedJavaScriptBeforeContentLoaded={SHEET_SAME_WINDOW_BRIDGE} onOpenWindow={(event)=>{const target=String(event.nativeEvent.targetUrl||'');if(target.startsWith('http://')||target.startsWith('https://'))setSheetUrl(target);}} onShouldStartLoadWithRequest={(request)=>{const target=request.url;if(target.startsWith('http://')||target.startsWith('https://'))return true;if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}return false;}}/>:null}</Animated.View></View></Modal>
   </View>;
 }

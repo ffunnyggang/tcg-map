@@ -53,6 +53,30 @@ npx.cmd expo config --type public
 
 ## 로컬 화면 확인
 
+### 빠른 실행 스크립트
+
+아래 스크립트는 개발 모드 환경변수만 설정하고 로컬 Android 화면을 실행합니다. APK/AAB는 생성하지 않습니다.
+
+```powershell
+cd C:\Users\ALIC\Desktop\tcg-map-aos-qa\mobile
+.\scripts\run-floating-mode.ps1 -Preset native
+.\scripts\run-floating-mode.ps1 -Preset web
+.\scripts\run-floating-mode.ps1 -Preset off
+.\scripts\run-floating-mode.ps1 -Preset mixed
+```
+
+화면별 조합도 지정할 수 있습니다.
+
+```powershell
+.\scripts\run-floating-mode.ps1 -Preset native -MapMode web -TalkMode off
+```
+
+실행 없이 적용될 모드만 확인하려면 `-DryRun`을 사용합니다.
+
+```powershell
+.\scripts\run-floating-mode.ps1 -Preset mixed -DryRun
+```
+
 ### 전체 네이티브
 
 ```powershell

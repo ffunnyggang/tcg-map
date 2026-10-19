@@ -7,3 +7,6 @@ expo-env.d.ts
 # @end expo-cli.expo/
 
 .expo/
+
+# Local floating-action QA captures
+qa/*.png

@@ -292,14 +292,17 @@ html.app-shell.live-pin-page .filters{top:54px!important}
 .head.funy-sub-header .back::before{
   content:""!important;
   box-sizing:border-box!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
   display:block!important;
   width:10px!important;
   height:10px!important;
   border-right:2px solid currentColor!important;
   border-bottom:2px solid currentColor!important;
-  transform:rotate(135deg)!important;
+  transform:translate(-38%,-50%) rotate(135deg)!important;
   transform-origin:center!important;
-  margin-left:3px!important;
+  margin:0!important;
 }
 .test-title,
 .funy-sub-header .funy-sub-title,

@@ -13,8 +13,8 @@ export default function MapScreen(){
   const [scrolling,setScrolling]=useState(false);
   const [nativeCommand,setNativeCommand]=useState<NativeFloatingCommand|null>(null);
   const router=useRouter();
-  const {setting}=useFloatingAction('map');
-  const floatingMode=Platform.OS==='android'?setting.mode:'web';
+  const {setting,ready}=useFloatingAction('map');
+  const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'web';
   const {country,from,marketId,marketRegister}=useLocalSearchParams<{country?:string;from?:string;marketId?:string;marketRegister?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';

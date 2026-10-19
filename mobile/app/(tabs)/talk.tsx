@@ -12,8 +12,8 @@ import { useFloatingAction } from '../../lib/floatingActions';
 export default function Talk(){
   const [webBack,setWebBack]=useState(false);
   const [scrolling,setScrolling]=useState(false);
-  const {setting}=useFloatingAction('talk');
-  const floatingMode=Platform.OS==='android'?setting.mode:'web';
+  const {setting,ready}=useFloatingAction('talk');
+  const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'web';
   const {__tabRefresh,postId,editPost}=useLocalSearchParams<{__tabRefresh?:string;postId?:string;editPost?:string}>();
   const navigation=useNavigation();
   const insets=useSafeAreaInsets();

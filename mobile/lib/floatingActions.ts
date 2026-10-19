@@ -38,6 +38,7 @@ export const DEFAULT_FLOATING_ACTIONS:Snapshot={
 
 let snapshot:Snapshot={...DEFAULT_FLOATING_ACTIONS};
 let cacheLoaded=false;
+let cachePromise:Promise<Snapshot>|null=null;
 let lastRemoteLoad=0;
 let inFlight:Promise<Snapshot>|null=null;
 const listeners=new Set<Listener>();
@@ -76,15 +77,22 @@ const mergeRows=(rows:any[]):Snapshot=>{
 
 const readCache=async()=>{
   if(cacheLoaded)return snapshot;
-  cacheLoaded=true;
-  try{
-    const raw=await SecureStore.getItemAsync(CACHE_KEY);
-    if(!raw)return snapshot;
-    const parsed=JSON.parse(raw);
-    snapshot=mergeRows(Object.values(parsed||{}));
-    emit();
-  }catch{}
-  return snapshot;
+  if(cachePromise)return cachePromise;
+  cachePromise=(async()=>{
+    try{
+      const raw=await SecureStore.getItemAsync(CACHE_KEY);
+      if(raw){
+        const parsed=JSON.parse(raw);
+        snapshot=mergeRows(Object.values(parsed||{}));
+        emit();
+      }
+    }catch{}finally{
+      cacheLoaded=true;
+      cachePromise=null;
+    }
+    return snapshot;
+  })();
+  return cachePromise;
 };
 
 const writeCache=async(next:Snapshot)=>{
@@ -130,11 +138,12 @@ export const refreshFloatingActions=async(force=false):Promise<Snapshot>=>{
 
 export const useFloatingAction=(surface:FloatingSurface)=>{
   const [setting,setSetting]=useState<FloatingActionSetting>(()=>snapshot[surface]);
+  const [ready,setReady]=useState(Platform.OS!=='android');
 
   useEffect(()=>{
     let mounted=true;
     const unsubscribe=subscribeFloatingActions(next=>{if(mounted)setSetting(next[surface]);});
-    readCache().then(next=>{if(mounted)setSetting(next[surface]);}).catch(()=>{});
+    readCache().then(next=>{if(mounted){setSetting(next[surface]);setReady(true);}}).catch(()=>{if(mounted)setReady(true);});
     refreshFloatingActions(false).catch(()=>{});
     const appState=AppState.addEventListener('change',state=>{
       if(state==='active')refreshFloatingActions(false).catch(()=>{});
@@ -144,5 +153,5 @@ export const useFloatingAction=(surface:FloatingSurface)=>{
   },[surface]);
 
   const refresh=useCallback(()=>refreshFloatingActions(true),[]);
-  return {setting,refresh};
+  return {setting,ready,refresh};
 };

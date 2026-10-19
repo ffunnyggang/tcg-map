@@ -243,7 +243,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   place-items:center;
   font-size:18px;
   line-height:1;
-  transform:translateY(2px);
+  transform:translateY(0);
 }
 
 /* One canonical back glyph for both 게시글 관리 (.test-back) and all guided subpages. */

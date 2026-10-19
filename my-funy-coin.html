@@ -7,10 +7,9 @@
 <link rel="stylesheet" href="/my-v2.css?v=20261020-back-align2">
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261020-back-align2">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
-<script src="/my-feature-gate.js?v=20261018-feature1"></script>
 <style>
 .coin-title{display:flex!important;align-items:center!important;height:36px!important;line-height:24px!important}
-.coin-hero{margin-top:12px;padding:21px 18px;border-radius:20px;background:linear-gradient(145deg,#2B2630,#6047A1);color:#fff}.coin-hero small{font-size:10px;opacity:.72}.coin-hero strong{display:block;margin-top:6px;font-size:34px}.coin-hero span{font-size:10px;opacity:.8}.coin-expire{margin-top:10px;padding:11px 12px;border:1px solid #E8E2EC;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:space-between}.coin-expire span{color:#8F8793;font-size:10px}.coin-expire b{font-size:14px}.tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:13px;border:1px solid #EAE5EE;border-radius:14px;background:#fff}.tx b{display:block;font-size:11px}.tx span{display:block;margin-top:4px;color:#958D99;font-size:9px;line-height:1.45}.tx strong{font-size:12px}.plus{color:#368554}.minus{color:#B34D5C}
+.coin-hero{margin-top:12px;padding:21px 18px;border-radius:20px;background:linear-gradient(145deg,#2B2630,#6047A1);color:#fff}.coin-hero small{font-size:10px;opacity:.72}.coin-hero strong{display:block;margin-top:6px;font-size:34px}.coin-hero span{font-size:10px;opacity:.8}.tx{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:13px;border:1px solid #EAE5EE;border-radius:14px;background:#fff}.tx b{display:block;font-size:11px}.tx span{display:block;margin-top:4px;color:#958D99;font-size:9px;line-height:1.45}.tx strong{font-size:12px}.plus{color:#368554}.minus{color:#B34D5C}
 </style></head><body><div class="test-shell">
 <header class="test-head funy-sub-header"><button class="test-back funy-sub-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title funy-sub-title coin-title">퍼니코인</div><span></span></header>
 <main class="test-main">
@@ -21,11 +20,9 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),date=v=>v?new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
  const labels={signup_bonus:'회원가입 보너스',mission_reward:'미션 보상',event_reward:'이벤트 보상',garapon_spend:'가라폰 참여',garapon_refund:'가라폰 환불',admin_grant:'관리자 지급',admin_deduct:'관리자 회수'};
- if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;const uid=A.session.user.id;
+ await A.init();if(!A.session){A.goLogin('/my-funy-coin.html');return}const uid=A.session.user.id;
  const [w,l]=await Promise.all([A.client.from('funy_coin_wallets').select('balance').eq('user_id',uid).maybeSingle(),A.client.from('funy_coin_ledger').select('id,amount,balance_after,transaction_type,source_type,source_id,description,metadata,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(100)]);
- if(w.error)throw w.error;if(l.error)throw l.error;const rows=l.data||[],balance=Number(w.data?.balance||0),now=Date.now(),limit=now+30*86400000;
- const expiring=rows.filter(x=>Number(x.amount)>0&&x.metadata?.expires_at&&Date.parse(x.metadata.expires_at)>now&&Date.parse(x.metadata.expires_at)<=limit).reduce((s,x)=>s+Number(x.amount||0),0);
- const hasExpiryPolicy=rows.some(x=>Number(x.amount)>0&&x.metadata?.expires_at);$('#summary').innerHTML='<section class="coin-hero"><small>현재 사용 가능한 코인</small><strong>'+balance.toLocaleString('ko-KR')+'</strong><span>FUNY COIN</span></section><div class="coin-expire"><span>30일 내 소멸 예정'+(hasExpiryPolicy?'':' · 정책 준비중')+'</span><b>'+expiring.toLocaleString('ko-KR')+' C</b></div>';
+ if(w.error)throw w.error;if(l.error)throw l.error;const rows=l.data||[],balance=Number(w.data?.balance||0);$('#summary').innerHTML='<section class="coin-hero"><small>현재 사용 가능한 코인</small><strong>'+balance.toLocaleString('ko-KR')+'</strong><span>FUNY COIN</span></section>';
  let filter='all';
  function render(){const list=rows.filter(x=>filter==='all'||(filter==='earn'?Number(x.amount)>0:Number(x.amount)<0));$('#root').innerHTML='<div class="list">'+(list.length?list.map(x=>'<article class="tx"><div><b>'+esc(x.description||labels[x.transaction_type]||x.transaction_type||'퍼니코인')+'</b><span>'+date(x.created_at)+' · 잔액 '+Number(x.balance_after||0).toLocaleString('ko-KR')+' C'+(x.source_type?' · '+esc(x.source_type):'')+'</span></div><strong class="'+(Number(x.amount)>0?'plus':'minus')+'">'+(Number(x.amount)>0?'+':'')+Number(x.amount||0).toLocaleString('ko-KR')+' C</strong></article>').join(''):'<div class="empty"><strong>해당 내역이 없어요</strong>적립하거나 사용한 퍼니코인이 이곳에 표시됩니다.</div>')+'</div>'}
  $$('.chip').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});render();

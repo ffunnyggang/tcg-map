@@ -117,7 +117,6 @@
       <a class="menu-row" href="/my-favorites.html"><span class="menu-icon">⭐</span><span class="menu-copy"><b>${T.favorites}</b><span>${T.favoritesSub}</span></span><span class="chev">›</span></a>
     </div></section>
     <section class="section"><div class="section-head"><h2>${T.reward}</h2></div><div class="card menu-card">
-      <a class="menu-row" href="${isTester?'/my-funy-coin.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🪙</span><span class="menu-copy"><b>${T.coin} <span class="coming-badge">${T.coming}</span></b><span>${T.coinSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="${isTester?'/ranking.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🏆</span><span class="menu-copy"><b>${T.ranking} <span class="coming-badge">${T.coming}</span></b><span>${T.rankingSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="${isTester?'/my-badges.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🎖️</span><span class="menu-copy"><b>${T.badges} <span class="coming-badge">${T.coming}</span></b><span>${T.badgesSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-funymon.html"><span class="menu-icon">👾</span><span class="menu-copy"><b>${T.mon}</b><span>${T.monSub}</span></span><span class="chev">›</span></a>

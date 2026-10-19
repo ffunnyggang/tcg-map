@@ -141,7 +141,7 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   text-align:left!important;
   transform:none!important;
 }
-.funy-sub-header>.brand,
+.funy-sub-header>.brand:not(.funy-sub-title),
 .funy-sub-header>p,
 .funy-sub-header>span:not(.funy-sub-title){
   display:none!important;

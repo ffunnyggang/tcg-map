@@ -1436,7 +1436,7 @@
     const el=$('#marketDetailOverlay');if(el){el.hidden=true;el.classList.remove('is-scrolled');el.onscroll=null}
     const floatingRegister=document.querySelector('body>.market-overlay-register');
     if(floatingRegister)floatingRegister.hidden=$('#marketOverlay')?.hidden!==false;
-    if(location.hash.startsWith('#market/'))history.replaceState(null,'',location.pathname+location.search);
+    if(/^#\/?market\//i.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
     if($('#marketOverlay')?.hidden!==false&&$('#marketRegisterOverlay')?.hidden!==false)document.body.style.overflow='';
     requestAnimationFrame(syncNativeMarketOverlayState);
   }
@@ -1755,17 +1755,19 @@
   await Promise.all([rowsReadyPromise,mapReadyPromise]);
   const identityReturned=await handleMarketIdentityReturn();
   if(!identityReturned){
-    const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId'),marketRegister=params.get('marketRegister');
+    const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId'),marketRegister=params.get('marketRegister'),marketDetail=params.get('marketDetail');
     if(marketRegister==='1'){
       await openRegister();
       try{
         const u=new URL(location.href);u.searchParams.delete('marketRegister');
         history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);
       }catch(_){}
+    }else if(marketDetail==='1'&&marketId){
+      openDetail(marketId);
     }else if(focus==='market'&&marketId){
       await focusMarketOnMap(marketId,{updateUrl:false});
     }else{
-      const directMarket=location.hash.match(/^#market\/([0-9a-f-]{36})$/i);
+      const directMarket=location.hash.match(/^#\/?market\/([0-9a-f-]{36})$/i);
       if(directMarket)openDetail(directMarket[1]);
     }
   }

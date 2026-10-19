@@ -90,7 +90,7 @@ async function loadShopsFromSupabase(){
     }catch(_){}
   };
   const ctrl=new AbortController();
-  const timer=setTimeout(()=>ctrl.abort(),3500);
+  const timer=setTimeout(()=>ctrl.abort(),6500);
   const headers={apikey:KEY,Authorization:'Bearer '+KEY};
   const get=async path=>{
     const res=await fetch(API+'/rest/v1/'+path,{headers,signal:ctrl.signal,cache:'no-store'});
@@ -163,6 +163,11 @@ async function loadShopsFromSupabase(){
       imageSource='supabase-read-model';
     }
 
+    window.FUNY_SHOPS_SOURCE='supabase-read-model';
+    trackSource('supabase-read-model');
+    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase-read-model',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS}}));
+    syncFreshShopDataToMap();
+
     try{
       const [shopReviews,shopContents]=await Promise.all([
         get('shop_reviews?select=*'),
@@ -182,9 +187,7 @@ async function loadShopsFromSupabase(){
       console.warn('[FUNY PIN] Supabase review/content fallback:',contentErr?.message||contentErr);
     }
 
-    window.FUNY_SHOPS_SOURCE='supabase-read-model';
-    trackSource('supabase-read-model');
-    window.dispatchEvent(new CustomEvent('funy:shops-source',{detail:{source:'supabase-read-model',imageSource,count:SHOPS.length,loadMs:window.FUNY_SHOPS_LOAD_MS}}));
+    if(location.hash.includes('/shop/'))route();
   }catch(err){
     window.FUNY_SHOPS_SOURCE='static-fallback';
     fallbackReason=err?.name==='AbortError'?'timeout':String(err?.message||err).slice(0,80);
@@ -211,5 +214,5 @@ function syncFreshShopDataToMap(){
 (async()=>{
   renderFilters();renderList();route();initNaverMap();
   await loadShopsFromSupabase();
-  syncFreshShopDataToMap();
+  if(window.FUNY_SHOPS_SOURCE!=='supabase-read-model')syncFreshShopDataToMap();
 })();

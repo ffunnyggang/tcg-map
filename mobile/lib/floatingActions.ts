@@ -57,10 +57,10 @@ const normalizeSetting=(row:any):FloatingActionSetting|null=>{
     surface,
     mode:isMode(row.mode)?row.mode:fallback.mode,
     label:String(row.label_ko||row.label||fallback.label).trim()||fallback.label,
-    actionKey:isActionKey(row.action_key)?row.action_key:fallback.actionKey,
-    targetUrl:row.target_url?String(row.target_url):fallback.targetUrl,
-    isActive:row.is_active!==false,
-    updatedAt:row.updated_at?String(row.updated_at):null,
+    actionKey:isActionKey(row.action_key||row.actionKey)?(row.action_key||row.actionKey):fallback.actionKey,
+    targetUrl:(row.target_url||row.targetUrl)?String(row.target_url||row.targetUrl):fallback.targetUrl,
+    isActive:(row.is_active??row.isActive)!==false,
+    updatedAt:(row.updated_at||row.updatedAt)?String(row.updated_at||row.updatedAt):null,
   };
 };
 
@@ -118,7 +118,8 @@ export const refreshFloatingActions=async(force=false):Promise<Snapshot>=>{
       await writeCache(snapshot);
       emit();
     }catch(error:any){
-      if(__DEV__&&error?.code!=='42P01')console.warn('[FUNY FLOATING] remote config fallback',error?.message||error);
+      lastRemoteLoad=Date.now();
+      if(__DEV__&&!['42P01','PGRST205'].includes(String(error?.code||'')))console.warn('[FUNY FLOATING] remote config fallback',error?.message||error);
     }finally{
       inFlight=null;
     }
@@ -138,7 +139,8 @@ export const useFloatingAction=(surface:FloatingSurface)=>{
     const appState=AppState.addEventListener('change',state=>{
       if(state==='active')refreshFloatingActions(false).catch(()=>{});
     });
-    return()=>{mounted=false;unsubscribe();appState.remove();};
+    const interval=setInterval(()=>refreshFloatingActions(false).catch(()=>{}),REFRESH_INTERVAL_MS);
+    return()=>{mounted=false;unsubscribe();appState.remove();clearInterval(interval);};
   },[surface]);
 
   const refresh=useCallback(()=>refreshFloatingActions(true),[]);

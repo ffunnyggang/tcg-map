@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>가라폰 관리자 로그인 | FUNY PIN</title>
+<title>비공개 관리자 로그인 | FUNY PIN</title>
 <link rel="icon" href="/favicon.svg">
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Pretendard Variable",Pretendard,sans-serif;background:#f7f5f9;color:#2b2630}body{min-height:100dvh;display:grid;place-items:center;padding:20px}.card{width:min(430px,100%);padding:26px;border:1px solid #e9e4ed;border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(53,39,65,.09)}.badge{display:inline-flex;height:25px;padding:0 9px;align-items:center;border-radius:999px;background:#f0e9ff;color:#6c4fc2;font-size:10px;font-weight:850}.card h1{margin:14px 0 7px;font-size:22px;letter-spacing:-.04em}.desc{margin:0 0 20px;color:#817986;font-size:12px;line-height:1.6}.field{display:grid;gap:6px;margin-top:12px}.field label{font-size:11px;font-weight:800}.input{width:100%;height:45px;padding:0 12px;border:1px solid #ddd7e2;border-radius:12px;background:#fff;color:#2b2630;font-size:14px;outline:none}.input:focus{border-color:#9c83e2;box-shadow:0 0 0 3px rgba(128,98,216,.09)}.primary{width:100%;height:47px;margin-top:16px;border:0;border-radius:12px;background:#2d2832;color:#fff;font-weight:850;cursor:pointer}.primary:disabled{opacity:.55;cursor:wait}.message{min-height:18px;margin:12px 0 0;color:#8c8491;font-size:11px;line-height:1.5}.message.error{color:#b42318}.links{display:flex;justify-content:center;margin-top:18px}.links a{color:#7456c8;font-size:11px;font-weight:800;text-decoration:none}.notice{margin-top:18px;padding:12px;border-radius:12px;background:#f8f5ff;color:#746b7b;font-size:10px;line-height:1.55}
@@ -13,9 +13,9 @@
 </head>
 <body>
 <main class="card">
-  <span class="badge">ADMIN ONLY · PRIVATE TEST</span>
-  <h1>가라폰 관리자 로그인</h1>
-  <p class="desc">기존 FUNY PIN 관리자 계정으로 로그인하면 요청한 비공개 가라폰 관리 화면으로 이동합니다.</p>
+  <span class="badge">ADMIN ONLY · PRIVATE</span>
+  <h1>FUNY PIN 관리자 로그인</h1>
+  <p class="desc">기존 FUNY PIN 관리자 계정으로 로그인하면 요청한 비공개 관리 화면으로 이동합니다.</p>
   <form id="loginForm">
     <div class="field"><label for="email">관리자 이메일</label><input id="email" class="input" type="email" autocomplete="username" placeholder="관리자 이메일" required></div>
     <div class="field"><label for="password">비밀번호</label><input id="password" class="input" type="password" autocomplete="current-password" placeholder="비밀번호" required></div>
@@ -23,7 +23,7 @@
     <p id="message" class="message">관리자 세션은 현재 브라우저 탭에서만 유지됩니다.</p>
   </form>
   <div class="links"><a href="/admin.html">기존 FUNY PIN 관리자 페이지 열기</a></div>
-  <div class="notice">일반 FUNY PIN 회원 로그인과 관리자 로그인은 분리되어 있습니다. 현재 고객용 계정으로 로그인되어 있어도 이 화면에서 관리자 계정으로 별도 로그인할 수 있습니다.</div>
+  <div class="notice">일반 FUNY PIN 회원 로그인과 관리자 로그인은 분리되어 있습니다. 고객용 계정으로 로그인되어 있어도 이 화면에서 관리자 계정으로 별도 로그인할 수 있습니다.</div>
 </main>
 <script>
 (()=>{
@@ -34,57 +34,14 @@
   const REFRESH_KEY='funypin_admin_refresh';
   const RETURN_KEY='funypin_admin_return';
   const form=document.getElementById('loginForm'),email=document.getElementById('email'),password=document.getElementById('password'),button=document.getElementById('loginButton'),message=document.getElementById('message');
-
-  function safeReturn(value){
-    try{
-      const url=new URL(value||'',location.origin);
-      if(url.origin!==location.origin)return '/admin-garapon-event-test.html';
-      return /^\/admin-garapon-(?:event|ops)-test\.html$/i.test(url.pathname)?url.pathname+url.search+url.hash:'/admin-garapon-event-test.html';
-    }catch(_){return '/admin-garapon-event-test.html'}
-  }
-  function returnTarget(){
-    const query=new URLSearchParams(location.search).get('return');
-    let saved='';try{saved=sessionStorage.getItem(RETURN_KEY)||''}catch(_){}
-    return safeReturn(query||saved||'/admin-garapon-event-test.html');
-  }
+  function safeReturn(value){try{const url=new URL(value||'',location.origin);if(url.origin!==location.origin)return'/admin.html';const allowed=/^\/(?:admin-garapon-(?:event|ops)-test|admin-missions)\.html$/i.test(url.pathname);return allowed?url.pathname+url.search+url.hash:'/admin.html'}catch(_){return'/admin.html'}}
+  function returnTarget(){const query=new URLSearchParams(location.search).get('return');let saved='';try{saved=sessionStorage.getItem(RETURN_KEY)||''}catch(_){}return safeReturn(query||saved||'/admin.html')}
   function setMessage(text,error=false){message.textContent=text;message.className='message'+(error?' error':'')}
-  function saveSession(data){
-    sessionStorage.setItem(TOKEN_KEY,data.access_token);
-    sessionStorage.setItem(REFRESH_KEY,data.refresh_token||'');
-  }
+  function saveSession(data){sessionStorage.setItem(TOKEN_KEY,data.access_token);sessionStorage.setItem(REFRESH_KEY,data.refresh_token||'')}
   function clearSession(){sessionStorage.removeItem(TOKEN_KEY);sessionStorage.removeItem(REFRESH_KEY)}
-  async function verify(accessToken){
-    const response=await fetch(BASE+'/rest/v1/admin_users?select=user_id&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'}});
-    let data=[];try{data=await response.json()}catch(_){}
-    if(!response.ok||!Array.isArray(data)||!data.length)throw new Error('관리자 권한이 없는 계정입니다.');
-    sessionStorage.removeItem(RETURN_KEY);
-    location.replace(returnTarget());
-  }
-  async function refreshExisting(){
-    const token=sessionStorage.getItem(TOKEN_KEY)||'',refresh=sessionStorage.getItem(REFRESH_KEY)||'';
-    if(!token)return false;
-    try{await verify(token);return true}catch(_){}
-    if(!refresh){clearSession();return false}
-    try{
-      const response=await fetch(BASE+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refresh})});
-      const data=await response.json();
-      if(!response.ok||!data.access_token)throw new Error('refresh_failed');
-      saveSession(data);await verify(data.access_token);return true;
-    }catch(_){clearSession();return false}
-  }
-
-  form.addEventListener('submit',async event=>{
-    event.preventDefault();
-    button.disabled=true;button.textContent='로그인 중...';setMessage('관리자 권한을 확인하고 있습니다.');
-    try{
-      const response=await fetch(BASE+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email.value.trim(),password:password.value})});
-      let data={};try{data=await response.json()}catch(_){}
-      if(!response.ok||!data.access_token)throw new Error(data.message||data.error_description||'로그인에 실패했습니다.');
-      saveSession(data);
-      await verify(data.access_token);
-    }catch(error){clearSession();setMessage('로그인 실패: '+String(error?.message||error),true);button.disabled=false;button.textContent='관리자 로그인'}
-  });
-
+  async function verify(accessToken){const response=await fetch(BASE+'/rest/v1/admin_users?select=user_id&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+accessToken,'Content-Type':'application/json'}});let data=[];try{data=await response.json()}catch(_){}if(!response.ok||!Array.isArray(data)||!data.length)throw new Error('관리자 권한이 없는 계정입니다.');sessionStorage.removeItem(RETURN_KEY);location.replace(returnTarget())}
+  async function refreshExisting(){const token=sessionStorage.getItem(TOKEN_KEY)||'',refresh=sessionStorage.getItem(REFRESH_KEY)||'';if(!token)return false;try{await verify(token);return true}catch(_){}if(!refresh){clearSession();return false}try{const response=await fetch(BASE+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refresh})});const data=await response.json();if(!response.ok||!data.access_token)throw new Error('refresh_failed');saveSession(data);await verify(data.access_token);return true}catch(_){clearSession();return false}}
+  form.addEventListener('submit',async event=>{event.preventDefault();button.disabled=true;button.textContent='로그인 중...';setMessage('관리자 권한을 확인하고 있습니다.');try{const response=await fetch(BASE+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email.value.trim(),password:password.value})});let data={};try{data=await response.json()}catch(_){}if(!response.ok||!data.access_token)throw new Error(data.message||data.error_description||'로그인에 실패했습니다.');saveSession(data);await verify(data.access_token)}catch(error){clearSession();setMessage('로그인 실패: '+String(error?.message||error),true);button.disabled=false;button.textContent='관리자 로그인'}});
   refreshExisting().catch(()=>{});
 })();
 </script>

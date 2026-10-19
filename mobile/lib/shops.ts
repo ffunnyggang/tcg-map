@@ -9,7 +9,13 @@ export async function getShops(){const {data,error}=await supabase.from('v_app_s
 export async function getShop(id:string){const {data,error}=await supabase.from('v_app_shops').select('*').eq('id',id).single();if(error)throw error;return data as AppShop}
 export async function getShopContents(id:string){const {data,error}=await supabase.from('shop_contents').select('*').eq('shop_id',id).eq('status','공개').order('published_at',{ascending:false});if(error)throw error;return(data??[]) as ShopContent[]}
 export async function getShopReview(id:string){const {data,error}=await supabase.from('shop_reviews').select('*').eq('shop_id',id).maybeSingle();if(error)throw error;return data as ShopReview|null}
-export async function getActiveFunyMonEvents(){const now=new Date().toISOString();const {data,error}=await supabase.from('funy_mon_events').select('id,shop_id,title,starts_at,ends_at,is_force_paused,is_archived,event_url,target_type,schedule_event_id,target_latitude,target_longitude,target_name_snapshot,target_location_snapshot').eq('is_archived',false).eq('is_force_paused',false).lte('starts_at',now).gte('ends_at',now);if(error)throw error;return(data??[]) as FunyMonEvent[]}
+export async function getActiveFunyMonEvents(){
+  const now=new Date().toISOString();
+  const {data,error}=await supabase.from('funy_mon_events').select('*').eq('is_archived',false).eq('is_force_paused',false).lte('starts_at',now).gte('ends_at',now);
+  if(error)throw error;
+  const rows=(data??[]) as (Omit<FunyMonEvent,'event_url'>&{event_url?:string|null})[];
+  return rows.map(event=>({...event,event_url:typeof event.event_url==='string'&&event.event_url.trim()?event.event_url.trim():null}));
+}
 export async function getFavoriteIds(){const {data:{user}}=await supabase.auth.getUser();if(!user)return new Set<string>();const {data,error}=await supabase.from('shop_favorites').select('shop_id').eq('user_id',user.id);if(error)throw error;return new Set((data??[]).map(x=>x.shop_id))}
 export async function toggleFavorite(shopId:string,on:boolean){const {data:{user}}=await supabase.auth.getUser();if(!user)throw new Error('LOGIN_REQUIRED');if(on){const {error}=await supabase.from('shop_favorites').insert({user_id:user.id,shop_id:shopId});if(error&&error.code!=='23505')throw error}else{const {error}=await supabase.from('shop_favorites').delete().eq('user_id',user.id).eq('shop_id',shopId);if(error)throw error}}
 

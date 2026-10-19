@@ -3,7 +3,7 @@ import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Pressa
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
-import { C,shadow } from '../../lib/theme';
+import { C,T,UI,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
 import { useAppLanguage } from '../../lib/i18n';
@@ -341,8 +341,8 @@ export default function ShopDetail(){
 
     {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
-        <Pressable onPress={goToMap} hitSlop={10} style={styles.stickyAction}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
-        <Text numberOfLines={1} style={styles.stickyTitle}>{shop.name}</Text>
+        <Pressable onPress={goToMap} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
+        <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
         <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
       </View>
     </View>:null}
@@ -380,10 +380,11 @@ const styles=StyleSheet.create({
   heroCount:{position:'absolute',right:14,bottom:36,height:26,paddingHorizontal:9,borderRadius:13,backgroundColor:'rgba(34,30,26,.62)',flexDirection:'row',gap:5,alignItems:'center',justifyContent:'center'},
   heroCountText:{fontSize:10,fontWeight:'700',color:'#fff'},
 
-  stickyHeaderShell:{position:'absolute',left:0,right:0,height:56,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
-  stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:14,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
-  stickyAction:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},
-  stickyTitle:{position:'absolute',left:56,right:56,textAlign:'center',fontSize:14.5,fontWeight:'800',letterSpacing:-.3,color:'#28231F'},
+  stickyHeaderShell:{position:'absolute',left:0,right:0,height:UI.headerH,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
+  stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',paddingHorizontal:UI.screenPad,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
+  stickyAction:{width:36,height:36,alignItems:'center',justifyContent:'center'},
+  stickyBackText:{fontSize:29,lineHeight:30,fontWeight:'400',color:C.text,textAlign:'center'},
+  stickyTitle:{position:'absolute',left:UI.screenPad+36+4,right:UI.screenPad+36+4,textAlign:'left',...T.header,color:'#28231F'},
 
   detailContent:{paddingHorizontal:16,paddingBottom:64},
   summaryCard:{marginTop:-18,paddingHorizontal:16,paddingTop:22,paddingBottom:18,zIndex:3,backgroundColor:'rgba(255,253,250,.98)',borderWidth:1,borderColor:'#E6DFD6',borderRadius:20,...shadow},

@@ -15,7 +15,7 @@ import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261005-android-shell');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261019-web-floating-v1');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
 
 export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines|my-community|my-market|my-favorites|my-funy-coin|ranking|my-badges|my-funymon|my-entries|my-coupons|my-blocked-users|my-security)\.html$/.test(p);}catch{return false}};
 const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션','/my-community.html':'게시글 관리','/my-market.html':'거래 매물 관리','/my-favorites.html':'관심 목록','/my-funy-coin.html':'퍼니코인','/ranking.html':'랭킹','/my-badges.html':'배지','/my-funymon.html':'퍼니몬 도감','/my-entries.html':'응모 내역','/my-coupons.html':'쿠폰함','/my-blocked-users.html':'차단한 사용자','/my-security.html':'계정 보안'};return map[p]||fallback;}catch{return fallback}};
@@ -45,6 +45,7 @@ try{
     'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
     'html.app-shell.app-shop-detail-open body{overflow:auto!important;background:#fff!important}'
   ].join('');
+  if(/^(?:\/|\/index\.html|\/reviews\.html)$/.test(path))style.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
   document.documentElement.classList.add('app-shell');
   if(/\/live-pin(?:-test)?\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
   if(/\/talk\.html$/.test(path))document.documentElement.classList.add('talk-page');
@@ -155,6 +156,7 @@ try{
       'html.app-shell body .market-fab-wrap{bottom:var(--funy-native-floating-bottom,88px)!important}',
       'html.app-shell body .market-overlay-register{bottom:calc(var(--funy-native-safe-bottom,0px) + 18px)!important}'
     ].join('');
+    if(/^(?:\/|\/index\.html|\/reviews\.html)$/.test(String(location.pathname||'').toLowerCase()))shellFix.textContent+='html.app-shell body .live-pin-entry-wrap{display:flex!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;pointer-events:auto!important}';
   }catch(_){}
   if(/\/shops\.html$/i.test(location.pathname)&&!window.__FUNY_MAP_BLUR_OUTSIDE){
     window.__FUNY_MAP_BLUR_OUTSIDE=true;
@@ -176,7 +178,47 @@ try{
     window.fetch=function(input,init){try{var target=typeof input==='string'?input:(input&&input.url)||'';if(target.indexOf('/functions/v1/funy-mon-catch')>=0&&window.__FUNY_ACCESS_TOKEN){init=Object.assign({},init||{});var headers=new Headers(init.headers||{});headers.set('Authorization','Bearer '+window.__FUNY_ACCESS_TOKEN);init.headers=headers;}}catch(_){}return originalFetch(input,init);};
   }
   var handleCMSLink=function(event){var node=event.target;var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;if(!link)return;var mode=link.getAttribute('data-funy-link-mode')||'inapp';var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';var href=link.href||link.getAttribute('href');if(!href)return;try{var u=new URL(href,location.href),m=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);if(/\/shops\.html$/i.test(u.pathname)&&m){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_SHOP_DETAIL',shopId:m[1].toUpperCase(),country:m[1].toUpperCase().startsWith('JP-')?'JP':'KR'});return false;}}catch(_){}if(mode==='external'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_EXTERNAL',url:href});return false;}if(mode==='inapp'&&presentation==='bottom_sheet'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_SHEET',url:href});return false;}if(mode==='inapp'&&presentation==='page'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_PAGE',url:href,title:(link.getAttribute('aria-label')||link.textContent||'').replace(/\s+/g,' ').trim()});return false;}if(mode==='inapp'&&link.getAttribute('target')==='_blank'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();location.href=href;return false;}};
+  if(window.ReactNativeWebView&&/Android/i.test(navigator.userAgent)&&!window.__FUNY_NATIVE_IMAGE_DOWNLOAD_BRIDGE){
+    window.__FUNY_NATIVE_IMAGE_DOWNLOAD_BRIDGE=true;
+    document.addEventListener('click',function(event){
+      try{
+        var target=event.target;
+        var link=target&&target.closest?target.closest('a[download]'):null;
+        if(!link)return;
+        var href=String(link.href||link.getAttribute('href')||'');
+        if(!/^blob:/i.test(href))return;
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        fetch(href).then(function(response){if(!response.ok)throw new Error('image_download_failed');return response.blob()}).then(function(blob){
+          if(!blob||!/^image\//i.test(String(blob.type||'')))throw new Error('not_an_image');
+          var reader=new FileReader();
+          reader.onload=function(){post({type:'SAVE_FUNYMON_IMAGE',dataUrl:String(reader.result||''),fileName:String(link.download||('funy-pin-'+Date.now()+'.png'))})};
+          reader.onerror=function(){post({type:'FUNY_NATIVE_IMAGE_BRIDGE_ERROR',message:'이미지 데이터를 읽지 못했습니다.'})};
+          reader.readAsDataURL(blob);
+        }).catch(function(){post({type:'FUNY_NATIVE_IMAGE_BRIDGE_ERROR',message:'이미지를 저장하지 못했습니다.'})});
+        return false;
+      }catch(_){}
+    },true);
+  }
   document.addEventListener('click',handleCMSLink,true);
+  if(window.ReactNativeWebView&&!window.__FUNY_NATIVE_AUTH_ROUTE_BRIDGE){
+    window.__FUNY_NATIVE_AUTH_ROUTE_BRIDGE=true;
+    var authBridgeTries=0,installNativeAuthBridge=function(){
+      try{
+        var auth=window.FUNY_WEB_AUTH;
+        if(!auth||typeof auth.goLogin!=='function')return false;
+        if(auth.__nativeRouteBridgeInstalled)return true;
+        auth.goLogin=function(returnTo){
+          try{if(typeof auth.rememberReturn==='function')auth.rememberReturn(returnTo||location.href);}catch(_){}
+          post({type:'OPEN_NATIVE',route:'/account',source:'web-auth'});
+        };
+        auth.__nativeRouteBridgeInstalled=true;
+        return true;
+      }catch(_){return false;}
+    };
+    if(!installNativeAuthBridge()){
+      var authBridgeTimer=setInterval(function(){authBridgeTries++;if(installNativeAuthBridge()||authBridgeTries>=120)clearInterval(authBridgeTimer);},50);
+    }
+  }
 
   /* Shop clicks are captured at document-start and handled natively. */
   window.addEventListener('hashchange',reportRoute);window.addEventListener('pageshow',reportRoute);reportRoute();
@@ -266,7 +308,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const sheetHeight=windowHeight*0.82;
   const isTalkPost=(()=>{try{const u=new URL(currentTarget);return /\/talk\.html$/.test(u.pathname.toLowerCase())&&/^#\/post\//.test(u.hash)}catch{return false}})();
   const exitBlockedTalkPost=useCallback((ownerId:string,postId:string)=>{
-    const script=`(function(){try{if(typeof window.FUNY_TALK_HANDLE_BLOCKED_OWNER==='function')window.FUNY_TALK_HANDLE_BLOCKED_OWNER(${JSON.stringify(ownerId)},${JSON.stringify(postId)});}catch(_){}try{window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));}catch(_){}try{history.replaceState(null,'',location.pathname+location.search);window.dispatchEvent(new HashChangeEvent('hashchange'));}catch(_){}return true;})();true;`;
+    const script=`(function(){try{if(typeof window.FUNY_TALK_HANDLE_BLOCKED_OWNER==='function')window.FUNY_TALK_HANDLE_BLOCKED_OWNER(${JSON.stringify(ownerId)},${JSON.stringify(postId)});}catch(_){}try{window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));}catch(_){}try{var u=new URL(location.href);u.searchParams.delete('editPost');u.hash='';history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():''));window.dispatchEvent(new HashChangeEvent('hashchange'));}catch(_){}return true;})();true;`;
     ref.current?.injectJavaScript(script);
     const listUrl='https://funypin.kr/talk.html';
     setCurrentTarget(listUrl);setTalkPostMine(false);setTalkMenuOpen(false);onWebRouteChange?.(listUrl);
@@ -447,6 +489,12 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   useEffect(()=>()=>{stopNativeLocation();lastShopDetail.current=false;setWebOverlayOpen(false);},[stopNativeLocation]);
   useEffect(()=>{if(!isFocused)setWebOverlayOpen(false);},[isFocused]);
+  useEffect(()=>{
+    if(!isFocused||!ref.current)return;
+    const syncOverlay=()=>ref.current?.injectJavaScript(`(function(){try{var ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay'];var open=ids.some(function(id){var el=document.getElementById(id);if(!el||el.hidden)return false;var s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&s.opacity!=='0';});window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:open,source:'native-refocus'}));}catch(_){}})();true;`);
+    const timers=[60,260,720].map(ms=>setTimeout(syncOverlay,ms));
+    return()=>timers.forEach(clearTimeout);
+  },[isFocused]);
   useEffect(()=>{let alive=true;supabase.auth.getSession().then(({data})=>{if(!alive)return;setAccessToken(data.session?.access_token||null);setAuthReady(true);}).catch(()=>{if(alive)setAuthReady(true)});const sub=supabase.auth.onAuthStateChange((_event,session)=>{if(!alive)return;setAccessToken(session?.access_token||null);});return()=>{alive=false;sub.data.subscription.unsubscribe();};},[]);
   useEffect(()=>{
     if(!authReady)return;
@@ -637,14 +685,14 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     try{const u=new URL(target);const id=u.searchParams.get('appShop')||'';return /^(?:KR|JP)-[A-Z]{3}-\d{3}$/i.test(id)?id.toUpperCase():'';}catch{return'';}
   },[]);
 
-  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='SHOP_DEBUG'){console.log('[FUNY SHOP]',data.stage,data.shopId||'',data.source||'',data.tries||'',data.openDetailType||'',data.message||'',data);return;}if(data?.type==='EARLY_SHOP_CLICK'&&data.shopId){const id=String(data.shopId).toUpperCase();console.log('[FUNY SHOP] CLICK',data.source||'',id,data.page||'');setWebOverlayOpen(false);router.push({pathname:'/shop/[id]',params:{id,from:String(data.source||'web')}} as any);return;}if(data?.type==='EARLY_SHOP_BACK'){console.log('[FUNY SHOP] BACK');injectShopClose('web-back');return;}if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);const topLayerTool=isTopLayerToolPage(target);if(surface==='tab'){if(detail!==lastShopDetail.current)lastShopDetail.current=detail;setWebOverlayOpen(detail||topLayerTool);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.push({pathname:'/shop/[id]',params:{id,from:'cms'}} as any);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='FORM_COMPLETE_BACK'){setWebOverlayOpen(false);if(router.canGoBack())router.back();else router.replace('/(tabs)');return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){setWebOverlayOpen(false);router.push(String(data.route) as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){const target=String(data.url);const last=lastSheetRequest.current;if(last&&last.url===target&&Date.now()-last.at<1000)return;Linking.openURL(target).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){const target=String(data.url);lastSheetRequest.current={url:target,at:Date.now()};openSheet(target);return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation(!!data.once,(data.options||{}) as NativeLocationOptions);return;}if(data?.type==='SAVE_FUNYMON_IMAGE'){void saveFunyMonImage(data);return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[injectShopClose,injectShopOpen,onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,saveFunyMonImage,stopNativeLocation]);
+  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='SHOP_DEBUG'){console.log('[FUNY SHOP]',data.stage,data.shopId||'',data.source||'',data.tries||'',data.openDetailType||'',data.message||'',data);return;}if(data?.type==='EARLY_SHOP_CLICK'&&data.shopId){const id=String(data.shopId).toUpperCase();console.log('[FUNY SHOP] CLICK',data.source||'',id,data.page||'');setWebOverlayOpen(false);router.push({pathname:'/shop/[id]',params:{id,from:String(data.source||'web')}} as any);return;}if(data?.type==='EARLY_SHOP_BACK'){console.log('[FUNY SHOP] BACK');injectShopClose('web-back');return;}if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);const topLayerTool=isTopLayerToolPage(target);if(surface==='tab'){if(detail!==lastShopDetail.current)lastShopDetail.current=detail;setWebOverlayOpen(detail||topLayerTool);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.push({pathname:'/shop/[id]',params:{id,from:'cms'}} as any);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='FORM_COMPLETE_BACK'){setWebOverlayOpen(false);if(router.canGoBack())router.back();else router.replace('/(tabs)');return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){const route=String(data.route);if(route.startsWith('/login')&&route.includes('next=talk')){ref.current?.injectJavaScript(`(function(){try{var u=new URL(location.href);u.searchParams.delete('editPost');u.hash='';history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():''));window.dispatchEvent(new HashChangeEvent('hashchange'));}catch(_){}})();true;`);setTalkPostMine(false);setTalkMenuOpen(false);reportRoute('https://funypin.kr/talk.html');setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/talk',params:{__tabRefresh:String(Date.now())}} as any);setTimeout(()=>router.push(route as any),80);return;}setWebOverlayOpen(false);router.push(route as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){const target=String(data.url);const last=lastSheetRequest.current;if(last&&last.url===target&&Date.now()-last.at<1000)return;Linking.openURL(target).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){const target=String(data.url);lastSheetRequest.current={url:target,at:Date.now()};openSheet(target);return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation(!!data.once,(data.options||{}) as NativeLocationOptions);return;}if(data?.type==='SAVE_FUNYMON_IMAGE'){void saveFunyMonImage(data);return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[injectShopClose,injectShopOpen,onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,saveFunyMonImage,stopNativeLocation]);
 
   const keepMapAlive=isMapWebView;
   if(!isFocused&&!keepMapAlive)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
   const nativeNavHeight=surface==='tab'?58:0;
   const nativeFloatingBottom=Platform.OS==='android'?(insets.bottom+nativeNavHeight+(surface==='tab'?10:16)):(surface==='tab'?Math.max(insets.bottom,10)+nativeNavHeight+10:Math.max(insets.bottom,12)+16);
-  const nativeCapabilities={saveFunyMonImage:Platform.OS==='android',coinAudioUnlock:true};
+  const nativeCapabilities={saveFunyMonImage:Platform.OS==='android',coinAudioUnlock:true,webFloatingActions:true};
   const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language,safeBottom:insets.bottom,nativeNavHeight,nativeFloatingBottom,capabilities:nativeCapabilities};
   const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};window.__FUNY_NATIVE_CAPABILITIES=${JSON.stringify(nativeCapabilities)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});document.documentElement.style.setProperty('--funy-native-safe-bottom',${JSON.stringify(`${insets.bottom}px`)});document.documentElement.style.setProperty('--funy-native-nav-height',${JSON.stringify(`${nativeNavHeight}px`)});document.documentElement.style.setProperty('--funy-native-floating-bottom',${JSON.stringify(`${nativeFloatingBottom}px`)});}catch(e){}})(); true;`;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;

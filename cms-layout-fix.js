@@ -9,7 +9,19 @@
   if(!document.querySelector('script[data-cms-shop-fix]')){const j=document.createElement('script');j.src='cms-collection-shop-fix.js?v=20260929-0330';j.dataset.cmsShopFix='1';document.head.appendChild(j)}
   if(!document.querySelector('script[data-cms-preview-parity]')){const j=document.createElement('script');j.src='cms-preview-parity.js?v=20260929-0400';j.dataset.cmsPreviewParity='1';document.head.appendChild(j)}
   if(!document.querySelector('script[data-cms-image-fallback]')){const j=document.createElement('script');j.src='cms-image-fallback.js?v=20260929-0422';j.dataset.cmsImageFallback='1';document.head.appendChild(j)}
-  const STYLE_ID='cms-desktop-preview-layout-v2',STORAGE_KEY='funypin:cms:active-placement';
+  const STYLE_ID='cms-desktop-preview-layout-v2',STORAGE_KEY='funypin:cms:active-placement',ADMIN_HANDOFF_KEY='funypin_admin_handoff_v1';
+  function openMissionAdmin(){
+    try{
+      const access=(sessionStorage.getItem('funypin_admin_token')||((typeof token!=='undefined'&&typeof token==='string')?token:'')).trim();
+      const refresh=(sessionStorage.getItem('funypin_admin_refresh')||((typeof refreshToken!=='undefined'&&typeof refreshToken==='string')?refreshToken:'')).trim();
+      if(access){
+        const payload={access_token:access,refresh_token:refresh,created_at:Date.now(),source:'integrated-admin'};
+        localStorage.setItem(ADMIN_HANDOFF_KEY,JSON.stringify(payload));
+        try{window.name='FUNYPIN_ADMIN_HANDOFF:'+encodeURIComponent(JSON.stringify(payload))}catch(_){}
+      }
+    }catch(error){console.warn('[MISSION ADMIN HANDOFF]',error)}
+    location.href='/admin-missions.html?from=integrated-admin&v=20261019-session2';
+  }
   function installMissionAdminMenu(){
     if(!/\/admin\.html$/i.test(location.pathname))return;
     const desktop=document.querySelector('.admin-tabs');
@@ -22,7 +34,7 @@
       const eventGroup=eventTitle?.closest('.admin-group');
       if(eventGroup)desktop.insertBefore(group,eventGroup);else desktop.appendChild(group);
       const button=group.querySelector('#adminMissionMenuLink');
-      if(button)button.onclick=()=>{location.href='/admin-missions.html'};
+      if(button)button.onclick=openMissionAdmin;
     }
     const mobile=document.getElementById('mobileTabs');
     if(mobile&&!document.getElementById('adminMissionMobileLink')){
@@ -30,7 +42,7 @@
       button.id='adminMissionMobileLink';
       button.type='button';
       button.textContent='미션 관리';
-      button.onclick=()=>{location.href='/admin-missions.html'};
+      button.onclick=openMissionAdmin;
       const eventButton=mobile.querySelector('[data-admin-tab="event"]');
       mobile.insertBefore(button,eventButton||null);
     }

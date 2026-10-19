@@ -10,7 +10,33 @@
   if(!document.querySelector('script[data-cms-preview-parity]')){const j=document.createElement('script');j.src='cms-preview-parity.js?v=20260929-0400';j.dataset.cmsPreviewParity='1';document.head.appendChild(j)}
   if(!document.querySelector('script[data-cms-image-fallback]')){const j=document.createElement('script');j.src='cms-image-fallback.js?v=20260929-0422';j.dataset.cmsImageFallback='1';document.head.appendChild(j)}
   const STYLE_ID='cms-desktop-preview-layout-v2',STORAGE_KEY='funypin:cms:active-placement';
+  function installMissionAdminMenu(){
+    if(!/\/admin\.html$/i.test(location.pathname))return;
+    const desktop=document.querySelector('.admin-tabs');
+    if(desktop&&!document.getElementById('adminMissionMenuGroup')){
+      const group=document.createElement('div');
+      group.id='adminMissionMenuGroup';
+      group.className='admin-group';
+      group.innerHTML='<div class="admin-group-title">리워드</div><div class="admin-group-items"><button id="adminMissionMenuLink" type="button">미션 관리</button></div>';
+      const eventTitle=[...desktop.querySelectorAll('.admin-group-title')].find(el=>String(el.textContent||'').trim()==='이벤트');
+      const eventGroup=eventTitle?.closest('.admin-group');
+      if(eventGroup)desktop.insertBefore(group,eventGroup);else desktop.appendChild(group);
+      const button=group.querySelector('#adminMissionMenuLink');
+      if(button)button.onclick=()=>{location.href='/admin-missions.html'};
+    }
+    const mobile=document.getElementById('mobileTabs');
+    if(mobile&&!document.getElementById('adminMissionMobileLink')){
+      const button=document.createElement('button');
+      button.id='adminMissionMobileLink';
+      button.type='button';
+      button.textContent='미션 관리';
+      button.onclick=()=>{location.href='/admin-missions.html'};
+      const eventButton=mobile.querySelector('[data-admin-tab="event"]');
+      mobile.insertBefore(button,eventButton||null);
+    }
+  }
   function apply(){
+    installMissionAdminMenu();
     if(!document.getElementById(STYLE_ID)){const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`@media (min-width:900px){.cms-builder{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(330px,380px)!important;column-gap:24px!important;row-gap:0!important;align-items:start!important;width:100%!important;max-width:none!important;min-width:0!important}.cms-builder-main{grid-column:1!important;grid-row:1!important;min-width:0!important;width:100%!important}.cms-phone-wrap{display:block!important;grid-column:2!important;grid-row:1!important;align-self:start!important;position:sticky!important;top:18px!important;min-width:0!important;width:100%!important;margin:0!important}.cms-phone{width:100%!important;max-width:380px!important;height:610px!important;margin:0 auto!important;border:9px solid #d5d0d8!important;border-radius:38px!important;background:#fff!important;overflow:hidden!important;box-shadow:0 8px 26px rgba(41,31,50,.1)!important}.cms-phone iframe{display:block!important;width:100%!important;height:100%!important;border:0!important;background:#fff!important}.cms-phone-label{display:block!important;margin:0 0 8px!important;font-size:10px!important;color:#978f9b!important}}@media (max-width:899px){.cms-builder{display:block!important}.cms-phone-wrap{display:none!important}}.cms-title-size-row button{font-size:10px!important;font-weight:750!important;height:38px!important}`;document.head.appendChild(s)}
     const builder=document.querySelector('.cms-builder');if(!builder)return;const main=builder.querySelector('.cms-builder-main'),phone=builder.querySelector('.cms-phone-wrap');if(main&&phone&&phone.parentElement===builder&&main.nextElementSibling!==phone)builder.insertBefore(phone,main.nextSibling);
     const sel=document.getElementById('cmsPage');if(sel&&!sel.dataset.fpFixed){sel.dataset.fpFixed='1';const labels={home:'HOME',pick_information:'PICK · 정보',pick_schedule:'PICK · 스케줄',pick_creator:'PICK · CREATOR',pick_review:'PICK · 깽퐌커플 리뷰'};sel.innerHTML=Object.entries(labels).map(([v,n])=>`<option value="${v}">${n}</option>`).join('');const saved=sessionStorage.getItem(STORAGE_KEY);sel.value=labels[saved]?saved:'home';sel.addEventListener('change',()=>sessionStorage.setItem(STORAGE_KEY,sel.value));sel.dispatchEvent(new Event('change',{bubbles:true}))}

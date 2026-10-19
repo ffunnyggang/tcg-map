@@ -13,7 +13,7 @@ import FunyHeader from './FunyHeader';
 import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
-import type { FloatingMode } from '../lib/floatingActions';
+import type { FloatingMode,NativeFloatingCommand } from '../lib/floatingActions';
 import { TAB_BAR_HEIGHT,resolveFloatingActionBottom } from '../lib/tabMetrics';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
@@ -282,9 +282,9 @@ try{
 })();true;`;
 
 type NativeLocationOptions={enableHighAccuracy?:boolean;timeout?:number;maximumAge?:number};
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string;floatingActionMode?:FloatingMode};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string;floatingActionMode?:FloatingMode;nativeFloatingCommand?:NativeFloatingCommand|null};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken,floatingActionMode='web'}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken,floatingActionMode='web',nativeFloatingCommand=null}:Props){
   const router=useRouter();
   const {language}=useAppLanguage();
   const isFocused=useIsFocused();
@@ -313,6 +313,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const lastSheetRequest=useRef<{url:string;at:number}|null>(null);
   const lastNativeRefreshToken=useRef<string|undefined>(refreshToken);
   const lastNativeRefreshAt=useRef(0);
+  const lastFloatingCommandId=useRef<number|null>(null);
   const {height:windowHeight}=useWindowDimensions();
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
   const isCoinFlipWebView=(()=>{try{return /\/coin-flip\.html$/i.test(new URL(url).pathname)}catch{return false}})();
@@ -525,6 +526,13 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
       : `window.__FUNY_ACCESS_TOKEN='';window.dispatchEvent(new CustomEvent('funy:auth-ready',{detail:{loggedIn:false}}));true;`;
     ref.current?.injectJavaScript(tokenScript);
   },[accessToken,authReady,currentTarget,url]);
+  useEffect(()=>{
+    if(!nativeFloatingCommand||lastFloatingCommandId.current===nativeFloatingCommand.id)return;
+    lastFloatingCommandId.current=nativeFloatingCommand.id;
+    const action=nativeFloatingCommand.action;
+    const js=`(function(){try{var action=${JSON.stringify(action)};var handled=false;if(typeof window.FUNY_NATIVE_FLOATING_ACTION==='function'){try{window.FUNY_NATIVE_FLOATING_ACTION(action);handled=true}catch(_){}}window.dispatchEvent(new CustomEvent('funy:native-floating-action',{detail:{action:action}}));if(handled)return;if(action==='open_market'){var tab=document.querySelector('.qa-list-tab[data-tab="market"],[data-tab="market"]');if(tab&&typeof tab.click==='function')tab.click();return}if(action==='open_market_register'){var direct=document.querySelector('[data-market-register],#marketRegisterOpen,#marketRegisterButton');if(direct&&typeof direct.click==='function'){direct.click();return}var main=document.querySelector('#marketFabMain,.market-fab-main,.market-fab-wrap button');if(main&&typeof main.click==='function')main.click();setTimeout(function(){var items=Array.prototype.slice.call(document.querySelectorAll('button,a'));var target=items.find(function(el){var text=String(el.textContent||'').replace(/\s+/g,' ').trim();return /^(?:\+\s*)?매물 등록(?:하기)?$|^Register listing$/i.test(text)});if(target&&typeof target.click==='function')target.click()},80)}}catch(_){}})();true;`;
+    ref.current?.injectJavaScript(js);
+  },[nativeFloatingCommand]);
   useEffect(()=>{
     const mode=effectiveFloatingActionMode;
     const js=`(function(){try{var mode=${JSON.stringify(mode)};window.__FUNY_FLOATING_ACTION_MODE=mode;document.documentElement.classList.remove('app-floating-native','app-floating-web','app-floating-off');document.documentElement.classList.add('app-floating-'+mode);var style=document.getElementById('__funy_floating_mode_runtime__');if(!style){style=document.createElement('style');style.id='__funy_floating_mode_runtime__';document.head&&document.head.appendChild(style)}style.textContent=mode==='web'?'':'html.app-shell body :is(.live-pin-entry-wrap,.live-pin-detail-entry,#livePinEntry,[data-live-pin-entry],.pokamo-fab,.market-fab-wrap){display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';window.dispatchEvent(new CustomEvent('funy:floating-action-mode',{detail:{mode:mode}}));}catch(_){}})();true;`;

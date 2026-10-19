@@ -6,6 +6,7 @@ import { supabase } from './supabase';
 export type FloatingSurface='home'|'map'|'pick'|'talk';
 export type FloatingMode='native'|'web'|'off';
 export type FloatingActionKey='live_pin'|'map_actions'|'external_link';
+export type NativeFloatingCommand={id:number;action:'open_market'|'open_market_register'};
 
 export type FloatingActionSetting={
   platform:'android';

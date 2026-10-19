@@ -266,7 +266,7 @@
                 <label id="missionRandomCountField" class="mission-field" hidden>
                   <span>하루 노출 개수</span>
                   <input id="missionRandomCount" type="number" min="1" max="100" value="3">
-                  <small>고정 노출 미션은 항상 표시하고, 나머지 활성 미션 풀에서 KST 날짜별로 N개를 추가 편성합니다.</small>
+                  <small>고정 노출 미션을 포함해 하루 총 N개가 노출됩니다. 남는 수만큼 나머지 미션 풀에서 랜덤 편성합니다.</small>
                 </label>
                 <label class="mission-field"><span>노출 우선순위</span><input id="missionPriority" type="number" value="100"></label>
                 <label class="mission-field"><span>시작 일시</span><input id="missionStartsAt" type="datetime-local"></label>

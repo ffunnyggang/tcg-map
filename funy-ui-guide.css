@@ -269,3 +269,42 @@ html.app-shell.live-pin-page .filters{top:54px!important}
   font-weight:400!important;
   transform:none!important;
 }
+
+/* 2026-10-20 common back-header optical alignment
+   Draw the chevron instead of relying on the ‹ font glyph so icon/title centers match across browsers. */
+.test-back,
+.funy-sub-header .funy-sub-back,
+.funy-sub-header>.back,
+.funy-sub-header .top>.back,
+.my-head.funy-sub-header .my-back,
+.head.funy-sub-header .back{
+  position:relative!important;
+  font-size:0!important;
+  line-height:0!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.test-back::before,
+.funy-sub-header .funy-sub-back::before,
+.funy-sub-header>.back::before,
+.funy-sub-header .top>.back::before,
+.my-head.funy-sub-header .my-back::before,
+.head.funy-sub-header .back::before{
+  content:""!important;
+  box-sizing:border-box!important;
+  display:block!important;
+  width:10px!important;
+  height:10px!important;
+  border-right:2px solid currentColor!important;
+  border-bottom:2px solid currentColor!important;
+  transform:rotate(135deg)!important;
+  transform-origin:center!important;
+  margin-left:3px!important;
+}
+.test-title,
+.funy-sub-header .funy-sub-title,
+.funy-sub-header>h1,
+.my-head.funy-sub-header .my-title,
+.head.funy-sub-header .title{
+  align-self:center!important;
+}

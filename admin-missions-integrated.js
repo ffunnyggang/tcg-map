@@ -439,6 +439,24 @@
             :input.type==='checkbox'
               ?input.checked
               :input.value;
+          if(key==='is_pinned'&&state.items[index].id){
+            const item=state.items[index];
+            rpc('admin_set_mission_item_pinned',{
+              p_mission_id:item.id,
+              p_is_pinned:item.is_pinned===true
+            }).then(result=>{
+              if(!result?.ok)throw new Error(result?.error||'고정 노출 저장 실패');
+              item.is_pinned=!!result.item?.is_pinned;
+              item.selected_today=item.is_pinned||item.selected_today;
+              renderItems();
+              toast(item.is_pinned?'고정 노출로 설정했습니다.':'고정 노출을 해제했습니다.','ok');
+            }).catch(error=>{
+              item.is_pinned=!item.is_pinned;
+              renderItems();
+              toast(error?.message||'고정 노출 저장에 실패했습니다.','error');
+            });
+            return;
+          }
           if(key==='mission_type'){
             const defaults=TYPE_DEFAULTS[input.value];
             if(defaults){

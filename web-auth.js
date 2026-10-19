@@ -28,6 +28,15 @@
     }catch(_){}
   }
 
+  function shouldDetachForIntegratedAdmin(){
+    try{
+      if(!/\/admin\.html$/i.test(location.pathname))return false;
+      const copied=String(sessionStorage.getItem('funypin_admin_token')||'').trim();
+      const current=String(currentSession?.access_token||'').trim();
+      return !!copied&&!!current&&copied===current;
+    }catch(_){return false}
+  }
+
   function loadSdk(){
     if(window.supabase?.createClient)return Promise.resolve(window.supabase);
     return new Promise((resolve,reject)=>{
@@ -106,6 +115,18 @@
   }
   async function signOut(){
     await init();
+
+    // admin.html temporarily adopts the normal web login only to verify the single
+    // FUNY PIN administrator and then keeps its JWT/refresh token in sessionStorage.
+    // A normal Supabase signOut would revoke that refresh token, so detach the public
+    // web session locally while preserving the already-copied administrator session.
+    if(shouldDetachForIntegratedAdmin()){
+      try{client?.auth?.stopAutoRefresh?.()}catch(_){}
+      clearStoredAuth();
+      currentSession=null;emit();
+      return{ok:true,detached:true}
+    }
+
     let error=null;
     try{
       const result=await client.auth.signOut({scope:'local'});

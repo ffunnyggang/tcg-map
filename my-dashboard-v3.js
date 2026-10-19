@@ -68,15 +68,18 @@
     return `<section class="my-profile-card">
       <div class="my-profile-top">
         <div class="my-avatar">${avatar?`<img src="${esc(avatar)}" alt="">`:`<img src="/assets/profile/default-profile.svg?v=20261018-neutral1" alt="">`}</div>
-        <div class="my-profile-copy"><div class="my-name-line"><strong class="my-profile-name">${esc(name)}</strong></div><div class="my-join-date">${T.joined} ${esc(date(joined))}</div></div>
+        <div class="my-profile-copy">
+          <div class="my-name-line"><strong class="my-profile-name">${esc(name)}</strong></div>
+          <div class="my-join-date">${T.joined} ${esc(date(joined))}</div>
+          <div class="my-activity-counts">
+            <a href="/my-community.html">${T.posts} <b>${num(activity.post_count)}</b></a><i></i>
+            <a href="/my-market.html">${T.listings} <b>${num(activity.listing_count)}</b></a><i></i>
+            <a href="/my-favorites.html">${T.favorites} <b>${num(activity.favorite_count)}</b></a>
+          </div>
+        </div>
         <a class="my-profile-edit" href="/my-profile.html">${T.edit}</a>
       </div>
-      <div class="my-activity-counts">
-        <a href="/my-community.html">${T.posts} <b>${num(activity.post_count)}</b></a><i></i>
-        <a href="/my-market.html">${T.listings} <b>${num(activity.listing_count)}</b></a><i></i>
-        <a href="/my-favorites.html">${T.favorites} <b>${num(activity.favorite_count)}</b></a>
-      </div>
-      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon">●</span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)}</strong><span class="my-coin-chevron">›</span></a>`:''}
+      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon" aria-hidden="true"></span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)}</strong><span class="my-coin-chevron">›</span></a>`:''}
     </section>`;
   }
 
@@ -99,14 +102,14 @@
         <button type="button" class="my-mission-action${done?' is-complete':''}" ${done?'disabled':''} data-mission-action="${esc(item.id)}">${esc(actionLabel)}</button>
       </div>`;
     }).join(''):`<div class="my-mission-empty">${en?'No missions are available.':'진행 중인 미션이 없습니다.'}</div>`;
-    const pager=campaigns.length>1?`<div class="my-mission-pages"><button type="button" class="my-page-arrow" data-mission-prev ${missionIndex===0?'disabled':''}>‹</button><div class="my-page-dots">${campaigns.map((_,i)=>`<button type="button" class="my-page-dot${i===missionIndex?' is-on':''}" data-mission-page="${i}" aria-label="${i+1}"></button>`).join('')}</div><button type="button" class="my-page-arrow" data-mission-next ${missionIndex===campaigns.length-1?'disabled':''}>›</button></div>`:'';
+    const pager=campaigns.length>1?`<div class="my-mission-pages" aria-label="${en?'Mission sets':'미션 세트'}"><div class="my-page-dots">${campaigns.map((_,i)=>`<button type="button" class="my-page-dot${i===missionIndex?' is-on':''}" data-mission-page="${i}" aria-label="${i+1}"></button>`).join('')}</div></div>`:'';
     return `<section class="my-mission-wrap"><article class="my-mission-card${missionOpen?' is-open':''}" data-mission-card>
       <button type="button" class="my-mission-summary" data-mission-toggle>
-        <span class="my-progress-ring" style="--progress:${percent}%"><span class="my-progress-copy"><strong>${completed}/${total}</strong><span>${T.missionProgress}</span></span></span>
+        <span class="my-progress-ring" style="--progress:${percent}%"><span class="my-progress-copy"><strong>${completed}/${total}</strong></span></span>
         <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description|| (en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
         <span class="my-mission-toggle">⌄</span>
-      </button>${pager}${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}
-    </article></section>`;
+      </button>${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}
+    </article>${pager}</section>`;
   }
 
   const menuRow=(href,icon,label,sub,extra='')=>`<a class="my-menu-row" href="${href}" ${extra}><span class="my-menu-icon">${icon}</span><span class="my-menu-copy"><b>${label}</b><span>${sub}</span></span><span class="my-chevron">›</span></a>`;

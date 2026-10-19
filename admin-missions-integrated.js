@@ -2,17 +2,20 @@
 (()=>{
   'use strict';
 
-  const SCRIPT_VERSION='20261020-random-rotation1';
+  const SCRIPT_VERSION='20261020-pinned-missions1';
   const MISSION_TYPES={
     daily_checkin:'출석 체크',
-    profile_complete:'프로필 완성',
+    profile_complete:'프로필 편집',
     community_post_create:'게시글 작성',
+    community_comment_create:'댓글 작성',
+    community_post_like:'게시글 좋아요',
     market_listing_create:'거래 매물 등록',
     shop_favorite_add:'관심 매장 추가',
     market_favorite_add:'관심 매물 추가',
     shop_visit_checkin:'카드샵 방문 인증',
     funymon_capture:'퍼니몬 포획',
-    event_entry:'이벤트 참여'
+    event_entry:'이벤트 참여',
+    garapon_participation:'가라폰 참여'
   };
   const CTA_TYPES={
     checkin:'출석 처리',
@@ -22,14 +25,17 @@
   };
   const TYPE_DEFAULTS={
     daily_checkin:['출석 체크','오늘의 출석을 완료해주세요','출석 체크','checkin',''],
-    profile_complete:['프로필 완성','프로필 이미지와 닉네임을 설정해주세요','프로필 편집','route','/my-profile.html'],
+    profile_complete:['프로필 편집하기','닉네임 또는 프로필 이미지를 변경해보세요','프로필 편집','route','/my-profile.html'],
     community_post_create:['게시글 작성하기','FUNY TALK에 게시글을 작성해보세요','작성하기','route','/talk.html'],
+    community_comment_create:['댓글 작성하기','FUNY TALK 게시글에 댓글을 남겨보세요','댓글 쓰기','route','/talk.html'],
+    community_post_like:['게시글 좋아요','마음에 드는 FUNY TALK 게시글에 좋아요를 눌러보세요','둘러보기','route','/talk.html'],
     market_listing_create:['매물 등록하기','거래 매물을 등록해보세요','등록하기','route','/my-market.html'],
     shop_favorite_add:['관심 매장 추가하기','마음에 드는 카드샵을 저장해보세요','둘러보기','route','/shops.html'],
     market_favorite_add:['관심 매물 추가하기','관심 있는 거래 매물을 저장해보세요','둘러보기','route','/my-favorites.html'],
     shop_visit_checkin:['카드샵 방문 인증','가까운 카드샵에서 방문 인증을 완료해보세요','방문 인증','route','/ranking.html'],
     funymon_capture:['퍼니몬 포획하기','지도에서 퍼니몬을 포획해보세요','지도 보기','route','/shops.html'],
-    event_entry:['이벤트 참여하기','FUNY PIN 이벤트에 참여해보세요','응모 내역','route','/my-entries.html']
+    event_entry:['이벤트 참여하기','FUNY PIN 이벤트에 참여해보세요','응모 내역','route','/my-entries.html'],
+    garapon_participation:['가라폰 참여하기','퍼니코인으로 가라폰에 참여해보세요','가라폰 보기','route','/garapon.html']
   };
 
   let state={
@@ -157,7 +163,8 @@
       cta_label:'출석 체크',
       cta_target:'',
       sort_order:(index+1)*10,
-      is_active:true
+      is_active:true,
+      is_pinned:false
     };
   }
 
@@ -257,7 +264,7 @@
                 <label id="missionRandomCountField" class="mission-field" hidden>
                   <span>하루 노출 개수</span>
                   <input id="missionRandomCount" type="number" min="1" max="100" value="3">
-                  <small>활성 미션 풀에서 KST 날짜별로 N개를 자동 편성합니다.</small>
+                  <small>고정 노출 미션은 항상 표시하고, 나머지 활성 미션 풀에서 KST 날짜별로 N개를 추가 편성합니다.</small>
                 </label>
                 <label class="mission-field"><span>노출 우선순위</span><input id="missionPriority" type="number" value="100"></label>
                 <label class="mission-field"><span>시작 일시</span><input id="missionStartsAt" type="datetime-local"></label>
@@ -396,7 +403,9 @@
       <div class="mission-item-editor" data-mission-item-index="${index}">
         <div class="mission-item-editor-head">
           <b>미션 ${index+1}</b>
+          ${currentCampaign()?.display_mode==='random_daily'&&item.is_pinned?'<span class="mission-selected-today">고정 노출</span>':''}
           ${currentCampaign()?.display_mode==='random_daily'&&item.selected_today?'<span class="mission-selected-today">오늘 노출</span>':''}
+          ${currentCampaign()?.display_mode==='random_daily'?'<label class="mission-switch"><input data-key="is_pinned" type="checkbox" '+(item.is_pinned?'checked':'')+'><span>고정</span></label>':''}
           <label class="mission-switch"><input data-key="is_active" type="checkbox" ${item.is_active!==false?'checked':''}><span>사용</span></label>
           <button type="button" class="mission-remove-item" data-remove-item="${index}" aria-label="미션 삭제">×</button>
         </div>
@@ -627,7 +636,8 @@
       cta_label:String(item.cta_label||'').trim()||null,
       cta_target:String(item.cta_target||'').trim()||null,
       sort_order:(index+1)*10,
-      is_active:item.is_active!==false
+      is_active:item.is_active!==false,
+      is_pinned:item.is_pinned===true
     }));
     if(payload.some(item=>!item.title)){
       toast('모든 미션 타이틀을 입력해주세요.','error');

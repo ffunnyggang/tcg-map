@@ -20,3 +20,9 @@ body.country-japan #detail-view .hero{background:#f1e9eb}body.country-japan #det
 /* Avoid duplicate hero/sticky navigation controls while scrolling.
    Keep existing design; only switch which pair is visible. */
 #detail-view:has(.detail-sticky.show) .hero-top{visibility:hidden;pointer-events:none}
+
+/* Detail event + variable TCG content */
+#detail-view .section>.event-detail-card{margin:0 0 12px!important}
+#detail-view .analysis-card,#detail-view .analysis-grid,#detail-view .comp-card{height:auto!important;min-height:0!important}
+#detail-view .tcg-line{align-items:flex-start!important}
+#detail-view .tcg-value{white-space:normal!important;overflow-wrap:anywhere!important;word-break:keep-all!important}

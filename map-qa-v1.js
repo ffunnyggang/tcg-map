@@ -360,14 +360,16 @@ const $=s=>document.querySelector(s);
     syncCountrySpecificQaUI();applyLayers();
   }).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
+    keepLayerControls();buildSheet();renderVendingList();syncCountrySpecificQaUI();
     try{
       await loadVendingData();
+      renderVendingList();syncCountrySpecificQaUI();
+      const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(VENDING.length);
     }catch(e){
       console.error('[FUNY QA] vending DB load failed',e);
       const badge=document.querySelector('.qa-dev-badge');if(badge)badge.textContent='MAP V2 · QA · DB ERROR';
       return;
     }
-    keepLayerControls();buildSheet();renderVendingList();syncCountrySpecificQaUI();
     let tries=0,t=setInterval(()=>{
       tries++;
       if(mapReady()){

@@ -8,3 +8,5 @@ html.app-shell .live-pin-entry-wrap,
 html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;pointer-events:none!important}
 html.app-shell .portal-main{padding-top:0!important}
 html.app-shell .shops-page-pad{padding-top:0!important}
+
+html.app-shell body .info-tabs,html.app-shell.talk-page body .filters{top:0!important}

@@ -542,14 +542,16 @@
     if(!target||!scroller)return;let timer=0;
     scroller.addEventListener('scroll',()=>{if(target.classList.contains('open'))return;target.classList.add('is-scrolling');clearTimeout(timer);timer=setTimeout(()=>target.classList.remove('is-scrolling'),850)},{passive:true});
   }
-  function postNativeMarketOverlayState(open){
+  function postNativeMarketOverlayState(open,navMode='hide'){
     if(!window.ReactNativeWebView)return;
-    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:'market'}))}catch(_){}
+    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:'market',navMode:open?navMode:'none'}))}catch(_){}
   }
   function syncNativeMarketOverlayState(){
     const ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
-    const open=ids.some(id=>{const el=$('#'+id);return !!el&&el.hidden===false});
-    postNativeMarketOverlayState(open);
+    const fabMenu=$('#marketFabWrap .market-fab-menu');
+    const fullOpen=ids.some(id=>{const el=$('#'+id);return !!el&&el.hidden===false});
+    const menuOpen=!!fabMenu&&fabMenu.hidden===false;
+    postNativeMarketOverlayState(fullOpen||menuOpen,fullOpen?'hide':'dim');
   }
 
   function buildFab(){
@@ -573,7 +575,7 @@
       '<button type="button" class="market-fab-main" aria-label="제보 · 매물 등록" aria-expanded="false"><span class="market-fab-plus">＋</span><span class="market-fab-label">제보 · 매물 등록</span></button>';
     home.appendChild(wrap);
     const menu=wrap.querySelector('.market-fab-menu'),main=wrap.querySelector('.market-fab-main'),dim=wrap.querySelector('.market-fab-dim');
-    const setOpen=open=>{menu.hidden=!open;dim.hidden=!open;wrap.classList.toggle('open',open);main.classList.toggle('open',open);main.setAttribute('aria-expanded',open?'true':'false');wrap.classList.remove('is-scrolling');wrap.querySelector('.market-fab-plus').textContent=open?'×':'＋'};
+    const setOpen=open=>{menu.hidden=!open;dim.hidden=!open;wrap.classList.toggle('open',open);main.classList.toggle('open',open);main.setAttribute('aria-expanded',open?'true':'false');wrap.classList.remove('is-scrolling');wrap.querySelector('.market-fab-plus').textContent=open?'×':'＋';postNativeMarketOverlayState(open,'dim')};
     main.onclick=()=>setOpen(menu.hidden);
     dim.onclick=()=>setOpen(false);
     wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',()=>setOpen(false));
@@ -1738,12 +1740,11 @@
   const sheetRecoveryRoot=document.querySelector('.list-wrap');
   if(sheetRecoveryRoot)sheetRecoveryObserver.observe(sheetRecoveryRoot,{childList:true,subtree:true});
 
-  const mapReadyPromise=waitForMap();
-  const tabsReadyPromise=waitForQaTabs().then(tabs=>{if(tabs)setupMarketPanel(tabs);return tabs});
-  const [map,tabs]=await Promise.all([mapReadyPromise,tabsReadyPromise,authReady]).then(([readyMap,readyTabs])=>[readyMap,readyTabs]);
+  const mapReadyPromise=waitForMap().then(map=>{if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup());syncMarkers()}return map});
+  const tabs=await waitForQaTabs().then(readyTabs=>{if(readyTabs)setupMarketPanel(readyTabs);return readyTabs});
   syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();buildOverlay();buildRegister();buildDetail();buildMarketReport();ensureMarketSheetControlBridge();
-  if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup())}
+  const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
   setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();ensureMarketSheetControlBridge();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}else repairShopTabUI()},700);
   window.addEventListener('resize',()=>{
     if(!document.body.classList.contains('market-page'))return;
@@ -1751,7 +1752,7 @@
     requestAnimationFrame(()=>marketApplySheetMode(mode,false));
   });
   window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
-  await loadRows();
+  await Promise.all([rowsReadyPromise,mapReadyPromise]);
   const identityReturned=await handleMarketIdentityReturn();
   if(!identityReturned){
     const params=new URLSearchParams(location.search),focus=params.get('focus'),marketId=params.get('marketId'),marketRegister=params.get('marketRegister');

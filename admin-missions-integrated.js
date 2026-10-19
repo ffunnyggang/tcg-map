@@ -1,8 +1,10 @@
+[Reading 804 lines from start (total: 804 lines, 0 remaining)]
+
 /* FUNY PIN integrated mission management */
 (()=>{
   'use strict';
 
-  const SCRIPT_VERSION='20261020-pinned-missions2';
+  const SCRIPT_VERSION='20261020-pinned-missions3';
   const MISSION_TYPES={
     daily_checkin:'출석 체크',
     profile_complete:'프로필 편집',
@@ -405,9 +407,11 @@
           <b>미션 ${index+1}</b>
           ${currentCampaign()?.display_mode==='random_daily'&&item.is_pinned?'<span class="mission-selected-today">고정 노출</span>':''}
           ${currentCampaign()?.display_mode==='random_daily'&&item.selected_today?'<span class="mission-selected-today">오늘 노출</span>':''}
-          ${currentCampaign()?.display_mode==='random_daily'?'<label class="mission-switch"><input data-key="is_pinned" type="checkbox" '+(item.is_pinned?'checked':'')+'><span>고정</span></label>':''}
-          <label class="mission-switch"><input data-key="is_active" type="checkbox" ${item.is_active!==false?'checked':''}><span>사용</span></label>
-          <button type="button" class="mission-remove-item" data-remove-item="${index}" aria-label="미션 삭제">×</button>
+          <div class="mission-item-controls">
+            ${currentCampaign()?.display_mode==='random_daily'?'<label class="mission-switch"><input data-key="is_pinned" type="checkbox" '+(item.is_pinned?'checked':'')+'><span>고정</span></label>':''}
+            <label class="mission-switch"><input data-key="is_active" type="checkbox" ${item.is_active!==false?'checked':''}><span>사용</span></label>
+            <button type="button" class="mission-remove-item" data-remove-item="${index}" aria-label="미션 삭제">×</button>
+          </div>
         </div>
         <div class="mission-item-grid">
           <label class="mission-field"><span>판정 유형</span><select data-key="mission_type">${typeOptions}</select></label>
@@ -800,3 +804,5 @@
     setTimeout(()=>clearInterval(timer),10000);
   }
 })();
+
+[executed on device: DESKTOP-J04L0T1 (a0585d7e-eca2-46ba-8618-c7f659930ace)]

@@ -114,7 +114,7 @@
     <section class="section"><div class="section-head"><h2>${T.activity}</h2></div><div class="card menu-card">
       <a class="menu-row" href="/my-community.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>${T.community}</b><span>${T.communitySub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-market.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>${T.market}</b><span>${T.marketSub}</span></span><span class="chev">›</span></a>
-      <a class="menu-row" href="/my-favorites.html"><span class="menu-icon">⭐</span><span class="menu-copy"><b>${T.favorites}</b><span>${T.favoritesSub}</span></span><span class="chev">›</span></a>
+      <a class="menu-row" href="/my-favorites.html"><span class="menu-icon">💜</span><span class="menu-copy"><b>${T.favorites}</b><span>${T.favoritesSub}</span></span><span class="chev">›</span></a>
     </div></section>
     <section class="section"><div class="section-head"><h2>${T.reward}</h2></div><div class="card menu-card">
       <a class="menu-row" href="${isTester?'/ranking.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🏆</span><span class="menu-copy"><b>${T.ranking} <span class="coming-badge">${T.coming}</span></b><span>${T.rankingSub}</span></span><span class="chev">›</span></a>

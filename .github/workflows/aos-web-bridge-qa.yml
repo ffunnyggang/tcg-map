@@ -1,0 +1,53 @@
+name: AOS web bridge QA
+
+on:
+  push:
+    branches: [work/aos-web-bridge-20261019]
+    paths:
+      - 'funy-mon-v1.js'
+      - 'admin.html'
+      - '.github/workflows/aos-web-bridge-qa.yml'
+
+jobs:
+  static-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/aos-web-bridge-20261019
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: JavaScript syntax
+        run: node --check funy-mon-v1.js
+      - name: Admin inline script syntax
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('admin.html','utf8');
+          const scripts=[...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
+          const failures=[];
+          scripts.forEach((source,index)=>{try{new Function(source)}catch(error){failures.push(`script ${index+1}: ${error.message}`)}});
+          if(failures.length){console.error(failures.join('\n'));process.exit(1)}
+          console.log(`Parsed ${scripts.length} inline scripts.`);
+          NODE
+      - name: Native bridge contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const mon=fs.readFileSync('funy-mon-v1.js','utf8');
+          const admin=fs.readFileSync('admin.html','utf8');
+          const checks=[
+            [mon.includes("type:'SAVE_FUNYMON_IMAGE'"),'Android image message missing'],
+            [mon.includes("funy:native-image-save-result"),'Native image result handler missing'],
+            [mon.includes('window.__FUNY_NATIVE_CAPABILITIES'),'Native capability guard missing'],
+            [mon.includes('event_url'),'FUNY MON event URL fetch missing'],
+            [mon.includes("const eventUrl=String(ev.event_url||'').trim()"),'Dynamic event URL render missing'],
+            [admin.includes('id=\\"monEventUrl\\"'),'Admin event URL field missing'],
+            [admin.includes('event_url:eventUrl||null'),'Admin event URL save missing'],
+            [admin.includes("/^https:\\\\/\\\\//i.test(eventUrl)"),'Admin HTTPS validation missing'],
+          ];
+          const failures=checks.filter(([ok])=>!ok).map(([,message])=>message);
+          if(failures.length){console.error(failures.join('\n'));process.exit(1)}
+          console.log('AOS web bridge contract passed.');
+          NODE

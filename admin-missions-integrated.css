@@ -65,7 +65,7 @@
 .mission-item-list{display:grid;gap:9px}
 .mission-item-editor{padding:12px;border:1px solid #ECE7EF;border-radius:13px;background:#FBFAFC}
 .mission-item-editor-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.mission-item-editor-head>b{font-size:10.5px}
+.mission-item-editor-head>b{font-size:10.5px}.mission-selected-today{height:19px;padding:0 7px;border-radius:999px;background:#EAF1FF;color:#315FAE;display:inline-flex;align-items:center;font-size:8px;font-weight:900;white-space:nowrap}
 .mission-switch{margin-left:auto;display:flex;align-items:center;gap:5px;color:#716A76;font-size:8.5px;font-weight:800}
 .mission-switch input{accent-color:#8062D8}
 .mission-remove-item{width:28px;height:28px;border:1px solid #EFCBD0;border-radius:8px;background:#FFF7F8;color:#B42318;font-size:17px;cursor:pointer}

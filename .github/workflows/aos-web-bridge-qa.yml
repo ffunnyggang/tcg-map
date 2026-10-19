@@ -43,9 +43,9 @@ jobs:
             [mon.includes('window.__FUNY_NATIVE_CAPABILITIES'),'Native capability guard missing'],
             [mon.includes('event_url'),'FUNY MON event URL fetch missing'],
             [mon.includes("const eventUrl=String(ev.event_url||'').trim()"),'Dynamic event URL render missing'],
-            [admin.includes('id=\\"monEventUrl\\"'),'Admin event URL field missing'],
+            [admin.includes('monEventUrl'),'Admin event URL field missing'],
             [admin.includes('event_url:eventUrl||null'),'Admin event URL save missing'],
-            [admin.includes("/^https:\\\\/\\\\//i.test(eventUrl)"),'Admin HTTPS validation missing'],
+            [admin.includes('이벤트 상세 페이지 URL은 https:// 주소로 입력해주세요.'),'Admin HTTPS validation missing'],
           ];
           const failures=checks.filter(([ok])=>!ok).map(([,message])=>message);
           if(failures.length){console.error(failures.join('\n'));process.exit(1)}

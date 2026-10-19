@@ -8,7 +8,7 @@ import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 import { supabase } from '../lib/supabase';
 
 const NAV_HEIGHT=54;
-const NAV_GAP=10;
+const NAV_GAP=20;
 
 export default function LivePinButton({withNav=true,scrolling=false,bottomOffset=0}:{withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
   const router=useRouter();
@@ -17,8 +17,8 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
   const [badge,setBadge]=useState(0);
   const progress=useRef(new Animated.Value(0)).current;
-  const navBottom=Math.max(insets.bottom,UI.navBottomGap);
-  const bottom=withNav?navBottom+NAV_HEIGHT+NAV_GAP+bottomOffset:insets.bottom+16+bottomOffset;
+  const navBottom=Math.max(insets.bottom,16);
+  const bottom=withNav?navBottom+NAV_HEIGHT+NAV_GAP+bottomOffset:Math.max(insets.bottom,16)+20+bottomOffset;
 
   useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
   useEffect(()=>{

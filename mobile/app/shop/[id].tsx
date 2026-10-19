@@ -217,6 +217,7 @@ export default function ShopDetail(){
   const visitDate=shop.verified_at?String(shop.verified_at).replace(/^(\d{4})-(\d{2})-(\d{2}).*$/,'$1. $2. $3'):'';
   const analysisKeys:(keyof ShopReview)[]=['single_score','graded_score','box_score','oripa_score','price_score','scale_score','mood_score','access_score'];
   const hasAnalysis=!!review&&analysisKeys.some(k=>Number(review[k])>0);
+  const detailEvent=shop.detail_event_enabled?{title:shop.detail_event_title||activeEvent?.title||'FUNY PIN 이벤트',url:shop.detail_event_url||activeEvent?.event_url||null}:null;
   const reel=contents.find(c=>/reel/i.test(c.content_type||''));
   const blog=contents.find(c=>/blog/i.test(c.content_type||''));
   const reviewPicks=[reel,blog].filter(Boolean) as ShopContent[];
@@ -274,7 +275,6 @@ export default function ShopDetail(){
           </View>
           {!!location&&<View style={styles.locationRow}><Ionicons name="location-outline" size={15} color={accent}/><Text style={styles.location}>{location}</Text></View>}
           <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{FEATURE[k]||k}</Text></View>)}</View>
-          {activeEvent?(activeEvent.event_url?<Pressable onPress={()=>{setSheetTitle(activeEvent.title||'FUNY MON 이벤트');setSheetUrl(String(activeEvent.event_url))}} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text><Text style={styles.eventArrow}>›</Text></Pressable>:<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text></View>):null}
           <View style={styles.actionGrid}>
             {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
             {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
@@ -285,6 +285,7 @@ export default function ShopDetail(){
 
         <View style={styles.section}>
           <SectionTitle icon="information-circle-outline" title={en?'Basic information':'기본 정보'} color={accent}/>
+          {detailEvent?(detailEvent.url?<Pressable onPress={()=>{setSheetTitle(detailEvent.title);setSheetUrl(String(detailEvent.url))}} style={[styles.eventCard,{borderColor:accentBorder}]}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{detailEvent.title}</Text><Text style={styles.eventArrow}>›</Text></Pressable>:<View style={[styles.eventCard,{borderColor:accentBorder}]}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{detailEvent.title}</Text></View>):null}
           <View style={[styles.infoCard,{borderColor:accentBorder}]}>
             <InfoRow icon="location-outline" label={en?'Address':'주소'} value={shop.address} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
             <InfoRow icon="time-outline" label={en?'Hours':'영업시간'} value={formatHours(shop.hours_display)} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
@@ -448,17 +449,17 @@ const styles=StyleSheet.create({
 
   note:{marginTop:-5,marginBottom:10,fontSize:10.5,lineHeight:16,color:'#9992A4'},
   analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',...shadow},
-  analysisMainRow:{height:180,flexDirection:'row',alignItems:'stretch'},
-  radarPane:{width:'48%',height:180,alignItems:'center',justifyContent:'center'},
-  analysisDivider:{height:152,marginVertical:14,borderLeftWidth:StyleSheet.hairlineWidth},
-  compPane:{flex:1,height:152,marginVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
+  analysisMainRow:{minHeight:180,flexDirection:'row',alignItems:'stretch'},
+  radarPane:{width:'48%',minHeight:180,alignItems:'center',justifyContent:'center'},
+  analysisDivider:{alignSelf:'stretch',marginVertical:14,borderLeftWidth:StyleSheet.hairlineWidth},
+  compPane:{flex:1,minHeight:152,paddingVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
   radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
   radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:10.5,fontWeight:'700',color:'#504A59'},
   radarDot:{position:'absolute',width:6,height:6,borderRadius:3,backgroundColor:'#8A5BE2'},
   subTitle:{fontSize:14,fontWeight:'800',color:'#272331',marginBottom:1},
   tcgLine:{marginTop:10,marginBottom:0,minHeight:22,flexDirection:'row',alignItems:'center',gap:9},
   tcgLabel:{width:56,fontSize:10.5,lineHeight:15,fontWeight:'800',color:'#37313F'},
-  tcgValue:{flex:1,fontSize:10.5,lineHeight:15,fontWeight:'600',color:'#837C8E',textAlign:'left'},
+  tcgValue:{flex:1,flexShrink:1,fontSize:10.5,lineHeight:15,fontWeight:'600',color:'#837C8E',textAlign:'left',flexWrap:'wrap'},
   barRow:{marginTop:10,flexDirection:'row',alignItems:'center',gap:9},
   barLabel:{width:56,fontSize:10.5,lineHeight:15,fontWeight:'700',color:'#494351'},
   barTrack:{flex:1,height:7,borderRadius:4,backgroundColor:'#EEEAF7',overflow:'hidden'},

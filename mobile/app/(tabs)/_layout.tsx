@@ -8,7 +8,7 @@ import type { ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C,UI } from '../../lib/theme';
 import { TAB_INACTIVE } from '../../lib/tabBar';
-import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
+import { getWebNavigationDimmed,getWebOverlayOpen,subscribeWebNavigationDimmed,subscribeWebOverlay } from '../../lib/webOverlayState';
 import { useAppLanguage } from '../../lib/i18n';
 
 type IconKind='home'|'map'|'pick'|'talk';
@@ -43,7 +43,9 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const insets=useSafeAreaInsets();
   const {language}=useAppLanguage();
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
+  const [navigationDimmed,setNavigationDimmed]=useState(getWebNavigationDimmed());
   useEffect(()=>subscribeWebOverlay(setOverlayOpen),[]);
+  useEffect(()=>subscribeWebNavigationDimmed(setNavigationDimmed),[]);
   const isAndroid=Platform.OS==='android';
   const bottom=isAndroid?0:Math.max(insets.bottom,UI.navBottomGap);
   const currentRoute=state.routes[state.index];
@@ -52,19 +54,20 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   const isHidden=!!currentStyle&&!Array.isArray(currentStyle)&&typeof currentStyle==='object'&&'display' in currentStyle&&currentStyle.display==='none';
   if(isHidden||overlayOpen)return null;
 
-  return <View pointerEvents="box-none" style={[styles.outer,isAndroid&&styles.outerAndroid,{bottom,height:isAndroid?NAV_HEIGHT+insets.bottom:NAV_HEIGHT,paddingBottom:isAndroid?insets.bottom:0}]}>
+  return <View pointerEvents={navigationDimmed?'none':'box-none'} style={[styles.outer,isAndroid&&styles.outerAndroid,{bottom,height:isAndroid?NAV_HEIGHT+insets.bottom:NAV_HEIGHT,paddingBottom:isAndroid?insets.bottom:0}]}>
     <View style={[styles.glassBar,isAndroid&&styles.androidBar]}>
       {!isAndroid?<><BlurView pointerEvents="none" tint="systemUltraThinMaterialLight" intensity={64} style={StyleSheet.absoluteFill}/><View pointerEvents="none" style={styles.glassRefraction}/><View pointerEvents="none" style={styles.glassTint}/><View pointerEvents="none" style={styles.glassEdge}/></>:null}
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
         const accessibilityLabel=language==='en'?label:({home:'홈',map:'TCG 지도',pick:'픽',talk:'톡'} as Record<IconKind,string>)[kind];
-        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(kind==='map'){if(focused){navigation.navigate(route.name,{country:'KR',shop:''});return;}navigation.navigate(route.name,route.params);return;}if(focused){navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}navigation.navigate(route.name,route.params);};
+        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(focused){const refresh=String(Date.now());if(kind==='map'){navigation.navigate(route.name,{country:'KR',shop:'',marketId:'',marketRegister:'',from:'',__tabRefresh:refresh});return;}navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:refresh});return;}navigation.navigate(route.name,route.params);};
         return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||accessibilityLabel} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,!isAndroid&&focused&&styles.itemActive,isAndroid&&styles.androidItem,pressed&&styles.itemPressed]}>
           <NavIcon kind={kind} focused={focused}/>
           <Text allowFontScaling maxFontSizeMultiplier={1.1} style={[styles.label,focused&&styles.labelActive]}>{label}</Text>
         </Pressable>;
       })}
+      {navigationDimmed?<View pointerEvents="none" style={styles.navigationDim}/>:null}
     </View>
   </View>;
 }
@@ -85,5 +88,6 @@ const styles=StyleSheet.create({
   itemPressed:{opacity:.72},
   icon:{width:25,height:25},
   label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:'#17151A',letterSpacing:-.05},
-  labelActive:{fontWeight:'900',color:'#5C36B5'}
+  labelActive:{fontWeight:'900',color:'#5C36B5'},
+  navigationDim:{...StyleSheet.absoluteFillObject,zIndex:99,elevation:99,backgroundColor:'rgba(20,16,25,.38)'}
 });

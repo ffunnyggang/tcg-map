@@ -49,6 +49,18 @@ const isSurface=(value:unknown):value is FloatingSurface=>['home','map','pick','
 const isMode=(value:unknown):value is FloatingMode=>['native','web','off'].includes(String(value));
 const isActionKey=(value:unknown):value is FloatingActionKey=>['live_pin','map_actions','external_link'].includes(String(value));
 
+const devModeOverrides:Partial<Record<FloatingSurface,string>>={
+  home:process.env.EXPO_PUBLIC_FLOATING_MODE_HOME,
+  map:process.env.EXPO_PUBLIC_FLOATING_MODE_MAP,
+  pick:process.env.EXPO_PUBLIC_FLOATING_MODE_PICK,
+  talk:process.env.EXPO_PUBLIC_FLOATING_MODE_TALK,
+};
+
+const applyDevOverride=(setting:FloatingActionSetting)=>{
+  const override=devModeOverrides[setting.surface];
+  return __DEV__&&isMode(override)?{...setting,mode:override}:setting;
+};
+
 const normalizeSetting=(row:any):FloatingActionSetting|null=>{
   if(!isSurface(row?.surface))return null;
   const surface:FloatingSurface=row.surface;
@@ -137,13 +149,13 @@ export const refreshFloatingActions=async(force=false):Promise<Snapshot>=>{
 };
 
 export const useFloatingAction=(surface:FloatingSurface)=>{
-  const [setting,setSetting]=useState<FloatingActionSetting>(()=>snapshot[surface]);
+  const [setting,setSetting]=useState<FloatingActionSetting>(()=>applyDevOverride(snapshot[surface]));
   const [ready,setReady]=useState(Platform.OS!=='android');
 
   useEffect(()=>{
     let mounted=true;
-    const unsubscribe=subscribeFloatingActions(next=>{if(mounted)setSetting(next[surface]);});
-    readCache().then(next=>{if(mounted){setSetting(next[surface]);setReady(true);}}).catch(()=>{if(mounted)setReady(true);});
+    const unsubscribe=subscribeFloatingActions(next=>{if(mounted)setSetting(applyDevOverride(next[surface]));});
+    readCache().then(next=>{if(mounted){setSetting(applyDevOverride(next[surface]));setReady(true);}}).catch(()=>{if(mounted)setReady(true);});
     refreshFloatingActions(false).catch(()=>{});
     const appState=AppState.addEventListener('change',state=>{
       if(state==='active')refreshFloatingActions(false).catch(()=>{});

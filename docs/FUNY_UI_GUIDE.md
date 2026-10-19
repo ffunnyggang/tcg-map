@@ -46,12 +46,15 @@ APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞�
 - title uses Header typography
 
 ### Sub-page header
-- `‹ + title`
+- drawn chevron + title
 - left aligned
 - back touch target 36×36
+- chevron 10×10 / 2px stroke / 135° rotation
 - back-title gap 4
+- title alignment box 36px high
 - title uses Header typography
 - WEB class: `.funy-sub-header`
+- APP `FunyHeader` uses the same geometry
 
 ## Change rule
 페이지별 임의 폰트/색상/헤더 높이 추가를 피한다. 공통 UI를 바꿀 때는 먼저 APP `theme.ts`와 WEB `funy-ui-guide.css`를 동기화한 뒤 페이지는 공통 클래스를 사용한다.

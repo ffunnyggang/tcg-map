@@ -40,7 +40,7 @@ check('secure local cache',contains(settings,["const CACHE_KEY='funypin_floating
 check('cache readiness gate',contains(settings,['cachePromise:Promise<Snapshot>|null','const [ready,setReady]','setReady(true)']));
 check('remote refresh and foreground refresh',contains(settings,['REFRESH_INTERVAL_MS=60_000',"AppState.addEventListener('change'",'setInterval(()=>refreshFloatingActions']));
 check('development-only local mode override',contains(settings,['__DEV__&&isMode(override)','EXPO_PUBLIC_FLOATING_MODE_HOME','EXPO_PUBLIC_FLOATING_MODE_MAP','EXPO_PUBLIC_FLOATING_MODE_PICK','EXPO_PUBLIC_FLOATING_MODE_TALK']));
-check('local mode runner',contains(runner,["ValidateSet('native','web','off','mixed')",'HomeMode','MapMode','PickMode','TalkMode','EXPO_PUBLIC_FLOATING_MODE_HOME','EXPO_PUBLIC_FLOATING_MODE_MAP','EXPO_PUBLIC_FLOATING_MODE_PICK','EXPO_PUBLIC_FLOATING_MODE_TALK','--android','DryRun']));
+check('local mode runner',contains(runner,["ValidateSet('native','web','off','mixed','remote')",'HomeMode','MapMode','PickMode','TalkMode','EXPO_PUBLIC_FLOATING_MODE_HOME','EXPO_PUBLIC_FLOATING_MODE_MAP','EXPO_PUBLIC_FLOATING_MODE_PICK','EXPO_PUBLIC_FLOATING_MODE_TALK','--android','DryRun']));
 check('shared tab and safe-area metrics',contains(metrics,['TAB_BAR_HEIGHT=58','ANDROID_MIN_SAFE_BOTTOM=16','FLOATING_ACTION_GAP=18','resolveFloatingActionBottom']));
 check('native live button uses shared metrics',contains(live,['resolveFloatingActionBottom','label=\'LIVE PIN\'']));
 check('generic native button exists',contains(nativeButton,['export default function NativeFloatingButton','resolveFloatingActionBottom','subscribeWebOverlay']));

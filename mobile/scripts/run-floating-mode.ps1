@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [ValidateSet('native','web','off','mixed')]
+  [ValidateSet('native','web','off','mixed','remote')]
   [string]$Preset = 'native',
 
   [ValidateSet('native','web','off')]
@@ -28,6 +28,7 @@ $presets = @{
   web    = @{ home='web';    map='web';    pick='web';    talk='web' }
   off    = @{ home='off';    map='off';    pick='off';    talk='off' }
   mixed  = @{ home='native'; map='native'; pick='web';    talk='off' }
+  remote = @{ home='remote'; map='remote'; pick='remote'; talk='remote' }
 }
 
 $resolved = $presets[$Preset].Clone()

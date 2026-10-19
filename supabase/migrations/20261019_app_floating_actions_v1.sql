@@ -19,16 +19,22 @@ create table if not exists public.app_floating_actions (
 
 alter table public.app_floating_actions enable row level security;
 
+grant select on table public.app_floating_actions to anon, authenticated;
+grant insert, update, delete on table public.app_floating_actions to authenticated;
+grant select, insert, update, delete on table public.app_floating_actions to service_role;
+
 drop policy if exists "floating actions public read" on public.app_floating_actions;
 create policy "floating actions public read"
   on public.app_floating_actions
   for select
+  to anon, authenticated
   using (true);
 
 drop policy if exists "floating actions admin manage" on public.app_floating_actions;
 create policy "floating actions admin manage"
   on public.app_floating_actions
   for all
+  to authenticated
   using (public.is_funypin_admin())
   with check (public.is_funypin_admin());
 
@@ -42,6 +48,9 @@ begin
   return new;
 end;
 $$;
+
+revoke execute on function public.touch_app_floating_actions_updated_at() from public, anon, authenticated;
+grant execute on function public.touch_app_floating_actions_updated_at() to service_role;
 
 drop trigger if exists app_floating_actions_touch_updated_at on public.app_floating_actions;
 create trigger app_floating_actions_touch_updated_at

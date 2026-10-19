@@ -7,7 +7,7 @@
 - 개발 패키지 기준: `kr.funypin.app.dev`
 - APK/AAB 생성 없음
 - Google Play 비공개 테스트 변경 없음
-- 운영 Supabase 마이그레이션 적용 없음
+- 운영 Supabase `app_floating_actions` 적용 완료 (기본값: HOME/MAP/PICK/TALK 모두 native)
 
 ## 구현 단위
 
@@ -63,6 +63,7 @@ cd C:\Users\ALIC\Desktop\tcg-map-aos-qa\mobile
 .\scripts\run-floating-mode.ps1 -Preset web
 .\scripts\run-floating-mode.ps1 -Preset off
 .\scripts\run-floating-mode.ps1 -Preset mixed
+.\scripts\run-floating-mode.ps1 -Preset remote
 ```
 
 화면별 조합도 지정할 수 있습니다.
@@ -117,19 +118,18 @@ Remove-Item Env:EXPO_PUBLIC_FLOATING_MODE_PICK -ErrorAction SilentlyContinue
 Remove-Item Env:EXPO_PUBLIC_FLOATING_MODE_TALK -ErrorAction SilentlyContinue
 ```
 
-환경변수 오버라이드는 `__DEV__`에서만 적용되므로 preview/production 빌드에는 적용되지 않습니다.
+환경변수 오버라이드는 `__DEV__`에서만 적용되므로 preview/production 빌드에는 적용되지 않습니다. `-Preset remote`는 오버라이드 값으로 `remote`를 넣어 실제 Supabase 설정을 사용하게 합니다.
 
-## 어드민 로컬 확인
+## 어드민/원격 설정 확인
 
-`admin.html`의 `앱 플로팅 버튼` 메뉴는 마이그레이션을 적용하지 않은 상태에서도 기본 설정 카드가 노출됩니다. 이때 저장 버튼은 비활성화되고 마이그레이션 파일 안내가 표시됩니다.
+운영 Supabase에는 `app_floating_actions`가 적용되어 있으며 기본값은 네 화면 모두 `native`입니다. 실서비스 어드민의 `앱 플로팅 버튼`에서 저장한 값은 AOS 로컬 `-Preset remote` 실행 시 그대로 조회됩니다.
 
-운영 DB 반영 전 준비 파일:
+로컬 소스의 참고 마이그레이션 파일:
 
 ```text
 supabase/migrations/20261019_app_floating_actions_v1.sql
 ```
 
-운영 DB에는 별도 승인 전까지 적용하지 않습니다.
 
 ## 필수 회귀 확인
 

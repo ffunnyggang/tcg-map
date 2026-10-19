@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>미션 관리 | FUNY PIN 관리자</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/admin-missions.css?v=20261019-mission1">
+<script src="/admin-garapon-auth.js?v=20261019-mission1"></script>
+</head>
+<body>
+<div class="shell">
+<header class="topbar"><div class="brand"><strong>미션 관리</strong><small>MY 미션 · 퍼니코인 보상 · 진행 현황</small></div><div class="top-actions"><span class="lock">ADMIN ONLY · RELEASE LOCKED</span><a class="btn" href="/admin.html">통합 관리자</a><button id="refreshButton" class="btn primary" type="button">새로고침</button></div></header>
+<section id="gate" class="gate"><div class="gate-card"><div style="font-size:28px">🔐</div><h1 id="gateTitle">관리자 권한을 확인하고 있어요</h1><p id="gateText">비공개 미션 관리 데이터를 불러오는 중입니다.</p></div></section>
+<div id="dashboard" class="dashboard" hidden>
+<aside class="sidebar"><div class="side-head"><b>미션 세트</b><button id="newCampaign" class="btn" type="button">+ 새 세트</button></div><div id="campaignList" class="campaign-list"><div class="empty">불러오는 중...</div></div><div class="side-note"><b>비공개 개발 상태</b><br>출시 잠금 중에는 모든 미션 세트가 테스트 계정에만 노출됩니다. 공개 설정을 선택해도 서버에서 테스트 전용으로 저장합니다.</div></aside>
+<main class="main">
+<section class="summary"><article class="summary-card"><span>전체 세트</span><strong id="statCampaigns">0</strong></article><article class="summary-card"><span>진행 중</span><strong id="statActive">0</strong></article><article class="summary-card"><span>미션 항목</span><strong id="statItems">0</strong></article><article class="summary-card"><span>완료 건</span><strong id="statCompleted">0</strong></article><article class="summary-card"><span>지급 코인</span><strong id="statCoins">0</strong></article></section>
+<div class="notice" id="featureNotice">미션 공개 OFF · 보상 지급 ON · 출시 잠금 ON</div>
+<div class="grid">
+<section class="card"><div class="card-head"><h2>기능 상태</h2><span id="adminState">권한 확인 중</span></div><div class="form-grid"><div class="field"><label>미션 화면 공개</label><select id="publicEnabled" class="select" disabled><option value="false">OFF · 테스트 계정만</option><option value="true">ON</option></select><span class="help">출시 잠금 해제 전에는 ON으로 저장되지 않습니다.</span></div><div class="field"><label>퍼니코인 보상 지급</label><select id="rewardEnabled" class="select"><option value="true">ON</option><option value="false">OFF</option></select></div></div><div class="actions"><button id="saveFeature" class="btn primary" type="button">기능 상태 저장</button></div></section>
+<section class="card"><div class="card-head"><h2>선택 세트 상태</h2><span id="campaignStatus" class="status">신규</span></div><div class="actions" style="justify-content:flex-start"><button id="activateCampaign" class="btn purple" type="button" disabled>시작</button><button id="pauseCampaign" class="btn" type="button" disabled>일시 정지</button><button id="endCampaign" class="btn danger" type="button" disabled>종료</button></div><span class="help">진행 내역이 생성된 뒤에는 기간·주기·미션 항목을 직접 변경할 수 없습니다.</span></section>
+<section class="card full"><div class="card-head"><h2>미션 세트 기본 설정</h2><span id="selectedId">신규 세트</span></div><div class="form-grid"><div class="field full"><label>세트 제목</label><input id="campaignTitle" class="input" maxlength="120" placeholder="오늘의 미션"></div><div class="field full"><label>안내 문구</label><textarea id="campaignDescription" class="textarea" placeholder="미션을 완료하고 퍼니코인을 모아보세요"></textarea></div><div class="field"><label>주기</label><select id="periodType" class="select"><option value="daily">일간</option><option value="weekly">주간</option><option value="monthly">월간</option></select></div><div class="field"><label>노출 우선순위</label><input id="priority" class="input" type="number" value="100"></div><div class="field"><label>시작일시</label><input id="startsAt" class="input" type="datetime-local"></div><div class="field"><label>종료일시</label><input id="endsAt" class="input" type="datetime-local"></div><div class="field"><label>공개 범위</label><select id="visibility" class="select"><option value="test">테스트 계정</option><option value="public">전체 회원</option></select></div><div class="field"><label>MY 노출</label><select id="isVisible" class="select"><option value="true">노출</option><option value="false">숨김</option></select></div></div><div class="actions"><button id="saveCampaign" class="btn primary" type="button">기본 설정 저장</button></div></section>
+<section class="card full"><div class="card-head"><h2>개별 미션 설정</h2><span id="itemCount">0개</span></div><div id="itemList" class="item-list"></div><div class="actions"><button id="addItem" class="btn" type="button">+ 미션 추가</button><button id="saveItems" class="btn primary" type="button" disabled>미션 항목 저장</button></div></section>
+<section class="card full"><div class="card-head"><h2>최근 사용자 진행 내역</h2><span>최대 200건</span></div><div class="table-wrap"><table class="table"><thead><tr><th>회원</th><th>세트</th><th>미션</th><th>기간</th><th>진행</th><th>상태</th><th>완료·지급</th></tr></thead><tbody id="progressRows"><tr><td colspan="7" class="empty">진행 내역이 없습니다.</td></tr></tbody></table></div></section>
+</div>
+</main>
+</div>
+</div>
+<div id="toast" class="toast" role="status"></div>
+<script src="/admin-missions.js?v=20261019-mission1"></script>
+</body>
+</html>

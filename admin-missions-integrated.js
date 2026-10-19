@@ -2,7 +2,7 @@
 (()=>{
   'use strict';
 
-  const SCRIPT_VERSION='20261020-pinned-missions1';
+  const SCRIPT_VERSION='20261020-pinned-missions2';
   const MISSION_TYPES={
     daily_checkin:'출석 체크',
     profile_complete:'프로필 편집',

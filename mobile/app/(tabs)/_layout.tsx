@@ -11,10 +11,10 @@ import { TAB_INACTIVE } from '../../lib/tabBar';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
 import { useAppLanguage } from '../../lib/i18n';
 
-type IconKind='home'|'map'|'pick'|'talk';
+type IconKind='home'|'map'|'pick'|'talk'|'my';
 
-const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk'};
-const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK'};
+const ROUTE_KIND:Record<string,IconKind>={index:'home',map:'map',pick:'pick',talk:'talk',my:'my'};
+const ROUTE_LABEL:Record<IconKind,string>={home:'HOME',map:'TCG MAP',pick:'PICK',talk:'TALK',my:'MY'};
 const NAV_HEIGHT=58;
 const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSourcePropType}>={
   home:{
@@ -32,6 +32,10 @@ const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSource
   talk:{
     active:require('../../assets/nav-icons-final/funypin_nav_talk_on.png'),
     inactive:require('../../assets/nav-icons-final/funypin_nav_talk_off.png'),
+  },
+  my:{
+    active:{uri:'https://funypin.kr/assets/nav-icons-final-v2/funypin_nav_my_on.png'},
+    inactive:{uri:'https://funypin.kr/assets/nav-icons-final-v2/funypin_nav_my_off.png'},
   },
 };
 
@@ -58,7 +62,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
       {state.routes.map((route,index)=>{
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
-        const accessibilityLabel=language==='en'?label:({home:'홈',map:'TCG 지도',pick:'픽',talk:'톡'} as Record<IconKind,string>)[kind];
+        const accessibilityLabel=language==='en'?label:({home:'홈',map:'TCG 지도',pick:'픽',talk:'톡',my:'마이'} as Record<IconKind,string>)[kind];
         const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(kind==='map'){if(focused){navigation.navigate(route.name,{country:'KR',shop:''});return;}navigation.navigate(route.name,route.params);return;}if(focused){navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}navigation.navigate(route.name,route.params);};
         return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||accessibilityLabel} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,!isAndroid&&focused&&styles.itemActive,isAndroid&&styles.androidItem,pressed&&styles.itemPressed]}>
           <NavIcon kind={kind} focused={focused}/>
@@ -69,7 +73,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
   </View>;
 }
 
-export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {...props}/>} screenOptions={{headerShown:false,tabBarActiveTintColor:C.purpleDark,tabBarInactiveTintColor:TAB_INACTIVE,tabBarShowLabel:true}}><Tabs.Screen name="index" options={{title:'HOME'}}/><Tabs.Screen name="map" options={{title:'TCG MAP'}}/><Tabs.Screen name="pick" options={{title:'PICK'}}/><Tabs.Screen name="talk" options={{title:'TALK'}}/></Tabs>}
+export default function TabsLayout(){return <Tabs tabBar={(props)=><FunyTabBar {...props}/>} screenOptions={{headerShown:false,tabBarActiveTintColor:C.purpleDark,tabBarInactiveTintColor:TAB_INACTIVE,tabBarShowLabel:true}}><Tabs.Screen name="index" options={{title:'HOME'}}/><Tabs.Screen name="map" options={{title:'TCG MAP'}}/><Tabs.Screen name="pick" options={{title:'PICK'}}/><Tabs.Screen name="talk" options={{title:'TALK'}}/><Tabs.Screen name="my" options={{title:'MY'}}/></Tabs>}
 
 const styles=StyleSheet.create({
   outer:{position:'absolute',left:16,right:16,height:NAV_HEIGHT,zIndex:10000,elevation:10000},

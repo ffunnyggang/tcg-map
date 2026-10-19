@@ -79,7 +79,7 @@
         </div>
         <a class="my-profile-edit" href="/my-profile.html">${T.edit}</a>
       </div>
-      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon" aria-hidden="true">🪙</span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)}</strong><span class="my-coin-chevron">›</span></a>`:''}
+      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon" aria-hidden="true">🪙</span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)} <span class="my-coin-unit">C</span></strong><span class="my-coin-chevron">›</span></a>`:''}
     </section>`;
   }
 
@@ -98,7 +98,7 @@
       const reward=Number(item.reward_coin||0);
       const actionLabel=done?T.complete:(item.cta_label||T.inProgress);
       return `<div class="my-mission-row">
-        <div class="my-mission-item-copy"><div class="my-mission-item-title">${esc(item.title)}${reward>0?`<span class="my-reward-chip">+${num(reward)} FUNY</span>`:''}</div><div class="my-mission-item-sub">${item.description?esc(item.description)+' · ':''}${progress}/${Number(item.target_count||1)}</div></div>
+        <div class="my-mission-item-copy"><div class="my-mission-item-title">${esc(item.title)}${reward>0?`<span class="my-reward-chip">+${num(reward)} C</span>`:''}</div><div class="my-mission-item-sub">${item.description?esc(item.description)+' · ':''}${progress}/${Number(item.target_count||1)}</div></div>
         <button type="button" class="my-mission-action${done?' is-complete':''}" ${done?'disabled':''} data-mission-action="${esc(item.id)}">${esc(actionLabel)}</button>
       </div>`;
     }).join(''):`<div class="my-mission-empty">${en?'No missions are available.':'진행 중인 미션이 없습니다.'}</div>`;
@@ -163,7 +163,7 @@
         const {data,error}=await A.client.rpc('mission_checkin');
         if(error)throw error;
         if(data?.ok===false)throw new Error(data.error||'mission_failed');
-        showToast(Number(data?.rewarded_coin||0)>0?(en?`Mission complete · +${num(data.rewarded_coin)} FUNY`:`미션 완료 · +${num(data.rewarded_coin)} FUNY`):(en?'Mission status updated.':'미션 진행 상태를 갱신했어요.'));
+        showToast(Number(data?.rewarded_coin||0)>0?(en?`Mission complete · +${num(data.rewarded_coin)} C`:`미션 완료 · +${num(data.rewarded_coin)} C`):(en?'Mission status updated.':'미션 진행 상태를 갱신했어요.'));
         await refreshDashboard({keepOpen:true});
       }catch(error){console.warn('[MY MISSION]',error);showToast(en?'Could not update the mission.':'미션을 반영하지 못했어요.')}
       finally{missionBusy=false}

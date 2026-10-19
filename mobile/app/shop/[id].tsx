@@ -2,7 +2,7 @@ import { useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Pressable,ScrollView,Share,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
-import { AppShop,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
+import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
 import { C,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
@@ -89,7 +89,7 @@ export default function ShopDetail(){
   const [sheetTitle,setSheetTitle]=useState('FUNY PIN');
   const [galleryIndex,setGalleryIndex]=useState(0);
   const [instaPosts,setInstaPosts]=useState<InstaPost[]>([]);
-  const [activeEvent,setActiveEvent]=useState<string|null>(null);
+  const [activeEvent,setActiveEvent]=useState<FunyMonEvent|null>(null);
   const [reviewThumbs,setReviewThumbs]=useState<Record<string,string>>({});
   const [instaRatios,setInstaRatios]=useState<Record<string,number>>({});
   const [reviewRatios,setReviewRatios]=useState<Record<string,number>>({});
@@ -113,7 +113,7 @@ export default function ShopDetail(){
     Promise.all([getShop(id),getShopReview(id),getShopContents(id),getFavoriteIds(),getActiveFunyMonEvents()])
       .then(async([s,r,c,f,events])=>{
         setShop(s);setReview(r);setContents(c);setFavorite(f.has(id));
-        const event=events.find(x=>x.shop_id===id);setActiveEvent(event?.title||null);
+        const event=events.find(x=>x.shop_id===id);setActiveEvent(event||null);
         if(s.instagram_url){
           try{
             const res=await fetch('https://funypin.kr/data/instagram-feed.json?v='+Date.now(),{cache:'no-store'});
@@ -274,7 +274,7 @@ export default function ShopDetail(){
           </View>
           {!!location&&<View style={styles.locationRow}><Ionicons name="location-outline" size={15} color={accent}/><Text style={styles.location}>{location}</Text></View>}
           <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{FEATURE[k]||k}</Text></View>)}</View>
-          {activeEvent?<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent}</Text><Text style={styles.eventArrow}>›</Text></View>:null}
+          {activeEvent?(activeEvent.event_url?<Pressable onPress={()=>{setSheetTitle(activeEvent.title||'FUNY MON 이벤트');setSheetUrl(String(activeEvent.event_url))}} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text><Text style={styles.eventArrow}>›</Text></Pressable>:<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text></View>):null}
           <View style={styles.actionGrid}>
             {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
             {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}

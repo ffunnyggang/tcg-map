@@ -89,7 +89,7 @@ export default function Login(){
   return <SafeAreaView style={styles.root}>
     <View style={styles.header}>
       <Pressable onPress={goHome} hitSlop={10} style={styles.back}>
-        <Text style={styles.backText}>‹</Text>
+        <Text allowFontScaling={false} style={styles.backText}>‹</Text>
       </Pressable>
       <Text allowFontScaling maxFontSizeMultiplier={1} style={styles.headerTitle}>로그인</Text>
     </View>
@@ -181,9 +181,10 @@ const styles=StyleSheet.create({
   },
   backText:{
     fontSize:29,
-    lineHeight:31,
+    lineHeight:30,
     fontWeight:'400',
     color:C.text,
+    textAlign:'center',
   },
   headerTitle:{
     ...T.header,

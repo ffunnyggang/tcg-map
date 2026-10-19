@@ -7,7 +7,7 @@ export default function MySubHeader({title}:{title:string}){
   const router=useRouter();
   return <SafeAreaView edges={['top']} style={styles.safe}>
     <View style={styles.header}>
-      <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable>
+      <Pressable onPress={()=>router.back()} hitSlop={10} style={styles.back}><Text allowFontScaling={false} style={styles.backText}>‹</Text></Pressable>
       <Text allowFontScaling maxFontSizeMultiplier={1} style={styles.title}>{title}</Text>
     </View>
   </SafeAreaView>;
@@ -17,6 +17,6 @@ const styles=StyleSheet.create({
   safe:{backgroundColor:'#fff'},
   header:{height:UI.headerH,flexDirection:'row',alignItems:'center',paddingHorizontal:UI.screenPad,backgroundColor:'#fff'},
   back:{width:36,height:36,alignItems:'center',justifyContent:'center',marginRight:4},
-  backText:{fontSize:28,lineHeight:30,fontWeight:'400',color:C.text},
+  backText:{fontSize:29,lineHeight:30,fontWeight:'400',color:C.text,textAlign:'center'},
   title:{...T.header,color:C.text}
 });

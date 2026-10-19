@@ -23,7 +23,7 @@ export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false
   const isHome=title==='FUNY PIN';
   const goBack=()=>{if(onBack){onBack();return;}router.back();};
   return <View style={{height:UI.headerH,paddingHorizontal:14,flexDirection:'row',alignItems:'center',backgroundColor:'rgba(255,255,255,.96)',position:'relative',zIndex:9999,elevation:9999}}>
-    {back?<Pressable onPress={goBack} hitSlop={10} style={{width:34,height:34,alignItems:'center',justifyContent:'center',marginRight:4}}><Text style={{fontSize:27,lineHeight:29,fontWeight:'400',color:C.text}}>‹</Text></Pressable>:<Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34,marginRight:8}}/>}
+    {back?<Pressable onPress={goBack} hitSlop={10} style={{width:36,height:36,alignItems:'center',justifyContent:'center',marginRight:4}}><Text allowFontScaling={false} style={{fontSize:29,lineHeight:30,fontWeight:'400',color:C.text,textAlign:'center'}}>‹</Text></Pressable>:<Image source={{uri:visualAssets.logo}} resizeMode="contain" style={{width:30,height:34,marginRight:8}}/>}
     <Text allowFontScaling maxFontSizeMultiplier={1} style={{...T.header,color:C.text}}>{title}</Text>
     {!back&&isHome?<Text allowFontScaling maxFontSizeMultiplier={1} style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>:null}
     {right?<View style={{marginLeft:'auto',flexDirection:'row',alignItems:'center',gap:4}}>{right}</View>:null}

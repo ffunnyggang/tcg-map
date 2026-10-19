@@ -3,14 +3,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Platform,View } from 'react-native';
 import { useLocalSearchParams,useNavigation } from 'expo-router';
 import FunyHeader from '../../components/FunyHeader';
-import LivePinButton from '../../components/LivePinButton';
 import FunyWebView,{isWebBackPage} from '../../components/FunyWebView';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getTabBarStyle } from '../../lib/tabBar';
 
 export default function Pick(){
   const [webBack,setWebBack]=useState(false);
-  const [scrolling,setScrolling]=useState(false);
   const {__tabRefresh}=useLocalSearchParams<{__tabRefresh?:string}>();
   const navigation=useNavigation();
   const insets=useSafeAreaInsets();
@@ -24,8 +22,7 @@ export default function Pick(){
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
     <View style={{flex:1}}>
-      <FunyWebView key={Platform.OS==='android'?'pick-android-stable':`pick-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="PICK" onWebScrollChange={setScrolling}/>
-      {!webBack?<LivePinButton scrolling={scrolling}/>:null}
+      <FunyWebView key={Platform.OS==='android'?'pick-android-stable':`pick-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="PICK"/>
     </View>
   </SafeAreaView>;
 }

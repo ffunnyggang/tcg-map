@@ -2,6 +2,7 @@ import { useEffect,useState } from 'react';
 import { ActivityIndicator,Alert,Image,KeyboardAvoidingView,Modal,Platform,Pressable,ScrollView,StyleSheet,Text,TextInput,View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { WebView } from 'react-native-webview';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MySubHeader from '../../components/MySubHeader';
@@ -28,7 +29,7 @@ export default function ProfileEdit(){
   useEffect(()=>{getProfile().then(({profile,user})=>{
     const value=profile?.nickname||defaultNickname(user);
     setNickname(value);setInitialNickname(value);
-    setAvatar(profile?.avatar_url||user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null);
+    setAvatar(profile?(profile.avatar_url||null):(user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null));
     setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
   }).catch(e=>Alert.alert('불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[]);
 
@@ -110,7 +111,7 @@ export default function ProfileEdit(){
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.avatarWrap}>
           <Pressable onPress={pickAvatar} style={styles.avatarTap}>
-            {avatar?<Image source={{uri:avatar}} style={styles.avatar}/>:<View style={styles.avatarPlaceholder}><Text style={styles.avatarPlaceholderText}>사진</Text></View>}
+            {avatar?<Image source={{uri:avatar}} style={styles.avatar}/>:<View style={styles.avatarPlaceholder}><Ionicons name="person" size={48} color="#85818A"/></View>}
           </Pressable>
           {avatar?<Pressable onPress={deleteAvatar} disabled={saving} hitSlop={8} style={styles.avatarDelete}><Text style={styles.avatarDeleteText}>×</Text></Pressable>:<Pressable onPress={pickAvatar} hitSlop={8} style={styles.avatarAdd}><Text style={styles.avatarAddText}>＋</Text></Pressable>}
         </View>
@@ -135,5 +136,5 @@ export default function ProfileEdit(){
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#F7F4FC'},cropRoot:{flex:1,backgroundColor:'#18161D'},cropWeb:{flex:1,backgroundColor:'#18161D'},loading:{flex:1,backgroundColor:'#F7F4FC',alignItems:'center',justifyContent:'center'},content:{padding:22,paddingBottom:40},avatarWrap:{width:112,height:112,alignSelf:'center',position:'relative',marginTop:12},avatarTap:{width:112,height:112,borderRadius:56,overflow:'hidden'},avatar:{width:112,height:112,borderRadius:56,backgroundColor:'#eee'},avatarPlaceholder:{width:112,height:112,borderRadius:56,backgroundColor:'#EEE8FA',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#DDD3F1'},avatarPlaceholderText:{fontSize:14,fontWeight:'800',color:C.purpleDark},avatarAdd:{position:'absolute',right:-3,bottom:-3,width:30,height:30,borderRadius:15,backgroundColor:'#fff',borderWidth:1.5,borderColor:C.purpleDark,alignItems:'center',justifyContent:'center',zIndex:3},avatarAddText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.purpleDark},avatarDelete:{position:'absolute',right:-5,top:-5,width:28,height:28,borderRadius:14,backgroundColor:'#fff',borderWidth:1,borderColor:'#E0DAE5',alignItems:'center',justifyContent:'center',shadowColor:'#211A2E',shadowOpacity:.12,shadowRadius:5,shadowOffset:{width:0,height:2},elevation:3},avatarDeleteText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.textSoft},field:{marginTop:30},labelRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:8,gap:10},label:{fontSize:13,fontWeight:'900',color:C.text},nicknameAvailable:{flexShrink:1,textAlign:'right',fontSize:10.5,fontWeight:'700',color:C.purpleDark},input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},inputLocked:{backgroundColor:'#F1EEF4',color:C.muted},count:{marginTop:6,textAlign:'right',fontSize:11,color:C.muted},policy:{marginTop:5,fontSize:10.5,lineHeight:17,color:C.muted},saveButton:{marginTop:28,height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},saveText:{fontSize:14,fontWeight:'900',color:'#fff'}
+  root:{flex:1,backgroundColor:'#F7F4FC'},cropRoot:{flex:1,backgroundColor:'#18161D'},cropWeb:{flex:1,backgroundColor:'#18161D'},loading:{flex:1,backgroundColor:'#F7F4FC',alignItems:'center',justifyContent:'center'},content:{padding:22,paddingBottom:40},avatarWrap:{width:112,height:112,alignSelf:'center',position:'relative',marginTop:12},avatarTap:{width:112,height:112,borderRadius:56,overflow:'hidden'},avatar:{width:112,height:112,borderRadius:56,backgroundColor:'#eee'},avatarPlaceholder:{width:112,height:112,borderRadius:56,backgroundColor:'#ECEBED',alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'#DDDADD'},avatarPlaceholderText:{fontSize:14,fontWeight:'800',color:'#85818A'},avatarAdd:{position:'absolute',right:-3,bottom:-3,width:30,height:30,borderRadius:15,backgroundColor:'#fff',borderWidth:1.5,borderColor:C.purpleDark,alignItems:'center',justifyContent:'center',zIndex:3},avatarAddText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.purpleDark},avatarDelete:{position:'absolute',right:-5,top:-5,width:28,height:28,borderRadius:14,backgroundColor:'#fff',borderWidth:1,borderColor:'#E0DAE5',alignItems:'center',justifyContent:'center',shadowColor:'#211A2E',shadowOpacity:.12,shadowRadius:5,shadowOffset:{width:0,height:2},elevation:3},avatarDeleteText:{fontSize:20,lineHeight:22,fontWeight:'500',color:C.textSoft},field:{marginTop:30},labelRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:8,gap:10},label:{fontSize:13,fontWeight:'900',color:C.text},nicknameAvailable:{flexShrink:1,textAlign:'right',fontSize:10.5,fontWeight:'700',color:C.purpleDark},input:{height:52,borderRadius:14,borderWidth:1,borderColor:C.line,backgroundColor:'#fff',paddingHorizontal:16,fontSize:15,fontWeight:'700',color:C.text},inputLocked:{backgroundColor:'#F1EEF4',color:C.muted},count:{marginTop:6,textAlign:'right',fontSize:11,color:C.muted},policy:{marginTop:5,fontSize:10.5,lineHeight:17,color:C.muted},saveButton:{marginTop:28,height:54,borderRadius:16,backgroundColor:C.purpleDark,alignItems:'center',justifyContent:'center'},saveText:{fontSize:14,fontWeight:'900',color:'#fff'}
 });

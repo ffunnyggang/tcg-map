@@ -103,7 +103,7 @@
     return `<section class="my-mission-wrap"><article class="my-mission-card${missionOpen?' is-open':''}" data-mission-card>
       <button type="button" class="my-mission-summary" data-mission-toggle>
         <span class="my-progress-ring" style="--progress:${percent}%"><span class="my-progress-copy"><strong>${completed}/${total}</strong><span>${T.missionProgress}</span></span></span>
-        <span class="my-mission-copy"><span class="my-period-label">${esc(periodLabel(campaign.period_type))}</span><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description|| (en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
+        <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description|| (en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
         <span class="my-mission-toggle">⌄</span>
       </button>${pager}${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}
     </article></section>`;

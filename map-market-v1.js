@@ -556,8 +556,9 @@
     const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
     const appMode=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell');
+    const legacyNativeLauncher=appMode&&window.__FUNY_NATIVE_CAPABILITIES?.webFloatingActions!==true;
 
-    if(appMode){
+    if(legacyNativeLauncher){
       wrap.classList.add('app-trade-only');
       wrap.innerHTML='<button type="button" class="market-fab-main app-market-trade-button" aria-label="TCG 거래"><span class="market-fab-action-emoji">🃏</span><span class="market-fab-label">TCG 거래</span><span class="market-fab-arrow" aria-hidden="true">›</span></button>';
       home.appendChild(wrap);

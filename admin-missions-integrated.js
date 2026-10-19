@@ -234,6 +234,7 @@
                   <button id="missionActivate" class="mission-button purple" type="button" disabled>시작</button>
                   <button id="missionPause" class="mission-button secondary" type="button" disabled>일시 정지</button>
                   <button id="missionEnd" class="mission-button danger" type="button" disabled>종료</button>
+                  <button id="missionDelete" class="mission-button danger" type="button" hidden>삭제</button>
                 </div>
                 <p class="mission-help">진행 내역이 생성된 세트는 기간·주기·미션 항목을 직접 변경할 수 없습니다.</p>
               </article>
@@ -342,6 +343,11 @@
     getEl('missionActivate').disabled=!isExisting||status==='active'||status==='ended';
     getEl('missionPause').disabled=!isExisting||status!=='active';
     getEl('missionEnd').disabled=!isExisting||status==='ended';
+    const deleteButton=getEl('missionDelete');
+    if(deleteButton){
+      deleteButton.hidden=!isExisting||status!=='ended';
+      deleteButton.disabled=!isExisting||status!=='ended';
+    }
     getEl('missionSaveItems').disabled=!isExisting;
   }
 
@@ -630,6 +636,36 @@
     }
   }
 
+  async function deleteCampaign(){
+    const campaign=currentCampaign();
+    if(!campaign||campaign.status!=='ended')return;
+    const confirmed=confirm(`“${campaign.title}” 미션 세트를 삭제할까요?\n\n사용자 진행 이력과 퍼니코인 지급 원장은 유지되고, 관리자 목록에서만 숨김 처리됩니다.`);
+    if(!confirmed)return;
+
+    const button=getEl('missionDelete');
+    if(button){button.disabled=true;button.textContent='삭제 중...'}
+    try{
+      const result=await rpc('admin_soft_delete_mission_campaign',{
+        p_campaign_id:campaign.id
+      });
+      if(!result?.ok){
+        if(result?.error==='ended_only')throw new Error('종료된 미션 세트만 삭제할 수 있습니다.');
+        throw new Error(result?.error||'삭제 실패');
+      }
+      toast('종료된 미션 세트를 삭제했습니다. 진행·보상 이력은 유지됩니다.','ok');
+      state.selectedId='';
+      state.newMode=false;
+      state.items=[];
+      await refresh('');
+    }catch(error){
+      console.warn(error);
+      toast(error?.message||'미션 세트 삭제에 실패했습니다.','error');
+    }finally{
+      const current=getEl('missionDelete');
+      if(current){current.disabled=false;current.textContent='삭제'}
+    }
+  }
+
   function bind(){
     getEl('missionRefresh').onclick=()=>refresh(state.selectedId);
     getEl('missionNewCampaign').onclick=newCampaign;
@@ -640,6 +676,7 @@
     getEl('missionActivate').onclick=()=>setStatus('active');
     getEl('missionPause').onclick=()=>setStatus('paused');
     getEl('missionEnd').onclick=()=>setStatus('ended');
+    getEl('missionDelete').onclick=deleteCampaign;
   }
 
   async function openIntegrated(){

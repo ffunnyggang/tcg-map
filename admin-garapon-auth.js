@@ -1,4 +1,4 @@
-/* FUNY PIN hidden garapon admin auth bridge */
+/* FUNY PIN private admin auth bridge */
 (function(){
   'use strict';
   if(window.FUNY_WEB_AUTH?.__garaponAdminBridge)return;
@@ -17,10 +17,10 @@
   function safeReturn(value){
     try{
       const url=new URL(value||location.href,location.origin);
-      if(url.origin!==location.origin)return '/admin-garapon-event-test.html';
-      const allowed=/^\/admin-garapon-(?:event|ops)-test\.html$/i.test(url.pathname);
-      return allowed?url.pathname+url.search+url.hash:'/admin-garapon-event-test.html';
-    }catch(_){return '/admin-garapon-event-test.html'}
+      if(url.origin!==location.origin)return '/admin.html';
+      const allowed=/^\/(?:admin-garapon-(?:event|ops)-test|admin-missions)\.html$/i.test(url.pathname);
+      return allowed?url.pathname+url.search+url.hash:'/admin.html';
+    }catch(_){return '/admin.html'}
   }
 
   function clearSession(){
@@ -107,7 +107,7 @@
         currentSession={access_token:token,refresh_token:refreshToken,user};
         return currentSession;
       }catch(error){
-        console.warn('[GARAPON ADMIN AUTH]',error);
+        console.warn('[PRIVATE ADMIN AUTH]',error);
         clearSession();
         return null;
       }
@@ -129,7 +129,7 @@
     requireLogin:async returnTo=>{const session=await init();if(session)return session;goLogin(returnTo||location.href);return null},
     rememberReturn,
     consumeReturn(){
-      let value='/admin-garapon-event-test.html';
+      let value='/admin.html';
       try{value=sessionStorage.getItem(RETURN_KEY)||value;sessionStorage.removeItem(RETURN_KEY)}catch(_){}
       return safeReturn(value);
     },

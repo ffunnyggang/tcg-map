@@ -1,3 +1,5 @@
+[Reading 116 lines from start (total: 116 lines, 0 remaining)]
+
 /* FUNY PIN integrated mission admin */
 .mission-admin-integrated{display:grid;gap:14px;min-width:0}
 .mission-integrated-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:4px 2px 2px}
@@ -49,12 +51,15 @@
 .mission-status.paused{background:#FFF1DC;color:#A16B14}
 .mission-status.ended{background:#F2EFF3;color:#817987}
 .mission-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.mission-field{display:grid;gap:5px;min-width:0}
+.mission-field{display:grid;grid-template-rows:auto 40px auto;align-content:start;gap:5px;min-width:0}
 .mission-field.wide{grid-column:1/-1}
-.mission-field>span{color:#6F6875;font-size:9px;font-weight:850}
-.mission-field input,.mission-field select,.mission-field textarea{width:100%;border:1px solid #DFD9E4;border-radius:10px;background:#fff;color:#2B2630;outline:none;font:inherit;font-size:10.5px}
-.mission-field input,.mission-field select{height:40px;padding:0 10px}
-.mission-field textarea{min-height:76px;padding:9px 10px;resize:vertical;line-height:1.5}
+.mission-field>span{min-height:14px;display:flex;align-items:flex-end;color:#6F6875;font-size:9px;font-weight:850;line-height:1.35}
+.mission-field input,.mission-field select,.mission-field textarea{width:100%;min-width:0;border:1px solid #DFD9E4;border-radius:10px;background:#fff;color:#2B2630;outline:none;font:inherit;font-size:10.5px}
+.mission-field input,.mission-field select{height:40px;min-height:40px;padding:0 10px}
+.mission-field select{appearance:auto}
+.mission-field textarea{min-height:76px;padding:9px 10px;resize:vertical;line-height:1.5;grid-row:2/span 2}
+.mission-field:has(textarea){grid-template-rows:auto auto}
+.mission-field small{min-height:12px;display:block}
 .mission-field input:focus,.mission-field select:focus,.mission-field textarea:focus{border-color:#9C83E2;box-shadow:0 0 0 3px rgba(128,98,216,.08)}
 .mission-field select:disabled{background:#F3F1F4;color:#9A929E}
 .mission-field small{color:#9B939F;font-size:7.8px;line-height:1.4}
@@ -66,7 +71,8 @@
 .mission-item-editor{padding:12px;border:1px solid #ECE7EF;border-radius:13px;background:#FBFAFC}
 .mission-item-editor-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .mission-item-editor-head>b{font-size:10.5px}.mission-selected-today{height:19px;padding:0 7px;border-radius:999px;background:#EAF1FF;color:#315FAE;display:inline-flex;align-items:center;font-size:8px;font-weight:900;white-space:nowrap}
-.mission-switch{margin-left:auto;display:flex;align-items:center;gap:5px;color:#716A76;font-size:8.5px;font-weight:800}
+.mission-item-controls{margin-left:auto;display:flex;align-items:center;gap:8px}
+.mission-switch{margin-left:0;display:flex;align-items:center;gap:5px;color:#716A76;font-size:8.5px;font-weight:800;white-space:nowrap}
 .mission-switch input{accent-color:#8062D8}
 .mission-remove-item{width:28px;height:28px;border:1px solid #EFCBD0;border-radius:8px;background:#FFF7F8;color:#B42318;font-size:17px;cursor:pointer}
 .mission-item-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
@@ -110,3 +116,5 @@
   .mission-feature-notice b{margin-right:0}
   .mission-actions.split{justify-content:flex-end}
 }
+
+[executed on device: DESKTOP-J04L0T1 (a0585d7e-eca2-46ba-8618-c7f659930ace)]

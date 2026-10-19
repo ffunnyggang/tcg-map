@@ -12,7 +12,7 @@
     try{const {data,error}=await A.client.rpc('is_my_feature_tester');if(!error)tester=data===true}catch(_){tester=false}
     if(!tester){location.replace('/my-stable.html');return}
     const script=document.createElement('script');
-    script.src='/my-dashboard-v3.js?v=20261019-missions2';
+    script.src='/my-dashboard-v3.js?v=20261020-no-period-label1';
     script.async=false;
     script.onerror=()=>{if(root)root.innerHTML='<div class="error"><strong>MY를 불러오지 못했어요</strong><span>잠시 후 다시 시도해주세요.</span></div>'};
     document.body.appendChild(script);

@@ -79,7 +79,7 @@
         </div>
         <a class="my-profile-edit" href="/my-profile.html">${T.edit}</a>
       </div>
-      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon" aria-hidden="true"></span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)}</strong><span class="my-coin-chevron">›</span></a>`:''}
+      ${coin.visible?`<a class="my-coin-link" href="/my-funy-coin.html"><span class="my-coin-icon" aria-hidden="true">🪙</span><span class="my-coin-label">FUNY COIN</span><strong class="my-coin-value">${num(coin.balance)}</strong><span class="my-coin-chevron">›</span></a>`:''}
     </section>`;
   }
 
@@ -107,9 +107,9 @@
       <button type="button" class="my-mission-summary" data-mission-toggle>
         <span class="my-progress-ring" style="--progress:${percent}%"><span class="my-progress-copy"><strong>${completed}/${total}</strong></span></span>
         <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description|| (en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
-        <span class="my-mission-toggle">⌄</span>
+        <span class="my-mission-toggle" aria-hidden="true"></span>
       </button>${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}
-    </article>${pager}</section>`;
+    </article>${missionOpen?'':pager}</section>`;
   }
 
   const menuRow=(href,icon,label,sub,extra='')=>`<a class="my-menu-row" href="${href}" ${extra}><span class="my-menu-icon">${icon}</span><span class="my-menu-copy"><b>${label}</b><span>${sub}</span></span><span class="my-chevron">›</span></a>`;

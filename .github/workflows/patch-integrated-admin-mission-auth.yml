@@ -1,4 +1,4 @@
-name: Patch integrated admin mission auth
+name: Patch integrated admin missions
 
 on:
   push:
@@ -18,25 +18,41 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update integrated admin auth asset versions
+      - name: Embed mission management in admin shell
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('admin.html')
           text = path.read_text(encoding='utf-8')
-          replacements = {
-              '/web-auth.js?v=20261018-web-auth10': '/web-auth.js?v=20261019-admin-refresh4',
-              'cms-layout-fix.js?v=20260928-1839': 'cms-layout-fix.js?v=20261019-admin-refresh4',
-          }
-          for old, new in replacements.items():
-              if old not in text:
-                  raise SystemExit(f'Expected asset reference not found: {old}')
-              text = text.replace(old, new, 1)
+
+          text = re.sub(
+              r'/web-auth\.js\?v=[^"\']+',
+              '/web-auth.js?v=20261019-admin-refresh4',
+              text,
+              count=1,
+          )
+
+          text = re.sub(
+              r'<script src="/admin-missions-integrated\.js\?v=[^"]+"></script>',
+              '',
+              text,
+          )
+
+          pattern = r'<script src="cms-layout-fix\.js\?v=[^"]+"></script>'
+          replacement = (
+              '<script src="cms-layout-fix.js?v=20261019-integrated-missions1"></script>'
+              '<script src="/admin-missions-integrated.js?v=20261019-integrated1"></script>'
+          )
+          text, count = re.subn(pattern, replacement, text, count=1)
+          if count != 1:
+              raise SystemExit('cms-layout-fix script reference not found')
+
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit patched admin shell
+      - name: Commit integrated mission admin
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,5 +61,5 @@ jobs:
             echo "No admin.html changes required."
             exit 0
           fi
-          git commit -m "fix: preserve integrated admin mission session"
+          git commit -m "feat: embed mission management in integrated admin"
           git push

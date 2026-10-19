@@ -25,6 +25,16 @@
     }catch(_){return '/admin.html'}
   }
 
+  function decodeJwt(value){
+    try{
+      const part=String(value||'').split('.')[1]||'';
+      if(!part)return{};
+      const base64=part.replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(part.length/4)*4,'=');
+      const bytes=Uint8Array.from(atob(base64),ch=>ch.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }catch(_){return{}}
+  }
+
   function readHandoff(){
     let payload=null;
     try{
@@ -54,8 +64,16 @@
     try{
       sessionStorage.setItem(TOKEN_KEY,token);
       if(refreshToken)sessionStorage.setItem(REFRESH_KEY,refreshToken);
+      else sessionStorage.removeItem(REFRESH_KEY);
     }catch(_){}
     return true;
+  }
+
+  function loadStoredSession(){
+    try{
+      token=sessionStorage.getItem(TOKEN_KEY)||'';
+      refreshToken=sessionStorage.getItem(REFRESH_KEY)||'';
+    }catch(_){}
   }
 
   function clearSession(){
@@ -134,16 +152,26 @@
   async function init(){
     if(readyPromise)return readyPromise;
     readyPromise=(async()=>{
-      try{
-        token=sessionStorage.getItem(TOKEN_KEY)||'';
-        refreshToken=sessionStorage.getItem(REFRESH_KEY)||'';
-      }catch(_){}
-      if(!token)adoptHandoff();
+      // Prefer the newest one-time token handed over by the integrated admin.
+      // This also works when a previous private-admin token remains in sessionStorage.
+      if(!adoptHandoff())loadStoredSession();
       if(!token)return null;
       try{
-        const user=await request('/auth/v1/user');
+        // The integrated admin deliberately clears the customer Supabase session after
+        // adopting it. Because of that, /auth/v1/user may reject an otherwise valid JWT.
+        // Authorisation is therefore verified directly through the admin RPC, which is
+        // the same server-side check used by admin.html.
         const allowed=await request('/rest/v1/rpc/is_funypin_admin',{method:'POST',body:'{}'});
         if(allowed!==true)throw new Error('ADMIN_REQUIRED');
+        const claims=decodeJwt(token);
+        const user={
+          id:claims.sub||'',
+          email:claims.email||claims.user_metadata?.email||'',
+          role:claims.role||'',
+          aud:claims.aud||'',
+          user_metadata:claims.user_metadata||{},
+          app_metadata:claims.app_metadata||{}
+        };
         currentSession={access_token:token,refresh_token:refreshToken,user};
         return currentSession;
       }catch(error){

@@ -1,0 +1,49 @@
+name: Patch integrated admin mission auth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-integrated-admin-mission-auth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update integrated admin auth asset versions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('admin.html')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              '/web-auth.js?v=20261018-web-auth10': '/web-auth.js?v=20261019-admin-refresh4',
+              'cms-layout-fix.js?v=20260928-1839': 'cms-layout-fix.js?v=20261019-admin-refresh4',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected asset reference not found: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit patched admin shell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add admin.html
+          if git diff --cached --quiet; then
+            echo "No admin.html changes required."
+            exit 0
+          fi
+          git commit -m "fix: preserve integrated admin mission session"
+          git push

@@ -8,7 +8,7 @@ import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 import { supabase } from '../lib/supabase';
 
 
-export default function LivePinButton({withNav=true,scrolling=false,bottomOffset=0}:{withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
+export default function LivePinButton({label='LIVE PIN',withNav=true,scrolling=false,bottomOffset=0}:{label?:string;withNav?:boolean;scrolling?:boolean;bottomOffset?:number}){
   const router=useRouter();
   const insets=useSafeAreaInsets();
   const [showTip,setShowTip]=useState(false);
@@ -37,7 +37,8 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   useEffect(()=>{Animated.timing(progress,{toValue:scrolling?1:0,duration:220,easing:Easing.out(Easing.cubic),useNativeDriver:false}).start();},[scrolling,progress]);
 
   const open=async()=>{try{await SecureStore.setItemAsync('funypin_live_entry_clicked','1');await SecureStore.setItemAsync('funypin_live_last_seen',new Date().toISOString());}catch{}setShowTip(false);setBadge(0);router.push('/live-pin');};
-  const width=progress.interpolate({inputRange:[0,1],outputRange:[132,46]});
+  const expandedWidth=Math.max(132,Math.min(188,66+String(label||'').length*8.4));
+  const width=progress.interpolate({inputRange:[0,1],outputRange:[expandedWidth,46]});
   const labelOpacity=progress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const iconOpacity=progress.interpolate({inputRange:[0,.55,1],outputRange:[1,0,0]});
   const collapsedIconOpacity=progress.interpolate({inputRange:[0,.55,1],outputRange:[0,0,1]});
@@ -46,8 +47,8 @@ export default function LivePinButton({withNav=true,scrolling=false,bottomOffset
   if(overlayOpen)return null;
   return <View pointerEvents="box-none" style={[styles.wrap,{bottom}]}>
     {showTip&&!scrolling?<View style={styles.tip}><Text style={styles.tipText}>실시간으로 정보 공유해요!</Text></View>:null}
-    <Animated.View style={{width}}><Pressable accessibilityRole="button" accessibilityLabel="LIVE PIN 열기" onPress={open} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>
-      <Animated.Text style={[styles.icon,{opacity:iconOpacity}]}>⚡</Animated.Text><Animated.Text style={[styles.collapsedIcon,{opacity:collapsedIconOpacity}]}>⚡</Animated.Text><Animated.Text style={[styles.label,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>LIVE PIN</Animated.Text><Animated.Text style={[styles.arrow,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>›</Animated.Text>
+    <Animated.View style={{width}}><Pressable accessibilityRole="button" accessibilityLabel={label+' 열기'} onPress={open} style={({pressed})=>[styles.button,pressed&&styles.pressed]}>
+      <Animated.Text style={[styles.icon,{opacity:iconOpacity}]}>⚡</Animated.Text><Animated.Text style={[styles.collapsedIcon,{opacity:collapsedIconOpacity}]}>⚡</Animated.Text><Animated.Text style={[styles.label,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>{label}</Animated.Text><Animated.Text style={[styles.arrow,{opacity:labelOpacity,transform:[{scale:labelScale}]}]}>›</Animated.Text>
       {badge>0?<View style={styles.badge}><Text style={styles.badgeText}>{badge>99?'99+':badge}</Text></View>:null}
     </Pressable></Animated.View>
   </View>;

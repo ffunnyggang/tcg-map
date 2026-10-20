@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react';
-import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StyleSheet,Text,View } from 'react-native';
+import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StatusBar,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
@@ -255,6 +255,8 @@ export default function ShopDetail(){
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
   return <SafeAreaView edges={['top']} style={[styles.root,{backgroundColor:pageBg}]}>
+    <StatusBar barStyle={viewerOpen?'light-content':'dark-content'} backgroundColor={viewerOpen?'#09090B':'#FFFFFF'} translucent={false}/>
+    <View pointerEvents="none" style={[styles.statusBarBg,{height:insets.top,backgroundColor:viewerOpen?'#09090B':'#FFFFFF'}]}/>
     <Stack.Screen options={{headerShown:false}}/>
 
     <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
@@ -384,6 +386,7 @@ export default function ShopDetail(){
 
 const styles=StyleSheet.create({
   root:{flex:1,backgroundColor:'#F8F6FF'},
+  statusBarBg:{position:'absolute',left:0,right:0,top:0,zIndex:2147483000,elevation:2147483000},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 

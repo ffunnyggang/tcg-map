@@ -46,7 +46,6 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,root=document.getElementById('root'),back=document.getElementById('back'),tabs=[...document.querySelectorAll('[data-block-tab]')];
  back.onclick=()=>history.length>1?history.back():location.replace('/my.html');
- if(A.isAppShell()){location.replace('/');return}
  await A.init();if(!A.session){A.goLogin('/my-blocked-users.html');return}
  const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  let current=location.hash.replace('#','')||'posts',postRows=[],marketRows=[];

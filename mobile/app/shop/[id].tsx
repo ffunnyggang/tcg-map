@@ -85,6 +85,7 @@ export default function ShopDetail(){
   const [contents,setContents]=useState<ShopContent[]>([]);
   const [favorite,setFavorite]=useState(false);
   const [favoriteBusy,setFavoriteBusy]=useState(false);
+  const [favoriteToast,setFavoriteToast]=useState('');
   const [sheetUrl,setSheetUrl]=useState<string|null>(null);
   const [sheetTitle,setSheetTitle]=useState('FUNY PIN');
   const [galleryIndex,setGalleryIndex]=useState(0);
@@ -101,6 +102,7 @@ export default function ShopDetail(){
   const galleryRef=useRef<ScrollView>(null);
   const viewerRef=useRef<ScrollView>(null);
   const scrollTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const favoriteToastTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const chartProgress=useRef(new Animated.Value(0)).current;
   const fabProgress=useRef(new Animated.Value(0)).current;
   const analysisY=useRef(Number.POSITIVE_INFINITY);
@@ -158,6 +160,8 @@ export default function ShopDetail(){
     Animated.timing(fabProgress,{toValue:scrolling?1:0,duration:220,easing:Easing.out(Easing.cubic),useNativeDriver:false}).start();
   },[scrolling,fabProgress]);
 
+  useEffect(()=>()=>{if(favoriteToastTimer.current)clearTimeout(favoriteToastTimer.current)},[]);
+
   useEffect(()=>{
     const next:Record<string,number>={};
     instaPosts.forEach((p,i)=>{
@@ -190,10 +194,16 @@ export default function ShopDetail(){
     scrollTimer.current=setTimeout(()=>setScrolling(false),650);
   };
 
+  const showFavoriteToast=(message:string)=>{
+    if(favoriteToastTimer.current)clearTimeout(favoriteToastTimer.current);
+    setFavoriteToast(message);
+    favoriteToastTimer.current=setTimeout(()=>{setFavoriteToast('');favoriteToastTimer.current=null},1900);
+  };
   const onToggleFavorite=async()=>{
     if(!id||favoriteBusy)return;
+    const next=!favorite;
     setFavoriteBusy(true);
-    try{await toggleFavorite(id,!favorite);setFavorite(v=>!v)}
+    try{await toggleFavorite(id,next);setFavorite(next);showFavoriteToast(next?(en?'Added to favorites.':'관심 매장에 추가했어요.'):(en?'Removed from favorites.':'관심 매장에서 해제했어요.'))}
     catch(e:any){if(e?.message==='LOGIN_REQUIRED')Alert.alert('로그인이 필요해요','관심 매장을 저장하려면 MY에서 로그인해주세요.');else Alert.alert('처리 실패',String(e?.message||e));}
     finally{setFavoriteBusy(false)}
   };
@@ -355,6 +365,8 @@ export default function ShopDetail(){
       </View>
     </View>:null}
 
+    {favoriteToast?<View pointerEvents="none" style={[styles.favoriteToastWrap,{bottom:homeLivePinBottom+54}]}><View style={styles.favoriteToast}><Text style={styles.favoriteToastText}>{favoriteToast}</Text></View></View>:null}
+
     <View pointerEvents="box-none" style={styles.floatingLayer}>
       <Animated.View style={[styles.mapFabWrap,{bottom:tcgMapBottom,width:fabWidth}]}>
         <Pressable accessibilityRole="button" onPress={goToMap} style={styles.mapFab}>
@@ -423,6 +435,9 @@ const styles=StyleSheet.create({
   shopName:{fontSize:23,fontWeight:'900',letterSpacing:-.8,color:'#28231F'},
   shopNameEn:{marginTop:2,fontSize:10.5,fontWeight:'600',letterSpacing:.5,color:'#9690A3'},
   favorite:{width:34,height:34,alignItems:'center',justifyContent:'center'},
+  favoriteToastWrap:{position:'absolute',left:18,right:18,alignItems:'center',zIndex:2147482000,elevation:2147482000},
+  favoriteToast:{minHeight:40,maxWidth:'100%',paddingHorizontal:15,paddingVertical:10,borderRadius:12,backgroundColor:'rgba(42,37,48,.94)',alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:.16,shadowRadius:8,shadowOffset:{width:0,height:3},elevation:8},
+  favoriteToastText:{fontSize:11.5,lineHeight:17,fontWeight:'800',color:'#fff',textAlign:'center'},
   favoriteOn:{},
   favoriteText:{fontSize:21,color:'#99909F'},
   favoriteTextOn:{color:C.purpleDark},

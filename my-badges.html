@@ -7,7 +7,30 @@
 <link rel="stylesheet" href="/my-v2.css?v=20261020-back-align2">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261020-header4">
-</head><body><div class="test-shell">
+<style>
+/* Badge summary: scoped to MY badge detail; preserve filters and badge cards */
+.badge-overview{padding:17px 16px 16px;border:1px solid #E8E2EC;border-radius:19px;background:#fff;box-shadow:0 4px 16px rgba(51,41,65,.035)}
+.badge-overview-head{display:flex;align-items:center;gap:9px}
+.badge-overview-icon{width:29px;height:29px;flex:0 0 29px;display:grid;place-items:center;border-radius:10px;background:#F1ECFB;color:#7555C4}
+.badge-overview-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.badge-overview-head h2{margin:0;font-size:14px;line-height:20px;font-weight:900;letter-spacing:-.3px;color:#302A36}
+.badge-overview-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px;padding:13px 8px;border-radius:13px;background:#F9F7FC}
+.badge-overview-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;gap:4px;text-align:center}
+.badge-overview-stat + .badge-overview-stat{border-left:1px solid #E8E2ED}
+.badge-overview-label{font-size:10.5px;line-height:15px;font-weight:750;color:#88818F}
+.badge-overview-value{display:flex;justify-content:center;align-items:baseline;gap:2px;font-variant-numeric:tabular-nums;color:#302A36}
+.badge-overview-value strong{font-size:28px;line-height:34px;font-weight:900;letter-spacing:-.9px}
+.badge-overview-value small{font-size:11px;line-height:15px;font-weight:750;color:#6A6270}
+.badge-overview-stat:last-child .badge-overview-value strong{color:#6749BD}
+.badge-overview-progress{margin-top:17px}
+.badge-overview-progress-labels{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;font-size:10.5px;line-height:15px;color:#827B88}
+.badge-overview-progress-labels b{color:#605767;font-weight:800}
+.badge-overview-progress-labels span:last-child{white-space:nowrap}
+.badge-overview-track{height:8px;border-radius:999px;background:#EEEBF2;overflow:hidden}
+.badge-overview-track>span{display:block;height:100%;max-width:100%;border-radius:inherit;background:#8062D8;transition:width .25s ease}
+@media(max-width:350px){.badge-overview{padding:15px 13px}.badge-overview-value strong{font-size:26px}.badge-overview-progress-labels{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.badge-overview-track>span{transition:none}}
+</style></head><body><div class="test-shell">
 <header class="test-head funy-sub-header"><button class="test-back funy-sub-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title funy-sub-title">배지</div><span></span></header>
 <main class="test-main">
 <div id="summary"></div>
@@ -19,7 +42,14 @@
  await A.init();if(!A.session){A.goLogin(location.pathname+location.search+location.hash);return}
  const {data,error}=await A.client.rpc('sync_my_badges_test');if(error)throw error;if(!data?.ok)throw new Error(data?.error||'badge_error');
  const badges=Array.isArray(data.badges)?data.badges:[],earned=badges.filter(x=>x.earned).length;
- $('#summary').innerHTML='<div class="stat-grid"><div class="stat"><span>획득 배지</span><b>'+earned+'</b><small>전체 '+badges.length+'개</small></div><div class="stat"><span>달성률</span><b>'+Math.round((earned/Math.max(1,badges.length))*100)+'%</b><small>활동할수록 컬렉션이 채워져요</small></div></div>';
+ const total=badges.length,remaining=Math.max(0,total-earned),rate=total?Math.round(earned/total*100):0;
+ const status=total===0?'등록된 배지 없음':remaining===0?'모든 배지 획득':'남은 배지 '+remaining+'개';
+ $('#summary').innerHTML='<section class="badge-overview" aria-labelledby="badgeOverviewTitle">'+
+   '<div class="badge-overview-head"><span class="badge-overview-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h8v9a4 4 0 0 1-8 0V4Zm0 2H5v3a3 3 0 0 0 3 3m8-6h3v3a3 3 0 0 1-3 3M12 17v3m-4 0h8"/></svg></span><h2 id="badgeOverviewTitle">나의 배지 현황</h2></div>'+
+   '<div class="badge-overview-stats"><div class="badge-overview-stat"><span class="badge-overview-label">획득 배지</span><div class="badge-overview-value"><strong>'+earned.toLocaleString('ko-KR')+'</strong><small>개</small></div></div>'+
+   '<div class="badge-overview-stat"><span class="badge-overview-label">달성률</span><div class="badge-overview-value"><strong>'+rate+'</strong><small>%</small></div></div></div>'+
+   '<div class="badge-overview-progress"><div class="badge-overview-progress-labels"><b>전체 '+total.toLocaleString('ko-KR')+'개 중 '+earned.toLocaleString('ko-KR')+'개 획득</b><span>'+status+'</span></div>'+
+   '<div class="badge-overview-track" role="progressbar" aria-label="배지 달성률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+rate+'"><span style="width:'+rate+'%"></span></div></div></section>';
  let filter='all';
  function render(){const rows=badges.filter(x=>filter==='all'||(filter==='earned'?x.earned:!x.earned));$('#root').innerHTML='<div class="badge-grid">'+(rows.length?rows.map(x=>{const cur=Number(x.current||0),th=Number(x.threshold||1),pct=Math.min(100,Math.round(cur/th*100));return '<article class="badge-card '+(x.earned?'':'locked')+'"><div class="badge-icon">'+esc(x.icon)+'</div><div class="badge-name">'+esc(x.name)+'</div><div class="badge-desc">'+esc(x.description)+'</div><div class="progress"><span style="width:'+pct+'%"></span></div><div class="badge-progress">'+(x.earned?'획득 완료':Math.min(cur,th)+' / '+th)+'</div></article>'}).join(''):'<div class="empty"><strong>표시할 배지가 없어요</strong></div>')+'</div>'}
  $$('.chip').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});render();

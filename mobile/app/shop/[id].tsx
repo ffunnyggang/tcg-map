@@ -227,7 +227,8 @@ export default function ShopDetail(){
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
-  const goToMap=()=>{if(from==='list'||from==='map-popup'||from==='map'||from==='native-map'){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
+  const goBack=()=>{if(router.canGoBack()){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
+  const goToMap=()=>router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any);
   const googleBridgeHtml=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="map" style="width:1px;height:1px"></div><script>
   function send(data){try{window.ReactNativeWebView.postMessage(JSON.stringify(data));}catch(e){}}
   function init(){
@@ -261,7 +262,7 @@ export default function ShopDetail(){
           </ScrollView>
           :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
         <View style={styles.heroTop}>
-          <Pressable onPress={goToMap} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
+          <Pressable onPress={goBack} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
           <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
         </View>
         <View style={styles.heroCount}><Ionicons name="images-outline" size={13} color="#fff"/><Text style={styles.heroCountText}>{heroImages.length?galleryIndex+1:1} / {Math.max(heroImages.length,1)}</Text></View>
@@ -341,7 +342,7 @@ export default function ShopDetail(){
 
     {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
-        <Pressable onPress={goToMap} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
+        <Pressable onPress={goBack} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
         <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
         <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
       </View>

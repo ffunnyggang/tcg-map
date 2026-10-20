@@ -61,7 +61,6 @@ export default function Account(){
   const logout=()=>{if(busy)return;Alert.alert('로그아웃할까요?','로그아웃해도 저장된 관심 매장과 활동 내역은 계정에 유지돼요.',[{text:'취소',style:'cancel'},{text:'로그아웃',style:'destructive',onPress:runLogout}]);};
   const removeAccount=()=>Alert.alert('계정을 삭제할까요?','계정과 프로필, 관심 매장 등 계정에 연결된 정보가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',[{text:'취소',style:'cancel'},{text:'계정 삭제',style:'destructive',onPress:async()=>{setBusy('delete');try{await deleteAccount();setUser(null);setProfile(null);Alert.alert('계정 삭제 완료','FUNY PIN 계정이 삭제되었습니다.');router.replace('/(tabs)' as any);}catch(e:any){Alert.alert('계정 삭제 실패',String(e?.message||e));}finally{setBusy(null);}}}]);
   const openWeb=(target:string,title:string)=>{const url=/^https?:\/\//i.test(target)?target:`https://funypin.kr/${target.replace(/^\//,'')}`;router.push({pathname:'/web',params:{url:encodeURIComponent(url),title}});};
-  const openPrepared=(target:string,title:string)=>{if(dashboard?.is_tester)openWeb(target,title);else Alert.alert('준비중','준비중인 기능입니다.');};
 
   useEffect(()=>{if(!loading&&!user)router.replace({pathname:'/login',params:{next:'account'}} as any);},[loading,user,router]);
 
@@ -96,12 +95,12 @@ export default function Account(){
     {label:'관심 목록',sub:'관심 카드샵과 저장한 매물 확인',icon:'💜',onPress:()=>router.push('/my/favorites')},
   ],[router]);
   const rewardRows=useMemo(()=>[
-    {label:'랭킹',sub:'출석 · 카드샵 방문 · 퍼니몬 포획 랭킹',icon:'🏆',prepared:true,onPress:()=>openPrepared('ranking.html','랭킹')},
-    {label:'배지',sub:'미션과 활동으로 획득한 배지 컬렉션',icon:'🎖️',prepared:true,onPress:()=>openPrepared('my-badges.html','배지')},
+    {label:'랭킹',sub:'출석 · 카드샵 방문 · 퍼니몬 포획 랭킹',icon:'🏆',onPress:()=>openWeb('ranking.html','랭킹')},
+    {label:'배지',sub:'미션과 활동으로 획득한 배지 컬렉션',icon:'🎖️',onPress:()=>openWeb('my-badges.html','배지')},
     {label:'퍼니몬 도감',sub:'포획한 퍼니몬 컬렉션',icon:'👾',onPress:()=>router.push('/my/funymon')},
     {label:'응모 내역',sub:'참여한 이벤트와 응모 내역',icon:'🎟️',onPress:()=>router.push('/my/entries')},
     {label:'쿠폰함',sub:'발급받은 쿠폰을 확인하세요',icon:'🎫',onPress:()=>router.push('/my/coupons')},
-  ],[router,dashboard?.is_tester]);
+  ],[router]);
 
   if(loading||!user)return <SafeAreaView style={styles.loading}><ActivityIndicator color={C.purple}/></SafeAreaView>;
 

@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/my-v2.css?v=20261020-back-align2">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
-<script src="/my-feature-gate.js?v=20261018-feature1"></script>
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261020-header4">
 <style>
 /* FUNY PIN ranking: three-section mobile layout (scoped to ranking page) */
@@ -151,7 +150,7 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
 <script>
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;const uid=A.session.user.id;
+ await A.init();if(!A.session){A.goLogin(location.pathname+location.search+location.hash);return}const uid=A.session.user.id;
  let category='attendance',metric='primary',publicOn=false,shopId='',cache={},savingPublic=false;
  function setPublicVisual(value){publicOn=!!value;const b=$('#publicToggle');b.classList.toggle('on',publicOn);b.setAttribute('aria-pressed',String(publicOn));b.setAttribute('aria-label','랭킹 공개 참여 '+(publicOn?'켜짐':'꺼짐'))}
  const now=new Date(Date.now()+9*3600000),first=new Date(2026,9,1);

@@ -546,9 +546,9 @@
     if(!window.ReactNativeWebView)return;
     try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:'market',navMode:open?navMode:'none'}))}catch(_){}
   }
-  function postNativeMarketDetailState(open){
+  function postNativeMarketDetailState(open,scrolled=false,hasMedia=false){
     if(!window.ReactNativeWebView)return;
-    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_MARKET_DETAIL_STATE',open:!!open}))}catch(_){}
+    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_MARKET_DETAIL_STATE',open:!!open,scrolled:!!scrolled,hasMedia:!!hasMedia}))}catch(_){}
   }
   function syncNativeMarketOverlayState(){
     const ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
@@ -1384,11 +1384,12 @@
     const floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;
     overlay.hidden=false;document.body.style.overflow='hidden';
     postNativeMarketOverlayState(true);
-    postNativeMarketDetailState(true);
+    postNativeMarketDetailState(true,false,detailImages.length>0);
     overlay.scrollTop=0;
     requestAnimationFrame(()=>{overlay.scrollTo({top:0,left:0,behavior:'auto'});const track=$('#marketDetailCarousel');if(track)track.scrollLeft=0});
     setTimeout(()=>overlay.scrollTo({top:0,left:0,behavior:'auto'}),0);
-    overlay.onscroll=()=>overlay.classList.toggle('is-scrolled',overlay.scrollTop>42);
+    let detailWasScrolled=false;
+    overlay.onscroll=()=>{const scrolled=overlay.scrollTop>42;overlay.classList.toggle('is-scrolled',scrolled);if(scrolled!==detailWasScrolled){detailWasScrolled=scrolled;postNativeMarketDetailState(true,scrolled,detailImages.length>0)}};
     if(detailImages.length){
       const track=$('#marketDetailCarousel'),page=$('#marketDetailPageNow');
       track?.addEventListener('scroll',()=>{if(!page)return;const w=track.clientWidth||1;page.textContent=String(Math.max(1,Math.min(detailImages.length,Math.round(track.scrollLeft/w)+1)))},{passive:true});
@@ -1443,7 +1444,7 @@
     if(floatingRegister)floatingRegister.hidden=$('#marketOverlay')?.hidden!==false;
     if(/^#\/?market\//i.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
     if($('#marketOverlay')?.hidden!==false&&$('#marketRegisterOverlay')?.hidden!==false)document.body.style.overflow='';
-    postNativeMarketDetailState(false);
+    postNativeMarketDetailState(false,false,false);
     requestAnimationFrame(syncNativeMarketOverlayState);
   }
 

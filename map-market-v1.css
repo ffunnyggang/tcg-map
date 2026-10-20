@@ -2733,3 +2733,20 @@ html.android-app-shell body.market-page .market-detail-head-actions{
 html.android-app-shell body.market-page .market-detail-more-menu{
   top:48px!important
 }
+
+/* APP edge-to-edge market detail top v50 */
+html.app-shell body.market-page .market-detail-head{
+  top:0!important;
+  height:calc(54px + var(--funy-native-safe-top,env(safe-area-inset-top,0px)))!important;
+  min-height:calc(54px + var(--funy-native-safe-top,env(safe-area-inset-top,0px)))!important;
+  padding:var(--funy-native-safe-top,env(safe-area-inset-top,0px)) 14px 0!important
+}
+html.app-shell body.market-page .market-detail-back{
+  top:calc(var(--funy-native-safe-top,env(safe-area-inset-top,0px)) + 9px)!important
+}
+html.app-shell body.market-page .market-detail-head-actions{
+  top:calc(var(--funy-native-safe-top,env(safe-area-inset-top,0px)) + 9px)!important
+}
+html.app-shell body.market-page .market-detail-more-menu{
+  top:calc(var(--funy-native-safe-top,env(safe-area-inset-top,0px)) + 48px)!important
+}

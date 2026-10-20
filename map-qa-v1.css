@@ -513,3 +513,12 @@ html.funy-map-qa body:not(.country-japan).qa-vending-tab-active .shop-request-li
 /* LIVE PIN uses the same liquid-glass chip geometry as the map layers. */
 .live-temp-layer.active{border-color:rgba(83,76,94,.64);background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(245,243,248,.68));color:#37313f;box-shadow:0 6px 18px rgba(48,39,58,.12),inset 0 1px 0 rgba(255,255,255,.96)}
 .live-temp-layer .live-layer-bolt{font-size:1em;line-height:1;opacity:.45}.live-temp-layer.active .live-layer-bolt{opacity:1}
+
+/* APP edge-to-edge map top v20261021 */
+html.app-shell.funy-map-qa .map-search-float{top:calc(var(--funy-native-safe-top,0px) + 14px)!important}
+html.app-shell.funy-map-qa .map-filter-bar{top:calc(var(--funy-native-safe-top,0px) + 70px)!important}
+html.app-shell.funy-map-qa .qa-geocode-status{top:calc(var(--funy-native-safe-top,0px) + 118px)!important}
+@media(max-width:430px){
+  html.app-shell.funy-map-qa .map-search-float{top:calc(var(--funy-native-safe-top,0px) + 10px)!important}
+  html.app-shell.funy-map-qa .map-filter-bar{top:calc(var(--funy-native-safe-top,0px) + 64px)!important}
+}

@@ -1,4 +1,4 @@
-/* FUNY PIN TCG MAP + MARKET production */
+﻿/* FUNY PIN TCG MAP + MARKET production */
 .market-test-only[hidden],.market-overlay[hidden],.market-register-overlay[hidden],.market-detail-overlay[hidden],.market-fab-menu[hidden]{display:none!important}
 
 /* test badge */
@@ -97,7 +97,7 @@ body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.c
 .market-register-map-wrap{position:relative;height:290px;border:1px solid #ECE7F0;border-radius:16px;overflow:hidden;background:#EEEAF2}
 #marketRegisterMap{position:absolute;inset:0;width:100%;height:100%}
 .market-register-center-pin{position:absolute;left:50%;top:50%;z-index:5;width:42px;height:42px;margin:-38px 0 0 -21px;border:3px solid #fff;border-radius:50% 50% 50% 7px;background:#6749BD;transform:rotate(-45deg);box-shadow:0 5px 15px rgba(103,73,189,.28);pointer-events:none}
-.market-register-center-pin:after{content:'₩';position:absolute;inset:0;display:grid;place-items:center;transform:rotate(45deg);color:#fff;font-size:16px;font-weight:900}
+.market-register-center-pin:after{content:'??;position:absolute;inset:0;display:grid;place-items:center;transform:rotate(45deg);color:#fff;font-size:16px;font-weight:900}
 .market-register-location-row{margin-top:8px;display:flex;align-items:center;gap:8px}.market-register-location-copy{flex:1;min-width:0}.market-register-location-name{font-size:11px;font-weight:800;color:#514B55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.market-register-coords{margin-top:3px;color:#AAA3AF;font-size:9px}
 .market-register-here{height:36px;padding:0 10px;border:1px solid #E4DFE8;border-radius:11px;background:#fff;color:#625B67;font-size:10px;font-weight:800}
 .market-register-error{display:none;margin-top:10px;color:#C65362;font-size:10px;line-height:1.5}
@@ -188,7 +188,7 @@ body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.c
 .market-chat-composer button:disabled{opacity:.45}
 
 
-/* MARKET test refinement — map/list structure */
+/* MARKET test refinement ??map/list structure */
 html.funy-map-qa body.market-page:not(.country-japan) .qa-list-tabs{
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
   width:100%!important
@@ -285,7 +285,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-sheet-list{width:100%!important}
 .market-card{width:100%!important}
 
-/* only full 거래 page has registration entry */
+/* only full 嫄곕옒 page has registration entry */
 .market-sheet-register{display:none!important}
 
 /* FAB: exact + -> x, actions above */
@@ -297,7 +297,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-fab-action{min-width:124px;justify-content:center}
 .market-fab-action.market{min-width:132px}
 
-/* Full 거래 page — FUNY PIN sub-page guide */
+/* Full 嫄곕옒 page ??FUNY PIN sub-page guide */
 .market-overlay{
   background:#fff!important;
   color:#28232E!important
@@ -790,7 +790,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
   --market-purple:#8062d8;
 }
 
-/* TCG MAP top layer filter — LIVE PIN liquid glass parity */
+/* TCG MAP top layer filter ??LIVE PIN liquid glass parity */
 .market-layer-chip{
   height:36px!important;
   padding:0 12px!important;
@@ -818,7 +818,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-layer-chip.active .market-layer-count{background:rgba(255,255,255,.14);color:#fff!important}
 .market-layer-chip:active{transform:scale(.97)}
 
-/* MARKET marker — LIVE PIN black pin + joker */
+/* MARKET marker ??LIVE PIN black pin + joker */
 .market-map-pin{position:relative!important;width:var(--marker-w,32px)!important;height:var(--marker-h,44px)!important}
 .market-map-pin svg{position:absolute;inset:0;width:100%!important;height:100%!important;filter:drop-shadow(0 4px 6px rgba(18,16,22,.26))!important}
 .market-map-pin-emoji{
@@ -846,7 +846,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
   font-size:8.5px!important;font-weight:850!important
 }
 
-/* TCG MAP transaction controls — sort/filter separated */
+/* TCG MAP transaction controls ??sort/filter separated */
 .market-sheet-panel{padding:0 0 32px!important}
 .market-sheet-sort-row{
   position:relative;display:flex;justify-content:flex-end;align-items:center;
@@ -917,7 +917,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 /* Combined MAP FAB */
 .market-page .live-pin-entry-wrap{display:none!important}
 .market-fab-wrap{
-  position:fixed!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important;bottom:88px!important;
+  position:fixed!important;right:max(16px,calc((100vw - 420px)/2 + 16px))!important;bottom:92px!important;
   z-index:2147480400!important;display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:8px!important
 }
 .market-fab-dim{
@@ -945,7 +945,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-fab-wrap.open .market-fab-main{width:46px!important;padding:0!important;border-radius:50%!important;background:#fff!important;color:#28232e!important}
 .market-fab-wrap.open .market-fab-label{display:none!important}
 
-/* Full TCG 거래 page */
+/* Full TCG 嫄곕옒 page */
 .market-overlay{
   background:#fff!important;color:var(--market-text)!important;overflow-y:auto!important;
   padding-bottom:0!important
@@ -991,7 +991,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 }
 .market-overlay-register.is-scrolling .market-overlay-register-label{position:absolute;opacity:0;pointer-events:none}
 
-/* Listing detail — common FUNY sub-header alignment */
+/* Listing detail ??common FUNY sub-header alignment */
 .market-detail-overlay{background:#fff!important;overflow-y:auto!important;color:#181720!important}
 .market-detail-head{
   box-sizing:border-box!important;position:sticky!important;top:0!important;z-index:35!important;
@@ -1085,7 +1085,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 
 
 /* MARKET MAP focused polish v5 */
-/* 거래 ON/OFF: LIVE PIN layer chip parity */
+/* 嫄곕옒 ON/OFF: LIVE PIN layer chip parity */
 .market-layer-chip.live-temp-layer{
   flex:0 0 auto!important;
   height:38px!important;
@@ -1120,7 +1120,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
   .market-layer-chip.live-temp-layer{height:36px!important;padding:0 11px!important;font-size:10.8px!important}
 }
 
-/* 거래 마커: LIVE PIN 기본 마커와 동일한 geometry / black pin */
+/* 嫄곕옒 留덉빱: LIVE PIN 湲곕낯 留덉빱? ?숈씪??geometry / black pin */
 .market-map-pin{
   position:relative!important;
   width:var(--marker-w)!important;
@@ -1151,14 +1151,14 @@ body.market-tab-active .qa-shop-only{display:none!important}
   filter:drop-shadow(0 4px 8px rgba(23,21,27,.34))!important
 }
 
-/* 바텀시트 TCG 거래 count */
+/* 諛뷀??쒗듃 TCG 嫄곕옒 count */
 .qa-list-tab[data-tab="market"] .qa-tab-count,
 #marketTestTabCount{
   color:#e34d5c!important;
   font-weight:900!important
 }
 
-/* 거래 탭: 카드샵 / 자판기와 동일한 1-line controls */
+/* 嫄곕옒 ?? 移대뱶??/ ?먰뙋湲곗? ?숈씪??1-line controls */
 .market-sheet-tools{
   display:flex!important;
   align-items:center!important;
@@ -1225,7 +1225,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
   font-weight:850!important
 }
 
-/* 리스트 우측 chevron 복구 */
+/* 由ъ뒪???곗륫 chevron 蹂듦뎄 */
 .market-card{
   grid-template-columns:88px minmax(0,1fr) 12px!important
 }
@@ -1282,13 +1282,13 @@ body.market-tab-active .qa-shop-only{display:none!important}
   font-size:calc(var(--pin-w) * .58)!important
 }
 
-/* Force original card-shop controls off while TCG 거래 tab is active */
+/* Force original card-shop controls off while TCG 嫄곕옒 tab is active */
 body.market-tab-active .qa-shop-tools,
 body.market-tab-active .qa-shop-only{
   display:none!important
 }
 
-/* TCG 거래 count stays visible and red; restore vending count too */
+/* TCG 嫄곕옒 count stays visible and red; restore vending count too */
 html.funy-map-qa body.market-page .qa-list-tab[data-tab="vending"] .qa-tab-count{
   display:inline-flex!important
 }
@@ -1326,7 +1326,7 @@ html.funy-map-qa body.market-page .qa-list-tab[data-tab="market"] .qa-tab-count{
   font-size:9.5px!important
 }
 
-/* TCG 거래 tab must never show card-shop recommend/category controls */
+/* TCG 嫄곕옒 tab must never show card-shop recommend/category controls */
 body.market-tab-active .qa-shop-tools,
 body.market-tab-active .list-heading-v2,
 body.market-tab-active .shop-request-list-banner,
@@ -1344,7 +1344,7 @@ body.market-tab-active .market-sheet-panel .market-sheet-tools{
 }
 
 
-/* MARKET test correction v11 — interaction + UI guide alignment */
+/* MARKET test correction v11 ??interaction + UI guide alignment */
 /* Horizontal strips: mobile swipe + desktop drag/wheel support */
 html.funy-map-qa body.market-page #filters,
 html.funy-map-qa body.market-page .qa-shop-tools,
@@ -1408,7 +1408,7 @@ html.funy-map-qa body.market-page .market-sort-menu button{
 }
 html.funy-map-qa body.market-page .market-sort-menu button.active{background:#f1ecfb!important;color:#684bbf!important;font-weight:900!important}
 
-/* TCG 거래 full-page category tabs = PICK/TALK pill guide */
+/* TCG 嫄곕옒 full-page category tabs = PICK/TALK pill guide */
 body.market-page .market-overlay-filter-row{
   position:sticky!important;top:54px!important;z-index:29!important;
   padding:14px 14px 10px!important;background:rgba(255,255,255,.97)!important;border:0!important
@@ -1464,7 +1464,7 @@ body.market-page .market-detail-location{display:block!important;color:#625b67!i
 }
 
 
-/* MARKET test correction v12 — control events + requested layout */
+/* MARKET test correction v12 ??control events + requested layout */
 /* Bottom-sheet MARKET: sort + filters move as one horizontal strip */
 body.market-page .market-sheet-tools{
   position:relative!important;
@@ -1508,7 +1508,7 @@ body.market-page .market-sheet-sort .market-sort-menu{
   z-index:2147483200!important
 }
 
-/* Full TCG 거래 sticky controls: same hide/show motion as PICK/TALK */
+/* Full TCG 嫄곕옒 sticky controls: same hide/show motion as PICK/TALK */
 body.market-page .market-overlay-sticky-tools{
   position:sticky!important;
   top:54px!important;
@@ -1528,7 +1528,7 @@ body.market-page .market-overlay-listbar{
   top:auto!important
 }
 
-/* TCG 거래 listbar: sort left / item count right */
+/* TCG 嫄곕옒 listbar: sort left / item count right */
 body.market-page .market-overlay-listbar{
   display:flex!important;
   align-items:center!important;
@@ -1553,7 +1553,7 @@ body.market-page #marketOverlayListCount{
   font-weight:750!important
 }
 
-/* TCG 거래 cards: same spacing rhythm as current TCG MAP cards */
+/* TCG 嫄곕옒 cards: same spacing rhythm as current TCG MAP cards */
 body.market-page .market-overlay-body{padding-top:9px!important}
 body.market-page .market-sheet-list{gap:9px!important}
 body.market-page .market-card{
@@ -1573,7 +1573,7 @@ body.market-page .market-card-chev{
   justify-self:auto!important
 }
 
-/* + 매물 등록 remains fully fixed while the list scrolls */
+/* + 留ㅻЪ ?깅줉 remains fully fixed while the list scrolls */
 body.market-page .market-overlay-register,
 body.market-page .market-overlay-register.is-scrolling{
   position:fixed!important;
@@ -1683,7 +1683,7 @@ body.market-page .market-detail-bottom{
   z-index:2147483300!important
 }
 
-/* Description has no "내용" heading or section divider */
+/* Description has no "?댁슜" heading or section divider */
 body.market-page .market-detail-description{
   padding-top:18px!important;
   border-bottom:0!important
@@ -1694,7 +1694,7 @@ body.market-page .market-detail-description h3{display:none!important}
 body.market-page .market-detail-info{border-bottom:0!important}
 
 
-/* MARKET detail v15 — immersive media header / favorite / fullscreen */
+/* MARKET detail v15 ??immersive media header / favorite / fullscreen */
 body.market-page .market-detail-overlay{
   padding:0!important;
   background:#fff!important;
@@ -2096,7 +2096,7 @@ body.market-page .market-detail-seller-age{
   white-space:nowrap!important
 }
 
-/* 조회/관심 ↔ divider ↔ detail text: symmetric 18px spacing */
+/* 議고쉶/愿????divider ??detail text: symmetric 18px spacing */
 body.market-page .market-detail-info{
   padding-bottom:18px!important;
   border-bottom:0!important
@@ -2258,7 +2258,7 @@ html.funy-map-qa body.market-page .map-shop-sheet .map-sheet-handle span{
 /* Transaction marker no longer carries an emoji. */
 body.market-page .market-map-pin-emoji{display:none!important}
 
-/* TCG 거래 count: neutral when inactive, red only for selected tab. */
+/* TCG 嫄곕옒 count: neutral when inactive, red only for selected tab. */
 html.funy-map-qa body.market-page .qa-list-tab[data-tab="market"]:not(.active) .qa-tab-count,
 html.funy-map-qa body.market-page .qa-list-tab[data-tab="market"]:not(.active) #marketTestTabCount{
   color:#9a94a0!important;
@@ -2291,7 +2291,7 @@ body.market-page .market-layer-chip.live-temp-layer.active .qa-layer-count{
   opacity:1!important
 }
 
-/* Portalized TCG 거래 register FAB: fixed to the 420px service frame, never the scroll container. */
+/* Portalized TCG 嫄곕옒 register FAB: fixed to the 420px service frame, never the scroll container. */
 body.market-page> .market-overlay-register{
   position:fixed!important;
   right:max(16px,calc((100vw - 420px)/2 + 16px))!important;

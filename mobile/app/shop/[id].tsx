@@ -254,9 +254,8 @@ export default function ShopDetail(){
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
-  return <SafeAreaView edges={['top']} style={[styles.root,{backgroundColor:pageBg}]}>
-    <StatusBar barStyle={viewerOpen?'light-content':'dark-content'} backgroundColor={viewerOpen?'#09090B':'#FFFFFF'} translucent={false}/>
-    <View pointerEvents="none" style={[styles.statusBarBg,{height:insets.top,backgroundColor:viewerOpen?'#09090B':'#FFFFFF'}]}/>
+  return <SafeAreaView edges={['top']} style={styles.root}>
+    {viewerOpen?<StatusBar barStyle="light-content" backgroundColor="#09090B" translucent={false}/>:null}
     <Stack.Screen options={{headerShown:false}}/>
 
     <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
@@ -385,8 +384,7 @@ export default function ShopDetail(){
 }
 
 const styles=StyleSheet.create({
-  root:{flex:1,backgroundColor:'#F8F6FF'},
-  statusBarBg:{position:'absolute',left:0,right:0,top:0,zIndex:2147483000,elevation:2147483000},
+  root:{flex:1,backgroundColor:'#FFFFFF'},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 

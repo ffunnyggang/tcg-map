@@ -11,15 +11,12 @@
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   let VENDING=[];
   const OPERATOR_LOGOS=new Map();
-  async function loadVendingData(){
-    const qs='select=id,name,address,operator,status,is_active,latitude,longitude,logo_url&order=id.asc';
-    const r=await fetch(SB_URL+'/rest/v1/v_public_pokemon_card_vending_machines?'+qs,{
-      headers:{apikey:SB_KEY},
-      cache:'no-store'
-    });
-    if(!r.ok)throw new Error('vending DB '+r.status);
-    const rows=await r.json();
-    VENDING=(rows||[]).map(v=>{
+  const VENDING_CACHE_KEY='funypin_vending_cache_v1';
+  const VENDING_CACHE_VERSION=1;
+  function normalizeVendingRows(rows){
+    OPERATOR_LOGOS.clear();
+    return (Array.isArray(rows)?rows:[]).map(row=>{
+      const v={...row};
       if(v?.operator&&v?.logo_url&&!OPERATOR_LOGOS.has(v.operator))OPERATOR_LOGOS.set(v.operator,String(v.logo_url));
       const hasLat=v.latitude!==null&&v.latitude!==undefined&&v.latitude!=='';
       const hasLng=v.longitude!==null&&v.longitude!==undefined&&v.longitude!=='';
@@ -28,7 +25,58 @@
       if(Number.isFinite(lat)&&Number.isFinite(lng))v._coord={lat,lng};
       return v;
     });
+  }
+  function vendingComparable(rows){
+    return (Array.isArray(rows)?rows:[]).map(v=>({
+      id:String(v?.id||''),name:String(v?.name||''),address:String(v?.address||''),operator:String(v?.operator||''),
+      status:v?.status??null,is_active:v?.is_active??null,
+      latitude:Number.isFinite(Number(v?._coord?.lat))?Number(v._coord.lat):(v?.latitude??null),
+      longitude:Number.isFinite(Number(v?._coord?.lng))?Number(v._coord.lng):(v?.longitude??null),
+      logo_url:String(v?.logo_url||'')
+    }));
+  }
+  function vendingSignature(rows){try{return JSON.stringify(vendingComparable(rows))}catch(_){return''}}
+  function readVendingCache(){
+    try{
+      const cached=JSON.parse(localStorage.getItem(VENDING_CACHE_KEY)||'null');
+      if(!cached||cached.version!==VENDING_CACHE_VERSION||!Array.isArray(cached.rows)||!cached.rows.length)return null;
+      return cached;
+    }catch(_){return null}
+  }
+  function writeVendingCache(rows){
+    try{
+      const cacheRows=vendingComparable(rows);
+      localStorage.setItem(VENDING_CACHE_KEY,JSON.stringify({version:VENDING_CACHE_VERSION,savedAt:Date.now(),rows:cacheRows}));
+    }catch(_){}
+  }
+  function clearVendingMarkers(){
+    try{if(activeInfoWindow)activeInfoWindow.close()}catch(_){}
+    state.selectedVending=null;
+    vendingMarkers.forEach(m=>{try{m.setMap(null)}catch(_){}});
+    vendingMarkers.clear();
+  }
+  function applyVendingRows(rows,{rebuildMarkers=false,cache=false}={}){
+    VENDING=normalizeVendingRows(rows);
+    if(cache)writeVendingCache(VENDING);
+    renderVendingList();
+    syncCountrySpecificQaUI();
+    const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(VENDING.length);
+    buildLayerControls();
+    if(rebuildMarkers&&mapReady()){clearVendingMarkers();buildVendingMarkers()}
     return VENDING;
+  }
+  async function loadVendingData(){
+    const qs='select=id,name,address,operator,status,is_active,latitude,longitude,logo_url&order=id.asc';
+    const r=await fetch(SB_URL+'/rest/v1/v_public_pokemon_card_vending_machines?'+qs,{
+      headers:{apikey:SB_KEY},
+      cache:'no-store'
+    });
+    if(!r.ok)throw new Error('vending DB '+r.status);
+    const rows=await r.json();
+    const changed=vendingSignature(rows)!==vendingSignature(VENDING);
+    if(changed)applyVendingRows(rows,{rebuildMarkers:true,cache:true});
+    else writeVendingCache(VENDING);
+    return {rows:VENDING,changed};
   }
   async function persistVendingCoords(rows){
     if(!rows?.length)return 0;
@@ -145,6 +193,7 @@ const $=s=>document.querySelector(s);
     for(let i=0;i<seedRows.length;i+=25){
       try{await persistVendingCoords(seedRows.slice(i,i+25))}catch(e){console.warn('[FUNY QA] coordinate persist failed',e)}
     }
+    if(seedRows.length)writeVendingCache(VENDING);
     renderVendingList();
   }
 
@@ -360,23 +409,27 @@ const $=s=>document.querySelector(s);
     syncCountrySpecificQaUI();applyLayers();
   }).observe(document.body,{attributes:true,attributeFilter:['class']});
   (async function initVendingQa(){
-    keepLayerControls();buildSheet();renderVendingList();syncCountrySpecificQaUI();
-    try{
-      await loadVendingData();
-      renderVendingList();syncCountrySpecificQaUI();
-      const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(VENDING.length);
-    }catch(e){
-      console.error('[FUNY QA] vending DB load failed',e);
-      const badge=document.querySelector('.qa-dev-badge');if(badge)badge.textContent='MAP V2 · QA · DB ERROR';
-      return;
-    }
+    keepLayerControls();buildSheet();
+    const cached=readVendingCache();
+    if(cached)applyVendingRows(cached.rows,{cache:false});
+    else{renderVendingList();syncCountrySpecificQaUI()}
+
     let tries=0,t=setInterval(()=>{
       tries++;
       if(mapReady()){
         clearInterval(t);
         try{naver.maps.Event.addListener(naverMap,'zoom_changed',()=>vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending,id))))}catch(_){}
-        buildVendingMarkers();
+        if(VENDING.length)buildVendingMarkers();
       }else if(tries>80)clearInterval(t)
     },200);
+
+    try{
+      await loadVendingData();
+    }catch(e){
+      console.error('[FUNY QA] vending DB load failed',e);
+      if(!VENDING.length){
+        const badge=document.querySelector('.qa-dev-badge');if(badge)badge.textContent='MAP V2 · QA · DB ERROR';
+      }
+    }
   })();
 })();

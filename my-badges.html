@@ -10,7 +10,7 @@
 <style>
 /* Badge summary: scoped to MY badge detail; preserve filters and badge cards */
 .badge-overview{padding:17px 16px 16px;border:1px solid #E8E2EC;border-radius:19px;background:#fff;box-shadow:0 4px 16px rgba(51,41,65,.035)}
-.badge-overview-head{display:flex;align-items:center}
+.badge-overview-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .badge-overview-head h2{margin:0;font-size:14px;line-height:20px;font-weight:900;letter-spacing:-.3px;color:#302A36}
 .badge-overview-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px;padding:13px 8px;border-radius:13px;background:#F9F7FC}
 .badge-overview-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;gap:4px;text-align:center}
@@ -20,10 +20,8 @@
 .badge-overview-value strong{font-size:28px;line-height:34px;font-weight:900;letter-spacing:-.9px}
 .badge-overview-value small{font-size:11px;line-height:15px;font-weight:750;color:#6A6270}
 .badge-overview-stat:last-child .badge-overview-value strong{color:#6749BD}
-.badge-overview-progress{margin-top:17px}
-.badge-overview-progress-labels{display:flex;justify-content:flex-end;align-items:center;text-align:right;gap:8px;font-size:10.5px;line-height:15px;color:#827B88}
-.badge-overview-progress-labels b{color:#605767;font-weight:800}
-@media(max-width:350px){.badge-overview{padding:15px 13px}.badge-overview-value strong{font-size:26px}.badge-overview-progress-labels{font-size:10px}}
+.badge-overview-total{margin-left:auto;color:#99929E;font-size:10px;line-height:16px;font-weight:600;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:350px){.badge-overview{padding:15px 13px}.badge-overview-value strong{font-size:26px}.badge-overview-total{font-size:9.5px}}
 </style></head><body><div class="test-shell">
 <header class="test-head funy-sub-header"><button class="test-back funy-sub-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title funy-sub-title">배지</div><span></span></header>
 <main class="test-main">
@@ -38,11 +36,9 @@
  const badges=Array.isArray(data.badges)?data.badges:[],earned=badges.filter(x=>x.earned).length;
  const total=badges.length,rate=total?Math.round(earned/total*100):0;
  $('#summary').innerHTML='<section class="badge-overview" aria-labelledby="badgeOverviewTitle">'+
-   '<div class="badge-overview-head"><h2 id="badgeOverviewTitle">나의 배지</h2></div>'+
+   '<div class="badge-overview-head"><h2 id="badgeOverviewTitle">나의 배지</h2><span class="badge-overview-total">전체 '+total.toLocaleString('ko-KR')+'개 중 '+earned.toLocaleString('ko-KR')+'개 획득</span></div>'+
    '<div class="badge-overview-stats"><div class="badge-overview-stat"><span class="badge-overview-label">획득 배지</span><div class="badge-overview-value"><strong>'+earned.toLocaleString('ko-KR')+'</strong><small>개</small></div></div>'+
-   '<div class="badge-overview-stat"><span class="badge-overview-label">달성률</span><div class="badge-overview-value"><strong>'+rate+'</strong><small>%</small></div></div></div>'+
-   '<div class="badge-overview-progress"><div class="badge-overview-progress-labels"><b>전체 '+total.toLocaleString('ko-KR')+'개 중 '+earned.toLocaleString('ko-KR')+'개 획득</b></div>'+
-   '</div></section>';
+   '<div class="badge-overview-stat"><span class="badge-overview-label">달성률</span><div class="badge-overview-value"><strong>'+rate+'</strong><small>%</small></div></div></div></section>';
  let filter='all';
  function render(){const rows=badges.filter(x=>filter==='all'||(filter==='earned'?x.earned:!x.earned));$('#root').innerHTML='<div class="badge-grid">'+(rows.length?rows.map(x=>{const cur=Number(x.current||0),th=Number(x.threshold||1),pct=Math.min(100,Math.round(cur/th*100));return '<article class="badge-card '+(x.earned?'':'locked')+'"><div class="badge-icon">'+esc(x.icon)+'</div><div class="badge-name">'+esc(x.name)+'</div><div class="badge-desc">'+esc(x.description)+'</div><div class="progress"><span style="width:'+pct+'%"></span></div><div class="badge-progress">'+(x.earned?'획득 완료':Math.min(cur,th)+' / '+th)+'</div></article>'}).join(''):'<div class="empty"><strong>표시할 배지가 없어요</strong></div>')+'</div>'}
  $$('.chip').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.chip').forEach(x=>x.classList.toggle('on',x===b));render()});render();

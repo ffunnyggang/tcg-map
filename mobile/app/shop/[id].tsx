@@ -108,6 +108,7 @@ export default function ShopDetail(){
   const lastScrollY=useRef(0);
 
   const navBottom=Math.max(insets.bottom,10);
+  const heroHeight=280+insets.top;
   const homeLivePinBottom=navBottom+54+10;
   const tcgMapBottom=Math.max(navBottom,10);
 
@@ -254,19 +255,20 @@ export default function ShopDetail(){
   const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
-  return <SafeAreaView edges={['top']} style={styles.root}>
-    {viewerOpen?<StatusBar barStyle="light-content" backgroundColor="#09090B" translucent={false}/>:null}
+  return <View style={styles.root}>
+    <StatusBar barStyle={viewerOpen||(!stickyHeader&&heroImages.length>0)?'light-content':'dark-content'} backgroundColor="transparent" translucent/>
+    {!viewerOpen&&(stickyHeader||heroImages.length===0)?<View pointerEvents="none" style={[styles.statusBarSolid,{height:insets.top}]}/>:null}
     <Stack.Screen options={{headerShown:false}}/>
 
     <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
-      <View style={styles.hero}>
+      <View style={[styles.hero,{height:heroHeight}]}>
         {heroImages.length?
           <ScrollView ref={galleryRef} horizontal pagingEnabled nestedScrollEnabled directionalLockEnabled={false} showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={e=>setGalleryIndex(Math.round(e.nativeEvent.contentOffset.x/SW))}>
-            {heroImages.map((uri,i)=><Pressable key={uri||String(i)} onPress={()=>openViewer(i)} style={styles.heroImagePress}><Image source={{uri}} style={styles.heroImage} resizeMode="cover"/></Pressable>)}
+            {heroImages.map((uri,i)=><Pressable key={uri||String(i)} onPress={()=>openViewer(i)} style={[styles.heroImagePress,{height:heroHeight}]}><Image source={{uri}} style={[styles.heroImage,{height:heroHeight}]} resizeMode="cover"/></Pressable>)}
           </ScrollView>
-          :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
-        <View style={[styles.heroTop,{top:9}]}>
+          :<View style={[styles.heroEmpty,{height:heroHeight}]}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
+        <View style={[styles.heroTop,{top:insets.top+9}]}>
           <Pressable onPress={goBack} style={styles.heroIcon}><Ionicons name="chevron-back" size={26} color="#fff"/></Pressable>
           <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={23} color="#fff"/></Pressable>
         </View>
@@ -345,8 +347,8 @@ export default function ShopDetail(){
       </View>
     </ScrollView>
 
-    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,height:UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
-      <View style={styles.stickyHeader}>
+    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:0,height:insets.top+UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
+      <View style={[styles.stickyHeader,{top:insets.top}]}>
         <Pressable onPress={goBack} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
         <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
         <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
@@ -380,11 +382,12 @@ export default function ShopDetail(){
     </Modal>
 
     <InAppWebSheet visible={!!sheetUrl} url={sheetUrl} title={sheetTitle} onClose={()=>setSheetUrl(null)}/>
-  </SafeAreaView>;
+  </View>;
 }
 
 const styles=StyleSheet.create({
   root:{flex:1,backgroundColor:'#FFFFFF'},
+  statusBarSolid:{position:'absolute',left:0,right:0,top:0,backgroundColor:'#fff',zIndex:2147483000,elevation:2147483000},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 

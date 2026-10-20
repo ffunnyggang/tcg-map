@@ -120,6 +120,7 @@
       <a class="menu-row" href="${isTester?'/ranking.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🏆</span><span class="menu-copy"><b>${T.ranking} <span class="coming-badge">${T.coming}</span></b><span>${T.rankingSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="${isTester?'/my-badges.html':'#'}" data-coming="${isTester?'0':'1'}"><span class="menu-icon">🎖️</span><span class="menu-copy"><b>${T.badges} <span class="coming-badge">${T.coming}</span></b><span>${T.badgesSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-funymon.html"><span class="menu-icon">👾</span><span class="menu-copy"><b>${T.mon}</b><span>${T.monSub}</span></span><span class="chev">›</span></a>
+      <a class="menu-row" href="/my-events.html"><span class="menu-icon">🎉</span><span class="menu-copy"><b>${T.events}</b><span>${T.eventsSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-entries.html"><span class="menu-icon">🎟️</span><span class="menu-copy"><b>${T.entries}</b><span>${T.entriesSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-coupons.html"><span class="menu-icon">🎫</span><span class="menu-copy"><b>${T.coupons}</b><span>${T.couponsSub}</span></span><span class="chev">›</span></a>
     </div></section>

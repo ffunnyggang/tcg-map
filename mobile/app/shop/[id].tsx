@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react';
-import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Pressable,ScrollView,Share,StyleSheet,Text,View } from 'react-native';
+import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
@@ -88,6 +88,8 @@ export default function ShopDetail(){
   const [sheetUrl,setSheetUrl]=useState<string|null>(null);
   const [sheetTitle,setSheetTitle]=useState('FUNY PIN');
   const [galleryIndex,setGalleryIndex]=useState(0);
+  const [viewerOpen,setViewerOpen]=useState(false);
+  const [viewerIndex,setViewerIndex]=useState(0);
   const [instaPosts,setInstaPosts]=useState<InstaPost[]>([]);
   const [activeEvent,setActiveEvent]=useState<FunyMonEvent|null>(null);
   const [reviewThumbs,setReviewThumbs]=useState<Record<string,string>>({});
@@ -97,6 +99,7 @@ export default function ShopDetail(){
   const [stickyHeader,setStickyHeader]=useState(false);
   const [googlePlace,setGooglePlace]=useState<GooglePlaceData|null>(null);
   const galleryRef=useRef<ScrollView>(null);
+  const viewerRef=useRef<ScrollView>(null);
   const scrollTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const chartProgress=useRef(new Animated.Value(0)).current;
   const fabProgress=useRef(new Animated.Value(0)).current;
@@ -227,6 +230,7 @@ export default function ShopDetail(){
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
+  const openViewer=(index:number)=>{const next=Math.max(0,Math.min(heroImages.length-1,index));setViewerIndex(next);setViewerOpen(true);setTimeout(()=>viewerRef.current?.scrollTo({x:SW*next,y:0,animated:false}),80)};
   const goBack=()=>{if(router.canGoBack()){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
   const goToMap=()=>router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any);
   const googleBridgeHtml=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="map" style="width:1px;height:1px"></div><script>
@@ -253,17 +257,17 @@ export default function ShopDetail(){
   return <SafeAreaView edges={['top']} style={[styles.root,{backgroundColor:pageBg}]}>
     <Stack.Screen options={{headerShown:false}}/>
 
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
+    <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent,{backgroundColor:pageBg}]} onScroll={onDetailScroll} scrollEventThrottle={16}>
       <View style={styles.hero}>
         {heroImages.length?
-          <ScrollView ref={galleryRef} horizontal pagingEnabled showsHorizontalScrollIndicator={false}
+          <ScrollView ref={galleryRef} horizontal pagingEnabled nestedScrollEnabled directionalLockEnabled={false} showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={e=>setGalleryIndex(Math.round(e.nativeEvent.contentOffset.x/SW))}>
-            {heroImages.map((uri,i)=><Image key={uri||String(i)} source={{uri}} style={styles.heroImage} resizeMode="cover"/>)}
+            {heroImages.map((uri,i)=><Pressable key={uri||String(i)} onPress={()=>openViewer(i)} style={styles.heroImagePress}><Image source={{uri}} style={styles.heroImage} resizeMode="cover"/></Pressable>)}
           </ScrollView>
           :<View style={styles.heroEmpty}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
-        <View style={styles.heroTop}>
-          <Pressable onPress={goBack} style={styles.heroIcon}><Ionicons name="chevron-back" size={21} color={C.text}/></Pressable>
-          <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
+        <View style={[styles.heroTop,{top:9}]}>
+          <Pressable onPress={goBack} style={styles.heroIcon}><Ionicons name="chevron-back" size={26} color="#fff"/></Pressable>
+          <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={23} color="#fff"/></Pressable>
         </View>
         <View style={styles.heroCount}><Ionicons name="images-outline" size={13} color="#fff"/><Text style={styles.heroCountText}>{heroImages.length?galleryIndex+1:1} / {Math.max(heroImages.length,1)}</Text></View>
       </View>
@@ -340,7 +344,7 @@ export default function ShopDetail(){
       </View>
     </ScrollView>
 
-    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
+    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:0,height:UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
         <Pressable onPress={goBack} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
         <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
@@ -361,6 +365,19 @@ export default function ShopDetail(){
     </View>
 
     {isJapan?<View pointerEvents="none" style={styles.googleBridge}><WebView source={{html:googleBridgeHtml,baseUrl:'https://funypin.kr'}} javaScriptEnabled domStorageEnabled originWhitelist={['https://*']} onMessage={e=>{try{const d=JSON.parse(e.nativeEvent.data);if(d?.type==='GOOGLE_PLACE_DATA')setGooglePlace({rating:String(d.rating||''),count:String(d.count||''),url:String(d.url||''),reviews:Array.isArray(d.reviews)?d.reviews.slice(0,3):[],photos:Array.isArray(d.photos)?d.photos.slice(0,5).map(String):[]})}catch{}}}/></View>:null}
+
+    <Modal visible={viewerOpen} animationType="fade" statusBarTranslucent navigationBarTranslucent onRequestClose={()=>setViewerOpen(false)}>
+      <View style={styles.viewerRoot}>
+        <ScrollView ref={viewerRef} style={styles.viewerTrack} horizontal pagingEnabled nestedScrollEnabled showsHorizontalScrollIndicator={false} contentOffset={{x:SW*viewerIndex,y:0}} onMomentumScrollEnd={e=>setViewerIndex(Math.max(0,Math.min(heroImages.length-1,Math.round(e.nativeEvent.contentOffset.x/SW))))}>
+          {heroImages.map((uri,i)=><View key={`viewer-${uri||i}`} style={styles.viewerSlide}><Image source={{uri}} style={styles.viewerImage} resizeMode="contain"/></View>)}
+        </ScrollView>
+        <View style={[styles.viewerHeader,{height:insets.top+52,paddingTop:insets.top}]}>
+          <Pressable hitSlop={10} onPress={()=>setViewerOpen(false)} style={styles.viewerClose}><Text style={styles.viewerCloseText}>×</Text></Pressable>
+          <Text style={styles.viewerCount}>{heroImages.length?viewerIndex+1:0} / {heroImages.length}</Text>
+        </View>
+      </View>
+    </Modal>
+
     <InAppWebSheet visible={!!sheetUrl} url={sheetUrl} title={sheetTitle} onClose={()=>setSheetUrl(null)}/>
   </SafeAreaView>;
 }
@@ -370,12 +387,13 @@ const styles=StyleSheet.create({
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 
-  hero:{height:280,backgroundColor:'#ECE8E1',position:'relative'},
-  heroImage:{width:SW,height:280,backgroundColor:'#EEEAF2'},
+  hero:{height:280,backgroundColor:'#17151B',position:'relative'},
+  heroImagePress:{width:SW,height:280,backgroundColor:'#17151B'},
+  heroImage:{width:SW,height:280,backgroundColor:'#17151B'},
   heroEmpty:{height:280,alignItems:'center',justifyContent:'center',backgroundColor:'#ECE8E1'},
   heroEmptyText:{fontSize:11,fontWeight:'600',color:'#958D84'},
-  heroTop:{position:'absolute',left:14,right:14,top:14,flexDirection:'row',justifyContent:'space-between'},
-  heroIcon:{width:36,height:36,borderRadius:18,backgroundColor:'rgba(255,253,250,.95)',borderWidth:1,borderColor:'rgba(226,219,210,.9)',alignItems:'center',justifyContent:'center',...shadow},
+  heroTop:{position:'absolute',left:14,right:14,height:36,zIndex:20,flexDirection:'row',justifyContent:'space-between'},
+  heroIcon:{width:36,height:36,backgroundColor:'transparent',alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:.42,shadowRadius:3,shadowOffset:{width:0,height:1},elevation:2},
   backText:{fontSize:29,lineHeight:30,color:C.text},
   shareText:{fontSize:19,fontWeight:'800',color:C.text},
   heroCount:{position:'absolute',right:14,bottom:36,height:26,paddingHorizontal:9,borderRadius:13,backgroundColor:'rgba(34,30,26,.62)',flexDirection:'row',gap:5,alignItems:'center',justifyContent:'center'},
@@ -386,6 +404,14 @@ const styles=StyleSheet.create({
   stickyAction:{width:36,height:36,alignItems:'center',justifyContent:'center'},
   stickyBackText:{fontSize:29,lineHeight:30,fontWeight:'400',color:C.text,textAlign:'center'},
   stickyTitle:{position:'absolute',left:UI.screenPad+36+4,right:UI.screenPad+36+4,textAlign:'left',...T.header,color:'#28231F'},
+  viewerRoot:{flex:1,backgroundColor:'#09090B'},
+  viewerTrack:{flex:1,backgroundColor:'#09090B'},
+  viewerSlide:{width:SW,flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#09090B'},
+  viewerImage:{width:SW,height:'100%',backgroundColor:'#09090B'},
+  viewerHeader:{position:'absolute',left:0,right:0,top:0,zIndex:50,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:14,backgroundColor:'rgba(0,0,0,.28)'},
+  viewerClose:{width:36,height:36,alignItems:'center',justifyContent:'center'},
+  viewerCloseText:{fontSize:31,lineHeight:32,fontWeight:'300',color:'#fff'},
+  viewerCount:{fontSize:11,fontWeight:'800',color:'#fff'},
 
   detailContent:{paddingHorizontal:16,paddingBottom:64},
   summaryCard:{marginTop:-18,paddingHorizontal:16,paddingTop:22,paddingBottom:18,zIndex:3,backgroundColor:'rgba(255,253,250,.98)',borderWidth:1,borderColor:'#E6DFD6',borderRadius:20,...shadow},

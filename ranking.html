@@ -15,22 +15,25 @@ body.ranking-page .ranking-main{padding:14px 12px 42px}
 body.ranking-page .rank-panel{margin:0 0 14px;padding:16px 14px;border:1px solid #ECE7F0;border-radius:20px;background:#fff;box-shadow:0 5px 18px rgba(52,39,71,.035)}
 body.ranking-page .rank-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
 body.ranking-page .rank-panel-heading h2{margin:0;color:#28232E;font-size:15px;font-weight:900;letter-spacing:-.3px}
+body.ranking-page .rank-panel--summary{padding-top:14px;padding-bottom:13px}
+body.ranking-page .rank-panel--summary .rank-panel-heading{margin-bottom:10px}
 body.ranking-page .rank-panel-subtitle{font-size:10px;color:#98909E;font-weight:650;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
 body.ranking-page .rank-title-suffix{margin-left:4px;color:#A19AA7;font-size:12px;font-weight:750;letter-spacing:-.15px;white-space:nowrap}
 body.ranking-page .rank-month-control{position:relative;display:inline-flex;align-items:center;flex:0 0 auto}
 body.ranking-page .rank-month-control::after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:1.8px solid #625A6A;border-bottom:1.8px solid #625A6A;transform:translateY(-70%) rotate(45deg);pointer-events:none}
 body.ranking-page .rank-month-control select{max-width:150px;height:35px;padding:0 29px 0 12px;border:1px solid #E6DFEE;border-radius:10px;background:#FAF8FD;color:#3C3246;font-family:inherit;font-size:11.5px;font-weight:850;appearance:none;-webkit-appearance:none;cursor:pointer}
 body.ranking-page .rank-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-body.ranking-page .rank-summary-group{--rank-accent:#7456C4;--rank-soft:#F1ECFC;display:flex;flex-direction:column;gap:0;min-width:0;padding:9px 7px 7px;border:1px solid #E7DDF6;border-radius:15px;background:#F8F5FE}
+body.ranking-page .rank-summary-group{--rank-accent:#7456C4;--rank-soft:#F1ECFC;display:flex;flex-direction:column;gap:0;min-width:0;padding:7px 6px 6px;border:1px solid #E7DDF6;border-radius:15px;background:#F8F5FE}
 body.ranking-page .rank-summary-group:nth-child(2){--rank-accent:#449A59;--rank-soft:#EDF8ED;border-color:#DEEFDF;background:#F4FAF3}
 body.ranking-page .rank-summary-group:nth-child(3){--rank-accent:#C88835;--rank-soft:#FFF3E4;border-color:#F3E7D3;background:#FFF9F0}
-body.ranking-page .rank-summary-group>b{display:flex;justify-content:center;align-items:center;min-height:26px;margin-bottom:1px;color:var(--rank-accent);font-size:11px;font-weight:850;letter-spacing:-.35px;text-align:center;white-space:nowrap}
-body.ranking-page .rank-summary-metric{display:flex;flex-direction:column;align-items:center;min-height:109px;padding:13px 2px 10px;border:0;border-radius:0;background:transparent;text-align:center;min-width:0}
+body.ranking-page .rank-summary-group>b{display:flex;justify-content:center;align-items:center;min-height:23px;margin-bottom:0;color:var(--rank-accent);font-size:11px;font-weight:850;letter-spacing:-.35px;text-align:center;white-space:nowrap}
+body.ranking-page .rank-summary-metric{display:flex;flex-direction:column;align-items:center;min-height:91px;padding:9px 2px 8px;border:0;border-radius:0;background:transparent;text-align:center;min-width:0}
 body.ranking-page .rank-summary-metric + .rank-summary-metric{border-top:1px solid rgba(83,70,97,.13)}
-body.ranking-page .rank-summary-metric small{display:block;min-height:14px;color:#807885;font-size:10px;line-height:1.35;font-weight:650;white-space:nowrap;letter-spacing:-.25px}
-body.ranking-page .rank-summary-metric strong{display:block;max-width:100%;margin:8px 0 7px;color:#292332;font-size:23px;line-height:1.05;font-weight:900;letter-spacing:-.8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.ranking-page .rank-summary-metric small{display:block;min-height:13px;color:#807885;font-size:10px;line-height:1.3;font-weight:650;white-space:nowrap;letter-spacing:-.25px}
+body.ranking-page .rank-summary-metric strong{display:block;max-width:100%;margin:5px 0 4px;color:#292332;font-size:21px;line-height:1.1;font-weight:900;letter-spacing:-.8px;font-variant-numeric:tabular-nums;white-space:nowrap}
 body.ranking-page .rank-summary-metric strong span{margin-left:2px;font-size:10px;font-weight:750;letter-spacing:0}
-body.ranking-page .rank-summary-metric em{display:inline-flex;align-items:center;justify-content:center;min-height:23px;max-width:100%;margin-top:auto;padding:4px 7px;border-radius:8px;background:var(--rank-soft);color:var(--rank-accent);font-size:10px;font-weight:850;font-style:normal;white-space:nowrap}
+body.ranking-page .rank-summary-metric.is-empty strong{color:#A69CAA}
+body.ranking-page .rank-summary-metric em{display:inline-flex;align-items:center;justify-content:center;min-height:20px;max-width:100%;margin-top:auto;padding:3px 6px;border-radius:7px;background:var(--rank-soft);color:var(--rank-accent);font-size:10px;font-weight:850;font-style:normal;white-space:nowrap}
 body.ranking-page .rank-panel--public{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:17px 15px}
 body.ranking-page .rank-public-copy{min-width:0;flex:1}
 body.ranking-page .rank-public-copy b{display:block;font-size:13px;font-weight:900;color:#302738}
@@ -49,11 +52,20 @@ body.ranking-page #metricChips.rank-metrics{display:flex;flex:1;align-items:cent
 body.ranking-page #metricChips.rank-metrics::-webkit-scrollbar{display:none}
 body.ranking-page #metricChips .chip{display:inline-flex;align-items:center;justify-content:center;min-height:40px;height:auto;flex:0 0 auto;padding:0 1px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#918994;font-size:11.5px;font-weight:750;letter-spacing:-.35px;white-space:nowrap;cursor:pointer}
 body.ranking-page #metricChips .chip.on{border-bottom-color:#8062D8;background:transparent;color:#6546B7;font-weight:900}
-body.ranking-page .rank-shop-filter{position:relative;display:flex;align-items:center;flex:0 1 136px;width:136px;height:37px;margin-left:auto;border:0;border-radius:0;background:transparent;min-width:0}
+body.ranking-page .rank-shop-filter{position:relative;display:inline-flex;align-items:center;justify-content:flex-start;gap:4px;flex:0 1 auto;width:max-content;max-width:138px;min-width:0;height:37px;margin-left:auto;padding:0 3px 0 2px;border:0;border-radius:7px;background:transparent}
+body.ranking-page .rank-shop-filter:focus-within{outline:2px solid #8568D9;outline-offset:2px}
+body.ranking-page .rank-shop-label{display:block;flex:0 1 auto;max-width:105px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#504658;font-size:11px;font-weight:780;pointer-events:none}
 body.ranking-page .rank-shop-filter[hidden]{display:none!important}
-body.ranking-page .rank-shop-filter>svg{position:absolute;left:5px;top:9px;width:17px;height:17px;color:#8162D6;pointer-events:none}
-body.ranking-page .rank-shop-filter::after{content:"";position:absolute;right:11px;top:13px;width:6px;height:6px;border-right:1.6px solid #7F7885;border-bottom:1.6px solid #7F7885;transform:rotate(45deg);pointer-events:none}
-body.ranking-page .rank-shop-filter select{display:block;width:100%;height:100%;padding:0 23px 0 26px;border:0;outline:0;border-radius:0;background:transparent;color:#504658;font-family:inherit;font-size:11px;font-weight:780;text-overflow:ellipsis;white-space:nowrap;appearance:none;-webkit-appearance:none;cursor:pointer}
+body.ranking-page .rank-shop-filter>svg{position:static;flex:0 0 17px;width:17px;height:17px;color:#8162D6;pointer-events:none}
+body.ranking-page .rank-shop-filter::after{content:"";display:block;position:static;flex:0 0 6px;width:6px;height:6px;margin:0 2px 3px 1px;border-right:1.6px solid #7F7885;border-bottom:1.6px solid #7F7885;transform:rotate(45deg);pointer-events:none}
+body.ranking-page .rank-shop-filter select{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;margin:0;padding:0;border:0;outline:0;background:transparent;opacity:0;appearance:none;-webkit-appearance:none;cursor:pointer}
+body.ranking-page .rank-join-prompt{display:flex;flex-direction:column;align-items:center;gap:9px;margin:14px 0 4px;padding:28px 15px 25px;border:1px solid #EEE8F7;border-radius:16px;background:#FAF8FD;text-align:center}
+body.ranking-page .rank-join-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:15px;background:#EEE8FA;color:#7957C4}
+body.ranking-page .rank-join-icon svg{width:23px;height:23px}
+body.ranking-page .rank-join-prompt strong{margin-top:4px;color:#43364E;font-size:13px;font-weight:900;line-height:1.45;word-break:keep-all}
+body.ranking-page .rank-join-prompt p{max-width:255px;margin:0;color:#8D8495;font-size:10.5px;line-height:1.6;word-break:keep-all}
+body.ranking-page .rank-join-prompt button{margin-top:7px;min-height:38px;padding:0 16px;border:0;border-radius:11px;background:#8062D8;color:#fff;font:800 11.5px inherit;cursor:pointer}
+body.ranking-page .rank-join-prompt button:disabled{opacity:.45}
 body.ranking-page #ranking .loading,body.ranking-page #ranking .empty,body.ranking-page #ranking .error{padding:45px 8px;font-size:11px}
 body.ranking-page .rank-ceremony{margin:13px 0 13px;padding:17px 9px 0;overflow:hidden;border:1px solid #EFE9F1;border-radius:19px;background:linear-gradient(180deg,#FEFCFF 0%,#F9F5FC 100%)}
 body.ranking-page .rank-stage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:5px;min-height:226px}
@@ -130,7 +142,7 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
   </div>
   <label class="rank-shop-filter" id="shopFilterWrap" hidden>
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
-   <select id="shopFilter" aria-label="카드샵 위치"><option value="">전체</option></select>
+   <span class="rank-shop-label" id="shopFilterLabel" aria-hidden="true">전체</span><select id="shopFilter" aria-label="카드샵 선택"><option value="">전체</option></select>
   </label>
  </div>
  <div id="ranking" aria-live="polite"><div class="loading">랭킹을 불러오는 중...</div></div>
@@ -175,12 +187,20 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
   const units=['일','일','회','곳','회','종'];
   $('#summary').innerHTML='<div class="rank-summary-grid">'+keys.map((c,i)=>{
    const a=data[i*2],b=data[i*2+1];
-   const render=(d,k)=>{const my=d.my||{},r=Number(my.rank||0),pop=Number(d.population||0),value=Number(my.value||0),rankLabel=!publicOn?'비공개':r>0&&r<=100?r+'위':r>100&&pop>0?'상위 '+Math.max(1,Math.min(100,Math.ceil(r*100/pop)))+'%':value>0?'집계 대기':'기록 없음';return '<div class="rank-summary-metric"><small>'+summaryLabels[c][k]+'</small><strong>'+value.toLocaleString('ko-KR')+'<span>'+units[i*2+k]+'</span></strong><em>'+rankLabel+'</em></div>'};
+   const render=(d,k)=>{const my=d.my||{},r=Number(my.rank||0),pop=Number(d.population||0),value=Number(my.value||0),rankLabel=!publicOn?'비공개':r>0&&r<=100?r+'위':r>100&&pop>0?'상위 '+Math.max(1,Math.min(100,Math.ceil(r*100/pop)))+'%':value>0?'집계 대기':'기록 없음';return '<div class="rank-summary-metric'+(value===0?' is-empty':'')+'"><small>'+summaryLabels[c][k]+'</small><strong>'+value.toLocaleString('ko-KR')+'<span>'+units[i*2+k]+'</span></strong><em>'+rankLabel+'</em></div>'};
    return '<div class="rank-summary-group"><b>'+labels[c][0]+'</b>'+render(a,0)+render(b,1)+'</div>';
   }).join('')+'</div>';
   const shops=data[2].shops||[];
   $('#shopFilter').innerHTML='<option value="">전체</option>'+shops.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
   $('#shopFilter').value=shopId;
+  updateShopLabel();
+ }
+ function updateShopLabel(){
+  const dropdown=$('#shopFilter'),label=$('#shopFilterLabel');
+  const current=dropdown.options[dropdown.selectedIndex];
+  const name=current?current.textContent:'전체';
+  label.textContent=name;
+  $('#shopFilterWrap').title=name;
  }
  function rankingDelta(x){
   if(month==='2026-10')return '<span class="rank-delta rank-delta--na" title="2026년 10월부터 랭킹을 집계합니다.">전월 —</span>';
@@ -199,8 +219,17 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
   const url=(x?.avatar_url&&/^(https?:\/\/|\/(?!\/))/.test(x.avatar_url))?x.avatar_url:fallback;
   return '<img src="'+esc(url)+'" alt="" loading="lazy" onerror="this.onerror=null;this.src=\''+fallback+'\'">';
  }
+ function renderJoinPrompt(){
+  $('#ranking').innerHTML='<div class="rank-join-prompt">'+
+   '<span class="rank-join-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4ZM7 6H4v2a4 4 0 0 0 3 4M17 6h3v2a4 4 0 0 1-3 4"/></svg></span>'+
+   '<strong>랭킹에 참여하고 TOP 100을 확인해 보세요!</strong>'+
+   '<p>공개 참여를 켜면 다른 수집가들의 기록과 순위를 볼 수 있어요. 공개 설정은 언제든 변경할 수 있습니다.</p>'+
+   '<button type="button" id="rankJoinBtn">랭킹 참여하기</button></div>';
+  $('#rankJoinBtn').onclick=()=>{const toggle=$('#publicToggle');if(!toggle.disabled)toggle.click()};
+ }
  async function loadRanking(){
   const requestId=++rankRequestId;
+  if(!publicOn){renderJoinPrompt();return}
   const field=category,subMetric=metric;
   $('#ranking').innerHTML='<div class="loading">랭킹을 불러오는 중...</div>';
   const type=field+(subMetric==='secondary'?'_secondary':'');
@@ -265,8 +294,8 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
  };
  $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$$('#categoryChips .chip').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b))});$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
  $$('#metricChips [data-metric]').forEach(b=>b.onclick=()=>{metric=b.dataset.metric;updateMetrics();loadRanking().catch(e=>alert(e.message))});updateMetrics();
- $('#shopFilter').onchange=e=>{shopId=e.target.value;loadRanking().catch(err=>alert(err.message))};
+ $('#shopFilter').onchange=e=>{shopId=e.target.value;updateShopLabel();loadRanking().catch(err=>alert(err.message))};
  $('#monthPicker').onchange=e=>{month=e.target.value;shopId='';updateRankPeriod();Promise.all([refreshSummary(),loadRanking()]).catch(err=>alert(err.message))};
- await Promise.all([refreshSummary(),loadRanking()]);
+ await refreshSummary();await loadRanking();
 })().catch(e=>{document.getElementById('ranking').innerHTML='<div class="error"><strong>랭킹을 불러오지 못했어요</strong>'+String(e?.message||e)+'</div>'});
 </script></body></html>

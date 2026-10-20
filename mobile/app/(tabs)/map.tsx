@@ -7,7 +7,7 @@ import FunyWebView from '../../components/FunyWebView';
 
 export default function MapScreen(){
   const [webBack,setWebBack]=useState(false);
-  const {country,from}=useLocalSearchParams<{country?:string;from?:string}>();
+  const {country,from,__tabRefresh}=useLocalSearchParams<{country?:string;from?:string;__tabRefresh?:string}>();
   const initialCountry=country==='JP'?'JP':'KR';
   const sourceQuery=from?`&from=${encodeURIComponent(from)}`:'';
   const mapUrl=`https://funypin.kr/shops.html?country=${initialCountry}${sourceQuery}`;
@@ -17,7 +17,7 @@ export default function MapScreen(){
   },[]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     <ViewWithMarket>
-      <FunyWebView key={`map-${initialCountry}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP"/>
+      <FunyWebView key={`map-${initialCountry}`} url={mapUrl} title="FUNY PIN TCG MAP" onWebRouteChange={onRoute} showBackHeader={webBack} backTitle="TCG MAP" refreshToken={__tabRefresh}/>
     </ViewWithMarket>
   </SafeAreaView>;
 }

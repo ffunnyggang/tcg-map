@@ -189,9 +189,25 @@ try{
   }
   /* CMS navigation is intercepted at document start. */
 
+  /* Preserve the previous page scroll only for an explicit app-header history back. */
+  var scrollPositionKey=function(){try{return '__funy_scroll_v1:'+location.pathname+location.search+location.hash}catch(_){return '__funy_scroll_v1'}};
+  var readScrollY=function(){try{return Math.max(0,Math.round(window.scrollY||document.scrollingElement&&document.scrollingElement.scrollTop||document.documentElement&&document.documentElement.scrollTop||document.body&&document.body.scrollTop||0))}catch(_){return 0}};
+  var saveScrollPosition=function(){try{sessionStorage.setItem(scrollPositionKey(),String(readScrollY()))}catch(_){}};
+  window.__FUNY_SAVE_SCROLL_POSITION=saveScrollPosition;
+  var restoreHistoryScroll=function(){
+    try{
+      if(sessionStorage.getItem('__funy_restore_after_header_back')!=='1')return;
+      var raw=sessionStorage.getItem(scrollPositionKey());
+      sessionStorage.removeItem('__funy_restore_after_header_back');
+      if(raw==null)return;
+      var y=Math.max(0,Number(raw)||0),restore=function(){try{window.scrollTo(0,y)}catch(_){}};
+      requestAnimationFrame(restore);[60,180,420,900].forEach(function(ms){setTimeout(restore,ms)});
+    }catch(_){}
+  };
+
   /* Shop clicks are captured at document-start and handled natively. */
-  window.addEventListener('hashchange',reportRoute);window.addEventListener('pageshow',reportRoute);window.addEventListener('load',reportPageTitle);reportRoute();
-  var scrollTimer=null;var reportScroll=function(){post({type:'WEB_SCROLL',scrolling:true});clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){post({type:'WEB_SCROLL',scrolling:false});},650);};window.addEventListener('scroll',reportScroll,{passive:true});
+  window.addEventListener('hashchange',function(){reportRoute();restoreHistoryScroll()});window.addEventListener('pageshow',function(){reportRoute();restoreHistoryScroll()});window.addEventListener('load',function(){reportPageTitle();restoreHistoryScroll()});reportRoute();setTimeout(restoreHistoryScroll,0);
+  var scrollSaveTimer=null;var scrollTimer=null;var reportScroll=function(){post({type:'WEB_SCROLL',scrolling:true});clearTimeout(scrollSaveTimer);scrollSaveTimer=setTimeout(saveScrollPosition,80);clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){saveScrollPosition();post({type:'WEB_SCROLL',scrolling:false});},650);};window.addEventListener('scroll',reportScroll,{passive:true});window.addEventListener('pagehide',saveScrollPosition);
 }catch(e){}
 })(); true;`;
 
@@ -248,7 +264,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const lastNativeRefreshAt=useRef(0);
   const {height:windowHeight}=useWindowDimensions();
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
-  const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
+  const goWebHistoryBack=useCallback(()=>{if(!ref.current)return false;ref.current.injectJavaScript(`(function(){try{if(window.__FUNY_SAVE_SCROLL_POSITION)window.__FUNY_SAVE_SCROLL_POSITION();sessionStorage.setItem('__funy_restore_after_header_back','1');history.back();}catch(_){try{history.back()}catch(__){}}})();true;`);return true;},[]);
+  const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&goWebHistoryBack())return;if(router.canGoBack())router.back();else router.replace('/(tabs)' as any);},[canGoBack,goWebHistoryBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
   const isTalkPost=(()=>{try{const u=new URL(currentTarget);return /\/talk\.html$/.test(u.pathname.toLowerCase())&&/^#\/post\//.test(u.hash)}catch{return false}})();
   const blockTalkAuthor=useCallback(async()=>{
@@ -426,7 +443,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     return true;
   },[blockExternalNavigation,openSheet,router]);
 
-  useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&ref.current){ref.current.goBack();return true;}return false;});return()=>sub.remove();},[canGoBack,closeSheet,sheetOpen]));
+  useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&goWebHistoryBack())return true;return false;});return()=>sub.remove();},[canGoBack,closeSheet,goWebHistoryBack,sheetOpen]));
   useEffect(()=>{setLoading(true);setError(false);reloadAttempts.current=0;if(Platform.OS==='android'){androidFirstPaintDone.current=false;setAndroidPageReady(false);}const timer=setTimeout(()=>setLoading(false),2500);return()=>clearTimeout(timer);},[url]);
   useEffect(()=>{
     if(!isFocused||!isMapWebView||!ref.current||Platform.OS==='android')return;

@@ -13,6 +13,7 @@ import FunyHeader from './FunyHeader';
 import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
+import { resolveFloatingActionBottom } from '../lib/tabMetrics';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
 const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261005-android-shell');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
@@ -44,7 +45,7 @@ try{
     'html.app-shell input:not([type="checkbox"]):not([type="radio"]),html.app-shell textarea{font-size:16px!important;-webkit-text-size-adjust:100%!important}',
     'html.app-shell .country-filter-select{font-size:12px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
-    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}',
+    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:var(--funy-native-floating-bottom,calc(max(env(safe-area-inset-bottom,0px),12px) + 76px))!important;right:16px!important}',
     'html.app-shell.app-shop-detail-open #home-view{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #naver-map,html.app-shell.app-shop-detail-open #google-map,html.app-shell.app-shop-detail-open .map-wrap-hero,html.app-shell.app-shop-detail-open .map-shop-sheet{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
@@ -272,6 +273,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const tabScrollPositions=useRef<Record<string,number>>({});
   const pendingTabScrollRestore=useRef(false);
   const {height:windowHeight}=useWindowDimensions();
+  const nativeFloatingBottom=resolveFloatingActionBottom(insets.bottom,Platform.OS==='android',true);
   const isMapWebView=(()=>{try{return /\/shops\.html$/i.test(new URL(url).pathname)}catch{return false}})();
   const goWebHistoryBack=useCallback(()=>{if(!ref.current)return false;ref.current.injectJavaScript(`(function(){try{if(window.__FUNY_SAVE_SCROLL_POSITION)window.__FUNY_SAVE_SCROLL_POSITION();sessionStorage.setItem('__funy_restore_after_header_back','1');history.back();}catch(_){try{history.back()}catch(__){}}})();true;`);return true;},[]);
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&goWebHistoryBack())return;if(router.canGoBack())router.back();else router.replace('/(tabs)' as any);},[canGoBack,goWebHistoryBack,onNativeBack,router]);
@@ -615,7 +617,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   if(!isFocused&&!keepMapAlive)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
   const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language,safeTop:insets.top};
-  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};document.documentElement.style.setProperty('--funy-native-safe-top',${JSON.stringify(`${insets.top}px`)});localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});}catch(e){}})(); true;`;
+  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};document.documentElement.style.setProperty('--funy-native-safe-top',${JSON.stringify(`${insets.top}px`)});document.documentElement.style.setProperty('--funy-native-floating-bottom',${JSON.stringify(`${nativeFloatingBottom}px`)});localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});}catch(e){}})(); true;`;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={[styles.container,isMapWebView&&{marginTop:-insets.top}]} accessibilityLabel={title}>

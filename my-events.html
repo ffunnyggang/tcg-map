@@ -19,13 +19,13 @@ body{margin:0;background:#F7F4FC;color:#28232e;font-family:'Pretendard Variable'
 .event-tab{height:36px;border:0;border-radius:10px;background:transparent;color:#847C89;font-size:11px;font-weight:800;cursor:pointer}
 .event-tab.on{background:#fff;color:#3E3744;box-shadow:0 1px 4px rgba(44,35,52,.08)}
 .event-list{display:grid;gap:10px;margin-top:12px}
-.event-card{width:100%;padding:0;border:1px solid #E8E2EC;border-radius:16px;background:#fff;display:grid;grid-template-columns:112px minmax(0,1fr) 24px;align-items:center;gap:12px;overflow:hidden;text-align:left;cursor:pointer}
-.event-thumb{width:112px;height:82px;background:#EEEAF3;overflow:hidden}
+.event-card{width:100%;padding:0;border:1px solid #E8E2EC;border-radius:18px;background:#fff;display:block;overflow:hidden;text-align:left;cursor:pointer}
+.event-thumb{display:block;width:100%;aspect-ratio:16/9;background:#EEEAF3;overflow:hidden}
 .event-thumb img{display:block;width:100%;height:100%;object-fit:cover}
-.event-copy{min-width:0;padding:12px 0}
-.event-copy b{display:block;font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.event-copy span{display:block;margin-top:7px;color:#8F8794;font-size:10px;line-height:1.4}
-.event-chevron{padding-right:12px;color:#A29AA7;font-size:22px}
+.event-copy{display:block;min-width:0;padding:14px 16px 16px}
+.event-copy b{display:block;font-size:14px;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.event-copy span{display:block;margin-top:7px;color:#8F8794;font-size:10.5px;line-height:1.45}
+.event-chevron{display:none}
 .event-empty,.event-loading,.event-error{padding:48px 16px;text-align:center;color:#928A96;font-size:11px;line-height:1.6}
 .event-empty strong,.event-error strong{display:block;margin-bottom:5px;color:#554E59;font-size:13px}
 </style>
@@ -54,7 +54,7 @@ body{margin:0;background:#F7F4FC;color:#28232e;font-family:'Pretendard Variable'
  const state=x=>{const now=Date.now(),start=Date.parse(x.starts_at),end=Date.parse(x.ends_at);return end<now?'ended':start<=now&&now<=end?'active':'upcoming'};
  function render(){
   const list=rows.filter(x=>filter==='all'||state(x)===filter);
-  $('#eventList').innerHTML=list.length?list.map(x=>'<button type="button" class="event-card" data-url="'+esc(x.detail_url)+'"><span class="event-thumb">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'')+'</span><span class="event-copy"><b>'+esc(x.title)+'</b><span>'+fmt(x.starts_at)+' ~ '+fmt(x.ends_at)+'</span></span><span class="event-chevron">›</span></button>').join(''):'<div class="event-empty"><strong>표시할 이벤트가 없어요</strong>해당 상태의 이벤트가 등록되면 이곳에 표시됩니다.</div>';
+  $('#eventList').innerHTML=list.length?list.map(x=>'<button type="button" class="event-card" data-url="'+esc(x.detail_url)+'"><span class="event-thumb">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'')+'</span><span class="event-copy"><b>'+esc(x.title)+'</b><span>'+fmt(x.starts_at)+' ~ '+fmt(x.ends_at)+'</span></span></button>').join(''):'<div class="event-empty"><strong>표시할 이벤트가 없어요</strong>해당 상태의 이벤트가 등록되면 이곳에 표시됩니다.</div>';
   $$('.event-card').forEach(b=>b.onclick=()=>{const url=String(b.dataset.url||'').trim();if(url)location.href=url});
  }
  $$('.event-tab').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.event-tab').forEach(x=>x.classList.toggle('on',x===b));render()});

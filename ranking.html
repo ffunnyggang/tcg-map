@@ -15,7 +15,7 @@
 <header class="test-head funy-sub-header"><button class="test-back funy-sub-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title funy-sub-title">랭킹</div><span></span></header>
 <main class="test-main">
 <div class="rank-month"><b>나의 랭킹</b><select id="monthPicker" aria-label="조회 월"></select></div><div id="summary"><div class="loading">내 활동을 불러오는 중...</div></div>
-<section class="card switch-row"><div class="switch-copy"><b>랭킹 공개 참여</b><span>닉네임·프로필 이미지·활동 수치만 순위표에 표시됩니다.</span></div><button id="publicToggle" class="switch" type="button" aria-label="랭킹 공개 참여"></button></section>
+<section class="card switch-row"><div class="switch-copy"><b>랭킹 공개 참여</b><span>닉네임·프로필 이미지·활동 수치만 순위표에 표시됩니다.</span></div><button id="publicToggle" class="switch" type="button" aria-label="랭킹 공개 참여 확인 중" aria-pressed="false" aria-busy="true" disabled></button></section>
 <section class="section"><div class="section-head"><h2>랭킹</h2><span class="section-note">TOP 100</span></div>
 <div class="segment" id="categoryChips"><button class="chip on" data-category="attendance">출석</button><button class="chip" data-category="visit">카드샵 방문</button><button class="chip" data-category="funymon">퍼니몬 포획</button></div><div class="rank-metrics" id="metricChips"><button class="chip on" data-metric="primary">횟수</button><button class="chip" data-metric="secondary">종류</button></div><div class="rank-filter" id="shopFilterWrap" hidden><select id="shopFilter"><option value="">전체 카드샵</option></select></div><div id="ranking"><div class="loading">랭킹을 불러오는 중...</div></div>
 </section></main></div><div id="toast" class="toast"></div>
@@ -40,7 +40,7 @@
  async function refreshSummary(){
   const p=await A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle();
   if(p.error)throw p.error;
-  setPublicVisual(!!p.data?.is_public);
+  setPublicVisual(!!p.data?.is_public);if(!savingPublic){const toggle=$('#publicToggle');toggle.disabled=false;toggle.removeAttribute('aria-busy')}
   const keys=['attendance','visit','funymon'];
   const data=await Promise.all(keys.flatMap(c=>[getRank(c),getRank(c+'_secondary')]));
   const units=['일','일','회','곳','회','종'];

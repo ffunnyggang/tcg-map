@@ -9,6 +9,20 @@
 
   let params;
   try{params=new URLSearchParams(location.search)}catch(_){return}
+  if(params.get('focus')!=='shop'){
+    try{
+      const raw=localStorage.getItem('funypin-map-focus-pending');
+      const pending=raw?JSON.parse(raw):null;
+      const fresh=pending&&pending.focus==='shop'&&Date.now()-Number(pending.at||0)<15000;
+      if(fresh){
+        params.set('focus','shop');
+        params.set('shopId',String(pending.shopId||''));
+        params.set('zoom',String(pending.zoom||'max'));
+        params.set('popup',String(pending.popup||'1'));
+        localStorage.removeItem('funypin-map-focus-pending');
+      }
+    }catch(_){}
+  }
   if(params.get('focus')!=='shop')return;
 
   const shopId=String(params.get('shopId')||'').trim().toUpperCase();

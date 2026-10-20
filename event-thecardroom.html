@@ -193,6 +193,13 @@ html,body{margin:0;background:#f4f2f7;color:#17151a;font-family:'Pretendard Vari
   }
 
   function openCaptureEntry(){
+    if(window.ReactNativeWebView){
+      try{
+        localStorage.setItem('funypin-map-focus-pending',JSON.stringify({focus:'shop',shopId:'KR-SEO-009',zoom:'max',popup:'1',at:Date.now()}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/map?country=KR&from=cardroom-event'}));
+        return;
+      }catch(_){}
+    }
     location.href=webMapUrl();
   }
 

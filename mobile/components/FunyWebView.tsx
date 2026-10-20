@@ -1,27 +1,23 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
-import { ActivityIndicator,Alert,Animated,BackHandler,Easing,Linking,Modal,Platform,Pressable,Share,StyleSheet,Text,View,useWindowDimensions } from 'react-native';
+import { Alert,Animated,BackHandler,Easing,Linking,Modal,Platform,Pressable,Share,StyleSheet,Text,View,useWindowDimensions } from 'react-native';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 import { useFocusEffect,useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
 import { useIsFocused } from '@react-navigation/native';
 import { WebView,WebViewMessageEvent } from 'react-native-webview';
-import { C,UI } from '../lib/theme';
+import { C } from '../lib/theme';
 import FunyHeader from './FunyHeader';
 import { supabase } from '../lib/supabase';
 import { setWebOverlayOpen } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
 const isFunyHost=(target:string)=>{const value=String(target||'').toLowerCase();return value==='https://funypin.kr'||value.startsWith('https://funypin.kr/')||value.startsWith('https://www.funypin.kr/')||value.startsWith('https://www.funypin.kr')||value.startsWith('http://funypin.kr/')||value.startsWith('http://www.funypin.kr/');};
-const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261019-aos-qa1');u.searchParams.set('webFab','1');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
+const makeAppUrl=(value:string)=>{try{const u=new URL(value);if(isFunyHost(value)){u.searchParams.set('app','1');u.searchParams.set('appv','20261005-android-shell');if(Platform.OS==='android')u.searchParams.set('appPlatform','android');}return u.toString();}catch{return value}};
 
-export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines|my-community|my-market|my-favorites|my-funy-coin|ranking|my-badges|my-funymon|my-entries|my-coupons|my-security|my-blocked-users|my-profile)\.html$/.test(p);}catch{return false}};
-const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션','/my-community.html':'게시글 관리','/my-market.html':'거래 매물 관리','/my-favorites.html':'관심 목록','/my-funy-coin.html':'퍼니코인','/ranking.html':'랭킹','/my-badges.html':'배지','/my-funymon.html':'퍼니몬 도감','/my-entries.html':'응모 내역','/my-coupons.html':'쿠폰함','/my-security.html':'계정 보안','/my-blocked-users.html':'차단한 사용자','/my-profile.html':'프로필 편집'};return map[p]||fallback;}catch{return fallback}};
+export const isWebBackPage=(target:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return true;const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return true;return /\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(p);}catch{return false}};
+const pageTitleFromUrl=(target:string,fallback:string)=>{try{const u=new URL(target);if(!isFunyHost(target))return '';const p=u.pathname.toLowerCase();if(/\/talk\.html$/.test(p)&&/^#\/post\//.test(u.hash))return '';const map:Record<string,string>={'/notice.html':'공지사항','/faq.html':'자주 묻는 질문','/support.html':'온라인 문의','/feedback.html':'서비스 만족도 조사','/shop-request.html':'매장 등록 · 정보 수정 요청','/partner.html':'광고 · 제휴 문의','/terms.html':'이용약관','/privacy.html':'개인정보처리방침','/community-guidelines.html':'커뮤니티 운영정책','/promo.html':'프로모션'};return map[p]||fallback;}catch{return fallback}};
 export const isShopDetail=(target:string)=>{try{const u=new URL(target);if(!/\/shops\.html$/.test(u.pathname.toLowerCase()))return false;const hash=u.hash.toLowerCase();return /shop\//.test(hash)||/shop(?:=|%3d)/.test(hash)||u.searchParams.has('shop');}catch{return false}};
 const isTopLayerToolPage=(target:string)=>{try{const p=new URL(target).pathname.toLowerCase();return /\/(oripa-calculator)\.html$/.test(p);}catch{return false}};
-const NATIVE_TAB_BAR_HEIGHT=58;
 
 const APP_SHELL_BEFORE=String.raw`(function(){
 try{
@@ -39,23 +35,20 @@ try{
     'html.app-shell .popular-sort.show{top:54px!important}',
     'html.app-shell input:not([type="checkbox"]):not([type="radio"]),html.app-shell textarea{font-size:16px!important;-webkit-text-size-adjust:100%!important}',
     'html.app-shell .country-filter-select{font-size:12px!important}',
-    'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{bottom:var(--funy-native-tab-fab-bottom,88px)!important}',
-    'html.app-shell .market-fab-wrap{bottom:var(--funy-native-tab-fab-bottom,88px)!important}',
-    'html.app-shell .market-overlay-register{bottom:calc(var(--funy-native-safe-bottom,0px) + 18px)!important}',
-    'html.app-shell .market-register-submit{margin-bottom:calc(var(--funy-native-safe-bottom,0px) + 12px)!important}',
-    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:var(--funy-native-tab-fab-bottom,88px)!important;right:16px!important}',
+    'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
+    'html.app-shell .pokamo-fab{display:flex!important;visibility:visible!important;opacity:1!important;bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important;right:16px!important}',
     'html.app-shell.app-shop-detail-open #home-view{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #naver-map,html.app-shell.app-shop-detail-open #google-map,html.app-shell.app-shop-detail-open .map-wrap-hero,html.app-shell.app-shop-detail-open .map-shop-sheet{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     'html.app-shell.app-shop-detail-open #detail-view{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147482000!important;background:#fff!important;min-height:100dvh!important;isolation:isolate!important;-webkit-transform:translateZ(0)!important;transform:translateZ(0)!important}',
     'html.app-shell.app-shop-detail-open body{overflow:auto!important;background:#fff!important}'
   ].join('');
   document.documentElement.classList.add('app-shell');
-  if(/\/live-pin(?:-test)?\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
+  if(/\/live-pin-test\.html$/.test(path))document.documentElement.classList.add('live-pin-page');
   if(/\/talk\.html$/.test(path))document.documentElement.classList.add('talk-page');
-  if(/\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines|my-community|my-market|my-favorites|my-funy-coin|ranking|my-badges|my-funymon|my-entries|my-coupons|my-security|my-blocked-users|my-profile)\.html$/.test(path))document.documentElement.classList.add('web-back-page');
+  if(/\/(notice|shop-request|partner|faq|feedback|privacy|promo|support|terms|community-guidelines)\.html$/.test(path))document.documentElement.classList.add('web-back-page');
   style.textContent+='html.app-shell header.portal-header,html.app-shell .portal-header,html.app-shell .app-header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
-  style.textContent+='html.app-shell.web-back-page .header,html.app-shell.web-back-page .test-head,html.app-shell.web-back-page .funy-sub-header,html.app-shell.web-back-page header.head{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}';
-  if(/\/live-pin(?:-test)?\.html$/.test(path))style.textContent+='html.app-shell.live-pin-page .shell{padding-top:54px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:54px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:54px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(var(--funy-native-safe-bottom,0px) + 16px)!important}html.app-shell.live-pin-page .sheetbg.open,html.app-shell.live-pin-page .shop-filter-bg.open,html.app-shell.live-pin-page .flag-sheet.open{z-index:2147483000!important}html.app-shell .map-location-avatar-sheet{z-index:2147483000!important}';
+  style.textContent+='html.app-shell.web-back-page .header{display:none!important;visibility:hidden!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important}';
+  if(/\/live-pin-test\.html$/.test(path))style.textContent+='html.app-shell.live-pin-page .shell{padding-top:54px!important;background:#fff!important}html.app-shell.live-pin-page .head{position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;width:min(100%,420px)!important;height:54px!important;z-index:200!important}html.app-shell.live-pin-page .filters{position:sticky!important;top:54px!important;z-index:150!important;background:#fff!important}html.app-shell.live-pin-page .fab{bottom:calc(max(env(safe-area-inset-bottom,0px),12px) + 64px)!important}html.app-shell.live-pin-page .sheetbg.open,html.app-shell.live-pin-page .shop-filter-bg.open,html.app-shell.live-pin-page .flag-sheet.open{z-index:2147483000!important}html.app-shell .map-location-avatar-sheet{z-index:2147483000!important}';
   document.documentElement.appendChild(style);
 
   /* Capture shop navigation before remote web handlers are registered.
@@ -86,20 +79,6 @@ try{
           event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
           earlyPost({type:'EARLY_SHOP_BACK',page:location.pathname,url:location.href});
           return false;
-        }
-        var anchor=target.closest('a[href]');
-        if(anchor){
-          try{
-            var routeUrl=new URL(anchor.href||anchor.getAttribute('href')||'',location.href),routePath=routeUrl.pathname.toLowerCase();
-            var routeShop=routeUrl.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);
-            var routeMarket=routeUrl.hash.match(/^#\/?market\/([0-9a-f-]{36})$/i);
-            var routePost=routeUrl.hash.match(/^#\/post\/([^/?#]+)/i);
-            if(/\/live-pin(?:-test)?\.html$/i.test(routePath)){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();earlyPost({type:'OPEN_NATIVE',route:'/live-pin'});return false;}
-            if(/\/shops\.html$/i.test(routePath)&&routeShop){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();earlyPost({type:'OPEN_SHOP_DETAIL',shopId:routeShop[1].toUpperCase(),source:'internal-link'});return false;}
-            if(/\/shops\.html$/i.test(routePath)&&routeMarket){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();earlyPost({type:'OPEN_MARKET_DETAIL',listingId:routeMarket[1]});return false;}
-            if(/\/shops\.html$/i.test(routePath)&&routeUrl.searchParams.get('marketRegister')==='1'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();earlyPost({type:'OPEN_MARKET_REGISTER'});return false;}
-            if(/\/talk\.html$/i.test(routePath)&&routePost){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();earlyPost({type:'OPEN_TALK_POST',postId:decodeURIComponent(routePost[1]),edit:routeUrl.searchParams.has('editPost')});return false;}
-          }catch(_){}
         }
         var card=target.closest('.shop-card[data-id]');
         var popup=target.closest('.map-shop-popup');
@@ -169,7 +148,7 @@ try{
     shellFix.textContent=[
       'html.app-shell body .portal-bottom-nav,html.app-shell body .shops-bottom-nav,html.app-shell body nav.portal-bottom-nav,html.app-shell body nav.shops-bottom-nav,html.app-shell body .mobile-bottom-nav,html.app-shell body .bottom-navigation,html.app-shell body #bottom-nav,html.app-shell body #bottomNav{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
       'html.app-shell body>.portal-shell>.portal-header,html.app-shell body .portal-header,html.app-shell body .app-header,html.app-shell body .site-header,html.app-shell body .main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
-      'html.app-shell body .live-pin-entry-wrap,html.app-shell body .live-pin-detail-entry,html.app-shell body #livePinEntry,html.app-shell body [data-live-pin-entry]{bottom:var(--funy-native-tab-fab-bottom,88px)!important}'
+      'html.app-shell body .live-pin-entry-wrap,html.app-shell body .live-pin-detail-entry,html.app-shell body #livePinEntry,html.app-shell body [data-live-pin-entry]{display:none!important;visibility:hidden!important;opacity:0!important;width:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;pointer-events:none!important}'
     ].join('');
   }catch(_){}
   if(/\/shops\.html$/i.test(location.pathname)&&!window.__FUNY_MAP_BLUR_OUTSIDE){
@@ -193,15 +172,6 @@ try{
   }
   var handleCMSLink=function(event){var node=event.target;var link=node&&node.closest?node.closest('a[data-funy-link-mode]'):null;if(!link)return;var mode=link.getAttribute('data-funy-link-mode')||'inapp';var presentation=link.getAttribute('data-funy-inapp-presentation')||'page';var href=link.href||link.getAttribute('href');if(!href)return;try{var u=new URL(href,location.href),m=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i);if(/\/shops\.html$/i.test(u.pathname)&&m){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_SHOP_DETAIL',shopId:m[1].toUpperCase(),country:m[1].toUpperCase().startsWith('JP-')?'JP':'KR'});return false;}}catch(_){}if(mode==='external'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_EXTERNAL',url:href});return false;}if(mode==='inapp'&&presentation==='bottom_sheet'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_SHEET',url:href});return false;}if(mode==='inapp'&&presentation==='page'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();post({type:'OPEN_INAPP_PAGE',url:href,title:(link.getAttribute('aria-label')||link.textContent||'').replace(/\s+/g,' ').trim(),showNativeTitle:String(link.getAttribute('data-funy-native-title-visible')||'true').toLowerCase()!=='false'});return false;}if(mode==='inapp'&&link.getAttribute('target')==='_blank'){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();location.href=href;return false;}};
   document.addEventListener('click',handleCMSLink,true);
-  if(/\/coin-flip\.html$/i.test(location.pathname)&&!window.__FUNY_AUDIO_UNLOCK){
-    window.__FUNY_AUDIO_UNLOCK=true;
-    var unlockAudio=function(){
-      try{var Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){var ctx=window.__FUNY_AUDIO_CONTEXT||(window.__FUNY_AUDIO_CONTEXT=new Ctx());if(ctx.state==='suspended')ctx.resume().catch(function(){});}}catch(_){}
-      try{document.querySelectorAll('audio').forEach(function(a){a.muted=true;var p=a.play();if(p&&p.then)p.then(function(){a.pause();a.currentTime=0;a.muted=false;}).catch(function(){a.muted=false;});});}catch(_){}
-    };
-    document.addEventListener('touchstart',unlockAudio,{once:true,passive:true});
-    document.addEventListener('pointerdown',unlockAudio,{once:true,passive:true});
-  }
 
   /* Shop clicks are captured at document-start and handled natively. */
   window.addEventListener('hashchange',reportRoute);window.addEventListener('pageshow',reportRoute);window.addEventListener('load',reportPageTitle);reportRoute();
@@ -224,21 +194,15 @@ try{
       return false;
     }catch(_){}
   },true);
-  if(/\/coin-flip\.html$/i.test(location.pathname)){
-    var unlock=function(){try{var Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){var ctx=window.__FUNY_AUDIO_CONTEXT||(window.__FUNY_AUDIO_CONTEXT=new Ctx());if(ctx.state==='suspended')ctx.resume().catch(function(){});}}catch(_){}};
-    document.addEventListener('touchstart',unlock,{once:true,passive:true});
-    document.addEventListener('pointerdown',unlock,{once:true,passive:true});
-  }
 }catch(_){}
 })();true;`;
 
-type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string;waitForAuth?:boolean};
+type Props={url:string;title?:string;onWebRouteChange?:(target:string)=>void;onWebScrollChange?:(scrolling:boolean)=>void;onMapCountryChange?:(country:'KR'|'JP')=>void;showBackHeader?:boolean;backTitle?:string;backOnlyHeader?:boolean;onNativeBack?:()=>void;surface?:'tab'|'page';refreshToken?:string};
 
-export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken,waitForAuth=false}:Props){
+export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWebScrollChange,onMapCountryChange,showBackHeader=false,backTitle,backOnlyHeader=false,onNativeBack,surface='tab',refreshToken}:Props){
   const router=useRouter();
   const {language}=useAppLanguage();
   const isFocused=useIsFocused();
-  const insets=useSafeAreaInsets();
   const ref=useRef<WebView>(null);
   const locationSub=useRef<Location.LocationSubscription|null>(null);
   const [loading,setLoading]=useState(true);
@@ -269,33 +233,6 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const goBack=useCallback(()=>{if(onNativeBack){onNativeBack();return;}if(canGoBack&&ref.current){ref.current.goBack();return;}router.back();},[canGoBack,onNativeBack,router]);
   const sheetHeight=windowHeight*0.82;
   const isTalkPost=(()=>{try{const u=new URL(currentTarget);return /\/talk\.html$/.test(u.pathname.toLowerCase())&&/^#\/post\//.test(u.hash)}catch{return false}})();
-  const closeBlockedTalkPost=useCallback((ownerId:string,postId:string)=>{
-    const listUrl='https://funypin.kr/talk.html';
-    const js=`(function(){try{var owner=${JSON.stringify(ownerId)},post=${JSON.stringify(postId)};if(typeof window.FUNY_TALK_HANDLE_BLOCKED_OWNER==='function')window.FUNY_TALK_HANDLE_BLOCKED_OWNER(owner,post);else window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:owner,postId:post}}));history.replaceState(null,'',location.pathname+location.search);location.hash='';}catch(_){location.hash='';}})();true;`;
-    ref.current?.injectJavaScript(js);
-    setTalkPostMine(false);setTalkMenuOpen(false);setCurrentTarget(listUrl);onWebRouteChange?.(listUrl);
-  },[onWebRouteChange]);
-  const saveImageFromWeb=useCallback(async(data:any)=>{
-    try{
-      const raw=String(data?.dataUrl||data?.data||'');
-      const match=raw.match(/^data:(image\/(?:png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=\r\n]+)$/i);
-      if(!match)throw new Error('저장할 이미지 데이터를 확인하지 못했습니다.');
-      const mime=match[1].toLowerCase().replace('jpg','jpeg'),base64=match[2].replace(/\s+/g,'');
-      const ext=mime.includes('png')?'png':mime.includes('webp')?'webp':'jpg';
-      const safeName=String(data?.filename||`funypin-${Date.now()}.${ext}`).replace(/[^A-Za-z0-9._-]/g,'_');
-      const directory=FileSystem.cacheDirectory||FileSystem.documentDirectory;if(!directory)throw new Error('임시 저장 공간을 사용할 수 없습니다.');
-      const uri=directory+safeName;
-      await FileSystem.writeAsStringAsync(uri,base64,{encoding:FileSystem.EncodingType.Base64});
-      if(!(await Sharing.isAvailableAsync()))throw new Error('이 기기에서는 이미지 공유 기능을 사용할 수 없습니다.');
-      await Sharing.shareAsync(uri,{mimeType:mime,dialogTitle:'FUNY PIN 이미지 저장'});
-      ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-image-save-result',{detail:{ok:true}}));true;`);
-      setTimeout(()=>FileSystem.deleteAsync(uri,{idempotent:true}).catch(()=>{}),60000);
-    }catch(e:any){
-      const message=String(e?.message||'이미지를 저장하지 못했습니다.');
-      ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-image-save-result',{detail:{ok:false,error:${JSON.stringify(message)}}}));true;`);
-      Alert.alert('이미지 저장 실패',message);
-    }
-  },[]);
   const blockTalkAuthor=useCallback(async()=>{
     setTalkMenuOpen(false);
     let postId='';
@@ -356,7 +293,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
               .maybeSingle();
 
             if(existingBlock){
-              closeBlockedTalkPost(ownerId,postId);
+              ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));location.hash='';true;`);
               Alert.alert('차단한 사용자','이미 차단한 사용자입니다.');
               return;
             }
@@ -381,7 +318,9 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
                 });
             }catch{}
 
-            closeBlockedTalkPost(ownerId,postId);
+            ref.current?.injectJavaScript(`window.dispatchEvent(new CustomEvent('funy:native-talk-blocked',{detail:{ownerId:${JSON.stringify(ownerId)},postId:${JSON.stringify(postId)}}}));location.hash='';true;`);
+            setTalkPostMine(false);
+            setTalkMenuOpen(false);
             Alert.alert('차단 완료','해당 사용자의 게시물을 내 TALK에서 숨겼습니다.');
           }catch(e:any){
             Alert.alert('차단 실패',String(e?.message||'차단 처리 중 오류가 발생했습니다.'));
@@ -389,7 +328,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
         }},
       ],
     );
-  },[accessToken,closeBlockedTalkPost,currentTarget,router,url]);
+  },[accessToken,currentTarget,router,url]);
 
   const talkAction=(action:'share'|'edit'|'delete'|'report'|'block')=>{
     setTalkMenuOpen(false);
@@ -400,28 +339,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
 
   const injectEvent=useCallback((name:string,detail:Record<string,unknown>)=>{const js=`window.dispatchEvent(new CustomEvent(${JSON.stringify(name)},{detail:${JSON.stringify(detail)}}));true;`;ref.current?.injectJavaScript(js);},[]);
   const stopNativeLocation=useCallback(()=>{try{locationSub.current?.remove();}catch{}locationSub.current=null;},[]);
-  const requestNativeLocation=useCallback(async(once=false,rawOptions:Record<string,unknown>={})=>{
-    try{
-      let permission;if(Platform.OS==='ios'){permission=await Location.getForegroundPermissionsAsync();if(permission.status!=='granted')permission=await Location.requestForegroundPermissionsAsync();}else{permission=await Location.requestForegroundPermissionsAsync();}
-      if(permission.status!=='granted'){stopNativeLocation();injectEvent('funy:nativelocationerror',{code:1,message:'위치 권한을 허용하면 내 위치를 표시할 수 있어요.'});return;}
-      let lastSentTimestamp=0;
-      const send=(pos:Location.LocationObject)=>{const ts=Number(pos.timestamp)||Date.now();if(ts<lastSentTimestamp)return;lastSentTimestamp=ts;injectEvent('funy:nativelocation',{latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy:pos.coords.accuracy??0,altitude:pos.coords.altitude??null,altitudeAccuracy:pos.coords.altitudeAccuracy??null,heading:pos.coords.heading??null,speed:pos.coords.speed??null,timestamp:ts});};
-      const high=rawOptions.enableHighAccuracy!==false,maximumAge=Math.max(0,Math.min(300000,Number(rawOptions.maximumAge)||0)),timeout=Math.max(3000,Math.min(30000,Number(rawOptions.timeout)||12000));
-      if(Platform.OS==='ios'&&!once){
-        const cachedPromise=Location.getLastKnownPositionAsync({maxAge:maximumAge||30000,requiredAccuracy:150}).catch(()=>null);
-        stopNativeLocation();locationSub.current=await Location.watchPositionAsync({accuracy:Location.Accuracy.High,distanceInterval:2,timeInterval:1000},send);
-        const cached=await cachedPromise;if(cached)send(cached);return;
-      }
-      const accuracy=high?Location.Accuracy.High:Location.Accuracy.Balanced;
-      const cached=maximumAge>0?await Location.getLastKnownPositionAsync({maxAge:maximumAge,requiredAccuracy:high?200:800}).catch(()=>null):null;
-      if(cached){send(cached);if(once){stopNativeLocation();return;}}
-      const currentPromise=Location.getCurrentPositionAsync({accuracy});
-      const first=await Promise.race([currentPromise,new Promise<never>((_,reject)=>setTimeout(()=>reject(new Error('현재 위치 요청 시간이 초과되었습니다.')),timeout))]);
-      send(first);
-      if(once){stopNativeLocation();return;}
-      stopNativeLocation();locationSub.current=await Location.watchPositionAsync({accuracy,distanceInterval:high?3:10,timeInterval:high?1800:3000},send);
-    }catch(e:any){stopNativeLocation();injectEvent('funy:nativelocationerror',{code:2,message:String(e?.message||'현재 위치를 확인하지 못했습니다.')});}
-  },[injectEvent,stopNativeLocation]);
+  const requestNativeLocation=useCallback(async(once=false)=>{try{let permission;if(Platform.OS==='ios'){permission=await Location.getForegroundPermissionsAsync();if(permission.status!=='granted')permission=await Location.requestForegroundPermissionsAsync();}else{permission=await Location.requestForegroundPermissionsAsync();}if(permission.status!=='granted'){stopNativeLocation();injectEvent('funy:nativelocationerror',{code:1,message:'위치 권한을 허용하면 내 위치를 표시할 수 있어요.'});return;}let lastSentTimestamp=0;const send=(pos:Location.LocationObject)=>{const ts=Number(pos.timestamp)||Date.now();if(ts<lastSentTimestamp)return;lastSentTimestamp=ts;injectEvent('funy:nativelocation',{latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy:pos.coords.accuracy??0,altitude:pos.coords.altitude??null,altitudeAccuracy:pos.coords.altitudeAccuracy??null,heading:pos.coords.heading??null,speed:pos.coords.speed??null,timestamp:ts});};if(Platform.OS==='ios'&&!once){const cachedPromise=Location.getLastKnownPositionAsync({maxAge:30000,requiredAccuracy:150}).catch(()=>null);stopNativeLocation();locationSub.current=await Location.watchPositionAsync({accuracy:Location.Accuracy.High,distanceInterval:2,timeInterval:1000},send);const cached=await cachedPromise;if(cached)send(cached);return;}const first=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High});send(first);if(once){stopNativeLocation();return;}stopNativeLocation();locationSub.current=await Location.watchPositionAsync({accuracy:Location.Accuracy.High,distanceInterval:3,timeInterval:1800},send);}catch(e:any){stopNativeLocation();injectEvent('funy:nativelocationerror',{code:2,message:String(e?.message||'현재 위치를 확인하지 못했습니다.')});}},[injectEvent,stopNativeLocation]);
 
   useEffect(()=>()=>{stopNativeLocation();lastShopDetail.current=false;setWebOverlayOpen(false);},[stopNativeLocation]);
   useEffect(()=>{if(!isFocused)setWebOverlayOpen(false);},[isFocused]);
@@ -443,7 +361,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     ref.current?.injectJavaScript(tokenScript);
   },[accessToken,authReady,currentTarget,url]);
   useEffect(()=>{
-    if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
+    if(!refreshToken||!isFocused)return;
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;
     const now=Date.now();
@@ -457,23 +375,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const openSheet=useCallback((target:string)=>{setSheetUrl(makeAppUrl(target));setSheetOpen(true);sheetY.setValue(1);backdropOpacity.setValue(0);requestAnimationFrame(()=>{Animated.timing(sheetY,{toValue:0,duration:280,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start(()=>{Animated.timing(backdropOpacity,{toValue:1,duration:120,useNativeDriver:true}).start();});});},[backdropOpacity,sheetY]);
   const closeSheet=useCallback(()=>{Animated.parallel([Animated.timing(backdropOpacity,{toValue:0,duration:100,useNativeDriver:true}),Animated.timing(sheetY,{toValue:1,duration:220,easing:Easing.in(Easing.cubic),useNativeDriver:true})]).start(()=>{setSheetOpen(false);setSheetUrl(null);});},[backdropOpacity,sheetY]);
 
-  const handleUrl=useCallback((target:string)=>{
-    if(target.startsWith('funypin://')){const path=target.replace('funypin://','/');if(path.startsWith('/account')){router.push('/account');return false;}if(path.startsWith('/shop/')){const id=path.slice('/shop/'.length);router.push({pathname:'/shop/[id]',params:{id}} as any);return false;}return false;}
-    if((target.startsWith('http://')||target.startsWith('https://'))&&surface==='page'&&isFunyHost(target)){
-      try{
-        const u=new URL(target),path=u.pathname.toLowerCase(),shop=u.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/i),market=u.hash.match(/^#\/?market\/([0-9a-f-]{36})$/i),post=u.hash.match(/^#\/post\/([^/?#]+)/i);
-        if(/\/live-pin(?:-test)?\.html$/i.test(path)){router.push('/live-pin');return false;}
-        if(/\/shops\.html$/i.test(path)&&shop){router.push({pathname:'/shop/[id]',params:{id:shop[1].toUpperCase(),from:'my'}} as any);return false;}
-        if(/\/shops\.html$/i.test(path)&&market){router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:market[1],marketRegister:'',from:'my'}} as any);return false;}
-        if(/\/shops\.html$/i.test(path)&&u.searchParams.get('marketRegister')==='1'){router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:'',marketRegister:'1',from:'my'}} as any);return false;}
-        if(/\/talk\.html$/i.test(path)&&post){router.push({pathname:'/(tabs)/talk',params:{postId:decodeURIComponent(post[1]),editPost:u.searchParams.has('editPost')?'1':''}} as any);return false;}
-      }catch{}
-    }
-    if(target==='about:blank'||target.startsWith('http://')||target.startsWith('https://'))return true;
-    if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}
-    if(/^[a-z][a-z0-9+.-]*:/i.test(target)){Linking.openURL(target).catch(()=>{});return false;}
-    return true;
-  },[router,surface]);
+  const handleUrl=useCallback((target:string)=>{if(target.startsWith('funypin://')){const path=target.replace('funypin://','/');if(path.startsWith('/account')){router.push('/account');return false;}if(path.startsWith('/shop/')){const id=path.slice('/shop/'.length);router.push({pathname:'/shop/[id]',params:{id}} as any);return false;}return false;}if(target==='about:blank'||target.startsWith('http://')||target.startsWith('https://'))return true;if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}if(/^[a-z][a-z0-9+.-]*:/i.test(target)){Linking.openURL(target).catch(()=>{});return false;}return true;},[router]);
 
   useFocusEffect(useCallback(()=>{if(Platform.OS!=='android')return;const sub=BackHandler.addEventListener('hardwareBackPress',()=>{if(sheetOpen){closeSheet();return true;}if(canGoBack&&ref.current){ref.current.goBack();return true;}return false;});return()=>sub.remove();},[canGoBack,closeSheet,sheetOpen]));
   useEffect(()=>{setLoading(true);setError(false);reloadAttempts.current=0;if(Platform.OS==='android'){androidFirstPaintDone.current=false;setAndroidPageReady(false);}const timer=setTimeout(()=>setLoading(false),2500);return()=>clearTimeout(timer);},[url]);
@@ -607,25 +509,22 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     try{const u=new URL(target);const id=u.searchParams.get('appShop')||'';return /^(?:KR|JP)-[A-Z]{3}-\d{3}$/i.test(id)?id.toUpperCase():'';}catch{return'';}
   },[]);
 
-  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='WEB_PAGE_TITLE'){setWebPageTitle(String(data.title||'').trim());return;}if(data?.type==='SHOP_DEBUG'){console.log('[FUNY SHOP]',data.stage,data.shopId||'',data.source||'',data.tries||'',data.openDetailType||'',data.message||'',data);return;}if(data?.type==='EARLY_SHOP_CLICK'&&data.shopId){const id=String(data.shopId).toUpperCase();console.log('[FUNY SHOP] CLICK',data.source||'',id,data.page||'');setWebOverlayOpen(false);router.push({pathname:'/shop/[id]',params:{id,from:String(data.source||'web')}} as any);return;}if(data?.type==='EARLY_SHOP_BACK'){console.log('[FUNY SHOP] BACK');injectShopClose('web-back');return;}if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);const topLayerTool=isTopLayerToolPage(target);if(surface==='tab'){if(detail!==lastShopDetail.current)lastShopDetail.current=detail;setWebOverlayOpen(detail||topLayerTool);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.push({pathname:'/shop/[id]',params:{id,from:'cms'}} as any);return;}if(data?.type==='OPEN_MARKET_DETAIL'&&data.listingId){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:String(data.listingId),marketRegister:'',from:'my',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='OPEN_MARKET_REGISTER'){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/map',params:{country:'KR',marketId:'',marketRegister:'1',from:'my',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='OPEN_TALK_POST'&&data.postId){setWebOverlayOpen(false);router.push({pathname:'/(tabs)/talk',params:{postId:String(data.postId),editPost:data.edit?'1':'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='SAVE_IMAGE'||data?.type==='SAVE_FUNYMON_IMAGE'){void saveImageFromWeb(data);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='FORM_COMPLETE_BACK'){setWebOverlayOpen(false);if(router.canGoBack())router.back();else router.replace('/(tabs)');return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){setWebOverlayOpen(false);router.push(String(data.route) as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){const target=String(data.url);const last=lastSheetRequest.current;if(last&&last.url===target&&Date.now()-last.at<1000)return;Linking.openURL(target).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){const target=String(data.url);lastSheetRequest.current={url:target,at:Date.now()};openSheet(target);return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);const showNativeTitle=data.showNativeTitle!==false&&String(data.showNativeTitle).toLowerCase()!=='false';router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:showNativeTitle?'0':'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation(!!data.once,data.options||{});return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[injectShopClose,injectShopOpen,onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,saveImageFromWeb,stopNativeLocation,surface]);
+  const onMessage=useCallback((event:WebViewMessageEvent)=>{try{const data=JSON.parse(event.nativeEvent.data);if(data?.type==='WEB_PAGE_TITLE'){setWebPageTitle(String(data.title||'').trim());return;}if(data?.type==='SHOP_DEBUG'){console.log('[FUNY SHOP]',data.stage,data.shopId||'',data.source||'',data.tries||'',data.openDetailType||'',data.message||'',data);return;}if(data?.type==='EARLY_SHOP_CLICK'&&data.shopId){const id=String(data.shopId).toUpperCase();console.log('[FUNY SHOP] CLICK',data.source||'',id,data.page||'');setWebOverlayOpen(false);router.push({pathname:'/shop/[id]',params:{id,from:String(data.source||'web')}} as any);return;}if(data?.type==='EARLY_SHOP_BACK'){console.log('[FUNY SHOP] BACK');injectShopClose('web-back');return;}if(data?.type==='WEB_ROUTE'&&data.url){const target=String(data.url);const detail=isShopDetail(target);const topLayerTool=isTopLayerToolPage(target);if(surface==='tab'){if(detail!==lastShopDetail.current)lastShopDetail.current=detail;setWebOverlayOpen(detail||topLayerTool);}reportRoute(target);if(!target.includes('#/post/'))setTalkMenuOpen(false);return;}if(data?.type==='SHOP_DETAIL_STATE'){const open=!!data.open;lastShopDetail.current=open;if(surface==='tab')setWebOverlayOpen(open);const virtualUrl=open&&data.shopId?'https://funypin.kr/shops.html?shop='+encodeURIComponent(String(data.shopId)):'https://funypin.kr/shops.html';reportRoute(virtualUrl);return;}if(data?.type==='TALK_POST_CONTEXT'){setTalkPostMine(!!data.mine);return;}if(data?.type==='WEB_SCROLL'){onWebScrollChange?.(!!data.scrolling);return;}if(data?.type==='OPEN_SHOP_DETAIL'&&data.shopId){setWebOverlayOpen(false);const id=String(data.shopId).toUpperCase();router.push({pathname:'/shop/[id]',params:{id,from:'cms'}} as any);return;}if(data?.type==='RESET_MAP'){setWebOverlayOpen(false);router.replace({pathname:'/(tabs)/map',params:{country:String(data.country)==='JP'?'JP':'KR',shop:'',from:'',__tabRefresh:String(Date.now())}} as any);return;}if(data?.type==='FORM_COMPLETE_BACK'){setWebOverlayOpen(false);if(router.canGoBack())router.back();else router.replace('/(tabs)');return;}if(data?.type==='NATIVE_BACK'){setWebOverlayOpen(false);router.back();return;}if(data?.type==='OPEN_NATIVE'&&data.route){setWebOverlayOpen(false);router.push(String(data.route) as any);return;}if(data?.type==='OPEN_EXTERNAL'&&data.url){const target=String(data.url);const last=lastSheetRequest.current;if(last&&last.url===target&&Date.now()-last.at<1000)return;Linking.openURL(target).catch(()=>{});return;}if(data?.type==='SHARE_URL'&&data.url){Share.share({title:String(data.title||''),message:String(data.url)}).catch(()=>{});return;}if(data?.type==='OPEN_INAPP_SHEET'&&data.url){const target=String(data.url);lastSheetRequest.current={url:target,at:Date.now()};openSheet(target);return;}if(data?.type==='OPEN_INAPP_PAGE'&&data.url){setWebOverlayOpen(false);const showNativeTitle=data.showNativeTitle!==false&&String(data.showNativeTitle).toLowerCase()!=='false';router.push({pathname:'/web',params:{url:encodeURIComponent(String(data.url)),title:'',backOnly:showNativeTitle?'0':'1'}} as any);return;}if(data?.type==='FUNY_WEB_OVERLAY_STATE'){setWebOverlayOpen(!!data.open);return;}if(data?.type==='MAP_COUNTRY'&&data.country){onMapCountryChange?.(String(data.country)==='JP'?'JP':'KR');return;}if(data?.type==='REQUEST_NATIVE_LOCATION'){requestNativeLocation(!!data.once);return;}if(data?.type==='STOP_NATIVE_LOCATION'){stopNativeLocation();return;}}catch{}},[injectShopClose,injectShopOpen,onMapCountryChange,onWebScrollChange,openSheet,reportRoute,requestNativeLocation,router,stopNativeLocation]);
 
   const keepMapAlive=isMapWebView;
-  const isCoinFlipPage=(()=>{try{return /\/coin-flip\.html$/i.test(new URL(currentTarget||url).pathname)}catch{return false}})();
   if(!isFocused&&!keepMapAlive)return null;
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
   const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language};
-  const nativeSafeBottom=Math.max(0,insets.bottom);
-  const nativeTabFabBottom=surface==='tab'?(Platform.OS==='android'?nativeSafeBottom+NATIVE_TAB_BAR_HEIGHT+10:Math.max(nativeSafeBottom,UI.navBottomGap)+NATIVE_TAB_BAR_HEIGHT+10):nativeSafeBottom+16;
-  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});document.documentElement.style.setProperty('--funy-native-safe-bottom',${JSON.stringify(nativeSafeBottom+'px')});document.documentElement.style.setProperty('--funy-native-tab-fab-bottom',${JSON.stringify(nativeTabFabBottom+'px')});}catch(e){}})(); true;`;
+  const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});}catch(e){}})(); true;`;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={styles.container} accessibilityLabel={title}>
     {showBackHeader?<FunyHeader title={backOnlyHeader?'':(webPageTitle||(blockExternalNavigation?'':pageTitleFromUrl(currentTarget,backTitle||title)))} showAccount={false} back onBack={goBack} right={isTalkPost?<View style={styles.headerMenuWrap}><Pressable onPress={()=>setTalkMenuOpen(v=>!v)} hitSlop={10} style={styles.headerMenuButton}><Text style={styles.headerMenuDots}>⋮</Text></Pressable>{talkMenuOpen?<View style={styles.headerDropdown}><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('share')}><Text style={styles.headerDropdownText}>공유하기</Text></Pressable>{talkPostMine?<><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('edit')}><Text style={styles.headerDropdownText}>수정하기</Text></Pressable><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('delete')}><Text style={styles.headerDropdownDanger}>삭제하기</Text></Pressable></>:<><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('report')}><Text style={styles.headerDropdownDanger}>신고하기</Text></Pressable><Pressable style={styles.headerDropdownItem} onPress={()=>talkAction('block')}><Text style={styles.headerDropdownDanger}>차단하기</Text></Pressable></>}</View>:null}</View>:null}/>:null}
-    {waitForAuth&&!authReady?<View style={styles.authLoading}><ActivityIndicator color={C.purple}/></View>:<WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={[styles.webview,Platform.OS==='android'&&!androidPageReady&&styles.webviewPreparing]} androidLayerType="none" javaScriptEnabled mediaPlaybackRequiresUserAction={!isCoinFlipPage} scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true);if(Platform.OS==='android'&&!androidPageReady&&reloadAttempts.current===0)setAndroidPageReady(false)}} onLoadProgress={(e)=>{if(Platform.OS==='android'&&isMapWebView&&!androidFirstPaintDone.current&&Number(e.nativeEvent.progress)>=0.35){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false);if(Platform.OS==='android'&&!androidFirstPaintDone.current){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>}
-    <Modal visible={sheetOpen} transparent animationType="none" onRequestClose={closeSheet}><View style={styles.sheetModal}><Animated.View pointerEvents="none" style={[styles.sheetBackdrop,{opacity:backdropOpacity}]}/><Pressable style={styles.sheetDismissArea} onPress={closeSheet}/><Animated.View style={[styles.sheetPanel,{height:sheetHeight,transform:[{translateY:sheetY.interpolate({inputRange:[0,1],outputRange:[0,sheetHeight]})}]}]}><View style={styles.sheetHandle}/><View style={styles.sheetHeader}><Text numberOfLines={1} style={styles.sheetTitle}>FUNY PIN</Text><Pressable hitSlop={10} onPress={closeSheet}><Text style={styles.sheetClose}>×</Text></Pressable></View>{sheetUrl?<WebView source={{uri:sheetUrl}} style={styles.sheetWebview} javaScriptEnabled mediaPlaybackRequiresUserAction={!/\/coin-flip\.html(?:[?#]|$)/i.test(sheetUrl)} scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces injectedJavaScriptBeforeContentLoaded={SHEET_SAME_WINDOW_BRIDGE} onOpenWindow={(event)=>{const target=String(event.nativeEvent.targetUrl||'');if(target.startsWith('http://')||target.startsWith('https://'))setSheetUrl(target);}} onShouldStartLoadWithRequest={(request)=>{const target=request.url;if(target.startsWith('http://')||target.startsWith('https://'))return true;if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}return false;}}/>:null}</Animated.View></View></Modal>
+    <WebView ref={ref} key={`${url}:${webViewKey}`} source={{uri:makeAppUrl(url)}} style={[styles.webview,Platform.OS==='android'&&!androidPageReady&&styles.webviewPreparing]} androidLayerType="none" javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} scrollEnabled decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces showsVerticalScrollIndicator={false} overScrollMode="always" onShouldStartLoadWithRequest={(request)=>handleUrl(request.url)} onNavigationStateChange={(state)=>{setCanGoBack(state.canGoBack);reportRoute(state.url)}} injectedJavaScriptBeforeContentLoaded={APP_SHELL_BEFORE+authInjection+contextInjection} injectedJavaScriptBeforeContentLoadedForMainFrameOnly injectedJavaScript={APP_SHELL_AFTER} injectedJavaScriptForMainFrameOnly onLoadStart={(e)=>{reportRoute(e.nativeEvent.url);setLoading(true);if(Platform.OS==='android'&&!androidPageReady&&reloadAttempts.current===0)setAndroidPageReady(false)}} onLoadProgress={(e)=>{if(Platform.OS==='android'&&isMapWebView&&!androidFirstPaintDone.current&&Number(e.nativeEvent.progress)>=0.35){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onLoad={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false)}} onLoadEnd={(e)=>{reportRoute(e.nativeEvent.url);setLoading(false);if(Platform.OS==='android'&&!androidFirstPaintDone.current){androidFirstPaintDone.current=true;requestAnimationFrame(()=>setAndroidPageReady(true))}}} onMessage={onMessage} onContentProcessDidTerminate={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}} onError={()=>{if(reloadAttempts.current<2){reloadAttempts.current+=1;setLoading(true);setTimeout(()=>setWebViewKey(k=>k+1),350);}else{setLoading(false);setError(true);}}}/>
+    <Modal visible={sheetOpen} transparent animationType="none" onRequestClose={closeSheet}><View style={styles.sheetModal}><Animated.View pointerEvents="none" style={[styles.sheetBackdrop,{opacity:backdropOpacity}]}/><Pressable style={styles.sheetDismissArea} onPress={closeSheet}/><Animated.View style={[styles.sheetPanel,{height:sheetHeight,transform:[{translateY:sheetY.interpolate({inputRange:[0,1],outputRange:[0,sheetHeight]})}]}]}><View style={styles.sheetHandle}/><View style={styles.sheetHeader}><Text numberOfLines={1} style={styles.sheetTitle}>FUNY PIN</Text><Pressable hitSlop={10} onPress={closeSheet}><Text style={styles.sheetClose}>×</Text></Pressable></View>{sheetUrl?<WebView source={{uri:sheetUrl}} style={styles.sheetWebview} javaScriptEnabled scalesPageToFit={false} domStorageEnabled allowsInlineMediaPlayback automaticallyAdjustContentInsets={false} decelerationRate={Platform.OS==='android'?0.998:'normal'} bounces injectedJavaScriptBeforeContentLoaded={SHEET_SAME_WINDOW_BRIDGE} onOpenWindow={(event)=>{const target=String(event.nativeEvent.targetUrl||'');if(target.startsWith('http://')||target.startsWith('https://'))setSheetUrl(target);}} onShouldStartLoadWithRequest={(request)=>{const target=request.url;if(target.startsWith('http://')||target.startsWith('https://'))return true;if(target.startsWith('mailto:')||target.startsWith('tel:')){Linking.openURL(target).catch(()=>{});return false;}return false;}}/>:null}</Animated.View></View></Modal>
   </View>;
 }
 
 const styles=StyleSheet.create({
-  container:{flex:1,backgroundColor:'#fff'},authLoading:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#fff'},webview:{flex:1,backgroundColor:'#fff'},webviewPreparing:{opacity:0},headerMenuWrap:{position:'relative',zIndex:20000,elevation:20000},headerMenuButton:{width:38,height:38,alignItems:'center',justifyContent:'center'},headerMenuDots:{fontSize:30,lineHeight:32,fontWeight:'900',color:C.text},headerDropdown:{position:'absolute',right:0,top:38,minWidth:126,paddingVertical:6,borderRadius:12,backgroundColor:'#fff',borderWidth:1,borderColor:'#E7E2E9',shadowColor:'#211A2E',shadowOpacity:.16,shadowRadius:12,shadowOffset:{width:0,height:5},elevation:22},headerDropdownItem:{height:42,paddingHorizontal:15,justifyContent:'center'},headerDropdownText:{fontSize:12,fontWeight:'800',color:C.text},headerDropdownDanger:{fontSize:12,fontWeight:'800',color:C.danger},error:{flex:1,alignItems:'center',justifyContent:'center',padding:28,backgroundColor:'#fff'},errorTitle:{fontSize:16,fontWeight:'800',color:C.text},errorText:{marginTop:8,fontSize:12,color:C.muted,textAlign:'center'},sheetModal:{flex:1,justifyContent:'flex-end'},sheetBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(20,16,24,.42)'},sheetDismissArea:{flex:1},sheetPanel:{backgroundColor:'#fff',borderTopLeftRadius:24,borderTopRightRadius:24,overflow:'hidden',shadowColor:'#201C2A',shadowOpacity:.18,shadowRadius:22,shadowOffset:{width:0,height:-6},elevation:20},sheetHandle:{width:42,height:5,borderRadius:99,backgroundColor:'#d6d0dc',alignSelf:'center',marginTop:8,marginBottom:6},sheetHeader:{height:44,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:16},sheetTitle:{fontSize:14,fontWeight:'800',color:C.text},sheetClose:{fontSize:28,lineHeight:28,color:C.muted},sheetWebview:{flex:1,backgroundColor:'#fff'}
+  container:{flex:1,backgroundColor:'#fff'},webview:{flex:1,backgroundColor:'#fff'},webviewPreparing:{opacity:0},headerMenuWrap:{position:'relative',zIndex:20000,elevation:20000},headerMenuButton:{width:38,height:38,alignItems:'center',justifyContent:'center'},headerMenuDots:{fontSize:30,lineHeight:32,fontWeight:'900',color:C.text},headerDropdown:{position:'absolute',right:0,top:38,minWidth:126,paddingVertical:6,borderRadius:12,backgroundColor:'#fff',borderWidth:1,borderColor:'#E7E2E9',shadowColor:'#211A2E',shadowOpacity:.16,shadowRadius:12,shadowOffset:{width:0,height:5},elevation:22},headerDropdownItem:{height:42,paddingHorizontal:15,justifyContent:'center'},headerDropdownText:{fontSize:12,fontWeight:'800',color:C.text},headerDropdownDanger:{fontSize:12,fontWeight:'800',color:C.danger},error:{flex:1,alignItems:'center',justifyContent:'center',padding:28,backgroundColor:'#fff'},errorTitle:{fontSize:16,fontWeight:'800',color:C.text},errorText:{marginTop:8,fontSize:12,color:C.muted,textAlign:'center'},sheetModal:{flex:1,justifyContent:'flex-end'},sheetBackdrop:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(20,16,24,.42)'},sheetDismissArea:{flex:1},sheetPanel:{backgroundColor:'#fff',borderTopLeftRadius:24,borderTopRightRadius:24,overflow:'hidden',shadowColor:'#201C2A',shadowOpacity:.18,shadowRadius:22,shadowOffset:{width:0,height:-6},elevation:20},sheetHandle:{width:42,height:5,borderRadius:99,backgroundColor:'#d6d0dc',alignSelf:'center',marginTop:8,marginBottom:6},sheetHeader:{height:44,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:16},sheetTitle:{fontSize:14,fontWeight:'800',color:C.text},sheetClose:{fontSize:28,lineHeight:28,color:C.muted},sheetWebview:{flex:1,backgroundColor:'#fff'}
 });

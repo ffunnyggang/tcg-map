@@ -361,7 +361,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     ref.current?.injectJavaScript(tokenScript);
   },[accessToken,authReady,currentTarget,url]);
   useEffect(()=>{
-    if(Platform.OS!=='android'||!refreshToken||!isFocused)return;
+    if(!refreshToken||!isFocused)return;
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;
     const now=Date.now();

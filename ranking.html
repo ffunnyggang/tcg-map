@@ -23,14 +23,15 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;const uid=A.session.user.id;
- let category='attendance',metric='primary',publicOn=false,shopId='',cache={};
+ let category='attendance',metric='primary',publicOn=false,shopId='',cache={},savingPublic=false;
+ function setPublicVisual(value){publicOn=!!value;const b=$('#publicToggle');b.classList.toggle('on',publicOn);b.setAttribute('aria-pressed',String(publicOn));b.setAttribute('aria-label','랭킹 공개 참여 '+(publicOn?'켜짐':'꺼짐'))}
  const now=new Date(Date.now()+9*3600000),first=new Date(2026,9,1);
  const monthList=[];for(let i=0;i<6;i++){const d=new Date(now.getUTCFullYear(),now.getUTCMonth()-i,1);if(d<first)break;monthList.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))}
  $('#monthPicker').innerHTML=monthList.map(m=>'<option value="'+m+'">'+m.slice(0,4)+'년 '+Number(m.slice(5))+'월</option>').join('');
  let month=monthList[0]||'2026-10';
  const labels={attendance:['출석','연속 출석','일'],visit:['카드샵 방문','방문 매장','회'],funymon:['퍼니몬 포획','포획 종류','회']};
  const metricLabels={attendance:['출석 일수','연속 출석 일수'],visit:['방문 횟수','방문 매장 수'],funymon:['포획 횟수','포획한 퍼니몬 종류']};
- function updateMetrics(){const buttons=$('#metricChips [data-metric]');buttons.forEach((b,i)=>{b.textContent=metricLabels[category][i];b.classList.toggle('on',b.dataset.metric===metric)})}
+ function updateMetrics(){$('#metricChips [data-metric]').forEach((b,i)=>{b.textContent=metricLabels[category][i];b.classList.toggle('on',b.dataset.metric===metric);b.setAttribute('aria-pressed',String(b.dataset.metric===metric))})}
  async function getRank(c,shop=''){
   const key=[month,c,shop].join(':');if(cache[key])return cache[key];
   const {data,error}=await A.client.rpc(c.endsWith('_secondary')?'get_monthly_activity_metric_rankings':'get_monthly_activity_rankings',{p_month:month,p_category:c,p_shop_id:shop||null});
@@ -39,7 +40,7 @@
  async function refreshSummary(){
   const p=await A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle();
   if(p.error)throw p.error;
-  publicOn=!!p.data?.is_public;$('#publicToggle').classList.toggle('on',publicOn);
+  setPublicVisual(!!p.data?.is_public);
   const keys=['attendance','visit','funymon'];
   const data=await Promise.all(keys.flatMap(c=>[getRank(c),getRank(c+'_secondary')]));
   const units=['일','일','회','곳','회','종'];
@@ -61,8 +62,27 @@
   const change=x=>x.previous_rank==null?'<span class="rank-change">NEW</span>':x.rank_change===0?'<span class="rank-change">—</span>':'<span class="rank-change '+(x.rank_change>0?'up':'down')+'">'+(x.rank_change>0?'▲ ':'▼ ')+Math.abs(x.rank_change)+'</span>';
   $('#ranking').innerHTML=(rows.length?'<div class="rank-top">'+top.map((x,i)=>'<div class="rank-podium"><div class="medal">'+['🥇','🥈','🥉'][i]+'</div><b>'+esc(x.nickname)+'</b><strong>'+Number(x.value).toLocaleString()+unit+'</strong></div>').join('')+'</div><div class="card rank-list">'+rows.map(x=>'<div class="rank-row"><span class="rank-no">'+x.rank+'위</span><span class="rank-avatar">'+avatar(x)+'</span><span class="rank-name">'+esc(x.nickname)+change(x)+'</span><span class="rank-value">'+Number(x.value).toLocaleString()+unit+'<small style="display:block;color:#918996">'+labels[category][1]+' '+Number(x.secondary||0)+'</small></span></div>').join('')+'</div>':'<div class="empty">선택한 월의 공개 랭킹 데이터가 없습니다.</div>');
  }
- $('#publicToggle').onclick=async()=>{const next=!publicOn;const {error}=await A.client.from('ranking_preferences').upsert({user_id:uid,is_public:next,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error){alert(error.message);return}publicOn=next;cache={};await Promise.all([refreshSummary(),loadRanking()])};
- $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$$('#categoryChips .chip').forEach(x=>x.classList.toggle('on',x===b));$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
+ $('#publicToggle').onclick=async()=>{
+  if(savingPublic)return;
+  const b=$('#publicToggle'),next=!publicOn;
+  savingPublic=true;b.disabled=true;b.setAttribute('aria-busy','true');
+  try{
+   const {data,error}=await A.client.from('ranking_preferences').upsert({user_id:uid,is_public:next,updated_at:new Date().toISOString()},{onConflict:'user_id'}).select('is_public').single();
+   if(error)throw error;
+   if(data?.is_public!==next)throw new Error('공개 설정 저장 결과를 확인하지 못했습니다.');
+   setPublicVisual(data.is_public);
+   cache={};
+   await Promise.all([refreshSummary(),loadRanking()]);
+  }catch(e){
+   console.error('[FUNY Ranking] public preference save failed',e);
+   alert('랭킹 공개 참여 설정을 저장하지 못했습니다. '+(e?.message||'다시 시도해주세요.'));
+   try{
+    const {data,error}=await A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle();
+    if(!error)setPublicVisual(!!data?.is_public);
+   }catch(_){}
+  }finally{savingPublic=false;b.disabled=false;b.removeAttribute('aria-busy')}
+ };
+ $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$('#categoryChips .chip').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b))});$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
  $$('#metricChips [data-metric]').forEach(b=>b.onclick=()=>{metric=b.dataset.metric;updateMetrics();loadRanking().catch(e=>alert(e.message))});updateMetrics();
  $('#shopFilter').onchange=e=>{shopId=e.target.value;loadRanking().catch(err=>alert(err.message))};
  $('#monthPicker').onchange=e=>{month=e.target.value;shopId='';Promise.all([refreshSummary(),loadRanking()]).catch(err=>alert(err.message))};

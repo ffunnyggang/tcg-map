@@ -57,7 +57,7 @@ body{margin:0;background:#F7F4FC;color:#28232e;font-family:'Pretendard Variable'
  const state=x=>{const now=Date.now(),start=Date.parse(x.starts_at),end=Date.parse(x.ends_at);return end<now?'ended':start<=now&&now<=end?'active':'upcoming'};
  function render(){
   const list=rows.filter(x=>filter==='all'||state(x)===filter);
-  $('#eventList').innerHTML=list.length?list.map(x=>'<button type="button" class="event-card" data-url="'+esc(x.detail_url)+'"><span class="event-thumb">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'')+'</span><span class="event-copy"><b>'+esc(x.title)+'</b><span>'+fmt(x.starts_at)+' ~ '+fmt(x.ends_at)+'</span></span></button>').join(''):'<div class="event-empty"><strong>표시할 이벤트가 없어요</strong>해당 상태의 이벤트가 등록되면 이곳에 표시됩니다.</div>';
+  $('#eventList').innerHTML=list.length?list.map(x=>'<button type="button" class="event-card" data-url="'+esc(x.detail_url)+'"><span class="event-thumb'+(state(x)==='ended'?' is-ended':'')+'">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':'')+(state(x)==='ended'?'<span class="event-ended-label">종료</span>':'')+'</span><span class="event-copy"><b>'+esc(x.title)+'</b><span>'+fmt(x.starts_at)+' ~ '+fmt(x.ends_at)+'</span></span></button>').join(''):'<div class="event-empty"><strong>표시할 이벤트가 없어요</strong>해당 상태의 이벤트가 등록되면 이곳에 표시됩니다.</div>';
   $$('.event-card').forEach(b=>b.onclick=()=>{const url=String(b.dataset.url||'').trim();if(url)location.href=url});
  }
  $$('.event-tab').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.event-tab').forEach(x=>x.classList.toggle('on',x===b));render()});

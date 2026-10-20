@@ -28,7 +28,7 @@
     ranking:en?'Ranking':'랭킹',rankingSub:en?'Check-in, card-shop visits, and FUNY MON ranking':'출석 · 카드샵 방문 · 퍼니몬 포획 랭킹',
     badges:en?'Badges':'배지',badgesSub:en?'Collect badges earned from missions and activities':'미션과 활동으로 획득한 배지 컬렉션',
     mon:en?'FUNY MON Collection':'퍼니몬 도감',monSub:en?'See your captured FUNY MON collection':'포획한 퍼니몬 컬렉션',
-    entries:en?'Entries':'응모 내역',entriesSub:en?'View events and entries you joined':'참여한 이벤트와 응모 내역',coupons:en?'Coupons':'쿠폰함',couponsSub:en?'Check your issued coupons':'발급받은 쿠폰을 확인하세요',
+    events:en?'Events':'이벤트',eventsSub:en?'Browse ongoing and past FUNY PIN events':'진행 중·종료된 이벤트를 확인하세요',entries:en?'Entries':'응모 내역',entriesSub:en?'View events and entries you joined':'참여한 이벤트와 응모 내역',coupons:en?'Coupons':'쿠폰함',couponsSub:en?'Check your issued coupons':'발급받은 쿠폰을 확인하세요',
     language:en?'Language':'언어',security:en?'Account security':'계정 보안',blocked:en?'Blocked Users':'차단한 사용자',notice:en?'Notices':'공지사항',faq:en?'FAQ':'자주 묻는 질문',inquiry:en?'Support':'온라인 문의',survey:en?'Service Survey':'서비스 만족도 조사',shopRequest:en?'Add / Update Shop':'매장 등록 · 정보 수정 요청',partner:en?'Advertising & Partnerships':'광고 · 제휴 문의',
     logout:en?'Log out':'로그아웃',loggingOut:en?'Signing out…':'처리 중…',deleteAccount:en?'Delete account':'계정 삭제',deleting:en?'Deleting…':'삭제 중…',terms:en?'Terms of Service':'이용약관',privacy:en?'Privacy Policy':'개인정보처리방침',guidelines:en?'Community Guidelines':'커뮤니티 운영정책',coming:en?'COMING':'준비중'
   };

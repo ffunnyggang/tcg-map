@@ -39,7 +39,7 @@ export default function Account(){
   const {language,setLanguage}=useAppLanguage();
   const en=language==='en';
   const insets=useSafeAreaInsets();
-  const params=useLocalSearchParams<{refresh?:string}>();
+  const params=useLocalSearchParams<{refresh?:string;__tabRefresh?:string}>();
   const [loading,setLoading]=useState(true),[refreshing,setRefreshing]=useState(false),[user,setUser]=useState<any>(null),[profile,setProfile]=useState<any>(null),[dashboard,setDashboard]=useState<Dashboard|null>(null),[busy,setBusy]=useState<string|null>(null),[missionIndex,setMissionIndex]=useState(0),[missionOpen,setMissionOpen]=useState(false);
   const touchStartX=useRef(0);
 
@@ -53,7 +53,7 @@ export default function Account(){
     }finally{setLoading(false);setRefreshing(false)}
   },[]);
   useFocusEffect(useCallback(()=>{void refresh();},[refresh]));
-  useEffect(()=>{if(params.refresh)void refresh();},[params.refresh,refresh]);
+  useEffect(()=>{if(params.refresh||params.__tabRefresh)void refresh();},[params.refresh,params.__tabRefresh,refresh]);
   useEffect(()=>{const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>refresh(),0);});return()=>subscription.unsubscribe();},[refresh]);
   useEffect(()=>{const count=dashboard?.mission_campaigns?.length||0;if(missionIndex>=count)setMissionIndex(0);},[dashboard,missionIndex]);
 

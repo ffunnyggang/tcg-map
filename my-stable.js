@@ -17,6 +17,13 @@
   let missionOpen=false;
   let missionBusy=false;
   let touchStartX=0;
+  const MY_SCROLL_KEY='__funy_my_scroll_y_v1',MY_RESTORE_KEY='__funy_restore_my_scroll_v1';
+  let myScrollTimer=0;
+  const currentScrollY=()=>Math.max(0,Math.round(window.scrollY||document.scrollingElement?.scrollTop||document.documentElement?.scrollTop||document.body?.scrollTop||0));
+  const saveMyScroll=()=>{try{sessionStorage.setItem(MY_SCROLL_KEY,String(currentScrollY()))}catch(_){}};
+  const restoreMyScroll=()=>{try{if(sessionStorage.getItem(MY_RESTORE_KEY)!=='1')return;sessionStorage.removeItem(MY_RESTORE_KEY);const y=Math.max(0,Number(sessionStorage.getItem(MY_SCROLL_KEY)||0)||0);if(!y)return;const restore=()=>{try{window.scrollTo(0,y)}catch(_){}};requestAnimationFrame(restore);[70,180,420,900].forEach(ms=>setTimeout(restore,ms))}catch(_){}};
+  window.addEventListener('scroll',()=>{clearTimeout(myScrollTimer);myScrollTimer=setTimeout(saveMyScroll,80)},{passive:true});
+  window.addEventListener('pagehide',saveMyScroll);
   try{const {data}=await A.client.rpc('is_my_feature_tester');isTester=data===true}catch(_){isTester=false}
 
   const T={
@@ -199,4 +206,5 @@
   }
 
   render();
+  restoreMyScroll();
 })().catch(error=>{const root=document.getElementById('root');if(root)root.innerHTML=`<div class="error"><strong>불러오지 못했어요</strong>${String(error?.message||error)}</div>`});

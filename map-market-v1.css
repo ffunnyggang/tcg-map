@@ -2668,3 +2668,50 @@ html.app-shell body.market-page .market-detail-head-actions{
   transform:none!important;
 }
 html.app-shell body.market-page .market-detail-more-menu{right:14px!important}
+
+
+/* AOS MARKET immersive detail media/header v48 */
+html.app-shell body.market-page .market-detail-head{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  right:auto!important;
+  transform:translateX(-50%)!important;
+  width:min(100%,420px)!important;
+  max-width:420px!important;
+  height:calc(54px + env(safe-area-inset-top,0px))!important;
+  min-height:calc(54px + env(safe-area-inset-top,0px))!important;
+  padding:env(safe-area-inset-top,0px) 14px 0!important;
+  margin:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+html.app-shell body.market-page .market-detail-head button,
+html.app-shell body.market-page .market-detail-more-menu{pointer-events:auto!important}
+html.app-shell body.market-page .market-detail-back{
+  left:14px!important;
+  top:calc(env(safe-area-inset-top,0px) + 9px)!important
+}
+html.app-shell body.market-page .market-detail-head-actions{
+  right:14px!important;
+  top:calc(env(safe-area-inset-top,0px) + 9px)!important
+}
+html.app-shell body.market-page .market-detail-more-menu{
+  right:14px!important;
+  top:calc(env(safe-area-inset-top,0px) + 48px)!important
+}
+html.app-shell body.market-page .market-detail-overlay.is-scrolled .market-detail-head{
+  background:rgba(255,255,255,.97)!important;
+  box-shadow:0 1px 0 rgba(232,228,235,.92)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  backdrop-filter:blur(18px)!important
+}
+html.app-shell body.market-page .market-detail-carousel,
+html.app-shell body.market-page .market-detail-hero{
+  width:calc(100% + 28px)!important;
+  max-width:none!important;
+  margin-left:-14px!important;
+  margin-right:-14px!important
+}
+html.app-shell body.market-page .market-detail-carousel-track{width:100%!important;max-width:none!important}

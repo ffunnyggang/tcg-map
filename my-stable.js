@@ -100,7 +100,7 @@
     const pager=campaigns.length>1?`<div class="my-mission-pages"><div class="my-page-dots">${campaigns.map((_,i)=>`<button type="button" class="my-page-dot${i===missionIndex?' is-on':''}" data-mission-page="${i}" aria-label="${i+1}"></button>`).join('')}</div></div>`:'';
     return `<section class="my-mission-wrap"><article class="my-mission-card${missionOpen?' is-open':''}" data-mission-card>
       <button type="button" class="my-mission-summary" data-mission-toggle>
-        <span class="my-progress-ring" style="--progress:${percent}%"><span class="my-progress-copy"><strong>${completed}/${total}</strong></span></span>
+        <span class="my-progress-ring" role="img" aria-label="${percent}%"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle class="my-progress-track" cx="24" cy="24" r="20"></circle>${percent>0?`<circle class="my-progress-bar" cx="24" cy="24" r="20" pathLength="100" stroke-dasharray="${percent} 100"></circle>`:''}</svg><span class="my-progress-copy"><strong>${completed}/${total}</strong></span></span>
         <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description||(en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
         <span class="my-mission-toggle" aria-hidden="true"></span>
       </button>${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}

@@ -33,7 +33,7 @@ export const DEFAULT_FLOATING_ACTIONS:Snapshot={
   home:createDefault('home','LIVE PIN','live_pin'),
   map:createDefault('map','제보 · 매물 등록','map_actions'),
   pick:createDefault('pick','LIVE PIN','live_pin'),
-  talk:createDefault('talk','POKAMO에 글쓰기','external_link','https://cafe.daangn.com/pokamo-pokesm-1'),
+  talk:{...createDefault('talk','게시물 등록','external_link'),mode:'off',isActive:false},
 };
 
 let snapshot:Snapshot={...DEFAULT_FLOATING_ACTIONS};

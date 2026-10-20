@@ -7,7 +7,7 @@
     {surface:'home',name:'HOME',mode:'native',label_ko:'LIVE PIN',action_key:'live_pin',target_url:null,sort_order:10},
     {surface:'map',name:'TCG MAP',mode:'native',label_ko:'제보 · 매물 등록',action_key:'map_actions',target_url:null,sort_order:20},
     {surface:'pick',name:'PICK',mode:'native',label_ko:'LIVE PIN',action_key:'live_pin',target_url:null,sort_order:30},
-    {surface:'talk',name:'TALK',mode:'native',label_ko:'POKAMO에 글쓰기',action_key:'external_link',target_url:'https://cafe.daangn.com/pokamo-pokesm-1',sort_order:40}
+    {surface:'talk',name:'TALK',mode:'off',label_ko:'게시물 등록',action_key:'external_link',target_url:null,sort_order:40}
   ];
 
   const ensureStyle=()=>{

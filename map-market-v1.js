@@ -558,7 +558,7 @@
     const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
     const appMode=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell');
-    const legacyNativeLauncher=appMode&&window.__FUNY_NATIVE_CAPABILITIES?.webFloatingActions!==true;
+    const legacyNativeLauncher=false;
 
     if(legacyNativeLauncher){
       wrap.classList.add('app-trade-only');

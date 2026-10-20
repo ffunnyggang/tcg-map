@@ -11,23 +11,19 @@
 <style>
 .rank-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}.rank-metrics .chip{min-height:38px;border-radius:10px}.rank-month{display:flex;align-items:center;justify-content:space-between;padding:15px 0 10px}.rank-month b{font-size:16px}.rank-month select,.rank-filter select{border:1px solid #e5dfed;border-radius:11px;background:white;padding:10px;font-size:12px;font-weight:750}.rank-filter{margin:10px 0}.rank-filter select{width:100%}
 .rank-my-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.rank-my-stat{background:white;border:1px solid #ebe5f0;border-radius:15px;padding:13px 8px;text-align:center;min-width:0}.rank-my-stat b{display:block;font-size:11px}.rank-my-stat strong{display:block;font-size:24px;margin:8px 0}.rank-my-stat small{display:block;font-size:10px;color:#827987;line-height:1.5}.rank-my-stat em{display:inline-block;margin-top:8px;font-style:normal;font-size:11px;font-weight:850;color:#7657d6}.rank-actions{margin-top:14px}.rank-actions summary{padding:12px;font-size:12px;color:#655a70;cursor:pointer}.rank-list{margin-top:10px}.rank-row{min-width:0}.rank-change{font-size:10px;margin-left:6px;color:#7b7481}.rank-change.up{color:#39885a}.rank-change.down{color:#cf615b}.rank-podium{min-width:0}.rank-podium b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
-</style></head><body><div class="test-shell">
+.rank-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:20px}.rank-summary-group{min-width:0;display:flex;flex-direction:column;gap:8px;text-align:center}.rank-summary-group>b{font-size:12px;padding:8px 2px}.rank-summary-metric{background:#fff;border-radius:12px;padding:12px 3px;border:1px solid #eee9f2}.rank-summary-metric small{display:block;font-size:10px;white-space:nowrap}.rank-summary-metric strong{display:block;font-size:23px;margin:7px 0}.rank-summary-metric strong span{font-size:11px;margin-left:2px}.rank-summary-metric em{display:block;font-style:normal;font-weight:850;font-size:11px}.rank-actions{display:none}</style></head><body><div class="test-shell">
 <header class="test-head funy-sub-header"><button class="test-back funy-sub-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title funy-sub-title">랭킹</div><span></span></header>
 <main class="test-main">
 <div class="rank-month"><b>나의 랭킹</b><select id="monthPicker" aria-label="조회 월"></select></div><div id="summary"><div class="loading">내 활동을 불러오는 중...</div></div>
 <section class="card switch-row"><div class="switch-copy"><b>랭킹 공개 참여</b><span>닉네임·프로필 이미지·활동 수치만 순위표에 표시됩니다.</span></div><button id="publicToggle" class="switch" type="button" aria-label="랭킹 공개 참여"></button></section>
-<details class="rank-actions"><summary>출석체크 · 방문 인증</summary><section class="section"><div class="section-head"><h2>오늘의 활동</h2><span class="section-note">KST 기준</span></div><div class="card visit-box"><div id="attendanceStatus" class="visit-status">오늘 출석 여부를 확인하는 중...</div><div class="actions"><button id="attendanceBtn" class="primary">오늘 출석체크</button></div></div>
-<div class="card visit-box"><div class="visit-status"><b>카드샵 방문 인증</b><br>현재 위치와 매장 좌표를 비교하며, 정확한 위치 좌표는 저장하지 않습니다.</div><div class="actions"><button id="nearbyBtn" class="primary">주변 카드샵 찾기</button></div><div id="nearby" class="nearby"></div></div></section>
-</details><section class="section"><div class="section-head"><h2>랭킹</h2><span class="section-note">TOP 100</span></div>
+<section class="section"><div class="section-head"><h2>랭킹</h2><span class="section-note">TOP 100</span></div>
 <div class="segment" id="categoryChips"><button class="chip on" data-category="attendance">출석</button><button class="chip" data-category="visit">카드샵 방문</button><button class="chip" data-category="funymon">퍼니몬 포획</button></div><div class="rank-metrics" id="metricChips"><button class="chip on" data-metric="primary">횟수</button><button class="chip" data-metric="secondary">종류</button></div><div class="rank-filter" id="shopFilterWrap" hidden><select id="shopFilter"><option value="">전체 카드샵</option></select></div><div id="ranking"><div class="loading">랭킹을 불러오는 중...</div></div>
 </section></main></div><div id="toast" class="toast"></div>
 <script>
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)};
- const dist=(a,b)=>{const R=6371000,rad=x=>x*Math.PI/180,dLat=rad(a.lat-b.lat),dLng=rad(a.lng-b.lng),q=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
  if(!await FUNY_MY_FEATURE_GATE.ensure(A))return;const uid=A.session.user.id;
- let category='attendance',metric='primary',publicOn=false,lastPos=null,shopId='',cache={};
+ let category='attendance',metric='primary',publicOn=false,shopId='',cache={};
  const now=new Date(Date.now()+9*3600000),first=new Date(2026,9,1);
  const monthList=[];for(let i=0;i<6;i++){const d=new Date(now.getUTCFullYear(),now.getUTCMonth()-i,1);if(d<first)break;monthList.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))}
  $('#monthPicker').innerHTML=monthList.map(m=>'<option value="'+m+'">'+m.slice(0,4)+'년 '+Number(m.slice(5))+'월</option>').join('');
@@ -37,24 +33,25 @@
  function updateMetrics(){const buttons=$('#metricChips [data-metric]');buttons.forEach((b,i)=>{b.textContent=metricLabels[category][i];b.classList.toggle('on',b.dataset.metric===metric)})}
  async function getRank(c,shop=''){
   const key=[month,c,shop].join(':');if(cache[key])return cache[key];
-  const {data,error}=await A.client.rpc('get_monthly_activity_rankings',{p_month:month,p_category:c,p_shop_id:shop||null});
+  const {data,error}=await A.client.rpc(c.endsWith('_secondary')?'get_monthly_activity_metric_rankings':'get_monthly_activity_rankings',{p_month:month,p_category:c,p_shop_id:shop||null});
   if(error)throw error;if(!data?.ok)throw new Error(data?.error||'랭킹 조회 실패');cache[key]=data;return data;
  }
  async function refreshSummary(){
-  const [d,v,f,p]=await Promise.all([
-    A.client.from('daily_checkins').select('checkin_date_kst').eq('user_id',uid).order('checkin_date_kst',{ascending:false}),
-    A.client.from('shop_visit_checkins').select('shop_id,visit_date_kst').eq('user_id',uid),
-    A.client.from('funy_mon_catches').select('monster_id,result,caught_at').eq('user_id',uid).neq('result','failed'),
-    A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle()
-  ]);
-  if(d.error||v.error||f.error||p.error)throw d.error||v.error||f.error||p.error;
-  const checked=(d.data||[]).some(x=>x.checkin_date_kst===new Date(Date.now()+9*3600000).toISOString().slice(0,10));
-  $('#attendanceStatus').textContent=checked?'오늘 출석체크를 완료했어요.':'오늘 아직 출석하지 않았어요.';
-  $('#attendanceBtn').disabled=checked;$('#attendanceBtn').textContent=checked?'오늘 출석 완료':'오늘 출석체크';
+  const p=await A.client.from('ranking_preferences').select('is_public').eq('user_id',uid).maybeSingle();
+  if(p.error)throw p.error;
   publicOn=!!p.data?.is_public;$('#publicToggle').classList.toggle('on',publicOn);
-  const results=await Promise.all(['attendance','visit','funymon'].map(c=>getRank(c)));
-  $('#summary').innerHTML='<div class="rank-my-grid">'+results.map((x,i)=>{const [title,sub,unit]=labels[['attendance','visit','funymon'][i]],my=x.my||{},rank=my.rank,percent=x.population?Math.max(1,Math.min(100,Math.ceil(100*(rank||x.population)/x.population))):100;return '<div class="rank-my-stat"><b>'+title+'</b><strong>'+Number(my.value||0).toLocaleString()+'<small style="display:inline">'+unit+'</small></strong><small>'+sub+' '+Number(my.secondary||0)+(i===0?'회':i===1?'곳':'종')+'</small><em>'+(publicOn?(rank&&rank<=100?rank+'위':'상위 '+percent+'%'):'비공개')+'</em></div>'}).join('')+'</div>';
-  const shops=results[1].shops||[];$('#shopFilter').innerHTML='<option value="">전체 카드샵</option>'+shops.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');$('#shopFilter').value=shopId;
+  const keys=['attendance','visit','funymon'];
+  const data=await Promise.all(keys.flatMap(c=>[getRank(c),getRank(c+'_secondary')]));
+  const units=['일','일','회','곳','회','종'];
+  const colors=['#7657d6','#46a42b','#e79b31'];
+  $('#summary').innerHTML='<div class="rank-summary-grid">'+keys.map((c,i)=>{
+   const a=data[i*2],b=data[i*2+1];
+   const render=(d,k)=>{const my=d.my||{},r=Number(my.rank||0),pop=Number(d.population||0),value=Number(my.value||0),rankLabel=!publicOn?'비공개':r>0&&r<=100?r+'위':pop>0?'상위 '+Math.max(1,Math.min(100,Math.ceil((r||pop)*100/pop)))+'%':'집계 대기';return '<div class="rank-summary-metric"><small>'+metricLabels[c][k]+'</small><strong>'+value.toLocaleString()+'<span>'+units[i*2+k]+'</span></strong><em style="color:'+colors[i]+'">'+rankLabel+'</em></div>'};
+   return '<div class="rank-summary-group"><b>'+labels[c][0]+'</b>'+render(a,0)+render(b,1)+'</div>';
+  }).join('')+'</div>';
+  const shops=data[2].shops||[];
+  $('#shopFilter').innerHTML='<option value="">전체 카드샵</option>'+shops.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
+  $('#shopFilter').value=shopId;
  }
  async function loadRanking(){
   $('#ranking').innerHTML='<div class="loading">랭킹을 불러오는 중...</div>';
@@ -64,10 +61,7 @@
   const change=x=>x.previous_rank==null?'<span class="rank-change">NEW</span>':x.rank_change===0?'<span class="rank-change">—</span>':'<span class="rank-change '+(x.rank_change>0?'up':'down')+'">'+(x.rank_change>0?'▲ ':'▼ ')+Math.abs(x.rank_change)+'</span>';
   $('#ranking').innerHTML=(rows.length?'<div class="rank-top">'+top.map((x,i)=>'<div class="rank-podium"><div class="medal">'+['🥇','🥈','🥉'][i]+'</div><b>'+esc(x.nickname)+'</b><strong>'+Number(x.value).toLocaleString()+unit+'</strong></div>').join('')+'</div><div class="card rank-list">'+rows.map(x=>'<div class="rank-row"><span class="rank-no">'+x.rank+'위</span><span class="rank-avatar">'+avatar(x)+'</span><span class="rank-name">'+esc(x.nickname)+change(x)+'</span><span class="rank-value">'+Number(x.value).toLocaleString()+unit+'<small style="display:block;color:#918996">'+labels[category][1]+' '+Number(x.secondary||0)+'</small></span></div>').join('')+'</div>':'<div class="empty">선택한 월의 공개 랭킹 데이터가 없습니다.</div>');
  }
- $('#publicToggle').onclick=async()=>{const next=!publicOn;const {error}=await A.client.from('ranking_preferences').upsert({user_id:uid,is_public:next,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error){alert(error.message);return}publicOn=next;toast(next?'랭킹 공개에 참여합니다.':'랭킹 공개를 해제했습니다.');cache={};await Promise.all([refreshSummary(),loadRanking()])};
- $('#attendanceBtn').onclick=async()=>{const b=$('#attendanceBtn');b.disabled=true;const {data,error}=await A.client.rpc('my_daily_checkin_test');if(error||!data?.ok){alert(data?.error||error?.message||'출석 처리 실패');b.disabled=false;return}toast(data.new?'오늘 출석 완료!':'이미 오늘 출석했어요.');await Promise.all([refreshSummary(),loadRanking()])};
- $('#nearbyBtn').onclick=()=>{const b=$('#nearbyBtn');b.disabled=true;b.textContent='위치 확인 중...';navigator.geolocation.getCurrentPosition(async pos=>{try{lastPos={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy||0};const {data,error}=await A.client.from('shops').select('id,name,area,latitude,longitude').eq('is_active',true).not('latitude','is',null).not('longitude','is',null);if(error)throw error;const rows=(data||[]).map(x=>({...x,distance:dist(lastPos,{lat:+x.latitude,lng:+x.longitude})})).sort((a,b)=>a.distance-b.distance).slice(0,5);$('#nearby').innerHTML=rows.map(x=>'<div class="nearby-row"><div class="nearby-copy"><b>'+esc(x.name)+'</b><span>'+esc(x.area||'')+' · '+(x.distance<1000?Math.round(x.distance)+'m':(x.distance/1000).toFixed(1)+'km')+'</span></div><button class="btn primary" data-visit="'+esc(x.id)+'" '+(x.distance>500?'disabled':'')+'>방문 인증</button></div>').join('')||'<div class="empty">주변 카드샵을 찾지 못했어요.</div>';bindVisit()}catch(e){alert(String(e?.message||e))}finally{b.disabled=false;b.textContent='주변 카드샵 다시 찾기'}},()=>{alert('위치 권한을 확인해주세요.');b.disabled=false;b.textContent='주변 카드샵 찾기'},{enableHighAccuracy:true,timeout:9000,maximumAge:15000})};
- function bindVisit(){$$('[data-visit]').forEach(b=>b.onclick=async()=>{if(!lastPos)return;b.disabled=true;const {data,error}=await A.client.rpc('my_shop_visit_checkin_test',{p_shop_id:b.dataset.visit,p_lat:lastPos.lat,p_lng:lastPos.lng,p_accuracy:lastPos.accuracy});if(error||!data?.ok){const code=data?.error||error?.message||'visit_failed',msg=code==='too_far'?'매장과 너무 멀리 떨어져 있어요.':code==='low_accuracy'?'GPS 정확도가 낮습니다. 잠시 후 다시 시도해주세요.':code;alert(msg);b.disabled=false;return}toast(data.new?data.shop_name+' 방문 인증 완료!':'오늘 이미 이 매장을 인증했어요.');await Promise.all([refreshSummary(),loadRanking()])})}
+ $('#publicToggle').onclick=async()=>{const next=!publicOn;const {error}=await A.client.from('ranking_preferences').upsert({user_id:uid,is_public:next,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error){alert(error.message);return}publicOn=next;cache={};await Promise.all([refreshSummary(),loadRanking()])};
  $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$('#categoryChips .chip').forEach(x=>x.classList.toggle('on',x===b));$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
  $('#metricChips [data-metric]').forEach(b=>b.onclick=()=>{metric=b.dataset.metric;updateMetrics();loadRanking().catch(e=>alert(e.message))});updateMetrics();
  $('#shopFilter').onchange=e=>{shopId=e.target.value;loadRanking().catch(err=>alert(err.message))};

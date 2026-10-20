@@ -31,7 +31,7 @@
  let month=monthList[0]||'2026-10';
  const labels={attendance:['출석','연속 출석','일'],visit:['카드샵 방문','방문 매장','회'],funymon:['퍼니몬 포획','포획 종류','회']};
  const metricLabels={attendance:['출석 일수','연속 출석 일수'],visit:['방문 횟수','방문 매장 수'],funymon:['포획 횟수','포획한 퍼니몬 종류']};
- function updateMetrics(){$('#metricChips [data-metric]').forEach((b,i)=>{b.textContent=metricLabels[category][i];b.classList.toggle('on',b.dataset.metric===metric);b.setAttribute('aria-pressed',String(b.dataset.metric===metric))})}
+ function updateMetrics(){$$('#metricChips [data-metric]').forEach((b,i)=>{b.textContent=metricLabels[category][i];b.classList.toggle('on',b.dataset.metric===metric);b.setAttribute('aria-pressed',String(b.dataset.metric===metric))})}
  async function getRank(c,shop=''){
   const key=[month,c,shop].join(':');if(cache[key])return cache[key];
   const {data,error}=await A.client.rpc(c.endsWith('_secondary')?'get_monthly_activity_metric_rankings':'get_monthly_activity_rankings',{p_month:month,p_category:c,p_shop_id:shop||null});
@@ -82,7 +82,7 @@
    }catch(_){}
   }finally{savingPublic=false;b.disabled=false;b.removeAttribute('aria-busy')}
  };
- $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$('#categoryChips .chip').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b))});$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
+ $$('#categoryChips .chip').forEach(b=>b.onclick=()=>{category=b.dataset.category;metric='primary';updateMetrics();$$('#categoryChips .chip').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',String(x===b))});$('#shopFilterWrap').hidden=category!=='visit';loadRanking().catch(e=>alert(e.message))});
  $$('#metricChips [data-metric]').forEach(b=>b.onclick=()=>{metric=b.dataset.metric;updateMetrics();loadRanking().catch(e=>alert(e.message))});updateMetrics();
  $('#shopFilter').onchange=e=>{shopId=e.target.value;loadRanking().catch(err=>alert(err.message))};
  $('#monthPicker').onchange=e=>{month=e.target.value;shopId='';Promise.all([refreshSummary(),loadRanking()]).catch(err=>alert(err.message))};

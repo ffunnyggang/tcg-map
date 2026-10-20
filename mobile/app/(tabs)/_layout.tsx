@@ -10,7 +10,6 @@ import { C,UI } from '../../lib/theme';
 import { TAB_INACTIVE } from '../../lib/tabBar';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../../lib/webOverlayState';
 import { useAppLanguage } from '../../lib/i18n';
-import { emitTabReselect } from '../../lib/tabReselect';
 
 type IconKind='home'|'map'|'pick'|'talk'|'my';
 
@@ -65,7 +64,7 @@ function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
         const kind=ROUTE_KIND[route.name];if(!kind)return null;
         const focused=state.index===index,options=descriptors[route.key]?.options,label=ROUTE_LABEL[kind];
         const accessibilityLabel=language==='en'?label:({home:'홈',map:'TCG 지도',pick:'픽',talk:'톡',my:'마이'} as Record<IconKind,string>)[kind];
-        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(focused){if(kind==='map'||kind==='my'){emitTabReselect(kind);return;}navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}if(kind==='map'){navigation.navigate(route.name,route.params);return;}navigation.navigate(route.name,route.params);};
+        const onPress=()=>{const event=navigation.emit({type:'tabPress',target:route.key,canPreventDefault:true});if(event.defaultPrevented)return;if(focused){if(kind==='map'||kind==='my')return;navigation.navigate(route.name,{...(route.params||{}),__tabRefresh:String(Date.now())});return;}if(kind==='map'){navigation.navigate(route.name,route.params);return;}navigation.navigate(route.name,route.params);};
         return <Pressable key={route.key} testID={options?.tabBarButtonTestID} accessibilityRole="tab" accessibilityState={focused?{selected:true}:{}} accessibilityLabel={options?.tabBarAccessibilityLabel||accessibilityLabel} onPress={onPress} onLongPress={()=>navigation.emit({type:'tabLongPress',target:route.key})} style={({pressed})=>[styles.item,!isAndroid&&focused&&styles.itemActive,isAndroid&&styles.androidItem,pressed&&styles.itemPressed]}>
           <NavIcon kind={kind} focused={focused}/>
           <Text allowFontScaling maxFontSizeMultiplier={1.1} style={[styles.label,focused&&styles.labelActive]}>{label}</Text>

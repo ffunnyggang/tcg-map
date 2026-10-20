@@ -37,7 +37,7 @@ try{
     'html.app-shell .info-tabs{top:0!important}',
     'html.app-shell.talk-page .filters{top:0!important}',
     'html.app-shell.live-pin-page .filters{top:54px!important}',
-    'html.app-shell .popular-sort.show{top:54px!important}',
+    'html.app-shell .popular-sort.show{top:auto!important}',
     'html.app-shell input:not([type="checkbox"]):not([type="radio"]),html.app-shell textarea{font-size:16px!important;-webkit-text-size-adjust:100%!important}',
     'html.app-shell .country-filter-select{font-size:12px!important}',
     'html.app-shell .live-pin-entry-wrap,html.app-shell .live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',

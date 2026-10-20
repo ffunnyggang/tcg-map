@@ -97,7 +97,7 @@ body.country-japan .market-layer-chip,body.country-japan .market-list-tab,body.c
 .market-register-map-wrap{position:relative;height:290px;border:1px solid #ECE7F0;border-radius:16px;overflow:hidden;background:#EEEAF2}
 #marketRegisterMap{position:absolute;inset:0;width:100%;height:100%}
 .market-register-center-pin{position:absolute;left:50%;top:50%;z-index:5;width:42px;height:42px;margin:-38px 0 0 -21px;border:3px solid #fff;border-radius:50% 50% 50% 7px;background:#6749BD;transform:rotate(-45deg);box-shadow:0 5px 15px rgba(103,73,189,.28);pointer-events:none}
-.market-register-center-pin:after{content:'??;position:absolute;inset:0;display:grid;place-items:center;transform:rotate(45deg);color:#fff;font-size:16px;font-weight:900}
+.market-register-center-pin:after{content:'';position:absolute;inset:0;display:grid;place-items:center;transform:rotate(45deg);color:#fff;font-size:16px;font-weight:900}
 .market-register-location-row{margin-top:8px;display:flex;align-items:center;gap:8px}.market-register-location-copy{flex:1;min-width:0}.market-register-location-name{font-size:11px;font-weight:800;color:#514B55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.market-register-coords{margin-top:3px;color:#AAA3AF;font-size:9px}
 .market-register-here{height:36px;padding:0 10px;border:1px solid #E4DFE8;border-radius:11px;background:#fff;color:#625B67;font-size:10px;font-weight:800}
 .market-register-error{display:none;margin-top:10px;color:#C65362;font-size:10px;line-height:1.5}
@@ -2606,3 +2606,43 @@ html.app-shell body.market-page .market-toast{bottom:var(--funy-native-toast-bot
 html.app-shell body.market-page .market-detail-head{height:54px!important;min-height:54px!important;padding:0 12px!important}
 html.app-shell body.market-page .market-detail-back,html.app-shell body.market-page .market-detail-head-actions{top:9px!important}
 html.app-shell body.market-page .market-detail-more-menu{top:48px!important}
+
+
+/* AOS MARKET layout hardening v46 */
+html.app-shell body.market-page .market-sheet-panel,
+html.app-shell body.market-page .market-sheet-list{
+  width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:visible!important
+}
+html.app-shell body.market-page .market-sheet-list{padding-left:0!important;padding-right:0!important}
+html.app-shell body.market-page .market-card{
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+  grid-template-columns:88px minmax(0,1fr)!important;overflow:hidden!important;text-align:left!important;
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important
+}
+html.app-shell body.market-page .market-card>*{box-sizing:border-box!important;min-width:0}
+html.app-shell body.market-page .market-card-copy{width:100%!important;max-width:100%!important;overflow:hidden!important}
+html.app-shell body.market-page .market-card-badges{max-width:100%!important;overflow:hidden!important}
+html.app-shell body.market-page .market-card-title,
+html.app-shell body.market-page .market-card-price,
+html.app-shell body.market-page .market-card-location{max-width:100%!important}
+html.app-shell body.market-page .market-detail-overlay{
+  box-sizing:border-box!important;position:fixed!important;inset:0!important;left:0!important;right:0!important;
+  width:100%!important;max-width:420px!important;min-width:0!important;margin:0 auto!important;transform:none!important;
+  overflow-x:hidden!important;overflow-y:auto!important;background:#fff!important
+}
+html.app-shell body.market-page .market-detail-head,
+html.app-shell body.market-page .market-detail-body,
+html.app-shell body.market-page .market-detail-carousel,
+html.app-shell body.market-page .market-detail-hero,
+html.app-shell body.market-page .market-detail-info,
+html.app-shell body.market-page .market-detail-section,
+html.app-shell body.market-page .market-detail-guide{
+  box-sizing:border-box!important;max-width:100%!important;min-width:0!important
+}
+html.app-shell body.market-page .market-detail-head{left:0!important;right:0!important;width:100%!important}
+html.app-shell body.market-page .market-detail-body{width:100%!important;overflow-x:hidden!important}
+html.app-shell body.market-page .market-detail-carousel-track{width:100%!important;max-width:100%!important}
+html.app-shell body.market-page .market-detail-slide{min-width:100%!important;max-width:100%!important;border:0!important;padding:0!important}
+html.app-shell body.market-page .market-detail-title-row{display:flex!important;align-items:flex-start!important;gap:8px!important;min-width:0!important}
+html.app-shell body.market-page .market-detail-title{min-width:0!important;flex:1!important;overflow-wrap:anywhere!important}
+html.app-shell body.market-page .market-detail-bottom{left:0!important;right:0!important;transform:none!important;width:100%!important;max-width:420px!important;margin:0 auto!important;box-sizing:border-box!important}

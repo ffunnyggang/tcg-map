@@ -2646,3 +2646,25 @@ html.app-shell body.market-page .market-detail-slide{min-width:100%!important;ma
 html.app-shell body.market-page .market-detail-title-row{display:flex!important;align-items:flex-start!important;gap:8px!important;min-width:0!important}
 html.app-shell body.market-page .market-detail-title{min-width:0!important;flex:1!important;overflow-wrap:anywhere!important}
 html.app-shell body.market-page .market-detail-bottom{left:0!important;right:0!important;transform:none!important;width:100%!important;max-width:420px!important;margin:0 auto!important;box-sizing:border-box!important}
+
+
+/* AOS MARKET detail header alignment v47 */
+html.app-shell body.market-page .market-detail-head{
+  box-sizing:border-box!important;
+  position:sticky!important;
+  top:0!important;left:auto!important;right:auto!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  margin:0!important;padding:0 14px!important;
+  transform:none!important;
+}
+html.app-shell body.market-page .market-detail-back{
+  left:14px!important;
+  top:9px!important;
+  transform:none!important;
+}
+html.app-shell body.market-page .market-detail-head-actions{
+  right:14px!important;
+  top:9px!important;
+  transform:none!important;
+}
+html.app-shell body.market-page .market-detail-more-menu{right:14px!important}

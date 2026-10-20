@@ -115,7 +115,6 @@
   const menuRow=(href,icon,label,sub,extra='')=>`<a class="my-menu-row" href="${href}" ${extra}><span class="my-menu-icon">${icon}</span><span class="my-menu-copy"><b>${label}</b><span>${sub}</span></span><span class="my-chevron">›</span></a>`;
 
   function bodyHtml(){
-    const tester=dashboard?.is_tester===true;
     return profileHtml()+missionHtml()+
     `<section class="my-section"><div class="my-section-head"><h2>${T.activity}</h2></div><div class="my-menu-card">
       ${menuRow('/my-community.html','💬',T.community,T.communitySub)}
@@ -123,8 +122,8 @@
       ${menuRow('/my-favorites.html','♥',T.favoriteList,T.favoriteSub)}
     </div></section>
     <section class="my-section"><div class="my-section-head"><h2>${T.rewardCollection}</h2></div><div class="my-menu-card">
-      ${menuRow(tester?'/ranking.html':'#','🏆',`${T.ranking} <span class="my-coming">${T.coming}</span>`,T.rankingSub,`data-coming="${tester?'0':'1'}"`)}
-      ${menuRow(tester?'/my-badges.html':'#','🎖️',`${T.badges} <span class="my-coming">${T.coming}</span>`,T.badgesSub,`data-coming="${tester?'0':'1'}"`)}
+      ${menuRow('/ranking.html','🏆',T.ranking,T.rankingSub)}
+      ${menuRow('/my-badges.html','🎖️',T.badges,T.badgesSub)}
       ${menuRow('/my-funymon.html','👾',T.mon,T.monSub)}
       ${menuRow('/my-entries.html','🎟️',T.entries,T.entriesSub)}
       ${menuRow('/my-coupons.html','🎫',T.coupons,T.couponsSub)}

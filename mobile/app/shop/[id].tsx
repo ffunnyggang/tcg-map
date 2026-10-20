@@ -344,7 +344,7 @@ export default function ShopDetail(){
       </View>
     </ScrollView>
 
-    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:0,height:UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
+    {stickyHeader?<View style={[styles.stickyHeaderShell,{top:insets.top,height:UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={styles.stickyHeader}>
         <Pressable onPress={goBack} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
         <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
@@ -400,7 +400,7 @@ const styles=StyleSheet.create({
   heroCountText:{fontSize:10,fontWeight:'700',color:'#fff'},
 
   stickyHeaderShell:{position:'absolute',left:0,right:0,height:UI.headerH,zIndex:999999,elevation:999999,backgroundColor:'rgba(251,250,255,.98)',shadowColor:'#211A2E',shadowOpacity:.06,shadowRadius:8,shadowOffset:{width:0,height:2}},
-  stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',paddingHorizontal:UI.screenPad,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
+  stickyHeader:{...StyleSheet.absoluteFillObject,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:UI.screenPad,borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:'rgba(225,219,210,.86)',overflow:'hidden'},
   stickyAction:{width:36,height:36,alignItems:'center',justifyContent:'center'},
   stickyBackText:{fontSize:29,lineHeight:30,fontWeight:'400',color:C.text,textAlign:'center'},
   stickyTitle:{position:'absolute',left:UI.screenPad+36+4,right:UI.screenPad+36+4,textAlign:'left',...T.header,color:'#28231F'},

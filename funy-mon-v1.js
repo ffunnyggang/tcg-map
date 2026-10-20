@@ -347,7 +347,7 @@
     const entryInput=reward.querySelector('#funyMonEntryInstagram');
     entryInput?.addEventListener('keydown',e=>{if(e.key==='Enter')submitEventEntry(data)});
     bindEntryKeyboardMode(entryInput);
-    save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};setTimeout(()=>reward.classList.remove('is-flashing'),900);
+    save.disabled=false;save.onclick=()=>savePrizeImage(data,def);setTimeout(()=>reward.classList.remove('is-flashing'),900);
   }
   function bindRewardSwipe(data,def){
     const reward=document.getElementById('funyMonReward'),cover=document.getElementById('funyMonRewardCover');if(!reward||!cover)return;
@@ -370,7 +370,7 @@
     if(hasReward){
       rewardResult.innerHTML=rewardMarkup(data);reward.hidden=false;reward.classList.remove('is-revealed','is-flashing','is-swiping');cover.style.transform='translateX(0)';cover.style.opacity='1';cover.style.pointerEvents='auto';cover.style.transition='';save.disabled=true;save.onclick=null;
     }else{
-      reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=async()=>{await savePrizeImage(data,def);resultNeedsSave=false};
+      reward.hidden=true;reward.classList.remove('is-revealed','is-flashing','is-swiping');rewardResult.innerHTML='';save.disabled=false;save.onclick=()=>savePrizeImage(data,def);
     }
     document.getElementById('funyMonModal').hidden=false;document.body.classList.add('funy-mon-open');document.body.style.overflow='hidden';
     if(hasReward){const rewardType=data.reward?.reward_type||(data.reward?.is_win===true?'win':'lose');if(rewardType==='entry'){if(eventCaption){eventCaption.textContent='';eventCaption.hidden=true}savePendingEntry(data,def);revealReward(data,def)}else bindRewardSwipe(data,def)}
@@ -419,7 +419,10 @@
   function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
   function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){const words=String(text||'').split(' ');let line='',lines=[];for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight))}
   function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
-  function notifyImageSaved(){let n=document.getElementById('funyMonSaveNotice');if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}n.textContent='이미지 저장이 완료되었습니다.';n.classList.add('show');clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200)}
+  function notifyImageSave(message){let n=document.getElementById('funyMonSaveNotice');if(!n){n=document.createElement('div');n.id='funyMonSaveNotice';n.className='funy-mon-save-notice';document.body.appendChild(n)}n.textContent=message;n.classList.add('show');clearTimeout(n._timer);n._timer=setTimeout(()=>n.classList.remove('show'),2200)}
+  function setSaveButtonBusy(busy){const btn=document.getElementById('funyMonSave');if(!btn)return;btn.disabled=!!busy;btn.textContent=busy?'저장 중…':'이미지 저장'}
+  function blobBase64(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const value=String(reader.result||''),i=value.indexOf(',');resolve(i>=0?value.slice(i+1):value)};reader.onerror=()=>reject(reader.error||new Error('image_read_failed'));reader.readAsDataURL(blob)})}
+  window.addEventListener('funy:native-image-save-result',event=>{const detail=event?.detail||{};setSaveButtonBusy(false);if(detail.ok){resultNeedsSave=false;notifyImageSave('이미지 다운로드가 완료되었습니다.')}else if(detail.cancelled){notifyImageSave('이미지 저장을 취소했습니다.')}else{notifyImageSave('이미지 저장에 실패했습니다. 다시 시도해주세요.')}})
   async function savePrizeImage(data,def){
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const ctx=canvas.getContext('2d'),r=data.reward||{title:'꽝',is_win:false},win=r.is_win===true;
     const fxMap={ponanyang:['✦','♡','✧','♡','✦'],bubblelong:['○','✦','◌','✦','○'],hatring:['♡','♥','✦','♥','♡'],bulgi:['✦','◆','✧','◆','✦'],namumong:['❖','✦','❧','✦','❖'],ggomagureum:['✧','☁','✦','☁','✧'],bawidong:['◆','✦','◇','✦','◆'],grimjamong:['✦','☾','✧','☾','✦'],beonjjeogi:['✦','ϟ','✧','ϟ','✦'],neon:['✦','✧','★','✧','✦']};
@@ -432,7 +435,15 @@
     const chip=(x,w,label,bg,fg)=>{ctx.fillStyle=bg;roundRect(ctx,x,684,w,54,8);ctx.fillStyle=fg;ctx.font='850 23px ui-monospace,monospace';ctx.fillText(label,x+w/2,719)};
     const typeColors={ponanyang:['#eeeef1','#5e5c66'],bubblelong:['#e7f6ff','#2587ba'],hatring:['#fff0f7','#ce5f91'],bulgi:['#fff0e9','#d65d34'],namumong:['#edf8e9','#448d48'],ggomagureum:['#eef5fb','#6e8ba5'],bawidong:['#f3efe9','#806f58'],grimjamong:['#eeeafd','#67539d'],beonjjeogi:['#fff8df','#b18417'],neon:['#f0edff','#7057db']},tc=typeColors[def.id]||typeColors.ponanyang;chip(397,132,'No.'+def.no,'#302855','#ffffff');chip(541,142,monText(def.type),tc[0],tc[1]);ctx.fillStyle='#746d78';ctx.font='700 27px sans-serif';ctx.fillText(monText('📍 '+data.shop_name+'에서 포획했어요'),540,790);ctx.fillStyle='#9a92a0';ctx.font='700 22px ui-monospace,monospace';ctx.fillText('funypin.kr',540,1275);
     const isAndroid=/Android/i.test(navigator.userAgent);const mime=isAndroid?'image/jpeg':'image/png';const ext=isAndroid?'jpg':'png';const fileName='FUNY-MON-'+def.id+'-'+Date.now()+'.'+ext;const blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,isAndroid?.94:undefined));
-    if(blob){const file=new File([blob],fileName,{type:mime});if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:monText('FUNY MON 이미지')});notifyImageSaved();return}catch(e){if(e&&e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);notifyImageSaved()}
+    if(!blob){notifyImageSave('이미지 저장에 실패했습니다. 다시 시도해주세요.');return}
+    let nativePending=false;setSaveButtonBusy(true);
+    try{
+      const file=new File([blob],fileName,{type:mime});
+      if(isAndroid&&window.ReactNativeWebView){nativePending=true;const base64=await blobBase64(blob);window.ReactNativeWebView.postMessage(JSON.stringify({type:'SAVE_FUNYMON_IMAGE',filename:fileName,mime,base64}));return}
+      if(!isAndroid&&navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:monText('FUNY MON 이미지')});resultNeedsSave=false;notifyImageSave('이미지 저장이 완료되었습니다.');return}catch(e){if(e&&e.name==='AbortError')return}}
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.download=fileName;a.href=url;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},10000);resultNeedsSave=false;notifyImageSave('이미지 다운로드를 요청했습니다.');
+    }catch(_){nativePending=false;notifyImageSave('이미지 저장에 실패했습니다. 다시 시도해주세요.')}
+    finally{if(!nativePending)setSaveButtonBusy(false)}
   }
 
   function pageAnonKey(){return SUPABASE_KEY}

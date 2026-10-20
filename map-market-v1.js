@@ -546,6 +546,10 @@
     if(!window.ReactNativeWebView)return;
     try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:'market',navMode:open?navMode:'none'}))}catch(_){}
   }
+  function postNativeMarketDetailState(open){
+    if(!window.ReactNativeWebView)return;
+    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_MARKET_DETAIL_STATE',open:!!open}))}catch(_){}
+  }
   function syncNativeMarketOverlayState(){
     const ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
     const fabMenu=$('#marketFabWrap .market-fab-menu');
@@ -1380,6 +1384,7 @@
     const floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;
     overlay.hidden=false;document.body.style.overflow='hidden';
     postNativeMarketOverlayState(true);
+    postNativeMarketDetailState(true);
     overlay.scrollTop=0;
     requestAnimationFrame(()=>{overlay.scrollTo({top:0,left:0,behavior:'auto'});const track=$('#marketDetailCarousel');if(track)track.scrollLeft=0});
     setTimeout(()=>overlay.scrollTo({top:0,left:0,behavior:'auto'}),0);
@@ -1438,6 +1443,7 @@
     if(floatingRegister)floatingRegister.hidden=$('#marketOverlay')?.hidden!==false;
     if(/^#\/?market\//i.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
     if($('#marketOverlay')?.hidden!==false&&$('#marketRegisterOverlay')?.hidden!==false)document.body.style.overflow='';
+    postNativeMarketDetailState(false);
     requestAnimationFrame(syncNativeMarketOverlayState);
   }
 

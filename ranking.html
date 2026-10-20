@@ -238,7 +238,12 @@ body.ranking-page button:focus-visible,body.ranking-page select:focus-visible{ou
    if(data?.is_public!==next)throw new Error('공개 설정 저장 결과를 확인하지 못했습니다.');
    setPublicVisual(data.is_public);
    cache={};
-   await Promise.all([refreshSummary(),loadRanking()]);
+   try{
+    await Promise.all([refreshSummary(),loadRanking()]);
+   }catch(refreshError){
+    console.error('[FUNY Ranking] refresh failed after preference was saved',refreshError);
+    alert('랭킹 공개 설정은 저장되었지만 랭킹 데이터를 갱신하지 못했습니다. 페이지를 다시 열어주세요.');
+   }
   }catch(e){
    console.error('[FUNY Ranking] public preference save failed',e);
    alert('랭킹 공개 참여 설정을 저장하지 못했습니다. '+(e?.message||'다시 시도해주세요.'));

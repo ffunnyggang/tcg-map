@@ -1,13 +1,12 @@
 import { useCallback,useEffect,useMemo,useRef,useState } from 'react';
 import { ActivityIndicator,Alert,Image,Platform,Pressable,RefreshControl,ScrollView,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
+import { useFocusEffect,useLocalSearchParams,useNavigation,useRouter } from 'expo-router';
 import { deleteAccount,getProfile,signOut } from '../lib/auth';
 import { C,T,UI } from '../lib/theme';
 import { supabase } from '../lib/supabase';
 import { visualAssets } from '../lib/visualAssets';
 import { useAppLanguage } from '../lib/i18n';
-import { subscribeTabReselect } from '../lib/tabReselect';
 
 const WEB_MENU=[
   ['공지사항','notice.html'],['자주 묻는 질문','faq.html'],['온라인 문의','support.html'],['서비스 만족도 조사','feedback.html'],['매장 등록 · 정보 수정 요청','shop-request.html'],['광고 · 제휴 문의','partner.html'],
@@ -37,6 +36,7 @@ function MissionToggle({open}:{open:boolean}){
 
 export default function Account(){
   const router=useRouter();
+  const navigation=useNavigation();
   const {language,setLanguage}=useAppLanguage();
   const en=language==='en';
   const insets=useSafeAreaInsets();
@@ -55,7 +55,12 @@ export default function Account(){
   },[]);
   useFocusEffect(useCallback(()=>{void refresh();},[refresh]));
   useEffect(()=>{if(params.refresh)void refresh();},[params.refresh,refresh]);
-  useEffect(()=>subscribeTabReselect('my',()=>{void refresh();}),[refresh]);
+  useEffect(()=>{
+    const unsub=navigation.addListener('tabPress',()=>{
+      if(navigation.isFocused())void refresh(true);
+    });
+    return unsub;
+  },[navigation,refresh]);
   useEffect(()=>{const {data:{subscription}}=supabase.auth.onAuthStateChange(()=>{setTimeout(()=>refresh(),0);});return()=>subscription.unsubscribe();},[refresh]);
   useEffect(()=>{const count=dashboard?.mission_campaigns?.length||0;if(missionIndex>=count)setMissionIndex(0);},[dashboard,missionIndex]);
 

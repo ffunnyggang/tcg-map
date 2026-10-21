@@ -334,9 +334,10 @@ export default function ShopDetail(){
           </View>
         </View>
 
+        {funyMonEventActive?<Pressable onPress={openFunyMonEvent} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><View style={styles.eventCopy}><Text numberOfLines={2} style={styles.eventText}>{funyMonTitle}</Text><Text style={styles.eventPeriod}>{funyMonEventPeriod}</Text></View><Text style={styles.eventArrow}>›</Text></Pressable>:null}
+
         <View style={styles.section}>
           <SectionTitle icon="information-circle-outline" title={en?'Basic Info':'기본 정보'} color={accent}/>
-          {funyMonEventActive?<Pressable onPress={openFunyMonEvent} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><View style={styles.eventCopy}><Text numberOfLines={2} style={styles.eventText}>{funyMonTitle}</Text><Text style={styles.eventPeriod}>{funyMonEventPeriod}</Text></View><Text style={styles.eventArrow}>›</Text></Pressable>:null}
           <View style={[styles.infoCard,{borderColor:accentBorder}]}>
             <InfoRow icon="location-outline" label={en?'Address':'주소'} value={displayAddress} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
             <InfoRow icon="time-outline" label={en?'Hours':'영업시간'} value={displayHours} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
@@ -434,7 +435,7 @@ export default function ShopDetail(){
 const styles=StyleSheet.create({
   root:{flex:1,backgroundColor:'#FFFFFF'},
   statusBarSolid:{position:'absolute',left:0,right:0,top:0,backgroundColor:'#fff',zIndex:2147483000,elevation:2147483000},
-  statusBarMediaScrim:{position:'absolute',left:0,right:0,top:0,backgroundColor:'rgba(0,0,0,.22)',zIndex:2147482900,elevation:2147482900},
+  statusBarMediaScrim:{position:'absolute',left:0,right:0,top:0,backgroundColor:'rgba(0,0,0,.08)',zIndex:2147482900,elevation:2147482900},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 
@@ -483,7 +484,7 @@ const styles=StyleSheet.create({
   tag:{paddingHorizontal:10,paddingVertical:5,borderRadius:999,backgroundColor:'#F3EFF9'},
   tagText:{fontSize:10.5,fontWeight:'700',color:'#7358C5'},
 
-  eventCard:{width:'100%',alignSelf:'stretch',marginTop:0,marginBottom:10,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
+  eventCard:{width:'100%',alignSelf:'stretch',marginTop:14,marginBottom:0,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
   eventBadge:{fontSize:8.5,fontWeight:'900',color:'#fff',backgroundColor:'#EE7847',paddingHorizontal:8,paddingVertical:5,borderRadius:10},
   eventCopy:{flex:1,minWidth:0},
   eventText:{fontSize:12,fontWeight:'800',color:C.textSoft},
@@ -531,10 +532,10 @@ const styles=StyleSheet.create({
 
   note:{marginTop:-5,marginBottom:10,fontSize:10.5,lineHeight:16,color:'#9992A4'},
   analysisCombo:{minHeight:190,borderRadius:18,borderWidth:1,borderColor:'#E6DFD6',backgroundColor:'#FFFDFA',overflow:'hidden',...shadow},
-  analysisMainRow:{height:180,flexDirection:'row',alignItems:'stretch'},
-  radarPane:{width:'48%',height:180,alignItems:'center',justifyContent:'center'},
-  analysisDivider:{height:152,marginVertical:14,borderLeftWidth:StyleSheet.hairlineWidth},
-  compPane:{flex:1,height:152,marginVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
+  analysisMainRow:{minHeight:180,flexDirection:'row',alignItems:'stretch'},
+  radarPane:{width:'48%',minHeight:180,alignSelf:'stretch',alignItems:'center',justifyContent:'center'},
+  analysisDivider:{alignSelf:'stretch',marginVertical:14,borderLeftWidth:StyleSheet.hairlineWidth},
+  compPane:{flex:1,minHeight:152,marginVertical:14,paddingLeft:14,paddingRight:12,justifyContent:'center'},
   radarCanvas:{width:RADAR_SIZE,height:RADAR_SIZE,position:'relative'},
   radarLabel:{position:'absolute',width:54,textAlign:'center',fontSize:10.5,fontWeight:'700',color:'#504A59'},
   radarDot:{position:'absolute',width:6,height:6,borderRadius:3,backgroundColor:'#8A5BE2'},

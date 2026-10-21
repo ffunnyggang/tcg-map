@@ -171,9 +171,10 @@ export async function getUnreadNotificationCount(userId?:string|null){
   return value;
 }
 
+let notificationChannelSeq=0;
 export function subscribeNotificationChanges(userId:string,onChange:()=>void){
   const channel=supabase
-    .channel('my-notifications-'+userId)
+    .channel(`my-notifications-${userId}-${++notificationChannelSeq}`)
     .on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`user_id=eq.${userId}`},()=>onChange())
     .subscribe();
   return ()=>{void supabase.removeChannel(channel)};

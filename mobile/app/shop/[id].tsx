@@ -2,7 +2,7 @@ import { useCallback,useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StatusBar,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
-import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
+import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
 import { C,T,UI,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
@@ -13,6 +13,7 @@ import { WebView } from 'react-native-webview';
 
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
 const TCG:Record<string,string>={pokemon:'포켓몬',one_piece:'원피스',onepiece:'원피스',dragon_ball:'드래곤볼',dragonball:'드래곤볼',yugioh:'유희왕',lorcana:'로카나',riftbound:'리프트바운드',other:'기타 TCG'};
+const formatEventDate=(value?:string|null)=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[1]}. ${m[2]}. ${m[3]}`:String(value||'')};
 const SCORE_LABELS:[keyof ShopReview,string][]=[
   ['single_score','싱글카드'],['graded_score','등급카드'],['box_score','박스제품'],['oripa_score','오리파'],
   ['price_score','가격'],['scale_score','규모'],['mood_score','분위기'],['access_score','접근성'],['staff_score','응대']
@@ -92,7 +93,6 @@ export default function ShopDetail(){
   const [viewerOpen,setViewerOpen]=useState(false);
   const [viewerIndex,setViewerIndex]=useState(0);
   const [instaPosts,setInstaPosts]=useState<InstaPost[]>([]);
-  const [activeEvent,setActiveEvent]=useState<FunyMonEvent|null>(null);
   const [reviewThumbs,setReviewThumbs]=useState<Record<string,string>>({});
   const [instaRatios,setInstaRatios]=useState<Record<string,number>>({});
   const [reviewRatios,setReviewRatios]=useState<Record<string,number>>({});
@@ -112,16 +112,15 @@ export default function ShopDetail(){
   const navBottom=Math.max(insets.bottom,10);
   const heroHeight=280+insets.top;
   const homeLivePinBottom=navBottom+54+10;
-  const tcgMapBottom=Math.max(navBottom,10);
+  const tcgMapBottom=Math.max(navBottom,10)+12;
 
   useFocusEffect(useCallback(()=>{StatusBar.setHidden(false,'none');},[]));
 
   useEffect(()=>{
     if(!id)return;
-    Promise.all([getShop(id),getShopReview(id),getShopContents(id),getFavoriteIds(),getActiveFunyMonEvents()])
-      .then(async([s,r,c,f,events])=>{
+    Promise.all([getShop(id),getShopReview(id),getShopContents(id),getFavoriteIds()])
+      .then(async([s,r,c,f])=>{
         setShop(s);setReview(r);setContents(c);setFavorite(f.has(id));
-        const event=events.find(x=>x.shop_id===id);setActiveEvent(event||null);
         if(s.instagram_url){
           try{
             const res=await fetch('https://funypin.kr/data/instagram-feed.json?v='+Date.now(),{cache:'no-store'});
@@ -233,6 +232,14 @@ export default function ShopDetail(){
   const visitDate=shop.verified_at?String(shop.verified_at).replace(/^(\d{4})-(\d{2})-(\d{2}).*$/,'$1. $2. $3'):'';
   const analysisKeys:(keyof ShopReview)[]=['single_score','graded_score','box_score','oripa_score','price_score','scale_score','mood_score','access_score'];
   const hasAnalysis=!!review&&analysisKeys.some(k=>Number(review[k])>0);
+  const funyMonTitle=String(shop.detail_funymon_event_title||'').trim();
+  const funyMonStart=String(shop.detail_funymon_event_start_date||'').trim();
+  const funyMonEnd=String(shop.detail_funymon_event_end_date||'').trim();
+  const funyMonRawUrl=String(shop.detail_funymon_event_url||'').trim();
+  const todayKst=new Date(Date.now()+9*36e5).toISOString().slice(0,10);
+  const funyMonEventActive=shop.detail_funymon_event_enabled===true&&!!funyMonTitle&&!!funyMonStart&&!!funyMonEnd&&!!funyMonRawUrl&&todayKst>=funyMonStart&&todayKst<=funyMonEnd;
+  const funyMonEventPeriod=funyMonEventActive?`${formatEventDate(funyMonStart)} ~ ${formatEventDate(funyMonEnd)}`:'';
+  const funyMonEventUrl=/^https?:\/\//i.test(funyMonRawUrl)?funyMonRawUrl:`https://funypin.kr/${funyMonRawUrl.replace(/^\/+/, '')}`;
   const reel=contents.find(c=>/reel/i.test(c.content_type||''));
   const blog=contents.find(c=>/blog/i.test(c.content_type||''));
   const reviewPicks=[reel,blog].filter(Boolean) as ShopContent[];
@@ -243,6 +250,13 @@ export default function ShopDetail(){
   const fabLabelOpacity=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[1,0,0]});
   const fabLabelWidth=fabProgress.interpolate({inputRange:[0,.65,1],outputRange:[78,20,0]});
   const open=(url?:string|null)=>{if(url)Linking.openURL(url).catch(()=>{})};
+  const openFunyMonEvent=()=>{
+    if(!funyMonEventActive||!funyMonEventUrl)return;
+    const mode=shop.detail_funymon_event_link_mode||'inapp_page';
+    if(mode==='external'){Linking.openURL(funyMonEventUrl).catch(()=>{});return;}
+    if(mode==='inapp_bottom_sheet'){setSheetTitle(funyMonTitle||'FUNY MON 이벤트');setSheetUrl(funyMonEventUrl);return;}
+    router.push({pathname:'/web',params:{url:encodeURIComponent(funyMonEventUrl),title:'',backOnly:'1',inAppOnly:'1'}} as any);
+  };
   const openViewer=(index:number)=>{const next=Math.max(0,Math.min(heroImages.length-1,index));setViewerIndex(next);setViewerOpen(true);setTimeout(()=>viewerRef.current?.scrollTo({x:SW*next,y:0,animated:false}),80)};
   const goBack=()=>{if(router.canGoBack()){router.back();return;}router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any)};
   const goToMap=()=>router.replace({pathname:'/(tabs)/map',params:{country:shop.country_code}} as any);
@@ -295,7 +309,7 @@ export default function ShopDetail(){
           </View>
           {!!location&&<View style={styles.locationRow}><Ionicons name="location-outline" size={15} color={accent}/><Text style={styles.location}>{location}</Text></View>}
           <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{FEATURE[k]||k}</Text></View>)}</View>
-          {activeEvent?(activeEvent.event_url?<Pressable onPress={()=>{setSheetTitle(activeEvent.title||'FUNY MON 이벤트');setSheetUrl(String(activeEvent.event_url))}} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text><Text style={styles.eventArrow}>›</Text></Pressable>:<View style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><Text numberOfLines={2} style={styles.eventText}>{activeEvent.title}</Text></View>):null}
+          {funyMonEventActive?<Pressable onPress={openFunyMonEvent} style={styles.eventCard}><Text style={styles.eventBadge}>FUNY MON</Text><View style={styles.eventCopy}><Text numberOfLines={2} style={styles.eventText}>{funyMonTitle}</Text><Text style={styles.eventPeriod}>{funyMonEventPeriod}</Text></View><Text style={styles.eventArrow}>›</Text></Pressable>:null}
           <View style={styles.actionGrid}>
             {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
             {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
@@ -453,8 +467,10 @@ const styles=StyleSheet.create({
   tagText:{fontSize:10.5,fontWeight:'700',color:'#7358C5'},
 
   eventCard:{marginTop:14,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
-  eventBadge:{fontSize:9,fontWeight:'900',color:'#fff',backgroundColor:'#EE7847',paddingHorizontal:8,paddingVertical:5,borderRadius:10},
-  eventText:{flex:1,fontSize:12,fontWeight:'800',color:C.textSoft},
+  eventBadge:{fontSize:8.5,fontWeight:'900',color:'#fff',backgroundColor:'#EE7847',paddingHorizontal:8,paddingVertical:5,borderRadius:10},
+  eventCopy:{flex:1,minWidth:0},
+  eventText:{fontSize:12,fontWeight:'800',color:C.textSoft},
+  eventPeriod:{marginTop:3,fontSize:9.5,fontWeight:'600',color:'#8D8591'},
   eventArrow:{fontSize:22,color:C.muted},
 
   actionGrid:{marginTop:17,flexDirection:'row',gap:8,alignItems:'stretch'},

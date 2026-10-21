@@ -20,7 +20,7 @@
   let root=null,assertTimer=0,assertCount=0,current=null;
 
   function overlay(open){
-    post({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:overlaySource});
+    post({type:'FUNY_WEB_OVERLAY_STATE',open:!!open,source:overlaySource,navMode:page==='TCG_MAP'?'dim':'hide'});
   }
   function stopAssert(){
     if(assertTimer){clearInterval(assertTimer);assertTimer=0}

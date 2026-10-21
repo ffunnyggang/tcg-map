@@ -6,7 +6,8 @@ import { supabase } from '../lib/supabase';
 import {
   addNotificationResponseListener,
   handleInitialNotificationResponse,
-  syncPushTokenIfEnabled,
+  requestInitialPushPermissionOnIOS,
+  syncPushRegistrationAfterLogin,
 } from '../lib/notifications';
 
 function NotificationBootstrap(){
@@ -15,10 +16,14 @@ function NotificationBootstrap(){
   useEffect(()=>{
     const disposeResponse=addNotificationResponseListener(router);
     const timer=setTimeout(()=>{void handleInitialNotificationResponse(router)},450);
-    void syncPushTokenIfEnabled().catch(()=>{});
+
+    void (async()=>{
+      await requestInitialPushPermissionOnIOS().catch(()=>{});
+      await syncPushRegistrationAfterLogin().catch(()=>{});
+    })();
 
     const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>{
-      if(session?.user)setTimeout(()=>{void syncPushTokenIfEnabled().catch(()=>{})},0);
+      if(session?.user)setTimeout(()=>{void syncPushRegistrationAfterLogin().catch(()=>{})},0);
     });
 
     return ()=>{

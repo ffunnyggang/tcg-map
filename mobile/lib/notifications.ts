@@ -110,6 +110,78 @@ async function registerGrantedPushToken(permissionStatus='granted'){
   return token;
 }
 
+async function getExistingNotificationPreferences(userId:string){
+  const {data,error}=await supabase
+    .from('notification_preferences')
+    .select('*')
+    .eq('user_id',userId)
+    .maybeSingle();
+  if(error)throw error;
+  return data as NotificationPreference|null;
+}
+
+async function enablePushForFirstPermissionGrant(){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return false;
+
+  const existing=await getExistingNotificationPreferences(user.id);
+  if(existing&&existing.push_enabled===false)return false;
+
+  if(!existing){
+    const {error}=await supabase
+      .from('notification_preferences')
+      .insert({...defaultPrefs(user.id),push_enabled:true});
+    if(error)throw error;
+  }
+
+  const permission=await Notifications.getPermissionsAsync();
+  if(permission.status!=='granted')return false;
+  await registerGrantedPushToken(permission.status);
+
+  if(existing?.push_enabled===true)return true;
+  if(existing)await savePreferencePatch({push_enabled:true});
+  return true;
+}
+
+export async function requestInitialPushPermissionOnIOS(){
+  if(Platform.OS!=='ios')return {requested:false as const,status:'unsupported',registered:false};
+
+  let permission=await Notifications.getPermissionsAsync();
+  const requested=permission.status==='undetermined';
+  if(requested)permission=await Notifications.requestPermissionsAsync();
+
+  if(permission.status!=='granted'){
+    return {requested,status:permission.status,registered:false};
+  }
+
+  const registered=await enablePushForFirstPermissionGrant().catch(()=>false);
+  return {requested,status:permission.status,registered};
+}
+
+export async function syncPushRegistrationAfterLogin(){
+  if(Platform.OS!=='ios')return syncPushTokenIfEnabled();
+
+  const permission=await Notifications.getPermissionsAsync().catch(()=>null);
+  if(permission?.status!=='granted')return false;
+
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return false;
+
+  const existing=await getExistingNotificationPreferences(user.id);
+  if(!existing){
+    const {error}=await supabase
+      .from('notification_preferences')
+      .insert({...defaultPrefs(user.id),push_enabled:true});
+    if(error)throw error;
+    await registerGrantedPushToken(permission.status);
+    return true;
+  }
+
+  if(!existing.push_enabled)return false;
+  await registerGrantedPushToken(permission.status);
+  return true;
+}
+
 export async function enablePushNotifications(){
   await ensureNotificationPreferences();
   let permission=await Notifications.getPermissionsAsync();

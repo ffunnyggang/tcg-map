@@ -1,9 +1,10 @@
 import { useCallback,useEffect,useRef,useState } from 'react';
-import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StatusBar,StyleSheet,Text,View } from 'react-native';
+import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Platform,Pressable,ScrollView,Share,StatusBar,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack,useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,ShopContent,ShopReview,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
 import { C,T,UI,shadow } from '../../lib/theme';
+import { resolveFloatingActionBottom } from '../../lib/tabMetrics';
 import LivePinButton from '../../components/LivePinButton';
 import InAppWebSheet from '../../components/InAppWebSheet';
 import { useAppLanguage } from '../../lib/i18n';
@@ -112,7 +113,7 @@ export default function ShopDetail(){
   const navBottom=Math.max(insets.bottom,10);
   const heroHeight=280+insets.top;
   const homeLivePinBottom=navBottom+54+10;
-  const tcgMapBottom=Math.max(navBottom,10)+12;
+  const tcgMapBottom=resolveFloatingActionBottom(insets.bottom,Platform.OS==='android',true);
 
   useFocusEffect(useCallback(()=>{StatusBar.setHidden(false,'none');},[]));
 

@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { deactivateCurrentPushDevice } from './notifications';
 
 export async function signUp(email:string,password:string,nickname:string){
   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{nickname:nickname.trim()}}});
@@ -17,6 +18,7 @@ export async function signIn(email:string,password:string){
 }
 
 export async function signOut(){
+  await deactivateCurrentPushDevice().catch(()=>{});
   const {error}=await supabase.auth.signOut();
   if(error)throw error;
 }

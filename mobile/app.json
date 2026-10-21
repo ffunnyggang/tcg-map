@@ -35,7 +35,14 @@
           }
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "enableRemoteNotifications": true,
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": false,

@@ -211,6 +211,7 @@
     if(selectedMarkerId&&markers.has(selectedMarkerId))markers.get(selectedMarkerId).setIcon(markerIcon(false));
     selectedMarkerId=null;
   }
+  window.FUNY_MAP_BALLOONS?.register?.('market',closePopup);
   function popupHtml(x){
     return '<div class="market-popup-bubble"><button type="button" class="market-popup-card" data-market-popup-id="'+esc(x.id)+'">'+
       (x.thumbnail_url?'<img src="'+esc(x.thumbnail_url)+'" alt="" referrerpolicy="no-referrer">':'<span class="market-popup-ph">NO IMAGE</span>')+
@@ -218,7 +219,9 @@
   }
   function selectMarker(x,m){
     const map=window.FUNY_NAVER_MAP_API?.getMap?.();if(!map)return;
+    window.__FUNY_LAST_MAP_MARKER_TAP=Date.now();
     if(selectedMarkerId===x.id){closePopup();return}
+    window.FUNY_MAP_BALLOONS?.activate?.('market');
     closePopup();selectedMarkerId=x.id;m.setIcon(markerIcon(true));
     popup=new naver.maps.InfoWindow({content:popupHtml(x),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-8),disableAutoPan:true});
     popup.open(map,m);

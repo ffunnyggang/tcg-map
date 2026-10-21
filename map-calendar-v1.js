@@ -3,6 +3,9 @@
   const API_KEY='AIzaSyBFdEvEvlFJNfiV1shZnHyi_h_I47EKYao';
   const CALENDAR_ID='32475a73be5a7c48db3c46d180e659e870c8ca823b7d62071f3586387c91b4ca@group.calendar.google.com';
   const markers=[];
+  let activeEventInfo=null;
+  const closeEventPopup=()=>{try{activeEventInfo?.close()}catch(_){}activeEventInfo=null};
+  window.FUNY_MAP_BALLOONS?.register?.('event',closeEventPopup);
   const pinSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
   const clockSvg='<svg class="map-popup-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -32,7 +35,7 @@
         const marker=new naver.maps.Marker({map:naverMap,position:new naver.maps.LatLng(pos.lat,pos.lng),icon:icon(e),zIndex:150});
         const html=popup(e);
         const iw=new naver.maps.InfoWindow({content:html,borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-10)});
-        naver.maps.Event.addListener(marker,'click',()=>{try{if(window.activeInfoWindow===iw){iw.close();window.activeInfoWindow=null;return}if(window.activeInfoWindow)window.activeInfoWindow.close()}catch(_){}iw.open(naverMap,marker);try{window.activeInfoWindow=iw}catch(_){}});
+        naver.maps.Event.addListener(marker,'click',()=>{window.__FUNY_LAST_MAP_MARKER_TAP=Date.now();if(activeEventInfo===iw){closeEventPopup();return}window.FUNY_MAP_BALLOONS?.activate?.('event');closeEventPopup();iw.open(naverMap,marker);activeEventInfo=iw});
         marker.__event=e;markers.push(marker)
       }
       ready=true;

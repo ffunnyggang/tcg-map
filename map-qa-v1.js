@@ -137,10 +137,19 @@ const $=s=>document.querySelector(s);
   function popupHtml(v){
     return '<div class="map-popup-bubble qa-vending-popup"><div class="map-shop-popup"><span class="qa-popup-copy"><strong class="qa-popup-name">'+esc(v.name)+'</strong><span class="qa-popup-address-row">'+addressIcon+'<span class="qa-popup-address">'+esc(v.address)+'</span></span></span><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></div></div>';
   }
-  function selectVending(v,marker){
+  function closeVendingSelection(){
+    const id=state.selectedVending;
+    if(id&&vendingMarkers.get(id))try{vendingMarkers.get(id).setIcon(vendingIcon(false,id))}catch(_){}
+    state.selectedVending=null;
     try{if(activeInfoWindow)activeInfoWindow.close()}catch(_){}
-    if(state.selectedVending===v.id){state.selectedVending=null;marker.setIcon(vendingIcon(false,v.id));try{activeInfoWindow=null}catch(_){};return}
-    if(state.selectedVending&&vendingMarkers.get(state.selectedVending))vendingMarkers.get(state.selectedVending).setIcon(vendingIcon(false,state.selectedVending));
+    try{activeInfoWindow=null}catch(_){}
+  }
+  window.FUNY_MAP_BALLOONS?.register?.('vending',closeVendingSelection);
+  function selectVending(v,marker){
+    window.__FUNY_LAST_MAP_MARKER_TAP=Date.now();
+    if(state.selectedVending===v.id){closeVendingSelection();return}
+    window.FUNY_MAP_BALLOONS?.activate?.('vending');
+    closeVendingSelection();
     state.selectedVending=v.id;marker.setIcon(vendingIcon(true,v.id));
     const iw=new naver.maps.InfoWindow({content:popupHtml(v),borderWidth:0,backgroundColor:'transparent',anchorSize:new naver.maps.Size(0,0),pixelOffset:new naver.maps.Point(0,-12)});
     iw.open(naverMap,marker);try{activeInfoWindow=iw}catch(_){}

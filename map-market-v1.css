@@ -1533,7 +1533,7 @@ body.market-page .market-overlay-listbar{
 /* TCG 嫄곕옒 listbar: sort left / item count right */
 body.market-page .market-overlay-listbar{
   display:flex!important;
-  align-items:center!important;
+  align-items:flex-end!important;
   justify-content:flex-start!important;
   gap:10px!important;
   height:45px!important;
@@ -1547,9 +1547,12 @@ body.market-page .market-overlay-sort{
 }
 body.market-page #marketOverlayListCount{
   order:2!important;
+  align-self:flex-end!important;
   margin-left:auto!important;
   margin-right:0!important;
+  padding-bottom:1px!important;
   text-align:right!important;
+  line-height:1.2!important;
   color:#625b67!important;
   font-size:11px!important;
   font-weight:750!important

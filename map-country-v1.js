@@ -3,7 +3,7 @@
   if(window.__FUNY_COUNTRY_LOADER)return;
   window.__FUNY_COUNTRY_LOADER=true;
   const core=document.createElement('script');
-  core.src='map-country-core-v1.js?v=20261021-country-active1';
+  core.src='map-country-core-v1.js?v=20261022-balloon1';
   core.async=false;
   core.onload=()=>{
     if(document.querySelector('script[data-funy-country-stability]'))return;

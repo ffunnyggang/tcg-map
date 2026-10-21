@@ -1,7 +1,7 @@
-import { useEffect,useRef,useState } from 'react';
+import { useCallback,useEffect,useRef,useState } from 'react';
 import { ActivityIndicator,Alert,Animated,Dimensions,Easing,Image,Linking,Modal,Pressable,ScrollView,Share,StatusBar,StyleSheet,Text,View } from 'react-native';
 import { SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Stack,useLocalSearchParams,useRouter } from 'expo-router';
+import { Stack,useFocusEffect,useLocalSearchParams,useRouter } from 'expo-router';
 import { AppShop,FunyMonEvent,ShopContent,ShopReview,getActiveFunyMonEvents,getFavoriteIds,getShop,getShopContents,getShopReview,shopImageUrl,toggleFavorite } from '../../lib/shops';
 import { C,T,UI,shadow } from '../../lib/theme';
 import LivePinButton from '../../components/LivePinButton';
@@ -113,6 +113,8 @@ export default function ShopDetail(){
   const heroHeight=280+insets.top;
   const homeLivePinBottom=navBottom+54+10;
   const tcgMapBottom=Math.max(navBottom,10);
+
+  useFocusEffect(useCallback(()=>{StatusBar.setHidden(false,'none');},[]));
 
   useEffect(()=>{
     if(!id)return;
@@ -266,7 +268,8 @@ export default function ShopDetail(){
   const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
   return <View style={styles.root}>
-    <StatusBar barStyle={viewerOpen||(!stickyHeader&&heroImages.length>0)?'light-content':'dark-content'} backgroundColor="transparent" translucent/>
+    <StatusBar hidden={false} barStyle={viewerOpen||(!stickyHeader&&heroImages.length>0)?'light-content':'dark-content'} backgroundColor="transparent" translucent/>
+    {!viewerOpen&&!stickyHeader&&heroImages.length>0?<View pointerEvents="none" style={[styles.statusBarMediaScrim,{height:insets.top}]}/>:null}
     {!viewerOpen&&(stickyHeader||heroImages.length===0)?<View pointerEvents="none" style={[styles.statusBarSolid,{height:insets.top}]}/>:null}
     <Stack.Screen options={{headerShown:false}}/>
 
@@ -400,6 +403,7 @@ export default function ShopDetail(){
 const styles=StyleSheet.create({
   root:{flex:1,backgroundColor:'#FFFFFF'},
   statusBarSolid:{position:'absolute',left:0,right:0,top:0,backgroundColor:'#fff',zIndex:2147483000,elevation:2147483000},
+  statusBarMediaScrim:{position:'absolute',left:0,right:0,top:0,backgroundColor:'rgba(0,0,0,.22)',zIndex:2147482900,elevation:2147482900},
   loading:{flex:1,justifyContent:'center',backgroundColor:'#fff'},
   scrollContent:{paddingBottom:120,backgroundColor:'#F8F6FF'},
 

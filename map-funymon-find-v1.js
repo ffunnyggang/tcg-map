@@ -65,6 +65,8 @@
   }
   async function refresh(){
     try{
+      const japan=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
+      if(japan){removeControl();return}
       const settings=await get('funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds&id=eq.default&limit=1');
       const setting=settings?.[0];
       if(!setting?.is_enabled||!setting.event_id){removeControl();return}
@@ -84,5 +86,5 @@
   refresh();
   window.addEventListener('pageshow',refresh);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
-  window.addEventListener('funy:mapdatachange',()=>{if(!control)refresh()});
+  window.addEventListener('funy:mapdatachange',refresh);
 })();

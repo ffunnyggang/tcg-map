@@ -586,7 +586,7 @@
   }
 
   function buildFab(){
-    const home=$('#home-view');if(!home||$('#marketFabWrap'))return;
+    const home=$('#home-view');if(!home||$('#marketFabWrap')||isJapan())return;
     const wrap=document.createElement('div');wrap.id='marketFabWrap';wrap.className='market-fab-wrap';
     const appMode=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell');
     const legacyNativeLauncher=false;
@@ -612,6 +612,24 @@
     wrap.querySelector('.market-fab-action[href]')?.addEventListener('click',()=>setOpen(false));
     wrap.querySelector('[data-open-market-overlay]').onclick=()=>{setOpen(false);navigateMarketPage()};
     compactOnScroll(wrap,window);compactOnScroll(wrap,$('.list-wrap'));
+  }
+  function syncFabForCountry(){
+    let wrap=$('#marketFabWrap');
+    if(isJapan()){
+      if(wrap){
+        const menu=wrap.querySelector('.market-fab-menu'),dim=wrap.querySelector('.market-fab-dim'),main=wrap.querySelector('.market-fab-main');
+        if(menu)menu.hidden=true;
+        if(dim)dim.hidden=true;
+        wrap.classList.remove('open','is-scrolling');
+        if(main){main.classList.remove('open');main.setAttribute('aria-expanded','false')}
+        const plus=wrap.querySelector('.market-fab-plus');if(plus)plus.textContent='＋';
+        wrap.hidden=true;
+      }
+      postNativeMarketOverlayState(false);
+      return;
+    }
+    if(!wrap){buildFab();wrap=$('#marketFabWrap')}
+    if(wrap)wrap.hidden=false;
   }
 
   function buildOverlay(){
@@ -1789,8 +1807,8 @@
   },true);
 
   const search=$('#map-shop-search');search?.addEventListener('input',()=>{renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);updateCounts();syncMarkers()});
-  window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncLayerOrder();syncMarkers()});
-  new MutationObserver(()=>{ensureLayerChip();if(isJapan()&&marketTabActive){document.querySelector('.qa-list-tab[data-tab="shops"]')?.click()}syncMarkers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
+  window.addEventListener('funy:mapdatachange',()=>{ensureLayerChip();syncLayerOrder();syncFabForCountry();syncMarkers()});
+  new MutationObserver(()=>{ensureLayerChip();syncFabForCountry();if(isJapan()&&marketTabActive){document.querySelector('.qa-list-tab[data-tab="shops"]')?.click()}syncMarkers()}).observe(document.body,{attributes:true,attributeFilter:['class']});
 
   const sheetRecoveryObserver=new MutationObserver(()=>ensureMarketSheetControlBridge());
   const sheetRecoveryRoot=document.querySelector('.list-wrap');
@@ -1830,9 +1848,9 @@
   const mapReadyPromise=waitForMap().then(map=>{if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup());syncMarkers()}return map});
   const tabs=await waitForQaTabs().then(readyTabs=>{if(readyTabs)setupMarketPanel(readyTabs);return readyTabs});
   syncMarketSearchPlaceholder();syncMarketTabLabels();
-  ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();
+  ensureLayerChip();observeLayerOrder();syncLayerOrder();syncFabForCountry();
   const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
-  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}else repairShopTabUI()},900);
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();syncFabForCountry();bindHorizontalScrollers();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}else repairShopTabUI()},900);
   window.addEventListener('resize',()=>{const sheet=document.querySelector('.list-wrap'),mode=sheet?.dataset.sheet||'half';requestAnimationFrame(()=>marketApplySheetMode(mode,false))});
   window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
   await Promise.all([rowsReadyPromise,mapReadyPromise]);

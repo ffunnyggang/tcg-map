@@ -73,8 +73,10 @@
 /* Sticky content below a 54px common header */
 .info-tabs{top:var(--funy-header-h)!important}
 html.app-shell.live-pin-page .filters{top:54px!important}
-.portal-shell .talk-body>.filters{top:54px!important}
-.portal-shell .popular-sort.show{top:104px!important}
+html:not(.app-shell) .portal-shell .talk-body>.filters{top:54px!important}
+html:not(.app-shell) .portal-shell .popular-sort.show{top:104px!important}
+html.app-shell .portal-shell .talk-body>.filters{top:0!important}
+html.app-shell .portal-shell .popular-sort.show{top:auto!important}
 
 /* Common titled sub-page header: exact back-button style from 게시글 관리 */
 .funy-sub-header{

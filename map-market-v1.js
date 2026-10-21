@@ -621,7 +621,7 @@
       '<div class="market-overlay-sticky-tools"><div class="market-overlay-filter-row">'+filterStripHtml('market-overlay-filter')+'</div>'+
       '<div class="market-overlay-listbar"><span id="marketOverlayListCount">매물 0개</span>'+sortMenuHtml('market-overlay-sort')+'</div></div>'+
       '<main class="market-overlay-body"><div class="market-sheet-list" id="marketOverlayList"></div></main>'+
-      '<button type="button" class="market-overlay-register" data-open-market-register><span class="market-overlay-register-plus">＋</span><span class="market-overlay-register-label">매물 등록</span></button>';
+      '<button type="button" class="market-overlay-register" data-open-market-register><span class="market-overlay-register-plus">+</span><span class="market-overlay-register-label">매물 등록</span></button>';
     document.body.appendChild(el);
     const floatingRegister=el.querySelector('[data-open-market-register]');
     el.querySelector('.market-overlay-close').onclick=closeOverlay;

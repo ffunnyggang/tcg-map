@@ -2787,3 +2787,11 @@ html.market-standalone-page body.market-page .market-sort-menu button.active{
 html.app-shell body.market-page .market-overlay-register{
   bottom:calc(max(var(--funy-native-safe-bottom,0px),env(safe-area-inset-bottom,0px),40px) + 14px)!important
 }
+
+
+/* MARKET register plus = TALK post create plus */
+body.market-page .market-overlay-register-plus{
+  font:300 26px/1 Arial,sans-serif!important;
+  line-height:1!important;
+  transform:translateY(-1px)!important
+}

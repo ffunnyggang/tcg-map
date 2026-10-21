@@ -107,8 +107,27 @@ html.funy-talk-post-mode:not(.app-shell) .talk-post-page{padding:18px 16px 64px;
   translate:none!important;
   flex:0 0 4px!important
 }
+.talk-form-sheet .talk-form-scroll{
+  padding:0 16px 16px!important
+}
+.talk-form-sheet .talk-form-footer{
+  position:relative!important;
+  z-index:12!important;
+  flex:0 0 auto!important;
+  padding:10px 16px calc(max(env(safe-area-inset-bottom,0px),16px) + 8px)!important;
+  background:#fff!important;
+  border-top:1px solid #f1edf3!important;
+  box-shadow:0 -8px 22px rgba(32,24,44,.06)!important
+}
+.talk-form-sheet .talk-form-footer .talk-submit{
+  width:100%!important;
+  margin:0!important
+}
+html.app-shell .talk-form-sheet .talk-form-footer{
+  padding-bottom:calc(max(var(--funy-native-safe-bottom,0px),env(safe-area-inset-bottom,0px),40px) + 8px)!important
+}
 `;document.head.appendChild(style);
-function modalShell(id,title,body){document.getElementById(id)?.remove();const el=document.createElement('div');el.id=id;el.className='talk-community-modal';const singleDim=id==='funyTalkEditor'||id==='funyTalkPostEdit';if(singleDim){el.dataset.funySingleDim='1';document.documentElement.classList.add('funy-talk-form-open')}const top=`<div class="talk-community-top"><div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div></div>`;const regularTop=`<div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div>`;el.innerHTML=`<div class="talk-community-sheet${singleDim?' talk-form-sheet':''}">${singleDim?top+'<div class="talk-form-scroll">'+body+'</div>':regularTop+body}</div>`;const close=()=>{el.remove();if(singleDim&&!document.querySelector('.talk-community-modal[data-funy-single-dim="1"]'))document.documentElement.classList.remove('funy-talk-form-open')};el.querySelector('.talk-community-close').onclick=close;el.addEventListener('click',e=>{if(e.target===el)close()});document.body.appendChild(el);return el}
+function modalShell(id,title,body){document.getElementById(id)?.remove();const el=document.createElement('div');el.id=id;el.className='talk-community-modal';const singleDim=id==='funyTalkEditor'||id==='funyTalkPostEdit';if(singleDim){el.dataset.funySingleDim='1';document.documentElement.classList.add('funy-talk-form-open')}const top=`<div class="talk-community-top"><div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div></div>`;const regularTop=`<div class="talk-community-handle"></div><div class="talk-community-head"><strong>${esc(title)}</strong><button class="talk-community-close" type="button">×</button></div>`;el.innerHTML=`<div class="talk-community-sheet${singleDim?' talk-form-sheet':''}">${singleDim?top+'<div class="talk-form-scroll">'+body+'</div>':regularTop+body}</div>`;if(singleDim){const sheet=el.querySelector('.talk-form-sheet'),scroll=el.querySelector('.talk-form-scroll'),submit=scroll?.querySelector('.talk-submit');if(sheet&&submit){const footer=document.createElement('div');footer.className='talk-form-footer';footer.appendChild(submit);sheet.appendChild(footer)}}const close=()=>{el.remove();if(singleDim&&!document.querySelector('.talk-community-modal[data-funy-single-dim="1"]'))document.documentElement.classList.remove('funy-talk-form-open')};el.querySelector('.talk-community-close').onclick=close;el.addEventListener('click',e=>{if(e.target===el)close()});document.body.appendChild(el);return el}
 function pokamoLimit(n){if(n>=100)return 0;if(n>=50)return 3;if(n>=25)return 6;if(n>=10)return 12;return 30}
 async function loadFuny(){const r=await fetch(SB+'/rest/v1/community_posts?select=id,user_id,author_nickname,category,title,body,created_at,view_count,like_count,comment_count,report_count,community_post_images(storage_path,sort_order)&status=eq.published&order=created_at.desc&limit=80',{headers:headers(false),cache:'no-store'});if(!r.ok)throw Error('FUNY feed '+r.status);const rows=await r.json();return rows.map(x=>{const imageRows=(x.community_post_images||[]).sort((a,b)=>a.sort_order-b.sort_order),imgs=imageRows.map(i=>publicImage(i.storage_path));return{source:'funy',imageRows,id:x.id,ownerUserId:x.user_id,category:x.category,title:x.title,excerpt:x.body,body:x.body,author:x.author_nickname,publishedAt:x.created_at,image:imgs[0]||'',images:imgs,views:Number(x.view_count||0),likes:Number(x.like_count||0),comments:Number(x.comment_count||0),popularityScore:Number(x.like_count||0)*2+Number(x.comment_count||0)*3+Number(x.view_count||0)*.05}})}
 async function loadPokamo(){try{const r=await fetch('data/pokamo-feed.json?ts='+Date.now());if(!r.ok)throw Error();const d=await r.json();return(d.items||[]).map(x=>({...x,source:'pokamo'}))}catch(_){return[]}}

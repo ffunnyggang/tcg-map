@@ -522,3 +522,32 @@ html.app-shell.funy-map-qa .qa-geocode-status{top:calc(max(var(--funy-native-saf
   html.app-shell.funy-map-qa .map-search-float{top:calc(max(var(--funy-native-safe-top,0px),env(safe-area-inset-top,0px),28px) + 10px)!important}
   html.app-shell.funy-map-qa .map-filter-bar{top:calc(max(var(--funy-native-safe-top,0px),env(safe-area-inset-top,0px),28px) + 64px)!important}
 }
+
+
+/* APP MAP sheet chrome + bottom scroll extension v20261021 */
+@media(max-width:430px){
+  html.app-shell.funy-map-qa body:not(.country-japan) .map-shop-sheet{
+    bottom:0!important;
+    height:auto!important;
+    max-height:none!important;
+    padding-bottom:0!important
+  }
+  html.app-shell.funy-map-qa body:not(.country-japan) .map-shop-sheet>.qa-sheet-sticky-head{
+    margin-left:-14px!important;
+    margin-right:-14px!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+    background:#f9f8fa!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    overflow:hidden!important;
+    isolation:isolate!important
+  }
+  html.app-shell.funy-map-qa body:not(.country-japan) .map-shop-sheet .shop-list{
+    padding-bottom:calc(58px + var(--funy-native-safe-bottom,16px) + 28px)!important
+  }
+  html.app-shell.funy-map-qa body:not(.country-japan) .map-shop-sheet .qa-vending-panel,
+  html.app-shell.funy-map-qa body:not(.country-japan) .map-shop-sheet .market-sheet-panel{
+    padding-bottom:calc(58px + var(--funy-native-safe-bottom,16px) + 28px)!important
+  }
+}

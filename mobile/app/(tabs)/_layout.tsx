@@ -42,8 +42,12 @@ const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSource
 };
 
 function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
-  if(kind==='my')return <Ionicons name="person-outline" size={22} color={focused?'#5C36B5':'#17151A'}/>;
-  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,{tintColor:focused?'#5C36B5':'#17151A'}]}/>;
+  return <View style={styles.iconSlot}>
+    {kind==='my'
+      ?<Ionicons name="person-outline" size={21} color={focused?'#5C36B5':'#17151A'}/>
+      :<Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,{tintColor:focused?'#5C36B5':'#17151A'}]}/>
+    }
+  </View>;
 }
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
@@ -90,7 +94,8 @@ const styles=StyleSheet.create({
   androidItem:{height:54,borderRadius:0,overflow:'visible'},
   itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.7,borderColor:'rgba(126,92,226,.22)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:8,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.72},
+  iconSlot:{width:25,height:25,alignItems:'center',justifyContent:'center'},
   icon:{width:25,height:25},
-  label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:'#17151A',letterSpacing:-.05,textAlign:'center'},
+  label:{width:'100%',height:12,fontSize:9.5,lineHeight:12,fontWeight:'800',color:'#17151A',letterSpacing:-.05,textAlign:'center',textAlignVertical:'center',includeFontPadding:false},
   labelActive:{fontWeight:'900',color:'#5C36B5'}
 });

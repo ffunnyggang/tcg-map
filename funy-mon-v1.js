@@ -108,17 +108,44 @@
     const el=ensurePendingEntryButton(),rows=pendingEntries(),count=document.getElementById('funyMonPendingEntryCount');
     el.hidden=!rows.length;if(count)count.textContent=rows.length+'건 · 이어서 응모하기';
   }
-  function syncEventDetailBanner(){
+  async function loadDetailEventConfig(shopId){
+    try{
+      const qs=new URLSearchParams({
+        select:'detail_funymon_event_enabled,detail_funymon_event_title,detail_funymon_event_start_date,detail_funymon_event_end_date,detail_funymon_event_url,detail_funymon_event_link_mode',
+        id:'eq.'+shopId,
+        limit:'1'
+      });
+      const r=await fetch(SUPABASE_URL+'/rest/v1/v_app_shops?'+qs,{headers:{apikey:SUPABASE_KEY},cache:'no-store'});
+      if(!r.ok)return null;
+      const rows=await r.json();
+      return rows?.[0]||null;
+    }catch(_){return null}
+  }
+  function detailEventDateText(value){
+    const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m?m[1]+'. '+m[2]+'. '+m[3]:String(value||'');
+  }
+  async function syncEventDetailBanner(){
     document.querySelector('.funymon-detail-banner')?.remove();
     const m=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!m)return;
     const shopId=m[1].toUpperCase(),ev=window.FUNY_FUNYMON_ACTIVE_EVENTS.get(shopId);if(!ev)return;
+    const cfg=await loadDetailEventConfig(shopId);if(!cfg||cfg.detail_funymon_event_enabled!==true)return;
+    const title=String(cfg.detail_funymon_event_title||'').trim(),start=String(cfg.detail_funymon_event_start_date||'').trim(),end=String(cfg.detail_funymon_event_end_date||'').trim(),rawUrl=String(cfg.detail_funymon_event_url||'').trim(),mode=String(cfg.detail_funymon_event_link_mode||'inapp_page');
+    if(!title||!start||!end||!rawUrl||todayKst()<start||todayKst()>end)return;
+    const current=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!current||current[1].toUpperCase()!==shopId)return;
     const summary=document.querySelector('#detail .summary-card');if(!summary)return;
-    const eventUrls={'KR-SEO-009':'https://funypin.kr/event-thecardroom.html'};
-    const eventUrl=eventUrls[shopId]||'';
-    const box=document.createElement(eventUrl?'a':'div');box.className='funymon-detail-banner';
-    if(eventUrl){box.href=eventUrl;box.setAttribute('aria-label','FUNY MON 이벤트 자세히 보기')}
-    const end=ev.ends_at?new Date(ev.ends_at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-    box.innerHTML='<span class="funymon-detail-kicker">FUNY MON</span><div><b>퍼니몬 출현 중</b><small>'+String(ev.title||'매장 이벤트').replace(/[<>]/g,'')+(end?' · '+end+'까지':'')+'</small></div><i>›</i>';
+    let eventUrl='';try{eventUrl=new URL(rawUrl,location.origin).href}catch(_){return}
+    const box=document.createElement('a');box.className='funymon-detail-banner';box.href=eventUrl;
+    box.setAttribute('aria-label',title+' 자세히 보기');
+    if(mode==='external'){
+      box.target='_blank';box.rel='noopener noreferrer';box.dataset.funyLinkMode='external';
+    }else{
+      box.dataset.funyLinkMode='inapp';
+      box.dataset.funyInappPresentation=mode==='inapp_bottom_sheet'?'bottom_sheet':'page';
+    }
+    box.innerHTML='<span class="funymon-detail-kicker">FUNY MON</span><div><b></b><small></small></div><i>›</i>';
+    box.querySelector('b').textContent=title;
+    box.querySelector('small').textContent=detailEventDateText(start)+' ~ '+detailEventDateText(end);
     summary.insertAdjacentElement('afterend',box);
   }
   function syncActiveEventShops(events){

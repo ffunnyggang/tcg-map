@@ -15,7 +15,12 @@
       btn.setAttribute('aria-label',country==='JP'?'국가 변경 · 일본':'국가 변경 · 한국');
       btn.setAttribute('aria-expanded',String(wrap.classList.contains('open')));
     }
-    wrap.querySelectorAll('[data-country-value]').forEach(x=>x.classList.toggle('active',x.dataset.countryValue===country));
+    const countryItems=[...wrap.querySelectorAll('[data-country-value]'),...document.querySelectorAll('.country-filter-menu [data-country-value]')];
+    [...new Set(countryItems)].forEach(x=>{
+      const active=x.dataset.countryValue===country;
+      x.classList.toggle('active',active);
+      x.setAttribute('aria-current',active?'true':'false');
+    });
   }
   function syncMapEngineVisibility(){
     const naverEl=document.getElementById('naver-map'),googleEl=document.getElementById('google-map');

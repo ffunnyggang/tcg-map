@@ -74,7 +74,7 @@
 .info-tabs{top:var(--funy-header-h)!important}
 html.app-shell.live-pin-page .filters{top:54px!important}
 html:not(.app-shell) .portal-shell .talk-body>.filters{top:54px!important}
-html:not(.app-shell) .portal-shell .popular-sort.show{top:104px!important}
+html:not(.app-shell) .portal-shell .popular-sort.show{top:auto!important}
 html.app-shell .portal-shell .talk-body>.filters{top:0!important}
 html.app-shell .portal-shell .popular-sort.show{top:auto!important}
 

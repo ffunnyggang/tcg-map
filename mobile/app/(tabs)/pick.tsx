@@ -13,7 +13,7 @@ export default function Pick(){
   const [webBack,setWebBack]=useState(false);
   const [scrolling,setScrolling]=useState(false);
   const {setting,ready}=useFloatingAction('pick');
-  const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'web';
+  const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'native';
   const {__tabRefresh}=useLocalSearchParams<{__tabRefresh?:string}>();
   const navigation=useNavigation();
   const insets=useSafeAreaInsets();

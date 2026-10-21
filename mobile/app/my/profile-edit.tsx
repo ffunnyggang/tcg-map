@@ -100,7 +100,7 @@ export default function ProfileEdit(){
       if(pickedDataUrl)avatarUrl=await uploadProfileAvatarDataUrl(pickedDataUrl);else if(pickedUri)avatarUrl=await uploadProfileAvatar(pickedUri,pickedMimeType||'image/jpeg');
       const profile=await updateProfile({nickname:next,avatar_url:avatarUrl||null});
       setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
-      Alert.alert('저장 완료','프로필이 변경되었습니다.',[{text:'확인',onPress:()=>router.replace({pathname:'/account',params:{refresh:String(Date.now())}})}]);
+      Alert.alert('저장 완료','프로필이 변경되었습니다.',[{text:'확인',onPress:()=>router.replace({pathname:'/(tabs)/my',params:{refresh:String(Date.now())}} as any)}]);
     }catch(e:any){Alert.alert('저장 실패',String(e?.message||e));}
     finally{setSaving(false);}
   };

@@ -5,7 +5,7 @@ import FunyWebView,{isShopDetail} from '../components/FunyWebView';
 export default function WebPage(){
   const params=useLocalSearchParams<{url?:string;title?:string;backOnly?:string;inAppOnly?:string}>();
   const router=useRouter();
-  const goBack=()=>{if(router.canGoBack())router.back();else router.replace('/account');};
+  const goBack=()=>{if(router.canGoBack())router.back();else router.replace('/(tabs)/my' as any);};
   const titleValue=Array.isArray(params.title)?params.title[0]:params.title;
   const raw=Array.isArray(params.url)?params.url[0]:params.url;
   let url='https://funypin.kr/';

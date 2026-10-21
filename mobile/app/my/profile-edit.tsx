@@ -8,12 +8,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MySubHeader from '../../components/MySubHeader';
 import { getProfile,nicknameNextChangeAt,removeProfileAvatar,updateProfile,uploadProfileAvatar,uploadProfileAvatarDataUrl } from '../../lib/auth';
 import { C } from '../../lib/theme';
+import { useAppLanguage } from '../../lib/i18n';
 
-const dateLabel=(d:Date)=>`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
-const defaultNickname=(user:any)=>user?`FUNY회원${String(user.id||'').replace(/-/g,'').slice(-4).toUpperCase()}`:'';
+const dateLabel=(d:Date,en=false)=>en?d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}):`${d.getFullYear()}년 ${String(d.getMonth()+1).padStart(2,'0')}월 ${String(d.getDate()).padStart(2,'0')}일`;
+const defaultNickname=(user:any,en=false)=>user?`${en?'FUNY Member':'FUNY회원'}${String(user.id||'').replace(/-/g,'').slice(-4).toUpperCase()}`:'';
 
 export default function ProfileEdit(){
   const router=useRouter();
+  const {language}=useAppLanguage();
+  const en=language==='en';
   const insets=useSafeAreaInsets();
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
@@ -27,12 +30,12 @@ export default function ProfileEdit(){
   const [nextNicknameChange,setNextNicknameChange]=useState<Date|null>(null);
 
   useEffect(()=>{getProfile().then(({profile,user})=>{
-    const generated=defaultNickname(user),socialProvider=['google','apple','kakao'].includes(String(user?.app_metadata?.provider||'').toLowerCase());
+    const generated=defaultNickname(user,en),socialProvider=['google','apple','kakao'].includes(String(user?.app_metadata?.provider||'').toLowerCase());
     const value=socialProvider&&!profile?.nickname_changed_at?generated:(profile?.nickname||generated);
     setNickname(value);setInitialNickname(value);
     setAvatar(profile?.avatar_url||null);
     setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
-  }).catch(e=>Alert.alert('불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[]);
+  }).catch(e=>Alert.alert(en?'Could not load profile':'불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[en]);
 
   const nicknameLocked=!!nextNicknameChange;
   // Keep Hangul Jamo while the iOS IME is composing. Final validation still
@@ -47,7 +50,7 @@ export default function ProfileEdit(){
   .stage img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;will-change:transform}
   .guide{position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none}
   .bottom{height:110px;padding:10px 18px 14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#fff;font-size:12.5px;font-weight:700;gap:12px;background:#18161d}.actions{width:min(100%,320px);display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions button{height:46px;border-radius:12px;font-size:14px;font-weight:900}.cancel{border:1px solid #6c6672;background:#2a272f;color:#fff}.save{border:0;background:#8b6cf0;color:#fff;box-shadow:0 5px 16px rgba(128,98,216,.35)}
-  </style></head><body><div class="top"><strong>프로필 이미지 조정</strong></div><div class="wrap"><div id="stage" class="stage"><img id="img" src=${JSON.stringify(src)}><div class="guide"></div></div></div><div class="bottom"><div>한 손가락으로 이동 · 두 손가락으로 확대/축소</div><div class="actions"><button id="cancel" class="cancel">취소</button><button id="save" class="save">완료</button></div></div><script>
+  </style></head><body><div class="top"><strong>${en?'Adjust profile image':'프로필 이미지 조정'}</strong></div><div class="wrap"><div id="stage" class="stage"><img id="img" src=${JSON.stringify(src)}><div class="guide"></div></div></div><div class="bottom"><div>${en?'Drag with one finger · Pinch with two fingers to zoom':'한 손가락으로 이동 · 두 손가락으로 확대/축소'}</div><div class="actions"><button id="cancel" class="cancel">${en?'Cancel':'취소'}</button><button id="save" class="save">${en?'Done':'완료'}</button></div></div><script>
   (function(){
     var V=300,img=document.getElementById('img'),stage=document.getElementById('stage'),x=0,y=0,scale=1,minScale=1,start=null,pinch=null;
     function clamp(){var w=img.naturalWidth*scale,h=img.naturalHeight*scale;x=Math.min(0,Math.max(V-w,x));y=Math.min(0,Math.max(V-h,y));}
@@ -65,7 +68,7 @@ export default function ProfileEdit(){
   const pickAvatar=async()=>{
     if(Platform.OS==='ios'){
       const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if(!permission.granted){Alert.alert('사진 권한 필요','프로필 이미지를 변경하려면 사진 접근 권한이 필요해요.');return;}
+      if(!permission.granted){Alert.alert(en?'Photo permission required':'사진 권한 필요',en?'Photo library access is required to change your profile image.':'프로필 이미지를 변경하려면 사진 접근 권한이 필요해요.');return;}
     }
     const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:false,quality:.85,base64:true});
     if(result.canceled||!result.assets?.[0])return;
@@ -79,12 +82,12 @@ export default function ProfileEdit(){
 
   const deleteAvatar=()=>{
     if(!avatar||saving)return;
-    Alert.alert('프로필 이미지를 삭제할까요?','기본 프로필 이미지로 변경돼요.',[
-      {text:'취소',style:'cancel'},
-      {text:'삭제',style:'destructive',onPress:async()=>{
+    Alert.alert(en?'Delete profile image?':'프로필 이미지를 삭제할까요?',en?'Your profile image will return to the default image.':'기본 프로필 이미지로 변경돼요.',[
+      {text:en?'Cancel':'취소',style:'cancel'},
+      {text:en?'Delete':'삭제',style:'destructive',onPress:async()=>{
         setSaving(true);
-        try{await removeProfileAvatar();setAvatar(null);setPickedUri(null);setPickedMimeType(null);setPickedDataUrl(null);setCropSource(null);Alert.alert('삭제 완료','프로필 이미지가 삭제되었습니다.');}
-        catch(e:any){Alert.alert('삭제 실패',String(e?.message||e));}
+        try{await removeProfileAvatar();setAvatar(null);setPickedUri(null);setPickedMimeType(null);setPickedDataUrl(null);setCropSource(null);Alert.alert(en?'Deleted':'삭제 완료',en?'Your profile image has been deleted.':'프로필 이미지가 삭제되었습니다.');}
+        catch(e:any){Alert.alert(en?'Could not delete image':'삭제 실패',String(e?.message||e));}
         finally{setSaving(false);}
       }}
     ]);
@@ -92,22 +95,22 @@ export default function ProfileEdit(){
 
   const save=async()=>{
     const next=nickname.trim();
-    if(!next){Alert.alert('닉네임을 입력해주세요.');return;}
-    if(nicknameLocked&&next!==initialNickname){Alert.alert('아직 닉네임을 변경할 수 없어요',`${dateLabel(nextNicknameChange!)}부터 다시 변경할 수 있어요.`);return;}
+    if(!next){Alert.alert(en?'Please enter a nickname.':'닉네임을 입력해주세요.');return;}
+    if(nicknameLocked&&next!==initialNickname){Alert.alert(en?'Nickname change is not available yet':'아직 닉네임을 변경할 수 없어요',en?'You can change it again from '+dateLabel(nextNicknameChange!,true)+'.':dateLabel(nextNicknameChange!)+'부터 다시 변경할 수 있어요.');return;}
     setSaving(true);
     try{
       let avatarUrl=avatar;
       if(pickedDataUrl)avatarUrl=await uploadProfileAvatarDataUrl(pickedDataUrl);else if(pickedUri)avatarUrl=await uploadProfileAvatar(pickedUri,pickedMimeType||'image/jpeg');
       const profile=await updateProfile({nickname:next,avatar_url:avatarUrl||null});
       setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
-      Alert.alert('저장 완료','프로필이 변경되었습니다.',[{text:'확인',onPress:()=>router.replace({pathname:'/(tabs)/my',params:{refresh:String(Date.now())}} as any)}]);
-    }catch(e:any){Alert.alert('저장 실패',String(e?.message||e));}
+      Alert.alert(en?'Saved':'저장 완료',en?'Your profile has been updated.':'프로필이 변경되었습니다.',[{text:en?'OK':'확인',onPress:()=>router.replace({pathname:'/(tabs)/my',params:{refresh:String(Date.now())}} as any)}]);
+    }catch(e:any){Alert.alert(en?'Could not save profile':'저장 실패',String(e?.message||e));}
     finally{setSaving(false);}
   };
 
   if(loading)return <View style={styles.loading}><ActivityIndicator color={C.purple}/></View>;
   return <View style={styles.root}>
-    <MySubHeader title="프로필 편집"/>
+    <MySubHeader title={en?"Edit profile":"프로필 편집"}/>
     <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS==='ios'?'padding':undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.avatarWrap}>
@@ -118,13 +121,13 @@ export default function ProfileEdit(){
         </View>
 
         <View style={styles.field}>
-          <View style={styles.labelRow}><Text style={styles.label}>닉네임</Text>{nicknameLocked?<Text style={styles.nicknameAvailable}>{dateLabel(nextNicknameChange!)}부터 닉네임 변경 가능</Text>:null}</View>
-          <TextInput value={nickname} onChangeText={onNicknameChange} editable={!nicknameLocked} placeholder="2~12자 · 한글/영문/숫자" placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
+          <View style={styles.labelRow}><Text style={styles.label}>{en?'Nickname':'닉네임'}</Text>{nicknameLocked?<Text style={styles.nicknameAvailable}>{en?'Nickname can be changed from '+dateLabel(nextNicknameChange!,true):dateLabel(nextNicknameChange!)+'부터 닉네임 변경 가능'}</Text>:null}</View>
+          <TextInput value={nickname} onChangeText={onNicknameChange} editable={!nicknameLocked} placeholder={en?'2–12 chars · Korean/English/numbers':'2~12자 · 한글/영문/숫자'} placeholderTextColor={C.muted2} style={[styles.input,nicknameLocked&&styles.inputLocked]}/>
           <Text style={styles.count}>{nickname.length}/12</Text>
-          {!nicknameLocked?<Text style={styles.policy}>한글·영문·숫자 2~12자만 사용할 수 있어요. 공백·특수문자·이모지는 입력되지 않으며, 다른 사용자와 같은 닉네임은 사용할 수 없어요. 변경 후 30일 동안 다시 변경할 수 있어요.</Text>:null}
+          {!nicknameLocked?<Text style={styles.policy}>{en?'Use 2–12 Korean/English letters or numbers. Spaces, special characters, and emoji are not allowed. Nicknames must be unique, and can be changed again after 30 days.':'한글·영문·숫자 2~12자만 사용할 수 있어요. 공백·특수문자·이모지는 입력되지 않으며, 다른 사용자와 같은 닉네임은 사용할 수 없어요. 변경 후 30일 동안 다시 변경할 수 있어요.'}</Text>:null}
         </View>
 
-        <Pressable disabled={saving} onPress={save} style={[styles.saveButton,saving&&{opacity:.55}]}><Text style={styles.saveText}>{saving?'저장 중…':'저장하기'}</Text></Pressable>
+        <Pressable disabled={saving} onPress={save} style={[styles.saveButton,saving&&{opacity:.55}]}><Text style={styles.saveText}>{saving?(en?'Saving…':'저장 중…'):(en?'Save':'저장하기')}</Text></Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
       <Modal visible={!!cropSource} animationType="slide" presentationStyle="fullScreen" onRequestClose={()=>setCropSource(null)}>

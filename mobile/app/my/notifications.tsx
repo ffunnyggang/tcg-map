@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect,useRouter } from 'expo-router';
 import MySubHeader from '../../components/MySubHeader';
 import { C } from '../../lib/theme';
+import { useAppLanguage } from '../../lib/i18n';
 import { supabase } from '../../lib/supabase';
 import {
   fetchNotifications,
@@ -29,22 +30,24 @@ const categoryIcon=(category:FunyNotification['category'])=>{
   }
 };
 
-const timeLabel=(value:string)=>{
+const timeLabel=(value:string,en:boolean)=>{
   const d=new Date(value),now=new Date(),diff=Math.max(0,now.getTime()-d.getTime());
   const min=Math.floor(diff/60000);
-  if(min<1)return '방금';
-  if(min<60)return min+'분 전';
-  if(min<1440)return Math.floor(min/60)+'시간 전';
-  return d.toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'});
+  if(min<1)return en?'Just now':'방금';
+  if(min<60)return en?`${min}m ago`:min+'분 전';
+  if(min<1440)return en?`${Math.floor(min/60)}h ago`:Math.floor(min/60)+'시간 전';
+  return d.toLocaleDateString(en?'en-US':'ko-KR',{month:'numeric',day:'numeric'});
 };
 
-const groupKey=(value:string)=>{
+const groupKey=(value:string,en:boolean)=>{
   const d=new Date(value),now=new Date();
-  return d.toDateString()===now.toDateString()?'오늘':'이전';
+  return d.toDateString()===now.toDateString()?(en?'Today':'오늘'):(en?'Earlier':'이전');
 };
 
 export default function NotificationsScreen(){
   const router=useRouter();
+  const {language}=useAppLanguage();
+  const en=language==='en';
   const [filter,setFilter]=useState<Filter>('all');
   const [items,setItems]=useState<FunyNotification[]>([]);
   const [loading,setLoading]=useState(true);
@@ -82,19 +85,19 @@ export default function NotificationsScreen(){
   let lastGroup='';
   return <View style={styles.root}>
     <MySubHeader
-      title="알림"
-      right={unreadCount>0?<Pressable onPress={()=>void readAll()} hitSlop={8} style={styles.readAll}><Text style={styles.readAllText}>모두 읽음</Text></Pressable>:undefined}
+      title={en?'Notifications':'알림'}
+      right={unreadCount>0?<Pressable onPress={()=>void readAll()} hitSlop={8} style={styles.readAll}><Text style={styles.readAllText}>{en?'Mark all read':'모두 읽음'}</Text></Pressable>:undefined}
     />
     <View style={styles.filters}>
-      <Pressable onPress={()=>setFilter('all')} style={[styles.filter,filter==='all'&&styles.filterOn]}><Text style={[styles.filterText,filter==='all'&&styles.filterTextOn]}>전체</Text></Pressable>
-      <Pressable onPress={()=>setFilter('unread')} style={[styles.filter,filter==='unread'&&styles.filterOn]}><Text style={[styles.filterText,filter==='unread'&&styles.filterTextOn]}>미읽음</Text></Pressable>
+      <Pressable onPress={()=>setFilter('all')} style={[styles.filter,filter==='all'&&styles.filterOn]}><Text style={[styles.filterText,filter==='all'&&styles.filterTextOn]}>{en?'All':'전체'}</Text></Pressable>
+      <Pressable onPress={()=>setFilter('unread')} style={[styles.filter,filter==='unread'&&styles.filterOn]}><Text style={[styles.filterText,filter==='unread'&&styles.filterTextOn]}>{en?'Unread':'미읽음'}</Text></Pressable>
     </View>
 
     {loading?<View style={styles.loading}><ActivityIndicator color={C.purple}/></View>:
-      items.length===0?<View style={styles.empty}><Ionicons name="notifications-outline" size={34} color="#B8B0BD"/><Text style={styles.emptyTitle}>{filter==='unread'?'새로운 알림이 없어요':'아직 받은 알림이 없어요'}</Text><Text style={styles.emptySub}>새 소식이 생기면 이곳에서 알려드릴게요.</Text></View>:
+      items.length===0?<View style={styles.empty}><Ionicons name="notifications-outline" size={34} color="#B8B0BD"/><Text style={styles.emptyTitle}>{filter==='unread'?(en?'No new notifications':'새로운 알림이 없어요'):(en?'No notifications yet':'아직 받은 알림이 없어요')}</Text><Text style={styles.emptySub}>{en?'New activity will appear here.':'새 소식이 생기면 이곳에서 알려드릴게요.'}</Text></View>:
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         {items.map(item=>{
-          const group=groupKey(item.created_at);
+          const group=groupKey(item.created_at,en);
           const showGroup=group!==lastGroup;
           lastGroup=group;
           return <View key={item.id}>
@@ -107,7 +110,7 @@ export default function NotificationsScreen(){
                   {!item.read_at?<View style={styles.unreadDot}/>:null}
                 </View>
                 <Text numberOfLines={2} style={styles.body}>{item.body}</Text>
-                <Text style={styles.time}>{timeLabel(item.created_at)}</Text>
+                <Text style={styles.time}>{timeLabel(item.created_at,en)}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#B8B0BD"/>
             </Pressable>

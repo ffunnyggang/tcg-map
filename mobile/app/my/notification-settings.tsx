@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { useFocusEffect } from 'expo-router';
 import MySubHeader from '../../components/MySubHeader';
 import { C } from '../../lib/theme';
+import { useAppLanguage } from '../../lib/i18n';
 import {
   disablePushNotifications,
   enablePushNotifications,
@@ -15,7 +16,7 @@ import {
 
 type PrefKey='community_enabled'|'market_enabled'|'rewards_enabled'|'missions_enabled'|'coupons_enabled'|'service_notice_enabled';
 
-const ROWS:{key:PrefKey;title:string;sub:string}[]=[
+const ROWS_KO:{key:PrefKey;title:string;sub:string}[]=[
   {key:'community_enabled',title:'TALK 알림',sub:'내 게시글에 새 댓글이 등록되면 알려드려요.'},
   {key:'market_enabled',title:'TCG 거래 알림',sub:'거래 채팅과 매물 상태 변경을 알려드려요.'},
   {key:'rewards_enabled',title:'리워드 · 배지 알림',sub:'리워드 지급과 새 배지 획득을 알려드려요.'},
@@ -23,14 +24,24 @@ const ROWS:{key:PrefKey;title:string;sub:string}[]=[
   {key:'coupons_enabled',title:'쿠폰 알림',sub:'새 쿠폰이 발급되면 알려드려요.'},
   {key:'service_notice_enabled',title:'운영 공지',sub:'FUNY PIN의 중요한 서비스 소식을 알려드려요.'},
 ];
+const ROWS_EN:{key:PrefKey;title:string;sub:string}[]=[
+  {key:'community_enabled',title:'TALK notifications',sub:'Get notified when someone comments on your post.'},
+  {key:'market_enabled',title:'TCG Trade notifications',sub:'Get updates about trade activity and listing status.'},
+  {key:'rewards_enabled',title:'Rewards · Badges',sub:'Get notified about rewards and newly earned badges.'},
+  {key:'missions_enabled',title:'Mission notifications',sub:'Get mission completion and reward updates.'},
+  {key:'coupons_enabled',title:'Coupon notifications',sub:'Get notified when a new coupon is issued.'},
+  {key:'service_notice_enabled',title:'Service notices',sub:'Receive important FUNY PIN service updates.'},
+];
 
-const permissionText=(status:string)=>{
-  if(status==='granted')return '허용됨';
-  if(status==='denied')return '꺼짐';
-  return '요청 전';
+const permissionText=(status:string,en:boolean)=>{
+  if(status==='granted')return en?'Allowed':'허용됨';
+  if(status==='denied')return en?'Off':'꺼짐';
+  return en?'Not requested':'요청 전';
 };
 
 export default function NotificationSettingsScreen(){
+  const {language}=useAppLanguage();
+  const en=language==='en',rows=en?ROWS_EN:ROWS_KO;
   const [prefs,setPrefs]=useState<NotificationPreference|null>(null);
   const [permission,setPermission]=useState('undetermined');
   const [busy,setBusy]=useState<string|null>(null);
@@ -56,9 +67,9 @@ export default function NotificationSettingsScreen(){
         setPermission(result.status);
         if(!result.ok){
           Alert.alert(
-            '알림 권한이 꺼져 있어요',
-            'iPhone 설정에서 FUNY PIN 알림을 허용한 뒤 다시 시도해주세요.',
-            [{text:'취소',style:'cancel'},{text:'설정 열기',onPress:()=>void openSystemNotificationSettings()}]
+            en?'Notifications are turned off':'알림 권한이 꺼져 있어요',
+            en?'Allow FUNY PIN notifications in iPhone Settings, then try again.':'iPhone 설정에서 FUNY PIN 알림을 허용한 뒤 다시 시도해주세요.',
+            [{text:en?'Cancel':'취소',style:'cancel'},{text:en?'Open Settings':'설정 열기',onPress:()=>void openSystemNotificationSettings()}]
           );
         }
       }else{
@@ -66,7 +77,7 @@ export default function NotificationSettingsScreen(){
       }
       await refresh();
     }catch(e:any){
-      Alert.alert('푸시 알림 설정 실패',String(e?.message||e));
+      Alert.alert(en?'Could not update push notifications':'푸시 알림 설정 실패',String(e?.message||e));
     }finally{setBusy(null)}
   };
 
@@ -80,20 +91,20 @@ export default function NotificationSettingsScreen(){
       setPrefs(updated);
     }catch(e:any){
       setPrefs(previous);
-      Alert.alert('알림 설정 실패',String(e?.message||e));
+      Alert.alert(en?'Could not update notification settings':'알림 설정 실패',String(e?.message||e));
     }finally{setBusy(null)}
   };
 
-  if(!prefs)return <View style={styles.root}><MySubHeader title="알림 설정"/><View style={styles.loading}><ActivityIndicator color={C.purple}/></View></View>;
+  if(!prefs)return <View style={styles.root}><MySubHeader title={en?"Notification settings":"알림 설정"}/><View style={styles.loading}><ActivityIndicator color={C.purple}/></View></View>;
 
   return <View style={styles.root}>
-    <MySubHeader title="알림 설정"/>
+    <MySubHeader title={en?"Notification settings":"알림 설정"}/>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
       <View style={styles.primaryCard}>
         <View style={styles.primaryCopy}>
-          <Text style={styles.primaryTitle}>푸시 알림 받기</Text>
-          <Text style={styles.primarySub}>앱을 사용하지 않을 때도 중요한 소식을 받아볼 수 있어요.</Text>
-          <Text style={styles.permission}>iPhone 알림 권한 · {permissionText(permission)}</Text>
+          <Text style={styles.primaryTitle}>{en?'Push notifications':'푸시 알림 받기'}</Text>
+          <Text style={styles.primarySub}>{en?'Receive important updates even when you are not using the app.':'앱을 사용하지 않을 때도 중요한 소식을 받아볼 수 있어요.'}</Text>
+          <Text style={styles.permission}>{en?'iPhone notification permission':'iPhone 알림 권한'} · {permissionText(permission,en)}</Text>
         </View>
         <Switch
           value={prefs.push_enabled}
@@ -104,9 +115,9 @@ export default function NotificationSettingsScreen(){
         />
       </View>
 
-      <Text style={styles.sectionTitle}>알림 유형</Text>
+      <Text style={styles.sectionTitle}>{en?'Notification types':'알림 유형'}</Text>
       <View style={[styles.list,!prefs.push_enabled&&styles.listDisabled]}>
-        {ROWS.map((row,index)=><View key={row.key} style={[styles.row,index<ROWS.length-1&&styles.rowBorder]}>
+        {rows.map((row,index)=><View key={row.key} style={[styles.row,index<rows.length-1&&styles.rowBorder]}>
           <View style={styles.copy}>
             <Text style={styles.title}>{row.title}</Text>
             <Text style={styles.sub}>{row.sub}</Text>
@@ -122,7 +133,7 @@ export default function NotificationSettingsScreen(){
       </View>
 
       <View style={styles.infoBox}>
-        <Text style={styles.infoText}>푸시 알림을 끄더라도 앱 안의 알림함에는 중요한 활동 내역이 계속 저장됩니다.</Text>
+        <Text style={styles.infoText}>{en?'Even if push notifications are off, important activity will still be saved in the in-app notification inbox.':'푸시 알림을 끄더라도 앱 안의 알림함에는 중요한 활동 내역이 계속 저장됩니다.'}</Text>
       </View>
     </ScrollView>
   </View>;

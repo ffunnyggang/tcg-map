@@ -1,2 +1,3 @@
 import MyWebPage from '../../components/MyWebPage';
-export default function Screen(){return <MyWebPage path="my-coupons.html" title="쿠폰함"/>;}
+import { useAppLanguage } from '../../lib/i18n';
+export default function Screen(){const {language}=useAppLanguage();return <MyWebPage path="my-coupons.html" title={language==='en'?'Coupons':'쿠폰함'}/>;}

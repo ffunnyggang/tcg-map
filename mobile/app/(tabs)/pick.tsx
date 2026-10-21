@@ -25,7 +25,7 @@ export default function Pick(){
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK"/></View>:null}
+    {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="PICK" showNotifications/></View>:null}
     <View style={{flex:1}}>
       <FunyWebView key={Platform.OS==='android'?'pick-android-stable':`pick-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url="https://funypin.kr/reviews.html" title="FUNY PIN PICK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} showBackHeader={webBack} backTitle="PICK" floatingActionMode={floatingMode}/>
     </View>

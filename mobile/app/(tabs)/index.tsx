@@ -28,7 +28,7 @@ export default function Home(){
   },[bottom,navigation]);
   useEffect(()=>()=>{navigation.setOptions({tabBarStyle:getTabBarStyle(bottom)});},[bottom,navigation]);
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
-    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader/></View>:null}
+    {!(webBack||shopDetail)?<View style={{zIndex:9999,elevation:9999}}><FunyHeader showNotifications/></View>:null}
     <View style={{flex:1}}>
       <FunyWebView key={`home-${__tabRefresh||'0'}`} url="https://funypin.kr/?homev=20261005-cms-rollback2" title="FUNY PIN HOME" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} showBackHeader={webBack} backTitle="FUNY PIN" floatingActionMode={floatingMode}/>
     </View>

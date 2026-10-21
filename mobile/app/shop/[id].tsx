@@ -12,11 +12,18 @@ import { supabase } from '../../lib/supabase';
 import { WebView } from 'react-native-webview';
 
 const FEATURE:Record<string,string>={single:'싱글카드',graded:'등급카드',vintage:'빈티지카드',oripa:'오리파',box:'박스제품',pack:'낱개팩',supplies:'카드용품',buy:'카드매입',consignment:'위탁판매',grading:'등급대행',play_space:'플레이스페이스',unmanned:'무인매장',tax_free:'면세'};
+const FEATURE_EN:Record<string,string>={single:'Singles',graded:'Graded Cards',vintage:'Vintage Cards',oripa:'Oripa',box:'Booster Boxes',pack:'Packs',supplies:'Accessories',buy:'Buyback',consignment:'Consignment',grading:'Grading Service',play_space:'Play Space',unmanned:'Unmanned Shop',tax_free:'Tax Free'};
 const TCG:Record<string,string>={pokemon:'포켓몬',one_piece:'원피스',onepiece:'원피스',dragon_ball:'드래곤볼',dragonball:'드래곤볼',yugioh:'유희왕',lorcana:'로카나',riftbound:'리프트바운드',other:'기타 TCG'};
+const TCG_EN:Record<string,string>={pokemon:'Pokémon',one_piece:'ONE PIECE',onepiece:'ONE PIECE',dragon_ball:'Dragon Ball',dragonball:'Dragon Ball',yugioh:'Yu-Gi-Oh!',lorcana:'Disney Lorcana',riftbound:'Riftbound',other:'Other TCG'};
+const AREA_EN_FALLBACK:Record<string,string>={강남:'Gangnam',강동:'Gangdong',강북:'Gangbuk',건대:'Konkuk Univ.',관악:'Gwanak',김포:'Gimpo',논현:'Nonhyeon',니혼바시:'Nihombashi',대림:'Daerim',대전:'Daejeon',동대문:'Dongdaemun',마포:'Mapo',목동:'Mokdong',부천:'Bucheon',부평:'Bupyeong',서대문:'Seodaemun',성남:'Seongnam',성수:'Seongsu',송도:'Songdo',송파:'Songpa',수원:'Suwon',신촌:'Sinchon',아키하바라:'Akihabara',안양:'Anyang','왕십리/한양대':'Wangsimni / Hanyang Univ.',용산:'Yongsan',용인:'Yongin',은평:'Eunpyeong',의정부:'Uijeongbu',이수:'Isu',일산:'Ilsan',천안:'Cheonan',평택:'Pyeongtaek',합정:'Hapjeong',홍대:'Hongdae'};
 const formatEventDate=(value?:string|null)=>{const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[1]}. ${m[2]}. ${m[3]}`:String(value||'')};
 const SCORE_LABELS:[keyof ShopReview,string][]=[
   ['single_score','싱글카드'],['graded_score','등급카드'],['box_score','박스제품'],['oripa_score','오리파'],
   ['price_score','가격'],['scale_score','규모'],['mood_score','분위기'],['access_score','접근성'],['staff_score','응대']
+];
+const SCORE_LABELS_EN:[keyof ShopReview,string][]=[
+  ['single_score','Singles'],['graded_score','Graded Cards'],['box_score','Boxes'],['oripa_score','Oripa'],
+  ['price_score','Price'],['scale_score','Store Size'],['mood_score','Atmosphere'],['access_score','Accessibility'],['staff_score','Service']
 ];
 const SW=Dimensions.get('window').width;
 type InstaPost={image?:string;thumbnail_url?:string;media_url?:string;permalink?:string};
@@ -24,7 +31,8 @@ type GoogleReview={author:string;rating:string;time:string;text:string};
 type GooglePlaceData={rating:string;count:string;url:string;reviews:GoogleReview[];photos:string[]};
 const GOOGLE_WEB_KEY='AIzaSyDBSPRs1jnfePKN9ZvZuyUWvlreMeAXYmw';
 const cleanInfo=(value?:string|null)=>{const v=String(value||'').trim();return !v||v==='-'||v==='–'||v==='—'?null:v};
-const formatHours=(value?:string|null)=>{const v=cleanInfo(value);return v?v.replace(/\s*\/\s*/g,'\n'):null};
+const localizeHours=(value?:string|null,en=false)=>{const v=cleanInfo(value);if(!v)return null;if(!en)return v.replace(/\s*\/\s*/g,'\n');const full:Record<string,string>={월요일:'Monday',화요일:'Tuesday',수요일:'Wednesday',목요일:'Thursday',금요일:'Friday',토요일:'Saturday',일요일:'Sunday'},short:Record<string,string>={월:'Mon',화:'Tue',수:'Wed',목:'Thu',금:'Fri',토:'Sat',일:'Sun'};let out=v.replace(/매일/g,'Daily').replace(/24시간/g,'24 Hours');Object.entries(full).forEach(([ko,label])=>{out=out.replaceAll(ko,label)});out=out.replace(/[월화수목금토일]/g,m=>short[m]||m).replaceAll('~','–');return out.replace(/\s*\/\s*/g,'\n')};
+const localizeParking=(value?:string|null,en=false)=>{const v=cleanInfo(value);if(!v)return null;if(!en)return v;return ({가능:'Available',불가:'Unavailable',미확인:'Unknown'} as Record<string,string>)[v]||v};
 const webAsset=(x?:string|null)=>!x?'':/^https?:\/\//i.test(x)?x:`https://funypin.kr/${String(x).replace(/^\//,'')}`;
 
 function SectionTitle({icon,title,color=C.purpleDark}:{icon:keyof typeof Ionicons.glyphMap;title:string;color?:string}){
@@ -53,11 +61,11 @@ const segmentStyle=(a:{x:number;y:number},b:{x:number;y:number},color:string,wid
   const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx);
   return {position:'absolute' as const,left:(a.x+b.x)/2-len/2,top:(a.y+b.y)/2-width/2,width:len,height:width,backgroundColor:color,transform:[{rotate:`${angle}rad`}],borderRadius:width};
 };
-function RadarPentagon({review,progress,color='#8062D8',grid='#E7E1F2',axis='#EEEAF7'}:{review:ShopReview;progress:Animated.Value;color?:string;grid?:string;axis?:string}){
+function RadarPentagon({review,progress,color='#8062D8',grid='#E7E1F2',axis='#EEEAF7',en=false}:{review:ShopReview;progress:Animated.Value;color?:string;grid?:string;axis?:string;en?:boolean}){
   const compValues=[review.single_score,review.graded_score,review.box_score,review.oripa_score].map(v=>Number(v)||0);
   const comp=compValues.reduce((sum:number,v:number)=>sum+v,0)/4;
   const values=[comp,Number(review.price_score)||0,Number(review.scale_score)||0,Number(review.mood_score)||0,Number(review.access_score)||0];
-  const labels=['상품구성','가격','매장규모','매장분위기','접근성'];
+  const labels=en?['Products','Price','Store Size','Atmosphere','Accessibility']:['상품구성','가격','매장규모','매장분위기','접근성'];
   const scorePts=values.map((v,i)=>radarPoint(i,Math.max(0,Math.min(5,v))/5));
   const scale=progress.interpolate({inputRange:[0,1],outputRange:[.05,1]});
   const opacity=progress.interpolate({inputRange:[0,.2,1],outputRange:[0,.55,1]});
@@ -132,7 +140,7 @@ export default function ShopDetail(){
           }catch{}
         }
       })
-      .catch(e=>Alert.alert('불러오기 실패',String(e.message||e)));
+      .catch(e=>Alert.alert(en?'Could not load shop information':'불러오기 실패',String(e.message||e)));
   },[id]);
 
   useEffect(()=>{
@@ -205,7 +213,7 @@ export default function ShopDetail(){
     const next=!favorite;
     setFavoriteBusy(true);
     try{await toggleFavorite(id,next);setFavorite(next);showFavoriteToast(next?(en?'Added to favorites.':'관심 매장에 추가했어요.'):(en?'Removed from favorites.':'관심 매장에서 해제했어요.'))}
-    catch(e:any){if(e?.message==='LOGIN_REQUIRED')Alert.alert('로그인이 필요해요','관심 매장을 저장하려면 MY에서 로그인해주세요.');else Alert.alert('처리 실패',String(e?.message||e));}
+    catch(e:any){if(e?.message==='LOGIN_REQUIRED')Alert.alert(en?'Login required':'로그인이 필요해요',en?'Log in from MY to save favorite shops.':'관심 매장을 저장하려면 MY에서 로그인해주세요.');else Alert.alert(en?'Could not update favorite':'처리 실패',String(e?.message||e));}
     finally{setFavoriteBusy(false)}
   };
 
@@ -228,7 +236,16 @@ export default function ShopDetail(){
   const pageBg=isJapan?'#FAF6F7':'#F8F6FF';
   const radarGrid=isJapan?'#F0DFE2':'#E7E1F2';
   const radarAxis=isJapan?'#F4E8EA':'#EEEAF7';
-  const location=[shop.area,shop.nearest_station?(shop.nearest_station+(shop.walk_minutes!=null?` 도보 ${shop.walk_minutes}분`:'')):null].filter(Boolean).join(' · ');
+  const displayName=en?(cleanInfo(shop.name_en)||shop.name):shop.name;
+  const secondaryName=en?(cleanInfo(shop.name_en)&&shop.name!==shop.name_en?shop.name:null):cleanInfo(shop.name_en);
+  const displayArea=en?(cleanInfo(shop.area_en)||AREA_EN_FALLBACK[String(shop.area||'')]||cleanInfo(shop.area)||cleanInfo(shop.city_en)||cleanInfo(shop.city)):(cleanInfo(shop.area)||cleanInfo(shop.city));
+  const displayStation=en?(cleanInfo(shop.nearest_station_en)||cleanInfo(shop.nearest_station)):cleanInfo(shop.nearest_station);
+  const location=[displayArea,displayStation?(en&&shop.walk_minutes!=null&&shop.walk_minutes>0?`${shop.walk_minutes} min walk from ${displayStation}`:(!en&&shop.walk_minutes!=null?`${displayStation} 도보 ${shop.walk_minutes}분`:displayStation)):null].filter(Boolean).join(' · ');
+  const displayAddress=en?(cleanInfo(shop.address_en)||shop.address):shop.address;
+  const displayHours=localizeHours(shop.hours_display,en);
+  const displayClosed=localizeHours(shop.closed_display,en);
+  const displayParking=localizeParking(shop.parking_status,en);
+  const scoreLabels=en?SCORE_LABELS_EN:SCORE_LABELS;
   const visitDate=shop.verified_at?String(shop.verified_at).replace(/^(\d{4})-(\d{2})-(\d{2}).*$/,'$1. $2. $3'):'';
   const analysisKeys:(keyof ShopReview)[]=['single_score','graded_score','box_score','oripa_score','price_score','scale_score','mood_score','access_score'];
   const hasAnalysis=!!review&&analysisKeys.some(k=>Number(review[k])>0);
@@ -254,7 +271,7 @@ export default function ShopDetail(){
     if(!funyMonEventActive||!funyMonEventUrl)return;
     const mode=shop.detail_funymon_event_link_mode||'inapp_page';
     if(mode==='external'){Linking.openURL(funyMonEventUrl).catch(()=>{});return;}
-    if(mode==='inapp_bottom_sheet'){setSheetTitle(funyMonTitle||'FUNY MON 이벤트');setSheetUrl(funyMonEventUrl);return;}
+    if(mode==='inapp_bottom_sheet'){setSheetTitle(funyMonTitle||(en?'Event':'이벤트'));setSheetUrl(funyMonEventUrl);return;}
     router.push({pathname:'/web',params:{url:encodeURIComponent(funyMonEventUrl),title:'',backOnly:'1',inAppOnly:'1'}} as any);
   };
   const openViewer=(index:number)=>{const next=Math.max(0,Math.min(heroImages.length-1,index));setViewerIndex(next);setViewerOpen(true);setTimeout(()=>viewerRef.current?.scrollTo({x:SW*next,y:0,animated:false}),80)};
@@ -278,8 +295,8 @@ export default function ShopDetail(){
     }catch(e){send({type:'GOOGLE_PLACE_DATA',rating:'',count:'',url:'',reviews:[],photos:[]});}
   }
   </script><script async defer src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_WEB_KEY}&libraries=places&callback=init"></script></body></html>`;
-  const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle('깽퐌커플 리뷰');setSheetUrl(content.url)};
-  const share=()=>Share.share({title:shop.name,message:`${shop.name} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
+  const openContent=(content:ShopContent)=>{if(!content.url)return;setSheetTitle(en?'FFUNNYGGANG Reviews':'깽퐌커플 리뷰');setSheetUrl(content.url)};
+  const share=()=>Share.share({title:displayName,message:`${displayName} | FUNY PIN\nhttps://funypin.kr/shops.html#/shop/${shop.id}`}).catch(()=>{});
 
   return <View style={styles.root}>
     <StatusBar hidden={false} barStyle={viewerOpen||(!stickyHeader&&heroImages.length>0)?'light-content':'dark-content'} backgroundColor="transparent" translucent/>
@@ -294,7 +311,7 @@ export default function ShopDetail(){
             onMomentumScrollEnd={e=>setGalleryIndex(Math.round(e.nativeEvent.contentOffset.x/SW))}>
             {heroImages.map((uri,i)=><Pressable key={uri||String(i)} onPress={()=>openViewer(i)} style={[styles.heroImagePress,{height:heroHeight}]}><Image source={{uri}} style={[styles.heroImage,{height:heroHeight}]} resizeMode="cover"/></Pressable>)}
           </ScrollView>
-          :<View style={[styles.heroEmpty,{height:heroHeight}]}><Text style={styles.heroEmptyText}>매장 이미지 준비 중</Text></View>}
+          :<View style={[styles.heroEmpty,{height:heroHeight}]}><Text style={styles.heroEmptyText}>{en?'Shop image coming soon':'매장 이미지 준비 중'}</Text></View>}
         <View style={[styles.heroTop,{top:insets.top+9}]}>
           <Pressable onPress={goBack} style={styles.heroIcon}><Ionicons name="chevron-back" size={26} color="#fff"/></Pressable>
           <Pressable onPress={share} style={styles.heroIcon}><Ionicons name="share-outline" size={23} color="#fff"/></Pressable>
@@ -304,66 +321,66 @@ export default function ShopDetail(){
 
       <View style={styles.detailContent}>
         <View style={[styles.summaryCard,{borderColor:accentBorder}]}>
-          <View style={styles.titleLine}><View style={{flex:1}}><Text style={styles.shopName}>{shop.name}</Text>{shop.name_en?<Text style={styles.shopNameEn}>{shop.name_en}</Text>:null}</View>
+          <View style={styles.titleLine}><View style={{flex:1}}><Text style={styles.shopName}>{displayName}</Text>{secondaryName?<Text style={styles.shopNameEn}>{secondaryName}</Text>:null}</View>
             <Pressable onPress={onToggleFavorite} disabled={favoriteBusy} hitSlop={10} style={styles.favorite}><Ionicons name={favorite?'heart':'heart-outline'} size={28} color={favorite?accent:'#A49DAC'}/></Pressable>
           </View>
           {!!location&&<View style={styles.locationRow}><Ionicons name="location-outline" size={15} color={accent}/><Text style={styles.location}>{location}</Text></View>}
-          <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{FEATURE[k]||k}</Text></View>)}</View>
-          {funyMonEventActive?<Pressable onPress={openFunyMonEvent} style={styles.eventCard}><Text style={styles.eventBadge}>FUNY MON</Text><View style={styles.eventCopy}><Text numberOfLines={2} style={styles.eventText}>{funyMonTitle}</Text><Text style={styles.eventPeriod}>{funyMonEventPeriod}</Text></View><Text style={styles.eventArrow}>›</Text></Pressable>:null}
+          <View style={styles.tags}>{features.map(([k])=><View key={'f'+k} style={[styles.tag,{backgroundColor:accentSoft}]}><Text style={[styles.tagText,{color:isJapan?'#A72D42':'#7358C5'}]}>{(en?FEATURE_EN:FEATURE)[k]||k}</Text></View>)}</View>
           <View style={styles.actionGrid}>
-            {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>네이버지도</Text></Pressable>:null}
+            {shop.naver_map_url?<Pressable onPress={()=>open(shop.naver_map_url)} style={[styles.actionMini,{borderColor:accentBorder}]}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><NaverMapIcon color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>{en?'Naver Map':'네이버지도'}</Text></Pressable>:null}
             {shop.google_map_url?<Pressable onPress={()=>open(shop.google_map_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="location-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Google Maps</Text></Pressable>:null}
             {shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="logo-instagram" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>Instagram</Text></Pressable>:null}
-            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="call-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>전화하기</Text></Pressable>:null}
+            {shop.phone?<Pressable onPress={()=>open('tel:'+shop.phone)} style={styles.actionMini}><View style={[styles.actionMiniIcon,{backgroundColor:accentSoft}]}><Ionicons name="call-outline" size={18} color={accent}/></View><Text numberOfLines={1} style={styles.actionMiniText}>{en?'Call':'전화하기'}</Text></Pressable>:null}
           </View>
         </View>
 
         <View style={styles.section}>
-          <SectionTitle icon="information-circle-outline" title={en?'Basic information':'기본 정보'} color={accent}/>
+          <SectionTitle icon="information-circle-outline" title={en?'Basic Info':'기본 정보'} color={accent}/>
+          {funyMonEventActive?<Pressable onPress={openFunyMonEvent} style={styles.eventCard}><Text style={styles.eventBadge}>EVENT</Text><View style={styles.eventCopy}><Text numberOfLines={2} style={styles.eventText}>{funyMonTitle}</Text><Text style={styles.eventPeriod}>{funyMonEventPeriod}</Text></View><Text style={styles.eventArrow}>›</Text></Pressable>:null}
           <View style={[styles.infoCard,{borderColor:accentBorder}]}>
-            <InfoRow icon="location-outline" label={en?'Address':'주소'} value={shop.address} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
-            <InfoRow icon="time-outline" label={en?'Hours':'영업시간'} value={formatHours(shop.hours_display)} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
-            <InfoRow icon="calendar-outline" label={en?'Closed':'정기휴무'} value={cleanInfo(shop.closed_display)} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
-            <InfoRow icon="car-outline" label={en?'Parking':'주차'} value={cleanInfo(shop.parking_status)} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'} last/>
+            <InfoRow icon="location-outline" label={en?'Address':'주소'} value={displayAddress} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
+            <InfoRow icon="time-outline" label={en?'Hours':'영업시간'} value={displayHours} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
+            <InfoRow icon="calendar-outline" label={en?'Regular Closing':'정기휴무'} value={displayClosed} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'}/>
+            <InfoRow icon="car-outline" label={en?'Parking':'주차'} value={displayParking} color={accent} soft={accentSoft} border={isJapan?'#F3E8EA':'#F0EDF6'} last/>
           </View>
         </View>
 
         {shop.country_code==='JP'&&shop.google_map_url?<View style={styles.section}>
-          <SectionTitle icon="logo-google" title={en?'Google store information':'Google 매장 정보'} color={accent}/>
+          <SectionTitle icon="logo-google" title={en?'Google Store Info':'Google 매장 정보'} color={accent}/>
           <View style={[styles.googleCard,{borderColor:accentBorder}]}>
             {googlePlace?<><View style={styles.googleRatingRow}><View style={styles.googleRatingMain}><Text style={styles.googleRating}>{googlePlace.rating||'-'}</Text><Text style={styles.googleStars}>★★★★★</Text></View><Text style={styles.googleCount}>{googlePlace.count}</Text></View>
-              {googlePlace.reviews.length?<View style={styles.googleReviews}><Text style={styles.googleReviewHeading}>Google 리뷰</Text>{googlePlace.reviews.slice(0,3).map((r,i)=><View key={i} style={styles.googleReviewItem}><View style={styles.googleReviewHead}><Text numberOfLines={1} style={styles.googleReviewAuthor}>{r.author||'Google 사용자'}</Text><Text style={styles.googleReviewRating}>{r.rating}</Text></View>{r.time?<Text style={styles.googleReviewTime}>{r.time}</Text>:null}{r.text?<Text numberOfLines={4} style={styles.googleReviewText}>{r.text}</Text>:null}</View>)}</View>:null}
-            </>:<Text style={styles.googleSub}>Google 정보를 불러오는 중...</Text>}
-            <Pressable onPress={()=>open(googlePlace?.url||shop.google_map_url)} style={styles.googleButton}><Text style={styles.googleButtonText}>Google Maps에서 전체 보기</Text></Pressable>
-            <Text style={styles.googleSource}>Google Maps 제공 정보</Text>
+              {googlePlace.reviews.length?<View style={styles.googleReviews}><Text style={styles.googleReviewHeading}>{en?'Google Reviews':'Google 리뷰'}</Text>{googlePlace.reviews.slice(0,3).map((r,i)=><View key={i} style={styles.googleReviewItem}><View style={styles.googleReviewHead}><Text numberOfLines={1} style={styles.googleReviewAuthor}>{r.author||(en?'Google User':'Google 사용자')}</Text><Text style={styles.googleReviewRating}>{r.rating}</Text></View>{r.time?<Text style={styles.googleReviewTime}>{r.time}</Text>:null}{r.text?<Text numberOfLines={4} style={styles.googleReviewText}>{r.text}</Text>:null}</View>)}</View>:null}
+            </>:<Text style={styles.googleSub}>{en?'Loading Google information...':'Google 정보를 불러오는 중...'}</Text>}
+            <Pressable onPress={()=>open(googlePlace?.url||shop.google_map_url)} style={styles.googleButton}><Text style={styles.googleButtonText}>{en?'View on Google Maps':'Google Maps에서 전체 보기'}</Text></Pressable>
+            <Text style={styles.googleSource}>{en?'Information provided by Google Maps':'Google Maps 제공 정보'}</Text>
           </View>
         </View>:null}
 
         {hasAnalysis&&review?<View style={styles.section} onLayout={e=>{analysisY.current=e.nativeEvent.layout.y+280}}>
-          <SectionTitle icon="analytics-outline" title={en?'Store analysis':'한눈에 보는 매장 분석'} color={accent}/>
-          <Text style={styles.note}>※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.</Text>
+          <SectionTitle icon="analytics-outline" title={en?'Store Analysis':'한눈에 보는 매장 분석'} color={accent}/>
+          <Text style={styles.note}>{en?'※ Based on FFUNNYGGANG visit ratings and intended for reference only.':'※ 깽퐌커플 방문 평점 바탕으로 주관적인 분석으로 단순 참고용으로 활용해주세요.'}</Text>
           <View style={[styles.analysisCombo,{borderColor:accentBorder}]}>
             <View style={styles.analysisMainRow}>
-              <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis}/></View>
+              <View style={styles.radarPane}><RadarPentagon review={review} progress={chartProgress} color={accent} grid={radarGrid} axis={radarAxis} en={en}/></View>
               <View style={[styles.analysisDivider,{borderColor:isJapan?'#F3E8EA':'#F0EDF6'}]}/>
               <View style={styles.compPane}>
-                <Text style={styles.subTitle}>상품 구성 상세</Text>
-                {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>취급 TCG</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>TCG[k]||k).join(' · ')}</Text></View>:null}
-                {SCORE_LABELS.slice(0,4).map(([key,label],index)=><ScoreBar key={String(key)} label={label} value={review[key] as number|null} progress={chartProgress} index={index} color={accent} track={isJapan?'#F2E4E7':'#EEEAF7'}/>)}
+                <Text style={styles.subTitle}>{en?'Product Mix':'상품 구성 상세'}</Text>
+                {tcg.length?<View style={styles.tcgLine}><Text style={styles.tcgLabel}>{en?'TCG Titles':'취급 TCG'}</Text><Text style={styles.tcgValue}>{tcg.map(([k])=>(en?TCG_EN:TCG)[k]||k).join(' · ')}</Text></View>:null}
+                {scoreLabels.slice(0,4).map(([key,label],index)=><ScoreBar key={String(key)} label={label} value={review[key] as number|null} progress={chartProgress} index={index} color={accent} track={isJapan?'#F2E4E7':'#EEEAF7'}/>)}
               </View>
             </View>
-            {visitDate?<View style={styles.analysisVisitDate}><Ionicons name="calendar-outline" size={13} color="#9B96A0"/><Text style={styles.analysisVisitDateText}>매장 방문일 {visitDate}</Text></View>:null}
+            {visitDate?<View style={styles.analysisVisitDate}><Ionicons name="calendar-outline" size={13} color="#9B96A0"/><Text style={styles.analysisVisitDateText}>{en?'Visited':'매장 방문일'} {visitDate}</Text></View>:null}
           </View>
         </View>:null}
 
         {instaPosts.length?<View style={styles.section}>
-          <View style={styles.instagramHead}><SectionTitle icon="logo-instagram" title="Instagram" color={accent}/>{shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)}><Text style={styles.moreText}>전체보기 →</Text></Pressable>:null}</View>
-          <Text style={styles.instagramGuide}>ⓘ 카드샵에서 직접 전하는 최신 소식이에요.</Text>
+          <View style={styles.instagramHead}><SectionTitle icon="logo-instagram" title="Instagram" color={accent}/>{shop.instagram_url?<Pressable onPress={()=>open(shop.instagram_url)}><Text style={styles.moreText}>{en?'View All →':'전체보기 →'}</Text></Pressable>:null}</View>
+          <Text style={styles.instagramGuide}>{en?'ⓘ Latest updates directly from the card shop.':'ⓘ 카드샵에서 직접 전하는 최신 소식이에요.'}</Text>
           <View style={styles.instagramGrid}>{instaColumns.map((col,colIndex)=><View key={colIndex} style={styles.instagramColumn}>{col.map((p,i)=>{const key=String(p.permalink||i),ratio=3/4;return <Pressable key={key} onPress={()=>{if(p.permalink){setSheetTitle('Instagram');setSheetUrl(String(p.permalink))}}} style={styles.instagramItem}><Image source={{uri:webAsset(String(p.image||p.thumbnail_url||p.media_url))}} style={[styles.instagramImage,{aspectRatio:ratio}]} resizeMode="cover"/></Pressable>})}</View>)}</View>
         </View>:null}
 
         {reviewPicks.length?<View style={styles.section}>
-          <SectionTitle icon="chatbox-ellipses-outline" title="깽퐌커플 리뷰" color={accent}/>
+          <SectionTitle icon="chatbox-ellipses-outline" title={en?'FFUNNYGGANG Reviews':'깽퐌커플 리뷰'} color={accent}/>
           <View style={styles.reviewGrid}>{reviewPicks.map(c=><Pressable key={c.content_id} onPress={()=>openContent(c)} style={[styles.contentCard,{borderColor:accentBorder}]}>
             {reviewThumbs[c.content_id]?<Image source={{uri:reviewThumbs[c.content_id]}} style={[styles.contentImage,{aspectRatio:c.platform==='Naver'?1:c.platform==='Instagram'?9/16:(reviewRatios[c.content_id]||1)}]} resizeMode="cover"/>:<View style={styles.contentPlaceholder}><Text style={styles.contentPlaceholderText}>{c.platform||'Review'}</Text></View>}
             <View style={styles.contentBody}><View style={styles.contentPlatformRow}>{c.platform==='Instagram'?<Ionicons name="logo-instagram" size={13} color={accentDark}/>:<Ionicons name="globe-outline" size={13} color={accentDark}/>}<Text style={styles.contentMeta}>{c.platform||c.content_type}</Text></View></View>
@@ -377,7 +394,7 @@ export default function ShopDetail(){
     {stickyHeader?<View style={[styles.stickyHeaderShell,{top:0,height:insets.top+UI.headerH,backgroundColor:isJapan?'rgba(255,250,251,.98)':'rgba(251,250,255,.98)'}]}>
       <View style={[styles.stickyHeader,{top:insets.top}]}>
         <Pressable onPress={goBack} hitSlop={10} style={styles.stickyAction}><Text allowFontScaling={false} style={styles.stickyBackText}>‹</Text></Pressable>
-        <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{shop.name}</Text>
+        <Text numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1} style={styles.stickyTitle}>{displayName}</Text>
         <Pressable onPress={share} hitSlop={10} style={styles.stickyAction}><Ionicons name="share-outline" size={19} color={C.text}/></Pressable>
       </View>
     </View>:null}
@@ -466,7 +483,7 @@ const styles=StyleSheet.create({
   tag:{paddingHorizontal:10,paddingVertical:5,borderRadius:999,backgroundColor:'#F3EFF9'},
   tagText:{fontSize:10.5,fontWeight:'700',color:'#7358C5'},
 
-  eventCard:{marginTop:14,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
+  eventCard:{width:'100%',alignSelf:'stretch',marginTop:0,marginBottom:10,minHeight:54,paddingHorizontal:13,borderRadius:15,borderWidth:1,borderColor:'#C47BFF',backgroundColor:'#FFF9FF',flexDirection:'row',alignItems:'center',gap:10},
   eventBadge:{fontSize:8.5,fontWeight:'900',color:'#fff',backgroundColor:'#EE7847',paddingHorizontal:8,paddingVertical:5,borderRadius:10},
   eventCopy:{flex:1,minWidth:0},
   eventText:{fontSize:12,fontWeight:'800',color:C.textSoft},

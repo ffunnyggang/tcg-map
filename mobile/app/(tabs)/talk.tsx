@@ -12,6 +12,7 @@ import { useFloatingAction } from '../../lib/floatingActions';
 export default function Talk(){
   const [webBack,setWebBack]=useState(false);
   const [scrolling,setScrolling]=useState(false);
+  const [formOverlayOpen,setFormOverlayOpen]=useState(false);
   const {setting,ready}=useFloatingAction('talk');
   const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'web';
   const {__tabRefresh,postId,editPost}=useLocalSearchParams<{__tabRefresh?:string;postId?:string;editPost?:string}>();
@@ -27,7 +28,8 @@ export default function Talk(){
   const talkUrl=postId?`https://funypin.kr/talk.html${editPost==='1'?`?editPost=${encodeURIComponent(postId)}`:''}#/post/${encodeURIComponent(postId)}`:'https://funypin.kr/talk.html';
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="TALK"/></View>:null}
-    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url={talkUrl} title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} showBackHeader={webBack} backTitle="TALK" floatingActionMode={floatingMode}/>
+    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url={talkUrl} title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} onTalkFormOverlayChange={setFormOverlayOpen} showBackHeader={webBack} backTitle="TALK" floatingActionMode={floatingMode}/>
     {floatingMode==='native'&&!webBack?<NativeFloatingButton label={setting.label} icon="＋" backgroundColor="#6749BD" scrolling={scrolling} onPress={async()=>{if(setting.targetUrl)await Linking.openURL(setting.targetUrl)}}/>:null}
+    {formOverlayOpen?<View pointerEvents="none" style={{position:'absolute',left:0,right:0,top:0,height:insets.top+54,zIndex:20000,elevation:20000,backgroundColor:'rgba(24,20,30,.36)'}}/>:null}
   </SafeAreaView>;
 }

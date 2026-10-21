@@ -27,42 +27,128 @@
     ['__shop__','카드샵 상세'],
     ['__custom__','직접 입력'],
   ];
+  const AUTO_NOTIFICATIONS=[
+    {
+      condition:'TALK 게시글에 댓글 등록',
+      title:'새 댓글이 달렸어요',
+      body:'{닉네임}님이 회원님의 게시글에 댓글을 남겼습니다.',
+      destination:'해당 TALK 게시글',
+    },
+    {
+      condition:'TCG 거래 채팅 메시지 수신',
+      title:'새 거래 메시지가 도착했어요',
+      body:'{상대 닉네임}님: {메시지 내용}',
+      destination:'TCG 거래',
+    },
+    {
+      condition:'등록 매물 상태 변경',
+      title:'거래 매물 상태가 변경됐어요',
+      body:'{매물명} · 판매중 / 거래 완료 / 종료 / 비노출',
+      destination:'TCG 거래',
+    },
+    {
+      condition:'배지 획득',
+      title:'새 배지를 획득했어요',
+      body:'{배지명} 배지가 추가되었습니다.',
+      destination:'배지 페이지',
+    },
+    {
+      condition:'미션 완료',
+      title:'미션을 완료했어요',
+      body:'{미션명} · +N FUNY COIN',
+      destination:'MY',
+    },
+    {
+      condition:'쿠폰 발급',
+      title:'새 쿠폰이 발급됐어요',
+      body:'{쿠폰명}을 쿠폰함에서 확인해보세요.',
+      destination:'쿠폰함',
+    },
+    {
+      condition:'퍼니몬 리워드 지급',
+      title:'리워드가 지급됐어요',
+      body:'{리워드명}을 확인해보세요.',
+      destination:'응모 내역',
+    },
+  ];
 
   const styles=document.createElement('style');
   styles.textContent=`
-  .notification-admin{display:grid;gap:16px}
-  .notification-admin-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:16px}
-  .notification-admin-card{background:#fff;border:1px solid #e9e5ec;border-radius:18px;padding:18px}
-  .notification-admin-card h3{margin:0 0 14px;font-size:15px;color:#211d25}
-  .notification-admin-field{display:grid;gap:7px;margin-top:13px}
-  .notification-admin-field:first-of-type{margin-top:0}
-  .notification-admin-field label{font-size:11px;font-weight:800;color:#625b67}
-  .notification-admin-field input,.notification-admin-field textarea,.notification-admin-field select{width:100%;box-sizing:border-box;border:1px solid #ded8e3;border-radius:12px;background:#fff;padding:10px 12px;font:inherit;color:#211d25;outline:none}
-  .notification-admin-field textarea{min-height:96px;resize:vertical;line-height:1.55}
+  .notification-admin{display:grid;gap:18px;align-items:start}
+  .notification-admin-grid{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(300px,.78fr);gap:18px;align-items:start}
+  .notification-admin-card{background:#fff;border:1px solid #e9e5ec;border-radius:16px;padding:20px;box-sizing:border-box;min-width:0}
+  .notification-admin-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .notification-admin-card h3{margin:0;font-size:15px;line-height:1.35;font-weight:900;color:#211d25;text-align:left}
+  .notification-admin-card>h3{margin-bottom:18px}
+  .notification-admin-guide-btn{height:34px;border:1px solid #ded7e8;border-radius:10px;background:#fff;color:#684dae;padding:0 11px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+  .notification-admin-guide-btn:hover{background:#f7f4fb}
+  .notification-admin-field{display:grid;gap:7px;margin-top:14px;min-width:0}
+  .notification-admin-field label{display:flex;align-items:center;min-height:16px;font-size:11px;line-height:16px;font-weight:800;color:#625b67;text-align:left}
+  .notification-admin-field input,.notification-admin-field select{width:100%;height:42px;box-sizing:border-box;border:1px solid #ded8e3;border-radius:11px;background:#fff;padding:0 12px;font:inherit;font-size:12px;color:#211d25;outline:none}
+  .notification-admin-field textarea{width:100%;min-height:100px;box-sizing:border-box;border:1px solid #ded8e3;border-radius:11px;background:#fff;padding:11px 12px;font:inherit;font-size:12px;line-height:1.55;color:#211d25;outline:none;resize:vertical}
   .notification-admin-field input:focus,.notification-admin-field textarea:focus,.notification-admin-field select:focus{border-color:#8a6bd0;box-shadow:0 0 0 3px rgba(118,87,214,.09)}
   .notification-admin-field input:disabled{background:#f6f3f8;color:#aaa3ad;cursor:not-allowed}
-  .notification-admin-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .notification-admin-hint{font-size:10px;line-height:1.5;color:#918993}
-  .notification-admin-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
-  .notification-admin-actions button{height:38px;border:0;border-radius:11px;padding:0 15px;font-weight:900;cursor:pointer}
+  .notification-admin-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+  .notification-admin-row>.notification-admin-field{margin-top:14px}
+  .notification-admin-hint{font-size:10px;line-height:1.5;color:#918993;text-align:left}
+  .notification-admin-route-result{margin-top:10px;padding:9px 11px;border-radius:10px;background:#f8f6fa;border:1px solid #eee9f2;font-size:10px;line-height:1.45;color:#746d79;word-break:break-all}
+  .notification-admin-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid #f0ecf2;flex-wrap:wrap}
+  .notification-admin-actions button{height:40px;border:0;border-radius:10px;padding:0 16px;font-size:11px;font-weight:900;cursor:pointer}
   .notification-admin-actions .test{background:#eee8fa;color:#6746b7}
   .notification-admin-actions .send{background:#6746b7;color:#fff}
   .notification-admin-actions button:disabled{opacity:.45;cursor:default}
-  .notification-preview{border-radius:18px;background:#f6f3f8;padding:15px}
+  .notification-preview{border-radius:14px;background:#f7f4f9;padding:16px;border:1px solid #f0ebf3}
   .notification-preview-app{font-size:9px;font-weight:800;color:#8b8390}
-  .notification-preview-title{margin-top:7px;font-size:13px;font-weight:900;color:#211d25}
-  .notification-preview-body{margin-top:4px;font-size:11px;line-height:1.45;color:#655e69;white-space:pre-wrap}
-  .notification-preview-meta{margin-top:10px;font-size:9px;color:#9a929e}
-  .notification-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-  .notification-stat{padding:11px;border-radius:13px;background:#faf8fb;border:1px solid #eeeaf0}
-  .notification-stat b{display:block;font-size:16px;color:#2b2630}.notification-stat span{font-size:9px;color:#918a95}
+  .notification-preview-title{margin-top:7px;font-size:13px;line-height:1.4;font-weight:900;color:#211d25}
+  .notification-preview-body{margin-top:5px;font-size:11px;line-height:1.55;color:#655e69;white-space:pre-wrap}
+  .notification-preview-meta{margin-top:11px;font-size:9px;line-height:1.45;color:#9a929e;word-break:break-all}
+  .notification-stat-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+  .notification-stat{padding:12px;border-radius:12px;background:#faf8fb;border:1px solid #eeeaf0;text-align:left}
+  .notification-stat b{display:block;font-size:16px;line-height:1.2;color:#2b2630}
+  .notification-stat span{display:block;margin-top:3px;font-size:9px;color:#918a95}
   .notification-history{display:grid;gap:8px}
-  .notification-history-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:13px 14px;border:1px solid #ece7ef;border-radius:14px;background:#fff}
-  .notification-history-item b{font-size:12px;color:#2b2630}.notification-history-item p{margin:4px 0 0;font-size:10px;line-height:1.45;color:#756e79}
-  .notification-history-meta{margin-top:7px;font-size:9px;color:#9b949f}
-  .notification-history-status{align-self:start;padding:4px 8px;border-radius:999px;background:#f0ecf8;color:#6d52ad;font-size:9px;font-weight:900;white-space:nowrap}
+  .notification-history-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;padding:14px 15px;border:1px solid #ece7ef;border-radius:12px;background:#fff}
+  .notification-history-item b{display:block;font-size:12px;line-height:1.4;color:#2b2630;text-align:left}
+  .notification-history-item p{margin:4px 0 0;font-size:10px;line-height:1.5;color:#756e79;text-align:left}
+  .notification-history-meta{margin-top:7px;font-size:9px;line-height:1.45;color:#9b949f;text-align:left;word-break:break-all}
+  .notification-history-status{align-self:start;padding:5px 8px;border-radius:999px;background:#f0ecf8;color:#6d52ad;font-size:9px;font-weight:900;white-space:nowrap}
   .notification-empty{padding:32px;text-align:center;color:#9a939e;font-size:11px}
-  @media(max-width:900px){.notification-admin-grid{grid-template-columns:1fr}.notification-admin-row{grid-template-columns:1fr}.notification-stat-row{grid-template-columns:repeat(2,1fr)}}
+  .notification-auto-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(25,21,29,.42);backdrop-filter:blur(2px)}
+  .notification-auto-overlay[hidden]{display:none}
+  .notification-auto-modal{width:min(760px,100%);max-height:min(760px,calc(100vh - 48px));display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 20px 70px rgba(30,24,35,.2);overflow:hidden}
+  .notification-auto-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 16px;border-bottom:1px solid #eee9f0}
+  .notification-auto-head h3{margin:0;font-size:16px;line-height:1.35;color:#211d25}
+  .notification-auto-head p{margin:6px 0 0;font-size:10px;line-height:1.5;color:#8d8590}
+  .notification-auto-close{width:34px;height:34px;flex:0 0 auto;border:0;border-radius:10px;background:#f5f2f7;color:#5f5763;font-size:19px;line-height:1;cursor:pointer}
+  .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:9px}
+  .notification-auto-item{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:11px;align-items:start;padding:13px 14px;border:1px solid #ece7ef;border-radius:12px;background:#fff}
+  .notification-auto-num{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#f1ecf8;color:#6c50b1;font-size:10px;font-weight:900}
+  .notification-auto-condition{font-size:10px;font-weight:800;color:#8b8390}
+  .notification-auto-title{margin-top:3px;font-size:12px;line-height:1.4;font-weight:900;color:#29242d}
+  .notification-auto-body{margin-top:4px;font-size:10px;line-height:1.5;color:#756e79}
+  .notification-auto-dest{padding:5px 8px;border-radius:8px;background:#f7f5f8;font-size:9px;font-weight:800;color:#746b78;white-space:nowrap}
+  .notification-auto-foot{padding:0 22px 18px;font-size:9px;line-height:1.5;color:#9a929e}
+  @media(max-width:900px){
+    .notification-admin-grid{grid-template-columns:1fr}
+    .notification-admin-row{grid-template-columns:1fr}
+    .notification-admin-row>.notification-admin-field{margin-top:14px}
+  }
+  @media(max-width:600px){
+    .notification-admin-card{padding:16px}
+    .notification-admin-card-head{align-items:flex-start}
+    .notification-admin-guide-btn{height:32px}
+    .notification-admin-actions{display:grid;grid-template-columns:1fr 1fr}
+    .notification-admin-actions button{width:100%;padding:0 10px}
+    .notification-history-item{grid-template-columns:1fr}
+    .notification-history-status{justify-self:start}
+    .notification-auto-overlay{padding:12px;align-items:flex-end}
+    .notification-auto-modal{max-height:88vh;border-radius:18px 18px 0 0}
+    .notification-auto-head{padding:18px 16px 14px}
+    .notification-auto-list{padding:12px 16px 18px}
+    .notification-auto-item{grid-template-columns:28px minmax(0,1fr)}
+    .notification-auto-dest{grid-column:2;justify-self:start}
+    .notification-auto-foot{padding:0 16px 16px}
+  }
   `;
   document.head.appendChild(styles);
 
@@ -125,7 +211,10 @@
       <section class="notification-admin">
         <div class="notification-admin-grid">
           <article class="notification-admin-card">
-            <h3>새 알림 발송</h3>
+            <div class="notification-admin-card-head">
+              <h3>새 알림 발송</h3>
+              <button id="notificationAutoGuideBtn" class="notification-admin-guide-btn" type="button">자동 기본 알림 7종 보기</button>
+            </div>
             <div class="notification-admin-field">
               <label>알림 제목</label>
               <input id="notificationTitle" maxlength="120" placeholder="예: FUNY PIN 업데이트 안내">
@@ -175,7 +264,7 @@
               <input id="notificationCustomRoute" placeholder="/my/coupons">
               <div class="notification-admin-hint">Expo Router 경로를 / 로 시작해 입력하세요.</div>
             </div>
-            <div id="notificationResolvedRoute" class="notification-admin-hint" style="margin-top:8px">앱 이동 없음</div>
+            <div id="notificationResolvedRoute" class="notification-admin-route-result">앱 이동 없음</div>
             <div class="notification-admin-field">
               <label>예약 시각 (선택)</label>
               <input id="notificationSchedule" type="datetime-local">
@@ -212,6 +301,32 @@
           </div>
         </article>
       </section>
+
+      <div id="notificationAutoModal" class="notification-auto-overlay" role="dialog" aria-modal="true" aria-labelledby="notificationAutoTitle" tabindex="-1" hidden>
+        <section class="notification-auto-modal">
+          <div class="notification-auto-head">
+            <div>
+              <h3 id="notificationAutoTitle">자동 기본 알림 7종</h3>
+              <p>사용자 행동이나 상태 변경 시 자동으로 생성되는 기본 알림 예시입니다.</p>
+            </div>
+            <button id="notificationAutoClose" class="notification-auto-close" type="button" aria-label="닫기">×</button>
+          </div>
+          <div class="notification-auto-list">
+            ${AUTO_NOTIFICATIONS.map((item,index)=>`
+              <div class="notification-auto-item">
+                <div class="notification-auto-num">${index+1}</div>
+                <div>
+                  <div class="notification-auto-condition">${escText(item.condition)}</div>
+                  <div class="notification-auto-title">${escText(item.title)}</div>
+                  <div class="notification-auto-body">${escText(item.body)}</div>
+                </div>
+                <div class="notification-auto-dest">→ ${escText(item.destination)}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="notification-auto-foot">※ 중괄호({ }) 영역은 실제 닉네임·메시지·매물명·배지명·미션명·쿠폰명·리워드명으로 자동 치환됩니다. 푸시를 꺼도 앱 알림함에는 기록될 수 있습니다.</div>
+        </section>
+      </div>
     `;
 
     bind(feed);
@@ -266,6 +381,9 @@
     const resolvedRoute=document.getElementById('notificationResolvedRoute');
     const url=document.getElementById('notificationUrl');
     const urlHint=document.getElementById('notificationUrlHint');
+    const autoGuideBtn=document.getElementById('notificationAutoGuideBtn');
+    const autoModal=document.getElementById('notificationAutoModal');
+    const autoClose=document.getElementById('notificationAutoClose');
 
     const preview=()=>{
       const label=CATEGORIES.find(x=>x[0]===category.value)?.[1]||category.value;
@@ -314,6 +432,24 @@
     routeDetail.addEventListener('input',syncRoute);
     customRoute.addEventListener('input',syncRoute);
     url.addEventListener('input',preview);
+
+    const closeAutoModal=()=>{
+      if(!autoModal||autoModal.hidden)return;
+      autoModal.hidden=true;
+      document.body.style.overflow=autoModal.dataset.prevOverflow||'';
+    };
+    const openAutoModal=()=>{
+      if(!autoModal)return;
+      autoModal.dataset.prevOverflow=document.body.style.overflow||'';
+      autoModal.hidden=false;
+      document.body.style.overflow='hidden';
+      autoModal.focus();
+    };
+    autoGuideBtn?.addEventListener('click',openAutoModal);
+    autoClose?.addEventListener('click',closeAutoModal);
+    autoModal?.addEventListener('click',e=>{if(e.target===autoModal)closeAutoModal()});
+    autoModal?.addEventListener('keydown',e=>{if(e.key==='Escape')closeAutoModal()});
+
     syncRoute();
 
     document.getElementById('notificationTestBtn').onclick=()=>send(true);

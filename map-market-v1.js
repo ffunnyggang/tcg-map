@@ -75,15 +75,8 @@
     input.placeholder='카드샵 · 자판기 · 거래 매물 검색';
     input.setAttribute('aria-label','카드샵 · 자판기 · 거래 매물 검색');
   }
-  function removeLegacyMarketPanel(){
-    if(!mapDiscoveryMode)return;
-    document.querySelectorAll('.qa-list-tab[data-tab="market"],.market-sheet-panel,.market-test-sheet').forEach(el=>el.remove());
-    document.querySelector('.qa-list-tabs')?.style.removeProperty('grid-template-columns');
-    marketPanel=null;marketTabBtn=null;marketTabActive=false;
-    document.body.classList.remove('market-tab-active','market-tab-switching');
-  }
   function syncMarketTabLabels(){
-    if(mapDiscoveryMode){removeLegacyMarketPanel();return}
+    if(standaloneMarket)return;
     const tabs=$('.qa-list-tabs');if(!tabs)return;
     tabs.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
     const shop=tabs.querySelector('[data-tab="shops"]'),vending=tabs.querySelector('[data-tab="vending"]'),market=tabs.querySelector('[data-tab="market"]');
@@ -1812,6 +1805,8 @@
   }
 
   if(standaloneMarket){
+    try{document.getElementById('marketReportOverlay')?.remove()}catch(_){}
+    marketReportListingId='';
     buildOverlay();openOverlay();
     const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
     setInterval(()=>{bindHorizontalScrollers();syncSortUI()},900);
@@ -1831,12 +1826,12 @@
     return;
   }
 
-  removeLegacyMarketPanel();
   const mapReadyPromise=waitForMap().then(map=>{if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup());syncMarkers()}return map});
-  syncMarketSearchPlaceholder();
+  const tabs=await waitForQaTabs().then(readyTabs=>{if(readyTabs)setupMarketPanel(readyTabs);return readyTabs});
+  syncMarketSearchPlaceholder();syncMarketTabLabels();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();
   const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
-  setInterval(()=>{removeLegacyMarketPanel();syncMarketSearchPlaceholder();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers()},900);
+  setInterval(()=>{syncMarketSearchPlaceholder();syncMarketTabLabels();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers();if(tabs&&!tabs.querySelector('[data-tab="market"]'))setupMarketPanel(tabs);if(marketTabActive){document.querySelectorAll('.qa-list-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab==='market'));enforceMarketTabExclusiveUI()}else repairShopTabUI()},900);
   window.addEventListener('resize',()=>{const sheet=document.querySelector('.list-wrap'),mode=sheet?.dataset.sheet||'half';requestAnimationFrame(()=>marketApplySheetMode(mode,false))});
   window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
   await Promise.all([rowsReadyPromise,mapReadyPromise]);

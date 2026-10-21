@@ -31,14 +31,14 @@
 .market-end-reason{max-width:48%;color:#8D8591;font-size:9.5px;font-weight:800;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .manage-tab-count{margin-left:5px;color:inherit;font-size:9.5px;font-weight:900;opacity:.72}
 .market-empty{padding:70px 22px;text-align:center;color:#958D99;font-size:11px;line-height:1.65}.market-empty strong{display:block;margin-bottom:6px;color:#3D3741;font-size:14px}
-.fab-add{position:fixed;right:max(16px,calc((100vw - 420px)/2 + 16px));bottom:18px;z-index:70;height:44px;padding:0 16px;border:0;border-radius:22px;background:#28232E;color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;box-shadow:0 8px 22px rgba(40,35,46,.18)}
+.fab-add{position:fixed;right:max(16px,calc((100vw - 420px)/2 + 16px));bottom:18px;z-index:70;min-width:128px;height:46px;padding:0 15px;border:0;border-radius:23px;background:#17151B;color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px;font-weight:850;box-shadow:0 8px 24px rgba(17,16,21,.24)}.fab-add-main{display:flex;align-items:center;gap:7px}.fab-add-icon{font-size:15px;line-height:1;font-weight:400}.fab-add-arrow{font-size:17px;line-height:1;font-weight:500}html.app-shell .fab-add{bottom:calc(max(var(--funy-native-safe-bottom,0px),env(safe-area-inset-bottom,0px),40px) + 14px)!important}
 @media(max-width:360px){.market-card-main{grid-template-columns:88px minmax(0,1fr);padding-right:41px}.market-thumb,.market-ph{width:88px;height:88px}.market-title{font-size:14px}}
 </style>
 </head><body><div class="test-shell">
 <header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">거래 매물 관리</div><span></span></header>
 <main class="test-main"><div class="tabs"><button class="tab on" data-tab="active"><span>판매중</span><span class="manage-tab-count" id="activeCount">0</span></button><button class="tab" data-tab="ended"><span>비노출 · 종료</span><span class="manage-tab-count" id="endedCount">0</span></button></div>
 <div id="root"><div class="loading">매물을 불러오는 중...</div></div></main>
-<a class="fab-add" href="/market.html"><span>TCG 거래</span></a>
+<a class="fab-add" href="/market.html" aria-label="TCG 거래"><span class="fab-add-main"><b class="fab-add-icon" aria-hidden="true">🃏</b><span>TCG 거래</span></span><span class="fab-add-arrow" aria-hidden="true">›</span></a>
 </div><div id="toast" class="toast"></div>
 <script>
 (async()=>{

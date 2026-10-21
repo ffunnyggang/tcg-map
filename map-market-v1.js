@@ -43,7 +43,7 @@
   const marketEn=localStorage.getItem('funy-pin-lang')==='en';
   const marketTr=(ko,enText)=>marketEn?enText:ko;
 
-  let rows=[],marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null,marketBlockedUserIds=new Set();
+  let rows=[],marketRowsLoaded=false,marketLayerOn=true,marketTabActive=false,marketFilter='all',overlayFilter='all',marketSort='latest',marketSortOrigin=null,marketBlockedUserIds=new Set();
   let markers=new Map(),popup=null,selectedMarkerId=null,addressCache=new Map();
   let registerMap=null,registerProduct=null,registerPreviewUrl='',registerType='single',registerDirectBuy=false,registerIdentityVerified=false,registerIdentityLoading=false,registerIdentityConfigured=false,registerIdentityVerifiedAt='',registerIdentityPendingId='',registerExternalVerified=false,registerChallengeId='',registerVerifiedChallengeId='',registerExternalAccountId='',registerVerificationScope='',registerVerifiedAccounts=[],registerSellerStatusLoading=false,registerLat=null,registerLng=null,registerLocation='',registerCoordinate=null,registerPin=null,registerCurrentPin=null,registerCurrentAccuracy=null,reverseTimer=null;
   let marketSellerAllowed=false,marketSellerAccessLoaded=false;
@@ -87,7 +87,7 @@
     const ml=market?.querySelector('.qa-tab-label');if(ml)ml.textContent='TCG 거래';
     if(market&&!market.querySelector('#marketTestTabCount')){
       const inline=market.querySelector('.qa-tab-inline')||market;
-      const count=document.createElement('span');count.className='qa-tab-count';count.id='marketTestTabCount';count.textContent='0';inline.appendChild(count);
+      const count=document.createElement('span');count.className='qa-tab-count';count.id='marketTestTabCount';count.textContent=marketRowsLoaded?String(rows.filter(x=>listingMatches(x,'all')&&['active','reserved'].includes(x.listing_status)).length):'-';inline.appendChild(count);
     }
   }
 
@@ -186,7 +186,7 @@
   function updateCounts(){
     const all=rows.filter(x=>listingMatches(x,'all')&&['active','reserved'].includes(x.listing_status));
     if(layerChip){const count=layerChip.querySelector('.market-layer-count');if(count)count.textContent=String(all.length)}
-    const tabCount=$('#marketTestTabCount');if(tabCount)tabCount.textContent=String(all.length);
+    const tabCount=$('#marketTestTabCount');if(tabCount)tabCount.textContent=marketRowsLoaded?String(all.length):'-';
     const fullCount=$('#marketOverlayCount');if(fullCount)fullCount.textContent=String(all.length);
   }
 
@@ -358,7 +358,7 @@
   function setupMarketPanel(tabs){
     if(marketPanel?.isConnected)return;
     marketTabBtn=document.createElement('button');marketTabBtn.type='button';marketTabBtn.className='qa-list-tab market-list-tab';marketTabBtn.dataset.tab='market';
-    marketTabBtn.innerHTML='<span class="qa-tab-inline"><span class="qa-tab-label">TCG 거래</span><span class="qa-tab-count" id="marketTestTabCount">0</span></span>';
+    marketTabBtn.innerHTML='<span class="qa-tab-inline"><span class="qa-tab-label">TCG 거래</span><span class="qa-tab-count" id="marketTestTabCount">-</span></span>';
     tabs.appendChild(marketTabBtn);
     marketTabBtn.addEventListener('pointerdown',beginMarketTabSwitching);
     marketTabBtn.addEventListener('pointerup',()=>setTimeout(clearMarketTabSwitching,80));
@@ -1739,6 +1739,7 @@
   }
 
   async function loadRows(){
+    marketRowsLoaded=false;updateCounts();
     const userId=A.session?.user?.id||'';
     const listingPromise=A.client.from('market_listings').select('*').eq('listing_side','sell').in('listing_status',['active','reserved']).gt('expires_at',new Date().toISOString()).order('published_at',{ascending:false});
     const blockPromise=userId
@@ -1748,7 +1749,7 @@
     if(listingRes.error){console.error('[MARKET] load failed',listingRes.error);return}
     marketBlockedUserIds=new Set((blockRes.data||[]).map(x=>String(x.blocked_user_id)));
     rows=(listingRes.data||[]).filter(x=>!marketBlockedUserIds.has(String(x.seller_user_id)));
-    updateCounts();syncMarkers();
+    marketRowsLoaded=true;updateCounts();syncMarkers();
     await hydrateMarketAddresses(rows).catch(()=>{});
     renderListInto($('#marketSheetList'),marketFilter);renderListInto($('#marketOverlayList'),overlayFilter);
     const refreshAddresses=()=>hydrateMarketAddresses(rows).then(()=>{

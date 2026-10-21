@@ -2752,3 +2752,38 @@ html.app-shell body.market-page .market-detail-head-actions{
 html.app-shell body.market-page .market-detail-more-menu{
   top:calc(var(--funy-native-safe-top,env(safe-area-inset-top,0px)) + 48px)!important
 }
+
+
+/* Standalone MARKET common sort + Android bottom safe area v20261021 */
+html.market-standalone-page body.market-page .market-sort-wrap{
+  position:relative!important;flex:0 0 104px!important;width:104px!important;min-width:104px!important;max-width:104px!important
+}
+html.market-standalone-page body.market-page .market-sort-button{
+  width:104px!important;min-width:104px!important;max-width:104px!important;height:34px!important;
+  padding:0 32px 0 13px!important;border:1px solid rgba(204,198,211,.95)!important;border-radius:999px!important;
+  background:#fff!important;color:#332f36!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  gap:8px!important;font:800 11.5px Pretendard,sans-serif!important;box-shadow:0 3px 12px rgba(40,34,48,.05)!important;
+  position:relative!important;white-space:nowrap!important
+}
+html.market-standalone-page body.market-page .market-sort-chevron{
+  position:absolute!important;right:11px!important;top:50%!important;width:14px!important;height:14px!important;margin:0!important;
+  fill:none!important;stroke:#625b69!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important;
+  transform:translateY(-50%) rotate(0deg)!important;transform-origin:50% 50%!important;transition:transform .18s ease!important
+}
+html.market-standalone-page body.market-page .market-sort-button[aria-expanded="true"] .market-sort-chevron{
+  transform:translateY(-50%) rotate(180deg)!important
+}
+html.market-standalone-page body.market-page .market-sort-menu{
+  width:118px!important;min-width:118px!important;padding:5px!important;border:1px solid #e4dfe7!important;border-radius:12px!important;
+  background:#fff!important;box-shadow:0 10px 26px rgba(30,24,38,.16)!important;z-index:2147481800!important
+}
+html.market-standalone-page body.market-page .market-sort-menu button{
+  display:block!important;width:100%!important;height:38px!important;padding:0 12px!important;border:0!important;border-radius:8px!important;
+  background:#fff!important;text-align:left!important;color:#504a54!important;font:750 11.5px Pretendard,sans-serif!important
+}
+html.market-standalone-page body.market-page .market-sort-menu button.active{
+  background:#f1ecfb!important;color:#684bbf!important;font-weight:900!important
+}
+html.app-shell body.market-page .market-overlay-register{
+  bottom:calc(max(var(--funy-native-safe-bottom,0px),env(safe-area-inset-bottom,0px),40px) + 14px)!important
+}

@@ -125,14 +125,17 @@
     const m=String(value||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
     return m?m[1]+'. '+m[2]+'. '+m[3]:String(value||'');
   }
+  let detailEventBannerSyncSeq=0;
   async function syncEventDetailBanner(){
-    document.querySelector('.funymon-detail-banner')?.remove();
+    const seq=++detailEventBannerSyncSeq;
+    document.querySelectorAll('.funymon-detail-banner').forEach(el=>el.remove());
     const m=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!m)return;
     const shopId=m[1].toUpperCase(),ev=window.FUNY_FUNYMON_ACTIVE_EVENTS.get(shopId);if(!ev)return;
-    const cfg=await loadDetailEventConfig(shopId);if(!cfg||cfg.detail_funymon_event_enabled!==true)return;
+    const cfg=await loadDetailEventConfig(shopId);if(seq!==detailEventBannerSyncSeq||!cfg||cfg.detail_funymon_event_enabled!==true)return;
     const title=String(cfg.detail_funymon_event_title||'').trim(),start=String(cfg.detail_funymon_event_start_date||'').trim(),end=String(cfg.detail_funymon_event_end_date||'').trim(),rawUrl=String(cfg.detail_funymon_event_url||'').trim(),mode=String(cfg.detail_funymon_event_link_mode||'inapp_page');
     if(!title||!start||!end||!rawUrl||todayKst()<start||todayKst()>end)return;
     const current=location.hash.match(/#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})/i);if(!current||current[1].toUpperCase()!==shopId)return;
+    document.querySelectorAll('.funymon-detail-banner').forEach(el=>el.remove());
     const summary=document.querySelector('#detail .summary-card');if(!summary)return;
     let eventUrl='';try{eventUrl=new URL(rawUrl,location.origin).href}catch(_){return}
     const box=document.createElement('a');box.className='funymon-detail-banner';box.href=eventUrl;

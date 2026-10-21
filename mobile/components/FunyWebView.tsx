@@ -466,7 +466,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     if(last&&now-last.at<3000&&target===last.url)return false;
     if(target.startsWith('funypin://')){
       const path=target.replace('funypin://','/');
-      if(path.startsWith('/account')){router.push('/account');return false;}
+      if(path.startsWith('/account')){router.push('/(tabs)/my' as any);return false;}
       if(path.startsWith('/shop/')){const id=path.slice('/shop/'.length);router.push({pathname:'/shop/[id]',params:{id}} as any);return false;}
       return false;
     }

@@ -52,7 +52,7 @@ export default function Login(){
   const finish=()=>{
     if(next==='talk'){router.replace('/(tabs)/talk' as any);return;}
     if(next==='map'){router.replace('/(tabs)/map' as any);return;}
-    if(next==='account'){router.replace('/account' as any);return;}
+    if(next==='account'){router.replace('/(tabs)/my' as any);return;}
     router.replace('/(tabs)' as any);
   };
   const requireTerms=()=>{

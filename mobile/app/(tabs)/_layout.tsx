@@ -90,7 +90,7 @@ const styles=StyleSheet.create({
   itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.7,borderColor:'rgba(126,92,226,.22)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:8,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.72},
   icon:{width:25,height:25},
-  myIcon:{width:25,height:25},
+  myIcon:{width:23,height:23},
   label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:'#17151A',letterSpacing:-.05,textAlign:'center'},
   labelActive:{fontWeight:'900',color:'#5C36B5'}
 });

@@ -7,9 +7,9 @@ import { visualAssets } from '../lib/visualAssets';
 import { getWebOverlayOpen,subscribeWebOverlay } from '../lib/webOverlayState';
 import { useAppLanguage } from '../lib/i18n';
 
-type Props={showAccount?:boolean;title?:string;back?:boolean;onBack?:()=>void;right?:ReactNode};
+type Props={showAccount?:boolean;title?:string;back?:boolean;onBack?:()=>void;right?:ReactNode;dimmed?:boolean};
 
-export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false,onBack,right}:Props){
+export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false,onBack,right,dimmed=false}:Props){
   const router=useRouter();
   const {language,setLanguage}=useAppLanguage();
   const [overlayOpen,setOverlayOpen]=useState(getWebOverlayOpen());
@@ -21,6 +21,6 @@ export default function FunyHeader({showAccount=true,title='FUNY PIN',back=false
     {!back&&isHome?<Text allowFontScaling maxFontSizeMultiplier={1} style={{marginLeft:8,fontSize:11,color:'#85818E'}}>by 깽퐌커플</Text>:null}
     {right?<View style={{marginLeft:'auto',flexDirection:'row',alignItems:'center',gap:4}}>{right}</View>:null}
     {!right&&!back&&isHome?<View style={{marginLeft:'auto',flexDirection:'row',alignItems:'center',padding:2,borderRadius:16,backgroundColor:'#F4F1F8',borderWidth:1,borderColor:'#E8E1EF'}}>{(['ko','en'] as const).map(lang=><Pressable key={lang} accessibilityRole="button" accessibilityState={{selected:language===lang}} onPress={()=>{void setLanguage(lang)}} style={{height:25,minWidth:32,paddingHorizontal:7,borderRadius:13,alignItems:'center',justifyContent:'center',backgroundColor:language===lang?'#fff':'transparent'}}><Text style={{fontSize:10,fontWeight:'800',color:language===lang?C.purpleDark:'#8D8595'}}>{lang==='ko'?'한':'EN'}</Text></Pressable>)}</View>:null}
-    {overlayOpen?<View pointerEvents="none" style={{position:'absolute',left:0,right:0,top:0,bottom:0,backgroundColor:'rgba(20,16,24,.38)',zIndex:100000,elevation:100000}}/>:null}
+    {overlayOpen||dimmed?<View pointerEvents="none" style={{position:'absolute',left:0,right:0,top:0,bottom:0,backgroundColor:'rgba(20,16,24,.38)',zIndex:100000,elevation:100000}}/>:null}
   </View>;
 }

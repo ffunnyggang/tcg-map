@@ -75,8 +75,15 @@
     input.placeholder='카드샵 · 자판기 · 거래 매물 검색';
     input.setAttribute('aria-label','카드샵 · 자판기 · 거래 매물 검색');
   }
+  function removeLegacyMarketPanel(){
+    if(!mapDiscoveryMode)return;
+    document.querySelectorAll('.qa-list-tab[data-tab="market"],.market-sheet-panel,.market-test-sheet').forEach(el=>el.remove());
+    document.querySelector('.qa-list-tabs')?.style.removeProperty('grid-template-columns');
+    marketPanel=null;marketTabBtn=null;marketTabActive=false;
+    document.body.classList.remove('market-tab-active','market-tab-switching');
+  }
   function syncMarketTabLabels(){
-    if(mapDiscoveryMode)return;
+    if(mapDiscoveryMode){removeLegacyMarketPanel();return}
     const tabs=$('.qa-list-tabs');if(!tabs)return;
     tabs.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
     const shop=tabs.querySelector('[data-tab="shops"]'),vending=tabs.querySelector('[data-tab="vending"]'),market=tabs.querySelector('[data-tab="market"]');
@@ -1805,7 +1812,7 @@
   }
 
   if(standaloneMarket){
-    buildOverlay();buildRegister();buildDetail();buildMarketReport();openOverlay();
+    buildOverlay();openOverlay();
     const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
     setInterval(()=>{bindHorizontalScrollers();syncSortUI()},900);
     window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
@@ -1824,11 +1831,12 @@
     return;
   }
 
+  removeLegacyMarketPanel();
   const mapReadyPromise=waitForMap().then(map=>{if(map){naver.maps.Event.addListener(map,'zoom_changed',()=>syncMarkers());naver.maps.Event.addListener(map,'dragstart',()=>closePopup());syncMarkers()}return map});
   syncMarketSearchPlaceholder();
   ensureLayerChip();observeLayerOrder();syncLayerOrder();buildFab();
   const rowsReadyPromise=authReady.then(()=>loadRows()).catch(error=>console.error('[MARKET] initial load failed',error));
-  setInterval(()=>{syncMarketSearchPlaceholder();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers()},900);
+  setInterval(()=>{removeLegacyMarketPanel();syncMarketSearchPlaceholder();ensureLayerChip();syncLayerOrder();bindHorizontalScrollers()},900);
   window.addEventListener('resize',()=>{const sheet=document.querySelector('.list-wrap'),mode=sheet?.dataset.sheet||'half';requestAnimationFrame(()=>marketApplySheetMode(mode,false))});
   window.addEventListener('pagehide',()=>postNativeMarketOverlayState(false));
   await Promise.all([rowsReadyPromise,mapReadyPromise]);

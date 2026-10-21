@@ -657,6 +657,8 @@ body.market-tab-active .qa-shop-only{display:none!important}
 }
 .market-detail-management button:disabled{opacity:.45}
 
+.market-overlay[hidden],.market-detail-overlay[hidden],.market-register-overlay[hidden],.market-report-overlay[hidden],.market-image-viewer[hidden]{display:none!important}
+
 .market-report-overlay{
   position:fixed;
   inset:0;

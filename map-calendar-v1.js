@@ -22,9 +22,10 @@
     if(!window.naver?.maps||typeof naverMap==='undefined'||!naverMap)return;
     const now=new Date(),end=new Date(now);end.setMonth(end.getMonth()+13);
     const p=new URLSearchParams({key:API_KEY,singleEvents:'true',orderBy:'startTime',timeMin:now.toISOString(),timeMax:end.toISOString(),maxResults:'100'});
+    let ready=false;
     try{
       const res=await fetch('https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(CALENDAR_ID)+'/events?'+p);
-      if(!res.ok)return;
+      if(!res.ok)throw new Error('calendar '+res.status);
       const data=await res.json(),events=(data.items||[]).filter(e=>e.location&&eventEnd(e)>=now&&!isKnownShopLocation(e.location));
       for(const e of events){
         const pos=await geocode(e.location);if(!pos)continue;
@@ -34,7 +35,9 @@
         naver.maps.Event.addListener(marker,'click',()=>{try{if(window.activeInfoWindow===iw){iw.close();window.activeInfoWindow=null;return}if(window.activeInfoWindow)window.activeInfoWindow.close()}catch(_){}iw.open(naverMap,marker);try{window.activeInfoWindow=iw}catch(_){}});
         marker.__event=e;markers.push(marker)
       }
+      ready=true;
     }catch(e){console.warn('FUNY PIN calendar map markers unavailable',e)}
+    finally{window.dispatchEvent(new CustomEvent('funy:event-markers-ready',{detail:{ready,count:markers.length}}))}
   }
   addStyle();let zoomBound=false,clockTimer=0;function refreshMarkers(){const now=new Date();markers.forEach(m=>{try{if(eventEnd(m.__event)<now){m.setMap(null);return}m.setIcon(icon(m.__event))}catch(_){}})}function bindZoomRefresh(){if(zoomBound)return;zoomBound=true;naver.maps.Event.addListener(naverMap,'zoom_changed',refreshMarkers);if(!clockTimer)clockTimer=setInterval(refreshMarkers,30000)}let tries=0,t=setInterval(()=>{tries++;if(window.naver?.maps?.Service&&typeof naverMap!=='undefined'&&naverMap){clearInterval(t);bindZoomRefresh();load().then(refreshMarkers)}else if(tries>60)clearInterval(t)},250);
 })();

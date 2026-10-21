@@ -185,7 +185,7 @@
   }
   function updateCounts(){
     const all=rows.filter(x=>listingMatches(x,'all')&&['active','reserved'].includes(x.listing_status));
-    if(layerChip){const count=layerChip.querySelector('.market-layer-count');if(count)count.textContent=String(all.length)}
+    if(layerChip){const count=layerChip.querySelector('.market-layer-count');if(count)count.textContent=marketRowsLoaded?String(all.length):'-';layerChip.setAttribute('aria-busy',marketRowsLoaded?'false':'true')}
     const tabCount=$('#marketTestTabCount');if(tabCount)tabCount.textContent=marketRowsLoaded?String(all.length):'-';
     const fullCount=$('#marketOverlayCount');if(fullCount)fullCount.textContent=String(all.length);
   }
@@ -271,12 +271,17 @@
 
   function ensureLayerChip(){
     const track=$('#filters');if(!track||isJapan()){layerChip?.remove();layerChip=null;return}
-    if(layerChip&&layerChip.isConnected){updateCounts();syncLayerOrder();return}
-    layerChip=document.createElement('button');layerChip.type='button';layerChip.className='market-layer-chip live-temp-layer'+(marketLayerOn?' active':'');
+    if(!layerChip||!layerChip.isConnected)layerChip=track.querySelector('#marketLayerChip')||track.querySelector('.market-layer-chip');
+    if(!layerChip){
+      layerChip=document.createElement('button');layerChip.id='marketLayerChip';layerChip.type='button';layerChip.className='market-layer-chip live-temp-layer';
+      layerChip.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count qa-layer-count">-</span>';
+      track.appendChild(layerChip);
+    }
+    layerChip.id='marketLayerChip';
+    layerChip.classList.toggle('active',marketLayerOn);
     layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');
-    layerChip.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count qa-layer-count">0</span>';
     layerChip.onclick=e=>{e.preventDefault();e.stopPropagation();marketLayerOn=!marketLayerOn;layerChip.classList.toggle('active',marketLayerOn);layerChip.setAttribute('aria-pressed',marketLayerOn?'true':'false');syncMarkers()};
-    track.appendChild(layerChip);updateCounts();syncLayerOrder();
+    updateCounts();syncLayerOrder();
   }
   function sortMenuHtml(scope){
     return '<div class="list-sort market-sort-wrap '+scope+'"><button type="button" class="list-sort-button market-sort-button" data-market-sort-button aria-haspopup="menu" aria-expanded="false"><span data-market-sort-label>'+sortLabel()+'</span><svg class="list-sort-chevron market-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div class="list-sort-menu market-sort-menu" role="menu">'+sortDefs.map(([v,l])=>'<button type="button" class="'+(v===marketSort?'active':'')+'" data-market-sort-value="'+v+'">'+l+'</button>').join('')+'</div></div>';

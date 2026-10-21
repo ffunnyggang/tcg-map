@@ -10,7 +10,7 @@
   const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   let VENDING=[];
-  let qaShopCountReady=false,qaVendingCountReady=false;
+  let qaShopCountReady=false,qaEventCountReady=false,qaVendingCountReady=false;
   const OPERATOR_LOGOS=new Map();
   const VENDING_CACHE_KEY='funypin_vending_cache_v1';
   const VENDING_CACHE_VERSION=1;
@@ -232,30 +232,61 @@ const $=s=>document.querySelector(s);
   window.FUNY_QA_LAYERS={refresh:()=>{vendingMarkers.forEach((m,id)=>m.setIcon(vendingIcon(id===state.selectedVending,id)));applyLayers()}};
   function updateEventCount(){
     const n=document.querySelectorAll('.funy-event-pin').length;
-    const el=document.querySelector('.qa-layer-chip[data-layer="events"] .qa-layer-count');if(el)el.textContent=String(n);
+    const el=document.querySelector('.qa-layer-chip[data-layer="events"] .qa-layer-count');if(el)el.textContent=qaEventCountReady?String(n):'-';
   }
 
   let layerControlObserver=null,layerControlTimer=0;
   function buildLayerControls(){
     const track=$('#filters');if(!track)return;
-    if(document.body.classList.contains('country-japan')){track.querySelectorAll('.qa-layer-chip').forEach(x=>x.remove());return;}
-    const existing=[...track.querySelectorAll('.qa-layer-chip')];
-    if(existing.length===3){
-      existing.forEach(b=>b.classList.toggle('active',!!state.layers[b.dataset.layer]));
+    if(document.body.classList.contains('country-japan')){
+      track.querySelectorAll('.qa-layer-chip,#marketLayerChip').forEach(x=>x.remove());
       return;
     }
-    existing.forEach(x=>x.remove());
-    const shopCount=(()=>{try{return SHOPS.filter(x=>!String(x.id).startsWith('JP-')).length}catch(_){return 0}})();
-    const defs=[['shops','카드샵',shopCount],['events','일정',0],['vending','자판기',VENDING.length]];
     const anchor=track.querySelector('.country-filter-sep')||track.querySelector('.country-filter-wrap');
     if(anchor)anchor.remove();
-    let ref=track.firstChild||null;
+
+    const defs=[
+      ['shops','카드샵',qaShopCountReady?(()=>{try{return SHOPS.filter(x=>!String(x.id).startsWith('JP-')).length}catch(_){return 0}})():'-'],
+      ['events','일정',qaEventCountReady?document.querySelectorAll('.funy-event-pin').length:'-'],
+      ['vending','자판기',qaVendingCountReady?VENDING.length:'-']
+    ];
     defs.forEach(([key,label,count])=>{
-      const b=document.createElement('button');b.type='button';b.className='qa-layer-chip'+(state.layers[key]?' active':'');b.dataset.layer=key;
+      let b=track.querySelector('.qa-layer-chip[data-layer="'+key+'"]');
+      if(!b){
+        b=document.createElement('button');b.type='button';b.className='qa-layer-chip';b.dataset.layer=key;
+        b.onclick=e=>{e.preventDefault();e.stopPropagation();state.layers[key]=!state.layers[key];saveLayerPrefs();applyLayers()};
+      }
+      b.classList.toggle('active',!!state.layers[key]);
       b.innerHTML='<span class="qa-layer-dot"></span><span>'+label+'</span><span class="qa-layer-count">'+count+'</span>';
-      b.onclick=e=>{e.preventDefault();e.stopPropagation();state.layers[key]=!state.layers[key];saveLayerPrefs();applyLayers()};
-      track.insertBefore(b,ref);
+      if(!b.isConnected)track.appendChild(b);
     });
+    track.querySelectorAll('.qa-layer-chip').forEach(b=>{if(!defs.some(([key])=>key===b.dataset.layer))b.remove()});
+
+    let market=track.querySelector('#marketLayerChip')||track.querySelector('.market-layer-chip');
+    if(!market){
+      market=document.createElement('button');market.id='marketLayerChip';market.type='button';market.className='market-layer-chip live-temp-layer active';
+      market.setAttribute('aria-pressed','true');market.setAttribute('aria-busy','true');
+      market.innerHTML='<span class="market-layer-emoji" aria-hidden="true">🃏</span><span>거래</span><span class="market-layer-count qa-layer-count">-</span>';
+      track.appendChild(market);
+    }
+    let live=track.querySelector('#liveTempLayer');
+    if(!live){
+      let liveOn=true;try{liveOn=localStorage.getItem('funypin_map_live_pin_layer_v1')!=='false'}catch(_){}
+      live=document.createElement('button');live.id='liveTempLayer';live.type='button';live.className='live-temp-layer'+(liveOn?' active':'');
+      live.setAttribute('aria-pressed',String(liveOn));live.setAttribute('aria-busy','true');
+      live.innerHTML='<span class="live-layer-bolt" aria-hidden="true">⚡</span><span>LIVE PIN</span><span class="qa-layer-count">-</span>';
+      track.appendChild(live);
+    }
+
+    const desired=[
+      track.querySelector('.qa-layer-chip[data-layer="shops"]'),
+      track.querySelector('.qa-layer-chip[data-layer="events"]'),
+      track.querySelector('.qa-layer-chip[data-layer="vending"]'),
+      market,
+      live
+    ].filter(Boolean);
+    const wanted=new Set(desired),current=[...track.children].filter(el=>wanted.has(el));
+    if(current.length!==desired.length||current.some((el,i)=>el!==desired[i]))desired.forEach(el=>track.appendChild(el));
   }
   function keepLayerControls(){
     const track=$('#filters');if(!track)return;
@@ -399,7 +430,8 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:mapdatachange',()=>setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},120));
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
   window.addEventListener('funy:list-refresh',()=>setTimeout(applyLayers,20));
-  window.addEventListener('funy:shops-source',()=>{qaShopCountReady=true;setTimeout(()=>{const el=$('#qaShopCount');if(el)el.textContent=String(document.querySelectorAll('#shop-list .shop-card').length);applyLayers()},30)});
+  window.addEventListener('funy:shops-source',()=>{qaShopCountReady=true;buildLayerControls();setTimeout(()=>{const el=$('#qaShopCount');if(el)el.textContent=String(document.querySelectorAll('#shop-list .shop-card').length);applyLayers()},30)});
+  window.addEventListener('funy:event-markers-ready',e=>{qaEventCountReady=e?.detail?.ready!==false;buildLayerControls();updateEventCount()});
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
   let lastQaJapanState=document.body.classList.contains('country-japan');
@@ -433,7 +465,7 @@ const $=s=>document.querySelector(s);
       }
     }finally{
       qaVendingCountReady=true;
-      renderVendingList();
+      renderVendingList();buildLayerControls();
       const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(vendingListRows().length);
     }
   })();

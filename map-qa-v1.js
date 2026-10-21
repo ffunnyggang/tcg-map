@@ -10,6 +10,7 @@
   const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   let VENDING=[];
+  let qaShopCountReady=false,qaVendingCountReady=false;
   const OPERATOR_LOGOS=new Map();
   const VENDING_CACHE_KEY='funypin_vending_cache_v1';
   const VENDING_CACHE_VERSION=1;
@@ -60,7 +61,7 @@
     if(cache)writeVendingCache(VENDING);
     renderVendingList();
     syncCountrySpecificQaUI();
-    const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(VENDING.length);
+    const count=document.getElementById('qaVendingCount');if(count)count.textContent=qaVendingCountReady?String(VENDING.length):'-';
     buildLayerControls();
     if(rebuildMarkers&&mapReady()){clearVendingMarkers();buildVendingMarkers()}
     return VENDING;
@@ -306,7 +307,7 @@ const $=s=>document.querySelector(s);
   function buildSheet(){
     const sheet=$('.list-wrap');if(!sheet||sheet.querySelector('.qa-list-tabs'))return;
     const handle=sheet.querySelector('.map-sheet-handle');
-    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops"><span class="qa-tab-inline"><span class="qa-tab-label">'+(isEnglish()?'TCG Card Shops':'TCG 카드샵')+'</span><span class="qa-tab-count" id="qaShopCount">0</span></span></button><button class="qa-list-tab" data-tab="vending"><span class="qa-tab-inline"><span class="qa-tab-label qa-tab-label-vending">'+(isEnglish()?'Pokémon<br>Vending Machines':'포켓몬 자판기')+'</span><span class="qa-tab-count" id="qaVendingCount">'+VENDING.length+'</span></span></button>';
+    const tabs=document.createElement('div');tabs.className='qa-list-tabs';tabs.innerHTML='<button class="qa-list-tab active" data-tab="shops"><span class="qa-tab-inline"><span class="qa-tab-label">'+(isEnglish()?'TCG Card Shops':'TCG 카드샵')+'</span><span class="qa-tab-count" id="qaShopCount">-</span></span></button><button class="qa-list-tab" data-tab="vending"><span class="qa-tab-inline"><span class="qa-tab-label qa-tab-label-vending">'+(isEnglish()?'Pokémon<br>Vending Machines':'포켓몬 자판기')+'</span><span class="qa-tab-count" id="qaVendingCount">-</span></span></button>';
     handle?.after(tabs);
     if(handle&&!sheet.querySelector('.qa-sheet-sticky-head')){
       const sticky=document.createElement('div');sticky.className='qa-sheet-sticky-head';
@@ -342,7 +343,7 @@ const $=s=>document.querySelector(s);
     $('#list-sort-button')?.addEventListener('click',()=>requestAnimationFrame(syncShopSortMenu));
     tools.addEventListener('scroll',()=>{document.getElementById('list-sort-menu')?.classList.remove('open');document.getElementById('list-sort-button')?.setAttribute('aria-expanded','false')},{passive:true});
     vp.querySelector('.qa-vending-tools')?.addEventListener('scroll',()=>closeVendingSort(),{passive:true});
-    setInterval(()=>{const n=document.querySelectorAll('#shop-list .shop-card').length;const el=$('#qaShopCount');if(el)el.textContent=String(n);syncShopFilterUI()},400);
+    setInterval(()=>{if(!qaShopCountReady&&window.FUNY_SHOPS_BOOTSTRAPPING===false)qaShopCountReady=true;const n=document.querySelectorAll('#shop-list .shop-card').length;const el=$('#qaShopCount');if(el)el.textContent=qaShopCountReady?String(n):'-';syncShopFilterUI()},400);
   }
   function syncCountrySpecificQaUI(){
     const jp=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
@@ -375,7 +376,7 @@ const $=s=>document.querySelector(s);
   }
   function renderVendingList(){
     const list=$('#qaVendingList');if(!list)return;const rows=vendingListRows();
-    $('#qaVendingSummary').textContent='검색 결과 '+rows.length+'개';const tabCount=$('#qaVendingCount');if(tabCount)tabCount.textContent=String(rows.length);
+    $('#qaVendingSummary').textContent='검색 결과 '+rows.length+'개';const tabCount=$('#qaVendingCount');if(tabCount)tabCount.textContent=qaVendingCountReady?String(rows.length):'-';
     list.innerHTML=rows.length?rows.map(v=>'<article class="qa-vending-card" data-vending-id="'+esc(v.id)+'">'+logoHtml(v)+'<div class="qa-vending-copy"><strong class="qa-vending-name">'+esc(v.name)+'</strong><span class="qa-vending-address-row">'+addressIcon+'<span class="qa-vending-address">'+esc(v.address)+'</span></span></div><a class="qa-naver-route" href="'+naverUrl(v)+'" target="_blank" rel="noopener noreferrer">길찾기</a></article>').join(''):'<div class="qa-vending-empty">조건에 맞는 자판기가 없습니다.</div>';
     list.querySelectorAll('.qa-vending-card').forEach(card=>card.onclick=e=>{
       if(e.target.closest('.qa-naver-route'))return;
@@ -398,7 +399,7 @@ const $=s=>document.querySelector(s);
   window.addEventListener('funy:mapdatachange',()=>setTimeout(()=>{syncCountrySpecificQaUI();applyLayers()},120));
   window.addEventListener('funy:locationchange',()=>{if(state.vendingSort==='near')renderVendingList()});
   window.addEventListener('funy:list-refresh',()=>setTimeout(applyLayers,20));
-  window.addEventListener('funy:shops-source',()=>setTimeout(applyLayers,30));
+  window.addEventListener('funy:shops-source',()=>{qaShopCountReady=true;setTimeout(()=>{const el=$('#qaShopCount');if(el)el.textContent=String(document.querySelectorAll('#shop-list .shop-card').length);applyLayers()},30)});
 
   window.addEventListener('resize',()=>{syncShopSortMenu();syncVendingSortMenu()},{passive:true});
   let lastQaJapanState=document.body.classList.contains('country-japan');
@@ -430,6 +431,10 @@ const $=s=>document.querySelector(s);
       if(!VENDING.length){
         const badge=document.querySelector('.qa-dev-badge');if(badge)badge.textContent='MAP V2 · QA · DB ERROR';
       }
+    }finally{
+      qaVendingCountReady=true;
+      renderVendingList();
+      const count=document.getElementById('qaVendingCount');if(count)count.textContent=String(vendingListRows().length);
     }
   })();
 })();

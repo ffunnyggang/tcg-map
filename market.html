@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<script>(function(){try{var q=new URLSearchParams(location.search);if(q.get('app')==='1'){document.documentElement.classList.add('app-shell');if(q.get('appPlatform')==='android')document.documentElement.classList.add('android-app-shell')}}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TCG 거래 | FUNY PIN</title>
+<meta name="description" content="FUNY PIN에서 TCG 카드 매물을 확인하고 외부 플랫폼 판매자 인증 기반 매물을 안전하게 찾아보세요.">
+<link rel="canonical" href="https://funypin.kr/market.html">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20261016-app-logo1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FUNY PIN">
+<meta property="og:title" content="TCG 거래 | FUNY PIN">
+<meta property="og:description" content="TCG 카드 매물을 지역과 가격으로 확인하고 원본 판매 플랫폼에서 거래하세요.">
+<meta property="og:url" content="https://funypin.kr/market.html">
+<meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
+<script src="/funy-analytics-core.js?v=20261013-analytics-v2"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3ZERNC71PH"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","G-3ZERNC71PH");</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1">
+<link rel="stylesheet" href="/map-market-v1.css?v=20261021-market-page1">
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=zi1ymjvxt9"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script>
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#f4f2f6;color:#211e25;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body.market-standalone-page{background:#fff}
+.market-standalone-loading{width:min(100%,420px);min-height:100dvh;margin:auto;display:grid;place-items:center;background:#fff;color:#99919d;font-size:12px}
+body.market-standalone-page .market-overlay{max-width:420px}
+html:not(.app-shell) body.market-standalone-page .market-overlay-head{padding-top:env(safe-area-inset-top,0px);height:calc(54px + env(safe-area-inset-top,0px));min-height:calc(54px + env(safe-area-inset-top,0px))}
+</style>
+</head>
+<body>
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">TCG 거래</h1>
+<div id="marketStandaloneLoading" class="market-standalone-loading">TCG 거래를 불러오는 중...</div>
+<script src="/ga4-events.js?v=20261013-analytics-v2"></script>
+<script src="/map-market-v1.js?v=20261021-market-page1"></script>
+<script>
+(function(){var el=document.getElementById('marketStandaloneLoading');if(el)setTimeout(function(){if(document.getElementById('marketOverlay'))el.remove()},0)})();
+</script>
+</body>
+</html>

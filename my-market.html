@@ -38,7 +38,7 @@
 <header class="test-head"><button class="test-back" onclick="location.href='/my.html'" aria-label="뒤로가기">‹</button><div class="test-title">거래 매물 관리</div><span></span></header>
 <main class="test-main"><div class="tabs"><button class="tab on" data-tab="active"><span>판매중</span><span class="manage-tab-count" id="activeCount">0</span></button><button class="tab" data-tab="ended"><span>비노출 · 종료</span><span class="manage-tab-count" id="endedCount">0</span></button></div>
 <div id="root"><div class="loading">매물을 불러오는 중...</div></div></main>
-<a class="fab-add" href="/shops.html"><span>TCG 거래</span></a>
+<a class="fab-add" href="/market.html"><span>TCG 거래</span></a>
 </div><div id="toast" class="toast"></div>
 <script>
 (async()=>{
@@ -94,7 +94,7 @@
       stateAction+
       '<button type="button" class="danger" data-action="delete" data-id="'+esc(x.id)+'">삭제하기</button>'+
     '</div>'+
-    '<div class="market-card-footer"><div class="market-stats"><span>등록 '+registeredDate(x.created_at)+'</span><span class="market-stats-sep" aria-hidden="true">·</span><span>조회 '+Number(stats.view_count||0).toLocaleString('ko-KR')+'</span><span class="market-stats-sep" aria-hidden="true">·</span><span>관심 '+Number(stats.favorite_count||0).toLocaleString('ko-KR')+'</span></div>'+(active?'<a class="market-detail-link" href="/shops.html#market/'+encodeURIComponent(x.id)+'">상세보기 <span aria-hidden="true">›</span></a>':'<span class="market-end-reason">'+esc(endReason(x))+'</span>')+'</div>'+
+    '<div class="market-card-footer"><div class="market-stats"><span>등록 '+registeredDate(x.created_at)+'</span><span class="market-stats-sep" aria-hidden="true">·</span><span>조회 '+Number(stats.view_count||0).toLocaleString('ko-KR')+'</span><span class="market-stats-sep" aria-hidden="true">·</span><span>관심 '+Number(stats.favorite_count||0).toLocaleString('ko-KR')+'</span></div>'+(active?'<a class="market-detail-link" href="/market.html#/listing/'+encodeURIComponent(x.id)+'">상세보기 <span aria-hidden="true">›</span></a>':'<span class="market-end-reason">'+esc(endReason(x))+'</span>')+'</div>'+
    '</article>';
  }
  function closeMenus(except=''){

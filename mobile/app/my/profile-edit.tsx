@@ -27,9 +27,10 @@ export default function ProfileEdit(){
   const [nextNicknameChange,setNextNicknameChange]=useState<Date|null>(null);
 
   useEffect(()=>{getProfile().then(({profile,user})=>{
-    const value=profile?.nickname||defaultNickname(user);
+    const generated=defaultNickname(user),socialProvider=['google','apple','kakao'].includes(String(user?.app_metadata?.provider||'').toLowerCase());
+    const value=socialProvider&&!profile?.nickname_changed_at?generated:(profile?.nickname||generated);
     setNickname(value);setInitialNickname(value);
-    setAvatar(profile?(profile.avatar_url||null):(user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null));
+    setAvatar(profile?.avatar_url||null);
     setNextNicknameChange(nicknameNextChangeAt(profile?.nickname_changed_at));
   }).catch(e=>Alert.alert('불러오기 실패',String(e?.message||e))).finally(()=>setLoading(false));},[]);
 

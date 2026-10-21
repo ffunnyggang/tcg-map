@@ -72,8 +72,10 @@ export default function Account(){
   const coin=dashboard?.funy_coin||{};
   const currentProfile=dashboard?.profile||profile||{};
   const generatedNickname=defaultNickname(user);
-  const nickname=currentProfile?.nickname||profile?.nickname||generatedNickname;
-  const avatar=currentProfile?.avatar_url||profile?.avatar_url||user?.user_metadata?.avatar_url||user?.user_metadata?.picture||null;
+  const socialProvider=['google','apple','kakao'].includes(String(user?.app_metadata?.provider||'').toLowerCase());
+  const storedNickname=String(currentProfile?.nickname||profile?.nickname||'').trim();
+  const nickname=socialProvider&&!profile?.nickname_changed_at?generatedNickname:(storedNickname||generatedNickname);
+  const avatar=currentProfile?.avatar_url||profile?.avatar_url||null;
   const joinDate=currentProfile?.created_at||profile?.created_at||user?.created_at||null;
   const initials=String(nickname).trim().slice(0,1).toUpperCase();
   const missionPercent=activeCampaign?.total_count?Math.round(activeCampaign.completed_count/activeCampaign.total_count*100):0;
@@ -88,6 +90,10 @@ export default function Account(){
     }
     const target=String(item.cta_target||'').trim();
     if(!target){Alert.alert('이동할 화면 없음','관리자가 이동할 화면을 아직 설정하지 않았어요.');return}
+    try{
+      const u=new URL(/^https?:\/\//i.test(target)?target:`https://funypin.kr/${target.replace(/^\//,'')}`);
+      if(/\/talk\.html$/i.test(u.pathname)){router.replace('/(tabs)/talk' as any);return;}
+    }catch{}
     openWeb(target,item.title);
   };
 

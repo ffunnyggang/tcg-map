@@ -4,6 +4,7 @@ import { Tabs } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { Image,Platform,Pressable,StyleSheet,Text,View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C,UI } from '../../lib/theme';
@@ -41,8 +42,8 @@ const NAV_ICONS:Record<IconKind,{active:ImageSourcePropType;inactive:ImageSource
 };
 
 function NavIcon({kind,focused}:{kind:IconKind;focused:boolean}){
-  const isMy=kind==='my';
-  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,isMy&&styles.myIcon,!isMy&&{tintColor:focused?'#5C36B5':'#17151A'}]}/>;
+  if(kind==='my')return <Ionicons name="person-outline" size={22} color={focused?'#5C36B5':'#17151A'}/>;
+  return <Image source={focused?NAV_ICONS[kind].active:NAV_ICONS[kind].inactive} resizeMode="contain" style={[styles.icon,{tintColor:focused?'#5C36B5':'#17151A'}]}/>;
 }
 
 function FunyTabBar({state,descriptors,navigation}:BottomTabBarProps){
@@ -90,7 +91,6 @@ const styles=StyleSheet.create({
   itemActive:{backgroundColor:'rgba(126,92,226,.11)',borderWidth:.7,borderColor:'rgba(126,92,226,.22)',shadowColor:'#6547BA',shadowOpacity:.10,shadowRadius:8,shadowOffset:{width:0,height:2}},
   itemPressed:{opacity:.72},
   icon:{width:25,height:25},
-  myIcon:{width:23,height:23},
   label:{fontSize:9.5,lineHeight:11,fontWeight:'800',color:'#17151A',letterSpacing:-.05,textAlign:'center'},
   labelActive:{fontWeight:'900',color:'#5C36B5'}
 });

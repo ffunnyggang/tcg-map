@@ -17,7 +17,7 @@
 <body class="portal-body my-test-hub">
 <div class="test-shell">
 <header class="portal-header"><div class="portal-brand"><span class="portal-logo" aria-hidden="true"><img src="/favicon.svg?v=20261016-app-logo1" alt=""></span><strong>MY</strong></div></header>
-<main class="test-main"><div id="root"><div class="loading">계정 정보를 불러오는 중...</div></div></main>
+<main class="test-main"><div id="root"><div class="loading" id="myInitialLoading">계정 정보를 불러오는 중...</div></div></main><script>try{if(localStorage.getItem("funy-pin-lang")==="en")document.getElementById("myInitialLoading").textContent="Loading account information..."}catch(_){}</script>
 <nav class="portal-bottom-nav" aria-label="하단 메뉴">
   <a href="./"><img class="nav-icon" data-nav-icon="home" src="/assets/nav-icons-final-v2/funypin_nav_home_off.png?v=20261013-nav-unify" alt=""><span>HOME</span></a>
   <a href="shops.html"><img class="nav-icon" data-nav-icon="map" src="/assets/nav-icons-final-v2/funypin_nav_map_off.png?v=20261013-nav-unify" alt=""><span>TCG MAP</span></a>
@@ -27,7 +27,7 @@
 </nav>
 </div>
 <div id="myToast" class="test-hub-toast" role="status" aria-live="polite"></div>
-<script src="/my-stable.js?v=20261021-history-scroll1"></script>
+<script src="/my-stable.js?v=20261022-en3"></script>
 <script src="/funy-mon-account-migrate.js?v=20261014-account-link1"></script>
 </body>
 </html>

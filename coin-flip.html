@@ -53,7 +53,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
 <meta property="og:type" content="website"><meta property="og:site_name" content="FUNY PIN"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="코인플립 | FUNY PIN"><meta property="og:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta property="og:url" content="https://funypin.kr/coin-flip.html"><meta property="og:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="코인플립 | FUNY PIN"><meta name="twitter:description" content="실제 코인처럼 입체적으로 회전하는 3D 코인플립으로 앞면·뒷면을 빠르고 공정하게 결정하세요."><meta name="twitter:image" content="https://funypin.kr/assets/og/funy-pin-og.png?v=20261008-seo1">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"FUNY PIN 코인플립","url":"https://funypin.kr/coin-flip.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","inLanguage":"ko-KR","description":"실제 코인처럼 입체적으로 회전해 앞면·뒷면을 결정하는 무료 3D 코인플립 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <link rel="stylesheet" href="/web-responsive-420.css?v=20261014-1"><link rel="stylesheet" href="/tool-share.css?v=20261017-1"></head>
-<body data-coin-build="20261013-1954">
+<body data-coin-build="20261022-sound1">
 <div class="shell">
 <header class="funy-sub-header"><button class="back funy-sub-back" id="backButton" type="button" aria-label="뒤로가기">‹</button><div class="brand funy-sub-title">코인플립</div><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="효과음 켜짐">🔊</button></header>
 <main>
@@ -139,7 +139,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const LABELS=()=>isEnglish()?['Heads','Tails']:['앞면','뒷면'];
   const $=id=>document.getElementById(id);
   const els={coin:$('coin'),rise:document.querySelector('.coin-rise'),shadow:document.querySelector('.coin-shadow'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),dailyTotal:$('dailyTotal'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
-  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,activeDate=kstDate(),flipSeconds=loadDuration(),skinUrls={front:null,back:null},flightAnimations=[],cloudAuthCache=undefined,cropState={side:null,blob:null,url:null,minScale:1,scale:1,zoom:1,x:0,y:0,drag:null,pinch:null,pointers:new Map()};
+  let history=loadHistory(),busy=false,currentAngle=0,flipToken=0,toastTimer=0,soundOn=localStorage.getItem('funypin-coin-sound')!=='off',audioCtx=null,audioReadyPromise=null,fallbackAudio=null,fallbackAudioUrl=null,activeDate=kstDate(),flipSeconds=loadDuration(),skinUrls={front:null,back:null},flightAnimations=[],cloudAuthCache=undefined,cropState={side:null,blob:null,url:null,minScale:1,scale:1,zoom:1,x:0,y:0,drag:null,pinch:null,pointers:new Map()};
 
   function kstDate(){
     try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
@@ -420,8 +420,43 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function setBusy(v){busy=v;els.stage.disabled=v;els.flip.disabled=v;els.flip.textContent=v?(isEnglish()?'Flipping...':'코인 플립 중...'):(isEnglish()?'Flip Coin':'코인 던지기')}
   function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
   function audio(){
-    if(!soundOn)return null;
-    try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
+    if(!soundOn||!audioCtx||audioCtx.state!=='running')return null;
+    return audioCtx;
+  }
+  function unlockAudio(){
+    if(!soundOn)return Promise.resolve(null);
+    try{
+      const AudioCtor=window.AudioContext||window.webkitAudioContext;if(!AudioCtor)return Promise.resolve(null);
+      audioCtx=audioCtx||new AudioCtor();
+      if(audioCtx.state==='running')return Promise.resolve(audioCtx);
+      if(audioReadyPromise)return audioReadyPromise;
+      audioReadyPromise=Promise.resolve(audioCtx.resume())
+        .then(()=>audioCtx?.state==='running'?audioCtx:null)
+        .catch(()=>null)
+        .finally(()=>{audioReadyPromise=null});
+      return audioReadyPromise;
+    }catch(_){return Promise.resolve(null)}
+  }
+  function makeFallbackAudio(){
+    if(fallbackAudio)return fallbackAudio;
+    try{
+      const rate=22050,duration=.16,count=Math.floor(rate*duration),buf=new ArrayBuffer(44+count*2),view=new DataView(buf);
+      const text=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i))};
+      text(0,'RIFF');view.setUint32(4,36+count*2,true);text(8,'WAVE');text(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,rate,true);view.setUint32(28,rate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);text(36,'data');view.setUint32(40,count*2,true);
+      for(let i=0;i<count;i++){const t=i/rate,env=Math.exp(-22*t),tone=(Math.sin(2*Math.PI*1320*t)*.55+Math.sin(2*Math.PI*1980*t)*.30+Math.sin(2*Math.PI*2640*t)*.15),noise=(Math.random()*2-1)*.12;view.setInt16(44+i*2,Math.max(-32767,Math.min(32767,Math.round((tone+noise)*env*24500))),true)}
+      fallbackAudioUrl=URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+      fallbackAudio=new Audio(fallbackAudioUrl);fallbackAudio.preload='auto';fallbackAudio.setAttribute('playsinline','');
+      return fallbackAudio;
+    }catch(_){return null}
+  }
+  function unlockFallbackAudio(){
+    if(!soundOn)return Promise.resolve(false);
+    const a=makeFallbackAudio();if(!a)return Promise.resolve(false);
+    try{a.pause();a.currentTime=0;a.volume=.001;return Promise.resolve(a.play()).then(()=>{setTimeout(()=>{try{a.pause();a.currentTime=0;a.volume=.45}catch(_){}},24);return true}).catch(()=>false)}catch(_){return Promise.resolve(false)}
+  }
+  function fallbackPing(volume=.45,rate=1){
+    if(!soundOn)return;const a=makeFallbackAudio();if(!a)return;
+    try{a.pause();a.currentTime=0;a.volume=volume;a.playbackRate=rate;void a.play().catch(()=>{})}catch(_){}
   }
   function makeNoise(duration=.045,delay=0,volume=.035,low=900,high=9200){
     const ctx=audio();if(!ctx)return;const len=Math.max(1,Math.floor(ctx.sampleRate*duration)),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);
@@ -452,6 +487,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     resonant(3100+Math.random()*260,.055,volume*.75,delay,(Math.random()-.5)*8);
   }
   function playLaunch(){
+    if(!audio()){fallbackPing(.38,1.08);return}
     brightPing(0,.092,.985);
   }
   function playSpin(durationMs){
@@ -459,6 +495,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     for(let i=1;i<=count;i++){const d=(seconds*.68)*(i/(count+1));softTick(d,.007)}
   }
   function playLand(){
+    if(!audio()){fallbackPing(.52,.90);return}
     makeNoise(.032,0,.032,700,7200);
     brightPing(.008,.118,1.00);
     resonant(980,.12,.018,.002,(Math.random()-.5)*4);
@@ -532,15 +569,17 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
     const tilt=(secureRandom()%9)-4;
     els.coin.style.transition='none';els.coin.style.transform=`rotateX(${finalAngle+50}deg) rotateZ(-10deg)`;
+    const soundReady=soundOn?unlockAudio():Promise.resolve(null);
     animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt);
-    playLaunch();playSpin(totalMs);
+    void soundReady.then(ctx=>{if(soundOn&&token===flipToken){playLaunch();if(ctx)playSpin(totalMs)}});
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){
     if(busy||!history.length)return;history=[];save();renderResult();renderHistory();showToast(isEnglish()?"Today's history has been reset.":'내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
   }
   $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
-  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){brightPing(0,.045,1);showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  [els.stage,els.flip].forEach(el=>el?.addEventListener('pointerdown',()=>{if(soundOn){void unlockAudio();void unlockFallbackAudio()}},{passive:true}));
+  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){void unlockAudio().then(ctx=>{if(ctx&&soundOn)brightPing(0,.045,1)});showToast('효과음을 켰어요.')}else showToast('효과음을 껐어요.');track('coin_flip_sound_toggle',{sound_on:soundOn})});
   $('faceToggle').addEventListener('click',toggleFace);
   $('durationToggle').addEventListener('click',cycleDuration);
   $('skinButton').addEventListener('click',()=>setSkinModal(true));$('skinClose').addEventListener('click',()=>setSkinModal(false));$('skinModal').addEventListener('click',e=>{if(e.target===$('skinModal'))setSkinModal(false)});

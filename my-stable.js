@@ -39,6 +39,33 @@
     language:en?'Language':'언어',security:en?'Account security':'계정 보안',blocked:en?'Blocked Users':'차단한 사용자',notice:en?'Notices':'공지사항',faq:en?'FAQ':'자주 묻는 질문',inquiry:en?'Support':'온라인 문의',survey:en?'Service Survey':'서비스 만족도 조사',shopRequest:en?'Add / Update Shop':'매장 등록 · 정보 수정 요청',partner:en?'Advertising & Partnerships':'광고 · 제휴 문의',
     logout:en?'Log out':'로그아웃',loggingOut:en?'Signing out…':'처리 중…',deleteAccount:en?'Delete account':'계정 삭제',deleting:en?'Deleting…':'삭제 중…',terms:en?'Terms of Service':'이용약관',privacy:en?'Privacy Policy':'개인정보처리방침',guidelines:en?'Community Guidelines':'커뮤니티 운영정책',coming:en?'COMING':'준비중'
   };
+  const MISSION_EN={
+    daily_checkin:{title:n=>n>1?`Check in ${n} times`:'Check in',description:'Complete today\'s check-in.',cta:'Check in'},
+    profile_complete:{title:()=> 'Complete your profile',description:'Set your nickname and profile image.',cta:'Edit profile'},
+    community_post_create:{title:n=>n>1?`Create ${n} posts`:'Create a post',description:'Create a post in FUNY TALK.',cta:'Create post'},
+    community_post_like:{title:n=>n>1?`Like ${n} posts`:'Like a post',description:'Like a post you enjoy in FUNY TALK.',cta:'Browse posts'},
+    community_comment_create:{title:n=>n>1?`Write ${n} comments`:'Write a comment',description:'Leave a comment on a FUNY TALK post.',cta:'Write comment'},
+    market_listing_create:{title:n=>n>1?`Add ${n} listings`:'Add a listing',description:'Add a TCG trade listing.',cta:'Add listing'},
+    shop_favorite_add:{title:n=>n>1?`Favorite ${n} shops`:'Favorite a shop',description:'Save a card shop you like.',cta:'Browse shops'},
+    market_favorite_add:{title:n=>n>1?`Save ${n} listings`:'Save a listing',description:'Save a TCG trade listing you like.',cta:'Browse listings'},
+    shop_visit_checkin:{title:n=>n>1?`Verify ${n} shop visits`:'Verify a shop visit',description:'Complete a visit check-in at a nearby card shop.',cta:'Verify visit'},
+    funymon_capture:{title:n=>n>1?`Catch FUNY MON ${n} times`:'Catch FUNY MON',description:'Catch FUNY MON on TCG MAP.',cta:'Open map'},
+    event_entry:{title:n=>n>1?`Join ${n} events`:'Join an event',description:'Join an available FUNY PIN event.',cta:'View entries'}
+  };
+  const missionCopy=item=>{
+    if(!en)return{title:item.title||'',description:item.description||'',cta:item.cta_label||''};
+    const def=MISSION_EN[item.mission_type],n=Math.max(1,Number(item.target_count||1));
+    return def?{title:def.title(n),description:def.description,cta:def.cta}:{title:item.title||'Mission',description:item.description||'',cta:item.cta_label||'In progress'};
+  };
+  const campaignCopy=campaign=>{
+    if(!en)return{title:campaign.title||'',description:campaign.description||''};
+    const titles={'오늘의 미션이 도착했어요!':"Today's Missions",'이번 주 미션':'Weekly Missions','10월 미션':'October Missions'};
+    const descriptions={'미션을 완료하고 퍼니코인을 모아보세요':'Complete missions and collect FUNY COIN.','10월 동안 FUNY PIN 활동을 완성해보세요':'Complete FUNY PIN activities throughout October.','이번 주 활동을 채우고 추가 보상을 받아보세요':"Complete this week's activities and earn bonus rewards."};
+    const periodTitle=campaign.period_type==='weekly'?'Weekly Missions':campaign.period_type==='monthly'?'Monthly Missions':"Today's Missions";
+    const rawTitle=String(campaign.title||''),rawDescription=String(campaign.description||'');
+    return{title:titles[rawTitle]||(/[가-힣]/.test(rawTitle)?periodTitle:(rawTitle||periodTitle)),description:descriptions[rawDescription]||(/[가-힣]/.test(rawDescription)?'Complete missions and collect FUNY COIN.':(rawDescription||'Complete missions and collect FUNY COIN.'))};
+  };
+
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const date=value=>{if(!value)return'-';const d=new Date(value);if(Number.isNaN(d.getTime()))return'-';return d.toLocaleDateString(en?'en-US':'ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\. /g,'.').replace(/\.$/,'')};
   async function loadDashboard(){
@@ -61,7 +88,7 @@
   const profile=dashboard?.profile||{};
   const activity=dashboard?.activity||{};
   const coin=dashboard?.funy_coin||{};
-  const name=profile?.nickname||user.user_metadata?.nickname||user.user_metadata?.name||'FUNY 회원';
+  const name=profile?.nickname||user.user_metadata?.nickname||user.user_metadata?.name||(en?'FUNY Member':'FUNY 회원');
   const avatar=profile?.avatar_url||user.user_metadata?.avatar_url||user.user_metadata?.picture||'';
   const joined=profile?.created_at||user.created_at||null;
   const coinBalance=Number(coin?.balance||0);
@@ -90,6 +117,7 @@
     if(!dashboard?.mission_features?.visible||!campaigns.length)return'';
     if(missionIndex>=campaigns.length)missionIndex=0;
     const campaign=campaigns[missionIndex];
+    const campaignText=campaignCopy(campaign);
     const total=Math.max(0,Number(campaign.total_count||0));
     const completed=Math.min(total,Math.max(0,Number(campaign.completed_count||0)));
     const percent=total?Math.round(completed/total*100):0;
@@ -97,10 +125,10 @@
     const rows=missions.length?missions.map(item=>{
       const done=item.status==='completed';
       const progress=Math.min(Number(item.target_count||1),Number(item.progress_count||0));
-      const reward=Number(item.reward_coin||0);
-      const actionLabel=done?(en?'Complete':'완료'):(item.cta_label||(en?'In progress':'진행 중'));
+      const reward=Number(item.reward_coin||0),copy=missionCopy(item);
+      const actionLabel=done?(en?'Complete':'완료'):(copy.cta||(en?'In progress':'진행 중'));
       return `<div class="my-mission-row">
-        <div class="my-mission-item-copy"><div class="my-mission-item-title">${esc(item.title)}${reward>0?`<span class="my-reward-chip">+${reward.toLocaleString(en?'en-US':'ko-KR')} C</span>`:''}</div><div class="my-mission-item-sub">${item.description?esc(item.description)+' · ':''}${progress}/${Number(item.target_count||1)}</div></div>
+        <div class="my-mission-item-copy"><div class="my-mission-item-title">${esc(copy.title)}${reward>0?`<span class="my-reward-chip">+${reward.toLocaleString(en?'en-US':'ko-KR')} C</span>`:''}</div><div class="my-mission-item-sub">${copy.description?esc(copy.description)+' · ':''}${progress}/${Number(item.target_count||1)}</div></div>
         <button type="button" class="my-mission-action${done?' is-complete':''}" ${done?'disabled':''} data-mission-action="${esc(item.id)}">${esc(actionLabel)}</button>
       </div>`;
     }).join(''):'';
@@ -108,7 +136,7 @@
     return `<section class="my-mission-wrap"><article class="my-mission-card${missionOpen?' is-open':''}" data-mission-card>
       <button type="button" class="my-mission-summary" data-mission-toggle>
         <span class="my-progress-ring" role="img" aria-label="${percent}%"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle class="my-progress-track" cx="24" cy="24" r="20"></circle>${percent>0?`<circle class="my-progress-bar" cx="24" cy="24" r="20" pathLength="100" stroke-dasharray="${percent} 100"></circle>`:''}</svg><span class="my-progress-copy"><strong>${completed}/${total}</strong></span></span>
-        <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaign.title)}</strong><span class="my-mission-desc">${esc(campaign.description||(en?'Complete missions and collect FUNY COIN.':'미션을 완료하고 퍼니코인을 모아보세요'))}</span></span>
+        <span class="my-mission-copy"><strong class="my-mission-title">${esc(campaignText.title)}</strong><span class="my-mission-desc">${esc(campaignText.description)}</span></span>
         <span class="my-mission-toggle" aria-hidden="true"></span>
       </button>${missionOpen?`<div class="my-mission-list">${rows}</div>`:''}
     </article>${missionOpen?'':pager}</section>`;
@@ -207,4 +235,4 @@
 
   render();
   restoreMyScroll();
-})().catch(error=>{const root=document.getElementById('root');if(root)root.innerHTML=`<div class="error"><strong>불러오지 못했어요</strong>${String(error?.message||error)}</div>`});
+})().catch(error=>{const root=document.getElementById('root');if(root)root.innerHTML=`<div class="error"><strong>${en?'Could not load account information.':'불러오지 못했어요'}</strong>${String(error?.message||error)}</div>`});

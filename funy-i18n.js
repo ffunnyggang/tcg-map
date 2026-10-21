@@ -1277,6 +1277,29 @@
     '박스제품':{en:'Boxes'}
   });
 
+  Object.assign(textMap,{
+    '거래':{en:'Trade'},
+    'TCG 거래':{en:'TCG Trade'},
+    '제보 · 매물 등록':{en:'Report · Add Listing'},
+    '제보·매물 등록':{en:'Report · Add Listing'},
+    '카드샵 · 자판기 · 거래 매물 검색':{en:'Search card shops, vending machines, and listings'},
+    '조건에 맞는 TCG 거래 매물이 없습니다.':{en:'No TCG listings match these filters.'},
+    '매물 등록':{en:'Add Listing'},
+    '거래 희망 위치':{en:'Preferred Trade Location'},
+    '휴대폰 인증':{en:'Phone Verification'},
+    '현재 위치로 이동':{en:'Go to Current Location'},
+    '개인 판매자 · 승인 계정 전용':{en:'Individual sellers · approved accounts only'},
+    '카드샵':{en:'Card Shops'},
+    '일정':{en:'Events'},
+    '자판기':{en:'Vending'},
+    '등록 중...':{en:'Submitting...'},
+    '인증번호 받기':{en:'Send Code'},
+    '인증 확인':{en:'Verify'},
+    '위치를 선택해주세요.':{en:'Please select a location.'},
+    '위치 확인하기':{en:'View Location'},
+    '안내사항':{en:'Important Information'}
+  });
+
   const attrNames=['placeholder','aria-label','title','alt'];const originalText=new WeakMap();const originalAttr=new WeakMap();
   function tr(value){
     if(lang==='ko')return value;

@@ -8,6 +8,25 @@
     ['missions','미션'],
     ['coupons','쿠폰'],
   ];
+  const ROUTES=[
+    ['','선택 안 함'],
+    ['/(tabs)','HOME'],
+    ['/(tabs)/map','TCG MAP'],
+    ['/(tabs)/pick','PICK'],
+    ['/(tabs)/talk','TALK'],
+    ['/(tabs)/my','MY'],
+    ['/my/notifications','알림함'],
+    ['/my/notification-settings','알림 설정'],
+    ['/my/coupons','쿠폰함'],
+    ['/my/entries','응모 내역'],
+    ['/my/favorites','관심 매장'],
+    ['/my/funymon','퍼니몬'],
+    ['/market','TCG 거래'],
+    ['/live-pin','LIVE PIN'],
+    ['__talk_post__','TALK 특정 게시글'],
+    ['__shop__','카드샵 상세'],
+    ['__custom__','직접 입력'],
+  ];
 
   const styles=document.createElement('style');
   styles.textContent=`
@@ -21,6 +40,7 @@
   .notification-admin-field input,.notification-admin-field textarea,.notification-admin-field select{width:100%;box-sizing:border-box;border:1px solid #ded8e3;border-radius:12px;background:#fff;padding:10px 12px;font:inherit;color:#211d25;outline:none}
   .notification-admin-field textarea{min-height:96px;resize:vertical;line-height:1.55}
   .notification-admin-field input:focus,.notification-admin-field textarea:focus,.notification-admin-field select:focus{border-color:#8a6bd0;box-shadow:0 0 0 3px rgba(118,87,214,.09)}
+  .notification-admin-field input:disabled{background:#f6f3f8;color:#aaa3ad;cursor:not-allowed}
   .notification-admin-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .notification-admin-hint{font-size:10px;line-height:1.5;color:#918993}
   .notification-admin-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
@@ -134,14 +154,28 @@
             </div>
             <div class="notification-admin-row">
               <div class="notification-admin-field">
-                <label>앱 이동 경로 (선택)</label>
-                <input id="notificationRoute" placeholder="/(tabs)/talk 또는 /my/coupons">
+                <label>앱 이동 화면 (선택)</label>
+                <select id="notificationRoutePreset">
+                  ${ROUTES.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join('')}
+                </select>
+                <div class="notification-admin-hint">앱 내부 화면으로 이동할 때 선택하세요.</div>
               </div>
               <div class="notification-admin-field">
                 <label>웹 URL (선택)</label>
                 <input id="notificationUrl" placeholder="https://funypin.kr/...">
+                <div id="notificationUrlHint" class="notification-admin-hint">앱 이동 화면을 선택하지 않았을 때 사용합니다.</div>
               </div>
             </div>
+            <div id="notificationRouteDetailWrap" class="notification-admin-field" hidden>
+              <label id="notificationRouteDetailLabel">세부 ID</label>
+              <input id="notificationRouteDetail" placeholder="">
+            </div>
+            <div id="notificationCustomRouteWrap" class="notification-admin-field" hidden>
+              <label>직접 입력 경로</label>
+              <input id="notificationCustomRoute" placeholder="/my/coupons">
+              <div class="notification-admin-hint">Expo Router 경로를 / 로 시작해 입력하세요.</div>
+            </div>
+            <div id="notificationResolvedRoute" class="notification-admin-hint" style="margin-top:8px">앱 이동 없음</div>
             <div class="notification-admin-field">
               <label>예약 시각 (선택)</label>
               <input id="notificationSchedule" type="datetime-local">
@@ -167,7 +201,7 @@
               <div class="notification-stat"><b>${stats.dev}</b><span>DEV 토큰</span></div>
               <div class="notification-stat"><b>${stats.error}</b><span>전송 오류</span></div>
             </div>
-            <div class="notification-admin-hint" style="margin-top:12px">테스트 발송은 현재 관리자 계정의 DEV 앱 토큰으로만 전송됩니다. 최종 발송 전에 반드시 테스트를 권장합니다.</div>
+            <div class="notification-admin-hint" style="margin-top:12px">테스트 발송은 현재 관리자 로그인 계정과 동일한 회원 ID의 DEV 앱 토큰으로만 전송됩니다. 최종 발송 전에 반드시 테스트를 권장합니다.</div>
           </article>
         </div>
 
@@ -185,14 +219,36 @@
 
   function historyItem(row){
     const target=row.target_type==='all'?'전체':row.target_type==='self'?'본인 테스트':'특정 회원';
+    const destination=row.route?'앱 '+row.route:(row.url?'웹 '+row.url:'이동 없음');
     return `<div class="notification-history-item">
       <div>
         <b>${escText(row.title)}</b>
         <p>${escText(row.body)}</p>
-        <div class="notification-history-meta">${target} · 대상 ${Number(row.recipient_count||0).toLocaleString()}명 · 생성 ${fmt(row.created_at)}${row.scheduled_at?' · 예약 '+fmt(row.scheduled_at):''}</div>
+        <div class="notification-history-meta">${target} · 대상 ${Number(row.recipient_count||0).toLocaleString()}명 · ${escText(destination)} · 생성 ${fmt(row.created_at)}${row.scheduled_at?' · 예약 '+fmt(row.scheduled_at):''}</div>
       </div>
       <span class="notification-history-status">${escText(statusLabel(row.status))}</span>
     </div>`;
+  }
+
+  function resolveNotificationRoute(validate=false){
+    const preset=document.getElementById('notificationRoutePreset')?.value||'';
+    const detail=document.getElementById('notificationRouteDetail')?.value.trim()||'';
+    const custom=document.getElementById('notificationCustomRoute')?.value.trim()||'';
+
+    if(preset==='__talk_post__'){
+      if(validate&&!detail)throw new Error('TALK 게시글 ID를 입력해주세요.');
+      return detail?'/(tabs)/talk?postId='+encodeURIComponent(detail):null;
+    }
+    if(preset==='__shop__'){
+      if(validate&&!detail)throw new Error('카드샵 ID를 입력해주세요.');
+      return detail?'/shop/'+encodeURIComponent(detail):null;
+    }
+    if(preset==='__custom__'){
+      if(validate&&!custom)throw new Error('직접 입력할 앱 경로를 입력해주세요.');
+      if(validate&&custom&&!custom.startsWith('/'))throw new Error('직접 입력 경로는 / 로 시작해야 합니다.');
+      return custom||null;
+    }
+    return preset||null;
   }
 
   function bind(){
@@ -201,16 +257,64 @@
     const category=document.getElementById('notificationCategory');
     const target=document.getElementById('notificationTarget');
     const userWrap=document.getElementById('notificationUserIdsWrap');
+    const routePreset=document.getElementById('notificationRoutePreset');
+    const routeDetailWrap=document.getElementById('notificationRouteDetailWrap');
+    const routeDetailLabel=document.getElementById('notificationRouteDetailLabel');
+    const routeDetail=document.getElementById('notificationRouteDetail');
+    const customRouteWrap=document.getElementById('notificationCustomRouteWrap');
+    const customRoute=document.getElementById('notificationCustomRoute');
+    const resolvedRoute=document.getElementById('notificationResolvedRoute');
+    const url=document.getElementById('notificationUrl');
+    const urlHint=document.getElementById('notificationUrlHint');
+
     const preview=()=>{
       const label=CATEGORIES.find(x=>x[0]===category.value)?.[1]||category.value;
       const targetLabel=target.value==='all'?'전체 회원':target.value==='self'?'관리자 본인':'특정 회원';
+      const route=resolveNotificationRoute(false);
+      const destination=route?' · 이동: '+route:(url.value.trim()?' · 웹: '+url.value.trim():' · 이동 없음');
       document.getElementById('notificationPreviewTitle').textContent=title.value.trim()||'알림 제목';
       document.getElementById('notificationPreviewBody').textContent=body.value.trim()||'알림 내용을 입력하면 여기에 표시됩니다.';
-      document.getElementById('notificationPreviewMeta').textContent=label+' · '+targetLabel;
+      document.getElementById('notificationPreviewMeta').textContent=label+' · '+targetLabel+destination;
       userWrap.hidden=target.value!=='user_ids';
     };
+
+    const syncRoute=()=>{
+      const preset=routePreset.value;
+      const talkPost=preset==='__talk_post__';
+      const shopDetail=preset==='__shop__';
+      routeDetailWrap.hidden=!(talkPost||shopDetail);
+      customRouteWrap.hidden=preset!=='__custom__';
+
+      if(talkPost){
+        routeDetailLabel.textContent='TALK 게시글 ID';
+        routeDetail.placeholder='게시글 ID 입력';
+      }else if(shopDetail){
+        routeDetailLabel.textContent='카드샵 ID';
+        routeDetail.placeholder='예: SHOP-...';
+      }
+
+      const hasAppRoute=!!preset;
+      url.disabled=hasAppRoute;
+      if(hasAppRoute)url.value='';
+      urlHint.textContent=hasAppRoute
+        ?'앱 이동 화면을 사용하므로 웹 URL은 비활성화됩니다.'
+        :'앱 이동 화면을 선택하지 않았을 때 사용합니다.';
+
+      const route=resolveNotificationRoute(false);
+      resolvedRoute.textContent=route?'최종 앱 경로: '+route:'앱 이동 없음';
+      preview();
+    };
+
     [title,body,category,target].forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',preview));
-    preview();
+    routePreset.addEventListener('change',()=>{
+      routeDetail.value='';
+      customRoute.value='';
+      syncRoute();
+    });
+    routeDetail.addEventListener('input',syncRoute);
+    customRoute.addEventListener('input',syncRoute);
+    url.addEventListener('input',preview);
+    syncRoute();
 
     document.getElementById('notificationTestBtn').onclick=()=>send(true);
     document.getElementById('notificationSendBtn').onclick=()=>send(false);
@@ -224,11 +328,13 @@
     const category=document.getElementById('notificationCategory').value;
     const requestedTarget=document.getElementById('notificationTarget').value;
     const target=test?'self':requestedTarget;
-    const route=document.getElementById('notificationRoute').value.trim()||null;
+    const route=resolveNotificationRoute(true);
     const url=document.getElementById('notificationUrl').value.trim()||null;
     const schedule=document.getElementById('notificationSchedule').value;
     const userIds=(document.getElementById('notificationUserIds')?.value||'').split(/[\s,]+/).map(x=>x.trim()).filter(Boolean);
 
+    if(route&&url)throw new Error('앱 이동 화면과 웹 URL은 동시에 사용할 수 없습니다.');
+    if(url&&!/^https?:\/\//i.test(url))throw new Error('웹 URL은 http:// 또는 https:// 로 시작해야 합니다.');
     if(!test&&target==='user_ids'&&!userIds.length)throw new Error('특정 회원 UUID를 입력해주세요.');
 
     return {
@@ -247,12 +353,13 @@
     let payload;
     try{payload=readPayload(test)}catch(e){alert(e.message);return}
 
+    const destination=payload.route?'앱 '+payload.route:(payload.url?'웹 '+payload.url:'이동 없음');
     if(test){
-      if(!confirm('현재 관리자 계정의 FUNY PIN DEV 앱으로 테스트 알림을 보낼까요?'))return;
+      if(!confirm('현재 관리자 계정의 FUNY PIN DEV 앱으로 테스트 알림을 보낼까요?\n\n이동: '+destination))return;
     }else{
       const targetLabel=payload.target_type==='all'?'전체 회원':payload.target_type==='self'?'관리자 본인':'특정 회원 '+payload.user_ids.length+'명';
       const timing=payload.scheduled_at?'예약 '+new Date(payload.scheduled_at).toLocaleString('ko-KR'):'즉시';
-      if(!confirm('최종 발송 전 확인\n\n대상: '+targetLabel+'\n시점: '+timing+'\n제목: '+payload.title+'\n\n발송을 진행할까요?'))return;
+      if(!confirm('최종 발송 전 확인\n\n대상: '+targetLabel+'\n시점: '+timing+'\n이동: '+destination+'\n제목: '+payload.title+'\n\n발송을 진행할까요?'))return;
     }
 
     const testBtn=document.getElementById('notificationTestBtn');

@@ -81,7 +81,7 @@
   }
   overlay=new VisitOverlay();
  }
- function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대 확대에서 5단계 이내로 확대하면 인증 버튼이 보여요.','Zoom to within 5 levels of maximum to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));})));}
+ function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대 확대에서 5단계 이내로 확대하면 인증 버튼이 보여요.','Zoom to within 5 levels of maximum to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요!\n50m이내에서 방문 인증할 수 있어요.','Found shops within 500 m!\nCheck in within 50 m.'));})));}
  async function start(){
   if(busy||checking)return;if(country()!=='KR')return;
   stop();const ticket=epoch;busy=true;syncControl();tell(text('위치와 주변 카드샵을 확인하고 있어요.','Checking your location and nearby shops.'));
@@ -103,7 +103,7 @@
    if(!rows.length){tell(shops.some(s=>distance(p,s)<=SEARCH_RADIUS)?text('가까운 매장은 오늘 이미 인증했어요.','Nearby shops have already been checked in today.'):text('반경 500m 안에 방문 인증 대상 카드샵이 없어요.','No eligible card shops within 500 m.'));return;}
    active=true;bindMap();window.FUNY_MAP_POPUP?.clear?.();window.FUNY_MAP_SHEET?.collapse?.();
    await new Promise(r=>setTimeout(r,360));if(!live())return;
-   const nearest=rows[0];map().setCenter(new naver.maps.LatLng(Number(nearest.latitude),Number(nearest.longitude)));map().setZoom(maxZoom());buttons();tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));
+   const nearest=rows[0];map().setCenter(new naver.maps.LatLng(Number(nearest.latitude),Number(nearest.longitude)));map().setZoom(maxZoom());buttons();tell(text('500m 이내 매장을 찾았어요!\n50m이내에서 방문 인증할 수 있어요.','Found shops within 500 m!\nCheck in within 50 m.'));
    watch=navigator.geolocation.watchPosition(p=>{if(!live()||!active)return;fix={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,ts:p.timestamp||Date.now()};buttons();if(!valid(fix))tell(text('GPS 정확도가 낮아요. 위치를 다시 확인하고 있어요.','Waiting for a more accurate location.'));},()=>{fix=null;buttons();tell(text('위치를 확인할 수 없어요. 방문 인증을 다시 눌러주세요.','Location unavailable. Tap Check in to retry.'));},{enableHighAccuracy:true,maximumAge:3000,timeout:15000});
    expiryTimer=setInterval(()=>{if(active){buttons();if(today()!==day){stop();tell(text('날짜가 바뀌었어요. 방문 인증을 다시 눌러주세요.','A new day has started. Tap Check in again.'));}}},5000);
   }catch(e){if(live())tell(e.message||text('방문 인증을 준비하지 못했어요. 다시 시도해주세요.','Could not prepare check-in. Please retry.'));}finally{if(ticket===epoch){busy=false;syncControl();}}
@@ -117,7 +117,7 @@
    fix=p;if(!valid(p))throw Error(text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is low. Please retry.'));
    if(distance(p,shop)>RADIUS)throw Error(text('매장 반경 50m 안에서 인증해주세요.','Check in within 50 m of the shop.'));
    const {data,error}=await auth.client.rpc('my_shop_visit_checkin_test',{p_shop_id:shop.id,p_lat:p.lat,p_lng:p.lng,p_accuracy:p.accuracy});if(error)throw error;
-   if(!data?.ok){const messages={too_far:text('매장과 너무 멀리 떨어져 있어요.','You are too far from the shop.'),low_accuracy:text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is too low.'),test_access_denied:text('방문 인증은 현재 준비 중이에요.','Check-in is not available yet.'),login_required:text('로그인 후 인증해주세요.','Please sign in first.')};throw Error(messages[data?.error]||text('인증하지 못했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}
+   if(!data?.ok){const messages={too_far:text('매장과 너무 멀리 떨어져 있어요.','You are too far from the shop.'),low_accuracy:text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is too low.'),test_access_denied:text('현재 로그인한 계정은 방문 인증 테스트 대상이 아니에요.','Check-in is not available yet.'),login_required:text('로그인 후 인증해주세요.','Please sign in first.')};throw Error(messages[data?.error]||text('인증하지 못했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}
    if(ticket!==epoch)return;done.add(shop.id);buttons();tell(data.new?text(shop.name+' 방문 인증 완료! 미션에 반영했어요.','Checked in at '+shop.name+'! Your mission has been updated.'):text('오늘 이미 인증한 매장이에요.','Already checked in here today.'));
    window.dispatchEvent(new CustomEvent('funy:shopvisitcompleted',{detail:{shopId:shop.id,isNew:!!data.new}}));try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shop.id,is_new:!!data.new,source:'map'});}catch(_){}
   }catch(e){if(ticket===epoch)tell(e.message||text('방문 인증에 실패했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}finally{checking=false;buttons();}

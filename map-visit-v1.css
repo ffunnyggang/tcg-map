@@ -27,3 +27,6 @@
 
 /* Portal above the sheet: map z-index/overflow must not hide status or errors. */
 body>.map-visit-notice{z-index:2147483001}
+
+/* Preserve the two-line visit guidance across web and app. */
+body>.map-visit-notice{white-space:pre-line;text-align:center}

@@ -97,7 +97,7 @@ export default function Account(){
   const rewardRows=useMemo(()=>[
     {label:'랭킹',sub:'출석 · 카드샵 방문 · 퍼니몬 포획 랭킹',icon:'🏆',onPress:()=>openWeb('ranking.html','랭킹')},
     {label:'배지',sub:'미션과 활동으로 획득한 배지 컬렉션',icon:'🎖️',onPress:()=>openWeb('my-badges.html','배지')},
-    {label:'바인더 보관함',sub:'한 장씩 채우는 나의 카드 컬렉션',icon:'▤',prepared:true,onPress:()=>{} },
+    {label:'바인더 보관함',sub:'한 장씩 채우는 나의 카드 컬렉션',icon:'📔',onPress:()=>openWeb('binder.html?view=mine&nativeHeader=1','바인더 보관함')},
     {label:'퍼니몬 도감',sub:'포획한 퍼니몬 컬렉션',icon:'👾',onPress:()=>router.push('/my/funymon')},
     {label:'응모 내역',sub:'참여한 이벤트와 응모 내역',icon:'🎟️',onPress:()=>router.push('/my/entries')},
     {label:'쿠폰함',sub:'발급받은 쿠폰을 확인하세요',icon:'🎫',onPress:()=>router.push('/my/coupons')},

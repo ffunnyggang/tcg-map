@@ -1,6 +1,6 @@
-type TabReselectKey='map'|'my';
+type TabReselectKey='map'|'my'|'talk';
 type Listener=()=>void;
-const listeners:Record<TabReselectKey,Set<Listener>>={map:new Set(),my:new Set()};
+const listeners:Record<TabReselectKey,Set<Listener>>={map:new Set(),my:new Set(),talk:new Set()};
 export function emitTabReselect(key:TabReselectKey){
   for(const listener of Array.from(listeners[key])){try{listener()}catch{}}
 }

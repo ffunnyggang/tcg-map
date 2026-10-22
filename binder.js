@@ -152,7 +152,7 @@ async function action(act,el){const pid=el.dataset.page;
 }
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.disabled)return;e.preventDefault();if(el.dataset.act==='close'){closeModal();return}run(()=>action(el.dataset.act,el))});
 $('#editorClose').onclick=()=>run(async()=>{await save();location.href='/binder.html?view=mine'});
-$('#back').onclick=()=>run(async()=>{await save();if(preview){preview=false;return edit()}if(history.length>1)history.back();else location.href='/my.html'});
+$('#back').onclick=()=>run(async()=>{await save();if(preview){preview=false;return edit()}if(history.length>1)history.back();else {const backTo=new URLSearchParams(location.search).get('returnTo');location.href=backTo==='/talk.html'?backTo:(view==='detail'?'/talk.html':'/my.html')}});
 window.addEventListener('beforeunload',e=>{if(dirty||saving||photoPending){e.preventDefault();e.returnValue=''}});
 window.addEventListener('pagehide',()=>{observer?.disconnect();for(const promise of urls.values())Promise.resolve(promise).then(URL.revokeObjectURL);urls.clear()});
 window.addEventListener('online',()=>{if(dirty)save().catch(e=>toast(message(e)))});

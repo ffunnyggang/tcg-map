@@ -2,7 +2,7 @@
 (function(){
  'use strict';
  if(window.__FUNY_MAP_VISIT)return;window.__FUNY_MAP_VISIT=true;
- const RADIUS=200,SEARCH_RADIUS=500,MAX_ACCURACY=50,MAX_AGE=30000;
+ const RADIUS=50,SEARCH_RADIUS=500,MAX_ACCURACY=50,MAX_AGE=30000;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const en=()=>localStorage.getItem('funy-pin-lang')==='en';
  const text=(ko,eng)=>en()?eng:ko;
@@ -13,7 +13,7 @@
  const distance=(p,s)=>{const rad=Math.PI/180,a=p.lat*rad,b=Number(s.latitude)*rad,dl=(Number(s.longitude)-p.lng)*rad,dp=b-a;return 6371000*2*Math.asin(Math.sqrt(Math.min(1,Math.sin(dp/2)**2+Math.cos(a)*Math.cos(b)*Math.sin(dl/2)**2)));};
  const valid=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Number.isFinite(p.accuracy)&&p.accuracy>=0&&p.accuracy<=MAX_ACCURACY&&Date.now()-p.ts<=MAX_AGE;
  const maxZoom=()=>{const value=Number(map()?.getOptions?.('maxZoom'));return Number.isFinite(value)&&value>0?value:19;};
- const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-.01;
+ const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-3-.01;
  const searchable=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Number.isFinite(p.accuracy)&&p.accuracy>=0&&Date.now()-p.ts<=MAX_AGE;
  const available=()=>searchable(fix)?shops.filter(s=>!done.has(s.id)&&distance(fix,s)<=SEARCH_RADIUS).sort((a,b)=>distance(fix,a)-distance(fix,b)):[];
  function placeNotice(){if(!notice)return;notice.style.removeProperty('top');notice.style.removeProperty('left');}
@@ -30,12 +30,12 @@
   class VisitOverlay extends nm.OverlayView{
    constructor(){super();this.signature=rows.map(s=>s.id).join('|');this.nodes=rows.map(shop=>{const el=document.createElement('div');el.className='visit-map-label';el.innerHTML='<span class="visit-leader" aria-hidden="true"></span><button type="button" data-visit-shop="'+esc(shop.id)+'"><small>'+esc(shop.name)+'</small><b>'+text('방문 인증하기','Check in here')+'</b></button>';const button=el.querySelector('button');['pointerdown','mousedown','touchstart','dblclick'].forEach(type=>el.addEventListener(type,e=>e.stopPropagation()));button.onclick=e=>{e.preventDefault();e.stopPropagation();certify(shop);};return{shop,el,button};});this.setMap(map());}
    onAdd(){this.nodes.forEach(n=>this.getPanes().floatPane.appendChild(n.el));}
-   draw(){if(!this.getMap())return;const boxes=[];this.nodes.forEach(n=>{const p=this.getProjection().fromCoordToOffset(new nm.LatLng(Number(n.shop.latitude),Number(n.shop.longitude)));let bottom=p.y-52;for(let i=0;i<rows.length;i++){if(!boxes.some(b=>Math.abs(p.x-b.x)<170&&Math.abs(bottom-b.y)<68))break;bottom-=68;}boxes.push({x:p.x,y:bottom});n.el.style.left=p.x+'px';n.el.style.top=bottom+'px';n.el.style.setProperty('--visit-leader-height',(p.y-bottom-8)+'px');const eligible=valid(fix)&&distance(fix,n.shop)<=RADIUS;n.button.disabled=checking||!eligible;n.button.querySelector('b').textContent=eligible?text('방문 인증하기','Check in here'):!valid(fix)?text('GPS 오차 50m 이하 필요','GPS accuracy ≤50 m required'):text('200m 안으로 이동해주세요','Move within 200 m');});}
+   draw(){if(!this.getMap())return;const boxes=[];this.nodes.forEach(n=>{const p=this.getProjection().fromCoordToOffset(new nm.LatLng(Number(n.shop.latitude),Number(n.shop.longitude)));let bottom=p.y-52;for(let i=0;i<rows.length;i++){if(!boxes.some(b=>Math.abs(p.x-b.x)<170&&Math.abs(bottom-b.y)<68))break;bottom-=68;}boxes.push({x:p.x,y:bottom});n.el.style.left=p.x+'px';n.el.style.top=bottom+'px';n.el.style.setProperty('--visit-leader-height',(p.y-bottom-8)+'px');const eligible=valid(fix)&&distance(fix,n.shop)<=RADIUS;n.button.disabled=checking||!eligible;n.button.querySelector('b').textContent=eligible?text('방문 인증하기','Check in here'):!valid(fix)?text('GPS 오차 50m 이하 필요','GPS accuracy ≤50 m required'):text('50m 안으로 이동해주세요','Move within 50 m');});}
    onRemove(){this.nodes.forEach(n=>n.el.remove());}
   }
   overlay=new VisitOverlay();
  }
- function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대로 확대하면 방문 인증 버튼이 보여요.','Zoom in fully to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요. 200m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 200 m with GPS accuracy ≤50 m.'));})));}
+ function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대 확대에서 3단계 이내로 확대하면 인증 버튼이 보여요.','Zoom to within 3 levels of maximum to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));})));}
  async function start(){
   if(busy||checking)return;if(country()!=='KR')return;
   stop();const ticket=epoch;busy=true;syncControl();tell(text('위치와 주변 카드샵을 확인하고 있어요.','Checking your location and nearby shops.'));
@@ -54,7 +54,7 @@
    if(!rows.length){tell(shops.some(s=>distance(p,s)<=SEARCH_RADIUS)?text('가까운 매장은 오늘 이미 인증했어요.','Nearby shops have already been checked in today.'):text('반경 500m 안에 방문 인증 대상 카드샵이 없어요.','No eligible card shops within 500 m.'));return;}
    active=true;bindMap();window.FUNY_MAP_POPUP?.clear?.();window.FUNY_MAP_SHEET?.collapse?.();
    await new Promise(r=>setTimeout(r,360));if(!live())return;
-   const nearest=rows[0];map().setCenter(new naver.maps.LatLng(Number(nearest.latitude),Number(nearest.longitude)));map().setZoom(maxZoom());buttons();tell(text('500m 이내 매장을 찾았어요. 200m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 200 m with GPS accuracy ≤50 m.'));
+   const nearest=rows[0];map().setCenter(new naver.maps.LatLng(Number(nearest.latitude),Number(nearest.longitude)));map().setZoom(maxZoom());buttons();tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));
    watch=navigator.geolocation.watchPosition(p=>{if(!live()||!active)return;fix={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,ts:p.timestamp||Date.now()};buttons();if(!valid(fix))tell(text('GPS 정확도가 낮아요. 위치를 다시 확인하고 있어요.','Waiting for a more accurate location.'));},()=>{fix=null;buttons();tell(text('위치를 확인할 수 없어요. 방문 인증을 다시 눌러주세요.','Location unavailable. Tap Check in to retry.'));},{enableHighAccuracy:true,maximumAge:3000,timeout:15000});
    expiryTimer=setInterval(()=>{if(active){buttons();if(today()!==day){stop();tell(text('날짜가 바뀌었어요. 방문 인증을 다시 눌러주세요.','A new day has started. Tap Check in again.'));}}},5000);
   }catch(e){if(live())tell(e.message||text('방문 인증을 준비하지 못했어요. 다시 시도해주세요.','Could not prepare check-in. Please retry.'));}finally{if(ticket===epoch){busy=false;syncControl();}}
@@ -66,7 +66,7 @@
    const auth=window.FUNY_WEB_AUTH;if(auth?.session?.user?.id!==owner)throw Error(text('로그인 상태를 다시 확인해주세요.','Please sign in again.'));
    const p=await position();if(ticket!==epoch||!active||!maximum()||country()!=='KR'||document.hidden)return;
    fix=p;if(!valid(p))throw Error(text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is low. Please retry.'));
-   if(distance(p,shop)>RADIUS)throw Error(text('매장 반경 200m 안에서 인증해주세요.','Check in within 200 m of the shop.'));
+   if(distance(p,shop)>RADIUS)throw Error(text('매장 반경 50m 안에서 인증해주세요.','Check in within 50 m of the shop.'));
    const {data,error}=await auth.client.rpc('my_shop_visit_checkin_test',{p_shop_id:shop.id,p_lat:p.lat,p_lng:p.lng,p_accuracy:p.accuracy});if(error)throw error;
    if(!data?.ok){const messages={too_far:text('매장과 너무 멀리 떨어져 있어요.','You are too far from the shop.'),low_accuracy:text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is too low.'),test_access_denied:text('방문 인증은 현재 준비 중이에요.','Check-in is not available yet.'),login_required:text('로그인 후 인증해주세요.','Please sign in first.')};throw Error(messages[data?.error]||text('인증하지 못했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}
    if(ticket!==epoch)return;done.add(shop.id);buttons();tell(data.new?text(shop.name+' 방문 인증 완료! 미션에 반영했어요.','Checked in at '+shop.name+'! Your mission has been updated.'):text('오늘 이미 인증한 매장이에요.','Already checked in here today.'));

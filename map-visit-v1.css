@@ -20,3 +20,7 @@
 
 /* Keep visit guidance below the map controls, above bottom navigation. */
 .map-visit-notice{position:fixed;z-index:1200;left:50%;top:auto;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:min(360px,calc(100vw - 32px));box-sizing:border-box}
+
+/* Keep control taps separate from map gestures without disabling page pinch zoom. */
+.map-visit-control button,.visit-map-label button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+@media(pointer:coarse){#map-shop-search.map-search-input,.list-sort-select{font-size:16px!important}}

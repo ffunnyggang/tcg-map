@@ -21,14 +21,28 @@
  function syncControl(){if(!control)return;control.hidden=country()!=='KR';const mon=document.getElementById('funymonFindControl');control.classList.toggle('has-funymon',!!mon&&getComputedStyle(mon).display!=='none');control.querySelector('.visit-label').textContent=busy?text('위치 확인 중…','Locating…'):text('방문 인증','Check in');control.querySelector('.visit-start').disabled=busy;control.querySelector('.visit-start').setAttribute('aria-pressed',String(active));control.querySelector('.visit-exit').hidden=!active;placeNotice();}
  function detach(){if(overlay){overlay.setMap(null);overlay=null;}}
  function stop(){epoch++;active=false;busy=false;fix=null;shops=[];detach();if(watch!==null){navigator.geolocation?.clearWatch(watch);watch=null;}clearInterval(expiryTimer);expiryTimer=null;if(notice)notice.hidden=true;syncControl();}
- function position(){return new Promise((resolve,reject)=>{if(!navigator.geolocation){reject(Error(text('위치 기능을 사용할 수 없어요.','Location is unavailable.')));return;}navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,ts:p.timestamp||Date.now()}),e=>reject(Error(e.code===1?text('기기 설정에서 위치 권한을 허용해주세요.','Allow location access in device settings.'):text('현재 위치를 확인하지 못했어요. 다시 시도해주세요.','Could not locate you. Please try again.'))),{enableHighAccuracy:true,maximumAge:0,timeout:15000});});}
+ function position(){return new Promise((resolve,reject)=>{
+  if(!navigator.geolocation){reject(Error(text('위치 기능을 사용할 수 없어요.','Location is unavailable.')));return;}
+  let settled=false;const timer=setTimeout(()=>finish(Error(text('위치 확인이 지연되고 있어요. 위치 권한을 확인한 뒤 다시 눌러주세요.','Location timed out. Check permission and retry.'))),20000);
+  function finish(error,p){if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,ts:p.timestamp||Date.now()});}
+  try{navigator.geolocation.getCurrentPosition(p=>finish(null,p),e=>finish(Error(e.code===1?text('기기 설정에서 위치 권한을 허용해주세요.','Allow location access in device settings.'):text('현재 위치를 확인하지 못했어요. 다시 시도해주세요.','Could not locate you. Please try again.'))),{enableHighAccuracy:true,maximumAge:0,timeout:15000});}catch(e){finish(e);}
+ });}
+ // Explicit tap handling avoids a map gesture swallowing the synthesized iOS click.
+ function bindTap(button,action){
+  let origin=null,suppressUntil=0;
+  button.addEventListener('touchstart',e=>{e.stopPropagation();const t=e.touches[0];origin=e.touches.length===1?{x:t.clientX,y:t.clientY}:null;},{passive:true});
+  button.addEventListener('touchmove',e=>{e.stopPropagation();const t=e.touches[0];if(!t||!origin||Math.abs(t.clientX-origin.x)>10||Math.abs(t.clientY-origin.y)>10)origin=null;},{passive:true});
+  button.addEventListener('touchcancel',()=>{origin=null;});
+  button.addEventListener('touchend',e=>{e.stopPropagation();if(!origin||e.touches.length)return;origin=null;if(button.disabled)return;e.preventDefault();suppressUntil=Date.now()+700;action();},{passive:false});
+  button.onclick=e=>{e.preventDefault();e.stopPropagation();if(!button.disabled&&Date.now()>=suppressUntil)action();};
+ }
  function buttons(){
   if(!active||country()!=='KR'||document.hidden||!maximum()||!searchable(fix)||today()!==day){detach();return;}
   const rows=available();if(!rows.length){detach();return;}
   if(overlay&&overlay.signature===rows.map(s=>s.id).join('|')){overlay.draw();return;}
   detach();const nm=window.naver?.maps;if(!nm?.OverlayView)return;
   class VisitOverlay extends nm.OverlayView{
-   constructor(){super();this.signature=rows.map(s=>s.id).join('|');this.nodes=rows.map(shop=>{const el=document.createElement('div');el.className='visit-map-label';el.innerHTML='<span class="visit-leader" aria-hidden="true"></span><button type="button" data-visit-shop="'+esc(shop.id)+'"><small>'+esc(shop.name)+'</small><b>'+text('방문 인증하기','Check in here')+'</b></button>';const button=el.querySelector('button');['pointerdown','mousedown','touchstart','dblclick'].forEach(type=>el.addEventListener(type,e=>e.stopPropagation()));button.onclick=e=>{e.preventDefault();e.stopPropagation();certify(shop);};return{shop,el,button};});this.setMap(map());}
+   constructor(){super();this.signature=rows.map(s=>s.id).join('|');this.nodes=rows.map(shop=>{const el=document.createElement('div');el.className='visit-map-label';el.innerHTML='<span class="visit-leader" aria-hidden="true"></span><button type="button" data-visit-shop="'+esc(shop.id)+'"><small>'+esc(shop.name)+'</small><b>'+text('방문 인증하기','Check in here')+'</b></button>';const button=el.querySelector('button');['pointerdown','mousedown','touchstart','dblclick'].forEach(type=>el.addEventListener(type,e=>e.stopPropagation()));bindTap(button,()=>certify(shop));return{shop,el,button};});this.setMap(map());}
    onAdd(){this.nodes.forEach(n=>this.getPanes().floatPane.appendChild(n.el));}
    draw(){if(!this.getMap())return;const boxes=[];this.nodes.forEach(n=>{const p=this.getProjection().fromCoordToOffset(new nm.LatLng(Number(n.shop.latitude),Number(n.shop.longitude)));let bottom=p.y-52;for(let i=0;i<rows.length;i++){if(!boxes.some(b=>Math.abs(p.x-b.x)<170&&Math.abs(bottom-b.y)<68))break;bottom-=68;}boxes.push({x:p.x,y:bottom});n.el.style.left=p.x+'px';n.el.style.top=bottom+'px';n.el.style.setProperty('--visit-leader-height',(p.y-bottom-8)+'px');const eligible=valid(fix)&&distance(fix,n.shop)<=RADIUS;n.button.disabled=checking||!eligible;n.button.querySelector('b').textContent=eligible?text('방문 인증하기','Check in here'):!valid(fix)?text('GPS 오차 50m 이하 필요','GPS accuracy ≤50 m required'):text('50m 안으로 이동해주세요','Move within 50 m');});}
    onRemove(){this.nodes.forEach(n=>n.el.remove());}
@@ -39,7 +53,7 @@
  async function start(){
   if(busy||checking)return;if(country()!=='KR')return;
   stop();const ticket=epoch;busy=true;syncControl();tell(text('위치와 주변 카드샵을 확인하고 있어요.','Checking your location and nearby shops.'));
-  const live=()=>ticket===epoch&&country()==='KR'&&!document.hidden;
+  const live=()=>ticket===epoch&&country()==='KR';
   try{
    if(!map()||!window.naver?.maps)throw Error(text('지도를 불러온 뒤 다시 눌러주세요.','Please wait for the map to load.'));
    const auth=window.FUNY_WEB_AUTH;await auth?.init();if(!live())return;
@@ -73,12 +87,12 @@
    window.dispatchEvent(new CustomEvent('funy:shopvisitcompleted',{detail:{shopId:shop.id,isNew:!!data.new}}));try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shop.id,is_new:!!data.new,source:'map'});}catch(_){}
   }catch(e){if(ticket===epoch)tell(e.message||text('방문 인증에 실패했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}finally{checking=false;buttons();}
  }
- function mount(){const wrap=document.querySelector('.map-wrap-hero');if(!wrap||control)return;control=document.createElement('div');control.id='mapVisitControl';control.className='map-visit-control';control.innerHTML='<button type="button" class="visit-start" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><path d="m8 10 3 3 5-5"/></svg><span class="visit-label">'+text('방문 인증','Check in')+'</span></button><button type="button" class="visit-exit" hidden aria-label="방문 인증 모드 종료">×</button>';wrap.appendChild(control);notice=document.createElement('div');notice.className='map-visit-notice';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.hidden=true;wrap.appendChild(notice);new MutationObserver(syncControl).observe(wrap,{childList:true});control.addEventListener('transitionend',placeNotice);window.addEventListener('resize',placeNotice);control.querySelector('.visit-start').onclick=start;control.querySelector('.visit-exit').onclick=stop;syncControl();bindMap();if(new URLSearchParams(location.search).get('visit')==='1')tell(text('방문 인증 버튼을 눌러 주변 카드샵을 확인해보세요.','Tap Check in to find nearby card shops.'));}
+ function mount(){const wrap=document.querySelector('.map-wrap-hero');if(!wrap||control)return;control=document.createElement('div');control.id='mapVisitControl';control.className='map-visit-control';control.innerHTML='<button type="button" class="visit-start" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><path d="m8 10 3 3 5-5"/></svg><span class="visit-label">'+text('방문 인증','Check in')+'</span></button><button type="button" class="visit-exit" hidden aria-label="방문 인증 모드 종료">×</button>';wrap.appendChild(control);notice=document.createElement('div');notice.className='map-visit-notice';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.hidden=true;wrap.appendChild(notice);new MutationObserver(syncControl).observe(wrap,{childList:true});control.addEventListener('transitionend',placeNotice);window.addEventListener('resize',placeNotice);bindTap(control.querySelector('.visit-start'),start);bindTap(control.querySelector('.visit-exit'),stop);syncControl();bindMap();if(new URLSearchParams(location.search).get('visit')==='1')tell(text('방문 인증 버튼을 눌러 주변 카드샵을 확인해보세요.','Tap Check in to find nearby card shops.'));}
  const setup=setInterval(()=>{mount();bindMap();syncControl();if(control&&map())clearInterval(setup);},250);setTimeout(()=>clearInterval(setup),15000);
  new MutationObserver(()=>{mount();syncControl();if(country()!=='KR'&&(active||busy))stop();}).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:false});
  window.addEventListener('funy:mapdatachange',()=>{mount();bindMap();syncControl();if(country()!=='KR')stop();});
  window.addEventListener('funy:sheetchange',syncControl);window.addEventListener('pagehide',stop);window.addEventListener('hashchange',()=>{if(/^#\/shop\//.test(location.hash))stop();});
- document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){detach();if(!busy&&!checking)stop();}else{buttons();syncControl();}});
  window.FUNY_WEB_AUTH?.onChange(()=>{if(owner&&window.FUNY_WEB_AUTH.session?.user?.id!==owner)stop();});
  window.FUNY_MAP_VISIT={start,stop};mount();
 })();

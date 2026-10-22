@@ -1,0 +1,19 @@
+/* Independent map control; never changes map/marker selection or sheet layout. */
+.map-visit-control{position:absolute;left:14px;bottom:18px;z-index:26;display:flex;align-items:center;gap:6px;pointer-events:auto;transition:top .32s ease,bottom .32s ease}
+.map-visit-control.has-funymon{bottom:70px}
+.map-visit-control[hidden],.map-visit-control [hidden],.map-visit-notice[hidden]{display:none!important}
+.map-visit-control .visit-start{display:flex;align-items:center;justify-content:center;gap:5px;width:114px;height:44px;padding:0 8px;border:1px solid #b4a0d7;border-radius:15px;background:rgba(255,255,255,.97);color:#7057c7;box-shadow:0 5px 18px #36234820;font:800 11px Pretendard,sans-serif;cursor:pointer;white-space:nowrap}
+.visit-start svg{width:19px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.map-visit-control .visit-start[aria-pressed=true]{background:#7457bb;color:white;border-color:#7457bb}
+.map-visit-control .visit-start:disabled{opacity:.7;cursor:wait}
+.map-visit-control .visit-exit{width:32px;height:32px;padding:0;border:1px solid #e5dfee;border-radius:50%;background:white;color:#776489;font-size:21px;box-shadow:0 3px 10px #36234815;cursor:pointer}
+.map-visit-notice{position:absolute;z-index:27;left:50%;top:132px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);padding:10px 14px;border:1px solid #e8e0f0;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 4px 16px #33214418;color:#665475;font:600 12px/1.5 Pretendard,sans-serif;text-align:center;pointer-events:none}
+.visit-map-label{position:absolute;width:160px;transform:translate(-50%,-100%);z-index:100;pointer-events:none}
+.visit-map-label button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:160px;min-height:52px;padding:8px 10px;border:1px solid #9273cb;border-radius:13px;background:#fff;color:#7252ad;box-shadow:0 3px 14px #49316c24;pointer-events:auto;cursor:pointer;font-family:Pretendard,sans-serif}
+.visit-map-label small{display:block;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#82738f}
+.visit-map-label b{font-size:12px;font-weight:800}
+.visit-map-label button:disabled{opacity:.6;cursor:wait}
+.visit-map-label .visit-leader{position:absolute;left:calc(50% - 1px);top:100%;height:var(--visit-leader-height,44px);width:2px;background:#a386ca;pointer-events:none}
+.visit-map-label .visit-leader:after{content:'';position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border:2px solid white;box-sizing:border-box;border-radius:50%;background:#8260bc}
+.country-japan .map-visit-control,.country-japan .map-visit-notice,.country-japan .visit-map-label{display:none!important}
+@media(max-width:430px){.map-visit-control{left:12px;bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 54px),calc(var(--map-sheet-half-top,50dvh) - 54px))}.map-visit-control.has-funymon{bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 104px),calc(var(--map-sheet-half-top,50dvh) - 104px))}.map-visit-control .visit-start{height:42px;width:112px;border-radius:14px}}

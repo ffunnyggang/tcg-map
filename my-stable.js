@@ -147,7 +147,6 @@
     ${profileHtml()}
     ${missionHtml()}
     <section class="section"><div class="section-head"><h2>${T.activity}</h2></div><div class="card menu-card">
-      <div class="menu-row" aria-disabled="true"><span class="menu-icon">▤</span><span class="menu-copy"><b>${en?'My binders':'내 바인더 보관함'} <span style="display:inline-flex;vertical-align:middle;margin-left:6px;padding:3px 7px;border-radius:6px;background:#f0edf5;color:#91869f;font-size:10px;font-weight:600;line-height:1.2">${T.coming}</span></b><span>${en?'Capture, arrange, and share your collection':'한 장씩 채우는 나의 카드 컬렉션'}</span></span></div>
       <a class="menu-row" href="/my-community.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>${T.community}</b><span>${T.communitySub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-market.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>${T.market}</b><span>${T.marketSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-favorites.html"><span class="menu-icon">💜</span><span class="menu-copy"><b>${T.favorites}</b><span>${T.favoritesSub}</span></span><span class="chev">›</span></a>
@@ -155,6 +154,7 @@
     <section class="section"><div class="section-head"><h2>${T.reward}</h2></div><div class="card menu-card">
       <a class="menu-row" href="/ranking.html"><span class="menu-icon">🏆</span><span class="menu-copy"><b>${T.ranking}</b><span>${T.rankingSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-badges.html"><span class="menu-icon">🎖️</span><span class="menu-copy"><b>${T.badges}</b><span>${T.badgesSub}</span></span><span class="chev">›</span></a>
+      <div class="menu-row" aria-disabled="true"><span class="menu-icon">▤</span><span class="menu-copy"><b>${en?'Binder shelf':'바인더 보관함'} <span style="display:inline-flex;vertical-align:middle;margin-left:6px;padding:3px 7px;border-radius:6px;background:#f0edf5;color:#91869f;font-size:10px;font-weight:600;line-height:1.2">${T.coming}</span></b><span>${en?'Capture, arrange, and share your collection':'한 장씩 채우는 나의 카드 컬렉션'}</span></span></div>
       <a class="menu-row" href="/my-funymon.html"><span class="menu-icon">👾</span><span class="menu-copy"><b>${T.mon}</b><span>${T.monSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-events.html"><span class="menu-icon">🎉</span><span class="menu-copy"><b>${T.events}</b><span>${T.eventsSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-entries.html"><span class="menu-icon">🎟️</span><span class="menu-copy"><b>${T.entries}</b><span>${T.entriesSub}</span></span><span class="chev">›</span></a>
@@ -237,3 +237,4 @@
   render();
   restoreMyScroll();
 })().catch(error=>{const root=document.getElementById('root');if(root)root.innerHTML=`<div class="error"><strong>${en?'Could not load account information.':'불러오지 못했어요'}</strong>${String(error?.message||error)}</div>`});
+

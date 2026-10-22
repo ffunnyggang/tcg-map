@@ -16,7 +16,17 @@
  const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-5-.01;
  const searchable=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Number.isFinite(p.accuracy)&&p.accuracy>=0&&Date.now()-p.ts<=MAX_AGE;
  const available=()=>searchable(fix)?shops.filter(s=>!done.has(s.id)&&distance(fix,s)<=SEARCH_RADIUS).sort((a,b)=>distance(fix,a)-distance(fix,b)):[];
- function placeNotice(){if(!notice)return;notice.style.removeProperty('top');notice.style.removeProperty('left');}
+ function placeNotice(){
+  if(!notice)return;
+  const filters=document.querySelector('.map-filter-bar');
+  const search=document.querySelector('.map-search-float');
+  const rect=filters?.getBoundingClientRect();
+  const searchRect=search?.getBoundingClientRect();
+  const bottom=Math.max(rect?.bottom||0,searchRect?.bottom||0);
+  notice.style.top=(bottom>0?bottom+10:120)+'px';
+  const wrap=document.querySelector('.map-wrap-hero')?.getBoundingClientRect();
+  if(wrap?.width>0){notice.style.left=(wrap.left+wrap.width/2)+'px';notice.style.maxWidth=Math.max(0,Math.min(360,wrap.width-24))+'px';}
+ }
  function tell(message){if(!notice)return;notice.textContent=message;notice.hidden=false;placeNotice();}
  function syncControl(){if(!control)return;control.hidden=country()!=='KR';const mon=document.getElementById('funymonFindControl');control.classList.toggle('has-funymon',!!mon&&getComputedStyle(mon).display!=='none');control.querySelector('.visit-label').textContent=busy?text('위치 확인 중…','Locating…'):text('방문 인증','Check in');control.querySelector('.visit-start').disabled=busy;control.querySelector('.visit-start').setAttribute('aria-pressed',String(active));control.querySelector('.visit-exit').hidden=!active;placeNotice();}
  function detach(){if(overlay){overlay.setMap(null);overlay=null;}}
@@ -109,7 +119,11 @@
    window.dispatchEvent(new CustomEvent('funy:shopvisitcompleted',{detail:{shopId:shop.id,isNew:!!data.new}}));try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shop.id,is_new:!!data.new,source:'map'});}catch(_){}
   }catch(e){if(ticket===epoch)tell(e.message||text('방문 인증에 실패했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}finally{checking=false;buttons();}
  }
- function mount(){const wrap=document.querySelector('.map-wrap-hero');if(!wrap||control)return;control=document.createElement('div');control.id='mapVisitControl';control.className='map-visit-control';control.innerHTML='<button type="button" class="visit-start" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><path d="m8 10 3 3 5-5"/></svg><span class="visit-label">'+text('방문 인증','Check in')+'</span></button><button type="button" class="visit-exit" hidden aria-label="방문 인증 모드 종료">×</button>';wrap.appendChild(control);notice=document.createElement('div');notice.className='map-visit-notice';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.hidden=true;document.body.appendChild(notice);new MutationObserver(syncControl).observe(wrap,{childList:true});control.addEventListener('transitionend',placeNotice);window.addEventListener('resize',placeNotice);bindTap(control.querySelector('.visit-start'),start);bindTap(control.querySelector('.visit-exit'),stop);syncControl();bindMap();if(new URLSearchParams(location.search).get('visit')==='1')tell(text('방문 인증 버튼을 눌러 주변 카드샵을 확인해보세요.','Tap Check in to find nearby card shops.'));}
+ function mount(){const wrap=document.querySelector('.map-wrap-hero');if(!wrap||control)return;control=document.createElement('div');control.id='mapVisitControl';control.className='map-visit-control';control.innerHTML='<button type="button" class="visit-start" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><path d="m8 10 3 3 5-5"/></svg><span class="visit-label">'+text('방문 인증','Check in')+'</span></button><button type="button" class="visit-exit" hidden aria-label="방문 인증 모드 종료">×</button>';wrap.appendChild(control);notice=document.createElement('div');notice.className='map-visit-notice';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.hidden=true;document.body.appendChild(notice);new MutationObserver(syncControl).observe(wrap,{childList:true});control.addEventListener('transitionend',placeNotice);window.addEventListener('resize',placeNotice);
+ window.addEventListener('scroll',placeNotice,{passive:true});
+ window.visualViewport?.addEventListener('resize',placeNotice);
+ if(window.ResizeObserver){const resize=new ResizeObserver(placeNotice);['.map-filter-bar','.map-search-float','.map-wrap-hero'].forEach(selector=>{const el=document.querySelector(selector);if(el)resize.observe(el);});}
+ bindTap(control.querySelector('.visit-start'),start);bindTap(control.querySelector('.visit-exit'),stop);syncControl();bindMap();if(new URLSearchParams(location.search).get('visit')==='1')tell(text('방문 인증 버튼을 눌러 주변 카드샵을 확인해보세요.','Tap Check in to find nearby card shops.'));}
  const setup=setInterval(()=>{mount();bindMap();syncControl();if(control&&map())clearInterval(setup);},250);setTimeout(()=>clearInterval(setup),15000);
  new MutationObserver(()=>{mount();syncControl();if(country()!=='KR'&&(active||busy))stop();}).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:false});
  window.addEventListener('funy:mapdatachange',()=>{mount();bindMap();syncControl();if(country()!=='KR')stop();});

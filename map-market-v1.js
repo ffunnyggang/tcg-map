@@ -672,11 +672,40 @@
       });
     },{passive:true});
   }
+  const MARKET_SAFETY_NOTICE_KEY='funypin_market_safety_notice_v1_dismissed';
+  let marketSafetyNoticeShownThisVisit=false;
+  function shouldShowMarketSafetyNotice(){
+    try{return localStorage.getItem(MARKET_SAFETY_NOTICE_KEY)!=='1'}catch(_){return true}
+  }
+  function buildMarketSafetyNotice(){
+    if($('#marketSafetyNotice'))return;
+    const el=document.createElement('div');el.id='marketSafetyNotice';el.className='market-safety-notice';el.hidden=true;
+    el.innerHTML='<section class="market-safety-notice-card" role="dialog" aria-modal="true" aria-labelledby="marketSafetyNoticeTitle">'+
+      '<div class="market-safety-notice-icon" aria-hidden="true">✓</div>'+
+      '<h2 id="marketSafetyNoticeTitle">카드 거래 이용 안내</h2>'+
+      '<p>FUNY PIN의 TCG 거래는 회원 간 개인 거래를 연결하는 공간입니다. FUNY PIN은 거래 당사자가 아니며, 회원 간 거래 과정에서 발생하는 분쟁·사기·상품 하자·배송 문제 등은 당사자 간 해결이 원칙입니다.</p>'+
+      '<p>안전한 거래를 위해 가능한 한 직접 만나 상품 상태를 확인한 뒤 거래해 주세요. 선입금 요구, 외부 메신저 유도, 과도한 개인정보 요청에 주의하고 주민등록번호·신분증·계좌 비밀번호 등 민감정보는 공유하지 마세요.</p>'+
+      '<label class="market-safety-notice-dismiss"><input id="marketSafetyNoticeDismiss" type="checkbox"><span>다시 보지 않기</span></label>'+
+      '<button id="marketSafetyNoticeConfirm" type="button">확인하고 시작하기</button>'+
+      '</section>';
+    document.body.appendChild(el);
+    $('#marketSafetyNoticeConfirm').onclick=()=>{
+      if($('#marketSafetyNoticeDismiss')?.checked){try{localStorage.setItem(MARKET_SAFETY_NOTICE_KEY,'1')}catch(_){}}
+      el.hidden=true;
+    };
+  }
+  function showMarketSafetyNotice(){
+    if(!standaloneMarket||marketSafetyNoticeShownThisVisit||!shouldShowMarketSafetyNotice())return;
+    buildMarketSafetyNotice();
+    marketSafetyNoticeShownThisVisit=true;
+    const el=$('#marketSafetyNotice');if(el)el.hidden=false;
+  }
   function openOverlay(){
     buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
     postNativeMarketOverlayState(true);
     if(standaloneMarket)postNativeMarketRouteState('list');
+    showMarketSafetyNotice();
   }
   function closeOverlay(){if(standaloneMarket){closeStandaloneMarketPage();return}const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');if(el)el.hidden=true;if(registerBtn)registerBtn.hidden=true;closeSortMenus();document.body.style.overflow='';requestAnimationFrame(syncNativeMarketOverlayState)}
 
@@ -700,7 +729,7 @@
     if($('#marketRegisterOverlay'))return;
     const el=document.createElement('div');el.id='marketRegisterOverlay';el.className='market-register-overlay';el.hidden=true;
     el.innerHTML='<section class="market-register-sheet"><div class="market-register-handle"></div><header class="market-register-head"><strong>매물 등록</strong><button type="button" class="market-register-close" aria-label="닫기">×</button></header><div class="market-register-scroll">'+
-      '<div class="market-register-policy"><strong>개인 판매자 · 승인 계정 전용</strong><span>초기 운영 기간에는 등록 권한이 승인된 계정만 이용할 수 있습니다. 신규 노출은 하루 최대 10개 · 월 최대 30개이며 등록 후 기본 14일간 노출됩니다. 실제 거래는 원본 플랫폼에서 진행됩니다.</span></div>'+
+      '<div class="market-register-policy"><strong>개인 판매자 등록 안내</strong><span>신규 노출은 하루 최대 10개 · 월 최대 30개이며 등록 후 기본 14일간 노출됩니다. 실제 거래는 회원 간 직접 진행되며 FUNY PIN은 거래 당사자가 아닙니다.</span></div>'+
       '<div id="marketIdentitySection" class="market-form-section market-identity-section" hidden><span class="market-form-label">휴대폰 인증</span><div class="market-identity-card"><div class="market-identity-row"><div><strong id="marketIdentityStatus">휴대폰 인증 상태 확인 중...</strong><span id="marketIdentityHelp">거래 기능 이용을 위해 최초 1회 휴대폰 SMS 인증이 필요합니다.</span></div><button id="marketIdentityStart" class="market-identity-start" type="button" disabled>휴대폰 인증</button></div><div id="marketIdentitySms" class="market-identity-sms" hidden><div class="market-identity-phone-row"><input id="marketIdentityPhone" class="market-identity-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="휴대폰 번호 입력"><button id="marketIdentitySend" class="market-identity-secondary" type="button">인증번호 받기</button></div><div id="marketIdentityOtpRow" class="market-identity-phone-row" hidden><input id="marketIdentityCode" class="market-identity-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="인증번호 6자리"><button id="marketIdentityVerify" class="market-identity-secondary" type="button">인증 확인</button></div><div id="marketIdentityMessage" class="market-identity-message" role="status" aria-live="polite"></div></div></div></div>'+
       '<div class="market-form-section"><label class="market-form-label">카테고리</label><select id="marketRegisterCategory" class="market-select"><option value="pokemon">포켓몬스터</option><option value="onepiece">원피스</option><option value="dragonball">드래곤볼</option><option value="other">기타</option></select></div>'+
       '<div class="market-form-section"><span class="market-form-label">구분</span><div class="market-type-row">'+Object.entries(types).map(([v,l])=>'<button type="button" class="market-type-btn'+(v==='single'?' active':'')+'" data-register-type="'+v+'">'+l+'</button>').join('')+'</div></div>'+
@@ -708,7 +737,8 @@
       '<div id="marketSellerVerifySection" class="market-form-section market-seller-verify-section" hidden><span class="market-form-label">판매자 인증</span><div class="market-external-verify-card"><div id="marketExternalVerifyStatus" class="market-external-verify-status">현재 매물의 판매자 인증이 필요합니다.</div><button id="marketExternalVerifyStart" class="market-external-verify-start" type="button">판매자 인증 시작</button><div id="marketExternalVerifyChallenge" class="market-external-verify-challenge" hidden><span>발급된 인증코드를 외부 플랫폼 게시글 설명 마지막에 추가하고 저장해주세요.</span><div class="market-external-code-row"><code id="marketExternalVerifyCode"></code><button id="marketExternalVerifyCopy" type="button">복사</button></div><small>외부 플랫폼에 저장이 완료된 뒤 아래 인증 확인 버튼을 눌러주세요. 인증 완료 후 코드는 원본 게시글에서 삭제해도 됩니다.</small><button id="marketExternalVerifyConfirm" class="market-external-verify-confirm" type="button">인증 확인</button></div></div></div>'+
       '<div class="market-form-section"><span class="market-form-label">거래 희망 위치</span><div id="marketRegisterLocationTip" class="market-location-tip">지도를 터치해 핀을 선택해주세요. 현재 위치는 선택을 돕는 용도로만 사용합니다.</div><button id="marketRegisterHere" class="market-register-here" type="button" style="width:100%;margin-bottom:8px">현재 위치로 이동</button><div class="market-register-map-wrap"><div id="marketRegisterMap"></div></div><div class="market-place-input-wrap"><input id="marketRegisterPlaceName" class="market-place-input" type="text" maxlength="30" placeholder="(선택) 장소명을 입력해주세요" autocomplete="off"><span id="marketRegisterPlaceCount" class="market-place-count">0/30</span></div></div>'+
       '<div class="market-form-section market-consent-box"><span class="market-form-label">등록 확인</span>'+
-      '<label class="market-consent-item market-consent-all"><input id="marketConsentAll" type="checkbox"><span>개인 판매자임을 확인하며, 외부 매물의 사진·설명을 FUNY PIN에 재게시할 권리가 있고 실제 거래·결제·배송·환불은 원본 외부 플랫폼에서 진행되는 것에 모두 동의합니다.</span></label></div>'+
+      '<label class="market-consent-item market-consent-all"><input id="marketConsentAll" type="checkbox"><span>개인 판매자임을 확인하며, 외부 매물의 사진·설명을 FUNY PIN에 재게시할 권리가 있고 실제 거래·결제·배송·환불은 원본 외부 플랫폼에서 진행되는 것에 동의합니다.</span></label>'+
+      '<label class="market-consent-item market-consent-dispute"><input id="marketDisputeConsent" type="checkbox"><span>본 거래는 회원 간 개인 거래이며, 거래 과정에서 발생하는 분쟁·사기·상품 하자·배송 문제는 거래 당사자 간 해결이 원칙이고 FUNY PIN은 거래 당사자가 아님을 확인했습니다.</span></label></div>'+
       '<div id="marketRegisterError" class="market-register-error"></div></div><button id="marketRegisterSubmit" class="market-register-submit" type="button" disabled>매물 등록하기</button></section>';
     document.body.appendChild(el);
     el.querySelector('.market-register-close').onclick=closeRegister;
@@ -735,6 +765,7 @@
     $('#marketExternalVerifyCopy').onclick=copyExternalVerificationCode;
     $('#marketRegisterHere').onclick=moveRegisterToCurrent;
     $('#marketConsentAll')?.addEventListener('change',syncRegisterSubmitState);
+    $('#marketDisputeConsent')?.addEventListener('change',syncRegisterSubmitState);
     $('#marketRegisterPlaceName')?.addEventListener('input',()=>{
       const input=$('#marketRegisterPlaceName'),count=$('#marketRegisterPlaceCount');
       if(input){input.value=input.value.replace(/[\r\n\t]+/g,' ').replace(/\s{2,}/g,' ').slice(0,30)}
@@ -1066,7 +1097,7 @@
       if(registerProduct&&!registerExternalVerified)showSellerVerificationSection(sellerAccountProviderLabel(registerProduct.provider)+' 판매자 인증이 필요합니다.');
     }
   }
-  function registerConsentsOk(){return !!$('#marketConsentAll')?.checked}
+  function registerConsentsOk(){return !!$('#marketConsentAll')?.checked&&!!$('#marketDisputeConsent')?.checked}
   function syncRegisterSubmitState(){const btn=$('#marketRegisterSubmit');if(btn)btn.disabled=!(registerIdentityVerified&&registerProduct&&registerCoordinate&&registerConsentsOk()&&registerExternalVerified)}
   function resetExternalVerification(message='외부 매물을 확인해주세요.'){
     registerExternalVerified=false;registerChallengeId='';registerVerifiedChallengeId='';registerExternalAccountId='';registerVerificationScope='';
@@ -1435,7 +1466,8 @@
       '</div>'+
       '<section class="market-detail-section market-detail-description"><div class="market-detail-desc">'+esc(x.description||'등록된 설명이 없습니다.')+'</div></section>'+
       '<section class="market-detail-section market-detail-location-section"><div class="market-detail-section-head"><h3>거래 희망 위치</h3><button type="button" id="marketDetailMapLink" class="market-detail-map-link">위치 확인하기 <span aria-hidden="true">›</span></button></div><div class="market-detail-map-card"><div id="marketDetailMap" class="market-detail-map"></div></div></section>'+
-      '<section class="market-detail-guide"><strong>안내사항</strong><p>FUNY PIN은 외부 플랫폼의 매물을 연결해 보여주는 서비스이며 거래 당사자가 아닙니다. 실제 구매·결제·배송·환불은 '+esc(sourceName)+' 원본 매물에서 진행해주세요.</p><span>출처 · '+esc(sourceName)+' · 원본 마지막 확인 '+(x.source_last_checked_at?age(x.source_last_checked_at):'미확인')+' · 권리침해 문의 funypin.kr@gmail.com</span></section>'+
+      '<section class="market-detail-safety"><strong>안전한 개인 거래를 위해 확인해주세요</strong><p>FUNY PIN의 TCG 거래는 회원 간 개인 거래를 연결하는 공간입니다. FUNY PIN은 거래 당사자가 아니며, 거래 과정에서 발생하는 분쟁·사기·상품 하자·배송 문제 등은 거래 당사자 간 해결이 원칙입니다.</p><p>가능한 한 직접 만나 상품 상태를 확인한 뒤 거래하고, 선입금 요구·외부 메신저 유도·과도한 개인정보 요청에 주의해주세요.</p></section>'+
+      '<section class="market-detail-guide"><strong>안내사항</strong><p>실제 구매·결제·배송·환불은 '+esc(sourceName)+' 원본 매물에서 진행해주세요.</p><span>출처 · '+esc(sourceName)+' · 원본 마지막 확인 '+(x.source_last_checked_at?age(x.source_last_checked_at):'미확인')+' · 권리침해 문의 funypin.kr@gmail.com</span></section>'+
       '<div class="market-detail-bottom"><a id="marketDetailTrade" class="market-detail-trade '+providerClass+(ended?' disabled':'')+'" href="'+esc(x.external_url)+'" target="_blank" rel="noopener">'+(ended?'판매가 종료된 매물입니다':esc(sourceName)+'에서 구매하기')+'</a></div>';
     const floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;
     overlay.hidden=false;document.body.style.overflow='hidden';

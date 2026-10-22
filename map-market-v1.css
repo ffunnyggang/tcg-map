@@ -1047,7 +1047,7 @@ body.market-tab-active .qa-shop-only{display:none!important}
 .market-detail-seller{margin-top:6px;color:#8d8993;font-size:10px;font-weight:650}
 .market-detail-seller span{color:#aaa3af;font-weight:550}
 .market-detail-section{margin:0!important;padding:18px 0!important;border-bottom:1px solid #f2eff4!important}
-.market-detail-section h3,.market-detail-guide strong{display:block;margin:0 0 9px!important;color:#28232e!important;font-size:13px!important;font-weight:850!important}
+.market-detail-section h3,.market-detail-guide strong,.market-detail-safety strong{display:block;margin:0 0 9px!important;color:#28232e!important;font-size:13px!important;font-weight:850!important}
 .market-detail-desc{margin:0!important;color:#514b56!important;font-size:12px!important;line-height:1.65!important;white-space:pre-wrap!important}
 .market-detail-map-card{border:0!important;border-radius:13px!important;overflow:hidden!important;background:#f6f4f8!important}
 .market-detail-map{height:220px!important;width:100%!important}
@@ -1057,6 +1057,9 @@ body.market-tab-active .qa-shop-only{display:none!important}
 }
 .market-detail-guide p{margin:0;color:#716b79;font-size:10px;line-height:1.6}
 .market-detail-guide span{display:block;margin-top:8px;color:#aaa3af;font-size:9px}
+.market-detail-safety{margin:18px 0 0;padding:14px;border:1px solid #e6def5;border-radius:14px;background:#f8f5fd}
+.market-detail-safety p{margin:0;color:#625b67;font-size:10px;line-height:1.65}
+.market-detail-safety p+p{margin-top:7px}
 .market-detail-owner-tools{display:flex;gap:7px;margin-top:12px}
 .market-detail-owner-tools button{
   flex:1;height:38px;border:1px solid #e7e2ea;border-radius:11px;background:#fff;color:#716b79;font-size:10px;font-weight:750
@@ -2043,16 +2046,27 @@ body.market-page .market-place-count{
   pointer-events:none!important
 }
 
-/* Registration confirmation is a single all-agree row. */
+/* Registration confirmations: content rights + private-trade responsibility. */
 body.market-page .market-consent-box{padding-bottom:13px!important}
 body.market-page .market-consent-all{
   border-top:0!important;
   padding-top:11px!important;
   padding-bottom:11px!important
 }
-body.market-page .market-consent-all span{
-  line-height:1.55!important
-}
+body.market-page .market-consent-all span,
+body.market-page .market-consent-dispute span{line-height:1.55!important}
+body.market-page .market-consent-dispute{padding-top:12px!important;padding-bottom:11px!important}
+
+.market-safety-notice{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,17,25,.5);backdrop-filter:blur(7px)}
+.market-safety-notice[hidden]{display:none!important}
+.market-safety-notice-card{width:min(100%,380px);padding:28px 22px 20px;border-radius:24px;background:#fff;box-shadow:0 24px 60px rgba(28,23,34,.24)}
+.market-safety-notice-icon{width:52px;height:52px;margin:0 auto 17px;display:grid;place-items:center;border-radius:17px;background:#f0ebff;color:#6749bd;font-size:24px;font-weight:900}
+.market-safety-notice-card h2{margin:0 0 18px;text-align:center;color:#181720;font-size:22px;font-weight:900;letter-spacing:-.03em}
+.market-safety-notice-card p{margin:0;color:#5f5964;font-size:12px;line-height:1.72}
+.market-safety-notice-card p+p{margin-top:12px}
+.market-safety-notice-dismiss{display:flex;align-items:center;gap:8px;margin:18px 0 12px;color:#716b79;font-size:11px;font-weight:750}
+.market-safety-notice-dismiss input{width:17px;height:17px;margin:0;accent-color:#6749bd}
+#marketSafetyNoticeConfirm{width:100%;height:50px;border:0;border-radius:14px;background:#28232e;color:#fff;font-size:13px;font-weight:900}
 
 
 /* MARKET detail menu policy v26 */

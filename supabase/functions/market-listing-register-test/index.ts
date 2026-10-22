@@ -48,13 +48,8 @@ async function currentUser(req:Request){
   return {user:data.user,auth};
 }
 
-async function sellerAllowed(userId:string){
-  const {data,error}=await admin.from("market_seller_allowlist")
-    .select("is_active")
-    .eq("user_id",userId)
-    .maybeSingle();
-  if(error)throw error;
-  return data?.is_active===true;
+async function sellerAllowed(_userId:string){
+  return true;
 }
 
 async function requireVerifiedPhone(user:any){
@@ -123,7 +118,7 @@ Deno.serve(async(req:Request)=>{
     const allowed=await sellerAllowed(user.id);
 
     if(clean(body?.action)==="access"){
-      return new Response(JSON.stringify({ok:true,allowed,policy:"allowlist"}),{headers:cors});
+      return new Response(JSON.stringify({ok:true,allowed,policy:"all_authenticated"}),{headers:cors});
     }
 
     if(!allowed){

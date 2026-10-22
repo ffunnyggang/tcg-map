@@ -93,7 +93,6 @@
    if(!auth?.session){tell(text('로그인 후 방문 인증을 이용해주세요. MY에서 로그인 상태를 확인할 수 있어요.','Please sign in through MY to check in.'));if(!inApp())auth?.goLogin('/shops.html?visit=1');return;}
 
    owner=auth.session.user.id;
-   const gate=await auth.client.rpc('is_my_feature_tester');if(gate.error)throw gate.error;if(!gate.data)throw Error(text('현재 로그인한 계정은 방문 인증 테스트 대상이 아니에요.','Check-in is not available for your account yet.'));
    tell(text('현재 위치를 확인하고 있어요. 위치 권한을 허용해주세요.','Checking location. Please allow location access.'));
    const p=await position();if(!live())return;if(!searchable(p))throw Error(text('위치를 다시 확인해주세요.','Please refresh your location.'));
    day=today();tell(text('500m 이내 카드샵을 찾고 있어요.','Finding card shops within 500 m.'));

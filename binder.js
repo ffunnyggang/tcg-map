@@ -119,7 +119,7 @@ async function action(act,el){const pid=el.dataset.page;
  if(act==='comment-replies'){const c=commentRows.get(el.dataset.comment);openThreads.add(c.id);await loadReplies(c.id);setReply(c);$('#commentBody').focus();return;}
  if(act==='more-replies'){const cid=el.dataset.comment;threadLimits.set(cid,(threadLimits.get(cid)||20)+20);return loadReplies(cid);}
  if(act==='comment-like'){const cid=el.dataset.comment,on=el.getAttribute('aria-pressed')==='true';check(on?await db.from('binder_comment_likes').delete().eq('comment_id',cid).eq('user_id',uid):await db.from('binder_comment_likes').insert({comment_id:cid,user_id:uid}));return refreshSocial();}
- if(act==='write-comment'){$('#commentBody')?.focus();return;}if(act==='close')return closeModal();if(act==='create'){location.href='/binder.html?view=new';return;}if(act==='photo'){selectedPage=pid;const path=pid==='cover'?draft.cover:draft.pages.find(p=>p.id===pid)?.path;if(!path){$('#photo').removeAttribute('capture');$('#photo').click();return;}return photoMenu(pid);}if(act==='page-menu')return pageMenu(pid);
+ if(act==='write-comment'){$('#commentBody')?.focus();return;}if(act==='close')return closeModal();if(act==='create'){location.href='/binder.html?view=new';return;}if(act==='photo')return photoMenu(pid);if(act==='page-menu')return pageMenu(pid);
  if(act==='library'){closeModal();$('#photo').click();return;}
  if(act==='camera'){const pid=selectedPage;const photo=await capturePhoto(draft.pockets,modal);await applyPhoto(photo,pid);return;}
  if(act==='recrop'){const path=selectedPage==='cover'?draft.cover:draft.pages.find(p=>p.id===selectedPage).path;const blob=check(await db.storage.from('binders').download(path));await applyPhoto(blob,selectedPage);return;}

@@ -23,7 +23,10 @@
   const rect=filters?.getBoundingClientRect();
   const searchRect=search?.getBoundingClientRect();
   const bottom=Math.max(rect?.bottom||0,searchRect?.bottom||0);
-  notice.style.top=(bottom>0?bottom+10:120)+'px';
+  notice.style.setProperty('position','fixed','important');
+  notice.style.setProperty('top',(bottom>0?bottom+10:120)+'px','important');
+  notice.style.setProperty('bottom','auto','important');
+  notice.style.setProperty('transform','translateX(-50%)','important');
   const wrap=document.querySelector('.map-wrap-hero')?.getBoundingClientRect();
   if(wrap?.width>0){notice.style.left=(wrap.left+wrap.width/2)+'px';notice.style.maxWidth=Math.max(0,Math.min(360,wrap.width-24))+'px';}
  }
@@ -42,7 +45,7 @@
    let timer;const ready=()=>{clearTimeout(timer);window.removeEventListener('funy:auth-ready',ready);resolve();};
    window.addEventListener('funy:auth-ready',ready);timer=setTimeout(ready,1500);
   });token=String(window.__FUNY_ACCESS_TOKEN||'');}
-  if(inApp()&&token&&token!==auth.session?.access_token){
+  if(inApp()&&token){
    const {data,error}=await auth.client.auth.getUser(token);
    if(error||!data?.user)throw Error(text('앱 로그인 정보를 확인하지 못했어요. MY에서 로그인 상태를 확인해주세요.','Check your sign-in status in MY.'));
    const client=window.supabase.createClient('https://wdttzpbmqavaqfcbaywj.supabase.co','sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq',{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},global:{headers:{Authorization:'Bearer '+token}}});
@@ -90,7 +93,7 @@
    if(!auth?.session){tell(text('로그인 후 방문 인증을 이용해주세요. MY에서 로그인 상태를 확인할 수 있어요.','Please sign in through MY to check in.'));if(!inApp())auth?.goLogin('/shops.html?visit=1');return;}
 
    owner=auth.session.user.id;
-   const gate=await auth.client.rpc('is_my_feature_tester');if(gate.error)throw gate.error;if(!gate.data)throw Error(text('방문 인증은 현재 준비 중이에요.','Check-in is not available for your account yet.'));
+   const gate=await auth.client.rpc('is_my_feature_tester');if(gate.error)throw gate.error;if(!gate.data)throw Error(text('현재 로그인한 계정은 방문 인증 테스트 대상이 아니에요.','Check-in is not available for your account yet.'));
    tell(text('현재 위치를 확인하고 있어요. 위치 권한을 허용해주세요.','Checking location. Please allow location access.'));
    const p=await position();if(!live())return;if(!searchable(p))throw Error(text('위치를 다시 확인해주세요.','Please refresh your location.'));
    day=today();tell(text('500m 이내 카드샵을 찾고 있어요.','Finding card shops within 500 m.'));

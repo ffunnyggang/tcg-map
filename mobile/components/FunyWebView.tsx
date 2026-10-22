@@ -371,8 +371,10 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     const now=Date.now();
     if(now-lastNativeRefreshAt.current<1600)return;
     lastNativeRefreshAt.current=now;
-    ref.current?.reload();
-  },[refreshToken,isFocused]);
+    if(/\/talk\.html(?:[?#]|$)/.test(url)){
+      ref.current?.injectJavaScript("window.dispatchEvent(new Event('funy:talk-reselect'));true;");
+    }else ref.current?.reload();
+  },[refreshToken,isFocused,url]);
 
   const reportRoute=useCallback((target:string)=>{const next=String(target||'');if(!next||lastReportedRoute.current===next)return;lastReportedRoute.current=next;setCurrentTarget(next);onWebRouteChange?.(next);},[onWebRouteChange]);
   useEffect(()=>{reportRoute(url);},[url,reportRoute]);

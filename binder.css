@@ -42,3 +42,5 @@ html:not(.app-shell) .detail-author .detail-more-native{display:none}
 .binder-detail-comments .comment-replies .comment-replies>.comment>.comment-content::before{left:-8px}
 .binder-detail-comments .comment-social{gap:16px}
 .binder-detail-comments .comment-social button{padding:8px 0;min-width:0;flex:none}
+
+html.app-shell.binder-native-header .binder-header{display:none}

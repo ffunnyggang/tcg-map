@@ -1,0 +1,44 @@
+-- All fixtures are rolled back, including auth users. No published QA data persists.
+begin;
+select set_config('test.owner',(select id::text from auth.users order by created_at limit 1),true);
+select set_config('test.viewer',(select id::text from auth.users order by created_at offset 1 limit 1),true);
+select set_config('request.jwt.claims',json_build_object('sub',current_setting('test.owner'),'role','authenticated')::text,true);
+set local role authenticated;
+do $$ declare bid uuid; x integer; ok boolean; path text; begin
+ insert into public.binders(user_id,title,pockets,pages) values(auth.uid(),'QA rollback',9,'[]') returning id into bid;
+ perform set_config('test.binder',bid::text,true);
+ path=auth.uid()::text||'/'||bid::text||'/qa.jpg';perform set_config('test.path',path,true);
+ insert into public.binders(user_id,title,pockets) values(auth.uid(),'QA 2',4),(auth.uid(),'QA 3',6);
+ ok=false;begin insert into public.binders(user_id,title,pockets) values(auth.uid(),'QA 4',12);exception when others then if sqlerrm like '%BINDER_LIMIT%' then ok=true;else raise;end if;end;if not ok then raise exception 'FAIL quota';end if;
+ ok=false;begin update public.binders set title='bad revision' where id=bid;exception when others then if sqlerrm like '%REVISION_CONFLICT%' then ok=true;else raise;end if;end;if not ok then raise exception 'FAIL revision';end if;
+ update public.binders set pages=jsonb_build_array(jsonb_build_object('id','p1','path',path)),revision=revision+1 where id=bid;
+ insert into public.binder_publications(id,user_id,is_public) values(bid,auth.uid(),true);
+ update public.binders set title='unpublished edit',revision=revision+1 where id=bid;
+ if (select title from public.binder_publications where id=bid)<>'QA rollback' then raise exception 'FAIL snapshot';end if;
+end $$;
+reset role;
+select set_config('request.jwt.claims',json_build_object('sub',current_setting('test.viewer'),'role','authenticated')::text,true);
+set local role authenticated;
+do $$ declare bid uuid:=current_setting('test.binder')::uuid;n integer; begin
+ if exists(select 1 from public.binders where id=bid) then raise exception 'FAIL private draft';end if;
+ if not exists(select 1 from public.binder_publications where id=bid) then raise exception 'FAIL published read';end if;
+ update public.binders set title='attack',revision=revision+1 where id=bid;get diagnostics n=row_count;if n<>0 then raise exception 'FAIL edit ownership';end if;
+ insert into public.binder_likes(binder_id,user_id) values(bid,auth.uid());
+ insert into public.binder_comments(binder_id,user_id,body) values(bid,auth.uid(),'QA comment');
+ insert into public.binder_views(binder_id,user_id) values(bid,auth.uid());
+ if (select count(*) from public.binder_comments where binder_id=bid)<>1 then raise exception 'FAIL comment read';end if;
+ insert into public.community_user_blocks(blocker_user_id,blocked_user_id) values(auth.uid(),current_setting('test.owner')::uuid) on conflict do nothing;
+ if exists(select 1 from public.binder_publications where id=bid) then raise exception 'FAIL block';end if;
+ delete from public.community_user_blocks where blocker_user_id=auth.uid() and blocked_user_id=current_setting('test.owner')::uuid;
+end $$;
+reset role;
+select set_config('request.jwt.claims',json_build_object('sub',current_setting('test.owner'),'role','authenticated')::text,true);
+set local role authenticated;
+update public.binder_publications set is_public=false where id=current_setting('test.binder')::uuid;
+reset role;
+select set_config('request.jwt.claims',json_build_object('sub',current_setting('test.viewer'),'role','authenticated')::text,true);
+set local role authenticated;
+do $$ begin if exists(select 1 from public.binder_publications where id=current_setting('test.binder')::uuid) then raise exception 'FAIL unpublish';end if;if exists(select 1 from public.binder_comments where binder_id=current_setting('test.binder')::uuid) then raise exception 'FAIL private comments';end if;end $$;
+reset role;
+rollback;
+select 'PASS: quota, revisions, drafts, snapshot, ownership, likes, comments, views, blocks, unpublish (rolled back)' as result;

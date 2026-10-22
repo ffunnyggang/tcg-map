@@ -147,6 +147,7 @@
     ${profileHtml()}
     ${missionHtml()}
     <section class="section"><div class="section-head"><h2>${T.activity}</h2></div><div class="card menu-card">
+      <a class="menu-row" href="/binder.html?view=mine" data-funy-link-mode="inapp" data-funy-inapp-presentation="page"><span class="menu-icon">▤</span><span class="menu-copy"><b>${en?'My binders':'내 바인더 보관함'}</b><span>${en?'Capture, arrange, and share your collection':'한 장씩 채우는 나의 카드 컬렉션'}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-community.html"><span class="menu-icon">💬</span><span class="menu-copy"><b>${T.community}</b><span>${T.communitySub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-market.html"><span class="menu-icon">🃏</span><span class="menu-copy"><b>${T.market}</b><span>${T.marketSub}</span></span><span class="chev">›</span></a>
       <a class="menu-row" href="/my-favorites.html"><span class="menu-icon">💜</span><span class="menu-copy"><b>${T.favorites}</b><span>${T.favoritesSub}</span></span><span class="chev">›</span></a>

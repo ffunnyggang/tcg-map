@@ -66,9 +66,29 @@ async function renderDetail(){const b=detail;setHeader(preview?'바인더 미리
  viewMode='single';pageIndex=0;zoom=1;renderViewer();bindViewer();if(!preview){await refreshSocial();$('#commentForm').onsubmit=e=>{e.preventDefault();run(async()=>{const body=$('#commentBody').value.trim();if(!body)return;check(await db.from('binder_comments').insert({binder_id:detail.id,user_id:uid,body}));$('#commentBody').value='';await refreshSocial()})};}}
 function viewerPages(){return [{id:'cover',path:detail.cover},...filled(detail.pages)]}
 function viewerPhoto(p){return p.id==='cover'?cover(detail):`<img data-path="${esc(p.path)}" alt="바인더 페이지" loading="lazy">`}
-function renderViewer(direction=''){const pages=viewerPages(),content=$('#viewerContent');pageIndex=Math.max(0,Math.min(pages.length-1,pageIndex));$('#viewer').classList.toggle('all',viewMode==='all');document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.act==='mode-'+viewMode));if(viewMode==='all'){content.innerHTML=`<div class="edit-cover">${cover(detail)}</div>`+pages.slice(1).reduce((html,p,i)=>html+(i%2===0?'<div class="spread">':'')+`<div class="sheet"><div class="viewer-page">${viewerPhoto(p)}</div><span class="page-number">${i+1}</span></div>`+(i%2===1||i===pages.length-2?'</div>':''),'');$('#pageNav').innerHTML='';}else{content.innerHTML=`<div class="viewer-page ${direction?'turn-'+direction:''}">${viewerPhoto(pages[pageIndex])}</div>`;$('#pageNav').innerHTML=`<button class="btn" data-act="prev" aria-label="이전 페이지" ${pageIndex===0?'disabled':''}>‹</button><span>${pageIndex===0?'표지':pageIndex+'페이지'} · ${pages.length-1}면</span><button class="btn" data-act="next" aria-label="다음 페이지" ${pageIndex===pages.length-1?'disabled':''}>›</button>`;}applyZoom();loadImages();}
+let pageTurnToken=0,pageTurning=false,pageTurnTimer;
+function renderViewer(direction=''){pageTurnToken++;pageTurning=false;clearTimeout(pageTurnTimer);const pages=viewerPages(),content=$('#viewerContent');pageIndex=Math.max(0,Math.min(pages.length-1,pageIndex));$('#viewer').classList.toggle('all',viewMode==='all');document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.act==='mode-'+viewMode));if(viewMode==='all'){content.innerHTML=`<div class="edit-cover">${cover(detail)}</div>`+pages.slice(1).reduce((html,p,i)=>html+(i%2===0?'<div class="spread">':'')+`<div class="sheet"><div class="viewer-page">${viewerPhoto(p)}</div><span class="page-number">${i+1}</span></div>`+(i%2===1||i===pages.length-2?'</div>':''),'');$('#pageNav').innerHTML='';}else{content.innerHTML=`<div class="viewer-page ${direction?'turn-'+direction:''}">${viewerPhoto(pages[pageIndex])}</div>`;$('#pageNav').innerHTML=`<button class="btn" data-act="prev" aria-label="이전 페이지" ${pageIndex===0?'disabled':''}>‹</button><span>${pageIndex===0?'표지':pageIndex+'페이지'} · ${pages.length-1}면</span><button class="btn" data-act="next" aria-label="다음 페이지" ${pageIndex===pages.length-1?'disabled':''}>›</button>`;}applyZoom();loadImages();}
 function applyZoom(){const c=$('#viewerContent');if(c)c.style.width=zoom*100+'%';if($('#zoomValue'))$('#zoomValue').textContent=Math.round(zoom*100)+'%';}
-function turn(delta){if(zoom>1)return;const next=pageIndex+delta;if(next<0||next>=viewerPages().length)return;pageIndex=next;renderViewer(delta>0?'next':'prev')}
+async function turn(delta){
+ if(zoom>1||pageTurning||viewMode!=='single')return;
+ const pages=viewerPages(),next=pageIndex+delta;if(next<0||next>=pages.length)return;
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){pageIndex=next;renderViewer();return;}
+ const content=$('#viewerContent'),current=content?.querySelector('.viewer-page');if(!current)return;
+ const token=++pageTurnToken;pageTurning=true;
+ document.querySelectorAll('#pageNav button').forEach(b=>b.disabled=true);
+ const target=document.createElement('div');target.className='viewer-page';target.innerHTML=viewerPhoto(pages[next]);
+ await Promise.all([...target.querySelectorAll('img[data-path]')].map(async img=>{try{img.src=await imageURL(img.dataset.path);await img.decode?.();}catch(_){img.alt='사진을 불러오지 못했어요';}}));
+ if(token!==pageTurnToken||!content.isConnected)return;
+ const stage=document.createElement('div');stage.className='book-turn-stage '+(delta>0?'book-forward':'book-backward');
+ const base=delta>0?target:current.cloneNode(true);base.classList.add('book-turn-base');stage.appendChild(base);
+ const leaf=document.createElement('div');leaf.className='book-turn-leaf';
+ const front=document.createElement('div');front.className='book-turn-front';front.appendChild(delta>0?current.cloneNode(true):target);
+ const back=document.createElement('div');back.className='book-turn-back';back.setAttribute('aria-hidden','true');
+ leaf.append(front,back);stage.appendChild(leaf);content.replaceChildren(stage);
+ const finish=()=>{if(token!==pageTurnToken)return;pageIndex=next;renderViewer();};
+ leaf.addEventListener('animationend',finish,{once:true});
+ pageTurnTimer=setTimeout(finish,650);
+}
 function bindViewer(){const el=$('#viewer');let pointers=new Map(),start=null,pinch=null,hadPinch=false;el.onpointerdown=e=>{pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){start={x:e.clientX,y:e.clientY};hadPinch=false}if(pointers.size===2){const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};hadPinch=true}};el.onpointermove=e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2&&pinch&&e.pointerType!=='touch'){const [a,b]=[...pointers.values()];zoom=Math.min(3,Math.max(1,pinch.zoom*Math.hypot(a.x-b.x,a.y-b.y)/pinch.distance));applyZoom();}};el.onpointerup=e=>{if(!hadPinch&&start&&zoom===1&&viewMode==='single'){const dx=e.clientX-start.x,dy=e.clientY-start.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.5)turn(dx<0?1:-1)}pointers.delete(e.pointerId);if(!pointers.size){start=null;pinch=null}};el.onpointercancel=()=>{pointers.clear();start=pinch=null};
  // Allow one-finger scrolling; consume two-finger gestures inside the viewer only.
  let touchPinch=null;

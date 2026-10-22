@@ -29,3 +29,5 @@ html:not(.app-shell) .detail-author .detail-more-native{display:none}
 #comments > .comment:first-child{border-top:0}
 
 .binder-social-bar{background:#f4f1f6}
+
+.binder-author{gap:6px;margin-top:12px;font-size:11px;min-width:0}.binder-author>.avatar{width:30px;height:30px;flex:none;background:#eee9f3}.shelf-identity{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.shelf-identity>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.shelf-identity time{display:block;white-space:nowrap;font-size:8px;letter-spacing:-.35px;color:#aaa1af;font-variant-numeric:tabular-nums}.binder-author .list-more{margin-left:auto;flex:0 0 22px;padding:0;min-width:22px;min-height:36px;font-size:24px;color:#82748d}.binder-card>.stats{font-size:10px;color:#aaa1af;margin-top:5px;line-height:1.6}

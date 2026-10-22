@@ -24,3 +24,6 @@
 /* Keep control taps separate from map gestures without disabling page pinch zoom. */
 .map-visit-control button,.visit-map-label button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 @media(pointer:coarse){#map-shop-search.map-search-input,.list-sort-select{font-size:16px!important}}
+
+/* Portal above the sheet: map z-index/overflow must not hide status or errors. */
+body>.map-visit-notice{z-index:2147483001}

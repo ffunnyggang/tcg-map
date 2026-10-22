@@ -1,6 +1,6 @@
 /* Independent map control; never changes map/marker selection or sheet layout. */
 .map-visit-control{position:absolute;left:14px;bottom:18px;z-index:26;display:flex;align-items:center;gap:6px;pointer-events:auto;transition:top .32s ease,bottom .32s ease}
-.map-visit-control.has-funymon{bottom:70px}
+.map-visit-control.has-funymon{bottom:18px}
 .map-visit-control[hidden],.map-visit-control [hidden],.map-visit-notice[hidden]{display:none!important}
 .map-visit-control .visit-start{display:flex;align-items:center;justify-content:center;gap:5px;width:114px;height:44px;padding:0 8px;border:1px solid #b4a0d7;border-radius:15px;background:rgba(255,255,255,.97);color:#7057c7;box-shadow:0 5px 18px #36234820;font:800 11px Pretendard,sans-serif;cursor:pointer;white-space:nowrap}
 .visit-start svg{width:19px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -16,7 +16,7 @@
 .visit-map-label .visit-leader{position:absolute;left:calc(50% - 1px);top:100%;height:var(--visit-leader-height,44px);width:2px;background:#a386ca;pointer-events:none}
 .visit-map-label .visit-leader:after{content:'';position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border:2px solid white;box-sizing:border-box;border-radius:50%;background:#8260bc}
 .country-japan .map-visit-control,.country-japan .map-visit-notice,.country-japan .visit-map-label{display:none!important}
-@media(max-width:430px){.map-visit-control{left:12px;bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 54px),calc(var(--map-sheet-half-top,50dvh) - 54px))}.map-visit-control.has-funymon{bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 104px),calc(var(--map-sheet-half-top,50dvh) - 104px))}.map-visit-control .visit-start{height:42px;width:112px;border-radius:14px}}
+@media(max-width:430px){.map-visit-control{left:12px;bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 54px),calc(var(--map-sheet-half-top,50dvh) - 54px))}.map-visit-control.has-funymon{bottom:auto;top:max(calc(var(--map-sheet-top,50dvh) - 54px),calc(var(--map-sheet-half-top,50dvh) - 54px))}.map-visit-control .visit-start{height:42px;width:112px;border-radius:14px}}
 
 /* Anchor guidance beneath search/filter controls; JS measures their actual bounds. */
 .map-visit-notice{position:fixed;z-index:1200;left:50%;top:120px;bottom:auto;transform:translateX(-50%);max-width:min(360px,calc(100vw - 32px));box-sizing:border-box}
@@ -30,3 +30,8 @@ body>.map-visit-notice{z-index:2147483001}
 
 /* Preserve the two-line visit guidance across web and app. */
 body>.map-visit-notice{white-space:pre-line;text-align:center}
+
+/* Keep visit control below FUNYMON; only show leader lines at zoom-out levels 4–5. */
+.visit-map-label:not(.show-visit-leader) .visit-leader{display:none}
+#funymonFindControl.has-visit-control{bottom:70px!important}
+@media(max-width:430px){#funymonFindControl.has-visit-control{bottom:auto!important;top:max(calc(var(--map-sheet-top,50dvh) - 104px),calc(var(--map-sheet-half-top,50dvh) - 104px))!important}}

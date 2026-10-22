@@ -21,7 +21,7 @@
   const funySymbol='<img src="/favicon.svg?v=20261014-header1" alt="" aria-hidden="true">';
   const marketAddressIcon='<svg class="market-address-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
   const marketUserIcon='<svg class="market-user-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3.1-6 6.5-6s5.8 2 6.5 6"/></svg>';
-  const age=v=>{const m=Math.max(0,Math.floor((Date.now()-new Date(v))/60000));if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';return Math.floor(m/1440)+'일 전'};
+  const age=s=>{if(!s)return'-';const d=new Date(s);if(Number.isNaN(d.getTime()))return'-';const m=Math.max(0,Math.floor((Date.now()-d.getTime())/60000));if(m<1)return'방금 전';if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';if(m<10080)return Math.floor(m/1440)+'일 전';return d.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})};
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   const marketPageUrl=(route='')=>'/market.html'+String(route||'');
   function navigateMarketPage(route=''){

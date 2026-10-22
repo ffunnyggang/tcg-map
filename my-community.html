@@ -50,7 +50,7 @@
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=$('#root');
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const fullDate=v=>{if(!v)return'-';const d=new Date(v);if(Number.isNaN(d.getTime()))return'-';return String(d.getFullYear()).slice(-2)+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')};
+ const fullDate=s=>{if(!s)return'-';const d=new Date(s);if(Number.isNaN(d.getTime()))return'-';const m=Math.max(0,Math.floor((Date.now()-d.getTime())/60000));if(m<1)return'방금 전';if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';if(m<10080)return Math.floor(m/1440)+'일 전';return d.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})};
  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600)};
  await A.init();if(!A.session){A.goLogin('/my-community.html');return}const uid=A.session.user.id;
  let posts=[],comments=[],likes=[],postMap=new Map(),imageMap=new Map(),blockedOwners=new Set(),current=location.hash.replace('#','')||'posts';

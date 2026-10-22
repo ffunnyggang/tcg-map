@@ -72,10 +72,7 @@
    if(x.listing_status==='expired'&&!x.hidden_reason)return '노출 기간 만료';
    return labels[x.hidden_reason]||'비노출';
  }
- function registeredDate(v){
-   if(!v)return'-';const d=new Date(v);if(Number.isNaN(d.getTime()))return'-';
-   return String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
- }
+ const registeredDate=s=>{if(!s)return'-';const d=new Date(s);if(Number.isNaN(d.getTime()))return'-';const m=Math.max(0,Math.floor((Date.now()-d.getTime())/60000));if(m<1)return'방금 전';if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';if(m<10080)return Math.floor(m/1440)+'일 전';return d.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})};
  function card(x){
    const stats=statsMap.get(String(x.id))||{},active=group(x)==='active',sold=x.listing_status==='sold';
    const stateAction=active

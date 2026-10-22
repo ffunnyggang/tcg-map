@@ -1,5 +1,3 @@
-[Reading 804 lines from start (total: 804 lines, 0 remaining)]
-
 /* FUNY PIN integrated mission management */
 (()=>{
   'use strict';
@@ -804,5 +802,3 @@
     setTimeout(()=>clearInterval(timer),10000);
   }
 })();
-
-[executed on device: DESKTOP-J04L0T1 (a0585d7e-eca2-46ba-8618-c7f659930ace)]

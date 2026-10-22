@@ -90,6 +90,7 @@ export default function Account(){
   };
 
   const activityRows=useMemo(()=>[
+    {label:'내 바인더 보관함',sub:'한 장씩 채우는 나의 카드 컬렉션',icon:'▤',onPress:()=>openWeb('binder.html?view=mine','내 바인더 보관함')},
     {label:'게시글 관리',sub:'작성 게시글 · 댓글 · 좋아요한 게시물',icon:'💬',onPress:()=>openWeb('my-community.html','게시글 관리')},
     {label:'거래 매물 관리',sub:'판매중 · 비노출/종료 매물 관리',icon:'🃏',onPress:()=>openWeb('my-market.html','거래 매물 관리')},
     {label:'관심 목록',sub:'관심 카드샵과 저장한 매물 확인',icon:'💜',onPress:()=>router.push('/my/favorites')},

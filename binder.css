@@ -31,3 +31,12 @@ html:not(.app-shell) .detail-author .detail-more-native{display:none}
 .binder-social-bar{background:#f4f1f6}
 
 .binder-author{gap:6px;margin-top:12px;font-size:11px;min-width:0}.binder-author>.avatar{width:30px;height:30px;flex:none;background:#eee9f3}.shelf-identity{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.shelf-identity>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.shelf-identity time{display:block;white-space:nowrap;font-size:8px;letter-spacing:-.35px;color:#aaa1af;font-variant-numeric:tabular-nums}.binder-author .list-more{margin-left:auto;flex:0 0 22px;padding:0;min-width:22px;min-height:36px;font-size:24px;color:#82748d}.binder-card>.stats{font-size:10px;color:#aaa1af;margin-top:5px;line-height:1.6}
+
+/* Binder comments: delimit replies only across their own visible content. */
+.binder-detail-comments .comment{border-top:0}
+.binder-detail-comments .comment-content{position:relative}
+.binder-detail-comments .comment-replies:not(:empty){border-left:0}
+.binder-detail-comments .comment-replies>.comment>.comment-content::before{content:"";position:absolute;left:-14px;top:0;bottom:0;width:2px;background:#eee8f4}
+.binder-detail-comments .comment-replies .comment-replies>.comment>.comment-content::before{left:-8px}
+.binder-detail-comments .comment-social{gap:16px}
+.binder-detail-comments .comment-social button{padding:8px 0;min-width:0;flex:none}

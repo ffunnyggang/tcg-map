@@ -15,7 +15,7 @@
  const maxZoom=()=>{const value=Number(map()?.getOptions?.('maxZoom'));return Number.isFinite(value)&&value>0?value:19;};
  const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-.01;
  const available=()=>valid(fix)?shops.filter(s=>!done.has(s.id)&&distance(fix,s)<=RADIUS).sort((a,b)=>distance(fix,a)-distance(fix,b)):[];
- function placeNotice(){if(!notice||!control||notice.hidden)return;const wrap=control.parentElement;if(!wrap)return;const base=wrap.getBoundingClientRect(),button=control.getBoundingClientRect();notice.style.top=Math.max(8,button.top-base.top-10)+'px';notice.style.left=Math.max(12,button.left-base.left)+'px';}
+ function placeNotice(){if(!notice)return;notice.style.removeProperty('top');notice.style.removeProperty('left');}
  function tell(message){if(!notice)return;notice.textContent=message;notice.hidden=false;placeNotice();}
  function syncControl(){if(!control)return;control.hidden=country()!=='KR';const mon=document.getElementById('funymonFindControl');control.classList.toggle('has-funymon',!!mon&&getComputedStyle(mon).display!=='none');control.querySelector('.visit-label').textContent=busy?text('위치 확인 중…','Locating…'):text('방문 인증','Check in');control.querySelector('.visit-start').disabled=busy;control.querySelector('.visit-start').setAttribute('aria-pressed',String(active));control.querySelector('.visit-exit').hidden=!active;placeNotice();}
  function detach(){if(overlay){overlay.setMap(null);overlay=null;}}

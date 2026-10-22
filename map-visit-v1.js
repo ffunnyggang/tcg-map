@@ -13,7 +13,7 @@
  const distance=(p,s)=>{const rad=Math.PI/180,a=p.lat*rad,b=Number(s.latitude)*rad,dl=(Number(s.longitude)-p.lng)*rad,dp=b-a;return 6371000*2*Math.asin(Math.sqrt(Math.min(1,Math.sin(dp/2)**2+Math.cos(a)*Math.cos(b)*Math.sin(dl/2)**2)));};
  const valid=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Number.isFinite(p.accuracy)&&p.accuracy>=0&&p.accuracy<=MAX_ACCURACY&&Date.now()-p.ts<=MAX_AGE;
  const maxZoom=()=>{const value=Number(map()?.getOptions?.('maxZoom'));return Number.isFinite(value)&&value>0?value:19;};
- const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-3-.01;
+ const maximum=()=>!!map()&&map().getZoom()>=maxZoom()-5-.01;
  const searchable=p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Number.isFinite(p.accuracy)&&p.accuracy>=0&&Date.now()-p.ts<=MAX_AGE;
  const available=()=>searchable(fix)?shops.filter(s=>!done.has(s.id)&&distance(fix,s)<=SEARCH_RADIUS).sort((a,b)=>distance(fix,a)-distance(fix,b)):[];
  function placeNotice(){if(!notice)return;notice.style.removeProperty('top');notice.style.removeProperty('left');}
@@ -35,7 +35,7 @@
   }
   overlay=new VisitOverlay();
  }
- function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대 확대에서 3단계 이내로 확대하면 인증 버튼이 보여요.','Zoom to within 3 levels of maximum to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));})));}
+ function bindMap(){const m=map();if(!m||m===boundMap)return;handles.forEach(h=>window.naver?.maps?.Event.removeListener(h));handles=[];boundMap=m;['zoom_changed','idle'].forEach(name=>handles.push(naver.maps.Event.addListener(m,name,()=>{buttons();if(active&&!maximum())tell(text('최대 확대에서 5단계 이내로 확대하면 인증 버튼이 보여요.','Zoom to within 5 levels of maximum to see check-in buttons.'));else if(active&&searchable(fix)&&available().length)tell(text('500m 이내 매장을 찾았어요. 50m 이내·GPS 오차 50m 이하에서 인증할 수 있어요.','Shops within 500 m. Check in within 50 m with GPS accuracy ≤50 m.'));})));}
  async function start(){
   if(busy||checking)return;if(country()!=='KR')return;
   stop();const ticket=epoch;busy=true;syncControl();tell(text('위치와 주변 카드샵을 확인하고 있어요.','Checking your location and nearby shops.'));

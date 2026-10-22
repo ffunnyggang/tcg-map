@@ -7,7 +7,7 @@
 .map-visit-control .visit-start[aria-pressed=true]{background:#7457bb;color:white;border-color:#7457bb}
 .map-visit-control .visit-start:disabled{opacity:.7;cursor:wait}
 .map-visit-control .visit-exit{width:32px;height:32px;padding:0;border:1px solid #e5dfee;border-radius:50%;background:white;color:#776489;font-size:21px;box-shadow:0 3px 10px #36234815;cursor:pointer}
-.map-visit-notice{position:absolute;z-index:27;left:50%;top:132px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);padding:10px 14px;border:1px solid #e8e0f0;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 4px 16px #33214418;color:#665475;font:600 12px/1.5 Pretendard,sans-serif;text-align:center;pointer-events:none}
+.map-visit-notice{position:absolute;z-index:120;left:14px;top:auto;transform:translateY(-100%);width:max-content;max-width:calc(100% - 32px);padding:10px 14px;border:1px solid #e8e0f0;border-radius:13px;background:rgba(255,255,255,.97);box-shadow:0 4px 16px #33214418;color:#665475;font:600 12px/1.5 Pretendard,sans-serif;text-align:center;pointer-events:none}
 .visit-map-label{position:absolute;width:160px;transform:translate(-50%,-100%);z-index:100;pointer-events:none}
 .visit-map-label button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:160px;min-height:52px;padding:8px 10px;border:1px solid #9273cb;border-radius:13px;background:#fff;color:#7252ad;box-shadow:0 3px 14px #49316c24;pointer-events:auto;cursor:pointer;font-family:Pretendard,sans-serif}
 .visit-map-label small{display:block;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#82738f}

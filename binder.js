@@ -68,7 +68,7 @@ function viewerPages(){return [{id:'cover',path:detail.cover},...filled(detail.p
 function viewerPhoto(p){return p.id==='cover'?cover(detail):`<img data-path="${esc(p.path)}" alt="바인더 페이지" loading="lazy">`}
 let pageTurnToken=0,pageTurning=false,pageTurnTimer;
 function renderViewer(direction=''){pageTurnToken++;pageTurning=false;clearTimeout(pageTurnTimer);const pages=viewerPages(),content=$('#viewerContent');pageIndex=Math.max(0,Math.min(pages.length-1,pageIndex));$('#viewer').classList.toggle('all',viewMode==='all');document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.act==='mode-'+viewMode));if(viewMode==='all'){content.innerHTML=`<div class="edit-cover">${cover(detail)}</div>`+pages.slice(1).reduce((html,p,i)=>html+(i%2===0?'<div class="spread">':'')+`<div class="sheet"><div class="viewer-page">${viewerPhoto(p)}</div><span class="page-number">${i+1}</span></div>`+(i%2===1||i===pages.length-2?'</div>':''),'');$('#pageNav').innerHTML='';$('#viewerArrows').innerHTML='';}else{content.innerHTML=`<div class="viewer-page ${direction?'turn-'+direction:''}">${viewerPhoto(pages[pageIndex])}</div>`;$('#pageNav').innerHTML=`<span>${pageIndex===0?'표지':pageIndex+'페이지'} · ${pages.length-1}면</span>`;$('#viewerArrows').innerHTML=`<button class="viewer-arrow prev" data-act="prev" aria-label="이전 페이지" ${pageIndex===0?'disabled':''}>‹</button><button class="viewer-arrow next" data-act="next" aria-label="다음 페이지" ${pageIndex===pages.length-1?'disabled':''}>›</button>`;}applyZoom();loadImages();}
-function applyZoom(){const c=$('#viewerContent');if(c)c.style.width=zoom*100+'%';if($('#viewerArrows'))$('#viewerArrows').hidden=zoom>1;}
+function applyZoom(){if(zoom<1.03)zoom=1;const viewer=$('#viewer');if(viewer)viewer.style.touchAction=zoom>1||viewMode==='all'?'pan-x pan-y':'pan-y';const c=$('#viewerContent');if(c)c.style.width=zoom*100+'%';if($('#viewerArrows'))$('#viewerArrows').hidden=zoom>1;}
 async function turn(delta){
  if(zoom>1||pageTurning||viewMode!=='single')return;
  const pages=viewerPages(),next=pageIndex+delta;if(next<0||next>=pages.length)return;
@@ -77,7 +77,9 @@ async function turn(delta){
  const token=++pageTurnToken;pageTurning=true;
  document.querySelectorAll('#viewerArrows button').forEach(b=>b.disabled=true);
  const target=document.createElement('div');target.className='viewer-page';target.innerHTML=viewerPhoto(pages[next]);
- await Promise.all([...target.querySelectorAll('img[data-path]')].map(async img=>{try{img.src=await imageURL(img.dataset.path);await img.decode?.();}catch(_){img.alt='사진을 불러오지 못했어요';}}));
+ // Never gate navigation on decoding a detached, lazy-loaded image.
+ const preload=Promise.all([...target.querySelectorAll('img[data-path]')].map(async img=>{img.loading='eager';try{img.src=await imageURL(img.dataset.path);}catch(_){img.alt='사진을 불러오지 못했어요';}}));
+ let preloadTimeout;await Promise.race([preload,new Promise(resolve=>{preloadTimeout=setTimeout(resolve,1500);})]);clearTimeout(preloadTimeout);
  if(token!==pageTurnToken||!content.isConnected)return;
  const stage=document.createElement('div');stage.className='book-turn-stage '+(delta>0?'book-forward':'book-backward');
  const base=delta>0?target:current.cloneNode(true);base.classList.add('book-turn-base');stage.appendChild(base);

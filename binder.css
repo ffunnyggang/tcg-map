@@ -21,3 +21,5 @@
 .viewer-head .seg{padding:2px;background:#e9e3ef;border-radius:8px}.viewer-head .seg button{min-height:30px;padding:5px 13px;border-radius:6px;font-size:11px;font-weight:500;color:#9a8ca5}.viewer-head .seg button.on{background:#fff;color:#756386;box-shadow:none;font-weight:650}
 
 .viewer-head{align-items:flex-end;gap:12px;padding:14px 36px 10px}.viewer-head .page-nav{position:static;display:block;padding:0 0 6px;margin:0;background:transparent;color:#8a8195;font-size:11px;line-height:18px;white-space:nowrap}.viewer-head .seg{flex:none}.binder-viewer-wrap{padding-top:0}.viewer-arrows{top:0}.binder-comments-empty{flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;padding:24px 0}.binder-comments-empty .btn{align-self:center}
+
+html:not(.app-shell) .detail-author .detail-more-native{display:none}

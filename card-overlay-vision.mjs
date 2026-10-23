@@ -21,10 +21,40 @@ export function captureQuality(frame,previous,points){const {data,width:w,height
  return{alignment,sharpness:lap2/n-(lap/n)**2,motion:motion/(n*3),glare:glare/n};}
 export function autoCaptureReady(q){return q.alignment<.045&&q.sharpness>65&&q.motion<3&&q.glare<.2;}
 export const WINDOW_PRESETS={modern:{x:5,y:13,w:53,h:33},classic:{x:5.5,y:14,w:52,h:32}};
+// Offer an explicit whole-image path for a tightly cropped card scan. Aspect
+// ratio alone never bypasses the user's card confirmation or camera detection.
+export function isCardScan({width,height}){return width>=200&&height>=280&&Math.abs(width/height-63/88)/(63/88)<.015;}
 export function detectArtWindow(frame,preset='modern'){
  const base=WINDOW_PRESETS[preset]||WINDOW_PRESETS.modern,{data,width:w,height:h}=frame;
+ const fallback=()=>({rect:{...base},confident:false});if(w<100||h<140)return fallback();
  const color=(x,y,c)=>data[(Math.max(0,Math.min(h-1,Math.round(y)))*w+Math.max(0,Math.min(w-1,Math.round(x))))*4+c];
- function scan(axis,lo,hi,from,to,target){const size=axis==='y'?h:w,cross=axis==='y'?w:h,rows=[];for(let p=Math.ceil(lo*size);p<=hi*size;p++){let sum=0,n=0;for(let q=Math.ceil(from*cross);q<to*cross;q+=2){for(let c=0;c<3;c++)sum+=Math.abs(axis==='y'?color(q,p-2,c)-color(q,p+2,c):color(p-2,q,c)-color(p+2,q,c));n+=3;}rows.push({p,contrast:sum/Math.max(n,1),score:sum/Math.max(n,1)/(1+Math.abs(p/size-target)*8)});}return rows.sort((a,b)=>b.score-a.score)[0];}
- const t=scan('y',.105,.235,.13,.87,base.y/88),b=scan('y',.43,.59,.13,.87,(base.y+base.h)/88),l=scan('x',.045,.14,.23,.45,base.x/63),r=scan('x',.86,.955,.23,.45,(base.x+base.w)/63);
- const found={x:l.p/w*63+.2,y:t.p/h*88+.2,w:(r.p-l.p)/w*63-.4,h:(b.p-t.p)/h*88-.4};const confident=[t,b,l,r].every(v=>v.contrast>16)&&found.w>46&&found.h>25&&found.h<40&&validRect(found);return{rect:confident?Object.fromEntries(Object.entries(found).map(([k,v])=>[k,Math.round(v*10)/10])):{...base},confident};
+ function scan(axis,lo,hi,from,to,inward){
+  const size=axis==='y'?h:w,cross=axis==='y'?w:h,mm=axis==='y'?88:63,rows=[];
+  for(let p=Math.ceil(lo*size);p<=hi*size;p++){
+   let n=0,support=0;const vector=[0,0,0];
+   for(let q=Math.ceil(from*cross);q<to*cross;q+=2){let strength=0;
+    for(let c=0;c<3;c++){let delta=0;for(let z=-1;z<=1;z++)delta+=axis==='y'?color(q+z,p-2,c)-color(q+z,p+2,c):color(p-2,q+z,c)-color(p+2,q+z,c);delta/=3;vector[c]+=delta;strength+=Math.abs(delta)/3;}
+    support+=strength>16;n++;
+   }
+   // A frame edge changes in a consistent direction across most of the line.
+   // Random foil and subject texture can have high contrast but low coherence.
+   const coherent=vector.reduce((sum,v)=>sum+Math.abs(v),0)/Math.max(n*3,1),coverage=support/Math.max(n,1);
+   rows.push({p,coherent,coverage,score:coherent*coverage});
+  }
+  const strongest=rows.reduce((a,b)=>b.score>a.score?b:a),near=1.2/mm*size;
+  const other=rows.filter(v=>Math.abs(v.p-strongest.p)>near).reduce((v,row)=>Math.max(v,row.score),0);
+  const peaks=rows.filter((v,i)=>i>0&&i<rows.length-1&&v.score>=rows[i-1].score&&v.score>=rows[i+1].score&&v.score>=strongest.score*.55&&v.coverage>=.68&&Math.abs(v.p-strongest.p)<=size/mm);
+  // Select the inside local peak of the narrow frame band, not the outer rim.
+  const inside=peaks.filter(v=>(v.p-strongest.p)*inward>=0).sort((a,b)=>(b.p-a.p)*inward)[0]||strongest;
+  return{...inside,reliable:strongest.coherent>16&&strongest.coverage>=.68&&strongest.score>other*1.15};
+ }
+ // Older and commemorative cards can start around 8–9mm. The previous 10.5%
+ // lower bound excluded that edge and confidently selected a line in the art.
+ const t=scan('y',.065,.235,.13,.87,1),b=scan('y',.35,.60,.13,.87,-1);
+ const from=t.p/h+(b.p-t.p)/h*.16,to=b.p/h-(b.p-t.p)/h*.16;
+ if(to<=from)return fallback();
+ const l=scan('x',.045,.14,from,to,1),r=scan('x',.86,.955,from,to,-1);
+ const found={x:l.p/w*63,y:t.p/h*88,w:(r.p-l.p)/w*63,h:(b.p-t.p)/h*88};
+ const confident=[t,b,l,r].every(v=>v.reliable)&&found.w>46&&found.w<58&&found.h>25&&found.h<40&&validRect(found);
+ return{rect:confident?Object.fromEntries(Object.entries(found).map(([k,v])=>[k,Math.round(v*10)/10])):{...base},confident};
 }

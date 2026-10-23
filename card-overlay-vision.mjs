@@ -43,7 +43,7 @@ export function detectArtWindow(frame,preset='modern'){
   }
   const strongest=rows.reduce((a,b)=>b.score>a.score?b:a),near=1.2/mm*size;
   const other=rows.filter(v=>Math.abs(v.p-strongest.p)>near).reduce((v,row)=>Math.max(v,row.score),0);
-  const peaks=rows.filter((v,i)=>i>0&&i<rows.length-1&&v.score>=rows[i-1].score&&v.score>=rows[i+1].score&&v.score>=strongest.score*.55&&v.coverage>=.68&&Math.abs(v.p-strongest.p)<=size/mm);
+  const peaks=rows.filter((v,i)=>i>0&&i<rows.length-1&&v.score>=rows[i-1].score&&v.score>=rows[i+1].score&&v.score>=strongest.score*.35&&v.coverage>=.68&&Math.abs(v.p-strongest.p)<=size/mm);
   // Select the inside local peak of the narrow frame band, not the outer rim.
   const inside=peaks.filter(v=>(v.p-strongest.p)*inward>=0).sort((a,b)=>(b.p-a.p)*inward)[0]||strongest;
   return{...inside,reliable:strongest.coherent>16&&strongest.coverage>=.68&&strongest.score>other*1.15};

@@ -1,5 +1,5 @@
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
-import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window2';
+import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
 import {drawArt,artPlacement,makePrintSheet} from './card-overlay-print.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;

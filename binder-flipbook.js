@@ -76,11 +76,16 @@ window.FUNY_BINDER_FLIPBOOK = {
         gesture.dragging=true;
         // Begin at the relevant outer edge so dragging anywhere on a photo feels consistent.
         const rect=root.getBoundingClientRect();
-        book.startUserTouch({x:dx<0?rect.width-2:2,y:gesture.start.y});
+        gesture.edge=dx<0?rect.width-2:2;
+        book.startUserTouch({x:gesture.edge,y:gesture.start.y});
+        // Lock direction at the edge before a fast swipe crosses the midpoint.
+        book.userMove({x:gesture.edge+(dx<0?-8:8),y:gesture.start.y},true);
         viewer.setPointerCapture?.(e.pointerId);
       }
       if(e.cancelable)e.preventDefault();
-      book.userMove(point(e),true);
+      // Portrait mode represents a two-page curl in one visible page.
+      // Map half a visible page of travel to the engine's completion threshold.
+      book.userMove({x:gesture.edge+dx*2,y:point(e).y},true);
     }
     function up(e) {
       touches.delete(e.pointerId);

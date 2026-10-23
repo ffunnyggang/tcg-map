@@ -7,6 +7,7 @@ function png(data:unknown){
  if(b.length<24||[137,80,78,71,13,10,26,10].some((v,i)=>b[i]!==v))throw Error('PNG_REQUIRED');
  const d=new DataView(b.buffer);if(d.getUint32(16)!==1024||d.getUint32(20)!==1536)throw Error('INVALID_SIZE');return b;
 }
+console.info('overlay_config '+JSON.stringify({apiKeyConfigured:!!env('OPENAI_API_KEY'),enabled:env('OVERLAY_ENABLED')==='true'}));
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get('origin')||'',headers:Record<string,string>={'Content-Type':'application/json','Cache-Control':'no-store','Vary':'Origin'};
  if(origins.has(origin))headers['Access-Control-Allow-Origin']=origin;
@@ -22,10 +23,11 @@ Deno.serve(async(req:Request)=>{
   if(Number(req.headers.get('content-length')||0)>17_000_000)return reply({error:'이미지 크기가 너무 큽니다.'},413);
   const body=await req.text();if(body.length>17_000_000)return reply({error:'이미지 크기가 너무 큽니다.'},413);
   let data;try{data=JSON.parse(body);}catch{return reply({error:'올바른 요청이 아닙니다.'},400);}
-  const allowed=env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
+  // app_metadata is admin-controlled; never authorize from user_metadata.
+  const allowed=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
-  if(data.action==='status')return reply({ready,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!ready?'AI 생성 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':'AI 연결 완료 · 1일 계정당 최대 3회 시도 · 실패·시간 초과도 시도 횟수에 포함됩니다.'});
+  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 1일 계정당 최대 3회 시도 · 실패·시간 초과도 시도 횟수에 포함됩니다.'});
   if(data.action!=='generate')return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);

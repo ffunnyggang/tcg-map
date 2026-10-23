@@ -18,6 +18,8 @@ import {
 
 type Filter='all'|'unread';
 
+const hasNotificationTarget=(item:FunyNotification)=>Boolean(item.route?.trim()||item.url?.trim());
+
 const categoryIcon=(category:FunyNotification['category'])=>{
   switch(category){
     case 'community':return 'chatbubble-ellipses-outline';
@@ -79,7 +81,9 @@ export default function NotificationsScreen(){
       setItems(current=>filter==='unread'?current.filter(x=>x.id!==item.id):current.map(x=>x.id===item.id?{...x,read_at:new Date().toISOString()}:x));
       void getUnreadNotificationCount(userId);
     }
-    openNotificationTarget(router,{...(item.data||{}),route:item.route,url:item.url});
+    if(hasNotificationTarget(item)){
+      openNotificationTarget(router,{...(item.data||{}),route:item.route,url:item.url});
+    }
   };
 
   let lastGroup='';
@@ -112,7 +116,7 @@ export default function NotificationsScreen(){
                 <Text numberOfLines={2} style={styles.body}>{item.body}</Text>
                 <Text style={styles.time}>{timeLabel(item.created_at,en)}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color="#B8B0BD"/>
+              {hasNotificationTarget(item)?<Ionicons name="chevron-forward" size={16} color="#B8B0BD"/>:null}
             </Pressable>
           </View>;
         })}

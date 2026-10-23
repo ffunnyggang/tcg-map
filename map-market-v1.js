@@ -1325,7 +1325,7 @@
   const heartHtml=on=>on
     ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.2-4.35-9.55-8.36C.48 9.27 1.53 5.1 5.2 3.74 7.54 2.87 10.08 3.7 12 5.7c1.92-2 4.46-2.83 6.8-1.96 3.67 1.36 4.72 5.53 2.75 8.9C19.2 16.65 12 21 12 21Z"/></svg>'
     :'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/></svg>';
-  const marketShareUrl=id=>location.origin+'/market.html#/listing/'+encodeURIComponent(id);
+  const marketShareUrl=id=>'https://funypin.kr'+'/market.html#/listing/'+encodeURIComponent(id);
   function buildMarketImageViewer(){
     if($('#marketImageViewer'))return;
     const el=document.createElement('section');el.id='marketImageViewer';el.className='market-image-viewer';el.hidden=true;
@@ -1522,7 +1522,7 @@
     const shareBtn=$('#marketDetailShare');
     if(shareBtn)shareBtn.onclick=async()=>{
       const url=marketShareUrl(x.id);
-      try{if(navigator.share)await navigator.share({title:x.title,text:x.title,url});else{await navigator.clipboard.writeText(url);marketToast('매물 링크를 복사했어요.')}}catch(_){}
+      try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'SHARE_URL',title:x.title,text:x.title,url}));return;}if(navigator.share)await navigator.share({title:x.title,text:x.title,url});else{await navigator.clipboard.writeText(url);marketToast('매물 링크를 복사했어요.')}}catch(_){}
     };
     $('#marketDetailTrade')?.addEventListener('click',e=>{if(ended){e.preventDefault();return}if(window.ReactNativeWebView){e.preventDefault();openExternalMarketUrl(x.external_url)}});
   }

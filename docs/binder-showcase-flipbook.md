@@ -5,8 +5,12 @@ inside page. Editor, editor preview, overview, publication/storage and native
 headers are unchanged. Missing engine assets retain the previous viewer.
 
 StPageFlip 2.0.7 is self-hosted with its MIT license. The cover is hard, inside
-pages soft, with low-opacity folding shadows. A decorative page stack and
-cover edge add depth without distorting the photos at rest.
+pages soft, with low-opacity folding shadows. A single subtle paper edge and restrained shadow add depth. The showcase viewer
+has 18px side gutters; fine chevrons sit next to the page at vertical center.
+Photographed inside pages have a 3% inset. A small local canvas extends each
+photo edge and corner to color the mat; the original image stays sharp,
+uncropped and unchanged. Canvas failure falls back to a neutral mat. No photos
+are uploaded to another service for color extraction.
 
 Input: horizontal pointer dragging folds the page; release delegates completion
 or return to StPageFlip. Vertical intent leaves page scrolling alone. A second

@@ -17,7 +17,7 @@ module.exports = ({ config }) => {
     android: {
       ...config.android,
       package: isDev ? 'kr.funypin.app.dev' : config.android?.package,
-      ...(process.env.GOOGLE_SERVICES_JSON ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON } : {}),
+      ...((process.env.GOOGLE_SERVICES_JSON || (isDev && './google-services.dev.json')) ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.dev.json' } : {}),
       icon: appIcon,
       config: {
         ...(config.android?.config || {}),

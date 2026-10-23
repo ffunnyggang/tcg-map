@@ -15,3 +15,17 @@
 - [ ] 배포용 앱 + 운영 웹 조합에서 공유하기·바인더 헤더 더보기·TALK 재선택 최종 QA.
 - [ ] 배포용 푸시 수신·알림함·읽음 처리 확인.
 - [ ] 사용자 승인/요청 후 Play Console 업로드 및 제출.
+
+## 빌드 결과
+
+- FINISHED: 2026-10-23 19:37:56 KST.
+- Build ID: f99d9320-728d-4f09-83f8-24d2d9735f87.
+- 버전: 1.0.1 (10). Profile production / distribution STORE / Android AAB.
+- 소스 커밋: b356c4f6d5976cf9e721c5386a74056d98c958a4.
+- 빌드 화면: https://expo.dev/accounts/funy-pin/projects/funy-pin/builds/f99d9320-728d-4f09-83f8-24d2d9735f87
+- AAB: https://expo.dev/artifacts/eas/Ha4oTzuwypaPYTNdLkKmZOBBEsjtZ2YDz2eL1NMwVH4.aab
+- 로컬 보관: mobile/.expo/qa/funy-pin-1.0.1-10.aab (67,623,373 bytes).
+- SHA-256: 355289791890702647281482f1594739c249902a900d9f9e7c6ca5450672212b.
+- PASS AAB manifest의 배포용 패키지 확인, resources.pb의 배포용 Firebase App ID 및 프로젝트 확인.
+- PASS Gradle BUILD SUCCESSFUL, processReleaseGoogleServices 및 bundleRelease 로그 확인.
+- Play Console 업로드/제출 미실시. 위 제출 전 체크리스트는 미완료 상태 유지.

@@ -1,4 +1,6 @@
 // Test-only endpoint. No generation is enabled without explicit server-side configuration.
+// verify_jwt=false: validate every user token with this project Auth /user below.
+// This accepts current signing keys without trusting decoded client JWT claims.
 const origins = new Set(['https://funypin.kr','https://www.funypin.kr']);
 const env=(key:string)=>Deno.env.get(key)?.trim()||'';
 function png(data:unknown){
@@ -17,9 +19,13 @@ Deno.serve(async(req:Request)=>{
  if(req.method==='OPTIONS')return new Response(null,{status:204,headers});
  if(req.method!=='POST')return reply({error:'POST 요청만 가능합니다.'},405);
  const url=env('SUPABASE_URL'),anon=env('SUPABASE_ANON_KEY'),service=env('SUPABASE_SERVICE_ROLE_KEY'),token=req.headers.get('Authorization')||'';
+ const unauthorized=()=>reply({error:'로그인 세션이 만료됐거나 유효하지 않습니다. 다시 로그인해 주세요.',code:'AUTH_REQUIRED'},401);
+ if(!/^Bearer [^\s]+$/i.test(token)||token.length>8192)return unauthorized();
  try{
   const auth=await fetch(url+'/auth/v1/user',{headers:{apikey:anon,Authorization:token},signal:AbortSignal.timeout(10000)});
-  const user=await auth.json();if(!auth.ok||!user.id||user.is_anonymous)return reply({error:'로그인 후 이용해 주세요.'},401);
+  if(auth.status===429||auth.status>=500)return reply({error:'로그인 인증 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.',code:'AUTH_UNAVAILABLE'},503);
+  const user=await auth.json().catch(()=>null);
+  if(!auth.ok||!user||typeof user.id!=='string'||!user.id||user.is_anonymous)return unauthorized();
   if(Number(req.headers.get('content-length')||0)>17_000_000)return reply({error:'이미지 크기가 너무 큽니다.'},413);
   const body=await req.text();if(body.length>17_000_000)return reply({error:'이미지 크기가 너무 큽니다.'},413);
   let data;try{data=JSON.parse(body);}catch{return reply({error:'올바른 요청이 아닙니다.'},400);}

@@ -5,7 +5,7 @@ function png(data:unknown){
  if(typeof data!=='string'||!data.startsWith('data:image/png;base64,')||data.length>8_000_000)throw Error('PNG_REQUIRED');
  const raw=atob(data.slice(22)),b=Uint8Array.from(raw,c=>c.charCodeAt(0));
  if(b.length<24||[137,80,78,71,13,10,26,10].some((v,i)=>b[i]!==v))throw Error('PNG_REQUIRED');
- const d=new DataView(b.buffer);if(d.getUint32(16)!==1024||d.getUint32(20)!==1536)throw Error('INVALID_SIZE');return b;
+ const d=new DataView(b.buffer);if(!((d.getUint32(16)===1024&&d.getUint32(20)===1536)||(d.getUint32(16)===1072&&d.getUint32(20)===1472)))throw Error('INVALID_SIZE');return b;
 }
 console.info('overlay_config '+JSON.stringify({apiKeyConfigured:!!env('OPENAI_API_KEY'),enabled:env('OVERLAY_ENABLED')==='true'}));
 Deno.serve(async(req:Request)=>{
@@ -32,6 +32,8 @@ Deno.serve(async(req:Request)=>{
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
   let image,mask;try{image=png(data.image);mask=png(data.mask);}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
+  const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=imageView.getUint32(16),imageHeight=imageView.getUint32(20);
+  if(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
   // created using service credentials; clients receive no bucket access.
   const storageHeaders={apikey:service,Authorization:'Bearer '+service};
@@ -51,11 +53,11 @@ Deno.serve(async(req:Request)=>{
   const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';
   const diagnostic={model,promptVersion:'overlay-background-continuity-v2',imageHash:await digest(image),maskHash:await digest(mask)};
-  const form=new FormData();form.set('model',model);form.set('size','1024x1536');form.set('quality','medium');form.set('n','1');form.set('output_format','png');
+  const form=new FormData();form.set('model',model);form.set('size',imageWidth+'x'+imageHeight);form.set('quality','medium');form.set('n','1');form.set('output_format','png');
   form.set('image[]',new Blob([image],{type:'image/png'}),'source.png');form.set('mask',new Blob([mask],{type:'image/png'}),'mask.png');
   const anchor=data.anchor;
-  const hasAnchor=anchor&&['x','y','w','h'].every(k=>typeof anchor[k]==='number'&&Number.isFinite(anchor[k]))&&anchor.x>=0&&anchor.y>=0&&anchor.w>0&&anchor.h>0&&anchor.x+anchor.w<=1024&&anchor.y+anchor.h<=1536;
-  const placement=hasAnchor?' The fixed source rectangle in the 1024 by 1536 canvas is x='+anchor.x.toFixed(1)+', y='+anchor.y.toFixed(1)+', width='+anchor.w.toFixed(1)+', height='+anchor.h.toFixed(1)+'.':'';
+  const hasAnchor=anchor&&['x','y','w','h'].every(k=>typeof anchor[k]==='number'&&Number.isFinite(anchor[k]))&&anchor.x>=0&&anchor.y>=0&&anchor.w>0&&anchor.h>0&&anchor.x+anchor.w<=imageWidth&&anchor.y+anchor.h<=imageHeight;
+  const placement=hasAnchor?' The fixed source rectangle in the '+imageWidth+' by '+imageHeight+' canvas is x='+anchor.x.toFixed(1)+', y='+anchor.y.toFixed(1)+', width='+anchor.w.toFixed(1)+', height='+anchor.h.toFixed(1)+'.':'';
   form.set('prompt','Perform a localized background outpainting edit of the supplied canvas. The opaque region of the mask contains the fixed source illustration; keep this region unchanged at its exact pixel position and scale.'+placement+' Fill only the transparent masked area with the continuation of the existing environment. Continue the sky, horizon, ground, water, shadows, lighting and surface texture directly from each source edge. Keep the same horizon height and perspective. Do not recompose, recenter, zoom, rescale or move the source illustration. Do not redraw, repeat, mirror or duplicate its subject anywhere else. Do not extend a character or invent new body parts; only continue the surrounding scenery. Do not add characters, text, logos, borders, card UI or frames. Match the existing colors and texture at the boundary, without placing an outline, panel, collage seam or second copy of the illustration.');
   const response=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+key},body:form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();

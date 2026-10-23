@@ -27,7 +27,7 @@ Deno.serve(async(req:Request)=>{
   const allowed=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
-  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 1일 계정당 최대 3회 시도 · 실패·시간 초과도 시도 횟수에 포함됩니다.'});
+  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 20회 시도 한도'});
   if(data.action!=='generate')return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
@@ -46,7 +46,7 @@ Deno.serve(async(req:Request)=>{
    const res=await fetch(`${url}/storage/v1/object/${bucket}/${day}/${prefix}/${i}.json`,{method:'POST',headers:{...storageHeaders,'Content-Type':'application/json','x-upsert':'false'},body:JSON.stringify({at:new Date().toISOString()})});
    if(res.ok)return true;const error=await res.json().catch(()=>({}));if(res.status!==409&&error.error!=='Duplicate'&&error.code!=='Duplicate'&&error.message!=='The resource already exists')throw Error('QUOTA_UNAVAILABLE');
   }return false;}
-  if(!await reserve(user.id,3))return reply({error:'오늘 생성 시도 3회를 모두 사용했어요. 내일 다시 이용해 주세요.'},429);
+  // Allowlisted QA accounts have no per-account daily attempt limit.
   if(!await reserve('global',20))return reply({error:'오늘 테스트 전체 생성 한도에 도달했어요.'},429);
   const form=new FormData();form.set('model',env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst');form.set('size','1024x1536');form.set('quality','medium');form.set('n','1');form.set('output_format','png');
   form.set('image[]',new Blob([image],{type:'image/png'}),'source.png');form.set('mask',new Blob([mask],{type:'image/png'}),'mask.png');

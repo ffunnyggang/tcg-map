@@ -58,3 +58,27 @@ Android remote push requires a matching Firebase google-services.json and EAS FC
 - `scripts/start-aos-parity.ps1` starts Metro with APP_VARIANT=development and ADB reverse only; it does not run Gradle, EAS build or submit.
 - Local Metro remains on port 8083 for subsequent QA; existing ports 8081/8082 are untouched.
 - Pending: unlock device and complete the acceptance checklist above; configure/verify Firebase + FCM and native module compatibility for push. Release build is intentionally not run.
+
+## Stage 2 — development APK requested by user
+
+The user subsequently requested applying this work to the Android test app, authorizing a development APK build/install (release/store build is still excluded).
+
+- EAS development build: `dd0fbeec-0570-4640-9194-f2f66c644af5`.
+- Source commit: `5f19f8387b032924254efc86fed6f3b903a7cf30`.
+- App package: `kr.funypin.app.dev`; app version `1.0.1`, version code `3`.
+- Reuses the existing remote development signing credentials; no credential rotation, app uninstall, or production submission.
+- Native prebuild verified POST_NOTIFICATIONS and the default notification channel metadata.
+- EAS development environment contains the existing secret map key; no Firebase google-services file variable was found. Desktop/Downloads checks also found no Firebase configuration file.
+- Firebase Android client must match `kr.funypin.app.dev`; FCM v1 sending credentials must also be configured/verified in EAS. Remote push receipt is not claimed working merely because the module is installed.
+- `scripts/install-aos-test-build.ps1` waits for this exact development build, downloads the APK into ignored `.expo/qa`, performs `adb install -r` only and reconnects Metro on 8083. A failed update never uninstalls the existing app.
+- Native prebuild changed the package.json launch scripts; those incidental changes were reverted before archive upload. Generated android/ios folders and local Firebase JSON are ignored by Git.
+
+## Stage 2 outcome
+
+- EAS build FINISHED successfully. APK downloaded to ignored `.expo/qa/funypin-dev-dd0fbeec-0570-4640-9194-f2f66c644af5.apk`.
+- `adb install -r`: Success. Existing development application updated without uninstalling or deleting its data.
+- Installed package verification: versionName=1.0.1, versionCode=3, POST_NOTIFICATIONS present, granted=false.
+- ADB reverse 8083 established and development client launch intent delivered successfully.
+- Window focus remained NotificationShade / locked device. Interactive permission prompt and screen acceptance QA remain pending. Permission was not force-granted through ADB.
+- Remote push receipt remains BLOCKED on the missing matching Firebase configuration and FCM v1 setup/verification; module installation is not evidence of successful push delivery.
+- Production Android package and Play Console distribution were not updated.

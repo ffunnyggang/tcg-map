@@ -10,3 +10,8 @@ expo-env.d.ts
 
 # Local floating-action QA captures
 qa/*.png
+
+# Expo prebuild output and local Firebase configuration
+/android/
+/ios/
+/google-services*.json

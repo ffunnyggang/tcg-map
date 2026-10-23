@@ -1,0 +1,42 @@
+name: Validate runtime efficiency changes
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'funy-efficiency-v1.js'
+      - 'cms-frontend-renderer.js'
+      - 'talk-community-v1.js'
+      - 'map-live-pin-v1.js'
+      - 'binder.js'
+      - 'admin.html'
+      - 'tests/efficiency-*.cjs'
+      - '.github/workflows/validate-efficiency.yml'
+  pull_request:
+    paths:
+      - 'funy-efficiency-v1.js'
+      - 'cms-frontend-renderer.js'
+      - 'talk-community-v1.js'
+      - 'map-live-pin-v1.js'
+      - 'binder.js'
+      - 'admin.html'
+      - 'tests/efficiency-*.cjs'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check script syntax
+        run: |
+          node --check funy-efficiency-v1.js
+          node --check cms-frontend-renderer.js
+          node --check talk-community-v1.js
+          node --check map-live-pin-v1.js
+          node --input-type=module --check < binder.js
+      - name: Verify cache, upload fallback and realtime reconnection
+        run: |
+          node tests/efficiency-syntax.cjs
+          node tests/efficiency-runtime.cjs
+          node tests/efficiency-upload.cjs
+          node tests/efficiency-live.cjs

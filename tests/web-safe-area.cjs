@@ -1,0 +1,35 @@
+const fs=require('fs'),assert=require('assert/strict');
+const baseUrl=process.env.SAFE_QA_URL||'http://127.0.0.1:8086/';
+const cdpUrl=process.env.SAFE_QA_CDP||'http://127.0.0.1:9235';
+(async()=>{
+const targets=await(await fetch(cdpUrl+'/json/list')).json();
+const ws=new WebSocket(targets[0].webSocketDebuggerUrl);await new Promise(r=>ws.onopen=r);
+let seq=0;const jobs=new Map();const call=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;jobs.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
+ws.onmessage=async e=>{const d=JSON.parse(e.data);if(d.id){const j=jobs.get(d.id);jobs.delete(d.id);d.error?j.reject(Error(JSON.stringify(d.error))):j.resolve(d.result);}else if(d.method==='Fetch.requestPaused'){const p=d.params;try{if(p.request.url.startsWith(baseUrl)){const response=await fetch(p.request.url);let body=Buffer.from(await response.arrayBuffer());const type=response.headers.get('content-type')||'';if(/text\/(css|html)/.test(type))body=Buffer.from(body.toString('utf8').replace(/env\(safe-area-inset-top(?:,\s*0px)?\)/g,'47px'));await call('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:response.status,responseHeaders:[{name:'Content-Type',value:type}],body:body.toString('base64')});}else await call('Fetch.failRequest',{requestId:p.requestId,errorReason:'Aborted'});}catch(error){console.error(error);process.exit(1);}}};
+const evaluate=async expression=>(await call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true})).result.value;
+await call('Page.enable');await call('Fetch.enable',{patterns:[{urlPattern:'*'}]});
+await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:3,mobile:true});
+// Substitute only the browser's safe-area env in intercepted CSS/HTML responses.
+// Repository files remain unchanged. Test network blocks all external services.
+const realInsets=false;
+const wait=ms=>new Promise(r=>setTimeout(r,ms)),results=[];
+async function open(file){await call('Page.navigate',{url:baseUrl+file});await wait(700);await wait(100);}
+for(const file of ['index.html','talk.html','my.html','coin-flip.html','binder.html','pokemon-match.html','faq.html','reviews.html','login.html','notice.html','event-thecardroom.html','oripa-calculator.html','funymon-ladder.html']){
+await open(file);
+const r=await evaluate("(()=>{const h=document.querySelector('.funy-safe-header');const s=h&&getComputedStyle(h);return {ready:document.documentElement.classList.contains('funy-web-safe'),height:s?.height,padding:s?.paddingTop,base:s?.getPropertyValue('--funy-safe-header-height'),color:document.querySelector('meta[name=theme-color]')?.content,scroll:document.documentElement.scrollWidth,width:innerWidth}})()");
+assert(r.ready,file);assert(r.base,file+' has prepared header');assert.equal(parseFloat(r.height),parseFloat(r.base)+47,file+' header safe height');assert(r.scroll<=r.width+1,file+' no horizontal overflow');results.push({file,...r});
+}
+await open('talk.html');
+const base=await evaluate("document.querySelector('meta[name=theme-color]').content");
+await evaluate("(()=>{const d=document.createElement('div');d.id='qa-dim';d.style.cssText='position:fixed;inset:0;background:rgba(24,20,30,.36);z-index:2147483500';document.body.append(d)})()");
+await wait(150);const dim=await evaluate("document.querySelector('meta[name=theme-color]').content");assert.notEqual(dim,base,'dim theme changes');
+await evaluate("document.getElementById('qa-dim').remove()");await wait(150);assert.equal(await evaluate("document.querySelector('meta[name=theme-color]').content"),base,'dim restores');
+await open('binder.html');await evaluate("document.getElementById('modal').showModal()");await wait(150);const dialogDim=await evaluate("document.querySelector('meta[name=theme-color]').content");assert.notEqual(dialogDim,'#ffffff','native dialog backdrop tint');
+await evaluate("document.getElementById('modal').close()");await wait(150);assert.equal(await evaluate("document.querySelector('meta[name=theme-color]').content"),'#ffffff');
+await open('shops.html');const map=await evaluate("(()=>{let m=document.querySelector('#naver-map').getBoundingClientRect(),s=document.querySelector('.map-search-float').getBoundingClientRect();return {mapTop:m.top,searchTop:s.top}})()");assert.equal(map.mapTop,0);assert.equal(map.searchTop,57);
+await evaluate("(()=>{document.querySelector('#home-view').hidden=true;let d=document.querySelector('#detail-view');d.hidden=false;d.querySelector('article').innerHTML='<div class=hero><div class=hero-top><button>Back</button></div><div class=hero-gallery></div></div>'})()");await wait(150);const shop=await evaluate("(()=>{const h=document.querySelector('#detail-view .hero');return {top:h.getBoundingClientRect().top,padding:getComputedStyle(h.querySelector('.hero-top')).paddingTop}})()");assert.equal(shop.top,0);assert.equal(shop.padding,'61px');
+await open('market.html');await evaluate("(()=>{document.body.classList.add('market-page');document.querySelectorAll('.market-overlay').forEach(e=>e.remove());let d=document.createElement('div');d.className='market-detail-overlay has-media';d.innerHTML='<header class=market-detail-head><button class=market-detail-back>Back</button><div class=market-detail-head-actions><button>More</button></div></header><div style=height:600px;background:#8899aa></div>';document.body.append(d)})()");await wait(150);const listing=await evaluate("(()=>{const d=document.querySelector('.market-detail-overlay'),h=d.querySelector('.market-detail-head');return {top:d.getBoundingClientRect().top,height:getComputedStyle(h).height,button:d.querySelector('button').getBoundingClientRect().top}})()");assert.equal(listing.top,0);assert.equal(listing.height,'101px');assert(listing.button>=47,'market controls below safe area');
+await open('talk.html?app=1');assert.equal(await evaluate("document.documentElement.classList.contains('funy-web-safe')"),false,'native app excluded');
+await open('talk.html');await call('Emulation.setDeviceMetricsOverride',{width:1100,height:900,deviceScaleFactor:1,mobile:false});await wait(150);assert.equal(await evaluate("getComputedStyle(document.querySelector('.portal-header')).height"),'54px','desktop height unchanged');
+console.log(JSON.stringify({realInsets,results,dim:{base,dim,dialogDim},map,shop,listing,nativeExcluded:true,desktopUnchanged:true},null,2));ws.close();
+})().catch(e=>{console.error(e);process.exit(1)});

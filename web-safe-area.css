@@ -1,0 +1,27 @@
+/* Browser only: native shells own their safe areas and status bar. */
+html.funy-web-safe:not(.app-shell){--funy-web-safe-top:env(safe-area-inset-top,0px)}
+@media(max-width:767px){
+ html.funy-web-safe:not(.app-shell),
+ html.funy-web-safe:not(.app-shell) body{background-color:var(--funy-web-top-color,#fff)!important}
+ html.funy-web-safe:not(.app-shell) .funy-safe-header{
+  box-sizing:border-box!important;
+  height:calc(var(--funy-safe-header-height) + var(--funy-web-safe-top))!important;
+  min-height:calc(var(--funy-safe-header-height) + var(--funy-web-safe-top))!important;
+  padding-top:calc(var(--funy-safe-header-padding) + var(--funy-web-safe-top))!important;
+ }
+ /* Keep map/media at y=0; inset controls, never the content behind them. */
+ html.funy-web-safe:not(.app-shell).funy-map-qa .map-search-float{top:calc(var(--funy-web-safe-top) + 14px)!important}
+ html.funy-web-safe:not(.app-shell).funy-map-qa .map-filter-bar{top:calc(var(--funy-web-safe-top) + 70px)!important}
+ html.funy-web-safe:not(.app-shell).funy-map-qa .qa-geocode-status{top:calc(var(--funy-web-safe-top) + 118px)!important}
+ html.funy-web-safe:not(.app-shell) #detail-view .hero-top{padding-top:calc(var(--funy-web-safe-top) + 14px)!important}
+ html.funy-web-safe:not(.app-shell) #detail-view .detail-sticky{
+  height:calc(56px + var(--funy-web-safe-top))!important;
+  padding-top:var(--funy-web-safe-top)!important;
+ }
+ /* Full-screen masks already use inset:0, including the safe area. Never
+    add body top-padding: doing so leaves a bright strip above a fixed mask. */
+}
+@media(max-width:430px){
+ html.funy-web-safe:not(.app-shell).funy-map-qa .map-search-float{top:calc(var(--funy-web-safe-top) + 10px)!important}
+ html.funy-web-safe:not(.app-shell).funy-map-qa .map-filter-bar{top:calc(var(--funy-web-safe-top) + 64px)!important}
+}

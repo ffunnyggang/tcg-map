@@ -28,6 +28,13 @@ Deno.serve(async(req:Request)=>{
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
   if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 20회 시도 한도'});
+  if(data.action==='report_quality'){
+   if(!allowed)return reply({error:'테스트 계정만 보고할 수 있습니다.'},403);
+   const valid=typeof data.requestId==='string'&&/^req_[a-zA-Z0-9]{1,100}$/.test(data.requestId)&&typeof data.accepted==='boolean'&&Number.isFinite(data.correlation)&&data.correlation>=-1.001&&data.correlation<=1.001&&Number.isFinite(data.mae)&&data.mae>=0&&data.mae<=255;
+   if(!valid)return reply({error:'올바른 품질 보고가 아닙니다.'},400);
+   console.info('overlay client quality',{requestId:data.requestId,accepted:data.accepted,correlation:data.correlation,mae:data.mae});
+   return reply({reported:true});
+  }
   if(data.action!=='generate')return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
@@ -81,6 +88,6 @@ Deno.serve(async(req:Request)=>{
   }
   const output=result.data?.[0]?.b64_json;if(typeof output!=='string')throw Error('NO_IMAGE');
   console.info('overlay generation completed',{requestId:response.headers.get('x-request-id'),...diagnostic});
-  return reply({image:output});
+  return reply({image:output,requestId:response.headers.get('x-request-id')});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });

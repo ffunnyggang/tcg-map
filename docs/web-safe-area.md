@@ -24,3 +24,5 @@ Final device acceptance: iPhone Safari and Galaxy Chrome, normal/expanded browse
 ## Existing CI limitation
 
 PR validation: MY missions passed. The hidden garapon event suite reports 8 passes / 1 failure: its administrator-session test rejects any localStorage reference in admin-garapon-auth.js. The same test was rerun on the pre-change entry-limit checkout and fails identically. Both the auth source and test are unchanged by this PR. This pre-existing failure is separate from the safe-area work; it has not been suppressed or weakened.
+
+The map-hosted TCG market list receives the same explicit 54px + safe-top header as the standalone market list. Added a browser assertion for list header height and button position. CSS cache version advanced to safe2.

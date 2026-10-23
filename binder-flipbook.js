@@ -26,7 +26,7 @@ window.FUNY_BINDER_FLIPBOOK = {
         width, height:Math.round(width/ratio), size:'fixed', autoSize:false,
         usePortrait:true, showCover:false, startPage:index, drawShadow:true,
         flippingTime:560, maxShadowOpacity:.24, useMouseEvents:false,
-        showPageCorners:false, disableFlipByClick:true
+        showPageCorners:false, disableFlipByClick:false
       });
       root.style.width = width+'px';
       root.style.height = Math.round(width/ratio)+'px';

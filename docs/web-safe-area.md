@@ -20,3 +20,7 @@ The test blocks external services, and replaces only safe-area-inset-top env() w
 Passed: 13 public header pages (54+47px, binder/event 58+47px), no horizontal overflow, full-screen dim tint and restoration, dialog backdrop tint and restoration, map y=0/search y=57, shop hero y=0/controls padded 61px, listing y=0/header 101px/buttons y=56, native exclusion and desktop height.
 Shop/listing content is a DOM fixture using the actual page styles, without signed-in access or production writes.
 Final device acceptance: iPhone Safari and Galaxy Chrome, normal/expanded browser chrome, portrait/landscape, map -> shop detail -> back, listing scroll, dim open/close, native app parity.
+
+## Existing CI limitation
+
+PR validation: MY missions passed. The hidden garapon event suite reports 8 passes / 1 failure: its administrator-session test rejects any localStorage reference in admin-garapon-auth.js. The same test was rerun on the pre-change entry-limit checkout and fails identically. Both the auth source and test are unchanged by this PR. This pre-existing failure is separate from the safe-area work; it has not been suppressed or weakened.

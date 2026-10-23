@@ -29,3 +29,9 @@ Authorized QA accounts have no per-account daily cap; a private atomic slot buck
 ## Validation
 
 Run `node --test tests/card-overlay.test.mjs tests/card-overlay-server.test.mjs tests/card-overlay-vision.test.mjs`. Validate live sample PNG/PDF, physical scale, both trim shapes and illustration mapping. Synthetic-frame tests verify guide ratio, corner detection/fallback and quality gates; they do not replace real camera QA. Physical devices, representative Pokémon card eras, foil glare, printer alignment, corner radius and native WebView permissions still require user QA before launch.
+
+## Anchor continuity validation
+
+The background-continuity-v2 prompt names only the fixed input rectangle and surrounding scene. It forbids recomposition and subject duplication for layout quality; it does not change model safety settings, promise copyright clearance or attempt to make blocked requests pass. Moderation rejection remains terminal with no automatic retry.
+
+New generation sends an optional validated numeric anchor rectangle. The browser compares a downsampled original anchor against the same location in the returned image using color MAE and correlation. Grossly changed anchors are rejected before compositing, and download stays disabled. A preserved anchor is not proof that the entire outer seam is perfect; users still inspect horizons, colors and duplicated subjects. Check thresholds need real-output QA and may reject some useful results. No extra image API calls are made for this local check. Earlier results are not retroactively repaired; actual raw generated images plus source crops are needed to assess them quantitatively.

@@ -27,6 +27,9 @@ async function fixture(page,pockets=9){
  await page.mouse.move(b.x+b.width-5,b.y+b.height*.75);await page.mouse.down();await page.mouse.move(b.x+b.width-35,b.y+b.height*.7,{steps:8});await page.mouse.up();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/1페이지/);
  // Full drag advances exactly once.
  b=await page.locator('.binder-flip-root').boundingBox();await page.mouse.move(b.x+b.width-5,b.y+b.height*.75);await page.mouse.down();await page.mouse.move(b.x+8,b.y+b.height*.7,{steps:16});await page.mouse.up();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
+ // Reverse drag also completes inside the visible page.
+ b=await page.locator('.binder-flip-root').boundingBox();await page.mouse.move(b.x+5,b.y+b.height*.75);await page.mouse.down();await page.mouse.move(b.x+b.width-8,b.y+b.height*.7,{steps:16});await page.mouse.up();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/1페이지/);
+ await page.locator('[data-act=next]').click();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
  // Pinch handler: zoom stops flipping; reset restores it.
  await page.evaluate(()=>{const el=document.querySelector('#viewer');function ev(type,pts){const e=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:pts.map(([clientX,clientY])=>({clientX,clientY}))});el.dispatchEvent(e);}ev('touchstart',[[100,200],[200,200]]);ev('touchmove',[[75,200],[225,200]]);ev('touchend',[]);});
  assert(await page.locator('.binder-book-zoomed').count());const z=await page.locator('.binder-flip-root').evaluate(el=>el.style.transform);assert.equal(z,'scale(1.5)');

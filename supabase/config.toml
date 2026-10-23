@@ -1,0 +1,4 @@
+# Only this endpoint uses in-function authentication. All POST actions require
+# a project-verified user via Auth /user before parsing data or reserving quota.
+[functions.card-overlay-generate]
+verify_jwt = false

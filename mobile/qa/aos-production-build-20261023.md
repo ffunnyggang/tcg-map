@@ -11,7 +11,7 @@
 
 ## 제출 전 남은 확인
 
-- [ ] 웹 수정 브랜치 work/aos-share-binder-qa-20261023, 커밋 20c11529를 운영 웹에 반영. 이 문서 작성 시점에는 로컬 QA에만 연결되어 있음.
+- [x] 웹 수정 브랜치 work/aos-share-binder-qa-20261023, 커밋 20c11529를 운영 웹에 반영. 이 문서 작성 시점에는 로컬 QA에만 연결되어 있음.
 - [ ] 배포용 앱 + 운영 웹 조합에서 공유하기·바인더 헤더 더보기·TALK 재선택 최종 QA.
 - [ ] 배포용 푸시 수신·알림함·읽음 처리 확인.
 - [ ] 사용자 승인/요청 후 Play Console 업로드 및 제출.
@@ -29,3 +29,5 @@
 - PASS AAB manifest의 배포용 패키지 확인, resources.pb의 배포용 Firebase App ID 및 프로젝트 확인.
 - PASS Gradle BUILD SUCCESSFUL, processReleaseGoogleServices 및 bundleRelease 로그 확인.
 - Play Console 업로드/제출 미실시. 위 제출 전 체크리스트는 미완료 상태 유지.
+
+Web release deployed: PR #16, commit bf593519873c58b6cc90df9f1e75a321408ebed1. All 8 served web files verified. Internal-test app QA remains pending.

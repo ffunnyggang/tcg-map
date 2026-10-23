@@ -3,7 +3,8 @@ window.FUNY_BINDER_FLIPBOOK = {
   mount({host, viewer, pages, index, ratio, onFlip, onState, loadImage}) {
     let book, root, disposed = false, enabled = true, gesture = null;
     let touches = new Set(), resizeTimer, scale = 1;
-    const mats = new Map();
+    const mats = new Map(), sampled = new Set();
+    let matPaths = new Set();
     const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const point = e => {
       const rect = book.getUI().getDistElement().getBoundingClientRect();
@@ -41,46 +42,48 @@ window.FUNY_BINDER_FLIPBOOK = {
           img.loading='eager';
           loadImage(img.dataset.path).then(url=>{
             if(disposed)return;
-            img.onload=()=>{const mat=img.closest('.binder-photo-mat');if(mat&&!disposed)paintMat(img,mat);};
+            img.onload=()=>{const mat=img.closest('.binder-photo-mat');if(mat&&!disposed)paintMat(img);};
+            img.onerror=()=>{sampled.add(img.dataset.path);applyMat();};
             img.src=url;
             if(img.complete&&img.naturalWidth)img.onload();
-          }).catch(()=>{img.alt='사진을 불러오지 못했어요';});
+          }).catch(()=>{img.alt='사진을 불러오지 못했어요';sampled.add(img.dataset.path);applyMat();});
         });
         return node;
       });
-      book.on('flip', e => {index=e.data; onFlip(index);});
+      matPaths=new Set(nodes.flatMap(node=>[...node.querySelectorAll('.binder-photo-mat img[data-path]')].map(img=>img.dataset.path)));
+      applyMat();
+      book.on('flip', e => {index=e.data;host.classList.toggle('binder-on-cover',index===0); onFlip(index);});
       book.on('changeState', e => onState(e.data!=='read'));
       book.loadFromHTML(nodes);
       applyScale();
       onState(false);
     }
-    function paintMat(img,mat){
-      // Work only on the already downloaded local blob; never send photos elsewhere.
+    function paintMat(img){
       const key=img.dataset.path;
-      if(mats.has(key)){mat.style.backgroundImage=`url("${mats.get(key)}")`;return;}
+      if(sampled.has(key)){applyMat();return;}
+      sampled.add(key);
       try{
-        const canvas=document.createElement('canvas');
-        const w=128,h=Math.round(w/ratio);canvas.width=w;canvas.height=h;
-        const ctx=canvas.getContext('2d');if(!ctx)return;
-        ctx.fillStyle='#f4f1f6';ctx.fillRect(0,0,w,h);
-        const sw=img.naturalWidth,sh=img.naturalHeight;
-        if(!sw||!sh)return;
-        const fit=Math.min(w*.94/sw,h*.94/sh),dw=sw*fit,dh=sh*fit;
-        const x=(w-dw)/2,y=(h-dh)/2;
-        // Stretch only the outermost source pixels outward: four independently
-        // matched edges and four corner pixels. The full-resolution photo stays sharp above.
-        ctx.drawImage(img,0,0,sw,1,x,0,dw,y+1);
-        ctx.drawImage(img,0,sh-1,sw,1,x,y+dh-1,dw,h-y-dh+1);
-        ctx.drawImage(img,0,0,1,sh,0,y,x+1,dh);
-        ctx.drawImage(img,sw-1,0,1,sh,x+dw-1,y,w-x-dw+1,dh);
-        ctx.drawImage(img,0,0,1,1,0,0,x+1,y+1);
-        ctx.drawImage(img,sw-1,0,1,1,x+dw-1,0,w-x-dw+1,y+1);
-        ctx.drawImage(img,0,sh-1,1,1,0,y+dh-1,x+1,h-y-dh+1);
-        ctx.drawImage(img,sw-1,sh-1,1,1,x+dw-1,y+dh-1,w-x-dw+1,h-y-dh+1);
-        ctx.drawImage(img,x,y,dw,dh);
-        const url=canvas.toDataURL('image/png');mats.set(key,url);
-        mat.style.backgroundImage=`url("${url}")`;
-      }catch(_){/* Neutral mat remains usable if image decoding/canvas is unavailable. */}
+        const canvas=document.createElement('canvas');canvas.width=48;canvas.height=48;
+        const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)return;
+        ctx.drawImage(img,0,0,48,48);
+        const data=ctx.getImageData(0,0,48,48).data,pixels=[];
+        for(let i=0;i<data.length;i+=4){
+          if(data[i+3]<128)continue;
+          pixels.push([data[i],data[i+1],data[i+2],.2126*data[i]+.7152*data[i+1]+.0722*data[i+2]]);
+        }
+        pixels.sort((a,b)=>a[3]-b[3]);
+        const dark=pixels.slice(0,Math.max(1,Math.ceil(pixels.length*.25)));
+        if(dark.length)mats.set(key,[0,1,2].map(channel=>dark.reduce((sum,p)=>sum+p[channel],0)/dark.length));
+      }catch(_){/* Keep the shared neutral dark mat if local sampling is unavailable. */}
+      applyMat();
+    }
+    function applyMat(){
+      // One shared color for every page: equal-weight average of each photo's darkest quartile.
+      if([...matPaths].some(path=>!sampled.has(path)))return;
+      const colors=[...matPaths].map(path=>mats.get(path)).filter(Boolean);
+      if(!colors.length)return;
+      const color='rgb('+[0,1,2].map(c=>Math.round(colors.reduce((sum,p)=>sum+p[c],0)/colors.length)).join(',')+')';
+      host.style.setProperty('--binder-mat-color',color);
     }
     function applyScale(){
       root.style.transformOrigin='top left';root.style.transform=`scale(${scale})`;
@@ -150,7 +153,7 @@ window.FUNY_BINDER_FLIPBOOK = {
       setZoom(value) {scale=value;applyScale();},
       cancel,
       destroy() {
-        disposed=true; mats.clear(); clearTimeout(resizeTimer);release();unmount();
+        disposed=true; mats.clear();sampled.clear(); clearTimeout(resizeTimer);release();unmount();
         viewer.removeEventListener('pointerdown',down);
         viewer.removeEventListener('pointermove',move);
         viewer.removeEventListener('pointerup',up);

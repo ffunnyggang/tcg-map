@@ -1,5 +1,6 @@
 param([ValidatePattern('^[0-9a-fA-F-]{36}$')][string]$BuildId='dd0fbeec-0570-4640-9194-f2f66c644af5')
 $ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
 Set-Location (Split-Path -Parent $PSScriptRoot)
 $env:APP_VARIANT='development'
 $adbPath=Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'

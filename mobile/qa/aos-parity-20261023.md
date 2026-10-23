@@ -90,3 +90,22 @@ The user subsequently requested applying this work to the Android test app, auth
 - Corrected permission copy on Android (was hardcoded iPhone), and refreshes observed OS permission even when push-token registration fails.
 - TypeScript / behavior tests passed, including simulated Firebase token failure causing no registration and no push_enabled:true preference write; network errors remain distinct.
 - JavaScript changes served through local Metro; no new native build needed for this feedback fix. Device relocked during follow-up, so final on-screen wording acceptance is pending unlock. Actual push delivery still requires the Firebase configuration file and FCM v1 setup.
+
+## Firebase Android client attachment
+
+- Uploaded google-services.json validated: Firebase project funy-pin, package kr.funypin.app.dev. Saved as ignored google-services.dev.json; no key values printed or committed.
+- app.config.js now uses this file for development only, with GOOGLE_SERVICES_JSON taking precedence. Production package remains unconfigured until a separate matching client is supplied.
+- EAS development secret file variable GOOGLE_SERVICES_JSON created; builder receives the client configuration without committing the file.
+- Native prebuild confirmed android/app/google-services.json generated. TypeScript / behavioral tests passed.
+- Read-only EAS credential metadata confirmed FCM V1 is not yet configured for either Android package. Requested user register the private service account key directly in EAS; this attachment is the client configuration, not a sending credential.
+- An initial local upload process was stopped before build creation to ensure the ignored configuration file is supplied through the EAS file variable.
+- Firebase-connected development build queued: 9a3a9641-7991-4a09-84ed-909c202f0ad0, source 5004763ac525f416126b0152762ec3e2aa362fea. Production/store deployment excluded.
+
+## Firebase-connected build outcome
+
+- EAS build 9a3a9641-7991-4a09-84ed-909c202f0ad0 FINISHED; downloaded and adb install -r succeeded, with existing development app data preserved.
+- APK resource inspection with Android SDK aapt verified matching Firebase application ID, sender/project number, and project ID from the provided client file.
+- Actual installed app process log: `FirebaseInitProvider: FirebaseApp initialization successful` at 2026-10-23 16:02:55 KST. The earlier missing-default-Firebase-app cause is now resolved in the native app.
+- OS POST_NOTIFICATIONS permission remains granted=true; versionName=1.0.1, versionCode=3.
+- Fresh EAS metadata still reports fcmV1Configured=false for kr.funypin.app.dev. Remote delivery verification is pending user registration of the FCM V1 service account key.
+- Device remains locked (NotificationShade focus); in-app enable flow / registration acceptance and end-to-end receipt are not marked passed.

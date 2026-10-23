@@ -141,6 +141,7 @@ export default function Account(){
   const rewardRows=useMemo(()=>[
     {label:en?'Ranking':'랭킹',sub:en?'Check-in, shop-visit, and FUNY MON rankings':'출석 · 카드샵 방문 · 퍼니몬 포획 랭킹',icon:'🏆',onPress:()=>openWeb('ranking.html',en?'Ranking':'랭킹')},
     {label:en?'Badges':'배지',sub:en?'Collect badges earned from missions and activities':'미션과 활동으로 획득한 배지 컬렉션',icon:'🎖️',onPress:()=>openWeb('my-badges.html',en?'Badges':'배지')},
+    {label:en?'Binder Shelf':'바인더 보관함',sub:en?'Build your card collection, one page at a time':'한 장씩 채우는 나의 카드 컬렉션',icon:'📔',onPress:()=>openWeb('binder.html?view=mine&nativeHeader=1',en?'Binder Shelf':'바인더 보관함')},
     {label:en?'FUNY MON Collection':'퍼니몬 도감',sub:en?'See your captured FUNY MON collection':'포획한 퍼니몬 컬렉션',icon:'👾',onPress:()=>router.push('/my/funymon')},
     {label:en?'Events':'이벤트',sub:en?'Browse ongoing and past events':'진행 중·종료된 이벤트를 확인하세요',icon:'🎉',onPress:()=>openWeb('my-events.html',en?'Events':'이벤트')},
     {label:en?'Entries':'응모 내역',sub:en?'View events and entries you joined':'참여한 이벤트와 응모 내역',icon:'🎟️',onPress:()=>router.push('/my/entries')},

@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import {
   addNotificationResponseListener,
   handleInitialNotificationResponse,
-  requestInitialPushPermissionOnIOS,
+  requestInitialPushPermission,
   syncPushRegistrationAfterLogin,
 } from '../lib/notifications';
 
@@ -18,7 +18,7 @@ function NotificationBootstrap(){
     const timer=setTimeout(()=>{void handleInitialNotificationResponse(router)},450);
 
     void (async()=>{
-      await requestInitialPushPermissionOnIOS().catch(()=>{});
+      await requestInitialPushPermission().catch(()=>{});
       await syncPushRegistrationAfterLogin().catch(()=>{});
     })();
 

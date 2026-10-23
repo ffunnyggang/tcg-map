@@ -5,18 +5,25 @@ import { useLocalSearchParams,useNavigation } from 'expo-router';
 import FunyHeader from '../../components/FunyHeader';
 import FunyWebView,{isWebBackPage} from '../../components/FunyWebView';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { subscribeTabReselect } from '../../lib/tabReselect';
 import { getTabBarStyle } from '../../lib/tabBar';
 import NativeFloatingButton from '../../components/NativeFloatingButton';
 import { useFloatingAction } from '../../lib/floatingActions';
 
 export default function Talk(){
   const [webBack,setWebBack]=useState(false);
+  const [reselectToken,setReselectToken]=useState('');
   const [scrolling,setScrolling]=useState(false);
   const [formOverlayOpen,setFormOverlayOpen]=useState(false);
   const {setting,ready}=useFloatingAction('talk');
   const floatingMode=Platform.OS==='android'?(ready?setting.mode:'off'):'web';
   const {__tabRefresh,postId,editPost}=useLocalSearchParams<{__tabRefresh?:string;postId?:string;editPost?:string}>();
   const navigation=useNavigation();
+  useEffect(()=>subscribeTabReselect('talk',()=>{
+    navigation.setParams({postId:undefined,editPost:undefined} as any);
+    setFormOverlayOpen(false);
+    setReselectToken(String(Date.now()));
+  }),[navigation]);
   const insets=useSafeAreaInsets();
   const bottom=Math.max(insets.bottom,12);
   const onRoute=useCallback((url:string)=>{
@@ -28,7 +35,7 @@ export default function Talk(){
   const talkUrl=postId?`https://funypin.kr/talk.html${editPost==='1'?`?editPost=${encodeURIComponent(postId)}`:''}#/post/${encodeURIComponent(postId)}`:'https://funypin.kr/talk.html';
   return <SafeAreaView edges={['top']} style={{flex:1,backgroundColor:'#fff'}}>
     {!webBack?<View style={{zIndex:9999,elevation:9999}}><FunyHeader title="TALK" dimmed={formOverlayOpen} showNotifications/></View>:null}
-    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={Platform.OS==='android'?__tabRefresh:undefined} url={talkUrl} title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} onTalkFormOverlayChange={setFormOverlayOpen} showBackHeader={webBack} backTitle="TALK" floatingActionMode={floatingMode}/>
+    <FunyWebView key={Platform.OS==='android'?'talk-android-stable':`talk-${__tabRefresh||'0'}`} refreshToken={reselectToken||__tabRefresh} url={talkUrl} title="FUNY PIN TALK" onWebRouteChange={onRoute} onWebScrollChange={setScrolling} onTalkFormOverlayChange={setFormOverlayOpen} showBackHeader={webBack} backTitle="TALK" floatingActionMode={floatingMode}/>
     {floatingMode==='native'&&!webBack?<NativeFloatingButton label={setting.label} icon="＋" backgroundColor="#6749BD" scrolling={scrolling} onPress={async()=>{if(setting.targetUrl)await Linking.openURL(setting.targetUrl)}}/>:null}
   </SafeAreaView>;
 }

@@ -40,7 +40,8 @@
         "expo-notifications",
         {
           "enableRemoteNotifications": true,
-          "enableBackgroundRemoteNotifications": false
+          "enableBackgroundRemoteNotifications": false,
+          "defaultChannel": "default"
         }
       ]
     ],
@@ -63,7 +64,8 @@
       "package": "kr.funypin.app",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
       ]
     },
     "experiments": {

@@ -450,10 +450,14 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     if(lastNativeRefreshToken.current===refreshToken)return;
     lastNativeRefreshToken.current=refreshToken;
     const now=Date.now();
-    if(now-lastNativeRefreshAt.current<1600)return;
+    if(now-lastNativeRefreshAt.current<1600&&!/\/talk\.html(?:[?#]|$)/.test(url))return;
     lastNativeRefreshAt.current=now;
-    ref.current?.reload();
-  },[refreshToken,isFocused]);
+    if(/\/talk\.html(?:[?#]|$)/.test(url)){
+      pendingTabScrollRestore.current=false;
+      tabScrollPositions.current={};
+      ref.current?.injectJavaScript("window.dispatchEvent(new Event('funy:talk-reselect'));true;");
+    }else ref.current?.reload();
+  },[refreshToken,isFocused,url]);
 
   const scrollKeyForTarget=useCallback((target:string)=>{try{const u=new URL(String(target||''));u.searchParams.delete('app');u.searchParams.delete('appv');u.searchParams.delete('appPlatform');return u.origin+u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash;}catch{return String(target||'')}},[]);
   const restoreTabScroll=useCallback((target:string)=>{if(surface!=='tab'||!pendingTabScrollRestore.current||!ref.current)return;pendingTabScrollRestore.current=false;const y=Number(tabScrollPositions.current[scrollKeyForTarget(target)]||0);if(!Number.isFinite(y)||y<=0)return;ref.current.injectJavaScript(`(function(){var y=${Math.round(y)};var r=function(){try{window.scrollTo(0,y)}catch(_){}};requestAnimationFrame(r);[80,220,520,950].forEach(function(ms){setTimeout(r,ms)});})();true;`);},[scrollKeyForTarget,surface]);

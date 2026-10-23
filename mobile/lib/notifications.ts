@@ -90,7 +90,19 @@ async function savePreferencePatch(patch:Partial<NotificationPreference>){
   return data as NotificationPreference;
 }
 
+// Android 13+ requires a notification channel before the permission request.
+let channelReady:Promise<void>|null=null;
+export async function ensureAndroidNotificationChannel(){
+  if(Platform.OS!=='android')return;
+  if(!channelReady)channelReady=Notifications.setNotificationChannelAsync('default',{
+    name:'FUNY PIN',
+    importance:Notifications.AndroidImportance.HIGH,
+  }).then(()=>{}).catch(error=>{channelReady=null;throw error;});
+  await channelReady;
+}
+
 async function registerGrantedPushToken(permissionStatus='granted'){
+  await ensureAndroidNotificationChannel();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)throw new Error('LOGIN_REQUIRED');
   if(!Device.isDevice)throw new Error('PHYSICAL_DEVICE_REQUIRED');
@@ -143,8 +155,9 @@ async function enablePushForFirstPermissionGrant(){
   return true;
 }
 
-export async function requestInitialPushPermissionOnIOS(){
-  if(Platform.OS!=='ios')return {requested:false as const,status:'unsupported',registered:false};
+export async function requestInitialPushPermission(){
+  if(Platform.OS!=='ios'&&Platform.OS!=='android')return {requested:false as const,status:'unsupported',registered:false};
+  await ensureAndroidNotificationChannel();
 
   let permission=await Notifications.getPermissionsAsync();
   const requested=permission.status==='undetermined';
@@ -159,7 +172,7 @@ export async function requestInitialPushPermissionOnIOS(){
 }
 
 export async function syncPushRegistrationAfterLogin(){
-  if(Platform.OS!=='ios')return syncPushTokenIfEnabled();
+  await ensureAndroidNotificationChannel();
 
   const permission=await Notifications.getPermissionsAsync().catch(()=>null);
   if(permission?.status!=='granted')return false;
@@ -183,6 +196,7 @@ export async function syncPushRegistrationAfterLogin(){
 }
 
 export async function enablePushNotifications(){
+  await ensureAndroidNotificationChannel();
   await ensureNotificationPreferences();
   let permission=await Notifications.getPermissionsAsync();
   if(permission.status!=='granted')permission=await Notifications.requestPermissionsAsync();

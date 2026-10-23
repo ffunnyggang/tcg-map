@@ -1,0 +1,53 @@
+const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm'),ts=require('typescript');
+const read=p=>fs.readFileSync(p,'utf8').replace(/\r\n/g,'\n');
+function load(file,deps){const module={exports:{}};vm.runInNewContext(ts.transpileModule(read(file),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,{module,exports:module.exports,require:n=>{if(!(n in deps))throw Error('Unexpected dependency '+n);return deps[n]},setTimeout,clearTimeout,console});return module.exports;}
+function fixture(os,{failChannel=false,pushEnabled=false,status='undetermined',requestStatus='granted'}={}){
+  const calls=[];let permission=status;
+  const notifications={AndroidImportance:{HIGH:4},setNotificationHandler(){},async setNotificationChannelAsync(id){calls.push('channel:'+id);if(failChannel){failChannel=false;throw Error('channel unavailable')}},async getPermissionsAsync(){calls.push('getPermission');return{status:permission}},async requestPermissionsAsync(){calls.push('requestPermission');permission=requestStatus;return{status:permission}},async getExpoPushTokenAsync(){calls.push('token');return{data:'ExponentPushToken[test]'}}};
+  const prefs={user_id:'test',push_enabled:pushEnabled};
+  const supabase={auth:{async getUser(){return{data:{user:{id:'test'}}}}},from(){return{select(){return this},eq(){return this},async maybeSingle(){return{data:prefs,error:null}}}},async rpc(){calls.push('register');return{error:null}}};
+  const api=load('lib/notifications.ts',{'react-native':{Platform:{OS:os},Linking:{}},'expo-constants':{expoConfig:{extra:{eas:{projectId:'test'}}}},'expo-device':{isDevice:true},'expo-notifications':notifications,'./supabase':{supabase}});
+  return{api,calls};
+}
+(async()=>{
+  const android=fixture('android',{pushEnabled:true});
+  const result=await android.api.requestInitialPushPermission();
+  assert.equal(result.registered,true);
+  assert.deepEqual(android.calls,['channel:default','getPermission','requestPermission','getPermission','token','register']);
+  await Promise.all([android.api.ensureAndroidNotificationChannel(),android.api.ensureAndroidNotificationChannel()]);
+  assert.equal(android.calls.filter(x=>x.startsWith('channel:')).length,1);
+  const denied=fixture('android',{pushEnabled:false});
+  await denied.api.requestInitialPushPermission();
+  assert(!denied.calls.includes('token'),'must preserve explicit user opt-out');
+  const login=fixture('android',{pushEnabled:true,status:'granted'});
+  await login.api.syncPushRegistrationAfterLogin();
+  assert.equal(login.calls[0],'channel:default');
+  assert(login.calls.includes('register'));
+  const refused=fixture('android',{requestStatus:'denied'});
+  assert.equal((await refused.api.requestInitialPushPermission()).registered,false);
+  assert(!refused.calls.includes('token'));
+  const retry=fixture('android',{failChannel:true});
+  await assert.rejects(retry.api.ensureAndroidNotificationChannel());
+  await retry.api.ensureAndroidNotificationChannel();
+  assert.equal(retry.calls.length,2);
+  const ios=fixture('ios',{pushEnabled:true});
+  await ios.api.requestInitialPushPermission();
+  assert(!ios.calls.some(x=>x.startsWith('channel:')),'iOS must not create Android channels');
+  console.log('PASS Android channel ordering, deduplication, retry, permission, opt-out, login registration; iOS regression');
+  const bus=load('lib/tabReselect.ts',{});
+  let talk=0,map=0;const stop=bus.subscribeTabReselect('talk',()=>talk++);
+  bus.subscribeTabReselect('map',()=>map++);
+  bus.emitTabReselect('talk');assert.equal(talk,1);assert.equal(map,0);
+  stop();bus.emitTabReselect('talk');assert.equal(talk,1);
+  console.log('PASS TALK event isolation and unsubscribe');
+  const web=read('components/FunyWebView.tsx');
+  const match=web.match(/useEffect\(\(\)=>\{\n    if\(!refreshToken\|\|!isFocused\)return;([\s\S]*?)\n  \},\[refreshToken,isFocused,url\]\);/);assert(match,'refresh effect exists');
+  function refresh(url){const calls=[];const ctx={refreshToken:'next',isFocused:true,lastNativeRefreshToken:{current:'old'},lastNativeRefreshAt:{current:0},pendingTabScrollRestore:{current:true},tabScrollPositions:{current:{old:250}},ref:{current:{reload(){calls.push('reload')},injectJavaScript(js){calls.push(js)}}},url,Date};vm.runInNewContext('(function(){if(!refreshToken||!isFocused)return;'+match[1]+'})()',ctx);return{ctx,calls};}
+  const rt=refresh('https://funypin.kr/talk.html');
+  assert(rt.calls[0].includes('funy:talk-reselect'));assert.equal(rt.ctx.pendingTabScrollRestore.current,false);assert.equal(Object.keys(rt.ctx.tabScrollPositions.current).length,0);
+  assert.deepEqual(refresh('https://funypin.kr/shops.html').calls,['reload']);
+  const account=read('app/account.tsx');assert(account.includes('binder.html?view=mine&nativeHeader=1'));
+  assert(web.includes("data.showNativeTitle!==false"));assert(web.includes("inAppOnly:'1'"));
+  const cfg=JSON.parse(read('app.json'));assert(cfg.expo.android.permissions.includes('POST_NOTIFICATIONS'));assert.equal(cfg.expo.plugins.find(p=>p[0]==='expo-notifications')[1].defaultChannel,'default');
+  console.log('PASS TALK reset effect, map reload regression, binder route, titleless in-app bridge and notification config');
+})().catch(error=>{console.error(error);process.exitCode=1});

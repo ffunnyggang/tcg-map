@@ -53,7 +53,18 @@ Deno.serve(async(req:Request)=>{
   form.set('prompt','Outpaint the illustration into all masked space. Keep the provided illustration precisely at its original position and scale. Seamlessly extend only its existing environment, colors, lighting, texture, brushwork and perspective to the whole canvas. Do not add text, borders, frames, card UI, logos, additional characters, or new body parts. The white empty area is not a frame: replace it entirely with the continued scenery. This will be printed as an overlay with the original illustration cut out.');
   const response=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+key},body:form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();
-  if(!response.ok){console.error('overlay provider failure',{status:response.status,requestId:response.headers.get('x-request-id')});return reply({error:'AI 생성 요청을 완료하지 못했어요. 운영자에게 문의해 주세요. 사용 한도에는 이번 시도가 포함됩니다.'},502);}
+  if(!response.ok){
+   const safe=(v:unknown)=>typeof v==='string'?v.replace(/[^a-zA-Z0-9_.-]/g,'').slice(0,100):'';
+   const code=safe(result.error?.code),type=safe(result.error?.type);
+   console.error('overlay provider failure',{status:response.status,code,type,requestId:response.headers.get('x-request-id')});
+   let message='AI 생성 요청을 완료하지 못했어요. 운영자에게 문의해 주세요.';
+   if(code==='insufficient_quota'||type==='insufficient_quota'||code==='billing_hard_limit_reached')message='OpenAI API 잔액 또는 사용 한도가 부족합니다. OpenAI API 결제 설정에서 잔액과 한도를 확인해 주세요.';
+   else if(response.status===429)message='OpenAI가 요청을 제한했습니다. API 결제 잔액·사용 한도를 확인하고, 문제가 없으면 잠시 후 다시 시도해 주세요.';
+   else if(response.status===401)message='OpenAI API 키 인증에 실패했습니다. 서버에 등록한 키의 유효기간과 상태를 확인해 주세요.';
+   else if(response.status===403)message='OpenAI 이미지 생성 권한이 없습니다. API 프로젝트의 모델 권한과 필요한 인증을 확인해 주세요.';
+   else if(code==='model_not_found'||response.status===404)message='설정된 이미지 생성 모델을 사용할 수 없습니다. 운영자가 모델 설정과 접근 권한을 확인해야 합니다.';
+   return reply({error:message+' 이번 요청은 생성 시도 횟수에 포함됩니다.',code:code||'PROVIDER_ERROR'},response.status===429?429:502);
+  }
   const output=result.data?.[0]?.b64_json;if(typeof output!=='string')throw Error('NO_IMAGE');
   return reply({image:output});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}

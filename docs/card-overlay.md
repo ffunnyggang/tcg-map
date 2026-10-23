@@ -14,7 +14,7 @@ The illustration window is estimated from image edge contrast within expected to
 
 ## Generation and print geometry
 
-The original illustration's physical size and position stay fixed. New generation maps the known illustration into a 67 x 92 mm canvas: a 63 x 88 mm trim area plus 2 mm on each side. The API image and mask remain 1024 x 1536 pixels. Normalized coordinates are mapped using the extended canvas dimensions; preview crops back to the trim area. It does not enlarge the artwork within the card. Original artwork is composited over the generated image in the assembled preview.
+The original illustration's physical size and position stay fixed. New generation maps the known illustration into a 67 x 92 mm canvas: a 63 x 88 mm trim area plus 2 mm on each side. New API inputs, masks and requested output are 1072 x 1472 pixels (67 x 92 at 16 px/mm), avoiding aspect-ratio distortion. Legacy 1024 x 1536 requests remain accepted for older clients. Image/mask dimensions must match. Normalized coordinates are mapped using the extended canvas dimensions; preview crops back to the trim area. It does not enlarge the artwork within the card. Original artwork is composited over the generated image in the assembled preview.
 
 Print sheets include outer bleed, external crop marks, an inner cut-window dashed line placed inside the discarded side, and a 10 mm calibration ruler. The cut-window interior retains 0.5 mm of sacrificial artwork to reduce white seams from small cutting errors. Final trim stays 63 x 88 mm. Users choose square corners or a rounded R3 mm guide; R3 is a QA value requiring comparison with real cards, not a certified manufacturing radius. Corner changes require no new API generation.
 

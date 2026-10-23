@@ -1,5 +1,5 @@
 import { useCallback,useEffect,useState } from 'react';
-import { ActivityIndicator,Alert,ScrollView,StyleSheet,Switch,Text,View } from 'react-native';
+import { ActivityIndicator,Alert,Platform,ScrollView,StyleSheet,Switch,Text,View } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { useFocusEffect } from 'expo-router';
 import MySubHeader from '../../components/MySubHeader';
@@ -10,6 +10,7 @@ import {
   enablePushNotifications,
   ensureNotificationPreferences,
   NotificationPreference,
+  isPushConfigurationError,
   openSystemNotificationSettings,
   updateNotificationPreference,
 } from '../../lib/notifications';
@@ -42,6 +43,7 @@ const permissionText=(status:string,en:boolean)=>{
 export default function NotificationSettingsScreen(){
   const {language}=useAppLanguage();
   const en=language==='en',rows=en?ROWS_EN:ROWS_KO;
+  const deviceLabel=Platform.OS==='android'?'Android':'iPhone';
   const [prefs,setPrefs]=useState<NotificationPreference|null>(null);
   const [permission,setPermission]=useState('undetermined');
   const [busy,setBusy]=useState<string|null>(null);
@@ -68,7 +70,7 @@ export default function NotificationSettingsScreen(){
         if(!result.ok){
           Alert.alert(
             en?'Notifications are turned off':'알림 권한이 꺼져 있어요',
-            en?'Allow FUNY PIN notifications in iPhone Settings, then try again.':'iPhone 설정에서 FUNY PIN 알림을 허용한 뒤 다시 시도해주세요.',
+            en?'Allow FUNY PIN notifications in your device settings, then try again.':'기기 설정에서 FUNY PIN 알림을 허용한 뒤 다시 시도해주세요.',
             [{text:en?'Cancel':'취소',style:'cancel'},{text:en?'Open Settings':'설정 열기',onPress:()=>void openSystemNotificationSettings()}]
           );
         }
@@ -77,7 +79,13 @@ export default function NotificationSettingsScreen(){
       }
       await refresh();
     }catch(e:any){
-      Alert.alert(en?'Could not update push notifications':'푸시 알림 설정 실패',String(e?.message||e));
+      const currentPermission=await Notifications.getPermissionsAsync().catch(()=>null);
+      if(currentPermission)setPermission(currentPermission.status);
+      if(isPushConfigurationError(e)){
+        Alert.alert(en?'Push connection is being prepared':'푸시 알림 연결 준비 중',en?'This test app is not connected to the push service yet. Push notifications have not been enabled. You can still view activity in the in-app notification inbox.':'현재 테스트 앱은 푸시 서비스 연결을 준비하고 있어요. 푸시 알림은 아직 켜지지 않았으며, 활동 내역은 앱 안의 알림함에서 확인할 수 있어요.');
+      }else{
+        Alert.alert(en?'Could not update push notifications':'푸시 알림 설정을 저장하지 못했어요',en?'Check your connection and try again.':'연결 상태를 확인한 뒤 다시 시도해주세요.');
+      }
     }finally{setBusy(null)}
   };
 
@@ -104,7 +112,7 @@ export default function NotificationSettingsScreen(){
         <View style={styles.primaryCopy}>
           <Text style={styles.primaryTitle}>{en?'Push notifications':'푸시 알림 받기'}</Text>
           <Text style={styles.primarySub}>{en?'Receive important updates even when you are not using the app.':'앱을 사용하지 않을 때도 중요한 소식을 받아볼 수 있어요.'}</Text>
-          <Text style={styles.permission}>{en?'iPhone notification permission':'iPhone 알림 권한'} · {permissionText(permission,en)}</Text>
+          <Text style={styles.permission}>{en?deviceLabel+' notification permission':deviceLabel+' 알림 권한'} · {permissionText(permission,en)}</Text>
         </View>
         <Switch
           value={prefs.push_enabled}

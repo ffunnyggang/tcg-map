@@ -82,3 +82,11 @@ The user subsequently requested applying this work to the Android test app, auth
 - Window focus remained NotificationShade / locked device. Interactive permission prompt and screen acceptance QA remain pending. Permission was not force-granted through ADB.
 - Remote push receipt remains BLOCKED on the missing matching Firebase configuration and FCM v1 setup/verification; module installation is not evidence of successful push delivery.
 - Production Android package and Play Console distribution were not updated.
+
+## Push settings failure follow-up
+
+- Device UI dump confirmed the actual alert: Default FirebaseApp is not initialized in process kr.funypin.app.dev. This is missing native Firebase configuration, not an identified database preference failure.
+- Classified this configuration failure as PUSH_CONFIGURATION_REQUIRED, preserved failure rather than falsely enabling push, replaced raw SDK/guide text with clear push connection preparation guidance and inbox availability.
+- Corrected permission copy on Android (was hardcoded iPhone), and refreshes observed OS permission even when push-token registration fails.
+- TypeScript / behavior tests passed, including simulated Firebase token failure causing no registration and no push_enabled:true preference write; network errors remain distinct.
+- JavaScript changes served through local Metro; no new native build needed for this feedback fix. Device relocked during follow-up, so final on-screen wording acceptance is pending unlock. Actual push delivery still requires the Firebase configuration file and FCM v1 setup.

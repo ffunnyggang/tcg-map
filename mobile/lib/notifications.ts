@@ -90,6 +90,11 @@ async function savePreferencePatch(patch:Partial<NotificationPreference>){
   return data as NotificationPreference;
 }
 
+export function isPushConfigurationError(error:unknown){
+  const detail=error as {code?:string;message?:string}|null;
+  return detail?.code==='PUSH_CONFIGURATION_REQUIRED'||/PUSH_CONFIGURATION_REQUIRED|Default FirebaseApp|FirebaseApp\.initializeApp|fcm-credentials/i.test(String(detail?.message||error||''));
+}
+
 // Android 13+ requires a notification channel before the permission request.
 let channelReady:Promise<void>|null=null;
 export async function ensureAndroidNotificationChannel(){
@@ -108,7 +113,12 @@ async function registerGrantedPushToken(permissionStatus='granted'){
   if(!Device.isDevice)throw new Error('PHYSICAL_DEVICE_REQUIRED');
   if(!projectId)throw new Error('EAS_PROJECT_ID_MISSING');
 
-  const token=(await Notifications.getExpoPushTokenAsync({projectId})).data;
+  let token:string;
+  try{token=(await Notifications.getExpoPushTokenAsync({projectId})).data;}
+  catch(error){
+    if(isPushConfigurationError(error))throw Object.assign(new Error('PUSH_CONFIGURATION_REQUIRED'),{code:'PUSH_CONFIGURATION_REQUIRED'});
+    throw error;
+  }
   const {error}=await supabase.rpc('register_push_device',{
     p_expo_push_token:token,
     p_platform:Platform.OS,

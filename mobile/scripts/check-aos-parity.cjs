@@ -1,11 +1,11 @@
 const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm'),ts=require('typescript');
 const read=p=>fs.readFileSync(p,'utf8').replace(/\r\n/g,'\n');
 function load(file,deps){const module={exports:{}};vm.runInNewContext(ts.transpileModule(read(file),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,{module,exports:module.exports,require:n=>{if(!(n in deps))throw Error('Unexpected dependency '+n);return deps[n]},setTimeout,clearTimeout,console});return module.exports;}
-function fixture(os,{failChannel=false,pushEnabled=false,status='undetermined',requestStatus='granted'}={}){
+function fixture(os,{failChannel=false,pushEnabled=false,status='undetermined',requestStatus='granted',tokenError=null}={}){
   const calls=[];let permission=status;
-  const notifications={AndroidImportance:{HIGH:4},setNotificationHandler(){},async setNotificationChannelAsync(id){calls.push('channel:'+id);if(failChannel){failChannel=false;throw Error('channel unavailable')}},async getPermissionsAsync(){calls.push('getPermission');return{status:permission}},async requestPermissionsAsync(){calls.push('requestPermission');permission=requestStatus;return{status:permission}},async getExpoPushTokenAsync(){calls.push('token');return{data:'ExponentPushToken[test]'}}};
+  const notifications={AndroidImportance:{HIGH:4},setNotificationHandler(){},async setNotificationChannelAsync(id){calls.push('channel:'+id);if(failChannel){failChannel=false;throw Error('channel unavailable')}},async getPermissionsAsync(){calls.push('getPermission');return{status:permission}},async requestPermissionsAsync(){calls.push('requestPermission');permission=requestStatus;return{status:permission}},async getExpoPushTokenAsync(){calls.push('token');if(tokenError)throw tokenError;return{data:'ExponentPushToken[test]'}}};
   const prefs={user_id:'test',push_enabled:pushEnabled};
-  const supabase={auth:{async getUser(){return{data:{user:{id:'test'}}}}},from(){return{select(){return this},eq(){return this},async maybeSingle(){return{data:prefs,error:null}}}},async rpc(){calls.push('register');return{error:null}}};
+  const supabase={auth:{async getUser(){return{data:{user:{id:'test'}}}}},from(){return{async upsert(){return{error:null}},update(patch){calls.push('savePush:'+patch.push_enabled);return this},async single(){return{data:prefs,error:null}},select(){return this},eq(){return this},async maybeSingle(){return{data:prefs,error:null}}}},async rpc(){calls.push('register');return{error:null}}};
   const api=load('lib/notifications.ts',{'react-native':{Platform:{OS:os},Linking:{}},'expo-constants':{expoConfig:{extra:{eas:{projectId:'test'}}}},'expo-device':{isDevice:true},'expo-notifications':notifications,'./supabase':{supabase}});
   return{api,calls};
 }
@@ -26,6 +26,13 @@ function fixture(os,{failChannel=false,pushEnabled=false,status='undetermined',r
   const refused=fixture('android',{requestStatus:'denied'});
   assert.equal((await refused.api.requestInitialPushPermission()).registered,false);
   assert(!refused.calls.includes('token'));
+  const misconfigured=fixture('android',{status:'granted',tokenError:new Error('Default FirebaseApp is not initialized')});
+  await assert.rejects(misconfigured.api.enablePushNotifications(),error=>error.code==='PUSH_CONFIGURATION_REQUIRED');
+  assert(!misconfigured.calls.includes('register'));
+  assert(!misconfigured.calls.includes('savePush:true'));
+  assert(misconfigured.api.isPushConfigurationError(new Error('Default FirebaseApp is not initialized')));
+  assert(!misconfigured.api.isPushConfigurationError(new Error('Network request failed')));
+  console.log('PASS Firebase error classification and no false push enable/save after token failure');
   const retry=fixture('android',{failChannel:true});
   await assert.rejects(retry.api.ensureAndroidNotificationChannel());
   await retry.api.ensureAndroidNotificationChannel();

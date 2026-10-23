@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
-const ts=require('C:/Users/ALIC/Desktop/tcg-map-aos-parity-20261023/mobile/node_modules/typescript');
+const ts=require(process.env.TYPESCRIPT_PATH||'typescript');
 function fn(file,name){const text=fs.readFileSync(file,'utf8');const ast=ts.createSourceFile(file,text,ts.ScriptTarget.Latest,true);let n;function visit(node){if(ts.isFunctionDeclaration(node)&&node.name?.text===name)n=node;ts.forEachChild(node,visit)}visit(ast);assert(n,name);return n.getText(ast);}
 (async()=>{
  const messages=[],copied=[];let shared=[];

@@ -1,5 +1,15 @@
 module.exports = ({ config }) => {
   const isDev = process.env.APP_VARIANT === 'development';
+  const fs = require('fs');
+  const localGoogleServices = isDev ? './google-services.dev.json' : './google-services.prod.json';
+  const googleServicesFile = process.env.GOOGLE_SERVICES_JSON || (fs.existsSync(localGoogleServices) ? localGoogleServices : undefined);
+  if (googleServicesFile && fs.existsSync(googleServicesFile)) {
+    const firebase = JSON.parse(fs.readFileSync(googleServicesFile, 'utf8'));
+    const expectedPackage = isDev ? 'kr.funypin.app.dev' : config.android?.package;
+    if (!firebase.client?.some(client => client.client_info?.android_client_info?.package_name === expectedPackage)) {
+      throw new Error('Firebase configuration does not contain Android package: ' + expectedPackage);
+    }
+  }
   const appIcon = isDev ? './assets/app-icon-dark.png' : './assets/app-icon-light.png';
   const adaptiveForeground = isDev ? './assets/android-adaptive-dark.png' : './assets/android-adaptive-light.png';
   const adaptiveBackground = isDev ? '#221662' : '#A0A6F8';
@@ -17,7 +27,7 @@ module.exports = ({ config }) => {
     android: {
       ...config.android,
       package: isDev ? 'kr.funypin.app.dev' : config.android?.package,
-      ...((process.env.GOOGLE_SERVICES_JSON || (isDev && './google-services.dev.json')) ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON || './google-services.dev.json' } : {}),
+      ...(googleServicesFile ? { googleServicesFile } : {}),
       icon: appIcon,
       config: {
         ...(config.android?.config || {}),

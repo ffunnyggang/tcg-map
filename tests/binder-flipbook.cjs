@@ -9,7 +9,7 @@ async function fixture(page,pockets=9){
  await page.route('**/funy-efficiency-v1.js*',route=>route.fulfill({body:''}));
  await page.addInitScript(({pockets})=>{
  const binder={id:'fixture',user_id:'owner',title:'플립북 테스트',description:'수집한 카드',cover:null,cover_color:'#b9a6ca',pockets,created_at:'2026-10-23',pages:[1,2,3].map(i=>({id:'p'+i,path:'page'+i})),author_nickname:'수집가'};
- const db={from(table){let single=false;const q=new Proxy({}, {get(_,key){if(key==='then')return resolve=>Promise.resolve({data:table==='binder_publications'||table==='binders'?(single?binder:[binder]):[],count:0,error:null}).then(resolve);return()=>{if(key==='single'||key==='maybeSingle')single=true;return q;};}});return q;},storage:{from(){return {download:async()=>({data:new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="#cbb8e0"/><path d="M0 0H300V8H0Z" fill="#e03030"/><path d="M0 392H300V400H0Z" fill="#3050e0"/><path d="M0 0H8V400H0Z" fill="#30b060"/><path d="M292 0H300V400H292Z" fill="#e0b030"/><text x="35" y="180" font-size="28">CARD COLLECTION</text></svg>'],{type:'image/svg+xml'})})}}}};
+ const db={rpc:async()=>({data:[binder],error:null}),from(table){let single=false;const q=new Proxy({}, {get(_,key){if(key==='then')return resolve=>Promise.resolve({data:table==='binder_publications'||table==='binders'?(single?binder:[binder]):[],count:0,error:null}).then(resolve);return()=>{if(key==='single'||key==='maybeSingle')single=true;return q;};}});return q;},storage:{from(){return {download:async()=>({data:new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="#cbb8e0"/><path d="M0 0H300V8H0Z" fill="#e03030"/><path d="M0 392H300V400H0Z" fill="#3050e0"/><path d="M0 0H8V400H0Z" fill="#30b060"/><path d="M292 0H300V400H292Z" fill="#e0b030"/><text x="35" y="180" font-size="28">CARD COLLECTION</text></svg>'],{type:'image/svg+xml'})})}}}};
  window.FUNY_WEB_AUTH={init:async()=>{},session:{user:{id:'owner'}},client:db};
  },{pockets});
 }
@@ -24,6 +24,8 @@ async function fixture(page,pockets=9){
  const bounds=await page.locator('.binder-flip-root').boundingBox();assert(bounds.x<=20 && bounds.width>=350,'narrow showcase gutters');
  assert.equal(await page.locator('.binder-book-stack').count(),0);
  assert.equal(await page.locator('#viewerArrows svg').count(),2);
+ const arrows=await page.locator('.viewer-arrow').evaluateAll(els=>els.map(el=>{const s=getComputedStyle(el);return {background:s.backgroundImage,color:s.backgroundColor,border:s.borderWidth,shadow:s.boxShadow};}));
+ assert(arrows.every(a=>a.background==='none'&&a.color==='rgba(0, 0, 0, 0)'&&a.border==='0px'&&a.shadow==='none'),'no rectangular arrow background');
  assert.equal(await page.locator('.binder-flip-cover .cover').evaluate(el=>getComputedStyle(el).borderTopRightRadius),'12px');
  assert.equal(await page.locator('.binder-flip-cover .cover').evaluate(el=>getComputedStyle(el,'::before').left),'9px');
  await page.locator('[data-act=next]').click();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/1페이지/);
@@ -33,6 +35,7 @@ async function fixture(page,pockets=9){
  assert.equal(new Set(mats).size,1);assert.notEqual(mats[0],'rgb(41, 38, 45)');
  assert(mats[0].match(/\d+/g).map(Number).reduce((a,b)=>a+b,0)/3<170);
  const inset=await page.locator('.binder-photo-mat img').first().evaluate(el=>{const r=el.getBoundingClientRect(),p=el.parentElement.getBoundingClientRect();return (r.left-p.left)/p.width;});assert(Math.abs(inset-.01)<.002);
+ const shading=await page.locator('.binder-flip-page:not(.binder-flip-cover) .binder-flip-face').first().evaluate(el=>{const s=getComputedStyle(el,'::after');return {gradient:s.backgroundImage,shadow:s.boxShadow};});assert(shading.gradient.includes('linear-gradient')&&shading.shadow!=='none');
  // Partial drag returns to the same page.
  await page.locator('.binder-flip-root').scrollIntoViewIfNeeded();let b=await page.locator('.binder-flip-root').boundingBox();
  await page.mouse.move(b.x+b.width-5,b.y+b.height*.75);await page.mouse.down();await page.mouse.move(b.x+b.width-35,b.y+b.height*.7,{steps:8});await page.mouse.up();await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/1페이지/);
@@ -63,6 +66,25 @@ async function fixture(page,pockets=9){
  await page.evaluate(()=>{const el=document.querySelector('#viewer');const e=new Event('touchstart',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:10,clientY:10},{clientX:100,clientY:10}]});el.dispatchEvent(e);const m=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(m,'touches',{value:[{clientX:0,clientY:10},{clientX:150,clientY:10}]});el.dispatchEvent(m);});
  assert.equal(await page.locator('.binder-flip-root').evaluate(el=>el.style.transform),'scale(1)');
  await page.locator('[data-act=mode-all]').click();assert(!await page.locator('meta[name=viewport]').getAttribute('content').then(s=>s.includes('maximum-scale=1')));
+ assert(await page.locator('.viewer.all .cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
+ await page.evaluate(()=>{document.querySelector('#viewerContent').style.width='200%';});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.body.scrollWidth<=innerWidth),'app overview cannot widen document');
+ await page.goto(base+'/binder.html?view=mine&app=1');await page.waitForSelector('#binderList .cover');
+ assert(await page.locator('#binderList .cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.body.scrollWidth<=innerWidth),'app shelf cannot widen document');
+ await page.screenshot({path:'/tmp/binder-shelf-qa.png',fullPage:true});
+ // Actual TALK renderers use the same depth on the all-feed rail and binder grid.
+ await page.route('**/popup-runtime-v1.js*',route=>route.fulfill({body:''}));
+ await page.route('**/talk-safety-v1.js*',route=>route.fulfill({body:''}));
+ await page.route('**/funy-mon-account-migrate.js*',route=>route.fulfill({body:''}));
+ await page.route('**/data/pokamo-feed.json*',route=>route.fulfill({json:{items:[]}}));
+ await page.route('https://wdttzpbmqavaqfcbaywj.supabase.co/**',route=>route.fulfill({json:[{id:'post',user_id:'owner',category:'자유 게시판',title:'바인더 표지 테스트',body:'테스트',created_at:'2026-10-24',community_post_images:[]}]}));
+ await page.goto(base+'/talk.html?app=1');await page.waitForSelector('.binder-rail-cover');
+ assert(await page.locator('.binder-rail-cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
+ await page.screenshot({path:'/tmp/binder-talk-rail-qa.png',fullPage:true});
+ await page.locator('[data-cat="카드 자랑"]').click();await page.locator('[data-showcase=binders]').click();await page.waitForSelector('.talk-binder-cover');
+ assert(await page.locator('.talk-binder-cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
+ await page.screenshot({path:'/tmp/binder-talk-grid-qa.png',fullPage:true});
  assert.deepEqual(errors,[]);console.log('PASS: showcase scope, drag complete/cancel, depth, pinch lock, overview, resize, reduced motion, boundaries, preview isolation, all pocket ratios');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>server.close());

@@ -43,3 +43,10 @@ showcase single-page mode temporarily disables document viewport zoom, blocks
 outer multi-touch/gesture zoom, and clips horizontal document overflow. Custom
 pinch starts only when both touches are inside the visible image viewer; mode
 exit restores the original viewport. Internal zoom/pan remains available.
+
+Cover depth is shared by binder-cover.css across the binder shelf, editor,
+overview, flipbook and TALK rail/grid. It uses a spine seam and subtle inset
+lighting, without changing cover art or dimensions. App horizontal containment
+also applies to the shelf and overview; overview zoom stays inside its scroll
+container. Inside flipbook pages have shallow edge shading. Arrow controls
+have no fill/gradient/border/shadow; rounded keyboard focus is retained.

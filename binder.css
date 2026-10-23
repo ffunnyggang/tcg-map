@@ -82,3 +82,19 @@ html.app-shell.binder-native-menu .detail-author .detail-more-native{display:non
 html.binder-showcase-open,html.binder-showcase-open body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
 .binder-showcase-open .shell,.showcase-single{min-width:0;max-width:100%;overflow-x:clip}
 .showcase-single .viewer{min-width:0;box-sizing:border-box;overscroll-behavior-x:none}
+
+/* App horizontal containment applies to the shelf and every detail view mode. */
+html.app-shell,html.app-shell body{width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+html.app-shell .shell{width:100%;max-width:480px;min-width:0;overflow-x:clip}
+html.app-shell #app,html.app-shell .binder-viewer-wrap{max-width:100%;min-width:0;overflow-x:clip}
+html.app-shell .viewer.all{min-width:0;max-width:calc(100% - 36px);overscroll-behavior-x:none}
+/* Shallow edge light/shadow on inside pages, without a synthetic page stack. */
+.binder-flip-page:not(.binder-flip-cover) .binder-flip-face:after{
+  background:linear-gradient(90deg,#21182c14,transparent 2.5%,transparent 98%,#21182c0a);
+  box-shadow:inset 4px 0 6px -5px #24172e66,inset -2px 0 4px -3px #24172e44,inset 0 1px 1px #ffffff40,inset 0 -2px 3px -2px #24172e44;
+}
+/* Keep just the chevron; keyboard focus remains visible with a rounded outline. */
+.showcase-single .viewer-arrow,.showcase-single .viewer-arrow.next{
+  background:none!important;border:0;border-radius:50%;box-shadow:none;appearance:none;-webkit-appearance:none;
+}
+.showcase-single .viewer-arrow:focus-visible{outline:2px solid #af97d4;outline-offset:-3px}

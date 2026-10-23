@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'binder*'
+      - 'talk.html'
+      - 'talk-community-v1.js'
       - 'tests/binder-flipbook*'
       - 'vendor/page-flip/**'
       - '.github/workflows/binder-flipbook-check.yml'
@@ -17,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check binder.js && node --check binder-flipbook.js && node tests/binder-core.mjs && node tests/binder-flipbook-state.cjs
+      - run: node --check talk-community-v1.js && node --check binder.js && node --check binder-flipbook.js && node tests/binder-core.mjs && node tests/binder-flipbook-state.cjs
       - run: npm install --no-save --package-lock=false playwright@1.51.1
       - run: npx playwright install --with-deps chromium
       - run: node tests/binder-flipbook.cjs
@@ -25,5 +27,5 @@ jobs:
         if: success()
         with:
           name: binder-flipbook-visual-qa
-          path: /tmp/binder-flipbook-qa.png
+          path: /tmp/binder-*-qa.png
           retention-days: 3

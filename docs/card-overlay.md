@@ -1,18 +1,31 @@
-# Card overlay test
+# Pokémon card overlay QA
 
-Independent route: /card-overlay.html. Existing navigation and shared scripts are unchanged.
+Unlisted route: `/card-overlay.html`. Existing service navigation and native app code are unchanged. Public launch remains a separate decision after final QA.
 
-Implemented: image upload; explicit four-corner perspective correction; manual art-window calibration in millimetres; masked outpainting via a server-only API; local generated-art import; assembled preview with original art composited over generated output; cut-window PNG; A4 PDF with a 63 x 88 mm overlay, outer crop marks and a 10 mm calibration ruler. Guides are rasterized at 12 px/mm. PDF image occupies 83 x 118 mm on an A4 page. PNG pixel dimensions are 996 x 1416; use PDF for physical scale.
+## Supported workflow
 
-Deploy `supabase/functions/card-overlay-generate/index.ts` with JWT verification enabled. Auth is also checked with Auth /user. Before enabling generation, configure Supabase Edge Function secrets:
+The UI is scoped to standard, portrait Pokémon cards with a rectangular illustration window at the top. Full-art, jumbo and landscape layouts are unsupported. The user confirms the supported card type before generation; this is not an automated Pokémon authenticity or species classifier.
 
-- OPENAI_API_KEY: a funded image API project key (never put in HTML, chat or Git).
-- Test access: set the admin-controlled Auth app_metadata.card_overlay_test boolean to true for specifically authorized accounts. Do not use user_metadata. OVERLAY_TEST_USER_IDS remains an optional additional list of Auth user UUIDs.
-- OVERLAY_ENABLED: true; missing defaults to disabled.
-- OVERLAY_IMAGE_MODEL: optional; default gpt-image-2.5-sunburst.
+Direct camera capture uses a 63:88 guide and local image analysis. A foreground component is fitted with four edges to estimate the card quadrilateral. Guide alignment, internal Laplacian detail, inter-frame motion and white glare are checked for a stable 1.1-second interval before auto capture. It does not require exact 100% guide overlap. Manual capture, photo import and manual corner fallback remain available. Camera requests occur only on an explicit button click; all tracks stop on close, hidden tab or page exit, including late-resolving requests. HTTPS and camera permission are required; some WebViews may need native permission support.
 
-Generation is off until an allowed account, API key and explicit enable flag are all present. Auth /user is read on each call so permission changes do not depend on a stale JWT claim. Status messages distinguish test permission, missing key and disabled generation. Status is authenticated; a new private bucket `overlay-generation-limits` is created on the first authorized generation. Private quota markers atomically reserve at most 20 attempts across all accounts (no per-account daily limit) per Korean day, across isolates. Failures and uncertain timeouts count as attempts; no automatic retries. No user-uploaded images are stored in Supabase; image and mask are sent to the image API only when requested. The client processes uploaded/imported images locally otherwise.
+Imported photos attempt automatic card-edge detection first. Successful detection triggers perspective correction; failed detection asks for four corners. A corrected card can return to manual corner editing. Dark, plain backgrounds work best; hands, low contrast, foil reflection and complex backgrounds may prevent automatic recognition.
 
-Quality acceptance still requires several real card photographs and a physical print at 100%. The editor uses a rectangular art window and a default 63 x 88 mm outer size; it does not recognize card IDs or auto-detect the art window. Manual corners/window placement is intentional in this first test. Printouts are for a protective sleeve overlay; do not cut the original card. Smartphone file handling varies by WebView; verify download/share before adding the route to app menus. No app release is claimed.
+The illustration window is estimated from image edge contrast within expected top-window bands. General and classic layout presets are estimates, not universal Pokémon specifications. Low-confidence results are explicitly marked and open fine controls. All results require user confirmation. Fine controls offer 1x/1.5x/2x preview, 0.1 mm movement and numeric position/size adjustments. Changing the window invalidates existing generated art.
 
-Tests: node --test tests/card-overlay.test.mjs. Browser QA: real photograph correction, geometry boundaries, art import, output dimensions, 100% print calibration. API end-to-end generation requires funded key + allowlisted signed-in user; mocked tests are not quality validation. Scope does not include public launch or IP licensing clearance.
+## Generation and print geometry
+
+The original illustration's physical size and position stay fixed. New generation maps the known illustration into a 67 x 92 mm canvas: a 63 x 88 mm trim area plus 2 mm on each side. The API image and mask remain 1024 x 1536 pixels. Normalized coordinates are mapped using the extended canvas dimensions; preview crops back to the trim area. It does not enlarge the artwork within the card. Original artwork is composited over the generated image in the assembled preview.
+
+Print sheets include outer bleed, external crop marks, an inner cut-window dashed line placed inside the discarded side, and a 10 mm calibration ruler. The cut-window interior retains 0.5 mm of sacrificial artwork to reduce white seams from small cutting errors. Final trim stays 63 x 88 mm. Users choose square corners or a rounded R3 mm guide; R3 is a QA value requiring comparison with real cards, not a certified manufacturing radius. Corner changes require no new API generation.
+
+PNG output is 996 x 1416 pixels at 12 px/mm. A4 PDF embeds that 83 x 118 mm print sheet at fixed physical size. Print at 100% with page fitting disabled and verify the ruler. Imported prior 63 x 88 mm art remains supported with no outer bleed; 67 x 92 mm imports must explicitly select the extended range. The no-AI print sample includes outer bleed and a distinct sample label.
+
+## Server and access
+
+Deploy `supabase/functions/card-overlay-generate/index.ts` with JWT verification enabled. Auth `/user` verifies current server-controlled `app_metadata.card_overlay_test === true`; an optional `OVERLAY_TEST_USER_IDS` UUID list is also accepted. Never authorize from user metadata. Configure server-only `OPENAI_API_KEY` and `OVERLAY_ENABLED=true`; optional `OVERLAY_IMAGE_MODEL` overrides the existing model. Never store credentials in frontend code, chat or Git. Status distinguishes permission, missing key and disabled generation.
+
+Authorized QA accounts have no per-account daily cap; a private atomic slot bucket retains the global 20-attempt cap per Korean day. Provider rejections and uncertain timeouts count as attempts and are not automatically retried. Server errors distinguish insufficient API quota, transient 429, invalid key, model access and generic failures. Logs include sanitized error codes, never API keys or uploaded images. Uploaded images and camera frames are processed locally except for the explicitly requested masked generation sent to the image API. No photos are persisted to Supabase.
+
+## Validation
+
+Run `node --test tests/card-overlay.test.mjs tests/card-overlay-server.test.mjs tests/card-overlay-vision.test.mjs`. Validate live sample PNG/PDF, physical scale, both trim shapes and illustration mapping. Synthetic-frame tests verify guide ratio, corner detection/fallback and quality gates; they do not replace real camera QA. Physical devices, representative Pokémon card eras, foil glare, printer alignment, corner radius and native WebView permissions still require user QA before launch.

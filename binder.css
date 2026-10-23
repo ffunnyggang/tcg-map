@@ -48,3 +48,20 @@ html.app-shell.binder-native-header .binder-header{display:none}
 .binder-system-menu{position:relative;display:grid;place-items:center}.binder-system-menu select{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;cursor:pointer}.binder-system-menu:focus-within{outline:2px solid #7961ab;border-radius:6px}
 
 html.app-shell.binder-native-menu .detail-author .detail-more-native{display:none}
+
+/* Physical depth is scoped to showcase single-page mode only. */
+.showcase-flip{overflow-x:hidden;overflow-y:auto;overscroll-behavior-x:contain;padding-bottom:26px!important;user-select:none;-webkit-user-select:none}
+.showcase-flip .viewer-content{padding:0 7px 0 0}
+.binder-book-case{position:relative;isolation:isolate;padding:0 7px 9px 0;filter:drop-shadow(0 14px 12px #30213b22)}
+.binder-book-stack{position:absolute;inset:4px 0 0 4px;border:1px solid #c6b7cf;border-radius:4px 10px 10px 4px;background:repeating-linear-gradient(0deg,#e7e1eb 0px,#e7e1eb 1px,#faf8fc 1px,#faf8fc 3px);box-shadow:2px 3px 0 #a999b6,3px 5px 0 #d2c4dc;pointer-events:none}
+.binder-flip-root{position:relative;z-index:1;width:100%;min-width:0!important;overflow:hidden;border-radius:4px 9px 9px 4px;background:#f8f6fa}
+.binder-flip-page{background:#fcfbfd;border:1px solid #e0d9e6;overflow:hidden;touch-action:pan-y}
+.binder-flip-face{position:absolute;inset:0;overflow:hidden;background:#fcfbfd}
+.binder-flip-face>img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.binder-flip-face>.cover{width:100%;height:100%;aspect-ratio:auto;box-shadow:none}
+.binder-flip-face:after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 8px 0 10px -8px #30213b55,inset 0 1px #ffffffb3;background:linear-gradient(90deg,#39264b12,transparent 5%,transparent 98%,#fff5)}
+.binder-flip-cover .binder-flip-face:after{box-shadow:inset 2px 0 3px #fff5,inset -2px -2px 4px #281a3433;background:linear-gradient(90deg,#21112e22,transparent 7%)}
+.binder-book-zoomed .binder-flip-root,.binder-book-zoomed .binder-flip-page{touch-action:pan-x pan-y}
+@media(prefers-reduced-motion:reduce){.binder-book-case{filter:drop-shadow(0 6px 7px #30213b18)}}
+
+.showcase-flip.is-zoomed{overflow-x:auto}

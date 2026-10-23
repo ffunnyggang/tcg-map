@@ -41,12 +41,15 @@ Deno.serve(async(req:Request)=>{
    console.info('overlay client quality',{requestId:data.requestId,accepted:data.accepted,correlation:data.correlation,mae:data.mae});
    return reply({reported:true});
   }
-  if(data.action!=='generate')return reply({error:'지원하지 않는 요청입니다.'},400);
+  const independent=data.action==='generate_background';
+  const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
+  if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
+  if(data.action!=='generate'&&!independent)return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
-  let image,mask;try{image=png(data.image);mask=png(data.mask);}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
-  const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=imageView.getUint32(16),imageHeight=imageView.getUint32(20);
-  if(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
+  let image=new Uint8Array(),mask=new Uint8Array();try{if(!independent){image=png(data.image);mask=png(data.mask);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
+  const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=independent?1072:imageView.getUint32(16),imageHeight=independent?1472:imageView.getUint32(20);
+  if(!independent&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
   // created using service credentials; clients receive no bucket access.
   const storageHeaders={apikey:service,Authorization:'Bearer '+service};
@@ -72,7 +75,9 @@ Deno.serve(async(req:Request)=>{
   const hasAnchor=anchor&&['x','y','w','h'].every(k=>typeof anchor[k]==='number'&&Number.isFinite(anchor[k]))&&anchor.x>=0&&anchor.y>=0&&anchor.w>0&&anchor.h>0&&anchor.x+anchor.w<=imageWidth&&anchor.y+anchor.h<=imageHeight;
   const placement=hasAnchor?' The fixed source rectangle in the '+imageWidth+' by '+imageHeight+' canvas is x='+anchor.x.toFixed(1)+', y='+anchor.y.toFixed(1)+', width='+anchor.w.toFixed(1)+', height='+anchor.h.toFixed(1)+'.':'';
   form.set('prompt','Perform a localized background outpainting edit of the supplied canvas. The opaque region of the mask contains the fixed source illustration; keep this region unchanged at its exact pixel position and scale.'+placement+' Fill only the transparent masked area with the continuation of the existing environment. Continue the sky, horizon, ground, water, shadows, lighting and surface texture directly from each source edge. Keep the same horizon height and perspective. Do not recompose, recenter, zoom, rescale or move the source illustration. Do not redraw, repeat, mirror or duplicate its subject anywhere else. Do not extend a character or invent new body parts; only continue the surrounding scenery. Do not add characters, text, logos, borders, card UI or frames. Match the existing colors and texture at the boundary, without placing an outline, panel, collage seam or second copy of the illustration.');
-  const response=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+key},body:form,signal:AbortSignal.timeout(140000)});
+  const background={model,size:'1072x1472',quality:'medium',n:1,output_format:'png',prompt:'Create a completely original portrait landscape of '+themes[data.theme]+'. Hand-painted illustration with subtle paper texture and calm natural colors. Continuous scenery across the entire canvas. No characters, creatures, animals, people, text, logos, frames or borders. This is an independent landscape, not a continuation of an existing image.'};
+  if(independent)Object.assign(diagnostic,{promptVersion:'independent-landscape-v1',imageHash:undefined,maskHash:undefined});
+  const response=await fetch('https://api.openai.com/v1/images/'+(independent?'generations':'edits'),{method:'POST',headers:{Authorization:'Bearer '+key,...(independent?{'Content-Type':'application/json'}:{})},body:independent?JSON.stringify(background):form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();
   if(!response.ok){
    const safe=(v:unknown)=>typeof v==='string'?v.replace(/[^a-zA-Z0-9_.-]/g,'').slice(0,100):'';

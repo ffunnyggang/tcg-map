@@ -9,6 +9,12 @@ html.funy-web-safe:not(.app-shell){--funy-web-safe-top:env(safe-area-inset-top,0
   min-height:calc(var(--funy-safe-header-height) + var(--funy-web-safe-top))!important;
   padding-top:calc(var(--funy-safe-header-padding) + var(--funy-web-safe-top))!important;
  }
+ /* Market headers are shared by the map overlay and standalone page. */
+ html.funy-web-safe:not(.app-shell) .market-overlay-head{
+  height:calc(54px + var(--funy-web-safe-top))!important;
+  min-height:calc(54px + var(--funy-web-safe-top))!important;
+  padding-top:var(--funy-web-safe-top)!important;
+ }
  /* Keep map/media at y=0; inset controls, never the content behind them. */
  html.funy-web-safe:not(.app-shell).funy-map-qa .map-search-float{top:calc(var(--funy-web-safe-top) + 14px)!important}
  html.funy-web-safe:not(.app-shell).funy-map-qa .map-filter-bar{top:calc(var(--funy-web-safe-top) + 70px)!important}

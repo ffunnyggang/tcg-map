@@ -1,0 +1,19 @@
+/* Shared cover depth: shelf, TALK rail/grid, overview and flipbook. */
+.binder-cover-depth.binder-cover-depth{
+  border-radius:4px 12px 12px 4px;
+  box-shadow:inset 2px 0 3px #ffffff35,inset -1px -1px 2px #281a3420,0 3px 7px #30213b16;
+  isolation:isolate;
+}
+.binder-cover-depth.binder-cover-depth:before{
+  content:'';position:absolute;z-index:2;left:9px;top:0;bottom:0;width:5px;
+  border-left:1px solid #ffffff50;
+  background:linear-gradient(90deg,#24152e14,transparent);
+  box-shadow:-5px 0 8px #30213d22;pointer-events:none;
+}
+.binder-cover-depth.binder-cover-depth:after{
+  content:'';position:absolute;z-index:3;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 2px 0 3px #ffffff35,inset -1px -1px 2px #281a3420;
+  background:linear-gradient(90deg,#21112e1a,transparent 7%,transparent 98%,#ffffff14);
+}
+.binder-rail-cover.binder-cover-depth:before{left:6px;width:4px}
+.binder-flip-cover .binder-cover-depth.binder-cover-depth{box-shadow:inset 2px 0 3px #ffffff35,inset -1px -1px 2px #281a3420}

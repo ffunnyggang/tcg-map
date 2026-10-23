@@ -59,8 +59,8 @@ html.app-shell.binder-native-menu .detail-author .detail-more-native{display:non
 .binder-flip-root{position:relative;z-index:1;width:100%;min-width:0!important;overflow:hidden;border-radius:1px;background:#f8f6fa}
 .binder-flip-page{background:#fcfbfd;border:1px solid #e4dfe9;overflow:hidden;touch-action:pan-y}
 .binder-flip-face{position:absolute;inset:0;overflow:hidden;background:#fcfbfd}
-.binder-photo-mat{position:absolute;inset:0;background-color:#f4f1f6;background-size:100% 100%;background-repeat:no-repeat}
-.binder-photo-mat>img{position:absolute;left:3%;top:3%;width:94%;height:94%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.binder-photo-mat{position:absolute;inset:0;background:var(--binder-mat-color,#29262d)}
+.binder-photo-mat>img{position:absolute;left:1%;top:1%;width:98%;height:98%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
 .binder-flip-face>.cover{width:100%;height:100%;aspect-ratio:auto;box-shadow:none;border-radius:1px}
 .binder-flip-face:after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 2px 0 3px -2px #30213b25}
 .binder-book-zoomed .binder-flip-root,.binder-book-zoomed .binder-flip-page{touch-action:pan-x pan-y}
@@ -71,3 +71,14 @@ html.app-shell.binder-native-menu .detail-author .detail-more-native{display:non
 .showcase-single .viewer-arrow.next{right:0;background:linear-gradient(270deg,#f4f1f6d9,#f4f1f600)}
 .showcase-single .viewer-arrow svg{width:18px;height:28px;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.binder-book-case{filter:drop-shadow(0 1px 3px #30213b14)}}
+
+/* Restore the cover's rounded board and spine, without adding bulk to inside pages. */
+.binder-on-cover .binder-flip-root{border-radius:4px 12px 12px 4px}
+.binder-flip-cover{border-radius:4px 12px 12px 4px}
+.binder-flip-cover .binder-flip-face,.binder-flip-cover .binder-flip-face>.cover{border-radius:4px 12px 12px 4px}
+.binder-flip-cover .cover:before{content:'';position:absolute;z-index:2;left:9px;top:0;bottom:0;border-left:1px solid #ffffff50;box-shadow:-5px 0 8px #30213d22;pointer-events:none}
+.binder-flip-cover .binder-flip-face:after{box-shadow:inset 2px 0 3px #ffffff35,inset -1px -1px 2px #281a3420;background:linear-gradient(90deg,#21112e1a,transparent 7%)}
+/* Keep magnified content inside the viewer, never in the document's horizontal scroll range. */
+html.binder-showcase-open,html.binder-showcase-open body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+.binder-showcase-open .shell,.showcase-single{min-width:0;max-width:100%;overflow-x:clip}
+.showcase-single .viewer{min-width:0;box-sizing:border-box;overscroll-behavior-x:none}

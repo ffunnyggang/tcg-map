@@ -3,6 +3,7 @@ window.FUNY_BINDER_FLIPBOOK = {
   mount({host, viewer, pages, index, ratio, onFlip, onState, loadImage}) {
     let book, root, disposed = false, enabled = true, gesture = null;
     let touches = new Set(), resizeTimer, scale = 1;
+    const mats = new Map();
     const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const point = e => {
       const rect = book.getUI().getDistElement().getBoundingClientRect();
@@ -19,13 +20,13 @@ window.FUNY_BINDER_FLIPBOOK = {
     }
     function build() {
       unmount();
-      host.innerHTML = '<div class="binder-book-case"><div class="binder-book-stack" aria-hidden="true"></div><div class="binder-flip-root"></div></div>';
+      host.innerHTML = '<div class="binder-book-case"><div class="binder-flip-root"></div></div>';
       root = host.querySelector('.binder-flip-root');
-      const width = Math.max(120, Math.floor(host.clientWidth / scale - 14));
+      const width = Math.max(120, Math.floor(host.clientWidth / scale - 2));
       book = new St.PageFlip(root, {
         width, height:Math.round(width/ratio), size:'fixed', autoSize:false,
         usePortrait:true, showCover:false, startPage:index, drawShadow:true,
-        flippingTime:560, maxShadowOpacity:.24, useMouseEvents:false,
+        flippingTime:560, maxShadowOpacity:.18, useMouseEvents:false,
         showPageCorners:false, disableFlipByClick:false
       });
       root.style.width = width+'px';
@@ -34,11 +35,16 @@ window.FUNY_BINDER_FLIPBOOK = {
         const node = document.createElement('div');
         node.className = 'binder-flip-page'+(i===0?' binder-flip-cover':'');
         node.dataset.density = i===0?'hard':'soft';
-        node.innerHTML = '<div class="binder-flip-face">'+html+'</div>';
+        node.innerHTML = '<div class="binder-flip-face">'+(i===0?html:'<div class="binder-photo-mat">'+html+'</div>')+'</div>';
         // Decode in advance, including currently hidden leaves.
         node.querySelectorAll('img[data-path]').forEach(img => {
           img.loading='eager';
-          loadImage(img.dataset.path).then(url=>{if(!disposed)img.src=url;}).catch(()=>{img.alt='사진을 불러오지 못했어요';});
+          loadImage(img.dataset.path).then(url=>{
+            if(disposed)return;
+            img.onload=()=>{const mat=img.closest('.binder-photo-mat');if(mat&&!disposed)paintMat(img,mat);};
+            img.src=url;
+            if(img.complete&&img.naturalWidth)img.onload();
+          }).catch(()=>{img.alt='사진을 불러오지 못했어요';});
         });
         return node;
       });
@@ -48,9 +54,37 @@ window.FUNY_BINDER_FLIPBOOK = {
       applyScale();
       onState(false);
     }
+    function paintMat(img,mat){
+      // Work only on the already downloaded local blob; never send photos elsewhere.
+      const key=img.dataset.path;
+      if(mats.has(key)){mat.style.backgroundImage=`url("${mats.get(key)}")`;return;}
+      try{
+        const canvas=document.createElement('canvas');
+        const w=128,h=Math.round(w/ratio);canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');if(!ctx)return;
+        ctx.fillStyle='#f4f1f6';ctx.fillRect(0,0,w,h);
+        const sw=img.naturalWidth,sh=img.naturalHeight;
+        if(!sw||!sh)return;
+        const fit=Math.min(w*.94/sw,h*.94/sh),dw=sw*fit,dh=sh*fit;
+        const x=(w-dw)/2,y=(h-dh)/2;
+        // Stretch only the outermost source pixels outward: four independently
+        // matched edges and four corner pixels. The full-resolution photo stays sharp above.
+        ctx.drawImage(img,0,0,sw,1,x,0,dw,y+1);
+        ctx.drawImage(img,0,sh-1,sw,1,x,y+dh-1,dw,h-y-dh+1);
+        ctx.drawImage(img,0,0,1,sh,0,y,x+1,dh);
+        ctx.drawImage(img,sw-1,0,1,sh,x+dw-1,y,w-x-dw+1,dh);
+        ctx.drawImage(img,0,0,1,1,0,0,x+1,y+1);
+        ctx.drawImage(img,sw-1,0,1,1,x+dw-1,0,w-x-dw+1,y+1);
+        ctx.drawImage(img,0,sh-1,1,1,0,y+dh-1,x+1,h-y-dh+1);
+        ctx.drawImage(img,sw-1,sh-1,1,1,x+dw-1,y+dh-1,w-x-dw+1,h-y-dh+1);
+        ctx.drawImage(img,x,y,dw,dh);
+        const url=canvas.toDataURL('image/png');mats.set(key,url);
+        mat.style.backgroundImage=`url("${url}")`;
+      }catch(_){/* Neutral mat remains usable if image decoding/canvas is unavailable. */}
+    }
     function applyScale(){
       root.style.transformOrigin='top left';root.style.transform=`scale(${scale})`;
-      root.parentElement.style.height=(parseFloat(root.style.height)*scale+9)+'px';
+      root.parentElement.style.height=(parseFloat(root.style.height)*scale+2)+'px';
     }
     function cancel() {
       if (!gesture && book.getState()==='read') return;
@@ -116,7 +150,7 @@ window.FUNY_BINDER_FLIPBOOK = {
       setZoom(value) {scale=value;applyScale();},
       cancel,
       destroy() {
-        disposed=true; clearTimeout(resizeTimer);release();unmount();
+        disposed=true; mats.clear(); clearTimeout(resizeTimer);release();unmount();
         viewer.removeEventListener('pointerdown',down);
         viewer.removeEventListener('pointermove',move);
         viewer.removeEventListener('pointerup',up);

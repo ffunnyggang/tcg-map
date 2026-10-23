@@ -50,10 +50,13 @@ Deno.serve(async(req:Request)=>{
   if(!await reserve('global',20))return reply({error:'오늘 테스트 전체 생성 한도에 도달했어요.'},429);
   const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';
-  const diagnostic={model,promptVersion:'overlay-outpaint-v1',imageHash:await digest(image),maskHash:await digest(mask)};
+  const diagnostic={model,promptVersion:'overlay-background-continuity-v2',imageHash:await digest(image),maskHash:await digest(mask)};
   const form=new FormData();form.set('model',model);form.set('size','1024x1536');form.set('quality','medium');form.set('n','1');form.set('output_format','png');
   form.set('image[]',new Blob([image],{type:'image/png'}),'source.png');form.set('mask',new Blob([mask],{type:'image/png'}),'mask.png');
-  form.set('prompt','Outpaint the illustration into all masked space. Keep the provided illustration precisely at its original position and scale. Seamlessly extend only its existing environment, colors, lighting, texture, brushwork and perspective to the whole canvas. Do not add text, borders, frames, card UI, logos, additional characters, or new body parts. The white empty area is not a frame: replace it entirely with the continued scenery. This will be printed as an overlay with the original illustration cut out.');
+  const anchor=data.anchor;
+  const hasAnchor=anchor&&['x','y','w','h'].every(k=>typeof anchor[k]==='number'&&Number.isFinite(anchor[k]))&&anchor.x>=0&&anchor.y>=0&&anchor.w>0&&anchor.h>0&&anchor.x+anchor.w<=1024&&anchor.y+anchor.h<=1536;
+  const placement=hasAnchor?' The fixed source rectangle in the 1024 by 1536 canvas is x='+anchor.x.toFixed(1)+', y='+anchor.y.toFixed(1)+', width='+anchor.w.toFixed(1)+', height='+anchor.h.toFixed(1)+'.':'';
+  form.set('prompt','Perform a localized background outpainting edit of the supplied canvas. The opaque region of the mask contains the fixed source illustration; keep this region unchanged at its exact pixel position and scale.'+placement+' Fill only the transparent masked area with the continuation of the existing environment. Continue the sky, horizon, ground, water, shadows, lighting and surface texture directly from each source edge. Keep the same horizon height and perspective. Do not recompose, recenter, zoom, rescale or move the source illustration. Do not redraw, repeat, mirror or duplicate its subject anywhere else. Do not extend a character or invent new body parts; only continue the surrounding scenery. Do not add characters, text, logos, borders, card UI or frames. Match the existing colors and texture at the boundary, without placing an outline, panel, collage seam or second copy of the illustration.');
   const response=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+key},body:form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();
   if(!response.ok){

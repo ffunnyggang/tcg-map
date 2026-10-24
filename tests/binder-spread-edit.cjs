@@ -14,12 +14,12 @@ const bottom=async()=>{const r=await p.locator('.editor-dock').boundingBox();ass
 await p.locator('.page-photo').first().scrollIntoViewIfNeeded();await p.waitForFunction(()=>document.querySelector('#pages .spread').style.getPropertyValue('--endpaper-mat-color'));
 const colors=await p.locator('#pages .spread').first().locator('.sheet').evaluateAll(a=>a.map(el=>getComputedStyle(el).backgroundColor));assert.equal(colors[0],colors[1]);assert.notEqual(colors[0],'rgb(255, 255, 255)');
 assert.equal(await p.locator('.page-photo').first().evaluate(el=>getComputedStyle(el).borderWidth),'0px');
-await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('.page-photo').count(),5);await bottom();
+await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('.page-photo').count(),6);await bottom();
 for(const sel of ['[data-act=add-page]','[data-act=preview]'])assert.equal(await p.locator(sel).evaluate(el=>getComputedStyle(el).color),'rgb(41, 37, 50)');
-const count=await p.locator('.spread').count();p.once('dialog',d=>d.dismiss());await p.locator('[data-act=delete-spread][data-spread="1"]').click();assert.equal(await p.locator('.page-photo').count(),5);
-let confirmation='';p.once('dialog',d=>{confirmation=d.message();return d.accept();});await p.locator('[data-act=delete-spread][data-spread="1"]').click();assert(confirmation.includes('사진 2장'));assert.equal(await p.locator('.page-photo').count(),3);assert.equal(await p.locator('.spread').count(),count-1);
+const count=await p.locator('.spread').count();p.once('dialog',d=>d.dismiss());await p.locator('[data-act=delete-spread][data-spread="1"]').click();assert.equal(await p.locator('.page-photo').count(),6);
+let confirmation='';p.once('dialog',d=>{confirmation=d.message();return d.accept();});await p.locator('[data-act=delete-spread][data-spread="1"]').click();assert(confirmation.includes('사진 2장'));assert.equal(await p.locator('.page-photo').count(),4);assert.equal(await p.locator('.spread').count(),count-1);
 await p.waitForFunction(()=>document.querySelector('#saveState').textContent==='자동저장됨');assert.deepEqual(await p.evaluate(()=>window.__binderFixture.pages.filter(x=>x.path).map(x=>x.id)),['p1']);
 await p.locator('#pages .spread').first().scrollIntoViewIfNeeded();await p.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-spread-edit-'+engine+'-qa.png')});
-await p.locator('[data-act=preview]').click();await p.locator('[data-act=back-edit]').click();assert.equal(await p.locator('.page-photo').count(),3);await bottom();
+await p.locator('[data-act=preview]').click();await p.locator('[data-act=back-edit]').click();assert.equal(await p.locator('.page-photo').count(),4);await bottom();
 await p.close();console.log('PASS '+engine+': inline layout, check-only swatch, matching endpaper, borderless photo, add pair, cancel/delete pair, preserved other photo, fixed dock and explicit colors');
 }finally{await b.close();}}}finally{server.close();}})().catch(e=>{console.error(e);process.exitCode=1;server.close();});

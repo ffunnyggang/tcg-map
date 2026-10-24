@@ -14,11 +14,11 @@ await p.locator('[data-type=포켓몬]').click();await p.locator('[data-type=원
 assert.deepEqual(await p.evaluate(()=>window.__savedTypes),['포켓몬','원피스']);
 await p.locator('[data-act=preview]').click();await p.locator('[data-act=back-edit]').click();assert.equal(await p.locator('[data-type=포켓몬]').getAttribute('aria-pressed'),'true');
 await p.locator('[data-type=원피스]').click();await p.waitForFunction(()=>window.__savedTypes?.length===1);
-assert.equal(await p.locator('#pages .page-photo').count(),3,'all existing photos preserved');
+assert.equal(await p.locator('#pages .page-photo').count(),4,'all existing photos preserved');
 for(const sheet of [p.locator('#pages .spread .sheet').first(),p.locator('#pages .spread .sheet').last()]){assert(await sheet.evaluate(el=>el.classList.contains('binder-blank')));assert.equal(await sheet.locator('button').count(),0);}
 await p.locator('#pages .page-photo').first().scrollIntoViewIfNeeded();await p.waitForFunction(()=>document.querySelector('#pages .sheet:not(.binder-blank)').style.getPropertyValue('--page-mat-color'));
 assert.equal(await p.locator('#pages .sheet:not(.binder-blank)').first().evaluate(el=>getComputedStyle(el).backgroundColor==='rgb(255, 255, 255)'),false);
-await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('#pages .page-photo').count(),5);assert.equal(await p.locator('#pages .spread:last-of-type .sheet:last-child button').count(),0);
+await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('#pages .page-photo').count(),6);assert.equal(await p.locator('#pages .spread:last-of-type .sheet:last-child button').count(),0);
 await p.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-editor-types-'+engine+'-qa.png'),fullPage:true});
 await p.waitForFunction(()=>document.querySelector('#saveState')?.textContent==='자동저장됨');await p.goto(base+'/binder.html?view=new');await p.waitForSelector('[data-act=tcg-type]');assert.equal(await p.locator('#pages .page-photo').count(),10);assert.equal(await p.locator('#pages .spread').count(),6);
 assert.equal(await p.locator('#pages .sheet.binder-blank').count(),2);assert.equal(await p.locator('#saveState').textContent(),'사진을 추가하면 자동저장이 시작돼요.');

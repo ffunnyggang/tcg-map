@@ -226,3 +226,15 @@ html:not(.app-shell) .shell>.binder-header{position:sticky;top:0;z-index:80;back
 .preview-book-host{width:100%;position:relative}
 .preview-book-arrow{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:48px;padding:0;border:0;background:transparent;color:#fff;font-size:36px;line-height:1}
 .preview-book-arrow.prev{left:0}.preview-book-arrow.next{right:0}.preview-book-arrow:disabled{opacity:.2}
+
+/* A single translucent backdrop covers the web page while the preview floats above it. */
+#pageFullview.binder-preview-dim{background:transparent}
+#pageFullview.binder-preview-dim::backdrop{background:rgba(9,9,11,.72)}
+#pageFullview.binder-preview-dim .page-fullview-header{background:none}
+.binder-preview-dim .binder-flip-root,.binder-preview-dim .binder-flip-page,.binder-preview-dim .binder-flip-face{border:0;outline:0;background:transparent}
+.binder-preview-dim .binder-book-case:after{display:none}
+.binder-preview-dim .binder-flip-face>.cover{border:0;outline:0;box-shadow:none}
+.binder-preview-dim .binder-flip-face:after{box-shadow:inset -1px -1px 2px #281a3420}
+
+#pageFullview.binder-preview-dim .binder-cover-depth{box-shadow:none}
+#pageFullview.binder-preview-dim .binder-cover-depth:after{box-shadow:inset -1px -1px 2px #281a3420;background:linear-gradient(90deg,#21112e1a,transparent 7%)}

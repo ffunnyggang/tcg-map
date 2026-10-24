@@ -218,6 +218,7 @@ async function openPageFullview(index,editorPreview=false){
  const selected=viewerPages()[index],pages=editorPreview?viewerPages():viewerPages().slice(1).filter(p=>p.path),selectedIndex=editorPreview?0:pages.findIndex(p=>p.id===selected?.id);if(selectedIndex<0)return;
  const token=++fullPageToken;fullPageIndex=selectedIndex;fullPageZoom=1;
  pageFullview.innerHTML='<header class="page-fullview-header"><button type="button" data-act="'+(editorPreview?'back-edit':'close-full-page')+'" aria-label="'+(editorPreview?'미리보기 닫기':'페이지 전체보기 닫기')+'">×</button><strong id="pageFullviewTitle" class="page-fullview-accessible-title">'+index+'페이지</strong><span data-page-count></span></header><div class="page-fullview-track">'+pages.map((p,i)=>'<div class="page-fullview-stage" data-full-page="'+i+'"><div class="page-fullview-plane">'+(p.path?'<img alt="바인더 '+(p.id==='cover'?'표지':i+'페이지')+'" draggable="false">':p.id==='cover'?'<div class="page-fullview-cover">'+cover(detail)+'</div>':'<div class="page-fullview-blank" aria-label="빈 페이지"></div>')+'</div>'+(p.path?'<p class="page-fullview-status" role="status">사진을 불러오는 중…</p>':'')+'</div>').join('')+'</div>';
+ pageFullview.classList.toggle('binder-preview-dim',editorPreview);
  pageFullview.showModal();document.documentElement.classList.add('binder-page-fullview-open');
  try{history.pushState({...history.state,binderPageFullview:true},'',location.href);fullPageHistory=true;}catch(_){fullPageHistory=false;}
  if(editorPreview){mountPreviewFlip(pages);return;}
@@ -272,7 +273,7 @@ function mountPreviewFlip(pages){
 function closePageFullview(fromHistory=false){
  if(!pageFullview.open)return;
  if(!fromHistory&&fullPageHistory&&history.state?.binderPageFullview){history.back();return;}
- fullPageHistory=false;fullPageToken++;previewFlip?.destroy();previewFlip=null;pageFullview.onkeydown=null;pageFullview.close();pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
+ fullPageHistory=false;fullPageToken++;previewFlip?.destroy();previewFlip=null;pageFullview.onkeydown=null;pageFullview.close();pageFullview.classList.remove('binder-preview-dim');pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
  if(preview){preview=false;detail=null;window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();}
 }
 pageFullview.addEventListener('cancel',e=>{e.preventDefault();closePageFullview();});

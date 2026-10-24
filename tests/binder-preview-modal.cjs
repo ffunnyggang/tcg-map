@@ -17,7 +17,10 @@ const scroll=await p.evaluate(()=>scrollY),pages=await p.locator('.page-photo').
 await p.locator('[data-act=preview]').click();await p.waitForSelector('#pageFullview[open]');
 assert.equal(await p.locator('#pageFullview .detail-head,#pageFullview .comments,#pageFullview .seg').count(),0);
 assert.equal(await p.locator('#pageFullview .binder-flip-page').count(),4);assert.equal(await p.locator('#pageFullview .binder-flip-root').count(),1);assert.equal(await p.locator('.page-photo').count(),pages);
-assert.equal(await p.locator('#pageFullview').evaluate(e=>getComputedStyle(e,'::backdrop').backgroundColor),'rgb(9, 9, 11)');
+assert.equal(await p.locator('#pageFullview').evaluate(e=>getComputedStyle(e,'::backdrop').backgroundColor),'rgba(9, 9, 11, 0.72)');
+assert.equal(await p.locator('#pageFullview').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
+assert.equal(await p.locator('#pageFullview .binder-flip-page').first().evaluate(e=>getComputedStyle(e).borderTopWidth),'0px');
+assert.equal(await p.locator('#pageFullview .binder-book-case').evaluate(e=>getComputedStyle(e,'::after').display),'none');
 await p.screenshot({path:path.join(os.tmpdir(),'binder-preview-'+engine+'.png')});
 await p.locator('.preview-book-arrow.next').click();await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='2 / 4');await p.waitForTimeout(650);
 await p.locator('.preview-book-viewport').dblclick();assert.match(await p.locator('#pageFullview .binder-flip-root').evaluate(e=>e.style.transform),/scale\(2\)/);

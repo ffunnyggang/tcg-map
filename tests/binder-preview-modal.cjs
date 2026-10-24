@@ -23,6 +23,10 @@ assert.equal(await p.locator('#pageFullview .binder-flip-page').first().evaluate
 assert.equal(await p.locator('#pageFullview .binder-book-case').evaluate(e=>getComputedStyle(e,'::after').display),'none');
 await p.screenshot({path:path.join(os.tmpdir(),'binder-preview-'+engine+'.png')});
 await p.locator('.preview-book-arrow.next').click();await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='2 / 4');await p.waitForTimeout(650);
+const shadow=await p.locator('#pageFullview .binder-flip-page:not(.binder-flip-cover) .binder-flip-face').first().evaluate(e=>getComputedStyle(e,'::after').boxShadow);
+assert(shadow.includes('4px 0px 6px -5px')&&shadow.includes('-2px 0px 4px -3px')&&shadow.includes('0px -2px 3px -2px'));
+assert(!shadow.includes('255, 255, 255'));
+
 await p.locator('.preview-book-viewport').dblclick();assert.match(await p.locator('#pageFullview .binder-flip-root').evaluate(e=>e.style.transform),/scale\(2\)/);
 await p.keyboard.press('ArrowLeft');await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='1 / 4');
 

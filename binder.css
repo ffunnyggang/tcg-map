@@ -219,3 +219,10 @@ html:not(.app-shell) .shell>.binder-header{position:sticky;top:0;z-index:80;back
 .page-fullview-cover{width:min(90vw,calc((100dvh - 110px) * .75),440px);aspect-ratio:3/4}.page-fullview-cover>.cover{width:100%;height:100%}.page-fullview-blank{width:min(90vw,calc((100dvh - 110px) * .76),440px);aspect-ratio:.76;background:#29262d;border-radius:4px 12px 12px 4px}
 
 #pageFullview .page-fullview-header>button:focus{outline:none;box-shadow:none}
+
+/* Editor preview shares the showcase flipbook inside the full-screen image shell. */
+.preview-book-stage{position:absolute;inset:calc(60px + env(safe-area-inset-top,0px)) 0 calc(24px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center}
+.preview-book-viewport{width:min(calc(100vw - 64px),calc((100dvh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) * var(--preview-ratio)),560px);max-height:100%;overscroll-behavior:contain}
+.preview-book-host{width:100%;position:relative}
+.preview-book-arrow{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:48px;padding:0;border:0;background:transparent;color:#fff;font-size:36px;line-height:1}
+.preview-book-arrow.prev{left:0}.preview-book-arrow.next{right:0}.preview-book-arrow:disabled{opacity:.2}

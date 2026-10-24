@@ -16,16 +16,19 @@ await p.evaluate(()=>window.scrollTo(0,600));await p.waitForTimeout(100);assert(
 const scroll=await p.evaluate(()=>scrollY),pages=await p.locator('.page-photo').count();
 await p.locator('[data-act=preview]').click();await p.waitForSelector('#pageFullview[open]');
 assert.equal(await p.locator('#pageFullview .detail-head,#pageFullview .comments,#pageFullview .seg').count(),0);
-assert.equal(await p.locator('#pageFullview .page-fullview-stage').count(),4);assert.equal(await p.locator('#pageFullview .page-fullview-cover').count(),1);assert.equal(await p.locator('.page-photo').count(),pages);
+assert.equal(await p.locator('#pageFullview .binder-flip-page').count(),4);assert.equal(await p.locator('#pageFullview .binder-flip-root').count(),1);assert.equal(await p.locator('.page-photo').count(),pages);
 assert.equal(await p.locator('#pageFullview').evaluate(e=>getComputedStyle(e,'::backdrop').backgroundColor),'rgb(9, 9, 11)');
 await p.screenshot({path:path.join(os.tmpdir(),'binder-preview-'+engine+'.png')});
-await p.locator('.page-fullview-track').evaluate(e=>e.scrollLeft=e.clientWidth);await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='2 / 4');await p.locator('.page-fullview-stage').nth(1).dblclick();assert.equal(await p.locator('.page-fullview-plane').nth(1).evaluate(e=>e.style.width),'200%');
+await p.locator('.preview-book-arrow.next').click();await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='2 / 4');await p.waitForTimeout(650);
+await p.locator('.preview-book-viewport').dblclick();assert.match(await p.locator('#pageFullview .binder-flip-root').evaluate(e=>e.style.transform),/scale\(2\)/);
+await p.keyboard.press('ArrowLeft');await p.waitForFunction(()=>document.querySelector('[data-page-count]').textContent==='1 / 4');
+
 await p.locator('[data-act=back-edit]').click();await p.waitForFunction(()=>!document.querySelector('#pageFullview').open&&!history.state?.binderPageFullview);
 assert(Math.abs(await p.evaluate(()=>scrollY)-scroll)<3);assert.equal(await p.locator('.page-photo').count(),pages);
 await p.locator('[data-act=preview]').click();await p.waitForSelector('#pageFullview[open]');await p.goBack();await p.waitForFunction(()=>!document.querySelector('#pageFullview').open);
 await p.locator('[data-act=preview]').click();await p.keyboard.press('Escape');await p.waitForFunction(()=>!document.querySelector('#pageFullview').open&&!history.state?.binderPageFullview);
 await p.setViewportSize({width:320,height:568});await p.locator('[data-act=preview]').click();await p.waitForSelector('#pageFullview[open]');
-const bounds=await p.locator('#pageFullview .page-fullview-cover').boundingBox();assert(bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.width<=321&&bounds.y+bounds.height<=569);
+const bounds=await p.locator('#pageFullview .binder-flip-root').boundingBox();assert(bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.width<=321&&bounds.y+bounds.height<=569);
 await p.locator('[data-act=back-edit]').click();assert.deepEqual(errors,[]);
-console.log('PASS '+engine+': shelf copy, nonsticky status, sticky web header, translucent X, market-style black gallery, swipe and zoom, close/back/Escape, scroll and small viewport');
+console.log('PASS '+engine+': shelf copy, nonsticky status, sticky web header, translucent X, full-screen showcase flipbook, page turn and zoom, close/back/Escape, scroll and small viewport');
 }finally{await b.close()}}}finally{server.close()}})().catch(e=>{console.error(e);process.exitCode=1});

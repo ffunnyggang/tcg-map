@@ -203,6 +203,7 @@ function bindViewer(){const el=$('#viewer');let pointers=new Map(),start=null,pi
 
 // A dedicated modal keeps page inspection separate from the non-zoomable overview.
 let fullPageZoom=1,fullPageToken=0,fullPageHistory=false,fullPageIndex=0;
+let previewFlip=null;
 const pageFullview=$('#pageFullview');
 function setFullPageZoom(value){
  fullPageZoom=Math.max(1,Math.min(3,value));
@@ -219,6 +220,7 @@ async function openPageFullview(index,editorPreview=false){
  pageFullview.innerHTML='<header class="page-fullview-header"><button type="button" data-act="'+(editorPreview?'back-edit':'close-full-page')+'" aria-label="'+(editorPreview?'미리보기 닫기':'페이지 전체보기 닫기')+'">×</button><strong id="pageFullviewTitle" class="page-fullview-accessible-title">'+index+'페이지</strong><span data-page-count></span></header><div class="page-fullview-track">'+pages.map((p,i)=>'<div class="page-fullview-stage" data-full-page="'+i+'"><div class="page-fullview-plane">'+(p.path?'<img alt="바인더 '+(p.id==='cover'?'표지':i+'페이지')+'" draggable="false">':p.id==='cover'?'<div class="page-fullview-cover">'+cover(detail)+'</div>':'<div class="page-fullview-blank" aria-label="빈 페이지"></div>')+'</div>'+(p.path?'<p class="page-fullview-status" role="status">사진을 불러오는 중…</p>':'')+'</div>').join('')+'</div>';
  pageFullview.showModal();document.documentElement.classList.add('binder-page-fullview-open');
  try{history.pushState({...history.state,binderPageFullview:true},'',location.href);fullPageHistory=true;}catch(_){fullPageHistory=false;}
+ if(editorPreview){mountPreviewFlip(pages);return;}
  const track=pageFullview.querySelector('.page-fullview-track'),stages=[...track.children],loading=new Set();
  const load=async i=>{
   if(!pages[i]?.path||loading.has(i))return;loading.add(i);
@@ -247,10 +249,30 @@ async function openPageFullview(index,editorPreview=false){
  });
  pageFullview.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();setFullPageZoom(1);track.scrollTo({left:Math.max(0,Math.min(pages.length-1,fullPageIndex+(e.key==='ArrowRight'?1:-1)))*track.clientWidth,behavior:'auto'});}};
 }
+
+function mountPreviewFlip(pages){
+ const track=pageFullview.querySelector('.page-fullview-track');
+ track.outerHTML='<div class="preview-book-stage showcase-single"><div class="preview-book-viewport showcase-flip"><div class="preview-book-host"></div></div><button class="preview-book-arrow prev" aria-label="이전 페이지">‹</button><button class="preview-book-arrow next" aria-label="다음 페이지">›</button></div>';
+ const stage=pageFullview.querySelector('.preview-book-stage'),viewer=stage.querySelector('.preview-book-viewport'),host=stage.querySelector('.preview-book-host'),prev=stage.querySelector('.prev'),next=stage.querySelector('.next');
+ const ratio=layouts[detail.pockets].ratio;stage.style.setProperty('--preview-ratio',ratio);
+ let current=0,turning=false,scale=1,pinch=null;
+ const update=()=>{pageFullview.querySelector('[data-page-count]').textContent=(current+1)+' / '+pages.length;pageFullview.querySelector('#pageFullviewTitle').textContent=current===0?'표지':current+'페이지';prev.disabled=turning||current===0;next.disabled=turning||current===pages.length-1;};
+ const setZoom=value=>{scale=Math.max(1,Math.min(3,value));previewFlip?.setEnabled(scale===1);previewFlip?.setZoom(scale);viewer.classList.toggle('is-zoomed',scale>1);if(scale===1){viewer.scrollTop=0;viewer.scrollLeft=0;}};
+ previewFlip=window.FUNY_BINDER_FLIPBOOK.mount({host,viewer,pages:pages.map(viewerPhoto),index:0,ratio,loadImage:imageURL,onFlip:i=>{current=i;update();},onState:value=>{turning=value;update();}});
+ const turn=delta=>{setZoom(1);previewFlip?.turn(delta);};
+ prev.onclick=()=>turn(-1);next.onclick=()=>turn(1);
+ viewer.ondblclick=()=>setZoom(scale>1?1:2);
+ viewer.ontouchstart=e=>{if(e.touches.length===2){const[a,b]=e.touches;pinch={distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),scale};}};
+ viewer.addEventListener('touchmove',e=>{if(pinch&&e.touches.length===2){e.preventDefault();const[a,b]=e.touches;setZoom(pinch.scale*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/Math.max(1,pinch.distance));}},{passive:false});
+ viewer.ontouchend=viewer.ontouchcancel=()=>{pinch=null;};
+ pageFullview.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();turn(e.key==='ArrowRight'?1:-1);}};
+ update();
+}
+
 function closePageFullview(fromHistory=false){
  if(!pageFullview.open)return;
  if(!fromHistory&&fullPageHistory&&history.state?.binderPageFullview){history.back();return;}
- fullPageHistory=false;fullPageToken++;pageFullview.close();pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
+ fullPageHistory=false;fullPageToken++;previewFlip?.destroy();previewFlip=null;pageFullview.onkeydown=null;pageFullview.close();pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
  if(preview){preview=false;detail=null;window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();}
 }
 pageFullview.addEventListener('cancel',e=>{e.preventDefault();closePageFullview();});

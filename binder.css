@@ -238,3 +238,12 @@ html:not(.app-shell) .shell>.binder-header{position:sticky;top:0;z-index:80;back
 
 #pageFullview.binder-preview-dim .binder-cover-depth{box-shadow:none}
 #pageFullview.binder-preview-dim .binder-cover-depth:after{box-shadow:inset -1px -1px 2px #281a3420;background:linear-gradient(90deg,#21112e1a,transparent 7%)}
+
+/* Keep showcase dark depth in the dim preview without restoring white edge light. */
+#pageFullview.binder-preview-dim .binder-flip-page:not(.binder-flip-cover) .binder-flip-face:after{
+ background:linear-gradient(90deg,#21182c14,transparent 2.5%,transparent 98%,#21182c0a);
+ box-shadow:inset 4px 0 6px -5px #24172e66,inset -2px 0 4px -3px #24172e44,inset 0 -2px 3px -2px #24172e44;
+}
+#pageFullview.binder-preview-dim .binder-cover-depth{
+ box-shadow:inset -1px -1px 2px #281a3420;
+}

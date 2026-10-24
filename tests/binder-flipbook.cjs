@@ -56,8 +56,8 @@ async function fixture(page,pockets=9){
  await page.keyboard.press('ArrowRight');assert.match(await page.locator('#pageNav').innerText(),/3페이지/);
  await page.emulateMedia({reducedMotion:'no-preference'});await page.keyboard.press('ArrowLeft');await page.waitForTimeout(750);assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
  await page.screenshot({path:'/tmp/binder-flipbook-qa.png',fullPage:true});
- // Editing preview retains the previous renderer, and each pocket ratio fits a phone.
- await page.goto(base+'/binder.html?view=edit&id=fixture');await page.locator('[data-act=preview]').click();await page.waitForSelector('#viewer');assert.equal(await page.locator('.binder-flip-root').count(),0);assert(await page.locator('.viewer-page').count());
+ // Editing preview uses the full-screen image gallery; showcase ratios still fit a phone.
+ await page.goto(base+'/binder.html?view=edit&id=fixture');await page.locator('[data-act=preview]').click();await page.waitForSelector('#pageFullview[open]');assert.equal(await page.locator('.binder-flip-root').count(),0);assert.equal(await page.locator('.page-fullview-stage').count(),4);
  for(const pockets of [4,6,12]){const p=await browser.newPage({viewport:{width:360,height:800}});await fixture(p,pockets);await p.goto(base+'/binder.html?view=detail&id=fixture');await p.waitForSelector('.stf__item');const rect=await p.locator('.binder-flip-root').boundingBox();assert(rect.width<=324 && rect.width>=310);await p.locator('[data-act=next]').click();await p.waitForTimeout(700);assert.match(await p.locator('#pageNav').innerText(),/1페이지/);await p.close();}
  // App viewport: lock shelf/overview zoom; single-page and full-page image zoom stay local.
  await page.goto(base+'/binder.html?view=detail&id=fixture&app=1');await page.waitForSelector('.stf__item');

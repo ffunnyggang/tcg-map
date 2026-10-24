@@ -36,7 +36,7 @@ function metrics(b){return `좋아요 ${b?.binder_likes?.[0]?.count||0} · 댓�
 function createTile(){return '<button class="create-tile" data-act="create"><span>+</span><b>내 바인더 만들기</b></button>'}
 function shelfAuthor(author,timestamp){const time=date(timestamp);return (/^https:\/\//.test(author.avatar_url||'')?'<img class="avatar" src="'+esc(author.avatar_url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="avatar" aria-hidden="true"></span>')+'<div class="shelf-identity"><span>'+esc(author.author_nickname||'수집가')+'</span><time datetime="'+esc(timestamp)+'">'+esc(time)+'</time></div>'}
 async function list(){const mine=view!=='feed';draft=null;listRows.clear();listPublications.clear();setHeader(mine?'바인더 보관함':'바인더 자랑하기');
- app.innerHTML=`<section class="intro"><p class="eyebrow">MY CARD COLLECTION</p><h1>${mine?'한 장씩 채우는<br>나의 수집 이야기':'취향이 담긴 바인더,<br>함께 넘겨봐요'}</h1><p>${mine?'좋아하는 카드와 쌓아온 시간을 담아보세요.':'수집가들의 소중한 컬렉션을 만나보세요.'}</p>${mine?'<p class="shelf-publish-note">보관함의 바인더는 ‘자랑하기’를 설정해야 자랑 목록에 공개돼요.</p>':''}</section><div id="binderList" class="grid"></div><div id="more"></div>`;
+ app.innerHTML=`<section class="intro"><p class="eyebrow">MY CARD COLLECTION</p><h1>${mine?'한 장씩 채우는<br>나의 수집 이야기':'취향이 담긴 바인더,<br>함께 넘겨봐요'}</h1><p>${mine?'좋아하는 카드와 쌓아온 시간을 담아보세요.':'수집가들의 소중한 컬렉션을 만나보세요.'}</p>${mine?'<p class="shelf-publish-note">※ 보관함의 바인더는 ‘자랑하기’를 설정해야 자랑 목록에 공개돼요.</p>':''}</section><div id="binderList" class="grid"></div><div id="more"></div>`;
  let offset=0;const profile=mine?check(await db.from('profiles').select('nickname,avatar_url').eq('user_id',uid).maybeSingle()):null;
  const load=async()=>{let query=db.from(mine?'binders':'binder_publications').select(mine?'*':'*,binder_likes(count),binder_comments(count),binder_views(count)').order(mine?'updated_at':'published_at',{ascending:false}).range(offset,offset+19);if(mine)query=query.eq('user_id',uid);else query=query.eq('is_public',true).eq('is_listed',true).eq('hidden',false);const rows=check(await query);
  let publications=[];if(mine&&rows.length)publications=check(await db.from('binder_publications').select('*,binder_likes(count),binder_comments(count),binder_views(count)').in('id',rows.map(x=>x.id)));
@@ -113,28 +113,13 @@ window.addEventListener('funy:native-binder-action',e=>{if(!detail||preview)retu
 document.addEventListener('change',e=>{if(!e.target.matches('[data-detail-menu]'))return;const choice=e.target.value;e.target.value='';run(async()=>{if(choice==='share')return share();if(choice==='report'||choice==='block')return action(choice,{dataset:{user:detail.user_id}});if(choice==='stop'){if(!confirm('바인더 자랑을 멈출까요? 공유한 링크는 유지됩니다.'))return;menuBinder=detail;return action('hide-showcase',e.target);}})});
 
 
-const binderPreview=document.createElement('dialog');binderPreview.id='binderPreview';binderPreview.setAttribute('aria-label','바인더 미리보기');document.body.appendChild(binderPreview);
-let previewHistory=false,previewScroll=0;
+let previewScroll=0;
 async function openBinderPreview(){
- await save();if(binderPreview.open)return;
- previewScroll=window.scrollY;detail={...structuredClone(draft),author_nickname:'나'};preview=true;viewMode='single';pageIndex=0;zoom=1;
- binderPreview.style.setProperty('--preview-ratio',layouts[detail.pockets].ratio);
- binderPreview.innerHTML='<div class="preview-book"><div class="preview-controls"><div id="pageNav" class="page-nav"></div><button type="button" data-act="back-edit" aria-label="미리보기 닫기">×</button></div><div class="binder-viewer-wrap"><div class="viewer" id="viewer" style="'+style(detail.pockets)+'"><div class="viewer-content" id="viewerContent"></div></div><div id="viewerArrows" class="viewer-arrows"></div></div></div>';
- binderPreview.showModal();document.documentElement.classList.add('binder-preview-open');
- try{history.pushState({...history.state,binderPreview:true},'',location.href);previewHistory=true;}catch(_){previewHistory=false;}
- renderViewer();bindViewer();
+ await save();if(pageFullview.open)return;
+ previewScroll=window.scrollY;detail={...structuredClone(draft),author_nickname:'나'};preview=true;
+ return openPageFullview(0,true);
 }
-function closeBinderPreview(fromHistory=false){
- if(!binderPreview.open)return;pageTurnToken++;clearTimeout(pageTurnTimer);pageTurning=false;disposeShowcaseFlip();
- binderPreview.close();binderPreview.innerHTML='';preview=false;detail=null;document.documentElement.classList.remove('binder-preview-open');
- const back=previewHistory&&!fromHistory&&history.state?.binderPreview;previewHistory=false;if(back)history.back();
- window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();
-}
-binderPreview.addEventListener('cancel',e=>{e.preventDefault();closeBinderPreview();});
-binderPreview.addEventListener('click',e=>{if(e.target===binderPreview)closeBinderPreview();});
-window.addEventListener('popstate',()=>{if(binderPreview.open&&!history.state?.binderPreview)closeBinderPreview(true);});
-window.addEventListener('pagehide',()=>closeBinderPreview(true));
-
+function closeBinderPreview(){return closePageFullview();}
 async function renderDetail(){const b=detail;setHeader(preview?'바인더 미리보기':'바인더 자랑하기',preview);if(!preview&&$('#detailHeaderMenu'))$('#detailHeaderMenu').innerHTML=detailMenu();app.innerHTML=`<section class="detail-head">${preview?'<p class="eyebrow">나만 보는 미리보기</p>':detailAuthor(b)}<h1>${esc(b.title)}</h1><p class="description">${esc(b.description)}</p>${preview?'<div class="meta">좌우 모두 사진이 없는 면은 표시하지 않아요.</div>':''}</section><div class="viewer-head"><div id="pageNav" class="page-nav"></div><div class="seg"><button data-act="mode-single" class="on">한 장</button><button data-act="mode-all">전체</button></div></div><div class="binder-viewer-wrap"><div class="viewer" id="viewer" style="${style(b.pockets)}"><div class="viewer-content" id="viewerContent"></div></div><div id="viewerArrows" class="viewer-arrows"></div></div>${preview?'<div class="dock"><button class="btn primary" data-act="back-edit">편집으로 돌아가기</button></div>':'<div class="binder-social-bar" id="detailStats"><div class="binder-social-left"><button id="likeBtn" data-act="like" aria-pressed="false">♡ 좋아요 0</button><span id="commentCount">댓글 0</span></div><span id="viewCount">조회 0</span></div><section class="comments binder-detail-comments"><div id="comments"></div></section><form id="commentForm" class="comment-form binder-comment-fixed"><div id="replyTarget" hidden></div><textarea id="commentBody" rows="1" maxlength="500" placeholder="댓글을 남겨보세요." required aria-label="댓글 내용"></textarea><button class="btn primary" type="submit">등록</button></form>'}`;
  syncNativeBinderMenu();
  viewMode='single';pageIndex=0;zoom=1;renderViewer();bindViewer();if(!preview){await refreshSocial();$('#commentForm').onsubmit=e=>{e.preventDefault();run(async()=>{const body=$('#commentBody').value.trim();if(!body)return;check(await db.from('binder_comments').insert({binder_id:detail.id,user_id:uid,body,parent_id:replyParent?.id||null}));if(replyParent)openThreads.add(replyParent.id);setReply(null);$('#commentBody').value='';await refreshSocial()})};}}
@@ -227,16 +212,16 @@ function setFullPageZoom(value){
  stage.style.touchAction=fullPageZoom>1?'pan-x pan-y':'pan-y';
  if(fullPageZoom===1){stage.scrollLeft=0;stage.scrollTop=0;}
 }
-async function openPageFullview(index){
- if(view!=='detail'||preview||viewMode!=='all'||pageFullview.open)return;
- const selected=viewerPages()[index],pages=viewerPages().slice(1).filter(p=>p.path),selectedIndex=pages.findIndex(p=>p.id===selected?.id);if(selectedIndex<0)return;
+async function openPageFullview(index,editorPreview=false){
+ if(pageFullview.open||(!editorPreview&&(view!=='detail'||preview||viewMode!=='all')))return;
+ const selected=viewerPages()[index],pages=editorPreview?viewerPages():viewerPages().slice(1).filter(p=>p.path),selectedIndex=editorPreview?0:pages.findIndex(p=>p.id===selected?.id);if(selectedIndex<0)return;
  const token=++fullPageToken;fullPageIndex=selectedIndex;fullPageZoom=1;
- pageFullview.innerHTML='<header class="page-fullview-header"><button type="button" data-act="close-full-page" aria-label="페이지 전체보기 닫기">×</button><strong id="pageFullviewTitle" class="page-fullview-accessible-title">'+index+'페이지</strong><span data-page-count></span></header><div class="page-fullview-track">'+pages.map((p,i)=>'<div class="page-fullview-stage" data-full-page="'+i+'"><div class="page-fullview-plane"><img alt="바인더 '+(i+1)+'페이지" draggable="false"></div><p class="page-fullview-status" role="status">사진을 불러오는 중…</p></div>').join('')+'</div>';
+ pageFullview.innerHTML='<header class="page-fullview-header"><button type="button" data-act="'+(editorPreview?'back-edit':'close-full-page')+'" aria-label="'+(editorPreview?'미리보기 닫기':'페이지 전체보기 닫기')+'">×</button><strong id="pageFullviewTitle" class="page-fullview-accessible-title">'+index+'페이지</strong><span data-page-count></span></header><div class="page-fullview-track">'+pages.map((p,i)=>'<div class="page-fullview-stage" data-full-page="'+i+'"><div class="page-fullview-plane">'+(p.path?'<img alt="바인더 '+(p.id==='cover'?'표지':i+'페이지')+'" draggable="false">':p.id==='cover'?'<div class="page-fullview-cover">'+cover(detail)+'</div>':'<div class="page-fullview-blank" aria-label="빈 페이지"></div>')+'</div>'+(p.path?'<p class="page-fullview-status" role="status">사진을 불러오는 중…</p>':'')+'</div>').join('')+'</div>';
  pageFullview.showModal();document.documentElement.classList.add('binder-page-fullview-open');
  try{history.pushState({...history.state,binderPageFullview:true},'',location.href);fullPageHistory=true;}catch(_){fullPageHistory=false;}
  const track=pageFullview.querySelector('.page-fullview-track'),stages=[...track.children],loading=new Set();
  const load=async i=>{
-  if(!pages[i]||loading.has(i))return;loading.add(i);
+  if(!pages[i]?.path||loading.has(i))return;loading.add(i);
   const stage=stages[i],img=stage.querySelector('img');
   try{const url=await imageURL(pages[i].path);if(token!==fullPageToken||!pageFullview.open)return;
    img.onload=()=>stage.querySelector('.page-fullview-status')?.remove();
@@ -266,6 +251,7 @@ function closePageFullview(fromHistory=false){
  if(!pageFullview.open)return;
  if(!fromHistory&&fullPageHistory&&history.state?.binderPageFullview){history.back();return;}
  fullPageHistory=false;fullPageToken++;pageFullview.close();pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
+ if(preview){preview=false;detail=null;window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();}
 }
 pageFullview.addEventListener('cancel',e=>{e.preventDefault();closePageFullview();});
 window.addEventListener('popstate',()=>{if(pageFullview.open)closePageFullview(true);});

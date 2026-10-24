@@ -31,6 +31,7 @@ jobs:
       - run: node tests/binder-editor-types.cjs
       - run: node tests/binder-spread-edit.cjs
       - run: node tests/binder-paired.cjs
+      - run: node tests/binder-talk-policy.cjs
       - run: node tests/binder-image-priority.cjs
       - run: node tests/binder-app-menu.cjs
       - run: node tests/binder-sticky-title.cjs

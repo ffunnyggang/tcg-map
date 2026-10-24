@@ -79,7 +79,10 @@ html.app-shell.binder-native-menu .detail-author .detail-more-native{display:non
 .binder-flip-cover .cover:before{content:'';position:absolute;z-index:2;left:9px;top:0;bottom:0;border-left:1px solid #ffffff50;box-shadow:-5px 0 8px #30213d22;pointer-events:none}
 .binder-flip-cover .binder-flip-face:after{box-shadow:inset 2px 0 3px #ffffff35,inset -1px -1px 2px #281a3420;background:linear-gradient(90deg,#21112e1a,transparent 7%)}
 /* Keep magnified content inside the viewer, never in the document's horizontal scroll range. */
-html.binder-showcase-open,html.binder-showcase-open body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+html.binder-showcase-open,html.binder-showcase-open body{max-width:100%;overscroll-behavior-x:none}
+/* clip contains horizontal overflow without creating a separate body scroll container. */
+html:not(.app-shell).binder-showcase-open,html:not(.app-shell).binder-showcase-open body{overflow-x:clip}
+html.app-shell.binder-showcase-open,html.app-shell.binder-showcase-open body{overflow-x:hidden}
 .binder-showcase-open .shell,.showcase-single{min-width:0;max-width:100%;overflow-x:clip}
 .showcase-single .viewer{min-width:0;box-sizing:border-box;overscroll-behavior-x:none}
 
@@ -118,4 +121,4 @@ html.binder-page-fullview-open,html.binder-page-fullview-open body{overflow:hidd
 
 /* Browser shelf/showcase header stays above the scrolling book and content.
    Native shells keep their own header; full-page dialogs remain in the top layer. */
-html:not(.app-shell) .shell:not(:has(.editor-fields))>.binder-header{position:sticky;top:0;z-index:80;background:#fff}
+html:not(.app-shell):not([data-binder-view="edit"]):not([data-binder-view="new"]) .shell>.binder-header{position:sticky;top:0;z-index:80;background:#fff}

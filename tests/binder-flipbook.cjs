@@ -90,6 +90,16 @@ async function fixture(page,pockets=9){
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.body.scrollWidth<=innerWidth),'app shelf cannot widen document');
  await page.screenshot({path:'/tmp/binder-shelf-qa.png',fullPage:true});
  await page.goto(base+'/binder.html?view=edit&id=fixture&app=1');await page.waitForSelector('#draftTitle');assert(!await page.locator('meta[name=viewport]').getAttribute('content').then(s=>s.includes('maximum-scale=1')));
+ // Native menu handshake: retry late shell startup, route before context, hide only after ACK.
+ const nativePage=await browser.newPage({viewport:{width:390,height:844}});await fixture(nativePage);
+ await nativePage.addInitScript(()=>{window.__binderMessages=[];setTimeout(()=>{window.ReactNativeWebView={postMessage(raw){const m=JSON.parse(raw);window.__binderMessages.push(m);if(m.type==='BINDER_DETAIL_CONTEXT')document.documentElement.classList.add('binder-native-menu','binder-native-header');}};},650);});
+ await nativePage.goto(base+'/binder.html?view=detail&id=fixture&app=1');
+ await nativePage.waitForFunction(()=>document.documentElement.classList.contains('binder-native-menu'));
+ const handshake=await nativePage.evaluate(()=>window.__binderMessages);const contextIndex=handshake.findIndex(m=>m.type==='BINDER_DETAIL_CONTEXT');assert.equal(handshake[contextIndex-1].type,'WEB_ROUTE');assert.equal(handshake[contextIndex].mine,true);
+ assert.equal(await nativePage.locator('.detail-author [data-detail-menu]').isVisible(),false);
+ await nativePage.evaluate(()=>{document.dispatchEvent(new Event('visibilitychange'));});
+ await nativePage.waitForFunction(()=>window.__binderMessages.filter(m=>m.type==='BINDER_DETAIL_CONTEXT').length>=2);
+ await nativePage.close();
  // Actual TALK renderers use the same depth on the all-feed rail and binder grid.
  await page.route('**/popup-runtime-v1.js*',route=>route.fulfill({body:''}));
  await page.route('**/talk-safety-v1.js*',route=>route.fulfill({body:''}));

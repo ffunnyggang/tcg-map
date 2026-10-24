@@ -18,7 +18,7 @@ assert.equal(await p.locator('#pages .page-photo').count(),3,'all existing photo
 for(const sheet of [p.locator('#pages .spread .sheet').first(),p.locator('#pages .spread .sheet').last()]){assert(await sheet.evaluate(el=>el.classList.contains('binder-blank')));assert.equal(await sheet.locator('button').count(),0);}
 await p.locator('#pages .page-photo').first().scrollIntoViewIfNeeded();await p.waitForFunction(()=>document.querySelector('#pages .sheet:not(.binder-blank)').style.getPropertyValue('--page-mat-color'));
 assert.equal(await p.locator('#pages .sheet:not(.binder-blank)').first().evaluate(el=>getComputedStyle(el).backgroundColor==='rgb(255, 255, 255)'),false);
-await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('#pages .page-photo').count(),4);assert.equal(await p.locator('#pages .spread:last-of-type .sheet:last-child button').count(),0);
+await p.locator('[data-act=add-page]').click();assert.equal(await p.locator('#pages .page-photo').count(),5);assert.equal(await p.locator('#pages .spread:last-of-type .sheet:last-child button').count(),0);
 await p.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-editor-types-'+engine+'-qa.png'),fullPage:true});
 await p.waitForFunction(()=>document.querySelector('#saveState')?.textContent==='자동저장됨');await p.goto(base+'/binder.html?view=new');await p.waitForSelector('[data-act=tcg-type]');assert.equal(await p.locator('#pages .page-photo').count(),10);assert.equal(await p.locator('#pages .spread').count(),6);
 assert.equal(await p.locator('#pages .sheet.binder-blank').count(),2);assert.equal(await p.locator('#saveState').textContent(),'사진을 추가하면 자동저장이 시작돼요.');

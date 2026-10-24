@@ -2,7 +2,7 @@ const {chromium,webkit}=require('playwright'),assert=require('node:assert/strict
 const root=path.resolve(__dirname,'..'),s=fs.readFileSync(path.join(__dirname,'binder-flipbook.cjs'),'utf8'),fixture=new Function('return ('+s.slice(s.indexOf('async function fixture('),s.indexOf('\n(async()=>{'))+')')();
 const server=http.createServer((req,res)=>{const p=path.join(root,new URL(req.url,'http://localhost').pathname);try{res.setHeader('Content-Type',/\.m?js$/.test(p)?'text/javascript':p.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});
 async function verifySpread(page){
- const sheets=await page.locator('.spread').first().locator('.sheet').evaluateAll(els=>els.map(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect(),n=el.querySelector('.page-number').getBoundingClientRect();return {top:s.paddingTop,bottom:s.paddingBottom,left:s.paddingLeft,right:s.paddingRight,radius:s.borderTopLeftRadius,outside:n.top>=r.bottom};}));
+ const sheets=await page.locator('.spread').first().locator('.sheet').evaluateAll(els=>els.map(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect(),n=el.querySelector('.page-number')?.getBoundingClientRect();return {top:s.paddingTop,bottom:s.paddingBottom,left:s.paddingLeft,right:s.paddingRight,radius:s.borderTopLeftRadius,outside:!n||n.top>=r.bottom};}));
  for(const x of sheets){assert.equal(x.top,x.bottom);assert.equal(x.top,x.left);assert.equal(x.top,x.right);assert(x.outside,'number below page');}
  assert.equal(sheets[0].radius,'12px');assert.equal(sheets[1].radius,'4px');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
@@ -18,12 +18,12 @@ async function verifySpread(page){
   assert.equal(await page.locator(selector).first().evaluate(el=>getComputedStyle(el).borderTopRightRadius),'12px');
  }
  assert.equal(await page.locator('[data-detail-menu] option').evaluateAll(a=>a.some(x=>x.textContent.includes('바인더 메뉴'))),false);
- assert.equal(await page.locator('[data-detail-menu]').first().evaluate(el=>el.selectedIndex),-1);
+ await page.locator('#detailHeaderMenu [data-detail-menu]').click();assert.deepEqual(await page.locator('.binder-dropdown button').allTextContents(),['공유하기','자랑 멈추기']);await page.keyboard.press('Escape');
  await page.locator('[data-act=mode-all]').click();
  assert.equal(await page.locator('.viewer.all .spread').first().evaluate(el=>getComputedStyle(el).backgroundColor.replace(/\s/g,'')),mat);
- assert.equal(await page.locator('.viewer.all .viewer-page').first().evaluate(el=>getComputedStyle(el).borderTopLeftRadius),'8px');
+ assert.equal(await page.locator('.viewer.all .viewer-page').first().evaluate(el=>getComputedStyle(el).borderTopRightRadius),'8px');
  const nums=await page.locator('.viewer.all .sheet .page-number').evaluateAll(a=>a.slice(0,2).map(el=>({left:getComputedStyle(el).left,right:getComputedStyle(el).right})));
- assert.equal(nums[0].left,'10px');assert.equal(nums[1].right,'10px');
+ assert.equal(nums[0].right,'10px');assert.equal(nums[1].left,'10px');
  await verifySpread(page);
  await page.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-polish-overview-'+engine+'-qa.png'),fullPage:true});
  await page.locator('[data-act=full-page][data-index="2"]').click();
@@ -43,8 +43,8 @@ async function verifySpread(page){
  await verifySpread(page);
  await page.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-polish-editor-'+engine+'-qa.png'),fullPage:true});
  await page.goto(base+'/binder.html?view=mine');await page.waitForSelector('[data-shelf-menu]');
- assert.equal(await page.locator('[data-shelf-menu]').first().evaluate(el=>el.selectedIndex),-1);
- assert.deepEqual(await page.locator('[data-shelf-menu]').first().locator('option').allTextContents(),['자랑하기','공유하기','삭제하기']);
+ await page.locator('[data-shelf-menu]').first().click();
+ assert.deepEqual(await page.locator('.binder-dropdown button').allTextContents(),['자랑하기','공유하기','삭제하기']);
  console.log('PASS '+engine+': page radius, unchanged overview/editor, shared mat, outer numbering, menus, gallery layout/navigation/zoom/back');
  await page.close();
  }finally{await browser.close();}

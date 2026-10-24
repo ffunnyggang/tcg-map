@@ -115,3 +115,7 @@ html.binder-page-fullview-open,html.binder-page-fullview-open body{overflow:hidd
 .page-fullview-plane{width:100%;height:100%;min-width:100%;min-height:100%}
 .page-fullview-plane img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
 .page-fullview-status{position:absolute;inset:40% 15px auto;text-align:center;color:#d3ccdc;font-size:13px}
+
+/* Browser shelf/showcase header stays above the scrolling book and content.
+   Native shells keep their own header; full-page dialogs remain in the top layer. */
+html:not(.app-shell) .shell:not(:has(.editor-fields))>.binder-header{position:sticky;top:0;z-index:80;background:#fff}

@@ -13,7 +13,7 @@ if(window.ReactNativeWebView||q.get('app')==='1')document.documentElement.classL
 if(q.get('nativeHeader')==='1'&&document.documentElement.classList.contains('app-shell'))document.documentElement.classList.add('binder-native-header');
 function toast(s){$('#toast').textContent=s;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4000)}
 function localKey(){return `funy-binder-draft:${uid}:${draft.id}`}
-function saveStatusHTML(s,retry=false){return s==='자동저장됨'&&publication?.is_listed?'<span class="listed-save-notice">자랑 중인 바인더는 수정 내용이<br>자동으로 공개 화면에 반영돼요</span>':esc(s)+(retry?' <button data-act="retry">다시 저장</button>':'')}
+function saveStatusHTML(s,retry=false){return s==='자동저장됨'&&publication?.is_listed?'<span class="listed-save-notice">자랑 중인 바인더에 자동 저장됨</span>':esc(s)+(retry?' <button data-act="retry">다시 저장</button>':'')}
 function setStatus(s,retry=false){const el=$('#saveState');if(el)el.innerHTML=saveStatusHTML(s,retry)}
 function changed(){dirty=true;changeNo++;if(!autosaveStarted){setStatus('사진을 추가하면 자동저장이 시작돼요.');return;}try{sessionStorage.setItem(localKey(),JSON.stringify(draft))}catch(_){}setStatus('저장 대기 중…');clearTimeout(saveTimer);saveTimer=setTimeout(()=>save().catch(e=>toast(message(e))),650)}
 async function save(){clearTimeout(saveTimer);if(saving)return saving;if(!dirty||!draft||!autosaveStarted)return;
@@ -36,7 +36,7 @@ function metrics(b){return `좋아요 ${b?.binder_likes?.[0]?.count||0} · 댓�
 function createTile(){return '<button class="create-tile" data-act="create"><span>+</span><b>내 바인더 만들기</b></button>'}
 function shelfAuthor(author,timestamp){const time=date(timestamp);return (/^https:\/\//.test(author.avatar_url||'')?'<img class="avatar" src="'+esc(author.avatar_url)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="avatar" aria-hidden="true"></span>')+'<div class="shelf-identity"><span>'+esc(author.author_nickname||'수집가')+'</span><time datetime="'+esc(timestamp)+'">'+esc(time)+'</time></div>'}
 async function list(){const mine=view!=='feed';draft=null;listRows.clear();listPublications.clear();setHeader(mine?'바인더 보관함':'바인더 자랑하기');
- app.innerHTML=`<section class="intro"><p class="eyebrow">MY CARD COLLECTION</p><h1>${mine?'한 장씩 채우는<br>나의 수집 이야기':'취향이 담긴 바인더,<br>함께 넘겨봐요'}</h1><p>${mine?'좋아하는 카드와 쌓아온 시간을 담아보세요.':'수집가들의 소중한 컬렉션을 만나보세요.'}</p>${mine?'<p class="shelf-publish-note">보관함의 바인더는 ‘자랑하기’를 설정해야<br>TALK의 바인더 자랑 목록에 공개돼요.</p>':''}</section><div id="binderList" class="grid"></div><div id="more"></div>`;
+ app.innerHTML=`<section class="intro"><p class="eyebrow">MY CARD COLLECTION</p><h1>${mine?'한 장씩 채우는<br>나의 수집 이야기':'취향이 담긴 바인더,<br>함께 넘겨봐요'}</h1><p>${mine?'좋아하는 카드와 쌓아온 시간을 담아보세요.':'수집가들의 소중한 컬렉션을 만나보세요.'}</p>${mine?'<p class="shelf-publish-note">보관함의 바인더는 ‘자랑하기’를 설정해야 자랑 목록에 공개돼요.</p>':''}</section><div id="binderList" class="grid"></div><div id="more"></div>`;
  let offset=0;const profile=mine?check(await db.from('profiles').select('nickname,avatar_url').eq('user_id',uid).maybeSingle()):null;
  const load=async()=>{let query=db.from(mine?'binders':'binder_publications').select(mine?'*':'*,binder_likes(count),binder_comments(count),binder_views(count)').order(mine?'updated_at':'published_at',{ascending:false}).range(offset,offset+19);if(mine)query=query.eq('user_id',uid);else query=query.eq('is_public',true).eq('is_listed',true).eq('hidden',false);const rows=check(await query);
  let publications=[];if(mine&&rows.length)publications=check(await db.from('binder_publications').select('*,binder_likes(count),binder_comments(count),binder_views(count)').in('id',rows.map(x=>x.id)));
@@ -111,6 +111,29 @@ function detailMenu(){return '<button type="button" class="detail-more-native" d
 function detailAuthor(b){const timestamp=b.published_at||b.created_at||b.updated_at;const published=date(timestamp);return '<div class="detail-author">'+(/^https:\/\//.test(b.avatar_url||'')?'<img class="avatar" src="'+esc(b.avatar_url)+'" alt="" referrerpolicy="no-referrer">':'<span class="avatar" aria-hidden="true"></span>')+'<div class="detail-identity"><b>'+esc(b.author_nickname||'수집가')+'</b><time datetime="'+esc(timestamp)+'">'+esc(published)+'</time></div>'+detailMenu()+'</div>'}
 window.addEventListener('funy:native-binder-action',e=>{if(!detail||preview)return;const choice=e.detail?.action;if(choice==='share')return run(()=>share());if(choice==='stop'&&detail.user_id===uid)return run(async()=>{if(!confirm('바인더 자랑을 멈출까요? 공유한 링크는 유지됩니다.'))return;menuBinder=detail;await action('hide-showcase',{dataset:{}});});if((choice==='report'||choice==='block')&&detail.user_id!==uid)return run(()=>action(choice,{dataset:{user:detail.user_id}}));});
 document.addEventListener('change',e=>{if(!e.target.matches('[data-detail-menu]'))return;const choice=e.target.value;e.target.value='';run(async()=>{if(choice==='share')return share();if(choice==='report'||choice==='block')return action(choice,{dataset:{user:detail.user_id}});if(choice==='stop'){if(!confirm('바인더 자랑을 멈출까요? 공유한 링크는 유지됩니다.'))return;menuBinder=detail;return action('hide-showcase',e.target);}})});
+
+
+const binderPreview=document.createElement('dialog');binderPreview.id='binderPreview';binderPreview.setAttribute('aria-label','바인더 미리보기');document.body.appendChild(binderPreview);
+let previewHistory=false,previewScroll=0;
+async function openBinderPreview(){
+ await save();if(binderPreview.open)return;
+ previewScroll=window.scrollY;detail={...structuredClone(draft),author_nickname:'나'};preview=true;viewMode='single';pageIndex=0;zoom=1;
+ binderPreview.style.setProperty('--preview-ratio',layouts[detail.pockets].ratio);
+ binderPreview.innerHTML='<div class="preview-book"><div class="preview-controls"><div id="pageNav" class="page-nav"></div><button type="button" data-act="back-edit" aria-label="미리보기 닫기">×</button></div><div class="binder-viewer-wrap"><div class="viewer" id="viewer" style="'+style(detail.pockets)+'"><div class="viewer-content" id="viewerContent"></div></div><div id="viewerArrows" class="viewer-arrows"></div></div></div>';
+ binderPreview.showModal();document.documentElement.classList.add('binder-preview-open');
+ try{history.pushState({...history.state,binderPreview:true},'',location.href);previewHistory=true;}catch(_){previewHistory=false;}
+ renderViewer();bindViewer();
+}
+function closeBinderPreview(fromHistory=false){
+ if(!binderPreview.open)return;pageTurnToken++;clearTimeout(pageTurnTimer);pageTurning=false;disposeShowcaseFlip();
+ binderPreview.close();binderPreview.innerHTML='';preview=false;detail=null;document.documentElement.classList.remove('binder-preview-open');
+ const back=previewHistory&&!fromHistory&&history.state?.binderPreview;previewHistory=false;if(back)history.back();
+ window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();
+}
+binderPreview.addEventListener('cancel',e=>{e.preventDefault();closeBinderPreview();});
+binderPreview.addEventListener('click',e=>{if(e.target===binderPreview)closeBinderPreview();});
+window.addEventListener('popstate',()=>{if(binderPreview.open&&!history.state?.binderPreview)closeBinderPreview(true);});
+window.addEventListener('pagehide',()=>closeBinderPreview(true));
 
 async function renderDetail(){const b=detail;setHeader(preview?'바인더 미리보기':'바인더 자랑하기',preview);if(!preview&&$('#detailHeaderMenu'))$('#detailHeaderMenu').innerHTML=detailMenu();app.innerHTML=`<section class="detail-head">${preview?'<p class="eyebrow">나만 보는 미리보기</p>':detailAuthor(b)}<h1>${esc(b.title)}</h1><p class="description">${esc(b.description)}</p>${preview?'<div class="meta">좌우 모두 사진이 없는 면은 표시하지 않아요.</div>':''}</section><div class="viewer-head"><div id="pageNav" class="page-nav"></div><div class="seg"><button data-act="mode-single" class="on">한 장</button><button data-act="mode-all">전체</button></div></div><div class="binder-viewer-wrap"><div class="viewer" id="viewer" style="${style(b.pockets)}"><div class="viewer-content" id="viewerContent"></div></div><div id="viewerArrows" class="viewer-arrows"></div></div>${preview?'<div class="dock"><button class="btn primary" data-act="back-edit">편집으로 돌아가기</button></div>':'<div class="binder-social-bar" id="detailStats"><div class="binder-social-left"><button id="likeBtn" data-act="like" aria-pressed="false">♡ 좋아요 0</button><span id="commentCount">댓글 0</span></div><span id="viewCount">조회 0</span></div><section class="comments binder-detail-comments"><div id="comments"></div></section><form id="commentForm" class="comment-form binder-comment-fixed"><div id="replyTarget" hidden></div><textarea id="commentBody" rows="1" maxlength="500" placeholder="댓글을 남겨보세요." required aria-label="댓글 내용"></textarea><button class="btn primary" type="submit">등록</button></form>'}`;
  syncNativeBinderMenu();
@@ -288,8 +311,8 @@ const pid=el.dataset.page;
  if(act==='shelf-share'){const b=menuBinder.user_id===uid?await sharedSnapshot(menuBinder):menuBinder;closeModal();return share(b);}
  if(act==='showcase'){if(!confirm('이 바인더를 자랑 목록에 공개할까요?'))return;await sharedSnapshot(menuBinder,true);closeModal();toast('바인더 자랑 목록에 등록했어요.');return list();}
  if(act==='hide-showcase'){check(await db.from('binder_publications').update({is_listed:false}).eq('id',menuBinder.id));closeModal();toast('자랑 목록에서 숨겼어요. 공유한 링크는 유지돼요.');if(view==='detail')location.href='/binder.html?view=feed';else return list();return;}
- if(act==='preview'){await save();detail={...structuredClone(draft),author_nickname:'나'};preview=true;return renderDetail();}
- if(act==='back-edit')return edit();
+ if(act==='preview')return openBinderPreview();
+ if(act==='back-edit')return closeBinderPreview();
  if(act==='mode-all'||act==='mode-single'){changeViewerMode(act==='mode-all'?'all':'single');return;}
  if(act==='zoom-in'||act==='zoom-out'){zoom=Math.max(1,Math.min(3,zoom+(act==='zoom-in'?.25:-.25)));applyZoom();return;}
  if(act==='prev'||act==='next'){turn(act==='next'?1:-1);return;}
@@ -307,7 +330,7 @@ const pid=el.dataset.page;
 document.addEventListener('change',e=>{const el=e.target.closest('[data-shelf-menu]');if(!el||!el.value)return;const act=el.value;el.value='';menuBinder=listRows.get(el.dataset.id);if(menuBinder)run(()=>action(act,el));});
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||el.disabled)return;e.preventDefault();if(el.dataset.act==='close'){closeModal();return}run(()=>action(el.dataset.act,el))});
 $('#editorClose').onclick=()=>run(async()=>{await save();location.href='/binder.html?view=mine'});
-$('#back').onclick=()=>run(async()=>{await save();if(preview){preview=false;return edit()}if(history.length>1)history.back();else {const backTo=new URLSearchParams(location.search).get('returnTo');location.href=backTo==='/talk.html'?backTo:(view==='detail'?'/talk.html':'/my.html')}});
+$('#back').onclick=()=>run(async()=>{await save();if(preview)return closeBinderPreview();if(history.length>1)history.back();else {const backTo=new URLSearchParams(location.search).get('returnTo');location.href=backTo==='/talk.html'?backTo:(view==='detail'?'/talk.html':'/my.html')}});
 window.addEventListener('beforeunload',e=>{if(dirty||saving||photoPending){e.preventDefault();e.returnValue=''}});
 window.addEventListener('pagehide',()=>{closeBinderMenu();closePageFullview(true);disposeShowcaseFlip();observer?.disconnect();for(const promise of urls.values())Promise.resolve(promise).then(URL.revokeObjectURL);urls.clear()});
 window.addEventListener('pageshow',event=>{if(event.persisted){if(view==='detail'&&!preview&&$('#viewer'))renderViewer();document.querySelectorAll('img[data-path]').forEach(image=>image.removeAttribute('src'));loadImages();}});

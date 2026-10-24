@@ -122,7 +122,7 @@ function changeViewerMode(mode){
  }
  viewMode=mode;zoom=1;renderViewer();
  if(!preserve)return;
- const restore=()=>{if(token===viewerModeScrollToken)window.scrollTo({left:x,top:y,behavior:'instant'});};
+ const restore=()=>{if(token===viewerModeScrollToken)window.scrollTo({left:x,top:y,behavior:'auto'});};
  restore();requestAnimationFrame(()=>{restore();requestAnimationFrame(()=>{if(token!==viewerModeScrollToken)return;restore();releaseViewerScrollFloor();});});
 }
 window.addEventListener('scroll',()=>releaseViewerScrollFloor(),{passive:true});

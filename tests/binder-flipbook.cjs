@@ -59,20 +59,37 @@ async function fixture(page,pockets=9){
  // Editing preview retains the previous renderer, and each pocket ratio fits a phone.
  await page.goto(base+'/binder.html?view=edit&id=fixture');await page.locator('[data-act=preview]').click();await page.waitForSelector('#viewer');assert.equal(await page.locator('.binder-flip-root').count(),0);assert(await page.locator('.viewer-page').count());
  for(const pockets of [4,6,12]){const p=await browser.newPage({viewport:{width:360,height:800}});await fixture(p,pockets);await p.goto(base+'/binder.html?view=detail&id=fixture');await p.waitForSelector('.stf__item');const rect=await p.locator('.binder-flip-root').boundingBox();assert(rect.width<=324 && rect.width>=310);await p.locator('[data-act=next]').click();await p.waitForTimeout(700);assert.match(await p.locator('#pageNav').innerText(),/1페이지/);await p.close();}
- // App viewport: block outer page pinch, allow only image-local pinch, restore on mode exit.
+ // App viewport: lock shelf/overview zoom; single-page and full-page image zoom stay local.
  await page.goto(base+'/binder.html?view=detail&id=fixture&app=1');await page.waitForSelector('.stf__item');
  assert.match(await page.locator('meta[name=viewport]').getAttribute('content'),/maximum-scale=1/);
  const blocked=await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:20,clientY:20},{clientX:120,clientY:20}]});document.querySelector('.detail-head').dispatchEvent(e);return e.defaultPrevented;});assert(blocked);
  await page.evaluate(()=>{const el=document.querySelector('#viewer');const e=new Event('touchstart',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:10,clientY:10},{clientX:100,clientY:10}]});el.dispatchEvent(e);const m=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(m,'touches',{value:[{clientX:0,clientY:10},{clientX:150,clientY:10}]});el.dispatchEvent(m);});
  assert.equal(await page.locator('.binder-flip-root').evaluate(el=>el.style.transform),'scale(1)');
- await page.locator('[data-act=mode-all]').click();assert(!await page.locator('meta[name=viewport]').getAttribute('content').then(s=>s.includes('maximum-scale=1')));
+ await page.locator('[data-act=mode-all]').click();assert.match(await page.locator('meta[name=viewport]').getAttribute('content'),/maximum-scale=1/);
  assert(await page.locator('.viewer.all .cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
- await page.evaluate(()=>{document.querySelector('#viewerContent').style.width='200%';});
+ const overviewWidth=await page.locator('#viewerContent').evaluate(el=>el.getBoundingClientRect().width);
+ await page.evaluate(()=>{const el=document.querySelector('#viewer');for(const [type,gap] of [['touchstart',100],['touchmove',200],['touchend',0]]){const e=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:gap?[{clientX:60,clientY:200},{clientX:60+gap,clientY:200}]:[]});el.dispatchEvent(e);}});
+ assert.equal(await page.locator('#viewerContent').evaluate(el=>el.getBoundingClientRect().width),overviewWidth,'overview pinch cannot enlarge binder');
+ // Selected page opens alone, fits the screen, and retains overview position on close.
+ await page.locator('[data-act=full-page][data-index="2"]').scrollIntoViewIfNeeded();const beforeScroll=await page.evaluate(()=>scrollY);
+ await page.locator('[data-act=full-page][data-index="2"]').click();await page.waitForFunction(()=>document.querySelector('#pageFullview').open);
+ await page.waitForFunction(()=>document.querySelector('#pageFullview img')?.naturalWidth>0);
+ assert.equal(await page.locator('#pageFullviewTitle').innerText(),'2페이지');assert.equal(await page.locator('#pageFullview img').count(),1);
+ const fullRect=await page.locator('#pageFullview').boundingBox();assert.equal(fullRect.width,480);assert.equal(fullRect.height,844);
+ await page.locator('[data-act=full-page-in]').click();assert.equal(await page.locator('[data-page-zoom]').innerText(),'125%');
+ assert.equal(await page.locator('#viewerContent').evaluate(el=>el.getBoundingClientRect().width),overviewWidth);
+ await page.screenshot({path:'/tmp/binder-fullpage-qa.png',fullPage:false});
+ await page.locator('[data-act=close-full-page]').click();await page.waitForFunction(()=>!document.querySelector('#pageFullview').open);
+ assert(Math.abs(await page.evaluate(()=>scrollY)-beforeScroll)<2,'close preserves overview scroll');
+ await page.locator('[data-act=full-page][data-index="1"]').click();await page.waitForFunction(()=>document.querySelector('#pageFullview').open);await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#pageFullview').open);
+ await page.locator('[data-act=full-page][data-index="3"]').click();await page.waitForFunction(()=>document.querySelector('#pageFullview').open);await page.goBack();await page.waitForFunction(()=>!document.querySelector('#pageFullview').open);assert(await page.locator('.viewer.all').count());
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.body.scrollWidth<=innerWidth),'app overview cannot widen document');
- await page.goto(base+'/binder.html?view=mine&app=1');await page.waitForSelector('#binderList .cover');
+ await page.goto(base+'/binder.html?view=mine&app=1');await page.waitForSelector('#binderList .cover');assert.match(await page.locator('meta[name=viewport]').getAttribute('content'),/maximum-scale=1/);
+ const shelfPinchBlocked=await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:20,clientY:100},{clientX:200,clientY:100}]});document.querySelector('#binderList').dispatchEvent(e);return e.defaultPrevented;});assert(shelfPinchBlocked);
  assert(await page.locator('#binderList .cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.body.scrollWidth<=innerWidth),'app shelf cannot widen document');
  await page.screenshot({path:'/tmp/binder-shelf-qa.png',fullPage:true});
+ await page.goto(base+'/binder.html?view=edit&id=fixture&app=1');await page.waitForSelector('#draftTitle');assert(!await page.locator('meta[name=viewport]').getAttribute('content').then(s=>s.includes('maximum-scale=1')));
  // Actual TALK renderers use the same depth on the all-feed rail and binder grid.
  await page.route('**/popup-runtime-v1.js*',route=>route.fulfill({body:''}));
  await page.route('**/talk-safety-v1.js*',route=>route.fulfill({body:''}));

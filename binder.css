@@ -162,3 +162,15 @@ html[data-binder-view="detail"] .viewer.all .page-number{color:var(--muted);text
 .viewer.all .sheet:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,#ffffff10,transparent 18%,transparent 76%,#20152b20);box-shadow:inset 0 1px 1px #ffffff45,inset 1px 0 2px #ffffff25}
 .viewer.all .sheet:nth-child(even):after{background:linear-gradient(90deg,#20152b26,transparent 24%,transparent 82%,#ffffff0d);box-shadow:inset 0 1px 1px #ffffff45,inset -1px 0 2px #ffffff25}
 .viewer.all .spread:after{z-index:1;width:20px;background:linear-gradient(90deg,transparent,#170e262b 42%,#ffffff25 50%,#170e2633 56%,transparent)}
+
+/* TALK native header dropdown dimensions, shared by binder detail and shelf. */
+.binder-dropdown{position:fixed;z-index:2147483600;min-width:126px;padding:6px 0;border:1px solid #e7e2e9;border-radius:12px;background:white;box-shadow:0 5px 12px #211a2e29}
+.binder-dropdown button{display:block;width:100%;height:42px;padding:0 15px;border:0;background:transparent;text-align:left;font-size:12px;font-weight:800;color:var(--ink)}
+.binder-dropdown button:hover,.binder-dropdown button:focus-visible{background:#f6f2fa}
+.binder-dropdown button.danger{color:#d24a57}
+button.detail-more-native{border:0;background:transparent;padding:0;color:inherit;cursor:pointer}
+.inline-choices{grid-template-columns:repeat(3,1fr)}
+.binder-types{border:0;padding:0;margin:0;min-width:0}.binder-types legend{font-size:12px;font-weight:650;margin-bottom:10px}.binder-types legend small{font-weight:400;color:var(--muted);margin-left:6px;font-size:10px}
+.type-chips{display:flex;flex-wrap:wrap;gap:8px}.type-chips button{border:1px solid var(--line);background:white;color:#71677c;border-radius:22px;padding:9px 12px;font-size:12px}.type-chips button[aria-pressed=true]{border-color:var(--purple);color:#6b539c;background:#f3edf9}
+.book-desk .sheet{background:var(--page-mat-color,#fff)}.book-desk .sheet .page-photo{background:var(--page-mat-color,#fcfbfd)}
+.sheet.binder-blank{background:inherit;pointer-events:none}.blank-page{aspect-ratio:var(--ratio,.76);width:100%}

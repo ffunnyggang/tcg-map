@@ -49,7 +49,7 @@ async function fixture(page,pockets=9){
  assert(await page.locator('.binder-book-zoomed').count());const z=await page.locator('.binder-flip-root').evaluate(el=>el.style.transform);assert.equal(z,'scale(1.5)');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth && document.body.scrollWidth<=innerWidth),'zoom is contained in the viewer');
  await page.keyboard.press('ArrowRight');await page.waitForTimeout(650);assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
- await page.locator('[data-act=mode-all]').click();assert.equal(await page.locator('.binder-flip-root').count(),0);assert.equal(await page.locator('#viewerContent .sheet').count(),3);
+ await page.locator('[data-act=mode-all]').click();assert.equal(await page.locator('.binder-flip-root').count(),0);assert.equal(await page.locator('#viewerContent .sheet:not(.binder-blank)').count(),3);
  await page.locator('[data-act=mode-single]').click();await page.waitForSelector('.binder-flip-root');assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
  await page.setViewportSize({width:480,height:844});await page.waitForTimeout(250);assert.match(await page.locator('#pageNav').innerText(),/2페이지/);
  await page.emulateMedia({reducedMotion:'reduce'});await page.keyboard.press('ArrowRight');await page.waitForTimeout(50);assert.match(await page.locator('#pageNav').innerText(),/3페이지/);

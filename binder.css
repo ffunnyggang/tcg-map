@@ -180,7 +180,7 @@ button.detail-more-native{border:0;background:transparent;padding:0;color:inheri
 .color-swatch.on{outline-color:transparent}
 .book-desk .binder-blank{background:var(--endpaper-mat-color,#fff)}
 .book-desk .page-photo:has(img){border:0;box-shadow:none}
-.spread-delete{position:absolute;right:2px;top:2px;z-index:2;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:#ffffffed;color:#554b60;font-size:23px;line-height:1;display:grid;place-items:center;appearance:none;-webkit-appearance:none}
+.spread-delete{position:absolute;right:2px;top:2px;z-index:2;width:32px;height:32px;padding:0;border:0;border-radius:0;background:transparent;color:#554b60;font-size:23px;line-height:1;display:grid;place-items:center;appearance:none;-webkit-appearance:none}
 .book-desk>.btn,.editor-dock>.btn:not(.primary){color:var(--ink);appearance:none;-webkit-appearance:none}
 .editor-dock{position:fixed;z-index:90;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;padding-bottom:calc(12px + env(safe-area-inset-bottom));background:#fff}
 html[data-binder-view="new"] #app,html[data-binder-view="edit"] #app{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
@@ -205,3 +205,5 @@ html[data-binder-view="new"] #app,html[data-binder-view="edit"] #app{padding-bot
 #modal.talk-report-sheet .talk-report-options{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
 #modal.talk-report-sheet .talk-report-options button{height:42px;border:1px solid #e2dde7;border-radius:11px;background:#fff;color:#5d5661;font-size:11px}
 #modal.talk-report-sheet .talk-community-close:focus{outline:none;box-shadow:none}
+
+.edit-info{gap:8px}.edit-info #pageCount{flex-shrink:0}.listed-save-notice{display:inline-block;line-height:1.65;white-space:nowrap;font-size:clamp(9px,2.7vw,11px)}.spread-delete.photo-delete{color:#fff;text-shadow:0 1px 3px #0008}.intro .shelf-publish-note{margin-top:12px}

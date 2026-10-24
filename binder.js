@@ -61,13 +61,37 @@ async function deleteBinder(b){if(!confirm('바인더와 좋아요·댓글이 �
 let detail=null,preview=false,commentLimit=30,replyParent=null;const commentRows=new Map(),openThreads=new Set(),threadLimits=new Map();
 async function detailPage(){detail=check(await db.from('binder_publications').select('*').eq('id',id).eq('is_public',true).eq('hidden',false).single());preview=false;const kst=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);const vr=await db.from('binder_views').insert({binder_id:id,user_id:uid,view_day:kst});if(vr.error&&vr.error.code!=='23505')console.warn('View count unavailable');await renderDetail();}
 
+let nativeBinderMenuTimer,nativeBinderMenuToken=0;
+function syncNativeBinderMenu(){
+ clearTimeout(nativeBinderMenuTimer);const token=++nativeBinderMenuToken;
+ if(view!=='detail'||!detail||preview)return;
+ let attempts=0;
+ const send=()=>{
+  if(token!==nativeBinderMenuToken||view!=='detail'||!detail||preview)return;
+  try{
+   const bridge=window.ReactNativeWebView;
+   if(bridge?.postMessage){
+    // Route must reach the shell before context: its header is keyed by currentTarget.
+    bridge.postMessage(JSON.stringify({type:'WEB_ROUTE',url:location.href}));
+    bridge.postMessage(JSON.stringify({type:'BINDER_DETAIL_CONTEXT',url:location.href,mine:detail.user_id===uid,preview:false}));
+   }
+  }catch(_){}
+  if(++attempts<12&&!document.documentElement.classList.contains('binder-native-menu'))nativeBinderMenuTimer=setTimeout(send,500);
+ };
+ send();
+}
+window.addEventListener('load',()=>{if(detail&&!preview)syncNativeBinderMenu();});
+window.addEventListener('pageshow',()=>{if(detail&&!preview)syncNativeBinderMenu();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&detail&&!preview)syncNativeBinderMenu();});
+window.addEventListener('pagehide',()=>{nativeBinderMenuToken++;clearTimeout(nativeBinderMenuTimer);});
+
 function detailMenu(){return detail.user_id===uid?'<label class="detail-more-native"><span aria-hidden="true">⋮</span><select aria-label="바인더 더보기" data-detail-menu><option value="" disabled selected>바인더 메뉴</option><option value="share">공유하기</option><option value="stop">자랑 멈추기</option></select></label>':'<label class="detail-more-native"><span aria-hidden="true">⋮</span><select aria-label="바인더 더보기" data-detail-menu><option value="" disabled selected>바인더 메뉴</option><option value="share">공유하기</option><option value="report">신고하기</option><option value="block">차단하기</option></select></label>'}
 function detailAuthor(b){const timestamp=b.published_at||b.created_at||b.updated_at;const published=date(timestamp);return '<div class="detail-author">'+(/^https:\/\//.test(b.avatar_url||'')?'<img class="avatar" src="'+esc(b.avatar_url)+'" alt="" referrerpolicy="no-referrer">':'<span class="avatar" aria-hidden="true"></span>')+'<div class="detail-identity"><b>'+esc(b.author_nickname||'수집가')+'</b><time datetime="'+esc(timestamp)+'">'+esc(published)+'</time></div>'+detailMenu()+'</div>'}
 window.addEventListener('funy:native-binder-action',e=>{if(!detail||preview)return;const choice=e.detail?.action;if(choice==='share')return run(()=>share());if(choice==='stop'&&detail.user_id===uid)return run(async()=>{if(!confirm('바인더 자랑을 멈출까요? 공유한 링크는 유지됩니다.'))return;menuBinder=detail;await action('hide-showcase',{dataset:{}});});if((choice==='report'||choice==='block')&&detail.user_id!==uid)return run(()=>action(choice,{dataset:{user:detail.user_id}}));});
 document.addEventListener('change',e=>{if(!e.target.matches('[data-detail-menu]'))return;const choice=e.target.value;e.target.value='';run(async()=>{if(choice==='share')return share();if(choice==='report'||choice==='block')return action(choice,{dataset:{user:detail.user_id}});if(choice==='stop'){if(!confirm('바인더 자랑을 멈출까요? 공유한 링크는 유지됩니다.'))return;menuBinder=detail;return action('hide-showcase',e.target);}})});
 
 async function renderDetail(){const b=detail;setHeader(preview?'바인더 미리보기':'바인더 자랑하기',preview);if(!preview&&$('#detailHeaderMenu'))$('#detailHeaderMenu').innerHTML=detailMenu();app.innerHTML=`<section class="detail-head">${preview?'<p class="eyebrow">나만 보는 미리보기</p>':detailAuthor(b)}<h1>${esc(b.title)}</h1><p class="description">${esc(b.description)}</p>${preview?'<div class="meta">사진이 있는 페이지만 보여드려요.</div>':''}</section><div class="viewer-head"><div id="pageNav" class="page-nav"></div><div class="seg"><button data-act="mode-single" class="on">한 장</button><button data-act="mode-all">전체</button></div></div><div class="binder-viewer-wrap"><div class="viewer" id="viewer" style="${style(b.pockets)}"><div class="viewer-content" id="viewerContent"></div></div><div id="viewerArrows" class="viewer-arrows"></div></div>${preview?'<div class="dock"><button class="btn primary" data-act="back-edit">편집으로 돌아가기</button></div>':'<div class="binder-social-bar" id="detailStats"><div class="binder-social-left"><button id="likeBtn" data-act="like" aria-pressed="false">♡ 좋아요 0</button><span id="commentCount">댓글 0</span></div><span id="viewCount">조회 0</span></div><section class="comments binder-detail-comments"><div id="comments"></div></section><form id="commentForm" class="comment-form binder-comment-fixed"><div id="replyTarget" hidden></div><textarea id="commentBody" rows="1" maxlength="500" placeholder="댓글을 남겨보세요." required aria-label="댓글 내용"></textarea><button class="btn primary" type="submit">등록</button></form>'}`;
- try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'BINDER_DETAIL_CONTEXT',mine:b.user_id===uid,preview}));}catch(_){}
+ syncNativeBinderMenu();
  viewMode='single';pageIndex=0;zoom=1;renderViewer();bindViewer();if(!preview){await refreshSocial();$('#commentForm').onsubmit=e=>{e.preventDefault();run(async()=>{const body=$('#commentBody').value.trim();if(!body)return;check(await db.from('binder_comments').insert({binder_id:detail.id,user_id:uid,body,parent_id:replyParent?.id||null}));if(replyParent)openThreads.add(replyParent.id);setReply(null);$('#commentBody').value='';await refreshSocial()})};}}
 function viewerPages(){return [{id:'cover',path:detail.cover},...filled(detail.pages)]}
 function viewerPhoto(p){return p.id==='cover'?cover(detail):`<img data-path="${esc(p.path)}" alt="바인더 페이지" loading="lazy">`}

@@ -1,6 +1,6 @@
 /* Single-page showcase adapter for StPageFlip 2.0.7. No editor/overview changes. */
 window.FUNY_BINDER_FLIPBOOK = {
-  mount({host, viewer, pages, index, ratio, onFlip, onState, loadImage}) {
+  mount({host, viewer, pages, index, ratio, onFlip, onState, loadImage, onMat}) {
     let book, root, disposed = false, enabled = true, gesture = null;
     let touches = new Set(), resizeTimer, scale = 1;
     const mats = new Map(), sampled = new Set();
@@ -88,19 +88,7 @@ window.FUNY_BINDER_FLIPBOOK = {
       const key=img.dataset.path;
       if(sampled.has(key)){applyMat();return;}
       sampled.add(key);
-      try{
-        const canvas=document.createElement('canvas');canvas.width=48;canvas.height=48;
-        const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)return;
-        ctx.drawImage(img,0,0,48,48);
-        const data=ctx.getImageData(0,0,48,48).data,pixels=[];
-        for(let i=0;i<data.length;i+=4){
-          if(data[i+3]<128)continue;
-          pixels.push([data[i],data[i+1],data[i+2],.2126*data[i]+.7152*data[i+1]+.0722*data[i+2]]);
-        }
-        pixels.sort((a,b)=>a[3]-b[3]);
-        const dark=pixels.slice(0,Math.max(1,Math.ceil(pixels.length*.25)));
-        if(dark.length)mats.set(key,[0,1,2].map(channel=>dark.reduce((sum,p)=>sum+p[channel],0)/dark.length));
-      }catch(_){/* Keep the shared neutral dark mat if local sampling is unavailable. */}
+      const color=window.FUNY_BINDER_MAT?.sample(img);if(color)mats.set(key,color);
       applyMat();
     }
     function applyMat(){
@@ -108,8 +96,8 @@ window.FUNY_BINDER_FLIPBOOK = {
       if([...matPaths].some(path=>!sampled.has(path)))return;
       const colors=[...matPaths].map(path=>mats.get(path)).filter(Boolean);
       if(!colors.length)return;
-      const color='rgb('+[0,1,2].map(c=>Math.round(colors.reduce((sum,p)=>sum+p[c],0)/colors.length)).join(',')+')';
-      host.style.setProperty('--binder-mat-color',color);
+      const color=window.FUNY_BINDER_MAT?.average(colors);if(!color)return;
+      host.style.setProperty('--binder-mat-color',color);onMat?.(color);
     }
     function applyScale(){
       root.style.transformOrigin='top left';root.style.transform=`scale(${scale})`;

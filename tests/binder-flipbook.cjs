@@ -74,9 +74,9 @@ async function fixture(page,pockets=9){
  await page.locator('[data-act=full-page][data-index="2"]').scrollIntoViewIfNeeded();const beforeScroll=await page.evaluate(()=>scrollY);
  await page.locator('[data-act=full-page][data-index="2"]').click();await page.waitForFunction(()=>document.querySelector('#pageFullview').open);
  await page.waitForFunction(()=>document.querySelector('#pageFullview img')?.naturalWidth>0);
- assert.equal(await page.locator('#pageFullviewTitle').innerText(),'2페이지');assert.equal(await page.locator('#pageFullview img').count(),1);
+ assert.equal(await page.locator('#pageFullviewTitle').innerText(),'2페이지');assert.equal(await page.locator('#pageFullview img').count(),3);
  const fullRect=await page.locator('#pageFullview').boundingBox();assert.equal(fullRect.width,480);assert.equal(fullRect.height,844);
- await page.locator('[data-act=full-page-in]').click();assert.equal(await page.locator('[data-page-zoom]').innerText(),'125%');
+ await page.locator('.page-fullview-stage').nth(1).dblclick();assert.equal(await page.locator('.page-fullview-plane').nth(1).evaluate(el=>el.style.width),'200%');
  assert.equal(await page.locator('#viewerContent').evaluate(el=>el.getBoundingClientRect().width),overviewWidth);
  await page.screenshot({path:'/tmp/binder-fullpage-qa.png',fullPage:false});
  await page.locator('[data-act=close-full-page]').click();await page.waitForFunction(()=>!document.querySelector('#pageFullview').open);

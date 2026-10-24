@@ -125,3 +125,23 @@ html:not(.app-shell):not([data-binder-view="edit"]):not([data-binder-view="new"]
 
 /* Keep failed image loads readable instead of leaving an unexplained dark page. */
 .binder-photo-mat:has(>img[data-image-error])::before,.viewer-page:has(>img[data-image-error])::before,.cover:has(>img[data-image-error])::before{content:'사진을 불러오지 못했어요. 다시 열어주세요.';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#f4f1f6;color:#605868;font-size:13px;text-align:center;z-index:2}
+
+/* Showcase only: carry the cover board's radius through all single pages. */
+.showcase-single .binder-flip-root,.showcase-single .binder-flip-page,.showcase-single .binder-flip-face,.showcase-single .binder-photo-mat,.showcase-single .binder-book-case:after{border-radius:4px 12px 12px 4px}
+html[data-binder-view="detail"] .viewer.all .spread,html[data-binder-view="detail"] .viewer.all .viewer-page{background:var(--binder-mat-color,#29262d)}
+html[data-binder-view="detail"] .viewer.all .sheet:nth-child(even)>.page-number{left:auto;right:11px}
+html[data-binder-view="detail"] .viewer.all .page-number{color:#fff;text-shadow:0 1px 2px #0009}
+
+/* Image gallery follows market detail: black canvas, left close, right count. */
+#pageFullview.page-fullview,#pageFullview::backdrop{background:#09090b}
+.page-fullview-header{position:absolute;z-index:4;left:0;right:0;top:0;height:calc(52px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 14px 0;border:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent)}
+.page-fullview-header>button{width:36px;height:36px;padding:0;border:0;background:transparent;color:#fff;font-size:30px;font-weight:300;line-height:1}
+.page-fullview-header>span{font-size:11px;font-weight:750}
+.page-fullview-accessible-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.page-fullview-track{display:flex;width:100%;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.page-fullview-track::-webkit-scrollbar{display:none}
+.page-fullview-track>.page-fullview-stage{flex:0 0 100%;width:100%;height:100%;padding:0;scroll-snap-align:start;overflow:auto;touch-action:pan-y}
+.page-fullview-plane{display:grid;place-items:center}
+.page-fullview-plane img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+
+.page-fullview-track{overscroll-behavior:contain}.page-fullview-track>.page-fullview-stage{touch-action:pan-x pan-y;overscroll-behavior:auto}

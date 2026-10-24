@@ -4,7 +4,7 @@ window.FUNY_BINDER_FLIPBOOK = {
     let book, root, disposed = false, enabled = true, gesture = null;
     let touches = new Set(), resizeTimer, scale = 1;
     const mats = new Map(), sampled = new Set();
-    let matPaths = new Set();
+    let matPaths = new Set(), imageQueue;
     const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const point = e => {
       const rect = book.getUI().getDistElement().getBoundingClientRect();
@@ -37,26 +37,52 @@ window.FUNY_BINDER_FLIPBOOK = {
         node.className = 'binder-flip-page'+(i===0?' binder-flip-cover':'');
         node.dataset.density = i===0?'hard':'soft';
         node.innerHTML = '<div class="binder-flip-face">'+(i===0?html:'<div class="binder-photo-mat">'+html+'</div>')+'</div>';
-        // Decode in advance, including currently hidden leaves.
-        node.querySelectorAll('img[data-path]').forEach(img => {
-          img.loading='eager';
-          loadImage(img.dataset.path).then(url=>{
-            if(disposed)return;
-            img.onload=()=>{const mat=img.closest('.binder-photo-mat');if(mat&&!disposed)paintMat(img);};
-            img.onerror=()=>{sampled.add(img.dataset.path);applyMat();};
-            img.src=url;
-            if(img.complete&&img.naturalWidth)img.onload();
-          }).catch(()=>{img.dataset.imageError='1';img.alt='사진을 불러오지 못했어요';sampled.add(img.dataset.path);applyMat();});
-        });
         return node;
       });
       matPaths=new Set(nodes.flatMap(node=>[...node.querySelectorAll('.binder-photo-mat img[data-path]')].map(img=>img.dataset.path)));
       applyMat();
-      book.on('flip', e => {index=e.data;host.classList.toggle('binder-on-cover',index===0); onFlip(index);});
+      book.on('flip', e => {index=e.data;host.classList.toggle('binder-on-cover',index===0); imageQueue?.prioritize(index); onFlip(index);});
       book.on('changeState', e => onState(e.data!=='read'));
       book.loadFromHTML(nodes);
+      imageQueue=preloadPages(nodes);
       applyScale();
       onState(false);
+    }
+    function preloadPages(nodes){
+      let stopped=false,active=0,timer,current=index;
+      const tasks=nodes.flatMap((node,page)=>[...node.querySelectorAll('img[data-path]')].map(img=>({page,img})));
+      const rank=page=>page===current?0:page===current+1?1:page===current-1?2:3+Math.abs(page-current);
+      function launch(task){
+        active++;
+        const img=task.img;img.loading='eager';
+        loadImage(img.dataset.path).then(url=>{
+          if(stopped||disposed)return;
+          delete img.dataset.imageError;
+          img.onload=()=>{if(!stopped&&!disposed&&img.closest('.binder-photo-mat'))paintMat(img);};
+          img.onerror=()=>{if(stopped||disposed)return;img.dataset.imageError='1';sampled.add(img.dataset.path);applyMat();};
+          img.src=url;
+          if(img.complete&&img.naturalWidth)img.onload();
+        }).catch(()=>{
+          if(stopped||disposed)return;
+          img.dataset.imageError='1';img.alt='사진을 불러오지 못했어요';
+          sampled.add(img.dataset.path);applyMat();
+        }).finally(()=>{active--;pump();});
+      }
+      function pump(){
+        clearTimeout(timer);
+        if(stopped||disposed)return;
+        tasks.sort((a,b)=>rank(a.page)-rank(b.page));
+        // Current/next/previous pages get two slots; distant pages use only one,
+        // leaving a slot free if the reader turns before background work completes.
+        while(active<2&&tasks.length&&rank(tasks[0].page)<3)launch(tasks.shift());
+        if(active===0&&tasks.length)timer=setTimeout(()=>{
+          if(stopped||disposed)return;
+          tasks.sort((a,b)=>rank(a.page)-rank(b.page));
+          launch(tasks.shift());
+        },120);
+      }
+      pump();
+      return {prioritize(page){current=page;pump();},cancel(){stopped=true;clearTimeout(timer);tasks.length=0;}};
     }
     function paintMat(img){
       const key=img.dataset.path;

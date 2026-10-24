@@ -56,3 +56,10 @@ TypeScript, 실제 핸들러·ACK effect 테스트, iOS/Android JS 번들 export
 - [ ] 다른 딤 사용 사례 및 닫기·뒤로가기·페이지 이탈·앱 복귀까지 iOS/AOS 단말 QA.
 
 상세 체크리스트: [app-next-build-dim-todo.md](app-next-build-dim-todo.md). 이번 요청에서는 구현·빌드하지 않고 TO-DO로 관리.
+
+## 바인더 만들기 헤더 닫기(X) — 2026-10-24
+
+- [ ] iOS/AOS 바인더 만들기 네이티브 헤더의 이전(<) 버튼을 X로 변경.
+- [ ] 저장 상태 확인 후 종료·이전 화면 복귀, 미저장 변경 유실 방지 및 실제 단말 QA.
+
+상태: 요건 등록 / 구현 대기. 상세: [app-next-build-binder-close-todo.md](app-next-build-binder-close-todo.md).

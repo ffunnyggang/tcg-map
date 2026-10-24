@@ -36,3 +36,12 @@
 ### 웹 배포 상태 갱신 — 2026-10-23
 
 공유·바인더·TALK 웹 수정본은 PR #16 / bf593519873c58b6cc90df9f1e75a321408ebed1로 운영 배포 완료. 관련 8개 운영 파일 일치 확인. 다음 iOS 빌드에는 네이티브 변경 포함 여부와 실제 단말 QA를 계속 확인해야 함.
+
+## 바인더 헤더 더보기 수신 안정화 — 2026-10-24
+
+- [ ] 다음 iOS/AOS 빌드에 mobile/lib/binder-header.ts 및 FunyWebView.tsx 변경 포함.
+- [ ] route/context 동시 갱신, 다른 바인더의 늦은 문맥 무시, 실제 네이티브 헤더 렌더 이후 ACK 확인.
+- [ ] 바인더 더보기: 본인 공유하기/자랑 멈추기, 타인 공유하기/신고하기/차단하기. 본문 중복 메뉴 없음.
+- [ ] TALK 각 진입 경로 및 공유 링크, 뒤로가기/앱 복귀 확인.
+
+TypeScript, 실제 핸들러·ACK effect 테스트, iOS/Android JS 번들 export 통과. 새 IPA/AAB 빌드 및 단말 QA는 미실시. 상세: binder-header-20261024.md.

@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "note": "Verified approved daily observations only. KREAM initial anchor pending current verification; do not extrapolate or backfill.",
+  "series": {
+    "jp_30th_celebration": []
+  }
+}

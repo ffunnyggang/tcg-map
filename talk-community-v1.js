@@ -8,7 +8,10 @@ const CATS=['자유 게시판','카드 자랑','카드깡/카드샵 후기','정
 const feed=document.getElementById('feed'),fab=document.getElementById('pokamoFab'),popularSort=document.getElementById('popularSort');let mixed=[],current='전체',popularMode='popular',blockedOwners=new Set();let binderEpoch=0;const binderURLs=new Set();
 
 const talkStateKey='funy-talk-list-state-v2';let pendingListScroll=null,rememberedBinderPages=1;
-try{const saved=JSON.parse(sessionStorage.getItem(talkStateKey)||localStorage.getItem(talkStateKey)||'null');if(saved&&Date.now()-saved.at<86400000){current=saved.current==='카드 자랑'&&saved.showcaseTab==='binders'?'바인더 자랑':saved.current||'전체';popularMode=saved.popularMode||'popular';pendingListScroll=Number(saved.scroll)||0;rememberedBinderPages=Math.max(1,Number(saved.pages)||1);}}catch(_){}
+// Restore only history traversal; ordinary menu entry and reload start at All/top.
+const talkHistoryEntry=performance.getEntriesByType('navigation')[0]?.type==='back_forward';
+try{const saved=talkHistoryEntry?(history.state?.funyTalkList||JSON.parse(sessionStorage.getItem(talkStateKey)||'null')):null;if(saved&&Date.now()-saved.at<86400000){current=saved.current==='카드 자랑'&&saved.showcaseTab==='binders'?'바인더 자랑':saved.current||'전체';popularMode=saved.popularMode||'popular';pendingListScroll=Number(saved.scroll)||0;rememberedBinderPages=Math.max(1,Number(saved.pages)||1);}else{pendingListScroll=0;if('scrollRestoration' in history)history.scrollRestoration='manual';window.scrollTo(0,0);}}catch(_){pendingListScroll=0;}
+
 function rememberTalkList(){if(document.documentElement.classList.contains('funy-talk-post-mode'))return;try{const value=JSON.stringify({current,popularMode,scroll:window.scrollY||0,pages:rememberedBinderPages,at:Date.now()});sessionStorage.setItem(talkStateKey,value);localStorage.setItem(talkStateKey,value);history.replaceState({...history.state,funyTalkList:JSON.parse(value)},'',location.href);}catch(_){}}
 function restoreTalkScroll(){if(pendingListScroll===null)return;const y=pendingListScroll;pendingListScroll=null;requestAnimationFrame(()=>window.scrollTo(0,y));}
 document.addEventListener('click',e=>{if(e.target.closest?.('.talk-binder-cover,.talk-binder-cover-link'))rememberTalkList();},true);

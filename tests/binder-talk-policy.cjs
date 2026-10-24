@@ -16,7 +16,7 @@ await p.locator('[data-act=list-menu]').click();p.once('dialog',d=>d.accept());a
 await p.waitForFunction(()=>window.__writes.some(w=>w.table==='binder_publications'&&w.data?.is_listed===false));
 await p.locator('[data-act=list-menu]').click();assert.equal(await p.locator('.binder-dropdown button').first().textContent(),'자랑하기');
 await p.goto(base+'/binder.html?view=edit&id=fixture');await p.waitForSelector('.page-photo');
-assert.equal(await p.locator('[data-act=store]').textContent(),'보관함 이동');assert(await p.getByText('자랑 중인 바인더는 수정 내용이 자동으로 공개 화면에 반영돼요.').count());
+assert.equal(await p.locator('[data-act=store]').textContent(),'보관함 이동');assert(await p.locator('#saveState .listed-save-notice').count());
 await p.locator('#draftTitle').fill('수정한 컬렉션');await p.waitForFunction(()=>window.__writes.some(w=>w.table==='binders'&&w.data?.title==='수정한 컬렉션'));
 await p.goto(base+'/binder.html?view=detail&id=fixture&as=reader');await p.waitForSelector('.binder-flip-root');
 await p.locator('#detailHeaderMenu [data-act=detail-more]').click();await p.getByRole('menuitem',{name:'신고하기'}).click();

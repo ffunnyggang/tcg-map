@@ -46,7 +46,7 @@ window.FUNY_BINDER_FLIPBOOK = {
             img.onerror=()=>{sampled.add(img.dataset.path);applyMat();};
             img.src=url;
             if(img.complete&&img.naturalWidth)img.onload();
-          }).catch(()=>{img.alt='사진을 불러오지 못했어요';sampled.add(img.dataset.path);applyMat();});
+          }).catch(()=>{img.dataset.imageError='1';img.alt='사진을 불러오지 못했어요';sampled.add(img.dataset.path);applyMat();});
         });
         return node;
       });

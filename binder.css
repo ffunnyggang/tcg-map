@@ -122,3 +122,6 @@ html.binder-page-fullview-open,html.binder-page-fullview-open body{overflow:hidd
 /* Browser shelf/showcase header stays above the scrolling book and content.
    Native shells keep their own header; full-page dialogs remain in the top layer. */
 html:not(.app-shell):not([data-binder-view="edit"]):not([data-binder-view="new"]) .shell>.binder-header{position:sticky;top:0;z-index:80;background:#fff}
+
+/* Keep failed image loads readable instead of leaving an unexplained dark page. */
+.binder-photo-mat:has(>img[data-image-error])::before,.viewer-page:has(>img[data-image-error])::before,.cover:has(>img[data-image-error])::before{content:'사진을 불러오지 못했어요. 다시 열어주세요.';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#f4f1f6;color:#605868;font-size:13px;text-align:center;z-index:2}

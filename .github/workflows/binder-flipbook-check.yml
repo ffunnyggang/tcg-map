@@ -23,9 +23,10 @@ jobs:
           node-version: '22'
       - run: node --check talk-community-v1.js && node --check binder.js && node --check binder-flipbook.js && node tests/binder-core.mjs && node tests/binder-flipbook-state.cjs
       - run: npm install --no-save --package-lock=false playwright@1.51.1
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: node tests/binder-flipbook.cjs
       - run: node tests/binder-header.cjs
+      - run: node tests/binder-images.cjs
       - run: node tests/binder-app-menu.cjs
       - run: node tests/binder-sticky-title.cjs
       - run: node tests/binder-mode-scroll.cjs

@@ -42,7 +42,8 @@ The cover restores rounded right corners and the spine seam. In the app shell,
 showcase single-page mode temporarily disables document viewport zoom, blocks
 outer multi-touch/gesture zoom, and clips horizontal document overflow. Custom
 pinch starts only when both touches are inside the visible image viewer; mode
-exit restores the original viewport. Internal zoom/pan remains available.
+exit restores the original viewport on web; app shelf and detail modes retain
+the document zoom lock, while editor/camera flows keep their original settings. Internal zoom/pan remains available.
 
 Cover depth is shared by binder-cover.css across the binder shelf, editor,
 overview, flipbook and TALK rail/grid. It uses a spine seam and subtle inset
@@ -50,3 +51,9 @@ lighting, without changing cover art or dimensions. App horizontal containment
 also applies to the shelf and overview; overview zoom stays inside its scroll
 container. Inside flipbook pages have shallow edge shading. Arrow controls
 have no fill/gradient/border/shadow; rounded keyboard focus is retained.
+
+Showcase overview no longer scales as a binder grid. Each photographed page is
+a keyboard-accessible button opening a separate full-screen dialog with that
+page alone. The dialog supports local image zoom and panning, close/Escape and
+history-back dismissal. Closing preserves the overview and its scroll position.
+The cover and editing preview do not receive overview photo actions.

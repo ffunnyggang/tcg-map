@@ -39,7 +39,7 @@ async function verifySpread(page){
  await page.locator('[data-act=close-full-page]').click();await page.waitForFunction(()=>!document.querySelector('#pageFullview').open);
  assert(await page.locator('.viewer.all').count());
  await page.goto(base+'/binder.html?view=edit&id=fixture');await page.waitForSelector('.page-photo');
- assert.equal(await page.locator('.spread').first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
+ assert.equal(await page.locator('.spread').first().evaluate(el=>el.classList.contains('has-photo')),true);
  await verifySpread(page);
  await page.screenshot({path:path.join(process.env.TEMP||'/tmp','binder-polish-editor-'+engine+'-qa.png'),fullPage:true});
  await page.goto(base+'/binder.html?view=mine');await page.waitForSelector('[data-shelf-menu]');

@@ -128,7 +128,7 @@ html:not(.app-shell):not([data-binder-view="edit"]):not([data-binder-view="new"]
 
 /* Showcase only: carry the cover board's radius through all single pages. */
 .showcase-single .binder-flip-root,.showcase-single .binder-flip-page,.showcase-single .binder-flip-face,.showcase-single .binder-photo-mat,.showcase-single .binder-book-case:after{border-radius:4px 12px 12px 4px}
-html[data-binder-view="detail"] .viewer.all .spread,html[data-binder-view="detail"] .viewer.all .viewer-page{background:var(--binder-mat-color,#29262d)}
+ .viewer.all .spread,.viewer.all .viewer-page{background:var(--binder-mat-color,#29262d)}
 html[data-binder-view="detail"] .viewer.all .sheet:nth-child(even)>.page-number{left:auto;right:11px}
 html[data-binder-view="detail"] .viewer.all .page-number{color:#fff;text-shadow:0 1px 2px #0009}
 
@@ -158,10 +158,10 @@ html[data-binder-view="detail"] .viewer.all .page-number{color:var(--muted);text
 .book-desk .page-menu{bottom:-29px;right:3px}
 .book-desk .sheet:nth-child(even)>.page-menu{left:3px;right:auto}
 /* A central fold and directional light make each pair read as an open book. */
-.viewer.all .spread{border-color:#30203c28;box-shadow:0 2px 0 #b6acbf,0 4px 0 #d5cedc,0 9px 14px -7px #24152f66}
-.viewer.all .sheet:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,#ffffff10,transparent 18%,transparent 76%,#20152b20);box-shadow:inset 0 1px 1px #ffffff45,inset 1px 0 2px #ffffff25}
-.viewer.all .sheet:nth-child(even):after{background:linear-gradient(90deg,#20152b26,transparent 24%,transparent 82%,#ffffff0d);box-shadow:inset 0 1px 1px #ffffff45,inset -1px 0 2px #ffffff25}
-.viewer.all .spread:after{z-index:1;width:20px;background:linear-gradient(90deg,transparent,#170e262b 42%,#ffffff25 50%,#170e2633 56%,transparent)}
+.viewer.all .spread,.book-desk .spread.has-photo{border-color:#30203c28;box-shadow:0 2px 0 #b6acbf,0 4px 0 #d5cedc,0 9px 14px -7px #24152f66}
+.viewer.all .sheet:after,.book-desk .spread.has-photo .sheet:after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,#ffffff10,transparent 18%,transparent 76%,#20152b20);box-shadow:inset 0 1px 1px #ffffff45,inset 1px 0 2px #ffffff25}
+.viewer.all .sheet:nth-child(even):after,.book-desk .spread.has-photo .sheet:nth-child(even):after{background:linear-gradient(90deg,#20152b26,transparent 24%,transparent 82%,#ffffff0d);box-shadow:inset 0 1px 1px #ffffff45,inset -1px 0 2px #ffffff25}
+.viewer.all .spread:after,.book-desk .spread.has-photo:after{z-index:1;width:20px;background:linear-gradient(90deg,transparent,#170e262b 42%,#ffffff25 50%,#170e2633 56%,transparent)}
 
 /* TALK native header dropdown dimensions, shared by binder detail and shelf. */
 .binder-dropdown{position:fixed;z-index:2147483600;min-width:126px;padding:6px 0;border:1px solid #e7e2e9;border-radius:12px;background:white;box-shadow:0 5px 12px #211a2e29}
@@ -184,3 +184,13 @@ button.detail-more-native{border:0;background:transparent;padding:0;color:inheri
 .book-desk>.btn,.editor-dock>.btn:not(.primary){color:var(--ink);appearance:none;-webkit-appearance:none}
 .editor-dock{position:fixed;z-index:90;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;padding-bottom:calc(12px + env(safe-area-inset-bottom));background:#fff}
 html[data-binder-view="new"] #app,html[data-binder-view="edit"] #app{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+
+/* Photo-bearing editor spreads share the showcase material and depth. */
+.book-desk .spread.has-photo{background:var(--spread-mat-color,#29262d)}
+.book-desk .spread.has-photo .sheet{background:var(--page-mat-color,var(--spread-mat-color,#29262d))}
+.book-desk .spread.has-photo .binder-blank{background:var(--endpaper-mat-color,var(--spread-mat-color,#29262d))}
+.book-desk .spread.has-photo .page-photo{background:var(--page-mat-color,var(--spread-mat-color,#29262d));border:0}
+.viewer-empty-page{width:100%;height:100%;background:var(--binder-mat-color,#29262d)}
+#modal button{appearance:none;-webkit-appearance:none}
+#modal .btn:not(.primary):not(.danger),#modal .modal-head .icon{color:var(--ink)}
+#modal .modal-head .icon:focus,#modal .modal-head .icon:focus-visible{outline:none;box-shadow:none}

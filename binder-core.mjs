@@ -13,3 +13,5 @@ export const TCG_TYPES=['포켓몬','원피스','드래곤볼','리프트바운�
 export const normalizeTypes=value=>TCG_TYPES.filter(x=>Array.isArray(value)&&value.includes(x));
 // Non-data endpapers preserve every existing photo and stay outside the upload/order model.
 export function spreadSlots(pages){return [null,...pages,...(pages.length%2?[null]:[]),null];}
+
+export function visibleSpreads(pages){const slots=spreadSlots(pages);return Array.from({length:slots.length/2},(_,i)=>slots.slice(i*2,i*2+2)).filter(pair=>pair.some(p=>p?.path));}

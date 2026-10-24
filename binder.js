@@ -105,6 +105,29 @@ document.addEventListener('touchmove',stopAppPageZoom,{passive:false});
 document.addEventListener('gesturestart',stopAppPageZoom,{passive:false});
 function updateShowcaseNav(){const pages=viewerPages();$('#pageNav').innerHTML=`<span>${pageIndex===0?'표지':pageIndex+'페이지'} · ${pages.length-1}면</span>`;$('#viewerArrows').innerHTML=`<button class="viewer-arrow prev" data-act="prev" aria-label="이전 페이지" ${pageIndex===0?'disabled':''}><svg viewBox="0 0 18 28" aria-hidden="true"><path d="M12 5 4 14l8 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="viewer-arrow next" data-act="next" aria-label="다음 페이지" ${pageIndex===pages.length-1?'disabled':''}><svg viewBox="0 0 18 28" aria-hidden="true"><path d="m6 5 8 9-8 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;}
 function renderViewer(direction=''){disposeShowcaseFlip();pageTurnToken++;pageTurning=false;clearTimeout(pageTurnTimer);const pages=viewerPages(),content=$('#viewerContent');pageIndex=Math.max(0,Math.min(pages.length-1,pageIndex));$('#viewer').classList.toggle('all',viewMode==='all');document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.act==='mode-'+viewMode));if(viewMode==='all'){content.innerHTML=`<div class="edit-cover">${cover(detail)}</div>`+pages.slice(1).reduce((html,p,i)=>html+(i%2===0?'<div class="spread">':'')+`<div class="sheet">${view==='detail'&&!preview?`<button class="viewer-page overview-page-button" data-act="full-page" data-index="${i+1}" aria-label="${i+1}페이지 전체보기">${viewerPhoto(p)}</button>`:`<div class="viewer-page">${viewerPhoto(p)}</div>`}<span class="page-number">${i+1}</span></div>`+(i%2===1||i===pages.length-2?'</div>':''),'');$('#pageNav').innerHTML='';$('#viewerArrows').innerHTML='';}else{content.innerHTML=`<div class="viewer-page ${direction?'turn-'+direction:''}">${viewerPhoto(pages[pageIndex])}</div>`;$('#pageNav').innerHTML=`<span>${pageIndex===0?'표지':pageIndex+'페이지'} · ${pages.length-1}면</span>`;$('#viewerArrows').innerHTML=`<button class="viewer-arrow prev" data-act="prev" aria-label="이전 페이지" ${pageIndex===0?'disabled':''}>‹</button><button class="viewer-arrow next" data-act="next" aria-label="다음 페이지" ${pageIndex===pages.length-1?'disabled':''}>›</button>`;}const viewer=$('#viewer');const useFlip=view==='detail'&&!preview&&viewMode==='single'&&pages.length>1&&window.FUNY_BINDER_FLIPBOOK&&window.St?.PageFlip;syncShowcaseBounds(!!useFlip);viewer.classList.toggle('showcase-flip',!!useFlip);viewer.closest('.binder-viewer-wrap').classList.toggle('showcase-single',!!useFlip);if(useFlip){content.style.width='100%';showcaseFlip=window.FUNY_BINDER_FLIPBOOK.mount({host:content,viewer,pages:pages.map(viewerPhoto),index:pageIndex,ratio:layouts[detail.pockets].ratio,loadImage:imageURL,onFlip:index=>{pageIndex=index;updateShowcaseNav();},onState:turning=>{pageTurning=turning;if(!turning)updateShowcaseNav();else document.querySelectorAll('#viewerArrows button').forEach(b=>b.disabled=true);}});}applyZoom();loadImages();}
+// Keep the viewport stable while the long overview collapses into a single page.
+let viewerModeScrollToken=0,viewerScrollFloor=null;
+function releaseViewerScrollFloor(force=false){
+ if(!viewerScrollFloor)return;
+ const shell=document.querySelector('.shell');
+ if(!force&&shell&&shell.getBoundingClientRect().bottom+window.scrollY+1<window.scrollY+window.innerHeight)return;
+ const saved=viewerScrollFloor;viewerScrollFloor=null;
+ if(saved.value)document.body.style.setProperty('min-height',saved.value,saved.priority);else document.body.style.removeProperty('min-height');
+}
+function changeViewerMode(mode){
+ const preserve=view==='detail'&&!preview,x=window.scrollX,y=window.scrollY,token=++viewerModeScrollToken;
+ if(preserve){
+  if(!viewerScrollFloor)viewerScrollFloor={value:document.body.style.getPropertyValue('min-height'),priority:document.body.style.getPropertyPriority('min-height'),minimum:parseFloat(getComputedStyle(document.body).minHeight)||0};
+  document.body.style.setProperty('min-height',Math.max(y+window.innerHeight,viewerScrollFloor.minimum)+'px',viewerScrollFloor.priority);
+ }
+ viewMode=mode;zoom=1;renderViewer();
+ if(!preserve)return;
+ const restore=()=>{if(token===viewerModeScrollToken)window.scrollTo({left:x,top:y,behavior:'instant'});};
+ restore();requestAnimationFrame(()=>{restore();requestAnimationFrame(()=>{if(token!==viewerModeScrollToken)return;restore();releaseViewerScrollFloor();});});
+}
+window.addEventListener('scroll',()=>releaseViewerScrollFloor(),{passive:true});
+window.addEventListener('resize',()=>{if(viewerScrollFloor){document.body.style.setProperty('min-height',Math.max(window.scrollY+window.innerHeight,viewerScrollFloor.minimum)+'px',viewerScrollFloor.priority);releaseViewerScrollFloor();}});
+window.addEventListener('pagehide',()=>{viewerModeScrollToken++;releaseViewerScrollFloor(true);});
 function applyZoom(){if(view==='detail'&&!preview&&viewMode==='all')zoom=1;showcaseFlip?.setEnabled(zoom<=1.03);if(zoom<1.03)zoom=1;const viewer=$('#viewer');if(viewer){viewer.style.touchAction=zoom>1||viewMode==='all'?'pan-x pan-y':'pan-y';viewer.classList.toggle('is-zoomed',zoom>1);}const c=$('#viewerContent');if(c)c.style.width=zoom*100+'%';showcaseFlip?.setZoom(zoom);if($('#viewerArrows'))$('#viewerArrows').hidden=zoom>1;}
 async function turn(delta){
  if(showcaseFlip){if(zoom===1)showcaseFlip.turn(delta);return;}
@@ -211,7 +234,7 @@ const pid=el.dataset.page;
  if(act==='hide-showcase'){check(await db.from('binder_publications').update({is_listed:false}).eq('id',menuBinder.id));closeModal();toast('자랑 목록에서 숨겼어요. 공유한 링크는 유지돼요.');if(view==='detail')location.href='/binder.html?view=feed';else return list();return;}
  if(act==='preview'){await save();detail={...structuredClone(draft),author_nickname:'나'};preview=true;return renderDetail();}
  if(act==='back-edit')return edit();
- if(act==='mode-all'||act==='mode-single'){viewMode=act==='mode-all'?'all':'single';zoom=1;renderViewer();return;}
+ if(act==='mode-all'||act==='mode-single'){changeViewerMode(act==='mode-all'?'all':'single');return;}
  if(act==='zoom-in'||act==='zoom-out'){zoom=Math.max(1,Math.min(3,zoom+(act==='zoom-in'?.25:-.25)));applyZoom();return;}
  if(act==='prev'||act==='next'){turn(act==='next'?1:-1);return;}
  if(act==='more-comments'){commentLimit+=30;return refreshSocial();}

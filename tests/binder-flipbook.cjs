@@ -109,7 +109,7 @@ async function fixture(page,pockets=9){
  await page.goto(base+'/talk.html?app=1');await page.waitForSelector('.binder-rail-cover');
  assert(await page.locator('.binder-rail-cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
  await page.screenshot({path:'/tmp/binder-talk-rail-qa.png',fullPage:true});
- await page.locator('[data-cat="카드 자랑"]').click();await page.locator('[data-showcase=binders]').click();await page.waitForSelector('.talk-binder-cover');
+ await page.locator('[data-cat="바인더 자랑"]').click();await page.waitForSelector('.talk-binder-cover');
  assert(await page.locator('.talk-binder-cover').evaluate(el=>getComputedStyle(el,'::after').backgroundImage.includes('linear-gradient')));
  await page.screenshot({path:'/tmp/binder-talk-grid-qa.png',fullPage:true});
  assert.deepEqual(errors,[]);console.log('PASS: showcase scope, drag complete/cancel, depth, pinch lock, overview, resize, reduced motion, boundaries, preview isolation, all pocket ratios');

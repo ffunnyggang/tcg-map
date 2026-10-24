@@ -1,0 +1,123 @@
+{
+  "products": [
+    {
+      "id": "jp_151",
+      "name": "포켓몬카드 151",
+      "language": "JP",
+      "release_date": "2023-06-16",
+      "image_path": "jp_151.webp"
+    },
+    {
+      "id": "jp_shiny_treasure_ex",
+      "name": "샤이니 트레저 ex",
+      "language": "JP",
+      "release_date": "2023-12-01",
+      "image_path": "jp_shiny_treasure_ex.webp"
+    },
+    {
+      "id": "jp_super_electric_breaker",
+      "name": "초전브레이커",
+      "language": "JP",
+      "release_date": "2024-10-18",
+      "image_path": "jp_super_electric_breaker.webp"
+    },
+    {
+      "id": "jp_terastal_fest_ex",
+      "name": "테라스탈 페스 ex",
+      "language": "JP",
+      "release_date": "2024-12-06",
+      "image_path": "jp_terastal_fest_ex.webp"
+    },
+    {
+      "id": "jp_rocket_gang",
+      "name": "로켓단의 영광",
+      "language": "JP",
+      "release_date": "2025-04-18",
+      "image_path": "jp_rocket_gang.webp"
+    },
+    {
+      "id": "jp_white_flare",
+      "name": "화이트플레어",
+      "language": "JP",
+      "release_date": "2025-06-06",
+      "image_path": "jp_white_flare.webp"
+    },
+    {
+      "id": "jp_mega_brave",
+      "name": "메가브레이브",
+      "language": "JP",
+      "release_date": "2025-08-01",
+      "image_path": "jp_mega_brave.webp"
+    },
+    {
+      "id": "jp_mega_symphonia",
+      "name": "메가심포니아",
+      "language": "JP",
+      "release_date": "2025-08-01",
+      "image_path": "jp_mega_symphonia.webp"
+    },
+    {
+      "id": "jp_inferno_x",
+      "name": "인페르노X",
+      "language": "JP",
+      "release_date": "2025-09-26",
+      "image_path": "jp_inferno_x.webp"
+    },
+    {
+      "id": "jp_mega_dream_ex",
+      "name": "메가드림 ex",
+      "language": "JP",
+      "release_date": "2025-11-28",
+      "image_path": "jp_mega_dream_ex.webp"
+    },
+    {
+      "id": "jp_ninja_spinner",
+      "name": "닌자스피너",
+      "language": "JP",
+      "release_date": "2026-03-13",
+      "image_path": "jp_ninja_spinner.webp"
+    },
+    {
+      "id": "jp_abyss_eye",
+      "name": "어비스아이",
+      "language": "JP",
+      "release_date": "2026-05-22",
+      "image_path": "jp_abyss_eye.webp"
+    },
+    {
+      "id": "jp_storm_emerald",
+      "name": "스톰에메랄다",
+      "language": "JP",
+      "release_date": "2026-07-31",
+      "image_path": "jp_storm_emerald.webp"
+    },
+    {
+      "id": "jp_30th_celebration",
+      "name": "30주년 기념 일본판 BOX",
+      "language": "JP",
+      "release_date": "2026-09-16",
+      "image_path": "jp_30th_celebration.webp"
+    },
+    {
+      "id": "jp_30th_futuristic_box",
+      "name": "30주년 퓨처리스틱 BOX",
+      "language": "JP",
+      "release_date": null,
+      "image_path": "jp_30th_futuristic_box.webp"
+    },
+    {
+      "id": "en_30th_booster_bundle",
+      "name": "30th Celebration Booster Bundle",
+      "language": "EN",
+      "release_date": null,
+      "image_path": "en_30th_booster_bundle.webp"
+    },
+    {
+      "id": "en_30th_elite_trainer_box",
+      "name": "30th Celebration Elite Trainer Box",
+      "language": "EN",
+      "release_date": null,
+      "image_path": "en_30th_elite_trainer_box.webp"
+    }
+  ]
+}

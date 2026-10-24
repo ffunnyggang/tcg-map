@@ -44,6 +44,15 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
   if(platform)target.searchParams.set('appPlatform',platform);
   if(appv)target.searchParams.set('appv',appv);
 
+  // Binder owns its app header bridge and must run in the main WebView.
+  // The CMS iframe has no Android ReactNativeWebView bridge; forwarding just
+  // context would also leave native actions and ACKs targeting the wrong window.
+  if(target.pathname==='/binder.html'){
+    target.searchParams.delete('cmsInappPage');
+    location.replace(target.toString());
+    return;
+  }
+
   const css=[
     'html,body{background:#fff!important}',
     'body>header,body>.header,body>.head,.shell>header,.shell>.header,.shell>.head,.page>header,.page>.header,.page>.head,.portal-shell>.portal-header,.portal-header,.app-header,.site-header,.main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',

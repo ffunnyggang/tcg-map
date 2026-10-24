@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'binder*'
+      - 'cms-inapp-page.html'
       - 'talk.html'
       - 'talk-community-v1.js'
       - 'tests/binder-*'
@@ -25,6 +26,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tests/binder-flipbook.cjs
       - run: node tests/binder-header.cjs
+      - run: node tests/binder-app-menu.cjs
       - run: node tests/binder-sticky-title.cjs
       - run: node tests/binder-mode-scroll.cjs
       - run: node tests/talk-binder-tab.cjs

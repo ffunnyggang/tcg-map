@@ -20,8 +20,10 @@ async function save(){clearTimeout(saveTimer);if(saving)return saving;if(!dirty|
  saving=(async()=>{while(dirty){const n=changeNo,snapshot=structuredClone(draft);setStatus('저장 중…');const r=await db.from('binders').update({title:snapshot.title.trim()||'나의 바인더',description:snapshot.description,pockets:snapshot.pockets,tcg_types:normalizeTypes(snapshot.tcg_types),cover_color:snapshot.cover_color,pages:snapshot.pages,cover:snapshot.cover,revision:snapshot.revision+1}).eq('id',snapshot.id).eq('revision',snapshot.revision).select('revision,updated_at').single();if(r.error)throw r.error;draft.revision=r.data.revision;draft.updated_at=r.data.updated_at;dirty=n!==changeNo;if(!dirty){sessionStorage.removeItem(localKey());setStatus('자동저장됨');}else{sessionStorage.setItem(localKey(),JSON.stringify(draft));}}})().catch(e=>{setStatus('저장하지 못했어요',true);if(e.code==='PGRST116')throw Error('REVISION_CONFLICT');throw e}).finally(()=>saving=null);return saving;
 }
 async function run(fn){if(busy)return;busy=true;try{await fn()}catch(e){toast(message(e))}finally{busy=false}}
+function postNative(type,payload={}){try{window.ReactNativeWebView?.postMessage(JSON.stringify({type,url:location.href,...payload}));}catch(_){}}
+function setNativeDim(open,reason='binder'){postNative('WEB_MODAL_DIM_STATE',{open:!!open,reason});}
 function showModal(html){modal.classList.remove('talk-report-sheet');modal.innerHTML=html;if(!modal.open)modal.showModal();}
-function closeModal(){modal.close()}
+function closeModal(){const report=modal.classList.contains('talk-report-sheet');if(modal.open)modal.close();modal.classList.remove('talk-report-sheet');if(report)setNativeDim(false,'binder-report');}
 modal.addEventListener('click',e=>{if(e.target!==modal||!modal.classList.contains('talk-report-sheet'))return;const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();});
 const head=t=>`<div class="modal-head"><h2>${t}</h2><button class="icon" data-act="close" aria-label="닫기">×</button></div>`;
 const colors=['#b9a6ca','#91a9c6','#93b5aa','#ceaaa8','#d1bd97','#817a8c'];
@@ -220,6 +222,7 @@ async function openPageFullview(index,editorPreview=false){
  pageFullview.innerHTML='<header class="page-fullview-header"><button type="button" data-act="'+(editorPreview?'back-edit':'close-full-page')+'" aria-label="'+(editorPreview?'미리보기 닫기':'페이지 전체보기 닫기')+'">×</button><strong id="pageFullviewTitle" class="page-fullview-accessible-title">'+index+'페이지</strong><span data-page-count></span></header><div class="page-fullview-track">'+pages.map((p,i)=>'<div class="page-fullview-stage" data-full-page="'+i+'"><div class="page-fullview-plane">'+(p.path?'<img alt="바인더 '+(p.id==='cover'?'표지':i+'페이지')+'" draggable="false">':p.id==='cover'?'<div class="page-fullview-cover">'+cover(detail)+'</div>':'<div class="page-fullview-blank" aria-label="빈 페이지"></div>')+'</div>'+(p.path?'<p class="page-fullview-status" role="status">사진을 불러오는 중…</p>':'')+'</div>').join('')+'</div>';
  pageFullview.classList.toggle('binder-preview-dim',editorPreview);
  pageFullview.showModal();document.documentElement.classList.add('binder-page-fullview-open');
+ if(editorPreview)setNativeDim(true,'binder-preview');else postNative('BINDER_FULLVIEW_STATE',{open:true,color:'#09090b'});
  try{history.pushState({...history.state,binderPageFullview:true},'',location.href);fullPageHistory=true;}catch(_){fullPageHistory=false;}
  if(editorPreview){mountPreviewFlip(pages);return;}
  const track=pageFullview.querySelector('.page-fullview-track'),stages=[...track.children],loading=new Set();
@@ -274,7 +277,7 @@ function closePageFullview(fromHistory=false){
  if(!pageFullview.open)return;
  if(!fromHistory&&fullPageHistory&&history.state?.binderPageFullview){history.back();return;}
  fullPageHistory=false;fullPageToken++;previewFlip?.destroy();previewFlip=null;pageFullview.onkeydown=null;pageFullview.close();pageFullview.classList.remove('binder-preview-dim');pageFullview.innerHTML='';document.documentElement.classList.remove('binder-page-fullview-open');
- if(preview){preview=false;detail=null;window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();}
+ if(preview){setNativeDim(false,'binder-preview');preview=false;detail=null;window.scrollTo({top:previewScroll,behavior:'auto'});loadImages();}else postNative('BINDER_FULLVIEW_STATE',{open:false,color:'#ffffff'});
 }
 pageFullview.addEventListener('cancel',e=>{e.preventDefault();closePageFullview();});
 window.addEventListener('popstate',()=>{if(pageFullview.open)closePageFullview(true);});
@@ -332,7 +335,7 @@ const pid=el.dataset.page;
  if(act==='delete-comment'){if(!confirm('댓글과 연결된 답글을 삭제할까요?'))return;check(await db.from('binder_comments').delete().eq('id',el.dataset.comment));if(replyParent?.id===el.dataset.comment)setReply(null);return refreshSocial();}
  if(act==='edit-comment'){const text=commentRows.get(el.dataset.comment)?.body||'';showModal(head('댓글 수정')+`<textarea id="editComment" maxlength="500">${esc(text)}</textarea><button class="btn primary wide" data-act="save-comment" data-comment="${el.dataset.comment}">수정 완료</button>`);return;}
  if(act==='save-comment'){const body=$('#editComment').value.trim();if(!body)throw Error('댓글 내용을 입력해주세요.');check(await db.from('binder_comments').update({body}).eq('id',el.dataset.comment));closeModal();return refreshSocial();}
- if(act==='report'){const cid=el.dataset.comment||'';showModal('<div class="talk-community-handle"></div><div class="talk-community-head"><strong>'+ (cid?'댓글 신고':'게시물 신고')+'</strong><button type="button" class="talk-community-close" data-act="close" aria-label="닫기">×</button></div><p class="talk-policy">신고 사유를 선택해주세요.'+(cid?'':' 신고 내용은 LIVE PIN 신고와 별도로 관리됩니다.')+'</p><div class="talk-report-options">'+[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']].map(([value,label])=>'<button type="button" data-act="send-report" data-reason="'+value+'" data-comment="'+esc(cid)+'">'+label+'</button>').join('')+'</div>');modal.classList.add('talk-report-sheet');return;}
+ if(act==='report'){const cid=el.dataset.comment||'';showModal('<div class="talk-community-handle"></div><div class="talk-community-head"><strong>'+ (cid?'댓글 신고':'게시물 신고')+'</strong><button type="button" class="talk-community-close" data-act="close" aria-label="닫기">×</button></div><p class="talk-policy">신고 사유를 선택해주세요.'+(cid?'':' 신고 내용은 LIVE PIN 신고와 별도로 관리됩니다.')+'</p><div class="talk-report-options">'+[['spam','도배 · 광고'],['abuse','욕설 · 괴롭힘'],['inappropriate','부적절한 콘텐츠'],['privacy','개인정보 노출'],['other','기타']].map(([value,label])=>'<button type="button" data-act="send-report" data-reason="'+value+'" data-comment="'+esc(cid)+'">'+label+'</button>').join('')+'</div>');modal.classList.add('talk-report-sheet');setNativeDim(true,'binder-report');return;}
  if(act==='send-report'){const r=await db.from('community_post_reports').insert({binder_id:detail.id,binder_comment_id:el.dataset.comment||null,reporter_user_id:uid,reason:el.dataset.reason});if(r.error?.code==='23505')throw Error(el.dataset.comment?'이미 신고한 댓글이에요.':'이미 신고한 게시물이에요.');check(r);closeModal();toast('신고가 접수되었습니다.');return;}
  if(act==='block'){if(!confirm('이 회원을 차단할까요? 이 회원의 TALK 게시물, 바인더와 댓글이 숨겨집니다.'))return;const r=await db.from('community_user_blocks').insert({blocker_user_id:uid,blocked_user_id:el.dataset.user});if(r.error&&r.error.code!=='23505')throw r.error;closeModal();if(el.dataset.user===detail.user_id)location.href='/binder.html?view=feed';else await refreshSocial();}
 }

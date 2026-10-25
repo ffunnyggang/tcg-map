@@ -248,3 +248,32 @@ html:not(.app-shell) .shell>.binder-header{position:sticky;top:0;z-index:80;back
 #pageFullview.binder-preview-dim .binder-cover-depth{
  box-shadow:inset -1px -1px 2px #281a3420;
 }
+
+
+/* Binder editor preview controls: anchor metadata and close control to the book itself. */
+#pageFullview.binder-preview-dim .page-fullview-header{
+  left:50%;
+  right:auto;
+  top:calc(60px + env(safe-area-inset-top,0px));
+  width:min(calc(100vw - 64px),calc((100dvh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) * var(--preview-ratio,.76)),560px);
+  height:40px;
+  padding:0;
+  transform:translate(-50%,-100%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  pointer-events:none;
+}
+#pageFullview.binder-preview-dim .page-fullview-header>span{
+  order:-1;
+  margin:0;
+  color:#fff;
+  font-size:11px;
+  font-weight:750;
+  text-shadow:0 1px 3px rgba(0,0,0,.45);
+  pointer-events:auto;
+}
+#pageFullview.binder-preview-dim .page-fullview-header>button{
+  margin-left:auto;
+  pointer-events:auto;
+}

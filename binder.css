@@ -135,6 +135,7 @@ html[data-binder-view="detail"] .viewer.all .page-number{color:#fff;text-shadow:
 /* Image gallery follows market detail: black canvas, left close, right count. */
 #pageFullview.page-fullview,#pageFullview::backdrop{background:#09090b}
 .page-fullview-header{position:absolute;z-index:4;left:0;right:0;top:0;height:calc(52px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 14px 0;border:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent)}
+html.app-shell #pageFullview:not(.binder-preview-dim) .page-fullview-header{height:calc(52px + var(--funy-native-safe-top,0px));padding:var(--funy-native-safe-top,0px) 14px 0}
 .page-fullview-header>button{width:36px;height:36px;padding:0;border:0;background:transparent;color:#fff;font-size:30px;font-weight:300;line-height:1}
 .page-fullview-header>span{font-size:11px;font-weight:750}
 .page-fullview-accessible-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}

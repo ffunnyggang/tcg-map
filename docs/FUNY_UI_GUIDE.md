@@ -25,6 +25,24 @@
 | Purple dark | #6749BD |
 | Purple soft | #F0EBFB |
 | Danger | #C62828 |
+| Standard DIM | rgba(20,16,24,.38) |
+| Fullscreen background | #09090B |
+
+## Overlay / DIM rules
+- 동일 픽셀에는 DIM을 한 번만 적용한다.
+- WEB 모달/바텀시트의 `::backdrop`은 WebView 콘텐츠 영역을 담당한다.
+- APP 상태바 + 네이티브 헤더는 `mobile/components/FunyNativeDimLayer.tsx`만 사용한다.
+- Native Header 내부에 별도 DIM을 겹쳐 올리지 않는다.
+- SafeAreaView 배경을 어둡게 만든 뒤 DIM 레이어를 추가하는 방식은 금지한다.
+- 표준 DIM 색상은 WEB `--funy-dim-color`, APP `OVERLAY.dim`에서만 관리한다.
+- 전체화면 이미지/미디어 viewer는 DIM이 아니라 `#09090B` edge-to-edge surface를 사용한다.
+- overlay 닫기 시 native dim state와 status bar style을 반드시 원복한다.
+
+## Safe Area rules
+- 일반 APP 화면은 Native SafeArea가 상태바 영역을 담당한다.
+- 전체화면 viewer는 상태바 뒤까지 edge-to-edge로 확장한다.
+- 모바일 브라우저는 `web-safe-area.css` + `web-safe-area.js`가 safe-area 및 theme-color를 담당한다.
+- APP 안에서 웹 CSS로 native status bar 영역을 흉내내지 않는다.
 
 ## Typography
 APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞춘다.

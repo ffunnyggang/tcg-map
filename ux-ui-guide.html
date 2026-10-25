@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FUNY PIN UX/UI GUIDE</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/funy-ui-guide.css?v=20261025-guide1">
+<link rel="stylesheet" href="/ux-ui-guide.css?v=20261025-guide1">
+</head>
+<body>
+<div class="guide-shell">
+<aside class="guide-nav">
+  <div class="guide-brand"><img src="/favicon.svg" alt=""><div><strong>FUNY PIN</strong><small>UX/UI GUIDE · 2026.10.25</small></div></div>
+  <div class="nav-links">
+    <a href="#principles">원칙</a><a href="#sources">공통 소스</a><a href="#overlay">DIM · Overlay</a><a href="#header">Header</a><a href="#safearea">Safe Area</a><a href="#tokens">Design Tokens</a><a href="#components">Components</a><a href="#navigation">Navigation</a><a href="#checklist">수정 체크리스트</a>
+  </div>
+</aside>
+<main class="guide-main">
+  <header class="hero">
+    <div class="eyebrow">FUNY PIN PRODUCT SYSTEM</div>
+    <h1>UX/UI 구현 기준</h1>
+    <p>WEB · iOS · Android · Admin에서 같은 브랜드 경험을 유지하기 위한 기준입니다. 신규 기능이나 화면을 만들 때 페이지별 임시 스타일을 추가하기보다 이 가이드의 공통 토큰과 컴포넌트를 먼저 사용합니다.</p>
+    <div class="meta"><span class="tag">White Product UI</span><span class="tag">Purple Accent</span><span class="tag">Mobile First</span><span class="tag">Native + WebView</span><span class="tag">No Double DIM</span></div>
+  </header>
+
+  <section id="principles"><h2>01. 기본 원칙</h2><p class="lead">FUNY PIN은 밝고 캐주얼하지만 유치하지 않은 TCG 수집 서비스형 UI를 기준으로 합니다.</p>
+    <div class="grid">
+      <div class="card"><h3>제품 경험</h3><ul><li>화이트 기반, 낮은 채도의 보라 포인트</li><li>게임 UI보다 서비스형 프로덕트 우선</li><li>모바일 가독성·터치 영역을 우선</li><li>이벤트·퍼니몬은 예외적으로 더 화려한 비주얼 허용</li></ul></div>
+      <div class="card"><h3>수정 원칙</h3><ul><li>기존 승인 디자인은 임의 변경하지 않음</li><li>공통 컴포넌트가 있으면 페이지별 구현 금지</li><li>Native/WebView 경계에서 동일 픽셀에 두 레이어를 중복 적용하지 않음</li><li>신규 화면 추가 전 이 페이지의 체크리스트 확인</li></ul></div>
+    </div>
+  </section>
+
+  <section id="sources"><h2>02. Source of Truth</h2><p class="lead">수정 전 아래 파일을 먼저 확인합니다. 동일 규칙을 다른 파일에 복제하지 않습니다.</p>
+    <div class="card">
+      <div class="rule"><b>WEB 토큰</b><span><span class="source">funy-ui-guide.css</span> 색상·헤더·버튼·DIM·공통 UI 기준</span></div>
+      <div class="rule"><b>WEB Safe Area</b><span><span class="source">web-safe-area.css</span> + <span class="source">web-safe-area.js</span> 브라우저 Safe Area 및 theme-color 처리</span></div>
+      <div class="rule"><b>APP 토큰</b><span><span class="source">mobile/lib/theme.ts</span> Native 색상·타입·레이아웃·Overlay 토큰</span></div>
+      <div class="rule"><b>APP DIM</b><span><span class="source">mobile/components/FunyNativeDimLayer.tsx</span> 상태바·네이티브 헤더 DIM의 유일한 공통 레이어</span></div>
+      <div class="rule"><b>APP Header</b><span><span class="source">mobile/components/FunyHeader.tsx</span> Native 공통 헤더</span></div>
+      <div class="rule"><b>WebView Bridge</b><span><span class="source">mobile/components/FunyWebView.tsx</span> Web ↔ Native UI 상태 전달</span></div>
+    </div>
+  </section>
+
+  <section id="overlay"><h2>03. DIM · Modal · Overlay</h2><p class="lead">DIM 문제의 핵심 규칙은 “한 픽셀에 한 번만 어둡게”입니다.</p>
+    <div class="grid">
+      <div class="card"><h3>표준 규칙</h3>
+        <div class="rule"><b>Web 콘텐츠</b><span>웹 모달·바텀시트의 <code>::backdrop</code>이 WebView 콘텐츠 영역만 담당</span></div>
+        <div class="rule"><b>Native Chrome</b><span><code>FunyNativeDimLayer</code>가 상태바 + 네이티브 헤더만 담당</span></div>
+        <div class="rule"><b>농도</b><span><code>rgba(20,16,24,.38)</code> — WEB/APP 공통</span></div>
+        <div class="rule"><b>Fullscreen</b><span>전체화면 이미지 뷰어는 DIM이 아니라 <code>#09090b</code> 배경 사용</span></div>
+      </div>
+      <div class="card"><h3>금지 규칙</h3>
+        <div class="rule"><b class="dont">금지</b><span>Header 내부 DIM + 상단 Native DIM 동시 적용</span></div>
+        <div class="rule"><b class="dont">금지</b><span>SafeAreaView 배경을 어둡게 만든 뒤 DIM을 또 올리는 방식</span></div>
+        <div class="rule"><b class="dont">금지</b><span>페이지마다 다른 rgba 값 사용</span></div>
+        <div class="rule"><b class="do">허용</b><span>Web backdrop + Native topChrome DIM처럼 서로 겹치지 않는 영역 분담</span></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>시각 기준</h3>
+      <div class="demo-phone demo-dim"><div class="demo-status"></div><div class="demo-head">상태바 + Native Header</div><div class="demo-content">WebView 콘텐츠 영역<br>웹 모달 backdrop은 여기에서 시작</div></div>
+      <p>상단과 콘텐츠가 같은 농도로 보이되, 실제 구현 레이어는 서로 중첩되지 않아야 합니다.</p>
+    </div>
+  </section>
+
+  <section id="header"><h2>04. Header</h2><p class="lead">앱과 웹의 타이틀·뒤로가기·닫기·더보기 배치를 통일합니다.</p>
+    <div class="grid">
+      <div class="card"><h3>공통 수치</h3><ul><li>Header 높이: 54px</li><li>좌우 패딩: 14px</li><li>타이틀: 19px / 800</li><li>뒤로가기 터치 영역: 36×36</li><li>더보기: 세로형 <b>⋮</b></li></ul></div>
+      <div class="card"><h3>동작</h3><ul><li>상세: 왼쪽 이전 버튼</li><li>편집/생성 종료: 필요 시 우측 X</li><li>Native Header가 있는 앱 화면에서는 Web Header 숨김</li><li>헤더 자체에서 임의 DIM을 생성하지 않음</li></ul></div>
+    </div>
+  </section>
+
+  <section id="safearea"><h2>05. Status Bar · Safe Area</h2><p class="lead">Safe Area는 콘텐츠를 밀어내는 용도와 전체화면 콘텐츠를 확장하는 용도를 구분합니다.</p>
+    <div class="card">
+      <div class="rule"><b>일반 화면</b><span>Native SafeArea가 상태바 공간을 담당. WebView는 그 아래에서 시작.</span></div>
+      <div class="rule"><b>전체화면</b><span>이미지/미디어 viewer는 edge-to-edge로 상태바 뒤까지 확장하고 status bar style만 맞춤.</span></div>
+      <div class="rule"><b>DIM</b><span>Native 상태바 영역은 <code>FunyNativeDimLayer</code>의 <code>topChrome</code> 또는 <code>status</code> scope 사용.</span></div>
+      <div class="rule"><b>Web Browser</b><span><code>web-safe-area.*</code>가 browser safe-area와 theme-color를 담당.</span></div>
+    </div>
+  </section>
+
+  <section id="tokens"><h2>06. Design Tokens</h2><p class="lead">새 화면에서 아래 값을 직접 복사하지 말고 공통 토큰을 참조합니다.</p>
+    <div class="token-row">
+      <div class="token"><div class="swatch" style="background:#fff"></div><b>Background</b><code>#FFFFFF</code></div>
+      <div class="token"><div class="swatch" style="background:#181720"></div><b>Text</b><code>#181720</code></div>
+      <div class="token"><div class="swatch" style="background:#8062d8"></div><b>Purple</b><code>#8062D8</code></div>
+      <div class="token"><div class="swatch" style="background:#f0ebfb"></div><b>Purple Soft</b><code>#F0EBFB</code></div>
+      <div class="token"><div class="swatch" style="background:#e9e5ed"></div><b>Line</b><code>#E9E5ED</code></div>
+      <div class="token"><div class="swatch" style="background:#faf9fc"></div><b>Surface Soft</b><code>#FAF9FC</code></div>
+      <div class="token"><div class="swatch" style="background:rgba(20,16,24,.38)"></div><b>DIM</b><code>rgba(20,16,24,.38)</code></div>
+      <div class="token"><div class="swatch" style="background:#09090b"></div><b>Fullscreen</b><code>#09090B</code></div>
+    </div>
+  </section>
+
+  <section id="components"><h2>07. 공통 컴포넌트 규칙</h2><p class="lead">기능별로 아래 패턴을 먼저 재사용합니다.</p>
+    <div class="grid">
+      <div class="card"><h3>Modal / Bottom Sheet</h3><ul><li>표준 DIM 토큰 사용</li><li>닫기 시 Native dim state 반드시 reset</li><li>바텀시트는 하단 safe area 포함</li><li>신고·필터·메뉴 간 동일한 backdrop 농도 유지</li></ul></div>
+      <div class="card"><h3>Fullscreen Viewer</h3><ul><li>검정 배경 <code>#09090b</code></li><li>상태바 뒤까지 edge-to-edge</li><li>상태바 아이콘은 light-content</li><li>닫기 컨트롤은 safe-top만큼 inset</li></ul></div>
+      <div class="card"><h3>Buttons</h3><ul><li>최소 터치 높이 44px 권장</li><li>Primary는 Purple</li><li>Danger는 공통 danger token</li><li>아이콘만 있는 버튼도 accessibility label 필수</li></ul></div>
+      <div class="card"><h3>WebView</h3><ul><li>Native Header가 있으면 웹 헤더 중복 금지</li><li>Native UI 변경이 필요한 상태는 bridge event로 전달</li><li>웹 CSS만으로 native status bar를 흉내내지 않음</li><li>route/back은 실제 진입 context를 보존</li></ul></div>
+    </div>
+  </section>
+
+  <section id="navigation"><h2>08. Navigation</h2><p class="lead">뒤로가기는 “어디에서 들어왔는가”를 보존하는 것이 우선입니다.</p>
+    <div class="card">
+      <div class="rule"><b>Native page</b><span>별도 native route로 push된 경우 native router back 우선</span></div>
+      <div class="rule"><b>Same WebView</b><span>동일 WebView 내부 route라면 web history back 우선</span></div>
+      <div class="rule"><b>Fallback</b><span>history가 없는 direct entry에만 명시적 fallback 사용</span></div>
+      <div class="rule"><b class="dont">금지</b><span>상세 화면마다 임의로 HOME/TALK 전체/PICK 전체 등 고정 목적지로 보내기</span></div>
+    </div>
+  </section>
+
+  <section id="checklist"><h2>09. 수정 전 체크리스트</h2><p class="lead">기능·디자인·UI 변경 PR 전에 아래 항목을 확인합니다.</p>
+    <div class="checklist">
+      <div class="check">같은 기능의 공통 토큰/컴포넌트가 이미 있는지 확인했는가?</div>
+      <div class="check">Status bar + Native header + WebView 경계에서 레이어가 중복되지 않는가?</div>
+      <div class="check">DIM, 컬러, radius, header 높이를 페이지에서 하드코딩하지 않았는가?</div>
+      <div class="check">iOS / Android / Web에서 Safe Area와 keyboard 영향을 확인했는가?</div>
+      <div class="check">뒤로가기 시 실제 진입 화면과 스크롤/필터 상태가 보존되는가?</div>
+      <div class="check">Native header와 Web header가 동시에 노출되지 않는가?</div>
+      <div class="check">모달/전체화면 닫기 후 status bar style과 overlay state가 원복되는가?</div>
+      <div class="check">기존 승인 UI를 요청 범위 밖에서 바꾸지 않았는가?</div>
+      <div class="check">새로운 공통 규칙이 생겼다면 이 가이드와 source token을 함께 업데이트했는가?</div>
+    </div>
+  </section>
+
+  <div class="footer">FUNY PIN UX/UI GUIDE · Source of truth는 코드입니다. 가이드와 코드가 다르면 공통 토큰/컴포넌트를 먼저 정리한 뒤 이 페이지를 함께 업데이트합니다.</div>
+</main>
+</div>
+</body>
+</html>

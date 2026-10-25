@@ -21,6 +21,9 @@
   --funy-card-radius:13px;
   --funy-button-radius:12px;
   --funy-content-max:420px;
+  --funy-dim-color:rgba(20,16,24,.38);
+  --funy-fullscreen-bg:#09090b;
+  --funy-overlay-z:2147483600;
   --funy-system-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --funy-sub-header-font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --funy-back-glyph-font:Arial,Helvetica,sans-serif;
@@ -321,3 +324,14 @@ html.app-shell .portal-shell .popular-sort.show{top:auto!important}
   padding:0!important;
   line-height:24px!important;
 }
+
+
+/* Common overlay / DIM contract
+   - One visual dim per physical pixel.
+   - Web content owns the content-area backdrop.
+   - Native shell owns only native chrome (status bar + native header).
+   - Never stack a header-local dim on top of a native top-chrome dim. */
+.funy-dim-layer{background:var(--funy-dim-color)!important}
+.funy-fullscreen-surface{background:var(--funy-fullscreen-bg)!important}
+dialog.funy-standard-modal::backdrop,
+.funy-standard-backdrop{background:var(--funy-dim-color)!important}

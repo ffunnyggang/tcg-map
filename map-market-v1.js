@@ -689,7 +689,7 @@
       '<button id="marketSafetyNoticeConfirm" type="button">확인하고 시작하기</button>'+
       '</section>';
     document.body.appendChild(el);
-    const closeSafetyNotice=()=>{el.hidden=true;postNativeMarketOverlayState(false)};
+    const closeSafetyNotice=()=>{el.hidden=true};
     $('#marketSafetyNoticeConfirm').onclick=()=>{
       if($('#marketSafetyNoticeDismiss')?.checked){try{localStorage.setItem(MARKET_SAFETY_NOTICE_KEY,'1')}catch(_){}}
       closeSafetyNotice();
@@ -701,7 +701,7 @@
     if(!standaloneMarket||marketSafetyNoticeShownThisVisit||!shouldShowMarketSafetyNotice())return;
     buildMarketSafetyNotice();
     marketSafetyNoticeShownThisVisit=true;
-    const el=$('#marketSafetyNotice');if(el){el.hidden=false;postNativeMarketOverlayState(true)}
+    const el=$('#marketSafetyNotice');if(el)el.hidden=false;
   }
   function openOverlay(){
     buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';

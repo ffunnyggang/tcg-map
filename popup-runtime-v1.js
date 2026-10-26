@@ -137,6 +137,7 @@
       img.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();followLink()}};
     }
     root.addEventListener('click',e=>{if(e.target===root)close()});
+    window.addEventListener('funy:native-overlay-dismiss',()=>{if(root&&!root.hidden)close()});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root&&!root.hidden)close()});
     if(img.complete&&img.naturalWidth)open();
   }

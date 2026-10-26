@@ -4,8 +4,11 @@
 
 ## Source of truth
 - 현재 승인 기준: WEB `funy-ui-guide.css`
-- APP: `mobile/lib/theme.ts`는 다음 네이티브 배포 시 WEB 승인 기준에 동기화한다.
-- WEB에서 공통 UI가 확정되면 문서와 CSS를 먼저 갱신하고, APP 후속 배포에서 동일 수치를 반영한다.
+- APP token: `mobile/lib/theme.ts`
+- APP overlay host: `mobile/components/FunyNativeOverlayHost.tsx` + `mobile/components/FunyNativeDimLayer.tsx`
+- WebView bridge: `mobile/components/FunyWebView.tsx`
+- WEB overlay runtime: `app-runtime-fixes-v2.js`는 상태 감지·배경 잠금·Native bridge만 담당하며 DIM을 직접 생성하지 않는다.
+- WEB에서 공통 UI가 확정되면 문서·공통 CSS·Native token/host 계약을 함께 동기화한다.
 
 ## Core tokens
 | Token | Value |
@@ -29,20 +32,44 @@
 | Fullscreen background | #09090B |
 
 ## Overlay / DIM rules
-- 동일 픽셀에는 DIM을 한 번만 적용한다.
-- WEB 모달/바텀시트의 `::backdrop`은 WebView 콘텐츠 영역을 담당한다.
-- APP 상태바 + 네이티브 헤더는 `mobile/components/FunyNativeDimLayer.tsx`만 사용한다.
-- Native Header 내부에 별도 DIM을 겹쳐 올리지 않는다.
-- SafeAreaView 배경을 어둡게 만든 뒤 DIM 레이어를 추가하는 방식은 금지한다.
-- 표준 DIM 색상은 WEB `--funy-dim-color`, APP `OVERLAY.dim`에서만 관리한다.
+### 표준 결과
+- 최상단 modal / bottom sheet / popup 바로 아래에 화면 전체가 하나의 연속된 DIM으로 보여야 한다.
+- 상태바, Native header, WebView 콘텐츠 등 **동일한 물리 픽셀에는 DIM을 한 번만 적용**한다.
+- 표준 DIM 색상은 WEB `--funy-dim-color`, APP `OVERLAY.dim`의 `rgba(20,16,24,.38)`만 사용한다.
+- 기본 DIM에는 blur를 사용하지 않는다.
+
+### 영역 소유권
+- 일반 APP 화면: Web overlay의 backdrop은 WebView 콘텐츠 영역을 담당하고, `FunyNativeOverlayHost`가 WebView 밖의 상태바 / Native header만 담당한다.
+- edge-to-edge WebView: WebView가 상태바 뒤까지 실제로 확장된 경우 Web backdrop이 해당 픽셀까지 담당한다. 같은 상태바에 Native DIM을 추가하지 않는다.
+- `FunyHeader`는 DIM을 직접 그리지 않는다.
+- `app-runtime-fixes-v2.js`는 overlay 상태 감지, background scroll lock, Native bridge만 담당하며 global `::before` pseudo-DIM을 생성하지 않는다.
+
+### interaction
+- DIM이 열린 동안 아래 화면의 scroll, touch, map gesture, Native header back/close, bottom navigation 등은 동작하지 않아야 한다.
+- DIM 자체는 pointer event를 받아야 한다. `pointer-events:none`으로 아래 화면에 입력을 통과시키지 않는다.
+- DIM 영역 tap은 현재 **최상단 dismissible overlay만 닫는다**.
+- overlay 자체의 버튼, 입력, 내부 scroll은 정상 동작한다.
+- overlay close 시 Web/Native overlay state, background scroll lock, status bar style을 즉시 원복한다.
+- overlay가 중첩되어도 opacity를 누적하지 않는다. 현재 최상단 overlay 바로 아래에 시각적 backdrop 1겹만 유지한다.
+
+### 금지
+- Native Header 내부 DIM + Native Overlay Host DIM 중복
+- SafeAreaView 배경을 어둡게 한 뒤 DIM 추가
+- 페이지별 임의 rgba / opacity / blur hardcode
+- common runtime의 global pseudo-DIM
+- 같은 물리 영역에 Web backdrop + Native DIM 동시 적용
+
+### 명시적 예외
 - 전체화면 이미지/미디어 viewer는 DIM이 아니라 `#09090B` edge-to-edge surface를 사용한다.
-- overlay 닫기 시 native dim state와 status bar style을 반드시 원복한다.
+- OS permission/share 등 system-owned modal은 시스템 동작을 따른다.
+- toast 등 background interaction을 허용하는 non-modal UI에는 DIM을 적용하지 않는다.
+- 캠페인/CMS rich popup의 더 강한 backdrop/blur는 승인된 예외에서만 허용하고 공통 DIM과 중첩하지 않는다.
 
 ## Safe Area rules
 - 일반 APP 화면은 Native SafeArea가 상태바 영역을 담당한다.
 - 전체화면 viewer는 상태바 뒤까지 edge-to-edge로 확장한다.
 - 모바일 브라우저는 `web-safe-area.css` + `web-safe-area.js`가 safe-area 및 theme-color를 담당한다.
-- APP 안에서 웹 CSS로 native status bar 영역을 흉내내지 않는다.
+- APP 안에서 웹 CSS로 Native chrome을 흉내내지 않는다. 단, edge-to-edge WebView가 실제로 상태바 픽셀을 점유하는 경우 그 Web overlay backdrop이 해당 픽셀의 소유자다.
 
 ## Typography
 APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞춘다.
@@ -75,7 +102,7 @@ APP React Native 기본 시스템 폰트와 WEB 시스템 폰트 스택을 맞�
 - APP `FunyHeader` uses the same geometry
 
 ## Change rule
-페이지별 임의 폰트/색상/헤더 높이 추가를 피한다. 공통 UI를 바꿀 때는 먼저 APP `theme.ts`와 WEB `funy-ui-guide.css`를 동기화한 뒤 페이지는 공통 클래스를 사용한다.
+페이지별 임의 폰트/색상/헤더 높이/overlay DIM 로직 추가를 피한다. 공통 UI를 바꿀 때는 APP token/Overlay Host와 WEB `funy-ui-guide.css` 및 runtime 계약을 먼저 동기화한 뒤 페이지는 공통 상태·클래스를 사용한다.
 
 
 ## Native parity backlog

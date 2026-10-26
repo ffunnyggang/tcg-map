@@ -282,7 +282,7 @@ function closePageFullview(fromHistory=false){
 }
 pageFullview.addEventListener('cancel',e=>{e.preventDefault();closePageFullview();});
 pageFullview.addEventListener('click',e=>{if(!pageFullview.classList.contains('binder-preview-dim'))return;const target=e.target;if(target.closest?.('.preview-book-frame,.preview-book-arrow'))return;closePageFullview();});
-window.addEventListener('funy:native-overlay-dismiss',()=>{if(pageFullview.open&&pageFullview.classList.contains('binder-preview-dim')){closePageFullview();return;}if(modal.open&&modal.classList.contains('talk-report-sheet'))closeModal();});
+window.addEventListener('funy:native-overlay-dismiss',()=>{if(pageFullview.open&&pageFullview.classList.contains('binder-preview-dim')){closePageFullview();return;}if(modal.open)closeModal();});
 window.addEventListener('popstate',()=>{if(pageFullview.open)closePageFullview(true);});
 
 const commentSelect='*';

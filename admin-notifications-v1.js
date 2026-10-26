@@ -2,9 +2,9 @@
   const TAB='notifications';
   const CATEGORIES=[
     ['service','운영 공지'],
-    ['community','TALK'],
+    ['community','TALK · 바인더'],
     ['market','TCG 거래'],
-    ['rewards','리워드 · 배지'],
+    ['rewards','이벤트 · 리워드 · 배지'],
     ['missions','미션'],
     ['coupons','쿠폰'],
   ];
@@ -29,46 +29,123 @@
   ];
   const AUTO_NOTIFICATIONS=[
     {
-      condition:'TALK 게시글에 댓글 등록',
+      category:'TALK · 바인더',
+      condition:'다른 사용자가 내 TALK 게시글을 좋아요',
+      title:'내 게시글에 좋아요가 눌렸어요',
+      body:'{닉네임}님이 회원님의 게시글을 좋아합니다.',
+      destination:'해당 TALK 게시글',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'내 TALK 게시글에 댓글 등록',
       title:'새 댓글이 달렸어요',
       body:'{닉네임}님이 회원님의 게시글에 댓글을 남겼습니다.',
       destination:'해당 TALK 게시글',
     },
     {
+      category:'TALK · 바인더',
+      condition:'내 TALK 댓글에 답글 등록',
+      title:'내 댓글에 답글이 달렸어요',
+      body:'{닉네임}님이 회원님의 댓글에 답글을 남겼습니다.',
+      destination:'해당 TALK 게시글',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'내 게시글의 다른 사람 댓글에 답글 등록',
+      title:'내 게시글에 답글이 달렸어요',
+      body:'{닉네임}님이 회원님의 게시글에 답글을 남겼습니다.',
+      destination:'해당 TALK 게시글',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'다른 사용자가 내 TALK 댓글을 좋아요',
+      title:'내 댓글에 좋아요가 눌렸어요',
+      body:'{닉네임}님이 회원님의 댓글을 좋아합니다.',
+      destination:'해당 TALK 게시글',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'다른 사용자가 내 공개 바인더를 좋아요',
+      title:'내 바인더에 좋아요가 눌렸어요',
+      body:'{닉네임}님이 회원님의 바인더를 좋아합니다.',
+      destination:'해당 바인더',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'내 공개 바인더에 댓글 등록',
+      title:'내 바인더에 새 댓글이 달렸어요',
+      body:'{닉네임}님이 회원님의 바인더에 댓글을 남겼습니다.',
+      destination:'해당 바인더',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'내 바인더 댓글에 답글 등록',
+      title:'내 바인더 댓글에 답글이 달렸어요',
+      body:'{닉네임}님이 회원님의 댓글에 답글을 남겼습니다.',
+      destination:'해당 바인더',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'내 바인더의 다른 사람 댓글에 답글 등록',
+      title:'내 바인더에 답글이 달렸어요',
+      body:'{닉네임}님이 회원님의 바인더에 답글을 남겼습니다.',
+      destination:'해당 바인더',
+    },
+    {
+      category:'TALK · 바인더',
+      condition:'다른 사용자가 내 바인더 댓글을 좋아요',
+      title:'내 바인더 댓글에 좋아요가 눌렸어요',
+      body:'{닉네임}님이 회원님의 댓글을 좋아합니다.',
+      destination:'해당 바인더',
+    },
+    {
+      category:'TCG 거래',
       condition:'TCG 거래 채팅 메시지 수신',
       title:'새 거래 메시지가 도착했어요',
       body:'{상대 닉네임}님: {메시지 내용}',
       destination:'TCG 거래',
     },
     {
+      category:'TCG 거래',
       condition:'등록 매물 상태 변경',
       title:'거래 매물 상태가 변경됐어요',
       body:'{매물명} · 판매중 / 거래 완료 / 종료 / 비노출',
       destination:'TCG 거래',
     },
     {
-      condition:'배지 획득',
+      category:'이벤트 · 리워드 · 배지',
+      condition:'퍼니몬 이벤트 등 실제 응모 완료',
+      title:'이벤트 응모가 완료됐어요',
+      body:'{이벤트명} 응모가 정상적으로 완료되었습니다. · 필요 시 오늘 N회 / 총 N회',
+      destination:'응모 내역',
+    },
+    {
+      category:'이벤트 · 리워드 · 배지',
+      condition:'퍼니몬 실제 리워드 지급 (응모권 entry 제외)',
+      title:'리워드가 지급됐어요',
+      body:'{리워드명}을 확인해보세요.',
+      destination:'응모 내역',
+    },
+    {
+      category:'이벤트 · 리워드 · 배지',
+      condition:'새 배지 획득',
       title:'새 배지를 획득했어요',
       body:'{배지명} 배지가 추가되었습니다.',
       destination:'배지 페이지',
     },
     {
-      condition:'미션 완료',
+      category:'미션',
+      condition:'미션 상태가 최초로 완료 처리',
       title:'미션을 완료했어요',
       body:'{미션명} · +N FUNY COIN',
       destination:'MY',
     },
     {
-      condition:'쿠폰 발급',
+      category:'쿠폰',
+      condition:'새 쿠폰 발급',
       title:'새 쿠폰이 발급됐어요',
       body:'{쿠폰명}을 쿠폰함에서 확인해보세요.',
       destination:'쿠폰함',
-    },
-    {
-      condition:'퍼니몬 리워드 지급',
-      title:'리워드가 지급됐어요',
-      body:'{리워드명}을 확인해보세요.',
-      destination:'응모 내역',
     },
   ];
 
@@ -123,7 +200,7 @@
   .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:9px}
   .notification-auto-item{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:11px;align-items:start;padding:13px 14px;border:1px solid #ece7ef;border-radius:12px;background:#fff}
   .notification-auto-num{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#f1ecf8;color:#6c50b1;font-size:10px;font-weight:900}
-  .notification-auto-condition{font-size:10px;font-weight:800;color:#8b8390}
+  .notification-auto-category{display:inline-flex;margin-bottom:5px;padding:4px 7px;border-radius:999px;background:#f1ecf8;color:#6c50b1;font-size:8.5px;font-weight:900}\n  .notification-auto-condition{font-size:10px;font-weight:800;color:#8b8390}
   .notification-auto-title{margin-top:3px;font-size:12px;line-height:1.4;font-weight:900;color:#29242d}
   .notification-auto-body{margin-top:4px;font-size:10px;line-height:1.5;color:#756e79}
   .notification-auto-dest{padding:5px 8px;border-radius:8px;background:#f7f5f8;font-size:9px;font-weight:800;color:#746b78;white-space:nowrap}
@@ -213,7 +290,7 @@
           <article class="notification-admin-card">
             <div class="notification-admin-card-head">
               <h3>새 알림 발송</h3>
-              <button id="notificationAutoGuideBtn" class="notification-admin-guide-btn" type="button">자동 기본 알림 7종 보기</button>
+              <button id="notificationAutoGuideBtn" class="notification-admin-guide-btn" type="button">자동 기본 알림 ${AUTO_NOTIFICATIONS.length}종 보기</button>
             </div>
             <div class="notification-admin-field">
               <label>알림 제목</label>
@@ -306,7 +383,7 @@
         <section class="notification-auto-modal">
           <div class="notification-auto-head">
             <div>
-              <h3 id="notificationAutoTitle">자동 기본 알림 7종</h3>
+              <h3 id="notificationAutoTitle">자동 기본 알림 ${AUTO_NOTIFICATIONS.length}종</h3>
               <p>사용자 행동이나 상태 변경 시 자동으로 생성되는 기본 알림 예시입니다.</p>
             </div>
             <button id="notificationAutoClose" class="notification-auto-close" type="button" aria-label="닫기">×</button>
@@ -316,6 +393,7 @@
               <div class="notification-auto-item">
                 <div class="notification-auto-num">${index+1}</div>
                 <div>
+                  <div class="notification-auto-category">${escText(item.category)}</div>
                   <div class="notification-auto-condition">${escText(item.condition)}</div>
                   <div class="notification-auto-title">${escText(item.title)}</div>
                   <div class="notification-auto-body">${escText(item.body)}</div>
@@ -324,7 +402,7 @@
               </div>
             `).join('')}
           </div>
-          <div class="notification-auto-foot">※ 중괄호({ }) 영역은 실제 닉네임·메시지·매물명·배지명·미션명·쿠폰명·리워드명으로 자동 치환됩니다. 푸시를 꺼도 앱 알림함에는 기록될 수 있습니다.</div>
+          <div class="notification-auto-foot">※ 중괄호({ }) 영역은 실제 사용자·게시글·이벤트·리워드 정보로 자동 치환됩니다. 본인이 자기 게시글·댓글·바인더에 한 행동은 알림에서 제외되며, 동일 반응은 중복 생성되지 않습니다. 퍼니몬 응모권(entry) 발급만으로는 리워드 알림이 생성되지 않고 실제 응모 완료 시 ‘이벤트 응모가 완료됐어요’ 알림이 생성됩니다. 푸시를 꺼도 앱 알림함에는 기록될 수 있습니다.</div>
         </section>
       </div>
     `;

@@ -49,6 +49,7 @@
   if(next!==lastColor){lastColor=next;root.style.setProperty('--funy-web-top-color',next);theme.content=next;}
  }
  function schedule(){if(!frame)frame=setTimeout(update,80);}
+ window.FUNY_WEB_SAFE_AREA_REFRESH=()=>{if(frame){clearTimeout(frame);frame=0;}update();};
  const observer=new MutationObserver(schedule);
  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','open','style']});
  window.addEventListener('hashchange',schedule);

@@ -6,13 +6,13 @@
 <title>FUNY PIN UX/UI GUIDE</title>
 <link rel="icon" href="/favicon.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/funy-ui-guide.css?v=20261025-guide1">
+<link rel="stylesheet" href="/funy-ui-guide.css?v=20261026-overlay-contract1">
 <link rel="stylesheet" href="/ux-ui-guide.css?v=20261025-guide1">
 </head>
 <body>
 <div class="guide-shell">
 <aside class="guide-nav">
-  <div class="guide-brand"><img src="/favicon.svg" alt=""><div><strong>FUNY PIN</strong><small>UX/UI GUIDE · 2026.10.25</small></div></div>
+  <div class="guide-brand"><img src="/favicon.svg" alt=""><div><strong>FUNY PIN</strong><small>UX/UI GUIDE · 2026.10.26</small></div></div>
   <div class="nav-links">
     <a href="#principles">원칙</a><a href="#sources">공통 소스</a><a href="#overlay">DIM · Overlay</a><a href="#header">Header</a><a href="#safearea">Safe Area</a><a href="#tokens">Design Tokens</a><a href="#components">Components</a><a href="#navigation">Navigation</a><a href="#checklist">수정 체크리스트</a>
   </div>
@@ -37,30 +37,50 @@
       <div class="rule"><b>WEB 토큰</b><span><span class="source">funy-ui-guide.css</span> 색상·헤더·버튼·DIM·공통 UI 기준</span></div>
       <div class="rule"><b>WEB Safe Area</b><span><span class="source">web-safe-area.css</span> + <span class="source">web-safe-area.js</span> 브라우저 Safe Area 및 theme-color 처리</span></div>
       <div class="rule"><b>APP 토큰</b><span><span class="source">mobile/lib/theme.ts</span> Native 색상·타입·레이아웃·Overlay 토큰</span></div>
-      <div class="rule"><b>APP DIM</b><span><span class="source">mobile/components/FunyNativeDimLayer.tsx</span> 상태바·네이티브 헤더 DIM의 유일한 공통 레이어</span></div>
-      <div class="rule"><b>APP Header</b><span><span class="source">mobile/components/FunyHeader.tsx</span> Native 공통 헤더</span></div>
-      <div class="rule"><b>WebView Bridge</b><span><span class="source">mobile/components/FunyWebView.tsx</span> Web ↔ Native UI 상태 전달</span></div>
+      <div class="rule"><b>APP Overlay Host</b><span><span class="source">mobile/components/FunyNativeOverlayHost.tsx</span> Native chrome DIM을 실제로 렌더링하는 단일 진입점</span></div>
+      <div class="rule"><b>APP DIM</b><span><span class="source">mobile/components/FunyNativeDimLayer.tsx</span> 상태바·네이티브 헤더 영역의 DIM·입력 차단 레이어</span></div>
+      <div class="rule"><b>APP Header</b><span><span class="source">mobile/components/FunyHeader.tsx</span> Native 공통 헤더. 헤더 자체 DIM 생성 금지</span></div>
+      <div class="rule"><b>WebView Bridge</b><span><span class="source">mobile/components/FunyWebView.tsx</span> Web overlay 상태를 Native Overlay Host에 전달</span></div>
+      <div class="rule"><b>WEB Runtime</b><span><span class="source">app-runtime-fixes-v2.js</span> overlay 감지·배경 스크롤 잠금·bridge만 담당. 전역 DIM 직접 생성 금지</span></div>
     </div>
   </section>
 
-  <section id="overlay"><h2>03. DIM · Modal · Overlay</h2><p class="lead">DIM 문제의 핵심 규칙은 “한 픽셀에 한 번만 어둡게”입니다.</p>
+  <section id="overlay"><h2>03. DIM · Modal · Overlay</h2><p class="lead">최상단 바텀시트·모달·팝업은 하나의 modal contract를 사용합니다. 화면 전체는 같은 농도로 보이되, 동일한 물리 픽셀에 DIM이 겹치면 안 됩니다.</p>
     <div class="grid">
-      <div class="card"><h3>표준 규칙</h3>
-        <div class="rule"><b>Web 콘텐츠</b><span>웹 모달·바텀시트의 <code>::backdrop</code>이 WebView 콘텐츠 영역만 담당</span></div>
-        <div class="rule"><b>Native Chrome</b><span><code>FunyNativeDimLayer</code>가 상태바 + 네이티브 헤더만 담당</span></div>
-        <div class="rule"><b>농도</b><span><code>rgba(20,16,24,.38)</code> — WEB/APP 공통</span></div>
-        <div class="rule"><b>Fullscreen</b><span>전체화면 이미지 뷰어는 DIM이 아니라 <code>#09090b</code> 배경 사용</span></div>
+      <div class="card"><h3>표준 결과</h3>
+        <div class="rule"><b>전체 화면</b><span>최상단 overlay 바로 아래에 상태바 · Native Header · Web 콘텐츠까지 끊김 없는 DIM을 표시</span></div>
+        <div class="rule"><b>농도</b><span><code>rgba(20,16,24,.38)</code> — WEB/APP 공통. 기본 blur 없음</span></div>
+        <div class="rule"><b>입력 차단</b><span>DIM 아래 화면의 스크롤 · 터치 · 지도 제스처 · 헤더 이전/닫기 · 하단 내비 동작을 차단</span></div>
+        <div class="rule"><b>DIM 탭</b><span>DIM 영역 탭은 현재 최상단의 <em>dismissible</em> overlay만 닫고 DIM 상태를 즉시 원복</span></div>
+        <div class="rule"><b>Overlay 내부</b><span>바텀시트·팝업 자체의 버튼/입력/내부 스크롤은 정상 동작</span></div>
       </div>
-      <div class="card"><h3>금지 규칙</h3>
-        <div class="rule"><b class="dont">금지</b><span>Header 내부 DIM + 상단 Native DIM 동시 적용</span></div>
-        <div class="rule"><b class="dont">금지</b><span>SafeAreaView 배경을 어둡게 만든 뒤 DIM을 또 올리는 방식</span></div>
-        <div class="rule"><b class="dont">금지</b><span>페이지마다 다른 rgba 값 사용</span></div>
-        <div class="rule"><b class="do">허용</b><span>Web backdrop + Native topChrome DIM처럼 서로 겹치지 않는 영역 분담</span></div>
+      <div class="card"><h3>영역 소유권</h3>
+        <div class="rule"><b>일반 APP</b><span>Web overlay backdrop은 WebView 콘텐츠, <code>FunyNativeOverlayHost</code>는 WebView 밖의 상태바 + Native Header만 담당</span></div>
+        <div class="rule"><b>Edge-to-edge</b><span>WebView가 상태바 뒤까지 실제로 확장된 화면은 Web backdrop이 그 픽셀까지 담당. 같은 상태바에 Native DIM을 추가하지 않음</span></div>
+        <div class="rule"><b>Native only</b><span>WebView가 없는 Native modal은 Native overlay가 필요한 실제 화면 영역만 한 번 덮음</span></div>
+        <div class="rule"><b>Stack</b><span>overlay가 중첩되어도 backdrop 농도를 누적하지 않음. 항상 현재 최상단 overlay 바로 아래에 시각적 DIM 1겹만 유지</span></div>
       </div>
     </div>
-    <div class="card" style="margin-top:14px"><h3>시각 기준</h3>
-      <div class="demo-phone demo-dim"><div class="demo-status"></div><div class="demo-head">상태바 + Native Header</div><div class="demo-content">WebView 콘텐츠 영역<br>웹 모달 backdrop은 여기에서 시작</div></div>
-      <p>상단과 콘텐츠가 같은 농도로 보이되, 실제 구현 레이어는 서로 중첩되지 않아야 합니다.</p>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><h3>금지 규칙</h3>
+        <div class="rule"><b class="dont">금지</b><span><code>FunyHeader</code> 내부 DIM + Native Overlay Host 동시 적용</span></div>
+        <div class="rule"><b class="dont">금지</b><span>공통 runtime의 <code>::before</code> 등 전역 pseudo-DIM 추가</span></div>
+        <div class="rule"><b class="dont">금지</b><span>SafeAreaView 배경을 어둡게 만든 뒤 DIM을 또 올리는 방식</span></div>
+        <div class="rule"><b class="dont">금지</b><span>페이지별 rgba · opacity · blur 하드코딩 또는 기존 DIM 위 추가 DIM</span></div>
+        <div class="rule"><b class="dont">금지</b><span>DIM을 <code>pointer-events:none</code>으로 만들어 아래 화면을 조작 가능하게 두는 방식</span></div>
+      </div>
+      <div class="card"><h3>명시적 예외</h3>
+        <div class="rule"><b>Fullscreen</b><span>이미지/미디어 viewer는 translucent DIM이 아니라 <code>#09090B</code> edge-to-edge surface</span></div>
+        <div class="rule"><b>System UI</b><span>OS 권한·공유 등 시스템이 소유하는 modal은 시스템 동작을 따름</span></div>
+        <div class="rule"><b>Non-modal</b><span>Toast·비차단 안내처럼 의도적으로 배경 조작을 허용하는 UI에는 DIM을 사용하지 않음</span></div>
+        <div class="rule"><b>Campaign/CMS</b><span>더 강한 backdrop/blur가 필요한 캠페인 팝업은 승인된 명시적 예외로만 허용하며 공통 DIM과 중첩 금지</span></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>동작 순서</h3>
+      <div class="rule"><b>OPEN</b><span>top layer 표시 → web backdrop 활성화 → 필요한 Native chrome 영역만 Host에 전달 → background interaction lock</span></div>
+      <div class="rule"><b>DISMISS</b><span>DIM 탭/X/완료 → 최상단 overlay 닫기 → Web/Native overlay state reset → 스크롤·상태바 style 원복</span></div>
+      <div class="rule"><b>Runtime</b><span><code>app-runtime-fixes-v2.js</code>는 상태를 감지·잠그고 Native에 알릴 뿐 DIM을 직접 그리지 않음</span></div>
+      <div class="demo-phone demo-dim"><div class="demo-status"></div><div class="demo-head">상태바 + Native Header</div><div class="demo-content">WebView 콘텐츠 영역<br>각 픽셀의 소유자가 1겹만 DIM 처리</div></div>
     </div>
   </section>
 
@@ -75,7 +95,7 @@
     <div class="card">
       <div class="rule"><b>일반 화면</b><span>Native SafeArea가 상태바 공간을 담당. WebView는 그 아래에서 시작.</span></div>
       <div class="rule"><b>전체화면</b><span>이미지/미디어 viewer는 edge-to-edge로 상태바 뒤까지 확장하고 status bar style만 맞춤.</span></div>
-      <div class="rule"><b>DIM</b><span>Native 상태바 영역은 <code>FunyNativeDimLayer</code>의 <code>topChrome</code> 또는 <code>status</code> scope 사용.</span></div>
+      <div class="rule"><b>DIM</b><span>일반 화면은 <code>FunyNativeOverlayHost</code>가 필요한 Native chrome만 담당. edge-to-edge WebView가 이미 덮는 픽셀에는 Native DIM을 추가하지 않음.</span></div>
       <div class="rule"><b>Web Browser</b><span><code>web-safe-area.*</code>가 browser safe-area와 theme-color를 담당.</span></div>
     </div>
   </section>
@@ -95,7 +115,7 @@
 
   <section id="components"><h2>07. 공통 컴포넌트 규칙</h2><p class="lead">기능별로 아래 패턴을 먼저 재사용합니다.</p>
     <div class="grid">
-      <div class="card"><h3>Modal / Bottom Sheet</h3><ul><li>표준 DIM 토큰 사용</li><li>닫기 시 Native dim state 반드시 reset</li><li>바텀시트는 하단 safe area 포함</li><li>신고·필터·메뉴 간 동일한 backdrop 농도 유지</li></ul></div>
+      <div class="card"><h3>Modal / Bottom Sheet</h3><ul><li>표준 DIM 토큰과 공통 overlay contract 사용</li><li>열린 동안 배경 스크롤·터치·Native chrome 입력 차단</li><li>DIM 탭 시 최상단 dismissible overlay 닫기</li><li>닫기 시 Web/Native overlay state와 status bar style 원복</li><li>바텀시트는 하단 safe area 또는 Native navigation 경계를 반영</li></ul></div>
       <div class="card"><h3>Fullscreen Viewer</h3><ul><li>검정 배경 <code>#09090b</code></li><li>상태바 뒤까지 edge-to-edge</li><li>상태바 아이콘은 light-content</li><li>닫기 컨트롤은 safe-top만큼 inset</li></ul></div>
       <div class="card"><h3>Buttons</h3><ul><li>최소 터치 높이 44px 권장</li><li>Primary는 Purple</li><li>Danger는 공통 danger token</li><li>아이콘만 있는 버튼도 accessibility label 필수</li></ul></div>
       <div class="card"><h3>WebView</h3><ul><li>Native Header가 있으면 웹 헤더 중복 금지</li><li>Native UI 변경이 필요한 상태는 bridge event로 전달</li><li>웹 CSS만으로 native status bar를 흉내내지 않음</li><li>route/back은 실제 진입 context를 보존</li></ul></div>
@@ -116,6 +136,10 @@
       <div class="check">같은 기능의 공통 토큰/컴포넌트가 이미 있는지 확인했는가?</div>
       <div class="check">Status bar + Native header + WebView 경계에서 레이어가 중복되지 않는가?</div>
       <div class="check">DIM, 컬러, radius, header 높이를 페이지에서 하드코딩하지 않았는가?</div>
+      <div class="check">Overlay가 열린 동안 배경 스크롤·터치·헤더·하단 내비가 실제로 비활성화되는가?</div>
+      <div class="check">DIM 영역 탭이 최상단 dismissible overlay만 닫고 상태를 정상 해제하는가?</div>
+      <div class="check">Edge-to-edge 화면에서 Web backdrop과 Native DIM의 픽셀 소유권이 겹치지 않는가?</div>
+      <div class="check">공통 runtime이나 Header가 별도 pseudo-DIM/로컬 DIM을 만들고 있지 않은가?</div>
       <div class="check">iOS / Android / Web에서 Safe Area와 keyboard 영향을 확인했는가?</div>
       <div class="check">뒤로가기 시 실제 진입 화면과 스크롤/필터 상태가 보존되는가?</div>
       <div class="check">Native header와 Web header가 동시에 노출되지 않는가?</div>

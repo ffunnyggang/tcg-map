@@ -626,8 +626,9 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     els.kicker.textContent='RESULT';els.text.textContent=LABELS()[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent=isEnglish()?'The coin flip result is set.':'코인플립 결과가 결정되었습니다.';
     renderHistory();saveFlipToDb(outcome);playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
   }
-  function flip(){
+  async function flip(){
     if(busy)return;
+    if(isIOSApp&&soundOn&&!realSfxPrimed)await primeRealSfx();
     const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     syncDurationFromStorage();
     const totalMs=flipSeconds*1000,ascentMs=reduced?180:470,descentMs=reduced?180:500,bounceMs=reduced?180:500,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);

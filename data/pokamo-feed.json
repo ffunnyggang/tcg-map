@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-26T01:10:57.101703+00:00",
+  "updatedAt": "2026-10-26T06:14:06.954488+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "데덴네 카드를 모으려고 하고있습니다",
+      "author": "구진남",
+      "publishedAt": "2026-10-26T01:27:29.16743Z",
+      "excerpt": "데덴네 카드를 모으려고 하고있습니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/데덴네-카드를-모으려고-하고있습니다-d9X5zr6P",
+      "views": 3,
+      "likes": 2,
+      "comments": 0,
+      "popularityScore": 6.03
+    },
     {
       "category": "자유 게시판",
       "title": "오늘 노을이 이쁘더라고요🌇",
@@ -11,10 +24,10 @@
       "excerpt": "새로운 한주도 퐈이팅🔥",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/오늘-노을이-이쁘더라고요🌇-dg3BQrxd",
-      "views": 1,
+      "views": 14,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 0.14
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "재밌는 이벤트 많이 진행해볼게요✨",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄를-찾아라-이벤트-진행했어요-Px8OpRDP",
-      "views": 16,
+      "views": 20,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.16
+      "popularityScore": 5.2
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "이것들은 얼마하나요?",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792917703739b6f7d112c9db726c62da0694db3c78c899f429a92bf957820a71a7fe44bf50af0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-Px8ODrkP",
-      "views": 44,
+      "views": 45,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.44
+      "popularityScore": 3.45
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "안녕하세요! 30주년으로 입문한 뉴비입니다!",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-30주년으로-입문한-뉴비입니다-A4Q8NNoP",
-      "views": 16,
+      "views": 17,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.16
+      "popularityScore": 3.17
     },
     {
       "category": "카드거래",
@@ -76,10 +89,10 @@
       "excerpt": "시세보다 저렴하게 올려요 메가테라 6.5 나머지 3.5 용산샵에서 구매했고 당일 구매한 영수증도 있습니다 슈링크 o",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/a9cf0052-3967-4492-bea2-f0f290a3c18e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/테라스탈-메가드림-배틀파트너즈-니힐제로-닌자스피너-ARo4Wo3P",
-      "views": 3,
+      "views": 5,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.03
+      "popularityScore": 0.05
     },
     {
       "category": "자유 게시판",
@@ -89,10 +102,10 @@
       "excerpt": "이브이 ar입니당",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이브이-ar입니당-Px8z1rQP",
-      "views": 2,
+      "views": 3,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.02
+      "popularityScore": 3.03
     },
     {
       "category": "자유 게시판",
@@ -102,10 +115,10 @@
       "excerpt": "북미 포켓몬 카드를 모으고있는데 30주년 피카츄 30종 세트가 여러세트가 모여서 판매하려고 하는데 가격층정을 어느정도 해야하나요?",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261024/f5f831dc-000b-4c8b-b329-7f5d51d8daa2.png?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/북미-포켓몬-카드를-모으고있는데-30주년-피카츄-30종-세트가-여러세트가-모여서-판매하려고-j8r1p5WP",
-      "views": 5,
+      "views": 6,
       "likes": 6,
       "comments": 0,
-      "popularityScore": 18.05
+      "popularityScore": 18.06
     },
     {
       "category": "자유 게시판",
@@ -142,9 +155,9 @@
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/40대-직장인이고-dz9Z2O7P",
       "views": 40,
-      "likes": 4,
+      "likes": 5,
       "comments": 1,
-      "popularityScore": 14.4
+      "popularityScore": 17.4
     },
     {
       "category": "자유 게시판",
@@ -158,19 +171,6 @@
       "likes": 1,
       "comments": 1,
       "popularityScore": 5.27
-    },
-    {
-      "category": "자유 게시판",
-      "title": "팬텀이 좋아서 시작했습니다",
-      "author": "타임",
-      "publishedAt": "2026-10-24T09:56:37.098932Z",
-      "excerpt": "팬텀이 좋아서 시작했습니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팬텀이-좋아서-시작했습니다-j8r1KMJP",
-      "views": 4,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.04
     },
     {
       "category": "카드거래",
@@ -297,10 +297,10 @@
       "excerpt": "문방구에서 샀는데 시세가 좋은지 궁금해서",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/ab23a18b-d2e2-4015-aa4d-2278005006f7.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-1팩만에나오면-이득인가요-dEbq17Vj",
-      "views": 110,
+      "views": 111,
       "likes": 2,
       "comments": 6,
-      "popularityScore": 19.1
+      "popularityScore": 19.11
     },
     {
       "category": "카드 자랑",
@@ -310,10 +310,10 @@
       "excerpt": "RGB뮤 레드 노리고 시작해서 총 3천만원, 1500팩 이상 까서 드디어 나와주네요 ㅠㅠㅠ 루기아, 리자몽, FUR등 각각 전부 6장 - 10장 이상씩은 뜬 거 같고 추리고 추려서 100장 정도 전부 유학 보냈습니다! 좋은 결과로 돌아오길 ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792134003530d4b79dfb72eb4e865d3b709b2938d74dcb5ec77f2ff27d99dcba2dc7bf07c0da0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/총-3천만원어치-북미-30주년-카드깡-결과-dlYq1NYj",
-      "views": 183,
+      "views": 185,
       "likes": 3,
       "comments": 3,
-      "popularityScore": 16.83
+      "popularityScore": 16.85
     },
     {
       "category": "카드 자랑",
@@ -336,10 +336,10 @@
       "excerpt": "역시 피카츄가 제일 이쁘네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/17918835663818751865909df27dc7b4488fff586e81ad07175270edf5b92fdaedea686c50bc41.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-좋아하니-선물받았어요-AramxGej",
-      "views": 96,
+      "views": 97,
       "likes": 5,
       "comments": 3,
-      "popularityScore": 21.96
+      "popularityScore": 21.97
     },
     {
       "category": "정보 공유",
@@ -713,10 +713,10 @@
       "excerpt": "🎣 잉어킹 프로모 brg 그레이딩 신청방법! 홈페이지에서 ‘그레이딩 신청’ 선택! ① 레귤러 / 익스프레스 중 서비스 선택 ② 카드 종류에서 ‘포켓몬카드’ 선택 ③ 결제하면 신청 완료! 👉 카드 종류 외 나머지 항목은 생략하셔도 됩니다 📢 잠깐! 8/7~8/31 잉어킹 프로모 카드 그레",
       "image": "https://img.kr.gcp-karroter.net/community/community/20260828/aac9651a-c89c-4c15-88fa-d71f9d4eed4e.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎣-잉어킹-프로모-brg-그레이딩-신청방법-PBlDrwqj",
-      "views": 109,
+      "views": 110,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 6.09
+      "popularityScore": 6.1
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -778,10 +778,10 @@
       "excerpt": "맛집부터 취미까지, 당근 카페에서 관심 있는 주제에 대해 소통해보세요.",
       "image": "https://cafe.daangn.com/opengraph-image-12o0cb?e0d5489bbd866c99",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/뮤-rgb-레드-팔아요-dJyMk7gP",
-      "views": 15,
+      "views": 16,
       "likes": 2,
       "comments": 2,
-      "popularityScore": 10.15
+      "popularityScore": 10.16
     }
   ]
 }

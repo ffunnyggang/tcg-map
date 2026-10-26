@@ -586,7 +586,7 @@
     try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'FUNY_MARKET_ROUTE_STATE',route:String(route||'list')}))}catch(_){}
   }
   function syncNativeMarketOverlayState(){
-    const ids=['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
+    const ids=standaloneMarket?['marketRegisterOverlay','marketReportOverlay']:['marketOverlay','marketDetailOverlay','marketRegisterOverlay','marketReportOverlay','marketImageViewer'];
     const fabMenu=$('#marketFabWrap .market-fab-menu');
     const fullOpen=ids.some(id=>{const el=$('#'+id);return !!el&&el.hidden===false});
     const menuOpen=!!fabMenu&&fabMenu.hidden===false;
@@ -703,7 +703,7 @@
   function openOverlay(){
     buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';
     renderListInto($('#marketOverlayList'),overlayFilter);syncSortUI();updateCounts();
-    postNativeMarketOverlayState(true);
+    if(!standaloneMarket)postNativeMarketOverlayState(true);
     if(standaloneMarket)postNativeMarketRouteState('list');
     showMarketSafetyNotice();
   }
@@ -1471,7 +1471,7 @@
       '<div class="market-detail-bottom"><a id="marketDetailTrade" class="market-detail-trade '+providerClass+(ended?' disabled':'')+'" href="'+esc(x.external_url)+'" target="_blank" rel="noopener">'+(ended?'판매가 종료된 매물입니다':esc(sourceName)+'에서 구매하기')+'</a></div>';
     const floatingRegister=document.querySelector('body>.market-overlay-register');if(floatingRegister)floatingRegister.hidden=true;
     overlay.hidden=false;document.body.style.overflow='hidden';
-    postNativeMarketOverlayState(true);
+    if(!standaloneMarket)postNativeMarketOverlayState(true);
     postNativeMarketDetailState(true,false,detailImages.length>0);if(standaloneMarket)postNativeMarketRouteState('detail');
     overlay.scrollTop=0;
     requestAnimationFrame(()=>{overlay.scrollTo({top:0,left:0,behavior:'auto'});const track=$('#marketDetailCarousel');if(track)track.scrollLeft=0});

@@ -48,10 +48,10 @@
   }
   let lastOverlay=null,overlayTimer=0;
   function reportOverlay(){clearTimeout(overlayTimer);overlayTimer=setTimeout(()=>{
-    const open=isOverlayOpen(),avatarOpen=[...document.querySelectorAll('.map-location-avatar-sheet')].some(visible),adminOpen=[...document.querySelectorAll('#funyAdminPopup')].some(visible),marketSafetyOpen=[...document.querySelectorAll('#marketSafetyNotice')].some(visible);
+    const open=isOverlayOpen(),avatarOpen=[...document.querySelectorAll('.map-location-avatar-sheet')].some(visible),adminOpen=[...document.querySelectorAll('#funyAdminPopup')].some(visible),marketSafetyOpen=[...document.querySelectorAll('#marketSafetyNotice')].some(visible),marketDetailOpen=[...document.querySelectorAll('#marketDetailOverlay')].some(visible);
     document.documentElement.classList.toggle('funy-web-overlay-open',open);
     const adminOnMap=adminOpen&&/\/shops\.html$/i.test(location.pathname);
-    const source=avatarOpen?'map-location-avatar':adminOpen?'admin-popup':marketSafetyOpen?'market-safety':'runtime';
+    const source=avatarOpen?'map-location-avatar':adminOpen?'admin-popup':marketSafetyOpen?(marketDetailOpen?'market-safety-detail':'market-safety-list'):'runtime';
     const navMode=open?(avatarOpen||adminOnMap||marketSafetyOpen?'dim':'hide'):'none';
     const state=open?(source+':'+navMode):'closed:none';
     if(lastOverlay===state)return;

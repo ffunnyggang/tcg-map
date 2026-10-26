@@ -26,9 +26,9 @@
 
   const style=document.createElement('style');
   style.textContent=`
-    html.app-shell.funy-web-overlay-open::before{content:"";position:fixed;inset:0;z-index:2147482000;background:rgba(22,18,28,.42);pointer-events:none}html.app-shell.funy-web-overlay-open.funy-talk-form-open::before{display:none!important;content:none!important}
+    /* Common overlay runtime owns state/interaction only. The topmost overlay owns the web backdrop. */
+    html.app-shell.funy-web-overlay-open,html.app-shell.funy-web-overlay-open body{overflow:hidden!important;overscroll-behavior:none!important}
     html.app-shell .talk-community-modal,html.app-shell #funyMonModal,html.app-shell .map-location-avatar-sheet,html.app-shell .sheetbg.open,html.app-shell .shop-filter-bg.open,html.app-shell .flag-sheet.open,html.app-shell .lightbox.open{z-index:2147483000!important}
-    html.app-shell .talk-community-modal{inset:0!important;background:rgba(22,18,28,.42)!important}
     html.app-shell .talk-community-sheet{margin-bottom:0!important;max-height:92dvh!important}
     html.app-shell #funyMonModal .funy-mon-sheet,html.app-shell .funy-mon-outcome-box,html.app-shell .map-location-avatar-card{margin-bottom:0!important}
     html.app-shell .funy-google-marker{pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;border:0!important;background:transparent!important;padding:0!important}

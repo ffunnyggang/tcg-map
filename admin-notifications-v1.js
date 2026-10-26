@@ -205,9 +205,8 @@
   .notification-auto-head h3{margin:0;font-size:16px;line-height:1.35;color:#211d25}
   .notification-auto-head p{margin:6px 0 0;font-size:10px;line-height:1.5;color:#8d8590}
   .notification-auto-close{width:34px;height:34px;flex:0 0 auto;border:0;border-radius:10px;background:#f5f2f7;color:#5f5763;font-size:19px;line-height:1;cursor:pointer}
-  .notification-auto-tabs{display:flex;gap:7px;padding:12px 22px;border-bottom:1px solid #eee9f0;overflow-x:auto;background:#fff;scrollbar-width:none}
-  .notification-auto-tabs::-webkit-scrollbar{display:none}
-  .notification-auto-tab{height:32px;flex:0 0 auto;border:1px solid #e5dfeb;border-radius:999px;background:#fff;padding:0 11px;color:#766e7b;font-size:9.5px;font-weight:850;cursor:pointer;white-space:nowrap}
+  .notification-auto-tabs{display:flex;flex-wrap:wrap;gap:7px;padding:12px 22px;border-bottom:1px solid #eee9f0;overflow:visible;background:#fff}
+  .notification-auto-tab{min-height:32px;flex:0 0 auto;border:1px solid #e5dfeb;border-radius:999px;background:#fff;padding:7px 11px;color:#766e7b;font-size:9.5px;line-height:1.2;font-weight:850;cursor:pointer;white-space:nowrap;max-width:100%}
   .notification-auto-tab.is-active{border-color:#6c50b1;background:#6c50b1;color:#fff}
   .notification-auto-tab-count{margin-left:4px;opacity:.72;font-size:8.5px}
   .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:10px}
@@ -240,7 +239,9 @@
     .notification-auto-overlay{padding:12px;align-items:flex-end}
     .notification-auto-modal{max-height:88vh;border-radius:18px 18px 0 0}
     .notification-auto-head{padding:18px 16px 14px}
-    .notification-auto-tabs{padding:10px 16px}
+    .notification-auto-tabs{flex-wrap:nowrap;gap:6px;padding:10px 16px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .notification-auto-tabs::-webkit-scrollbar{display:none}
+    .notification-auto-tab{min-width:max-content;max-width:none}
     .notification-auto-list{padding:12px 16px 18px}
     .notification-auto-item{grid-template-columns:30px minmax(0,1fr)}
     .notification-auto-columns{grid-template-columns:1fr}

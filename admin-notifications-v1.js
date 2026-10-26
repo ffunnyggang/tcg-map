@@ -211,14 +211,15 @@
   .notification-auto-tab.is-active{border-color:#6c50b1;background:#6c50b1;color:#fff}
   .notification-auto-tab-count{margin-left:4px;opacity:.72;font-size:8.5px}
   .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:10px}
-  .notification-auto-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px 15px;border:1px solid #ece7ef;border-radius:13px;background:#fff}
+  .notification-auto-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 14px;border:1px solid #ece7ef;border-radius:13px;background:#fff}
   .notification-auto-num{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#f1ecf8;color:#6c50b1;font-size:10px;font-weight:900}
   .notification-auto-category{display:inline-flex;margin-bottom:8px;padding:4px 7px;border-radius:999px;background:#f1ecf8;color:#6c50b1;font-size:8.5px;font-weight:900}
-  .notification-auto-section{display:grid;gap:4px}
-  .notification-auto-section+.notification-auto-section{margin-top:11px;padding-top:11px;border-top:1px solid #f1edf3}
+  .notification-auto-columns{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;align-items:stretch}
+  .notification-auto-section{display:grid;align-content:start;gap:5px;min-width:0}
+  .notification-auto-section+.notification-auto-section{margin:0;padding:0 0 0 12px;border-left:1px solid #eee9f0}
   .notification-auto-label{font-size:8.5px;font-weight:900;color:#9a929e;letter-spacing:.02em}
   .notification-auto-condition{font-size:11px;line-height:1.5;font-weight:800;color:#4f4854}
-  .notification-auto-message{padding:10px 11px;border-radius:10px;background:#faf8fc;border:1px solid #f0ebf3}
+  .notification-auto-message{padding:9px 10px;border-radius:10px;background:#faf8fc;border:1px solid #f0ebf3}
   .notification-auto-title{font-size:12px;line-height:1.4;font-weight:900;color:#29242d}
   .notification-auto-body{margin-top:4px;font-size:10px;line-height:1.55;color:#756e79}
   .notification-auto-dest{padding:6px 9px;border-radius:8px;background:#f7f5f8;font-size:9px;font-weight:800;color:#746b78;white-space:nowrap}
@@ -242,6 +243,8 @@
     .notification-auto-tabs{padding:10px 16px}
     .notification-auto-list{padding:12px 16px 18px}
     .notification-auto-item{grid-template-columns:30px minmax(0,1fr)}
+    .notification-auto-columns{grid-template-columns:1fr}
+    .notification-auto-section+.notification-auto-section{padding:10px 0 0;border-left:0;border-top:1px solid #eee9f0}
     .notification-auto-dest{grid-column:2;justify-self:start}
     .notification-auto-foot{padding:0 16px 16px}
   }
@@ -535,15 +538,17 @@
           +'<div class="notification-auto-num">'+index+'</div>'
           +'<div>'
             +'<div class="notification-auto-category">'+escText(item.category)+'</div>'
-            +'<div class="notification-auto-section">'
-              +'<div class="notification-auto-label">발생 조건</div>'
-              +'<div class="notification-auto-condition">'+escText(item.condition)+'</div>'
-            +'</div>'
-            +'<div class="notification-auto-section">'
-              +'<div class="notification-auto-label">자동 알림 메시지</div>'
-              +'<div class="notification-auto-message">'
-                +'<div class="notification-auto-title">'+escText(item.title)+'</div>'
-                +'<div class="notification-auto-body">'+escText(item.body)+'</div>'
+            +'<div class="notification-auto-columns">'
+              +'<div class="notification-auto-section">'
+                +'<div class="notification-auto-label">발생 조건</div>'
+                +'<div class="notification-auto-condition">'+escText(item.condition)+'</div>'
+              +'</div>'
+              +'<div class="notification-auto-section">'
+                +'<div class="notification-auto-label">자동 알림 메시지</div>'
+                +'<div class="notification-auto-message">'
+                  +'<div class="notification-auto-title">'+escText(item.title)+'</div>'
+                  +'<div class="notification-auto-body">'+escText(item.body)+'</div>'
+                +'</div>'
               +'</div>'
             +'</div>'
           +'</div>'

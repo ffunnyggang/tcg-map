@@ -67,7 +67,7 @@
 @keyframes funy-avatar4-walk{0%,100%{background-position:2% var(--avatar-yp,0%)}33%{background-position:52% var(--avatar-yp,0%)}66%{background-position:100% var(--avatar-yp,0%)}}
 
 /* Native app overlay ordering */
-html.app-shell .map-location-avatar-sheet{z-index:2147483000!important;background:rgba(20,16,24,.38)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.app-shell .map-location-avatar-sheet{z-index:2147483000!important;background:rgba(20,16,24,.38)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overscroll-behavior:contain!important;touch-action:none!important}
 html.app-shell.funy-web-overlay-open.funy-map-location-overlay-open::before{display:none!important;content:none!important}
-html.app-shell .map-location-avatar-card{position:relative;z-index:1}
-html.app-shell body.country-japan .map-location-avatar-card{margin-bottom:0!important}
+html.app-shell .map-location-avatar-card{position:relative;z-index:1;touch-action:auto!important}
+html.app-shell body.country-japan .map-location-avatar-card{margin-bottom:calc(var(--funy-native-safe-bottom,0px) + 66px)!important}

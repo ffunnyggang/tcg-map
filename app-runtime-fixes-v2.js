@@ -43,17 +43,20 @@
   document.head.appendChild(style);
 
   function isOverlayOpen(){
-    const selectors=['.talk-community-modal','#funyMonModal','.map-location-avatar-sheet','.sheetbg.open','.shop-filter-bg.open','.flag-sheet.open','.lightbox.open','[data-funy-bottom-sheet].is-open','[role="dialog"].is-open'];
+    const selectors=['.talk-community-modal','#funyMonModal','.map-location-avatar-sheet','#funyAdminPopup','dialog.funy-standard-modal[open]','[data-funy-modal-overlay]:not([hidden])','.sheetbg.open','.shop-filter-bg.open','.flag-sheet.open','.lightbox.open','[data-funy-bottom-sheet].is-open','[role="dialog"].is-open'];
     return selectors.some(sel=>[...document.querySelectorAll(sel)].some(visible));
   }
   let lastOverlay=null,overlayTimer=0;
   function reportOverlay(){clearTimeout(overlayTimer);overlayTimer=setTimeout(()=>{
-    const open=isOverlayOpen(),avatarOpen=[...document.querySelectorAll('.map-location-avatar-sheet')].some(visible);
+    const open=isOverlayOpen(),avatarOpen=[...document.querySelectorAll('.map-location-avatar-sheet')].some(visible),adminOpen=[...document.querySelectorAll('#funyAdminPopup')].some(visible);
     document.documentElement.classList.toggle('funy-web-overlay-open',open);
-    const state=open?(avatarOpen?'map-location-avatar:dim':'runtime:hide'):'closed:none';
+    const adminOnMap=adminOpen&&/\/shops\.html$/i.test(location.pathname);
+    const source=avatarOpen?'map-location-avatar':adminOpen?'admin-popup':'runtime';
+    const navMode=open?(avatarOpen||adminOnMap?'dim':'hide'):'none';
+    const state=open?(source+':'+navMode):'closed:none';
     if(lastOverlay===state)return;
     lastOverlay=state;
-    if(appShell)post({type:'FUNY_WEB_OVERLAY_STATE',open,source:avatarOpen?'map-location-avatar':'runtime',navMode:open?(avatarOpen?'dim':'hide'):'none'});
+    if(appShell)post({type:'FUNY_WEB_OVERLAY_STATE',open,source,navMode});
   },20)}
   const observer=new MutationObserver(reportOverlay);
   const startObserver=()=>{observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style','aria-hidden']});reportOverlay()};

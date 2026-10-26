@@ -89,8 +89,8 @@
     s.id='funy-admin-popup-style';
     s.textContent=`
       #funyAdminPopup[hidden]{display:none!important}
-      #funyAdminPopup{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(18,14,26,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-      .funy-admin-popup-card{position:relative;width:min(92vw,420px);height:auto;max-height:calc(100dvh - 36px);display:flex;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 20px 60px rgba(20,14,34,.32)}
+      #funyAdminPopup{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;background:var(--funy-dim-color,rgba(20,16,24,.38));touch-action:none;overscroll-behavior:contain}
+      .funy-admin-popup-card{position:relative;width:min(92vw,420px);height:auto;max-height:calc(100dvh - 36px);display:flex;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 20px 60px rgba(20,14,34,.32);touch-action:auto;overscroll-behavior:contain}
       .funy-admin-popup-media{display:block;width:100%;height:auto;max-height:calc(100dvh - 104px);object-fit:contain;background:#f6f1ff;user-select:none;-webkit-user-drag:none}
       .funy-admin-popup-media.is-link{cursor:pointer}
       .funy-admin-popup-x{position:absolute;right:10px;top:10px;z-index:2;width:34px;height:34px;border:1px solid rgba(255,255,255,.9);border-radius:50%;background:rgba(28,19,42,.72);color:#fff;font:300 24px/30px Arial,sans-serif;display:grid;place-items:center;padding:0;box-shadow:0 3px 10px rgba(0,0,0,.18)}
@@ -109,6 +109,7 @@
     if(!imgUrl)return;
     root=document.createElement('div');
     root.id='funyAdminPopup';
+    root.dataset.funyModalOverlay='1';
     root.hidden=true;
     root.setAttribute('role','dialog');
     root.setAttribute('aria-modal','true');
@@ -136,6 +137,7 @@
       img.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();followLink()}};
     }
     root.addEventListener('click',e=>{if(e.target===root)close()});
+    window.addEventListener('funy:native-overlay-dismiss',()=>{if(root&&!root.hidden)close()});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&root&&!root.hidden)close()});
     if(img.complete&&img.naturalWidth)open();
   }

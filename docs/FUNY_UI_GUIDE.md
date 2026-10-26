@@ -49,6 +49,7 @@
 - DIM 자체는 pointer event를 받아야 한다. `pointer-events:none`으로 아래 화면에 입력을 통과시키지 않는다.
 - DIM 영역 tap은 현재 **최상단 dismissible overlay만 닫는다**.
 - overlay 자체의 버튼, 입력, 내부 scroll은 정상 동작한다.
+- 적용 범위에는 표준 modal/bottom sheet뿐 아니라 이벤트/CMS/사진선택/확인창 등 custom top-layer popup도 포함한다.
 - overlay close 시 Web/Native overlay state, background scroll lock, status bar style을 즉시 원복한다.
 - overlay가 중첩되어도 opacity를 누적하지 않는다. 현재 최상단 overlay 바로 아래에 시각적 backdrop 1겹만 유지한다.
 
@@ -63,7 +64,7 @@
 - 전체화면 이미지/미디어 viewer는 DIM이 아니라 `#09090B` edge-to-edge surface를 사용한다.
 - OS permission/share 등 system-owned modal은 시스템 동작을 따른다.
 - toast 등 background interaction을 허용하는 non-modal UI에는 DIM을 적용하지 않는다.
-- 캠페인/CMS rich popup의 더 강한 backdrop/blur는 승인된 예외에서만 허용하고 공통 DIM과 중첩하지 않는다.
+- 이벤트 팝업, CMS 팝업, 사진 선택/페이지 편집 팝업 등 서비스가 직접 그리는 custom popup도 기본적으로 동일한 DIM / interaction contract를 적용한다.
 
 ## Safe Area rules
 - 일반 APP 화면은 Native SafeArea가 상태바 영역을 담당한다.

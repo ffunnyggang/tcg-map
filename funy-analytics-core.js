@@ -104,8 +104,18 @@
           window.FUNY_TCG_LABEL=key=>['riftbound','other'].includes(key)?label(key):(typeof baseLabel==='function'?baseLabel(key):label(key));
           const insertAt=Math.max(0,FILTERS.findIndex(x=>x.id==='dragonBall')+1);
           if(!FILTERS.some(x=>x.id==='riftbound'))FILTERS.splice(insertAt,0,{id:'riftbound',label:label('riftbound'),test:s=>s.tcg?.riftbound===true});
-          const otherAt=Math.max(0,FILTERS.findIndex(x=>x.id==='riftbound')+1);
-          if(!FILTERS.some(x=>x.id==='other'))FILTERS.splice(otherAt,0,{id:'other',label:label('other'),test:s=>s.tcg?.other===true});
+          const existingOther=FILTERS.find(x=>x.id==='otherTcg'||x.id==='other');
+          if(existingOther){
+            existingOther.label=label('other');
+            existingOther.test=s=>s.tcg?.other===true;
+            for(let i=FILTERS.length-1;i>=0;i--){
+              const item=FILTERS[i];
+              if(item!==existingOther&&(item?.id==='otherTcg'||item?.id==='other'))FILTERS.splice(i,1);
+            }
+          }else{
+            const otherAt=Math.max(0,FILTERS.findIndex(x=>x.id==='riftbound')+1);
+            FILTERS.splice(otherAt,0,{id:'other',label:label('other'),test:s=>s.tcg?.other===true});
+          }
           const extendedComp=(s,rv)=>{const en=window.FUNY_IS_ENGLISH?.()===true;const tcg=[s.tcg?.pokemon&&window.FUNY_TCG_LABEL('pokemon'),s.tcg?.onePiece&&window.FUNY_TCG_LABEL('onePiece'),s.tcg?.dragonBall&&window.FUNY_TCG_LABEL('dragonBall'),s.tcg?.riftbound&&window.FUNY_TCG_LABEL('riftbound'),s.tcg?.other&&window.FUNY_TCG_LABEL('other')].filter(Boolean).join(' · ');const bars=en?[['Singles',rv.single],['Graded Cards',rv.graded],['Boxes',rv.box],['Oripa',rv.oripa]]:[['싱글카드',rv.single],['등급카드',rv.graded],['박스제품',rv.box],['오리파',rv.oripa]];return '<div class="comp-card"><h3 class="sub-title with-icon"><span class="sub-icon">'+icon('cards')+'</span>'+(en?'Product Mix':'상품 구성 상세')+'</h3>'+(tcg?'<div class="tcg-line"><span class="tcg-label">'+(en?'TCG Titles':'취급 TCG')+'</span><span class="tcg-value">'+tcg+'</span></div>':'')+'<div class="bar-list">'+bars.map(([l,v])=>'<div class="bar-row"><div class="bar-label">'+l+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(v/5*100)+'%"></div></div></div>').join('')+'</div></div>'};
           try{compHTML=extendedComp}catch(_){window.compHTML=extendedComp}
           installed=true;

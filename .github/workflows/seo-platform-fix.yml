@@ -31,7 +31,7 @@ jobs:
           const PUBLIC = {
             'index.html': `${SITE}/`,
             'shops.html': `${SITE}/shops.html`,
-            'reviews.html': `${SITE}/reviews.html`,
+            'pick.html': `${SITE}/pick.html`,
             'talk.html': `${SITE}/talk.html`,
             'card-centering.html': `${SITE}/card-centering.html`,
             'faq.html': `${SITE}/faq.html`,

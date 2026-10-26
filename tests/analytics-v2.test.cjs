@@ -48,7 +48,7 @@ r.context.location.hash='';r.listeners.hashchange.forEach(f=>f());
 r.context.location.hash='#/shop/KR-SEL-001';r.listeners.hashchange.forEach(f=>f());
 assert.equal(r.events.filter(x=>x[1]==='shop_detail_view').length,2);
 // Verify every inline script parses, including completion hooks after successful saves.
-const pages=['index.html','shops.html','reviews.html','talk.html','live-pin.html','live-pin-test.html','coin-flip.html','oripa-calculator.html','shop-request.html','partner.html','feedback.html','support.html'];
+const pages=['index.html','shops.html','pick.html','talk.html','live-pin.html','live-pin-test.html','coin-flip.html','oripa-calculator.html','shop-request.html','partner.html','feedback.html','support.html'];
 for(const page of pages){const s=read(page);assert.equal((s.match(/src="funy-analytics-core.js/g)||[]).length,1,page);for(const m of s.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/type=["']application\/ld\+json/.test(m[1]))continue;new vm.Script(m[2],{filename:page});}}
 for(const page of ['coin-flip.html','oripa-calculator.html','shop-request.html','partner.html'])assert.match(read(page),/data-ga-init="1"/);
 assert.match(read('shop-request.html'),/if\(!res.ok\)[\s\S]*shop_request_submit/);

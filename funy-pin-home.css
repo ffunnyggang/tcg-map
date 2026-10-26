@@ -9,10 +9,10 @@
 /* Remove legacy hardcoded bottom link banner/block. CMS-managed content remains untouched. */
 .home-links-block{display:none!important}
 /* Unified bottom navigation */
-.portal-bottom-nav a[href="./"] span,.portal-bottom-nav a[href="shops.html"] span,.portal-bottom-nav a[href="reviews.html"] span{font-size:0!important}
+.portal-bottom-nav a[href="./"] span,.portal-bottom-nav a[href="shops.html"] span,.portal-bottom-nav a[href="pick.html"] span{font-size:0!important}
 .portal-bottom-nav a[href="./"] span::after{content:"HOME";font-size:9.5px!important;line-height:14px!important}
 .portal-bottom-nav a[href="shops.html"] span::after{content:"TCG MAP";font-size:9.5px!important;line-height:14px!important}
-.portal-bottom-nav a[href="reviews.html"] span::after{content:"INFO";font-size:9.5px!important;line-height:14px!important}
+.portal-bottom-nav a[href="pick.html"] span::after{content:"INFO";font-size:9.5px!important;line-height:14px!important}
 .portal-bottom-nav{bottom:max(8px,env(safe-area-inset-bottom))!important;width:min(calc(100% - 26px),394px)!important;height:66px!important;min-height:66px!important;max-height:66px!important;padding:4px!important;gap:3px!important}
 .portal-bottom-nav a{height:56px!important;min-height:56px!important;max-height:56px!important;padding:0!important;margin:0!important;border:1px solid transparent;box-sizing:border-box!important;gap:2px!important;font-size:9.5px!important;line-height:14px!important;white-space:nowrap!important}
 .portal-bottom-nav a.active{font-size:9.5px!important;line-height:14px!important}

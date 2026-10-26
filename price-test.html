@@ -18,6 +18,6 @@
 <h2 class="section-title">검색 결과</h2><div class="empty" id="empty">카드를 검색하면<br>시세 정보가 여기에 표시됩니다.</div>
 <section class="card" id="result"><div class="card-top"><div><div class="card-name" id="name">잉어킹 프로모</div><div class="card-no" id="no">080/SV-P · Pokémon Card Game</div></div><span class="tag">샘플 데이터</span></div><div class="prices"><div class="price"><span>RAW 최근 시세</span><strong>—</strong></div><div class="price"><span>PSA 10 최근 시세</span><strong>—</strong></div></div><div class="recent"><span>최근 거래가</span><b>데이터 연동 예정</b></div></section>
 <div class="notice">실서비스에서는 판매 등록가가 아니라 가능한 경우 <b>최근 실거래</b>를 기준으로 시세 범위와 업데이트 시간을 함께 표시하는 구조를 고려하고 있습니다.</div>
-<a class="back" href="reviews.html">← INFO로 돌아가기</a></main></div>
+<a class="back" href="pick.html">← INFO로 돌아가기</a></main></div>
 <script>const f=document.getElementById('form'),q=document.getElementById('q'),e=document.getElementById('empty'),r=document.getElementById('result'),n=document.getElementById('name');function show(v){v=v.trim();if(!v)return;e.style.display='none';r.classList.add('show');n.textContent=v}f.addEventListener('submit',x=>{x.preventDefault();show(q.value)});document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;show(q.value)});</script>
 </body></html>

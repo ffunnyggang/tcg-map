@@ -14,7 +14,7 @@ await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScal
 const realInsets=false;
 const wait=ms=>new Promise(r=>setTimeout(r,ms)),results=[];
 async function open(file){await call('Page.navigate',{url:baseUrl+file});await wait(150);for(let i=0;i<60;i++){if(await evaluate("document.readyState==='complete'"))break;await wait(100);}await wait(200);}
-for(const file of ['index.html','talk.html','my.html','coin-flip.html','binder.html','pokemon-match.html','faq.html','reviews.html','login.html','notice.html','event-thecardroom.html','oripa-calculator.html','funymon-ladder.html']){
+for(const file of ['index.html','talk.html','my.html','coin-flip.html','binder.html','pokemon-match.html','faq.html','pick.html','login.html','notice.html','event-thecardroom.html','oripa-calculator.html','funymon-ladder.html']){
 await open(file);
 const r=await evaluate("(()=>{const h=document.querySelector('.funy-safe-header');const s=h&&getComputedStyle(h);return {controls:h?[...h.querySelectorAll('button,a,input')].filter(b=>b.getBoundingClientRect().height>0).map(b=>({tag:b.tagName,top:b.getBoundingClientRect().top})):[],ready:document.documentElement.classList.contains('funy-web-safe'),height:s?.height,padding:s?.paddingTop,base:s?.getPropertyValue('--funy-safe-header-height'),color:document.querySelector('meta[name=theme-color]')?.content,scroll:document.documentElement.scrollWidth,width:innerWidth}})()");
 assert(r.ready,file);assert(r.base,file+' has prepared header');assert.equal(parseFloat(r.height),parseFloat(r.base)+47,file+' header safe height');assert(r.scroll<=r.width+1,file+' no horizontal overflow');assert(r.controls.every(c=>c.top>=47),file+' header controls stay below notch: '+JSON.stringify(r.controls));results.push({file,...r});

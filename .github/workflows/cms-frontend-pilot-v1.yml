@@ -25,7 +25,7 @@ jobs:
           p.write_text(s,encoding='utf-8')
 
           # PICK: mount one CMS area per requested tab; legacy embeds remain until visual verification.
-          p=Path('reviews.html'); s=p.read_text(encoding='utf-8')
+          p=Path('pick.html'); s=p.read_text(encoding='utf-8')
           placements={'schedule':'pick_schedule','creator':'pick_creator','review':'pick_review'}
           # Current first tab may still be named information; treat it as schedule pilot too.
           placements['information']='pick_schedule'
@@ -47,15 +47,15 @@ jobs:
       - name: Verify
         run: |
           grep -q 'data-cms-placement="home"' index.html
-          grep -q 'data-cms-placement="pick_creator"' reviews.html
-          grep -q 'data-cms-placement="pick_review"' reviews.html
+          grep -q 'data-cms-placement="pick_creator"' pick.html
+          grep -q 'data-cms-placement="pick_review"' pick.html
           grep -q 'cms-frontend-renderer.js' index.html
-          grep -q 'cms-frontend-renderer.js' reviews.html
+          grep -q 'cms-frontend-renderer.js' pick.html
       - name: Commit
         run: |
           git config user.name 'FUNY PIN'
           git config user.email 'ffunnyggang@gmail.com'
-          git add index.html reviews.html admin.html
+          git add index.html pick.html admin.html
           git diff --cached --quiet && exit 0
           git commit -m 'mount CMS pilot on HOME and PICK tabs'
           git push

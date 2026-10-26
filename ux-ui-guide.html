@@ -53,6 +53,7 @@
         <div class="rule"><b>입력 차단</b><span>DIM 아래 화면의 스크롤 · 터치 · 지도 제스처 · 헤더 이전/닫기 · 하단 내비 동작을 차단</span></div>
         <div class="rule"><b>DIM 탭</b><span>DIM 영역 탭은 현재 최상단의 <em>dismissible</em> overlay만 닫고 DIM 상태를 즉시 원복</span></div>
         <div class="rule"><b>Overlay 내부</b><span>바텀시트·팝업 자체의 버튼/입력/내부 스크롤은 정상 동작</span></div>
+        <div class="rule"><b>적용 범위</b><span>표준 모달뿐 아니라 이벤트/CMS/사진선택/확인창 등 서비스가 직접 그리는 커스텀 최상단 레이어도 포함</span></div>
       </div>
       <div class="card"><h3>영역 소유권</h3>
         <div class="rule"><b>일반 APP</b><span>Web overlay backdrop은 WebView 콘텐츠, <code>FunyNativeOverlayHost</code>는 WebView 밖의 상태바 + Native Header만 담당</span></div>
@@ -73,7 +74,7 @@
         <div class="rule"><b>Fullscreen</b><span>이미지/미디어 viewer는 translucent DIM이 아니라 <code>#09090B</code> edge-to-edge surface</span></div>
         <div class="rule"><b>System UI</b><span>OS 권한·공유 등 시스템이 소유하는 modal은 시스템 동작을 따름</span></div>
         <div class="rule"><b>Non-modal</b><span>Toast·비차단 안내처럼 의도적으로 배경 조작을 허용하는 UI에는 DIM을 사용하지 않음</span></div>
-        <div class="rule"><b>Campaign/CMS</b><span>더 강한 backdrop/blur가 필요한 캠페인 팝업은 승인된 명시적 예외로만 허용하며 공통 DIM과 중첩 금지</span></div>
+        <div class="rule"><b>Custom popup</b><span>이벤트 팝업 · CMS 팝업 · 사진 선택/페이지 편집 팝업 등 커스텀 팝업도 공통 DIM · 입력 차단 · DIM 탭 dismiss 규칙을 동일하게 적용</span></div>
       </div>
     </div>
     <div class="card" style="margin-top:14px"><h3>동작 순서</h3>

@@ -327,11 +327,45 @@ html.app-shell .portal-shell .popular-sort.show{top:auto!important}
 
 
 /* Common overlay / DIM contract
-   - One visual dim per physical pixel.
-   - Web content owns the content-area backdrop.
-   - Native shell owns only native chrome (status bar + native header).
-   - Never stack a header-local dim on top of a native top-chrome dim. */
-.funy-dim-layer{background:var(--funy-dim-color)!important}
+   1) One visual DIM per physical pixel.
+   2) The topmost web modal/bottom sheet owns the WebView backdrop.
+   3) Native shell owns only native chrome pixels that the WebView does not already cover.
+   4) DIM is interactive: it blocks the underlying screen and may dismiss only the topmost dismissible overlay.
+   5) Common runtime detects/locks/reports overlay state; it must never paint a second global pseudo-DIM.
+   6) Fullscreen image/media viewers use --funy-fullscreen-bg instead of translucent DIM. */
+html.funy-overlay-lock,
+html.funy-overlay-lock body,
+html.funy-web-overlay-open,
+html.funy-web-overlay-open body{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+.funy-dim-layer,
+.funy-standard-backdrop{
+  background:var(--funy-dim-color)!important;
+  pointer-events:auto!important;
+  touch-action:none!important;
+  overscroll-behavior:contain!important;
+}
+.funy-standard-backdrop{
+  position:fixed!important;
+  inset:0!important;
+}
+.funy-standard-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:var(--funy-overlay-z)!important;
+  display:flex!important;
+  background:var(--funy-dim-color)!important;
+  pointer-events:auto!important;
+  touch-action:none!important;
+  overscroll-behavior:contain!important;
+}
+.funy-standard-overlay>.funy-overlay-surface,
+.funy-standard-surface{
+  pointer-events:auto!important;
+  touch-action:auto!important;
+  overscroll-behavior:contain!important;
+}
+dialog.funy-standard-modal::backdrop{background:var(--funy-dim-color)!important}
 .funy-fullscreen-surface{background:var(--funy-fullscreen-bg)!important}
-dialog.funy-standard-modal::backdrop,
-.funy-standard-backdrop{background:var(--funy-dim-color)!important}

@@ -1,6 +1,6 @@
 {
   "source": "TCG 카드샵 Master DB_v0.1 / 01_CARD_SHOP / L열 Instagram 게시물 노출",
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-10-26",
   "shops": {
     "KR-SEO-001": {
       "name": "카드노바",
@@ -91,6 +91,11 @@
       "name": "티씨지서울",
       "username": "tcg_seoul",
       "url": "https://www.instagram.com/tcg_seoul/"
+    },
+    "KR-SEO-045": {
+      "name": "테레카 성수",
+      "username": "teleca_official",
+      "url": "https://www.instagram.com/teleca_official/"
     },
     "KR-ICN-002": {
       "name": "아드레날린코리아",

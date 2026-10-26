@@ -679,7 +679,7 @@
   }
   function buildMarketSafetyNotice(){
     if($('#marketSafetyNotice'))return;
-    const el=document.createElement('div');el.id='marketSafetyNotice';el.className='market-safety-notice';el.hidden=true;
+    const el=document.createElement('div');el.id='marketSafetyNotice';el.className='market-safety-notice';el.dataset.funyModalOverlay='1';el.hidden=true;
     el.innerHTML='<section class="market-safety-notice-card" role="dialog" aria-modal="true" aria-labelledby="marketSafetyNoticeTitle">'+
       '<div class="market-safety-notice-icon" aria-hidden="true">✓</div>'+
       '<h2 id="marketSafetyNoticeTitle">카드 거래 이용 안내</h2>'+
@@ -689,16 +689,19 @@
       '<button id="marketSafetyNoticeConfirm" type="button">확인하고 시작하기</button>'+
       '</section>';
     document.body.appendChild(el);
+    const closeSafetyNotice=()=>{el.hidden=true;postNativeMarketOverlayState(false)};
     $('#marketSafetyNoticeConfirm').onclick=()=>{
       if($('#marketSafetyNoticeDismiss')?.checked){try{localStorage.setItem(MARKET_SAFETY_NOTICE_KEY,'1')}catch(_){}}
-      el.hidden=true;
+      closeSafetyNotice();
     };
+    el.addEventListener('click',e=>{if(e.target===el)closeSafetyNotice()});
+    window.addEventListener('funy:native-overlay-dismiss',()=>{if(!el.hidden)closeSafetyNotice()});
   }
   function showMarketSafetyNotice(){
     if(!standaloneMarket||marketSafetyNoticeShownThisVisit||!shouldShowMarketSafetyNotice())return;
     buildMarketSafetyNotice();
     marketSafetyNoticeShownThisVisit=true;
-    const el=$('#marketSafetyNotice');if(el)el.hidden=false;
+    const el=$('#marketSafetyNotice');if(el){el.hidden=false;postNativeMarketOverlayState(true)}
   }
   function openOverlay(){
     buildOverlay();const el=$('#marketOverlay'),registerBtn=document.querySelector('body>.market-overlay-register');el.hidden=false;el.scrollTop=0;el.querySelector('.market-overlay-sticky-tools')?.classList.remove('is-hidden');if(registerBtn){registerBtn.hidden=false;registerBtn.classList.remove('is-scrolling')}document.body.style.overflow='hidden';

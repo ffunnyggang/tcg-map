@@ -148,6 +148,14 @@
       destination:'쿠폰함',
     },
   ];
+  const AUTO_NOTIFICATION_TABS=[
+    ['all','전체'],
+    ['TALK · 바인더','TALK · 바인더'],
+    ['TCG 거래','TCG 거래'],
+    ['이벤트 · 리워드 · 배지','이벤트 · 리워드 · 배지'],
+    ['미션','미션'],
+    ['쿠폰','쿠폰'],
+  ];
 
   const styles=document.createElement('style');
   styles.textContent=`
@@ -192,18 +200,28 @@
   .notification-empty{padding:32px;text-align:center;color:#9a939e;font-size:11px}
   .notification-auto-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(25,21,29,.42);backdrop-filter:blur(2px)}
   .notification-auto-overlay[hidden]{display:none}
-  .notification-auto-modal{width:min(760px,100%);max-height:min(760px,calc(100vh - 48px));display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 20px 70px rgba(30,24,35,.2);overflow:hidden}
+  .notification-auto-modal{width:min(840px,100%);max-height:min(790px,calc(100vh - 48px));display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 20px 70px rgba(30,24,35,.2);overflow:hidden}
   .notification-auto-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 16px;border-bottom:1px solid #eee9f0}
   .notification-auto-head h3{margin:0;font-size:16px;line-height:1.35;color:#211d25}
   .notification-auto-head p{margin:6px 0 0;font-size:10px;line-height:1.5;color:#8d8590}
   .notification-auto-close{width:34px;height:34px;flex:0 0 auto;border:0;border-radius:10px;background:#f5f2f7;color:#5f5763;font-size:19px;line-height:1;cursor:pointer}
-  .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:9px}
-  .notification-auto-item{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:11px;align-items:start;padding:13px 14px;border:1px solid #ece7ef;border-radius:12px;background:#fff}
-  .notification-auto-num{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#f1ecf8;color:#6c50b1;font-size:10px;font-weight:900}
-  .notification-auto-category{display:inline-flex;margin-bottom:5px;padding:4px 7px;border-radius:999px;background:#f1ecf8;color:#6c50b1;font-size:8.5px;font-weight:900}\n  .notification-auto-condition{font-size:10px;font-weight:800;color:#8b8390}
-  .notification-auto-title{margin-top:3px;font-size:12px;line-height:1.4;font-weight:900;color:#29242d}
-  .notification-auto-body{margin-top:4px;font-size:10px;line-height:1.5;color:#756e79}
-  .notification-auto-dest{padding:5px 8px;border-radius:8px;background:#f7f5f8;font-size:9px;font-weight:800;color:#746b78;white-space:nowrap}
+  .notification-auto-tabs{display:flex;gap:7px;padding:12px 22px;border-bottom:1px solid #eee9f0;overflow-x:auto;background:#fff;scrollbar-width:none}
+  .notification-auto-tabs::-webkit-scrollbar{display:none}
+  .notification-auto-tab{height:32px;flex:0 0 auto;border:1px solid #e5dfeb;border-radius:999px;background:#fff;padding:0 11px;color:#766e7b;font-size:9.5px;font-weight:850;cursor:pointer;white-space:nowrap}
+  .notification-auto-tab.is-active{border-color:#6c50b1;background:#6c50b1;color:#fff}
+  .notification-auto-tab-count{margin-left:4px;opacity:.72;font-size:8.5px}
+  .notification-auto-list{overflow:auto;padding:14px 22px 22px;display:grid;gap:10px}
+  .notification-auto-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:start;padding:14px 15px;border:1px solid #ece7ef;border-radius:13px;background:#fff}
+  .notification-auto-num{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#f1ecf8;color:#6c50b1;font-size:10px;font-weight:900}
+  .notification-auto-category{display:inline-flex;margin-bottom:8px;padding:4px 7px;border-radius:999px;background:#f1ecf8;color:#6c50b1;font-size:8.5px;font-weight:900}
+  .notification-auto-section{display:grid;gap:4px}
+  .notification-auto-section+.notification-auto-section{margin-top:11px;padding-top:11px;border-top:1px solid #f1edf3}
+  .notification-auto-label{font-size:8.5px;font-weight:900;color:#9a929e;letter-spacing:.02em}
+  .notification-auto-condition{font-size:11px;line-height:1.5;font-weight:800;color:#4f4854}
+  .notification-auto-message{padding:10px 11px;border-radius:10px;background:#faf8fc;border:1px solid #f0ebf3}
+  .notification-auto-title{font-size:12px;line-height:1.4;font-weight:900;color:#29242d}
+  .notification-auto-body{margin-top:4px;font-size:10px;line-height:1.55;color:#756e79}
+  .notification-auto-dest{padding:6px 9px;border-radius:8px;background:#f7f5f8;font-size:9px;font-weight:800;color:#746b78;white-space:nowrap}
   .notification-auto-foot{padding:0 22px 18px;font-size:9px;line-height:1.5;color:#9a929e}
   @media(max-width:900px){
     .notification-admin-grid{grid-template-columns:1fr}
@@ -221,8 +239,9 @@
     .notification-auto-overlay{padding:12px;align-items:flex-end}
     .notification-auto-modal{max-height:88vh;border-radius:18px 18px 0 0}
     .notification-auto-head{padding:18px 16px 14px}
+    .notification-auto-tabs{padding:10px 16px}
     .notification-auto-list{padding:12px 16px 18px}
-    .notification-auto-item{grid-template-columns:28px minmax(0,1fr)}
+    .notification-auto-item{grid-template-columns:30px minmax(0,1fr)}
     .notification-auto-dest{grid-column:2;justify-self:start}
     .notification-auto-foot{padding:0 16px 16px}
   }
@@ -388,20 +407,13 @@
             </div>
             <button id="notificationAutoClose" class="notification-auto-close" type="button" aria-label="닫기">×</button>
           </div>
-          <div class="notification-auto-list">
-            ${AUTO_NOTIFICATIONS.map((item,index)=>`
-              <div class="notification-auto-item">
-                <div class="notification-auto-num">${index+1}</div>
-                <div>
-                  <div class="notification-auto-category">${escText(item.category)}</div>
-                  <div class="notification-auto-condition">${escText(item.condition)}</div>
-                  <div class="notification-auto-title">${escText(item.title)}</div>
-                  <div class="notification-auto-body">${escText(item.body)}</div>
-                </div>
-                <div class="notification-auto-dest">→ ${escText(item.destination)}</div>
-              </div>
-            `).join('')}
+          <div id="notificationAutoTabs" class="notification-auto-tabs" role="tablist" aria-label="자동 알림 유형">
+            ${AUTO_NOTIFICATION_TABS.map(([value,label],index)=>{
+              const count=value==='all'?AUTO_NOTIFICATIONS.length:AUTO_NOTIFICATIONS.filter(item=>item.category===value).length;
+              return '<button type="button" class="notification-auto-tab '+(index===0?'is-active':'')+'" data-auto-tab="'+escText(value)+'">'+escText(label)+'<span class="notification-auto-tab-count">'+count+'</span></button>';
+            }).join('')}
           </div>
+          <div id="notificationAutoList" class="notification-auto-list"></div>
           <div class="notification-auto-foot">※ 중괄호({ }) 영역은 실제 사용자·게시글·이벤트·리워드 정보로 자동 치환됩니다. 본인이 자기 게시글·댓글·바인더에 한 행동은 알림에서 제외되며, 동일 반응은 중복 생성되지 않습니다. 퍼니몬 응모권(entry) 발급만으로는 리워드 알림이 생성되지 않고 실제 응모 완료 시 ‘이벤트 응모가 완료됐어요’ 알림이 생성됩니다. 푸시를 꺼도 앱 알림함에는 기록될 수 있습니다.</div>
         </section>
       </div>
@@ -462,6 +474,8 @@
     const autoGuideBtn=document.getElementById('notificationAutoGuideBtn');
     const autoModal=document.getElementById('notificationAutoModal');
     const autoClose=document.getElementById('notificationAutoClose');
+    const autoTabs=document.getElementById('notificationAutoTabs');
+    const autoList=document.getElementById('notificationAutoList');
 
     const preview=()=>{
       const label=CATEGORIES.find(x=>x[0]===category.value)?.[1]||category.value;
@@ -510,6 +524,44 @@
     routeDetail.addEventListener('input',syncRoute);
     customRoute.addEventListener('input',syncRoute);
     url.addEventListener('input',preview);
+
+    let activeAutoTab='all';
+    const renderAutoNotifications=()=>{
+      if(!autoList)return;
+      const rows=activeAutoTab==='all'?AUTO_NOTIFICATIONS:AUTO_NOTIFICATIONS.filter(item=>item.category===activeAutoTab);
+      autoList.innerHTML=rows.map(item=>{
+        const index=AUTO_NOTIFICATIONS.indexOf(item)+1;
+        return '<div class="notification-auto-item">'
+          +'<div class="notification-auto-num">'+index+'</div>'
+          +'<div>'
+            +'<div class="notification-auto-category">'+escText(item.category)+'</div>'
+            +'<div class="notification-auto-section">'
+              +'<div class="notification-auto-label">발생 조건</div>'
+              +'<div class="notification-auto-condition">'+escText(item.condition)+'</div>'
+            +'</div>'
+            +'<div class="notification-auto-section">'
+              +'<div class="notification-auto-label">자동 알림 메시지</div>'
+              +'<div class="notification-auto-message">'
+                +'<div class="notification-auto-title">'+escText(item.title)+'</div>'
+                +'<div class="notification-auto-body">'+escText(item.body)+'</div>'
+              +'</div>'
+            +'</div>'
+          +'</div>'
+          +'<div class="notification-auto-dest">→ '+escText(item.destination)+'</div>'
+        +'</div>';
+      }).join('');
+      autoTabs?.querySelectorAll('[data-auto-tab]').forEach(button=>{
+        button.classList.toggle('is-active',button.dataset.autoTab===activeAutoTab);
+        button.setAttribute('aria-selected',button.dataset.autoTab===activeAutoTab?'true':'false');
+      });
+    };
+    autoTabs?.addEventListener('click',e=>{
+      const button=e.target.closest('[data-auto-tab]');
+      if(!button)return;
+      activeAutoTab=button.dataset.autoTab||'all';
+      renderAutoNotifications();
+    });
+    renderAutoNotifications();
 
     const closeAutoModal=()=>{
       if(!autoModal||autoModal.hidden)return;

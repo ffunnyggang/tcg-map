@@ -689,11 +689,13 @@
       '<button id="marketSafetyNoticeConfirm" type="button">확인하고 시작하기</button>'+
       '</section>';
     document.body.appendChild(el);
+    const closeSafetyNotice=()=>{el.hidden=true;postNativeMarketOverlayState(false)};
     $('#marketSafetyNoticeConfirm').onclick=()=>{
       if($('#marketSafetyNoticeDismiss')?.checked){try{localStorage.setItem(MARKET_SAFETY_NOTICE_KEY,'1')}catch(_){}}
-      el.hidden=true;
-      postNativeMarketOverlayState(false);
+      closeSafetyNotice();
     };
+    el.addEventListener('click',e=>{if(e.target===el)closeSafetyNotice()});
+    window.addEventListener('funy:native-overlay-dismiss',()=>{if(!el.hidden)closeSafetyNotice()});
   }
   function showMarketSafetyNotice(){
     if(!standaloneMarket||marketSafetyNoticeShownThisVisit||!shouldShowMarketSafetyNotice())return;

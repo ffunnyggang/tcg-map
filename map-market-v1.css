@@ -2057,7 +2057,7 @@ body.market-page .market-consent-all span,
 body.market-page .market-consent-dispute span{line-height:1.55!important}
 body.market-page .market-consent-dispute{padding-top:12px!important;padding-bottom:11px!important}
 
-.market-safety-notice{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,17,25,.5);backdrop-filter:blur(7px)}
+.market-safety-notice{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(20,16,24,.38);-webkit-backdrop-filter:none;backdrop-filter:none}
 .market-safety-notice[hidden]{display:none!important}
 .market-safety-notice-card{width:min(100%,380px);padding:28px 22px 20px;border-radius:24px;background:#fff;box-shadow:0 24px 60px rgba(28,23,34,.24)}
 .market-safety-notice-icon{width:52px;height:52px;margin:0 auto 17px;display:grid;place-items:center;border-radius:17px;background:#f0ebff;color:#6749bd;font-size:24px;font-weight:900}

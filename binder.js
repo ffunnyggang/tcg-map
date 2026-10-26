@@ -256,9 +256,10 @@ async function openPageFullview(index,editorPreview=false){
 
 function mountPreviewFlip(pages){
  const track=pageFullview.querySelector('.page-fullview-track');
- track.outerHTML='<div class="preview-book-stage showcase-single"><div class="preview-book-viewport showcase-flip"><div class="preview-book-host"></div></div><button class="preview-book-arrow prev" aria-label="이전 페이지">‹</button><button class="preview-book-arrow next" aria-label="다음 페이지">›</button></div>';
- const stage=pageFullview.querySelector('.preview-book-stage'),viewer=stage.querySelector('.preview-book-viewport'),host=stage.querySelector('.preview-book-host'),prev=stage.querySelector('.prev'),next=stage.querySelector('.next');
+ track.outerHTML='<div class="preview-book-stage showcase-single"><div class="preview-book-frame"><div class="preview-book-viewport showcase-flip"><div class="preview-book-host"></div></div></div><button class="preview-book-arrow prev" aria-label="이전 페이지">‹</button><button class="preview-book-arrow next" aria-label="다음 페이지">›</button></div>';
+ const stage=pageFullview.querySelector('.preview-book-stage'),frame=stage.querySelector('.preview-book-frame'),viewer=stage.querySelector('.preview-book-viewport'),host=stage.querySelector('.preview-book-host'),prev=stage.querySelector('.prev'),next=stage.querySelector('.next'),header=pageFullview.querySelector('.page-fullview-header');
  const ratio=layouts[detail.pockets].ratio;stage.style.setProperty('--preview-ratio',ratio);
+ if(frame&&header)frame.insertBefore(header,viewer);
  let current=0,turning=false,scale=1,pinch=null;
  const update=()=>{pageFullview.querySelector('[data-page-count]').textContent=(current+1)+' / '+pages.length;pageFullview.querySelector('#pageFullviewTitle').textContent=current===0?'표지':current+'페이지';prev.disabled=turning||current===0;next.disabled=turning||current===pages.length-1;};
  const setZoom=value=>{scale=Math.max(1,Math.min(3,value));previewFlip?.setEnabled(scale===1);previewFlip?.setZoom(scale);viewer.classList.toggle('is-zoomed',scale>1);if(scale===1){viewer.scrollTop=0;viewer.scrollLeft=0;}};

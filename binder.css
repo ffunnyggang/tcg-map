@@ -250,30 +250,36 @@ html:not(.app-shell) .shell>.binder-header{position:sticky;top:0;z-index:80;back
 }
 
 
-/* Binder editor preview controls: anchor metadata and close control to the book itself. */
-#pageFullview.binder-preview-dim .page-fullview-header{
-  left:50%;
+/* Binder editor preview controls live in the same centered frame as the book. */
+.preview-book-frame{
+  width:min(calc(100vw - 64px),calc((100dvh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) * var(--preview-ratio)),560px);
+  max-height:100%;
+  display:flex;
+  flex-direction:column;
+}
+.preview-book-frame .preview-book-viewport{width:100%;max-height:calc(100% - 34px)}
+#pageFullview.binder-preview-dim .preview-book-frame>.page-fullview-header{
+  position:relative;
+  left:auto;
   right:auto;
-  top:calc(60px + env(safe-area-inset-top,0px));
-  width:min(calc(100vw - 64px),calc((100dvh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) * var(--preview-ratio,.76)),560px);
-  height:40px;
-  padding:0;
-  transform:translate(-50%,-100%);
+  top:auto;
+  width:100%;
+  height:34px;
+  min-height:34px;
+  padding:0 0 4px;
+  transform:none;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  pointer-events:none;
+  background:none;
+  pointer-events:auto;
 }
-#pageFullview.binder-preview-dim .page-fullview-header>span{
+#pageFullview.binder-preview-dim .preview-book-frame>.page-fullview-header>span{
   order:-1;
   margin:0;
   color:#fff;
   font-size:11px;
   font-weight:750;
   text-shadow:0 1px 3px rgba(0,0,0,.45);
-  pointer-events:auto;
 }
-#pageFullview.binder-preview-dim .page-fullview-header>button{
-  margin-left:auto;
-  pointer-events:auto;
-}
+#pageFullview.binder-preview-dim .preview-book-frame>.page-fullview-header>button{margin-left:auto}

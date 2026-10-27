@@ -2,7 +2,7 @@
   "received_date": "2026-10-27",
   "price_effective_date": null,
   "status": "pending",
-  "notice": "사용자 제공 가격표. 가격표 발행일 미확인. 자료 접수일은 가격 기준일이 아닙니다.",
+  "notice": "가격표별 기준일을 표시하며 미확인 시 자료 접수일과 구분합니다. 현재 검수 대기 참고가이며 거래 체결가가 아닙니다.",
   "sources": [
     {
       "source": "용산골드카드",
@@ -44,6 +44,35 @@
         "jp_mega_symphonia": 92000,
         "jp_mega_brave": 84000,
         "jp_rocket_gang": 194000
+      }
+    },
+    {
+      "source": "리안티씨지",
+      "type": "uploaded_image",
+      "url": null,
+      "received_date": "2026-10-27",
+      "price_effective_date": "2026-10-26",
+      "quotes": {
+        "jp_30th_celebration": 247000,
+        "jp_30th_futuristic_box": 650000,
+        "jp_ninja_spinner": 96000,
+        "jp_mega_dream_ex": 128000,
+        "jp_mega_brave": 82000,
+        "jp_abyss_eye": 89000,
+        "jp_inferno_x": 177000,
+        "jp_shiny_treasure_ex": 187000,
+        "jp_storm_emerald": 106000,
+        "jp_terastal_fest_ex": 190000
+      }
+    },
+    {
+      "source": "더카드룸",
+      "type": "uploaded_image",
+      "url": null,
+      "received_date": "2026-10-27",
+      "price_effective_date": null,
+      "quotes": {
+        "jp_30th_celebration": 259000
       }
     }
   ]

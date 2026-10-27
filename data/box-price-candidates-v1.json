@@ -47,7 +47,8 @@
         "jp_mega_symphonia": 92000,
         "jp_mega_brave": 84000,
         "jp_rocket_gang": 194000
-      }
+      },
+      "price_effective_date": "2026-10-23"
     },
     {
       "source": "리안티씨지",
@@ -73,7 +74,7 @@
       "type": "uploaded_image",
       "url": null,
       "received_date": "2026-10-27",
-      "price_effective_date": null,
+      "price_effective_date": "2026-10-24",
       "quotes": {
         "jp_30th_celebration": 259000
       }

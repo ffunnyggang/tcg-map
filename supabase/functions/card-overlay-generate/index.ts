@@ -34,6 +34,17 @@ Deno.serve(async(req:Request)=>{
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
   if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 50회 시도 한도'});
+  if(data.action==='references'||data.action==='reference'){
+   if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   const h={apikey:service,Authorization:'Bearer '+service};
+   if(data.action==='references'){
+    const res=await fetch(url+'/rest/v1/overlay_art_references?select=id,card_number,display_name,art_rect,descriptor&order=card_number.asc&limit=500',{headers:h});
+    if(!res.ok)throw Error('CATALOG_UNAVAILABLE');return reply({references:await res.json()});
+   }
+   if(typeof data.id!=='string'||!/^30th-en-[0-9]{3}$/.test(data.id))return reply({error:'올바른 참조 카드가 아닙니다.'},400);
+   const res=await fetch(url+'/rest/v1/overlay_art_references?select=id,display_name,card_number,image_path,art_rect&id=eq.'+data.id,{headers:h});if(!res.ok)throw Error('CATALOG_UNAVAILABLE');const row=(await res.json())[0];if(!row)return reply({error:'등록된 이미지가 없습니다.'},404);
+   const sign=await fetch(url+'/storage/v1/object/sign/overlay-art-references/'+row.image_path,{method:'POST',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})});if(!sign.ok)throw Error('IMAGE_UNAVAILABLE');const signed=await sign.json();return reply({reference:{...row,imageUrl:url+'/storage/v1'+signed.signedURL}});
+  }
   if(data.action==='report_quality'){
    if(!allowed)return reply({error:'테스트 계정만 보고할 수 있습니다.'},403);
    const valid=typeof data.requestId==='string'&&/^req_[a-zA-Z0-9]{1,100}$/.test(data.requestId)&&typeof data.accepted==='boolean'&&Number.isFinite(data.correlation)&&data.correlation>=-1.001&&data.correlation<=1.001&&Number.isFinite(data.mae)&&data.mae>=0&&data.mae<=255;

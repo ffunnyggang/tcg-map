@@ -15,6 +15,6 @@ const comparison=document.getElementById('comparePrices');comparison.replaceChil
 for(const src of entries){comparison.append(compareRow(money(src.quotes[pid]),src.price_effective_date?'가격표 기준 '+src.price_effective_date.replaceAll('-','.'):'가격표 기준일 미확인',src.source,null))}
 if(pid==='jp_30th_celebration'){comparison.append(compareRow('¥25,400~','2026.10.24 확인 · 판매 희망가 · JPY','스니덩','https://snkrdunk.com/apparels/881421'));comparison.append(compareRow('가격 확인 대기','시세 기준일 미확인','KREAM',null))}
 if(!entries.length&&pid!=='jp_30th_celebration')comparison.append(compareRow('가격 정보 없음','기준일 미확인','판매처 확인 중',null));
-}}).catch(()=>{document.getElementById('productName').textContent='상품 정보를 불러오지 못했습니다.'});
+}).catch(()=>{document.getElementById('productName').textContent='상품 정보를 불러오지 못했습니다.'});
 document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-period]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.getElementById('chart').textContent='해당 기간의 검증된 스니덩/KREAM 가격 이력이 없습니다.'}));
 </script></body></html>

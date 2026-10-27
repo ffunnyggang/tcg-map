@@ -1,0 +1,90 @@
+{
+  "product_id": "jp_30th_celebration",
+  "image_bucket": "box-hit-cards",
+  "cards": [
+    {
+      "name": "뮤 ex",
+      "card_number": "129/103",
+      "rarity": "SAR",
+      "image_path": "129_mew_ex_sar.webp",
+      "sort_order": 1
+    },
+    {
+      "name": "팬텀 ex",
+      "card_number": "131/103",
+      "rarity": "SAR",
+      "image_path": "131_gengar_ex_sar.webp",
+      "sort_order": 2
+    },
+    {
+      "name": "지라치 ex",
+      "card_number": "132/103",
+      "rarity": "SAR",
+      "image_path": "132_jirachi_ex_sar.webp",
+      "sort_order": 3
+    },
+    {
+      "name": "님피아 ex",
+      "card_number": "130/103",
+      "rarity": "SAR",
+      "image_path": "130_sylveon_ex_sar.webp",
+      "sort_order": 4
+    },
+    {
+      "name": "보만다 ex",
+      "card_number": "133/103",
+      "rarity": "SAR",
+      "image_path": "133_salamence_ex_sar.webp",
+      "sort_order": 5
+    },
+    {
+      "name": "뮤 ex",
+      "card_number": "135/103",
+      "rarity": "FUR",
+      "image_path": "135_mew_ex_fur.webp",
+      "sort_order": 6
+    },
+    {
+      "name": "뮤츠 ex",
+      "card_number": "134/103",
+      "rarity": "FUR",
+      "image_path": "134_mewtwo_ex_fur.webp",
+      "sort_order": 7
+    },
+    {
+      "name": "뜨아거 ex",
+      "card_number": "124/103",
+      "rarity": "SAR",
+      "image_path": "124_fuecoco_ex_sar.webp",
+      "sort_order": 8
+    },
+    {
+      "name": "개굴닌자 ex",
+      "card_number": "125/103",
+      "rarity": "SAR",
+      "image_path": "125_greninja_ex_sar.webp",
+      "sort_order": 9
+    },
+    {
+      "name": "피카츄 ex",
+      "card_number": "126/103",
+      "rarity": "SAR",
+      "image_path": "126_pikachu_ex_sar.webp",
+      "sort_order": 10
+    },
+    {
+      "name": "피카츄 ex",
+      "card_number": "127/103",
+      "rarity": "SAR",
+      "image_path": "127_pikachu_ex_sar.webp",
+      "sort_order": 11
+    },
+    {
+      "name": "뮤츠 ex",
+      "card_number": "128/103",
+      "rarity": "SAR",
+      "image_path": "128_mewtwo_ex_sar.webp",
+      "sort_order": 12
+    }
+  ]
+}

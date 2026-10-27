@@ -1,0 +1,50 @@
+{
+  "received_date": "2026-10-27",
+  "price_effective_date": null,
+  "status": "pending",
+  "notice": "사용자 제공 가격표. 가격표 발행일 미확인. 자료 접수일은 가격 기준일이 아닙니다.",
+  "sources": [
+    {
+      "source": "용산골드카드",
+      "type": "uploaded_image",
+      "url": null,
+      "quotes": {
+        "jp_30th_celebration": 247000,
+        "jp_mega_dream_ex": 129000,
+        "jp_mega_symphonia": 92000,
+        "jp_storm_emerald": 106000,
+        "jp_inferno_x": 178000,
+        "jp_terastal_fest_ex": 196000,
+        "jp_ninja_spinner": 98000,
+        "jp_munikis_zero": 89000,
+        "jp_shiny_treasure_ex": 175000,
+        "jp_mega_brave": 84000,
+        "jp_white_flare": 222000,
+        "jp_super_electric_breaker": 268000,
+        "jp_151": 479000
+      }
+    },
+    {
+      "source": "카드성지",
+      "type": "uploaded_image",
+      "url": "https://www.instagram.com/p/DezreSfE9Wj/",
+      "quotes": {
+        "jp_30th_celebration": 247000,
+        "jp_storm_emerald": 106000,
+        "jp_inferno_x": 178000,
+        "jp_mega_dream_ex": 129000,
+        "jp_abyss_eye": 86000,
+        "jp_ninja_spinner": 98000,
+        "jp_munikis_zero": 89000,
+        "jp_terastal_fest_ex": 196000,
+        "jp_shiny_treasure_ex": 175000,
+        "jp_white_flare": 222000,
+        "jp_151": 479000,
+        "jp_super_electric_breaker": 268000,
+        "jp_mega_symphonia": 92000,
+        "jp_mega_brave": 84000,
+        "jp_rocket_gang": 194000
+      }
+    }
+  ]
+}

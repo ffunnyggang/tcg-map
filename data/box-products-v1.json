@@ -233,23 +233,29 @@
     },
     {
       "id": "op_eb03",
-      "name": "원피스 카드게임 EB-03 BOX (일어판)",
-      "name_en": "One Piece Card Game EB-03 Box",
+      "name": "원피스 카드게임 EB-03 Extra Booster One Piece Heroines Edition 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG EB-03 Extra Booster One Piece Heroines Edition Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 EB-03",
+      "kream_url": "https://kream.co.kr/products/799337",
+      "kream_recommend_rank": 8
     },
     {
       "id": "op_eb04",
-      "name": "원피스 카드게임 EB-04 BOX (일어판)",
-      "name_en": "One Piece Card Game EB-04 Box",
+      "name": "원피스 카드게임 EB-04 Extra Booster Egghead Crisis 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG EB-04 Extra Booster Egghead Crisis Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 EB-04",
+      "kream_url": "https://kream.co.kr/products/799331",
+      "kream_recommend_rank": 5
     },
     {
       "id": "op_prb01",
@@ -263,23 +269,29 @@
     },
     {
       "id": "op_prb02",
-      "name": "원피스 카드게임 PRB-02 BOX (일어판)",
-      "name_en": "One Piece Card Game PRB-02 Box",
+      "name": "원피스 카드게임 PRB-02 Premium Booster One Piece Card The Best Vol.2 박스 (10팩/일어판)",
+      "name_en": "One Piece TCG PRB-02 Premium Booster One Piece Card The Best Vol.2 Box (Pack of 10/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 PRB-02",
+      "kream_url": "https://kream.co.kr/products/799335",
+      "kream_recommend_rank": 15
     },
     {
       "id": "op_op11",
-      "name": "원피스 카드게임 OP-11 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-11 Box",
+      "name": "원피스 카드게임 OP-11 A Fist of Divine Speed 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-11 A Fist of Divine Speed Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-11",
+      "kream_url": "https://kream.co.kr/products/799342",
+      "kream_recommend_rank": 14
     },
     {
       "id": "op_op12",
@@ -293,53 +305,68 @@
     },
     {
       "id": "op_op13",
-      "name": "원피스 카드게임 OP-13 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-13 Box",
+      "name": "원피스 카드게임 OP-13 Carrying on His Will 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-13 Carrying on His Will Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-13",
+      "kream_url": "https://kream.co.kr/products/799332",
+      "kream_recommend_rank": 2
     },
     {
       "id": "op_op14",
-      "name": "원피스 카드게임 OP-14 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-14 Box",
+      "name": "원피스 카드게임 OP-14 The Azure Sea's Seven 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-14 The Azure Sea's Seven Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-14",
+      "kream_url": "https://kream.co.kr/products/799338",
+      "kream_recommend_rank": 7
     },
     {
       "id": "op_op15",
-      "name": "원피스 카드게임 OP-15 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-15 Box",
+      "name": "원피스 카드게임 OP-15 Adventure On Kami's Island 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-15 Adventure On Kami's Island Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-15",
+      "kream_url": "https://kream.co.kr/products/844840",
+      "kream_recommend_rank": 6
     },
     {
       "id": "op_op16",
-      "name": "원피스 카드게임 OP-16 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-16 Box",
+      "name": "원피스 카드게임 OP-16 The Time of Battle 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-16 The Time of Battle Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-16",
+      "kream_url": "https://kream.co.kr/products/947597",
+      "kream_recommend_rank": 3
     },
     {
       "id": "op_op17",
-      "name": "원피스 카드게임 OP-17 BOX (일어판)",
-      "name_en": "One Piece Card Game OP-17 Box",
+      "name": "원피스 카드게임 OP-17 The World's Strongest Warriors 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-17 The World's Strongest Warriors Box (Pack of 24/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "name_short_ko": "원피스 OP-17",
+      "kream_url": "https://kream.co.kr/products/1044392",
+      "kream_recommend_rank": 1
     },
     {
       "id": "jp_30th_espeon_umbreon_deck",
@@ -410,6 +437,84 @@
       "release_date": null,
       "image_path": null,
       "tcg_type": "pokemon"
+    },
+    {
+      "id": "op_op05",
+      "name": "원피스 카드게임 OP-05 Awakening of The New Era 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-05 Awakening of The New Era Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-05",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/171120",
+      "kream_recommend_rank": 4
+    },
+    {
+      "id": "op_op09",
+      "name": "원피스 카드게임 OP-09 Emperors in The New World 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-09 Emperors in The New World Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-09",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/799336",
+      "kream_recommend_rank": 9
+    },
+    {
+      "id": "op_op08",
+      "name": "원피스 카드게임 OP-08 Two Legends 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-08 Two Legends Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-08",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/799343",
+      "kream_recommend_rank": 10
+    },
+    {
+      "id": "op_op10",
+      "name": "원피스 카드게임 OP-10 Royal Blood 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-10 Royal Blood Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-10",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/799341",
+      "kream_recommend_rank": 11
+    },
+    {
+      "id": "op_op01",
+      "name": "원피스 카드게임 OP-01 Romance Dawn 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-01 Romance Dawn Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-01",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/117785",
+      "kream_recommend_rank": 12
+    },
+    {
+      "id": "op_op04",
+      "name": "원피스 카드게임 OP-04 Kingdoms of Intrigue 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-04 Kingdoms of Intrigue Box (Pack of 24/Japanese Ver.)",
+      "name_short_ko": "원피스 OP-04",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece",
+      "kream_url": "https://kream.co.kr/products/130665",
+      "kream_recommend_rank": 13
     }
   ]
 }

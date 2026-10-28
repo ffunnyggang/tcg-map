@@ -151,7 +151,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null
+      "image_path": "kream/jp_30th_celebration_non_shrink.png"
     },
     {
       "id": "jp_30th_futuristic_box",
@@ -378,7 +378,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_lost_abyss.png",
       "tcg_type": "pokemon"
     },
     {

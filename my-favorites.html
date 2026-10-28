@@ -40,7 +40,7 @@
 .favorite-empty{padding:74px 22px 36px;text-align:center;color:#8D8993;font-size:11px;line-height:1.65}.favorite-empty strong{display:block;margin-bottom:7px;color:#28232E;font-size:14px}.favorite-empty .btn{margin-top:16px}
 .toast{position:fixed;left:50%;bottom:28px;z-index:2147483600;transform:translate(-50%,18px);opacity:0;pointer-events:none;min-width:180px;max-width:calc(100% - 32px);padding:11px 14px;border-radius:12px;background:rgba(38,34,43,.94);color:#fff;text-align:center;font-size:11px;font-weight:750;transition:.2s ease}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:360px){.fav-shop-card{height:124px}.fav-market-card,.fav-market-card .fav-card-link{min-height:118px}.fav-shop-name{font-size:15px}}
-</style>
+ .fav-product-thumb{object-fit:contain;background:#faf9fc;padding:4px}.tabs .tab{min-width:0;flex:1} </style>
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261020-header4">
 <meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261023-safe2"><script defer src="/web-safe-area.js?v=20261023-safe1"></script></head>
 <body><div class="test-shell">
@@ -48,6 +48,7 @@
 <main class="test-main">
 <div class="tabs" role="tablist" aria-label="관심 목록 구분">
  <button class="tab on" type="button" data-fav-tab="shops"><span>카드샵</span><span class="manage-tab-count" id="shopCount">0</span></button>
+ <button class="tab" type="button" data-fav-tab="products"><span>상품</span><span class="manage-tab-count" id="productCount">0</span></button>
  <button class="tab" type="button" data-fav-tab="market"><span>거래</span><span class="manage-tab-count" id="marketCount">0</span></button>
 </div>
 <div id="root"><div class="loading">관심 목록을 불러오는 중...</div></div>
@@ -67,7 +68,7 @@
  const pin='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/></svg>';
  const clock='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
  const heart='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.2-4.35-9.55-8.36C.48 9.27 1.53 5.1 5.2 3.74 7.54 2.87 10.08 3.7 12 5.7c1.92-2 4.46-2.83 6.8-1.96 3.67 1.36 4.72 5.53 2.75 8.9C19.2 16.65 12 21 12 21Z"/></svg>';
- let current=location.hash.replace('#','')||'shops';if(!['shops','market'].includes(current))current='shops';let items=[];
+ let current=location.hash.replace('#','')||'shops';if(!['shops','products','market'].includes(current))current='shops';let items=[];
  let toastTimer=0;const toast=m=>{const t=$('#favToast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1600)};
 
  const dayNames=['일','월','화','수','목','금','토'];
@@ -114,45 +115,49 @@
    const m=x.data,src=m.thumbnail_url||'';
    return '<article class="fav-map-card fav-market-card" data-kind="market" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/market.html#/listing/'+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-market-thumb" src="'+esc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge provider '+esc(m.provider||'')+'">'+esc(providerNames[m.provider]||'외부 플랫폼')+'</span><span class="fav-market-badge category">'+esc(categoryNames[m.tcg_category]||'기타')+'</span><span class="fav-market-badge">'+esc(typeNames[m.item_type]||'기타')+'</span></div><strong class="fav-market-title">'+esc(m.title||'거래')+'</strong><span class="fav-market-price">'+money(m.price)+'</span><span class="fav-market-location">'+pin+'<span>'+esc(marketAddress(m))+'</span></span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
  }
+ function productCard(x){const p=x.data;const src=p.image_path?'https://wdttzpbmqavaqfcbaywj.supabase.co/storage/v1/object/public/box-products/'+encodeURIComponent(p.image_path):'';const tcg=p.tcg_type==='one_piece'?'원피스':'포켓몬';return '<article class="fav-map-card fav-market-card" data-kind="products" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/box-detail.html?id='+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-market-thumb fav-product-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge category">BOX</span><span class="fav-market-badge">'+tcg+'</span></div><strong class="fav-market-title">'+esc(p.name_short_ko||p.name||'상품')+'</strong><span class="fav-market-price">'+(x.price!=null?'최저 '+money(x.price):'가격 정보 없음')+'</span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 상품 해제">'+heart+'</button></article>'}
  function syncCounts(){
-   $('#shopCount').textContent=String(items.filter(x=>x.kind==='shops').length);
+   $('#shopCount').textContent=String(items.filter(x=>x.kind==='shops').length);$('#productCount').textContent=String(items.filter(x=>x.kind==='products').length);
    $('#marketCount').textContent=String(items.filter(x=>x.kind==='market').length);
  }
- const emptyHtml=tab=>tab==='shops'
+ const emptyHtml=tab=>tab==='products'?'<div class="favorite-empty"><strong>아직 관심 상품이 없어요</strong>상품 목록에서 ♡ 버튼을 눌러 추가해보세요.<br><a href="/products.html" class="btn primary">상품 둘러보기</a></div>':tab==='shops'
   ?'<div class="favorite-empty"><strong>아직 관심 카드샵이 없어요</strong>카드샵 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/shops.html" class="btn primary">TCG MAP 둘러보기</a></div>'
   :'<div class="favorite-empty"><strong>아직 관심 거래가 없어요</strong>거래 상세에서 ♡ 버튼을 눌러 관심 목록에 추가해보세요.<br><a href="/market.html" class="btn primary">TCG 거래 둘러보기</a></div>';
  function render(){
    $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.favTab===current));syncCounts();
    const list=items.filter(x=>x.kind===current);
-   root.innerHTML=list.length?'<div class="favorite-list">'+list.map(x=>x.kind==='shops'?shopCard(x):marketCard(x)).join('')+'</div>':emptyHtml(current);
+   root.innerHTML=list.length?'<div class="favorite-list">'+list.map(x=>x.kind==='shops'?shopCard(x):x.kind==='products'?productCard(x):marketCard(x)).join('')+'</div>':emptyHtml(current);
    root.querySelectorAll('.fav-remove').forEach(btn=>btn.onclick=async e=>{
      e.preventDefault();e.stopPropagation();
      const card=btn.closest('[data-id]'),id=card?.dataset.id,kind=card?.dataset.kind;if(!id||!kind)return;btn.disabled=true;
-     const q=kind==='shops'
-       ?A.client.from('shop_favorites').delete().eq('user_id',uid).eq('shop_id',id)
-       :A.client.from('market_listing_favorites').delete().eq('user_id',uid).eq('listing_id',id);
+     const q=kind==='shops'?A.client.from('shop_favorites').delete().eq('user_id',uid).eq('shop_id',id):kind==='products'?A.client.from('box_product_favorites').delete().eq('user_id',uid).eq('product_id',id):A.client.from('market_listing_favorites').delete().eq('user_id',uid).eq('listing_id',id);
      const {error}=await q;if(error){btn.disabled=false;alert('관심 목록 해제에 실패했습니다.');return}
      items=items.filter(x=>!(x.kind===kind&&x.id===id));render();
-     toast(kind==='shops'?'관심 카드샵에서 해제했습니다.':'관심 거래에서 해제했습니다.');
+     toast(kind==='shops'?'관심 카드샵에서 해제했습니다.':kind==='products'?'관심 상품에서 해제했습니다.':'관심 거래에서 해제했습니다.');
    });
  }
  $$('.tab').forEach(b=>b.onclick=()=>{current=b.dataset.favTab;history.replaceState(null,'','#'+current);render()});
  async function load(){
-   const [shopFavRes,marketFavRes,marketBlockRes]=await Promise.all([
+   const [shopFavRes,productFavRes,marketFavRes,marketBlockRes]=await Promise.all([
      A.client.from('shop_favorites').select('shop_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
+     A.client.from('box_product_favorites').select('product_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
      A.client.from('market_listing_favorites').select('listing_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
      A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',uid)
    ]);
-   if(shopFavRes.error)throw shopFavRes.error;if(marketFavRes.error)throw marketFavRes.error;
+   if(shopFavRes.error)throw shopFavRes.error;if(productFavRes.error)throw productFavRes.error;if(marketFavRes.error)throw marketFavRes.error;
    const blockedMarketUsers=new Set((marketBlockRes.data||[]).map(x=>String(x.blocked_user_id)));
-   const shopFavs=shopFavRes.data||[],marketFavs=marketFavRes.data||[],shopIds=shopFavs.map(x=>x.shop_id),marketIds=marketFavs.map(x=>x.listing_id);
-   const [shopsRes,marketRes]=await Promise.all([
+   const shopFavs=shopFavRes.data||[],productFavs=productFavRes.data||[],marketFavs=marketFavRes.data||[],shopIds=shopFavs.map(x=>x.shop_id),marketIds=marketFavs.map(x=>x.listing_id);
+   const [shopsRes,marketRes,productCatalogRes,productPricesRes]=await Promise.all([
      shopIds.length?A.client.from('v_app_shops').select('*').in('id',shopIds):Promise.resolve({data:[],error:null}),
-     marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,tcg_category,item_type,road_address,location_name,place_name,seller_user_id,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null})
+     marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,tcg_category,item_type,road_address,location_name,place_name,seller_user_id,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null}),
+     fetch('/data/box-products-v1.json').then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+     fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/box-price-public').then(r=>r.ok?r.json():{rows:[],products:[]}).catch(()=>({rows:[],products:[]}))
    ]);
    if(shopsRes.error)throw shopsRes.error;if(marketRes.error)throw marketRes.error;
    const shopBy=new Map((shopsRes.data||[]).map(x=>[String(x.id),x])),marketBy=new Map((marketRes.data||[]).filter(x=>!blockedMarketUsers.has(String(x.seller_user_id))).map(x=>[String(x.id),x]));
+   const catalogBy=new Map((productCatalogRes.products||[]).map(p=>[p.id,p]));const policyBy=new Map((productPricesRes.products||[]).map(p=>[p.product_id,p]));const priceBy=new Map();for(const r of productPricesRes.rows||[]){const v=Number(r.price_krw);if(Number.isFinite(v)&&v>0&&policyBy.get(r.product_id)?.price_enabled===true)priceBy.set(r.product_id,Math.min(priceBy.get(r.product_id)??Infinity,v))}
    items=[
+     ...productFavs.map(f=>({kind:'products',id:String(f.product_id),favAt:f.created_at,data:catalogBy.get(String(f.product_id)),price:priceBy.get(String(f.product_id))})).filter(x=>x.data&&policyBy.get(x.id)?.is_active===true),
      ...shopFavs.map(f=>({kind:'shops',id:String(f.shop_id),favAt:f.created_at,data:shopBy.get(String(f.shop_id))})).filter(x=>x.data),
      ...marketFavs.map(f=>({kind:'market',id:String(f.listing_id),favAt:f.created_at,data:marketBy.get(String(f.listing_id))})).filter(x=>x.data)
    ].sort((a,b)=>new Date(b.favAt)-new Date(a.favAt));

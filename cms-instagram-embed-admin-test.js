@@ -1,20 +1,7 @@
 (()=>{'use strict';
-const css=document.createElement('style');
-css.textContent='.cms-crop-stage.cms-instagram-embed-preview{isolation:isolate}.cms-instagram-embed-preview .cms-instagram-embed-window{position:absolute;inset:0;overflow:hidden;z-index:1;background:#f4f2f5;pointer-events:none}.cms-instagram-embed-preview .cms-instagram-embed-window iframe{position:absolute;left:0;top:-50px;width:540px;height:760px;border:0;transform:scale(var(--ig-scale,.297));transform-origin:top left;pointer-events:none}.cms-instagram-embed-preview .cms-image-remove{z-index:4}.cms-instagram-embed-preview .cms-embed-caption{position:absolute;left:4px;bottom:4px;z-index:2;padding:3px 5px;font-size:8px;background:#ffffffd9;color:#51456c;border-radius:4px;pointer-events:none}.cms-crop-stage.card.cms-instagram-embed-preview .cms-instagram-embed-window iframe{top:-50px}';
-document.head.appendChild(css);
-const valid=url=>{try{const u=new URL(url);if(u.protocol!=='https:'||!['www.instagram.com','instagram.com'].includes(u.hostname))return null;const m=u.pathname.match(/^\/(p|reel)\/([A-Za-z0-9_-]+)\/?$/);return m?'https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed/':null}catch{return null}};
-let pending=false;
-function paint(){pending=false;const editor=document.getElementById('cmsEditor');if(!editor)return;const stage=editor.querySelector('#cmsCropStage'),urlInput=editor.querySelector('#cmsBlockUrl');if(!stage||!urlInput)return;
-const src=valid(urlInput.value);const existing=stage.querySelector('.cms-instagram-embed-window');
-if(!src||!stage.querySelector('img')||stage.classList.contains('simple')){existing?.remove();stage.querySelector('.cms-embed-caption')?.remove();stage.classList.remove('cms-instagram-embed-preview');return}
-if(existing?.dataset.src===src)return;
-existing?.remove();stage.querySelector('.cms-embed-caption')?.remove();stage.classList.add('cms-instagram-embed-preview');
-const win=document.createElement('div');win.className='cms-instagram-embed-window';win.dataset.src=src;
-const iframe=document.createElement('iframe');iframe.title='Instagram 임베드 미리보기';iframe.src=src;iframe.loading='lazy';iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.setAttribute('aria-hidden','true');win.appendChild(iframe);
-const scale=Math.min(1,Math.max(0.20,stage.clientWidth/540));win.style.setProperty('--ig-scale',String(scale));
-stage.prepend(win);const note=document.createElement('span');note.className='cms-embed-caption';note.textContent='임베드 미리보기';stage.append(note);
-}
-const observer=new MutationObserver(()=>{if(pending)return;pending=true;requestAnimationFrame(paint)});
-observer.observe(document.documentElement,{childList:true,subtree:true});
-document.addEventListener('input',e=>{if(e.target?.id==='cmsBlockUrl'){if(!pending){pending=true;requestAnimationFrame(paint)}}});
-})();
+const style=document.createElement('style');style.textContent='.cms-instagram-admin-preview{margin-top:12px;border:1px solid #e5e0e8;border-radius:12px;background:#fff;padding:10px;max-width:530px}.cms-instagram-admin-preview iframe{display:block;width:100%;height:620px;border:0;background:#fff}.cms-instagram-admin-preview .caption{font-size:11px;font-weight:700;color:#75668e;margin:0 0 8px}.cms-instagram-admin-preview .hint{font-size:10px;color:#887d94;margin-top:8px}';document.head.appendChild(style);
+const valid=v=>{try{const u=new URL(v);const m=u.pathname.match(/^\/(p|reel)\/([A-Za-z0-9_-]+)\/?$/);return u.protocol==='https:'&&['instagram.com','www.instagram.com'].includes(u.hostname)&&m?'https://www.instagram.com/'+m[1]+'/'+m[2]+'/embed/':null}catch{return null}};
+let scheduled=false;
+function update(){scheduled=false;const editor=document.getElementById('cmsEditor');if(!editor)return;const stage=editor.querySelector('#cmsCropStage'),url=editor.querySelector('#cmsBlockUrl');if(!stage||!url)return;const src=valid(url.value);const host=stage.closest('.cms-image-editor')?.parentElement;if(!host)return;let panel=host.querySelector('.cms-instagram-admin-preview');if(!src){panel?.remove();return}if(panel?.dataset.src===src)return;panel?.remove();panel=document.createElement('div');panel.className='cms-instagram-admin-preview';panel.dataset.src=src;const caption=document.createElement('p');caption.className='caption';caption.textContent='Instagram 원본 임베드 확인';const frame=document.createElement('iframe');frame.title='Instagram 원본 임베드 확인';frame.src=src;frame.loading='lazy';frame.referrerPolicy='strict-origin-when-cross-origin';const hint=document.createElement('div');hint.className='hint';hint.textContent='위 기존 썸네일과 크롭 편집값은 유지됩니다. 아래는 실제 공식 임베드 표시 결과이며, 저장되는 이미지를 대체하지 않습니다.';panel.append(caption,frame,hint);host.append(panel)}
+const observer=new MutationObserver(()=>{if(!scheduled){scheduled=true;requestAnimationFrame(update)}});observer.observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener('input',e=>{if(e.target?.id==='cmsBlockUrl'&&!scheduled){scheduled=true;requestAnimationFrame(update)}});})();

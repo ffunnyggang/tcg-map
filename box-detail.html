@@ -45,7 +45,7 @@ viewer.addEventListener('click',e=>{if(e.target===viewer)close()});
 document.addEventListener('keydown',e=>{if(viewer.hidden)return;if(e.key==='Escape')close();if(e.key==='ArrowLeft')show(index-1);if(e.key==='ArrowRight')show(index+1)});
 let touchX=0;viewer.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].screenX},{passive:true});viewer.addEventListener('touchend',e=>{const delta=e.changedTouches[0].screenX-touchX;if(Math.abs(delta)>65)show(index+(delta<0?1:-1))},{passive:true});
 fetch('data/box-hit-cards-30th.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('hitcards');return r.json()}).then(data=>{
-cards=(data.cards||[]).sort((a,b)=>a.sort_order-b.sort_order);grid.replaceChildren();
+cards=(data.cards||[]).filter(c=>c&&c.image_path).sort((a,b)=>a.sort_order-b.sort_order);document.getElementById('hitSection').hidden=cards.length===0;grid.replaceChildren();
 cards.forEach((card,i)=>{const btn=document.createElement('button');btn.type='button';btn.className='hit-card';btn.setAttribute('aria-label',card.name+' '+card.card_number+' 전체보기');const thumb=document.createElement('img');thumb.loading='lazy';thumb.src=base+encodeURIComponent(card.image_path);thumb.alt=card.name;thumb.onerror=()=>{thumb.style.display='none';const ph=document.createElement('div');ph.className='hit-img-placeholder';ph.textContent='이미지 등록 대기';btn.prepend(ph)};const title=document.createElement('strong');title.textContent=card.name;const number=document.createElement('small');number.textContent=card.card_number+' '+card.rarity;btn.append(thumb,title,number);btn.addEventListener('click',()=>open(i));grid.append(btn)});
 }).catch(()=>{grid.textContent='히트카드 정보를 불러오지 못했습니다.'})
 })();

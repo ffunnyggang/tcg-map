@@ -34,6 +34,11 @@
 .home-box-top a{font:600 12px/1.2 'Pretendard Variable',Pretendard,sans-serif;color:#8d8993;text-decoration:none}
 .home-box-track{display:flex;overflow-x:auto;overflow-y:hidden;gap:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 0 4px;touch-action:pan-x}
 .home-box-track::-webkit-scrollbar{display:none}
+.home-box-ios-marquee .home-box-track{overflow-x:hidden;touch-action:pan-y}
+.home-box-ios-marquee .home-box-group{animation:home-box-ios-slide 35s linear infinite;will-change:transform}
+.home-box-ios-marquee.is-user-touching .home-box-group{animation-play-state:paused}
+@keyframes home-box-ios-slide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-100%,0,0)}}
+@media(prefers-reduced-motion:reduce){.home-box-ios-marquee .home-box-group{animation:none}.home-box-ios-marquee .home-box-track{overflow-x:auto;touch-action:pan-x}}
 .home-box-group{display:flex;gap:12px;flex:0 0 auto;padding-right:12px}
 .home-box-card{display:grid;grid-template-rows:132px 40px 24px;align-content:start;width:126px;min-width:126px;text-decoration:none;color:#181720;min-height:196px;gap:4px}
 .home-box-group:first-child{padding-left:16px}
@@ -47,7 +52,7 @@ const track=document.getElementById('homeBoxTrack'),section=document.getElementB
 const flow=document.querySelector('.home-content-flow');
 const news=flow?.querySelector('section[aria-label="카드샵 소식"]');
 const recommend=flow?.querySelector('section[aria-label="카드샵 추천"]');
-if(flow&&section.parentElement===flow){flow.insertBefore(section,recommend||flow.firstElementChild)}
+const notice=document.querySelector('.home-notice-strip');if(notice){notice.insertAdjacentElement('afterend',section)}else if(flow&&section.parentElement===flow){flow.insertBefore(section,recommend||flow.firstElementChild)}
 
 const ids=['jp_30th_celebration','jp_storm_emerald','jp_mega_dream_ex','jp_abyss_eye','jp_ninja_spinner','jp_inferno_x','jp_mega_symphonia','jp_mega_brave','jp_white_flare','jp_151'];
 const base='https://wdttzpbmqavaqfcbaywj.supabase.co/storage/v1/object/public/box-products/';
@@ -57,6 +62,8 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
  const entries=ids.map(id=>{const p=byId.get(id);const offers=prices.sources.flatMap(s=>typeof s.quotes[id]==='number'?[s.quotes[id]]:[]);return p&&(prices.productsPolicy?prices.productsPolicy.get(id)?.is_active===true:true)&&p.image_path&&offers.length?{...p,min:Math.min(...offers)}:null}).filter(Boolean);if(!entries.length){section.hidden=false;track.textContent='상품 가격 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.';track.style.padding='12px 16px';return}
  function makeGroup(){const group=document.createElement('div');group.className='home-box-group';for(const p of entries){const a=document.createElement('a');a.className='home-box-card';a.href='box-detail.html?id='+encodeURIComponent(p.id)+'&rev=20261028-postreview2';a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';const wrap=document.createElement('div');wrap.className='home-box-image';const img=document.createElement('img');img.src=base+encodeURIComponent(p.image_path);img.alt=p.name;img.loading='lazy';wrap.append(img);const title=document.createElement('div');title.className='home-box-name';title.textContent=p.name_short_ko||p.name;const label=document.createElement('div');label.className='home-box-sublabel';label.textContent='';const amount=document.createElement('div');amount.className='home-box-price';amount.textContent='최저 '+p.min.toLocaleString('ko-KR')+'원';a.append(wrap,title,label,amount);group.append(a)}return group}
  track.append(makeGroup(),makeGroup());
+ const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ if(isIOS){section.classList.add('home-box-ios-marquee');track.addEventListener('touchstart',()=>section.classList.add('is-user-touching'),{passive:true});track.addEventListener('touchend',()=>setTimeout(()=>section.classList.remove('is-user-touching'),1800),{passive:true});track.addEventListener('touchcancel',()=>section.classList.remove('is-user-touching'),{passive:true});return;}
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  let pauseUntil=0,visible=true,last=0,raf=0;const appMotion=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell')||/[?&]app=1(?:&|$)/.test(location.search)||/\b(FUNYPIN|FUNY_PIN)\b/i.test(navigator.userAgent);
  const pause=()=>{pauseUntil=performance.now()+2000};

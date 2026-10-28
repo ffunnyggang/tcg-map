@@ -7,7 +7,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2023-06-16",
-      "image_path": "jp_151.webp"
+      "image_path": "jp_151.webp",
+      "product_code": "BOX-PKM-JP-151"
     },
     {
       "id": "jp_shiny_treasure_ex",
@@ -16,7 +17,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2023-12-01",
-      "image_path": "jp_shiny_treasure_ex.webp"
+      "image_path": "jp_shiny_treasure_ex.webp",
+      "product_code": "BOX-PKM-JP-SHINY-TREASURE-EX"
     },
     {
       "id": "jp_super_electric_breaker",
@@ -25,7 +27,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2024-10-18",
-      "image_path": "jp_super_electric_breaker.webp"
+      "image_path": "jp_super_electric_breaker.webp",
+      "product_code": "BOX-PKM-JP-SUPER-ELECTRIC-BREAKER"
     },
     {
       "id": "jp_terastal_fest_ex",
@@ -34,7 +37,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2024-12-06",
-      "image_path": "jp_terastal_fest_ex.webp"
+      "image_path": "jp_terastal_fest_ex.webp",
+      "product_code": "BOX-PKM-JP-TERASTAL-FEST-EX"
     },
     {
       "id": "jp_rocket_gang",
@@ -43,7 +47,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-04-18",
-      "image_path": "jp_rocket_gang.webp"
+      "image_path": "jp_rocket_gang.webp",
+      "product_code": "BOX-PKM-JP-ROCKET-GANG"
     },
     {
       "id": "jp_white_flare",
@@ -52,7 +57,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-06-06",
-      "image_path": "jp_white_flare.webp"
+      "image_path": "jp_white_flare.webp",
+      "product_code": "BOX-PKM-JP-WHITE-FLARE"
     },
     {
       "id": "jp_mega_brave",
@@ -61,7 +67,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-08-01",
-      "image_path": "jp_mega_brave.webp"
+      "image_path": "jp_mega_brave.webp",
+      "product_code": "BOX-PKM-JP-MEGA-BRAVE"
     },
     {
       "id": "jp_mega_symphonia",
@@ -70,7 +77,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-08-01",
-      "image_path": "jp_mega_symphonia.webp"
+      "image_path": "jp_mega_symphonia.webp",
+      "product_code": "BOX-PKM-JP-MEGA-SYMPHONIA"
     },
     {
       "id": "jp_inferno_x",
@@ -79,7 +87,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-09-26",
-      "image_path": "jp_inferno_x.webp"
+      "image_path": "jp_inferno_x.webp",
+      "product_code": "BOX-PKM-JP-INFERNO-X"
     },
     {
       "id": "jp_mega_dream_ex",
@@ -88,7 +97,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-11-28",
-      "image_path": "jp_mega_dream_ex.webp"
+      "image_path": "jp_mega_dream_ex.webp",
+      "product_code": "BOX-PKM-JP-MEGA-DREAM-EX"
     },
     {
       "id": "jp_ninja_spinner",
@@ -97,7 +107,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-03-13",
-      "image_path": "jp_ninja_spinner.webp"
+      "image_path": "jp_ninja_spinner.webp",
+      "product_code": "BOX-PKM-JP-NINJA-SPINNER"
     },
     {
       "id": "jp_abyss_eye",
@@ -106,7 +117,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-05-22",
-      "image_path": "jp_abyss_eye.webp"
+      "image_path": "jp_abyss_eye.webp",
+      "product_code": "BOX-PKM-JP-ABYSS-EYE"
     },
     {
       "id": "jp_storm_emerald",
@@ -115,7 +127,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-07-31",
-      "image_path": "jp_storm_emerald.webp"
+      "image_path": "jp_storm_emerald.webp",
+      "product_code": "BOX-PKM-JP-STORM-EMERALD"
     },
     {
       "id": "jp_30th_celebration",
@@ -124,7 +137,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-09-16",
-      "image_path": "jp_30th_celebration.webp"
+      "image_path": "jp_30th_celebration.webp",
+      "product_code": "BOX-PKM-JP-30TH-CELEBRATION"
     },
     {
       "id": "en_30th_booster_bundle",
@@ -133,7 +147,8 @@
       "language": "EN",
       "type": "BOOSTER_BUNDLE",
       "release_date": null,
-      "image_path": "en_30th_booster_bundle.webp"
+      "image_path": "en_30th_booster_bundle.webp",
+      "product_code": "BOX-PKM-EN-30TH-BOOSTER-BUNDLE"
     },
     {
       "id": "en_30th_elite_trainer_box",
@@ -142,7 +157,8 @@
       "language": "EN",
       "type": "ETB",
       "release_date": null,
-      "image_path": "en_30th_elite_trainer_box.webp"
+      "image_path": "en_30th_elite_trainer_box.webp",
+      "product_code": "BOX-PKM-EN-30TH-ELITE-TRAINER-BOX"
     },
     {
       "id": "jp_30th_celebration_non_shrink",
@@ -151,7 +167,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": "kream/jp_30th_celebration_non_shrink.png"
+      "image_path": "kream/jp_30th_celebration_non_shrink.png",
+      "product_code": "BOX-PKM-JP-30TH-CELEBRATION-NON-SHRINK"
     },
     {
       "id": "jp_30th_futuristic_box",
@@ -160,7 +177,8 @@
       "language": "JP",
       "type": "SPECIAL_BOX",
       "release_date": null,
-      "image_path": "jp_30th_futuristic_box.webp"
+      "image_path": "jp_30th_futuristic_box.webp",
+      "product_code": "BOX-PKM-JP-30TH-FUTURISTIC-BOX"
     },
     {
       "id": "jp_munikis_zero",
@@ -169,7 +187,8 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null
+      "image_path": null,
+      "product_code": "BOX-PKM-JP-MUNIKIS-ZERO"
     },
     {
       "id": "jp_vmax_climax",
@@ -179,7 +198,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-VMAX-CLIMAX"
     },
     {
       "id": "jp_vstar_universe",
@@ -189,7 +209,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-VSTAR-UNIVERSE"
     },
     {
       "id": "jp_paradise_dragona",
@@ -199,7 +220,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-PARADISE-DRAGONA"
     },
     {
       "id": "jp_fusion_arts",
@@ -209,7 +231,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-FUSION-ARTS"
     },
     {
       "id": "jp_ruler_of_black_flame",
@@ -219,7 +242,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-RULER-OF-BLACK-FLAME"
     },
     {
       "id": "jp_star_birth",
@@ -229,7 +253,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-STAR-BIRTH"
     },
     {
       "id": "op_eb03",
@@ -242,7 +267,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 EB-03",
       "kream_url": "https://kream.co.kr/products/799337",
-      "kream_recommend_rank": 8
+      "kream_recommend_rank": 8,
+      "product_code": "BOX-OP-JP-EB03"
     },
     {
       "id": "op_eb04",
@@ -255,7 +281,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 EB-04",
       "kream_url": "https://kream.co.kr/products/799331",
-      "kream_recommend_rank": 5
+      "kream_recommend_rank": 5,
+      "product_code": "BOX-OP-JP-EB04"
     },
     {
       "id": "op_prb01",
@@ -265,7 +292,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_prb01.png",
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "product_code": "BOX-OP-JP-PRB01"
     },
     {
       "id": "op_prb02",
@@ -278,7 +306,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 PRB-02",
       "kream_url": "https://kream.co.kr/products/799335",
-      "kream_recommend_rank": 15
+      "kream_recommend_rank": 15,
+      "product_code": "BOX-OP-JP-PRB02"
     },
     {
       "id": "op_op11",
@@ -291,7 +320,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-11",
       "kream_url": "https://kream.co.kr/products/799342",
-      "kream_recommend_rank": 14
+      "kream_recommend_rank": 14,
+      "product_code": "BOX-OP-JP-OP11"
     },
     {
       "id": "op_op12",
@@ -301,7 +331,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op12.png",
-      "tcg_type": "one_piece"
+      "tcg_type": "one_piece",
+      "product_code": "BOX-OP-JP-OP12"
     },
     {
       "id": "op_op13",
@@ -314,7 +345,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-13",
       "kream_url": "https://kream.co.kr/products/799332",
-      "kream_recommend_rank": 2
+      "kream_recommend_rank": 2,
+      "product_code": "BOX-OP-JP-OP13"
     },
     {
       "id": "op_op14",
@@ -327,7 +359,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-14",
       "kream_url": "https://kream.co.kr/products/799338",
-      "kream_recommend_rank": 7
+      "kream_recommend_rank": 7,
+      "product_code": "BOX-OP-JP-OP14"
     },
     {
       "id": "op_op15",
@@ -340,7 +373,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-15",
       "kream_url": "https://kream.co.kr/products/844840",
-      "kream_recommend_rank": 6
+      "kream_recommend_rank": 6,
+      "product_code": "BOX-OP-JP-OP15"
     },
     {
       "id": "op_op16",
@@ -353,7 +387,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-16",
       "kream_url": "https://kream.co.kr/products/947597",
-      "kream_recommend_rank": 3
+      "kream_recommend_rank": 3,
+      "product_code": "BOX-OP-JP-OP16"
     },
     {
       "id": "op_op17",
@@ -366,7 +401,8 @@
       "tcg_type": "one_piece",
       "name_short_ko": "원피스 OP-17",
       "kream_url": "https://kream.co.kr/products/1044392",
-      "kream_recommend_rank": 1
+      "kream_recommend_rank": 1,
+      "product_code": "BOX-OP-JP-OP17"
     },
     {
       "id": "jp_30th_espeon_umbreon_deck",
@@ -376,7 +412,8 @@
       "type": "SPECIAL_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-30TH-ESPEON-UMBREON-DECK"
     },
     {
       "id": "jp_25th_anniversary_collection",
@@ -386,7 +423,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-25TH-ANNIVERSARY-COLLECTION"
     },
     {
       "id": "jp_battle_partners",
@@ -396,7 +434,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-BATTLE-PARTNERS"
     },
     {
       "id": "jp_lost_abyss",
@@ -406,7 +445,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "kream/jp_lost_abyss.png",
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-LOST-ABYSS"
     },
     {
       "id": "jp_shiny_star_v",
@@ -416,7 +456,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-SHINY-STAR-V"
     },
     {
       "id": "jp_black_bolt",
@@ -426,7 +467,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-BLACK-BOLT"
     },
     {
       "id": "jp_blue_sky_stream",
@@ -436,7 +478,8 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null,
-      "tcg_type": "pokemon"
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-BLUE-SKY-STREAM"
     },
     {
       "id": "op_op05",
@@ -449,7 +492,8 @@
       "image_path": "onepiece/op_op05.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/171120",
-      "kream_recommend_rank": 4
+      "kream_recommend_rank": 4,
+      "product_code": "BOX-OP-JP-OP05"
     },
     {
       "id": "op_op09",
@@ -462,7 +506,8 @@
       "image_path": "onepiece/op_op09.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799336",
-      "kream_recommend_rank": 9
+      "kream_recommend_rank": 9,
+      "product_code": "BOX-OP-JP-OP09"
     },
     {
       "id": "op_op08",
@@ -475,7 +520,8 @@
       "image_path": "onepiece/op_op08.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799343",
-      "kream_recommend_rank": 10
+      "kream_recommend_rank": 10,
+      "product_code": "BOX-OP-JP-OP08"
     },
     {
       "id": "op_op10",
@@ -488,7 +534,8 @@
       "image_path": "onepiece/op_op10.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799341",
-      "kream_recommend_rank": 11
+      "kream_recommend_rank": 11,
+      "product_code": "BOX-OP-JP-OP10"
     },
     {
       "id": "op_op01",
@@ -501,7 +548,8 @@
       "image_path": "onepiece/op_op01.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/117785",
-      "kream_recommend_rank": 12
+      "kream_recommend_rank": 12,
+      "product_code": "BOX-OP-JP-OP01"
     },
     {
       "id": "op_op04",
@@ -514,7 +562,8 @@
       "image_path": "onepiece/op_op04.png",
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/130665",
-      "kream_recommend_rank": 13
+      "kream_recommend_rank": 13,
+      "product_code": "BOX-OP-JP-OP04"
     }
   ]
 }

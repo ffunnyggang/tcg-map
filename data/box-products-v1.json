@@ -8,7 +8,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2023-06-16",
       "image_path": "jp_151.webp",
-      "product_code": "BOX-PKM-JP-151"
+      "product_code": "BOX-PKM-JP-151",
+      "name_short_ko": "포켓몬 TCG 포켓몬카드 151 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Pokemon Card 151 Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_shiny_treasure_ex",
@@ -18,17 +21,23 @@
       "type": "BOOSTER_BOX",
       "release_date": "2023-12-01",
       "image_path": "jp_shiny_treasure_ex.webp",
-      "product_code": "BOX-PKM-JP-SHINY-TREASURE-EX"
+      "product_code": "BOX-PKM-JP-SHINY-TREASURE-EX",
+      "name_short_ko": "포켓몬 TCG 샤이니트레저 ex 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Shiny Treasures ex Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_super_electric_breaker",
-      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 초전브레이커 1박스 (30팩/일어판)",
-      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Super Electric Breaker Box (Pack of 30/Japanese Ver.)",
+      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 초전브레이커 박스 (일어판)",
+      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Super Electric Breaker Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2024-10-18",
       "image_path": "jp_super_electric_breaker.webp",
-      "product_code": "BOX-PKM-JP-SUPER-ELECTRIC-BREAKER"
+      "product_code": "BOX-PKM-JP-SUPER-ELECTRIC-BREAKER",
+      "name_short_ko": "포켓몬 TCG 초전브레이커 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Super Electric Breaker Box (Japanese Ver.)",
+      "contents_description": "1BOX / 30팩"
     },
     {
       "id": "jp_terastal_fest_ex",
@@ -38,7 +47,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2024-12-06",
       "image_path": "jp_terastal_fest_ex.webp",
-      "product_code": "BOX-PKM-JP-TERASTAL-FEST-EX"
+      "product_code": "BOX-PKM-JP-TERASTAL-FEST-EX",
+      "name_short_ko": "포켓몬 TCG 테라스탈 페스타 ex 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Terastal Fest ex Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_rocket_gang",
@@ -48,7 +60,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2025-04-18",
       "image_path": "jp_rocket_gang.webp",
-      "product_code": "BOX-PKM-JP-ROCKET-GANG"
+      "product_code": "BOX-PKM-JP-ROCKET-GANG",
+      "name_short_ko": "포켓몬 TCG 로켓단의 영광 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Glory of Team Rocket Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_white_flare",
@@ -58,7 +73,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2025-06-06",
       "image_path": "jp_white_flare.webp",
-      "product_code": "BOX-PKM-JP-WHITE-FLARE"
+      "product_code": "BOX-PKM-JP-WHITE-FLARE",
+      "name_short_ko": "포켓몬 TCG 화이트플레어 박스 (일어판)",
+      "name_short_en": "Pokemon TCG White Flare Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_mega_brave",
@@ -68,7 +86,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2025-08-01",
       "image_path": "jp_mega_brave.webp",
-      "product_code": "BOX-PKM-JP-MEGA-BRAVE"
+      "product_code": "BOX-PKM-JP-MEGA-BRAVE",
+      "name_short_ko": "포켓몬 TCG 메가브레이브 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Mega Brave Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_mega_symphonia",
@@ -78,7 +99,10 @@
       "type": "BOOSTER_BOX",
       "release_date": "2025-08-01",
       "image_path": "jp_mega_symphonia.webp",
-      "product_code": "BOX-PKM-JP-MEGA-SYMPHONIA"
+      "product_code": "BOX-PKM-JP-MEGA-SYMPHONIA",
+      "name_short_ko": "포켓몬 TCG 메가심포니아 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Mega Symphonia Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_inferno_x",
@@ -88,57 +112,75 @@
       "type": "BOOSTER_BOX",
       "release_date": "2025-09-26",
       "image_path": "jp_inferno_x.webp",
-      "product_code": "BOX-PKM-JP-INFERNO-X"
+      "product_code": "BOX-PKM-JP-INFERNO-X",
+      "name_short_ko": "포켓몬 TCG 인페르노 X 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Inferno X Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_mega_dream_ex",
-      "name": "포켓몬 TCG 메가 하이클래스팩 메가 드림 ex 박스 (10팩/일어판)",
-      "name_en": "Pokemon TCG Mega High Class Pack MEGA Dream ex Box (Pack of 10/Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 하이클래스팩 메가 드림 ex 박스 (일어판)",
+      "name_en": "Pokemon TCG Mega High Class Pack MEGA Dream ex Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-11-28",
       "image_path": "jp_mega_dream_ex.webp",
-      "product_code": "BOX-PKM-JP-MEGA-DREAM-EX"
+      "product_code": "BOX-PKM-JP-MEGA-DREAM-EX",
+      "name_short_ko": "포켓몬 TCG 메가 드림 ex 박스 (일어판)",
+      "name_short_en": "Pokemon TCG MEGA Dream ex Box (Japanese Ver.)",
+      "contents_description": "1BOX / 10팩"
     },
     {
       "id": "jp_ninja_spinner",
-      "name": "포켓몬 TCG 메가 확장팩 닌자스피너 1 박스 (30팩/일어판)",
-      "name_en": "Pokemon TCG MEGA Expansion Pack Ninja Spinner 1 Box (Pack of 30/Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 닌자스피너 박스 (일어판)",
+      "name_en": "Pokemon TCG MEGA Expansion Pack Ninja Spinner Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-03-13",
       "image_path": "jp_ninja_spinner.webp",
-      "product_code": "BOX-PKM-JP-NINJA-SPINNER"
+      "product_code": "BOX-PKM-JP-NINJA-SPINNER",
+      "name_short_ko": "포켓몬 TCG 닌자스피너 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Ninja Spinner Box (Japanese Ver.)",
+      "contents_description": "1BOX / 30팩"
     },
     {
       "id": "jp_abyss_eye",
-      "name": "포켓몬 TCG 어비스 아이 메가 확장팩 1 박스 (30팩/일어판)",
-      "name_en": "Pokemon TCG Abyss Eye MEGA Expansion Pack (Pack of 30/Japanese Ver.)",
+      "name": "포켓몬 TCG 어비스 아이 메가 확장팩 박스 (일어판)",
+      "name_en": "Pokemon TCG Abyss Eye MEGA Expansion Pack (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-05-22",
       "image_path": "jp_abyss_eye.webp",
-      "product_code": "BOX-PKM-JP-ABYSS-EYE"
+      "product_code": "BOX-PKM-JP-ABYSS-EYE",
+      "name_short_ko": "포켓몬 TCG 어비스 아이 메가 확장팩 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Abyss Eye MEGA Expansion Pack (Japanese Ver.)",
+      "contents_description": "1BOX / 30팩"
     },
     {
       "id": "jp_storm_emerald",
-      "name": "포켓몬 TCG 메가 확장팩 스톰에메랄다 1박스 (30팩/일어판)",
-      "name_en": "Pokemon TCG MEGA Expansion Pack Storm Emeralda 1 Box (Pack of 30/Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 스톰에메랄다 박스 (일어판)",
+      "name_en": "Pokemon TCG MEGA Expansion Pack Storm Emeralda Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-07-31",
       "image_path": "jp_storm_emerald.webp",
-      "product_code": "BOX-PKM-JP-STORM-EMERALD"
+      "product_code": "BOX-PKM-JP-STORM-EMERALD",
+      "name_short_ko": "포켓몬 TCG 스톰에메랄다 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Storm Emeralda Box (Japanese Ver.)",
+      "contents_description": "1BOX / 30팩"
     },
     {
       "id": "jp_30th_celebration",
-      "name": "포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (20팩/일어판)",
-      "name_en": "Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Pack of 20/Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 30주년 기념팩 박스 (일어판)",
+      "name_en": "Pokemon TCG Mega Expansion 30th Celebration Pack Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-09-16",
       "image_path": "jp_30th_celebration.webp",
-      "product_code": "BOX-PKM-JP-30TH-CELEBRATION"
+      "product_code": "BOX-PKM-JP-30TH-CELEBRATION",
+      "name_short_ko": "포켓몬 TCG 30주년 기념팩 박스 (일어판)",
+      "name_short_en": "Pokemon TCG 30th Celebration Pack Box (Japanese Ver.)",
+      "contents_description": "1BOX / 20팩"
     },
     {
       "id": "en_30th_booster_bundle",
@@ -148,7 +190,10 @@
       "type": "BOOSTER_BUNDLE",
       "release_date": null,
       "image_path": "en_30th_booster_bundle.webp",
-      "product_code": "BOX-PKM-EN-30TH-BOOSTER-BUNDLE"
+      "product_code": "BOX-PKM-EN-30TH-BOOSTER-BUNDLE",
+      "name_short_ko": "30th Celebration Booster Bundle",
+      "name_short_en": null,
+      "contents_description": null
     },
     {
       "id": "en_30th_elite_trainer_box",
@@ -158,17 +203,23 @@
       "type": "ETB",
       "release_date": null,
       "image_path": "en_30th_elite_trainer_box.webp",
-      "product_code": "BOX-PKM-EN-30TH-ELITE-TRAINER-BOX"
+      "product_code": "BOX-PKM-EN-30TH-ELITE-TRAINER-BOX",
+      "name_short_ko": "30th Celebration Elite Trainer Box",
+      "name_short_en": null,
+      "contents_description": null
     },
     {
       "id": "jp_30th_celebration_non_shrink",
-      "name": "[논 슈링크] 포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (20팩/일어판)",
-      "name_en": "[Non-Shrink] Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Pack of 20/Japanese Ver.)",
+      "name": "[논 슈링크] 포켓몬 TCG 메가 확장팩 30주년 기념팩 박스 (일어판)",
+      "name_en": "[Non-Shrink] Pokemon TCG Mega Expansion 30th Celebration Pack Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "kream/jp_30th_celebration_non_shrink.png",
-      "product_code": "BOX-PKM-JP-30TH-CELEBRATION-NON-SHRINK"
+      "product_code": "BOX-PKM-JP-30TH-CELEBRATION-NON-SHRINK",
+      "name_short_ko": "[논 슈링크] 포켓몬 TCG 30주년 기념팩 박스 (일어판)",
+      "name_short_en": "[Non-Shrink] Pokemon TCG 30th Celebration Pack Box (Japanese Ver.)",
+      "contents_description": "1BOX / 20팩"
     },
     {
       "id": "jp_30th_futuristic_box",
@@ -178,17 +229,23 @@
       "type": "SPECIAL_BOX",
       "release_date": null,
       "image_path": "jp_30th_futuristic_box.webp",
-      "product_code": "BOX-PKM-JP-30TH-FUTURISTIC-BOX"
+      "product_code": "BOX-PKM-JP-30TH-FUTURISTIC-BOX",
+      "name_short_ko": "포켓몬 TCG 30주년 기념 퓨처리스틱 박스 (일어판)",
+      "name_short_en": "Pokemon TCG 30th Celebration Futuristic Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_munikis_zero",
-      "name": "포켓몬 TCG 무니키스 제로 확장팩 1 박스 (일어판)",
-      "name_en": "Pokemon TCG Munikis Zero Expansion Pack 1 Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 무니키스 제로 확장팩 박스 (일어판)",
+      "name_en": "Pokemon TCG Munikis Zero Expansion Pack Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "kream/jp_munikis_zero.png",
-      "product_code": "BOX-PKM-JP-MUNIKIS-ZERO"
+      "product_code": "BOX-PKM-JP-MUNIKIS-ZERO",
+      "name_short_ko": "포켓몬 TCG 무니키스 제로 확장팩 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Munikis Zero Expansion Pack Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_vmax_climax",
@@ -199,7 +256,10 @@
       "release_date": null,
       "image_path": "kream/jp_vmax_climax.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-VMAX-CLIMAX"
+      "product_code": "BOX-PKM-JP-VMAX-CLIMAX",
+      "name_short_ko": "포켓몬 TCG VMAX 클라이맥스 BOX (일어판)",
+      "name_short_en": "Pokemon TCG VMAX Climax Box",
+      "contents_description": null
     },
     {
       "id": "jp_vstar_universe",
@@ -210,7 +270,10 @@
       "release_date": null,
       "image_path": "kream/jp_vstar_universe.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-VSTAR-UNIVERSE"
+      "product_code": "BOX-PKM-JP-VSTAR-UNIVERSE",
+      "name_short_ko": "포켓몬 TCG VSTAR 유니버스 BOX (일어판)",
+      "name_short_en": "Pokemon TCG VSTAR Universe Box",
+      "contents_description": null
     },
     {
       "id": "jp_paradise_dragona",
@@ -221,7 +284,10 @@
       "release_date": null,
       "image_path": "kream/jp_paradise_dragona.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-PARADISE-DRAGONA"
+      "product_code": "BOX-PKM-JP-PARADISE-DRAGONA",
+      "name_short_ko": "포켓몬 TCG 낙원의 드라고나 BOX (일어판)",
+      "name_short_en": "Pokemon TCG Paradise Dragona Box",
+      "contents_description": null
     },
     {
       "id": "jp_fusion_arts",
@@ -232,7 +298,10 @@
       "release_date": null,
       "image_path": "kream/jp_fusion_arts.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-FUSION-ARTS"
+      "product_code": "BOX-PKM-JP-FUSION-ARTS",
+      "name_short_ko": "포켓몬 TCG 퓨전아츠 BOX (일어판)",
+      "name_short_en": "Pokemon TCG Fusion Arts Box",
+      "contents_description": null
     },
     {
       "id": "jp_ruler_of_black_flame",
@@ -243,7 +312,10 @@
       "release_date": null,
       "image_path": "kream/jp_ruler_of_black_flame.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-RULER-OF-BLACK-FLAME"
+      "product_code": "BOX-PKM-JP-RULER-OF-BLACK-FLAME",
+      "name_short_ko": "포켓몬 TCG 흑염의 지배자 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Ruler of the Black Flame Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_star_birth",
@@ -254,35 +326,42 @@
       "release_date": null,
       "image_path": "kream/jp_star_birth.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-STAR-BIRTH"
+      "product_code": "BOX-PKM-JP-STAR-BIRTH",
+      "name_short_ko": "포켓몬 TCG 스타버스 BOX (일어판)",
+      "name_short_en": "Pokemon TCG Star Birth Box",
+      "contents_description": null
     },
     {
       "id": "op_eb03",
-      "name": "원피스 카드게임 EB-03 Extra Booster One Piece Heroines Edition 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG EB-03 Extra Booster One Piece Heroines Edition Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 EB-03 Extra Booster One Piece Heroines Edition 박스 (일어판)",
+      "name_en": "One Piece TCG EB-03 Extra Booster One Piece Heroines Edition Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_eb03.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 EB-03",
+      "name_short_ko": "원피스 카드게임 EB-03 Extra Booster One Piece Heroines Edition 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799337",
       "kream_recommend_rank": 8,
-      "product_code": "BOX-OP-JP-EB03"
+      "product_code": "BOX-OP-JP-EB03",
+      "name_short_en": "One Piece TCG EB-03 Extra Booster One Piece Heroines Edition Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_eb04",
-      "name": "원피스 카드게임 EB-04 Extra Booster Egghead Crisis 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG EB-04 Extra Booster Egghead Crisis Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 EB-04 Extra Booster Egghead Crisis 박스 (일어판)",
+      "name_en": "One Piece TCG EB-04 Extra Booster Egghead Crisis Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_eb04.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 EB-04",
+      "name_short_ko": "원피스 카드게임 EB-04 Extra Booster Egghead Crisis 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799331",
       "kream_recommend_rank": 5,
-      "product_code": "BOX-OP-JP-EB04"
+      "product_code": "BOX-OP-JP-EB04",
+      "name_short_en": "One Piece TCG EB-04 Extra Booster Egghead Crisis Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_prb01",
@@ -293,35 +372,42 @@
       "release_date": null,
       "image_path": "onepiece/op_prb01.png",
       "tcg_type": "one_piece",
-      "product_code": "BOX-OP-JP-PRB01"
+      "product_code": "BOX-OP-JP-PRB01",
+      "name_short_ko": "원피스 카드게임 PRB-01 BOX (일어판)",
+      "name_short_en": "One Piece Card Game PRB-01 Box",
+      "contents_description": null
     },
     {
       "id": "op_prb02",
-      "name": "원피스 카드게임 PRB-02 Premium Booster One Piece Card The Best Vol.2 박스 (10팩/일어판)",
-      "name_en": "One Piece TCG PRB-02 Premium Booster One Piece Card The Best Vol.2 Box (Pack of 10/Japanese Ver.)",
+      "name": "원피스 카드게임 PRB-02 Premium Booster One Piece Card The Best Vol.2 박스 (일어판)",
+      "name_en": "One Piece TCG PRB-02 Premium Booster One Piece Card The Best Vol.2 Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_prb02.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 PRB-02",
+      "name_short_ko": "원피스 카드게임 PRB-02 Premium Booster One Piece Card The Best Vol.2 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799335",
       "kream_recommend_rank": 15,
-      "product_code": "BOX-OP-JP-PRB02"
+      "product_code": "BOX-OP-JP-PRB02",
+      "name_short_en": "One Piece TCG PRB-02 Premium Booster One Piece Card The Best Vol.2 Box (Japanese Ver.)",
+      "contents_description": "1BOX / 10팩"
     },
     {
       "id": "op_op11",
-      "name": "원피스 카드게임 OP-11 A Fist of Divine Speed 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-11 A Fist of Divine Speed Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-11 A Fist of Divine Speed 박스 (일어판)",
+      "name_en": "One Piece TCG OP-11 A Fist of Divine Speed Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op11.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-11",
+      "name_short_ko": "원피스 카드게임 OP-11 A Fist of Divine Speed 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799342",
       "kream_recommend_rank": 14,
-      "product_code": "BOX-OP-JP-OP11"
+      "product_code": "BOX-OP-JP-OP11",
+      "name_short_en": "One Piece TCG OP-11 A Fist of Divine Speed Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op12",
@@ -332,77 +418,90 @@
       "release_date": null,
       "image_path": "onepiece/op_op12.png",
       "tcg_type": "one_piece",
-      "product_code": "BOX-OP-JP-OP12"
+      "product_code": "BOX-OP-JP-OP12",
+      "name_short_ko": "원피스 카드게임 OP-12 BOX (일어판)",
+      "name_short_en": "One Piece Card Game OP-12 Box",
+      "contents_description": null
     },
     {
       "id": "op_op13",
-      "name": "원피스 카드게임 OP-13 Carrying on His Will 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-13 Carrying on His Will Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-13 Carrying on His Will 박스 (일어판)",
+      "name_en": "One Piece TCG OP-13 Carrying on His Will Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op13.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-13",
+      "name_short_ko": "원피스 카드게임 OP-13 Carrying on His Will 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799332",
       "kream_recommend_rank": 2,
-      "product_code": "BOX-OP-JP-OP13"
+      "product_code": "BOX-OP-JP-OP13",
+      "name_short_en": "One Piece TCG OP-13 Carrying on His Will Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op14",
-      "name": "원피스 카드게임 OP-14 The Azure Sea's Seven 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-14 The Azure Sea's Seven Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-14 The Azure Sea's Seven 박스 (일어판)",
+      "name_en": "One Piece TCG OP-14 The Azure Sea's Seven Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op14.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-14",
+      "name_short_ko": "원피스 카드게임 OP-14 The Azure Sea's Seven 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/799338",
       "kream_recommend_rank": 7,
-      "product_code": "BOX-OP-JP-OP14"
+      "product_code": "BOX-OP-JP-OP14",
+      "name_short_en": "One Piece TCG OP-14 The Azure Sea's Seven Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op15",
-      "name": "원피스 카드게임 OP-15 Adventure On Kami's Island 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-15 Adventure On Kami's Island Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-15 Adventure On Kami's Island 박스 (일어판)",
+      "name_en": "One Piece TCG OP-15 Adventure On Kami's Island Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op15.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-15",
+      "name_short_ko": "원피스 카드게임 OP-15 Adventure On Kami's Island 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/844840",
       "kream_recommend_rank": 6,
-      "product_code": "BOX-OP-JP-OP15"
+      "product_code": "BOX-OP-JP-OP15",
+      "name_short_en": "One Piece TCG OP-15 Adventure On Kami's Island Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op16",
-      "name": "원피스 카드게임 OP-16 The Time of Battle 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-16 The Time of Battle Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-16 The Time of Battle 박스 (일어판)",
+      "name_en": "One Piece TCG OP-16 The Time of Battle Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op16.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-16",
+      "name_short_ko": "원피스 카드게임 OP-16 The Time of Battle 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/947597",
       "kream_recommend_rank": 3,
-      "product_code": "BOX-OP-JP-OP16"
+      "product_code": "BOX-OP-JP-OP16",
+      "name_short_en": "One Piece TCG OP-16 The Time of Battle Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op17",
-      "name": "원피스 카드게임 OP-17 The World's Strongest Warriors 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-17 The World's Strongest Warriors Box (Pack of 24/Japanese Ver.)",
+      "name": "원피스 카드게임 OP-17 The World's Strongest Warriors 박스 (일어판)",
+      "name_en": "One Piece TCG OP-17 The World's Strongest Warriors Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": "onepiece/op_op17.png",
       "tcg_type": "one_piece",
-      "name_short_ko": "원피스 OP-17",
+      "name_short_ko": "원피스 카드게임 OP-17 The World's Strongest Warriors 박스 (일어판)",
       "kream_url": "https://kream.co.kr/products/1044392",
       "kream_recommend_rank": 1,
-      "product_code": "BOX-OP-JP-OP17"
+      "product_code": "BOX-OP-JP-OP17",
+      "name_short_en": "One Piece TCG OP-17 The World's Strongest Warriors Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "jp_30th_espeon_umbreon_deck",
@@ -413,7 +512,10 @@
       "release_date": null,
       "image_path": "kream/jp_30th_espeon_umbreon_deck.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-30TH-ESPEON-UMBREON-DECK"
+      "product_code": "BOX-PKM-JP-30TH-ESPEON-UMBREON-DECK",
+      "name_short_ko": "포켓몬 TCG 30주년 기념 프리미엄 덱 세트 에브이 & 블래키 (일어판)",
+      "name_short_en": "Pokemon TCG 30th Celebration Premium Deck Set Espeon & Umbreon (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_25th_anniversary_collection",
@@ -424,7 +526,10 @@
       "release_date": null,
       "image_path": "kream/jp_25th_anniversary_collection.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-25TH-ANNIVERSARY-COLLECTION"
+      "product_code": "BOX-PKM-JP-25TH-ANNIVERSARY-COLLECTION",
+      "name_short_ko": "포켓몬 TCG 25주년 기념 컬렉션 박스 (일어판)",
+      "name_short_en": "Pokemon TCG 25th Anniversary Collection Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_battle_partners",
@@ -435,7 +540,10 @@
       "release_date": null,
       "image_path": "kream/jp_battle_partners.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-BATTLE-PARTNERS"
+      "product_code": "BOX-PKM-JP-BATTLE-PARTNERS",
+      "name_short_ko": "포켓몬 TCG 배틀파트너즈 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Battle Partners Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_lost_abyss",
@@ -446,7 +554,10 @@
       "release_date": null,
       "image_path": "kream/jp_lost_abyss.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-LOST-ABYSS"
+      "product_code": "BOX-PKM-JP-LOST-ABYSS",
+      "name_short_ko": "포켓몬 TCG 로스트어비스 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Lost Abyss Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_shiny_star_v",
@@ -457,7 +568,10 @@
       "release_date": null,
       "image_path": "kream/jp_shiny_star_v.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-SHINY-STAR-V"
+      "product_code": "BOX-PKM-JP-SHINY-STAR-V",
+      "name_short_ko": "포켓몬 TCG 샤이니스타 V 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Shiny Star V Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_black_bolt",
@@ -468,7 +582,10 @@
       "release_date": null,
       "image_path": "kream/jp_black_bolt.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-BLACK-BOLT"
+      "product_code": "BOX-PKM-JP-BLACK-BOLT",
+      "name_short_ko": "포켓몬 TCG 블랙볼트 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Black Bolt Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "jp_blue_sky_stream",
@@ -479,13 +596,16 @@
       "release_date": null,
       "image_path": "kream/jp_blue_sky_stream.png",
       "tcg_type": "pokemon",
-      "product_code": "BOX-PKM-JP-BLUE-SKY-STREAM"
+      "product_code": "BOX-PKM-JP-BLUE-SKY-STREAM",
+      "name_short_ko": "포켓몬 TCG 창공스트림 박스 (일어판)",
+      "name_short_en": "Pokemon TCG Blue Sky Stream Box (Japanese Ver.)",
+      "contents_description": null
     },
     {
       "id": "op_op05",
-      "name": "원피스 카드게임 OP-05 Awakening of The New Era 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-05 Awakening of The New Era Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-05",
+      "name": "원피스 카드게임 OP-05 Awakening of The New Era 박스 (일어판)",
+      "name_en": "One Piece TCG OP-05 Awakening of The New Era Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-05 Awakening of The New Era 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -493,13 +613,15 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/171120",
       "kream_recommend_rank": 4,
-      "product_code": "BOX-OP-JP-OP05"
+      "product_code": "BOX-OP-JP-OP05",
+      "name_short_en": "One Piece TCG OP-05 Awakening of The New Era Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op09",
-      "name": "원피스 카드게임 OP-09 Emperors in The New World 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-09 Emperors in The New World Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-09",
+      "name": "원피스 카드게임 OP-09 Emperors in The New World 박스 (일어판)",
+      "name_en": "One Piece TCG OP-09 Emperors in The New World Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-09 Emperors in The New World 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -507,13 +629,15 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799336",
       "kream_recommend_rank": 9,
-      "product_code": "BOX-OP-JP-OP09"
+      "product_code": "BOX-OP-JP-OP09",
+      "name_short_en": "One Piece TCG OP-09 Emperors in The New World Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op08",
-      "name": "원피스 카드게임 OP-08 Two Legends 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-08 Two Legends Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-08",
+      "name": "원피스 카드게임 OP-08 Two Legends 박스 (일어판)",
+      "name_en": "One Piece TCG OP-08 Two Legends Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-08 Two Legends 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -521,13 +645,15 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799343",
       "kream_recommend_rank": 10,
-      "product_code": "BOX-OP-JP-OP08"
+      "product_code": "BOX-OP-JP-OP08",
+      "name_short_en": "One Piece TCG OP-08 Two Legends Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op10",
-      "name": "원피스 카드게임 OP-10 Royal Blood 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-10 Royal Blood Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-10",
+      "name": "원피스 카드게임 OP-10 Royal Blood 박스 (일어판)",
+      "name_en": "One Piece TCG OP-10 Royal Blood Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-10 Royal Blood 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -535,13 +661,15 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/799341",
       "kream_recommend_rank": 11,
-      "product_code": "BOX-OP-JP-OP10"
+      "product_code": "BOX-OP-JP-OP10",
+      "name_short_en": "One Piece TCG OP-10 Royal Blood Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op01",
-      "name": "원피스 카드게임 OP-01 Romance Dawn 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-01 Romance Dawn Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-01",
+      "name": "원피스 카드게임 OP-01 Romance Dawn 박스 (일어판)",
+      "name_en": "One Piece TCG OP-01 Romance Dawn Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-01 Romance Dawn 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -549,13 +677,15 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/117785",
       "kream_recommend_rank": 12,
-      "product_code": "BOX-OP-JP-OP01"
+      "product_code": "BOX-OP-JP-OP01",
+      "name_short_en": "One Piece TCG OP-01 Romance Dawn Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     },
     {
       "id": "op_op04",
-      "name": "원피스 카드게임 OP-04 Kingdoms of Intrigue 박스 (24팩/일어판)",
-      "name_en": "One Piece TCG OP-04 Kingdoms of Intrigue Box (Pack of 24/Japanese Ver.)",
-      "name_short_ko": "원피스 OP-04",
+      "name": "원피스 카드게임 OP-04 Kingdoms of Intrigue 박스 (일어판)",
+      "name_en": "One Piece TCG OP-04 Kingdoms of Intrigue Box (Japanese Ver.)",
+      "name_short_ko": "원피스 카드게임 OP-04 Kingdoms of Intrigue 박스 (일어판)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -563,7 +693,9 @@
       "tcg_type": "one_piece",
       "kream_url": "https://kream.co.kr/products/130665",
       "kream_recommend_rank": 13,
-      "product_code": "BOX-OP-JP-OP04"
+      "product_code": "BOX-OP-JP-OP04",
+      "name_short_en": "One Piece TCG OP-04 Kingdoms of Intrigue Box (Japanese Ver.)",
+      "contents_description": "1BOX / 24팩"
     }
   ]
 }

@@ -257,7 +257,7 @@ async function verify(options={}){
  try{
   const allowed=await api('/rest/v1/rpc/is_funypin_admin',{method:'POST',body:'{}'});
   if(allowed!==true)throw new Error('관리자 권한이 없는 계정입니다.');
-  $('login').classList.add('hidden');document.querySelector('.main')?.classList.remove('login-state');$('toolbar').classList.add('show');$('side').classList.add('show');$('mobileTabs').classList.add('show');$('headerLogout').classList.remove('hidden');await load();if(new URLSearchParams(location.search).get('tab')==='storeproducts'){document.querySelector('[data-admin-tab="storeproducts"]')?.click()}return true
+  $('login').classList.add('hidden');document.querySelector('.main')?.classList.remove('login-state');$('toolbar').classList.add('show');$('side').classList.add('show');$('mobileTabs').classList.add('show');$('headerLogout').classList.remove('hidden');await load();const params=new URLSearchParams(location.search);if(params.get('returnTo')==='/admin-box-prices.html'){location.replace('/admin-box-prices.html');return true}if(params.get('tab')==='storeproducts'){document.querySelector('[data-admin-tab="storeproducts"]')?.click()}return true
  }catch(e){
   token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');
   $('login').classList.remove('hidden');document.querySelector('.main')?.classList.add('login-state');$('toolbar').classList.remove('show');$('side').classList.remove('show');$('mobileTabs').classList.remove('show');$('headerLogout').classList.add('hidden');

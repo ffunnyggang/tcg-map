@@ -20,8 +20,8 @@
     },
     {
       "id": "jp_super_electric_breaker",
-      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 초전브레이커 1박스 (일어판)",
-      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Super Electric Breaker Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 초전브레이커 1박스 (30팩/일어판)",
+      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Super Electric Breaker Box (Pack of 30/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2024-10-18",
@@ -83,8 +83,8 @@
     },
     {
       "id": "jp_mega_dream_ex",
-      "name": "포켓몬 TCG 메가 하이클래스팩 메가 드림 ex 박스 (일어판)",
-      "name_en": "Pokemon TCG Mega High Class Pack MEGA Dream ex Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 하이클래스팩 메가 드림 ex 박스 (10팩/일어판)",
+      "name_en": "Pokemon TCG Mega High Class Pack MEGA Dream ex Box (Pack of 10/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2025-11-28",
@@ -92,8 +92,8 @@
     },
     {
       "id": "jp_ninja_spinner",
-      "name": "포켓몬 TCG 메가 확장팩 닌자스피너 1 박스 (일어판)",
-      "name_en": "Pokemon TCG MEGA Expansion Pack Ninja Spinner 1 Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 닌자스피너 1 박스 (30팩/일어판)",
+      "name_en": "Pokemon TCG MEGA Expansion Pack Ninja Spinner 1 Box (Pack of 30/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-03-13",
@@ -101,8 +101,8 @@
     },
     {
       "id": "jp_abyss_eye",
-      "name": "포켓몬 TCG 어비스 아이 메가 확장팩 1 박스 (일어판)",
-      "name_en": "Pokemon TCG Abyss Eye MEGA Expansion Pack (Japanese Ver.)",
+      "name": "포켓몬 TCG 어비스 아이 메가 확장팩 1 박스 (30팩/일어판)",
+      "name_en": "Pokemon TCG Abyss Eye MEGA Expansion Pack (Pack of 30/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-05-22",
@@ -110,8 +110,8 @@
     },
     {
       "id": "jp_storm_emerald",
-      "name": "포켓몬 TCG 메가 확장팩 스톰에메랄다 1박스 (일어판)",
-      "name_en": "Pokemon TCG MEGA Expansion Pack Storm Emeralda 1 Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 스톰에메랄다 1박스 (30팩/일어판)",
+      "name_en": "Pokemon TCG MEGA Expansion Pack Storm Emeralda 1 Box (Pack of 30/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-07-31",
@@ -119,8 +119,8 @@
     },
     {
       "id": "jp_30th_celebration",
-      "name": "포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (일어판)",
-      "name_en": "Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Japanese Ver.)",
+      "name": "포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (20팩/일어판)",
+      "name_en": "Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Pack of 20/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": "2026-09-16",
@@ -146,8 +146,8 @@
     },
     {
       "id": "jp_30th_celebration_non_shrink",
-      "name": "[논 슈링크] 포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (일어판)",
-      "name_en": "[Non-Shrink] Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Japanese Ver.)",
+      "name": "[논 슈링크] 포켓몬 TCG 메가 확장팩 30주년 기념팩 1 박스 (20팩/일어판)",
+      "name_en": "[Non-Shrink] Pokemon TCG Mega Expansion 30th Celebration Pack 1 Box (Pack of 20/Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -155,8 +155,8 @@
     },
     {
       "id": "jp_30th_futuristic_box",
-      "name": "30주년 퓨처리스틱 BOX",
-      "name_en": null,
+      "name": "포켓몬 TCG 30주년 기념 퓨처리스틱 박스 (일어판)",
+      "name_en": "Pokemon TCG 30th Celebration Futuristic Box (Japanese Ver.)",
       "language": "JP",
       "type": "SPECIAL_BOX",
       "release_date": null,
@@ -213,8 +213,8 @@
     },
     {
       "id": "jp_ruler_of_black_flame",
-      "name": "포켓몬 TCG 흑염의 지배자 BOX (일어판)",
-      "name_en": "Pokemon TCG Ruler of the Black Flame Box",
+      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 흑염의 지배자 박스 (일어판)",
+      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Ruler of the Black Flame Box (Japanese Ver.)",
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
@@ -340,6 +340,76 @@
       "release_date": null,
       "image_path": null,
       "tcg_type": "one_piece"
+    },
+    {
+      "id": "jp_30th_espeon_umbreon_deck",
+      "name": "포켓몬 TCG 30주년 기념 프리미엄 덱 세트 에브이 & 블래키 (일어판)",
+      "name_en": "Pokemon TCG 30th Celebration Premium Deck Set Espeon & Umbreon (Japanese Ver.)",
+      "language": "JP",
+      "type": "DECK_SET",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_25th_anniversary_collection",
+      "name": "포켓몬 TCG 소드 & 실드 확장팩 25주년 기념 컬렉션 박스 (일어판)",
+      "name_en": "Pokemon TCG Sword & Shield Expansion Pack 25th Anniversary Collection Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_battle_partners",
+      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 배틀파트너즈 박스 (일어판)",
+      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Battle Partners Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_lost_abyss",
+      "name": "포켓몬 TCG 소드 & 실드 확장팩 로스트어비스 박스 (일어판)",
+      "name_en": "Pokemon TCG Sword & Shield Expansion Pack Lost Abyss Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_shiny_star_v",
+      "name": "포켓몬 TCG 소드 & 실드 하이클래스팩 샤이니스타 V 박스 (일어판)",
+      "name_en": "Pokemon TCG Sword & Shield High Class Pack Shiny Star V Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_black_bolt",
+      "name": "포켓몬 TCG 스칼렛 & 바이올렛 확장팩 블랙볼트 박스 (일어판)",
+      "name_en": "Pokemon TCG Scarlet & Violet Expansion Pack Black Bolt Japanese Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_blue_sky_stream",
+      "name": "포켓몬 TCG 소드 & 실드 확장팩 창공스트림 박스 (일어판)",
+      "name_en": "Pokemon TCG Sword & Shield Expansion Pack Blue Sky Stream Box (Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
     }
   ]
 }

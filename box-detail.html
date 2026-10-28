@@ -60,11 +60,12 @@ const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 let overlay=null;
 function elt(tag,className,value){const node=document.createElement(tag);node.className=className;if(value!=null)node.textContent=value;return node}
 async function readReviews(){
- const params=new URLSearchParams({select:'id,title,body,author_nickname,created_at',category:'eq.카드깡 후기',product_id:'eq.'+productId,status:'eq.published',order:'created_at.desc',limit:'30'});
- const response=await fetch(api+'?'+params.toString(),{headers:{apikey:key},cache:'no-store'});
- if(!response.ok)throw Error('TALK 후기 조회 실패');
- const rows=await response.json();
- list.replaceChildren();toggle.hidden=rows.length===0;
+ const url='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/box-reviews-public?product_id='+encodeURIComponent(productId);
+ const response=await fetch(url,{cache:'no-store'});
+ if(!response.ok)throw Error('TALK 후기 조회 실패: HTTP '+response.status);
+ const payload=await response.json();
+ if(payload.product_id!==productId||!Array.isArray(payload.rows))throw Error('후기 응답 확인 실패');
+ const rows=payload.rows; list.replaceChildren();toggle.hidden=rows.length===0;
  if(!rows.length){
    const empty=elt('div','box-review-empty');
    empty.append(elt('strong','', '아직 등록된 카드깡 후기가 없습니다.'),elt('p','','첫 후기를 남겨보세요.'));

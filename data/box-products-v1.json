@@ -170,6 +170,176 @@
       "type": "BOOSTER_BOX",
       "release_date": null,
       "image_path": null
+    },
+    {
+      "id": "jp_vmax_climax",
+      "name": "포켓몬 TCG 하이클래스팩 VMAX 클라이맥스 BOX (일어판)",
+      "name_en": "Pokemon TCG VMAX Climax Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_vstar_universe",
+      "name": "포켓몬 TCG 하이클래스팩 VSTAR 유니버스 BOX (일어판)",
+      "name_en": "Pokemon TCG VSTAR Universe Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_paradise_dragona",
+      "name": "포켓몬 TCG 낙원의 드라고나 BOX (일어판)",
+      "name_en": "Pokemon TCG Paradise Dragona Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_fusion_arts",
+      "name": "포켓몬 TCG 퓨전아츠 BOX (일어판)",
+      "name_en": "Pokemon TCG Fusion Arts Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_ruler_of_black_flame",
+      "name": "포켓몬 TCG 흑염의 지배자 BOX (일어판)",
+      "name_en": "Pokemon TCG Ruler of the Black Flame Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "jp_star_birth",
+      "name": "포켓몬 TCG 스타버스 BOX (일어판)",
+      "name_en": "Pokemon TCG Star Birth Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "pokemon"
+    },
+    {
+      "id": "op_eb03",
+      "name": "원피스 카드게임 EB-03 BOX (일어판)",
+      "name_en": "One Piece Card Game EB-03 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_eb04",
+      "name": "원피스 카드게임 EB-04 BOX (일어판)",
+      "name_en": "One Piece Card Game EB-04 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_prb01",
+      "name": "원피스 카드게임 PRB-01 BOX (일어판)",
+      "name_en": "One Piece Card Game PRB-01 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_prb02",
+      "name": "원피스 카드게임 PRB-02 BOX (일어판)",
+      "name_en": "One Piece Card Game PRB-02 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op11",
+      "name": "원피스 카드게임 OP-11 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-11 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op12",
+      "name": "원피스 카드게임 OP-12 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-12 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op13",
+      "name": "원피스 카드게임 OP-13 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-13 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op14",
+      "name": "원피스 카드게임 OP-14 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-14 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op15",
+      "name": "원피스 카드게임 OP-15 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-15 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op16",
+      "name": "원피스 카드게임 OP-16 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-16 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
+    },
+    {
+      "id": "op_op17",
+      "name": "원피스 카드게임 OP-17 BOX (일어판)",
+      "name_en": "One Piece Card Game OP-17 Box",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": null,
+      "image_path": null,
+      "tcg_type": "one_piece"
     }
   ]
 }

@@ -187,7 +187,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_munikis_zero.png",
       "product_code": "BOX-PKM-JP-MUNIKIS-ZERO"
     },
     {
@@ -197,7 +197,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_vmax_climax.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-VMAX-CLIMAX"
     },
@@ -208,7 +208,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_vstar_universe.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-VSTAR-UNIVERSE"
     },
@@ -219,7 +219,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_paradise_dragona.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-PARADISE-DRAGONA"
     },
@@ -230,7 +230,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_fusion_arts.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-FUSION-ARTS"
     },
@@ -241,7 +241,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_ruler_of_black_flame.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-RULER-OF-BLACK-FLAME"
     },
@@ -252,7 +252,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_star_birth.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-STAR-BIRTH"
     },
@@ -411,7 +411,7 @@
       "language": "JP",
       "type": "SPECIAL_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_30th_espeon_umbreon_deck.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-30TH-ESPEON-UMBREON-DECK"
     },
@@ -422,7 +422,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_25th_anniversary_collection.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-25TH-ANNIVERSARY-COLLECTION"
     },
@@ -433,7 +433,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_battle_partners.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-BATTLE-PARTNERS"
     },
@@ -455,7 +455,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_shiny_star_v.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-SHINY-STAR-V"
     },
@@ -466,7 +466,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_black_bolt.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-BLACK-BOLT"
     },
@@ -477,7 +477,7 @@
       "language": "JP",
       "type": "BOOSTER_BOX",
       "release_date": null,
-      "image_path": null,
+      "image_path": "kream/jp_blue_sky_stream.png",
       "tcg_type": "pokemon",
       "product_code": "BOX-PKM-JP-BLUE-SKY-STREAM"
     },

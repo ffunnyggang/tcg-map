@@ -8,7 +8,7 @@ const names={jp_30th_celebration:'30th CELEBRATION',jp_storm_emerald:'스톰에�
 const local=Promise.all([fetch('data/box-products-v1.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/box-price-candidates-v1.json',{cache:'no-store'}).then(r=>r.json())]);
 const latest=fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/box-price-public').then(r=>r.ok?r.json():{rows:[]}).catch(()=>({rows:[]}));
 Promise.all([local,latest]).then(([[catalog,prices],live])=>{
-for(const item of live.rows||[]){let src=prices.sources.find(s=>s.source===item.seller);if(!src){src={source:item.seller,quotes:{}};prices.sources.push(src)}src.quotes[item.product_id]=item.price_krw}
+for(const item of live.rows||[]){for(const src of prices.sources){if(src.source===item.seller)delete src.quotes[item.product_id]}prices.sources.push({source:item.seller,quotes:{[item.product_id]:item.price_krw},price_effective_date:item.price_effective_date})}
 const byId=new Map(catalog.products.map(p=>[p.id,p]));
 const items=ids.map(id=>{const p=byId.get(id),q=prices.sources.flatMap(s=>Number.isInteger(s.quotes[id])?[s.quotes[id]]:[]);return p&&p.image_path&&q.length?{...p,price:Math.min(...q)}:null}).filter(Boolean);
 if(!items.length){message.textContent='현재 가격이 등록된 BOX 제품이 없습니다.';return}

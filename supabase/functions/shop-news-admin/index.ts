@@ -34,7 +34,7 @@ Deno.serve(async req=>{
  if(!url||!title||title.length>180||!/^[a-f0-9-]{36}$/i.test(data.request_id||'')||data.reviewed!==true)return reply({error:'URL·제목·이미지 및 카드샵 확인 항목을 점검해주세요.'},400);
  if(!(file instanceof File)||file.type!=='image/png'||file.size<100||file.size>8*1024*1024)return reply({error:'정상적인 캡처 이미지가 필요합니다.'},400);
  const source=new URL(url),parts=source.pathname.split('/'),prefix=BASE+'/storage/v1/object/public/cms-images/instagram-capture/'+parts[1]+'-'+parts[2]+'/';
- if(!settings||settings.kind!=='screenshot'||settings.enabled!==false||canonical(settings.source_url)!==url||!String(settings.source_image||'').startsWith(prefix))return reply({error:'현재 URL의 썸네일을 수집하고 이미지 영역에 적용해주세요.'},400);
+ if(!settings||settings.kind!=='screenshot'||settings.enabled!==false||canonical(settings.source_url)!==url||!(settings.source_type==='upload'&&settings.source_mode==='media_only'&&settings.source_image===''||String(settings.source_image||'').startsWith(prefix)))return reply({error:'현재 URL의 썸네일을 수집하고 이미지 영역에 적용해주세요.'},400);
  const placement=data.placement??'pick_shop_news';if(!['pick_shop_news','pick_information'].includes(placement))return reply({error:'등록 위치를 확인해주세요.'},400);
  const linkMode=data.link_mode??'external',presentation=data.inapp_presentation??'page';if(!['inapp','external'].includes(linkMode)||!['bottom_sheet','page'].includes(presentation))return reply({error:'연결 방식을 확인해주세요.'},400);
  const bytes=new Uint8Array(await file.arrayBuffer());if([137,80,78,71,13,10,26,10].some((v,i)=>bytes[i]!==v))return reply({error:'PNG 이미지 형식이 아닙니다.'},400);const view=new DataView(bytes.buffer),w=view.getUint32(16),h=view.getUint32(20);if(!w||!h||w>2160||h>2160)return reply({error:'썸네일 이미지 크기를 확인해주세요.'},400);

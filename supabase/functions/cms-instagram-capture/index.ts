@@ -27,11 +27,11 @@ Deno.serve(async req=>{
   const db=createClient(url,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
   // Immutable daily source cache avoids repeated external renders and preserves previous images.
   const stamp=new Date().toISOString(),revision=body.refresh===true?stamp.slice(0,16).replace(/[:T]/g,'-'):stamp.slice(0,10);
-  const path=`instagram-capture/${input.kind}-${input.code}/${revision}-frame-v2.png`;
+  const path=`instagram-capture/${input.kind}-${input.code}/${revision}-frame-v3.png`;
   const image=db.storage.from('cms-images').getPublicUrl(path).data.publicUrl;
   const {data:cached}=await db.storage.from('cms-images').download(path);
   if(cached)return reply({image,source_url:input.url,provider:'thum.io',cached:true,width:1200,height:760,embed_width:540,embed_height:760});
-  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url)+'&frame=v2'+(body.refresh===true?'&revision='+revision:'');
+  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url)+'&frame=v3'+(body.refresh===true?'&revision='+revision:'');
   const endpoint='https://image.thum.io/get/width/1200/crop/760/png/noanimate/?url='+encodeURIComponent(target);
   const r=await fetch(endpoint,{signal:AbortSignal.timeout(50000),redirect:'error'});
   if(!r.ok)return reply({error:'캡처 서비스가 응답하지 않았습니다. 잠시 후 다시 시도해주세요.',code:'CAPTURE_UNAVAILABLE'},502);

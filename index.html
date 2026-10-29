@@ -34,7 +34,6 @@
 .home-box-top a{font:600 12px/1.2 'Pretendard Variable',Pretendard,sans-serif;color:#8d8993;text-decoration:none}
 .home-box-track{display:flex;overflow-x:auto;overflow-y:hidden;gap:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 0 4px;touch-action:pan-x pan-y}
 .home-box-track::-webkit-scrollbar{display:none}
-.home-box-ios-marquee .home-box-track{overflow-x:hidden;touch-action:pan-y}
 .home-box-ios-marquee .home-box-group{animation:home-box-ios-slide 35s linear infinite;will-change:transform}
 .home-box-ios-marquee.is-user-touching .home-box-group{animation-play-state:paused}
 @keyframes home-box-ios-slide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-100%,0,0)}}
@@ -64,7 +63,37 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
  const entries=ids.map(id=>{const p=byId.get(id);const offers=prices.sources.flatMap(s=>typeof s.quotes[id]==='number'?[s.quotes[id]]:[]);return p&&(prices.productsPolicy?prices.productsPolicy.get(id)?.is_active===true:true)&&p.image_path&&offers.length?{...p,min:Math.min(...offers)}:null}).filter(Boolean);if(!entries.length){section.hidden=false;track.textContent='상품 가격 정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.';track.style.padding='12px 16px';return}
  function makeGroup(){const group=document.createElement('div');group.className='home-box-group';for(const p of entries){const a=document.createElement('a');a.className='home-box-card';a.dataset.boxId=p.id;a.href='box-detail.html?id='+encodeURIComponent(p.id)+'&rev=20261028-postreview2';a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';const wrap=document.createElement('div');wrap.className='home-box-image';const img=document.createElement('img');img.src=p.id==='jp_ninja_spinner'?'assets/box-home-ninja-spinner-v2.webp?v=20261029-fit2':p.id==='jp_abyss_eye'?'assets/box-home-abyss-eye-v2.webp?v=20261029-fit2':base+encodeURIComponent(p.image_path);img.alt=p.name;img.loading='lazy';wrap.append(img);const title=document.createElement('div');title.className='home-box-name';title.textContent=p.name_short_ko||p.name;const label=document.createElement('div');label.className='home-box-sublabel';label.textContent='';const amount=document.createElement('div');amount.className='home-box-price';amount.textContent='최저 '+p.min.toLocaleString('ko-KR')+'원';a.append(wrap,title,label,amount);group.append(a)}return group}
  track.append(makeGroup(),makeGroup());
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ 
+ // iOS WKWebView: drive horizontal dragging explicitly; retain native vertical page scrolling.
+ const iosTouch=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ if(iosTouch){
+   track.style.touchAction='pan-y';
+   let finger=null,startX=0,startY=0,startScroll=0,axis='',suppressClickUntil=0;
+   track.addEventListener('touchstart',e=>{
+     if(e.touches.length!==1){finger=null;axis='';return}
+     const t=e.touches[0];finger=t.identifier;startX=t.clientX;startY=t.clientY;startScroll=track.scrollLeft;axis='';
+   },{passive:true});
+   track.addEventListener('touchmove',e=>{
+     if(finger===null||e.touches.length!==1)return;
+     const t=[...e.touches].find(t=>t.identifier===finger);if(!t)return;
+     const dx=t.clientX-startX,dy=t.clientY-startY;
+     if(!axis){if(Math.max(Math.abs(dx),Math.abs(dy))<7)return;axis=Math.abs(dx)>Math.abs(dy)?'x':'y'}
+     if(axis!=='x')return;
+     if(e.cancelable)e.preventDefault();
+     const width=track.firstElementChild?.getBoundingClientRect().width||0;
+     let next=startScroll-dx;
+     if(width>track.clientWidth){
+       if(next<0){startScroll+=width;next+=width}
+       else if(next>=width){startScroll-=width;next-=width}
+     }
+     track.scrollLeft=next;suppressClickUntil=performance.now()+500;
+   },{passive:false});
+   const finish=()=>{if(axis==='x')suppressClickUntil=performance.now()+500;finger=null;axis=''};
+   track.addEventListener('touchend',finish,{passive:true});
+   track.addEventListener('touchcancel',finish,{passive:true});
+   track.addEventListener('click',e=>{if(performance.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation()}},true);
+ }
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  let pauseUntil=0,visible=true,last=0,raf=0,touching=false,position=track.scrollLeft;const appMotion=!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell')||/[?&]app=1(?:&|$)/.test(location.search)||/\b(FUNYPIN|FUNY_PIN)\b/i.test(navigator.userAgent);
  const pause=()=>{pauseUntil=performance.now()+2000};
  ['pointerdown','wheel','focusin'].forEach(type=>track.addEventListener(type,pause,{passive:true}));

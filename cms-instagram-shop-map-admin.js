@@ -1,6 +1,6 @@
 /* New registrations only. This module never writes CMS rows or scans old content. */
 (()=>{'use strict';
-function canonical(value){try{const u=new URL(value);return u.protocol==='https:'&&['instagram.com','www.instagram.com'].includes(u.hostname)&&!u.username&&!u.password&&!u.port&&/^\/(p|reel)\/[A-Za-z0-9_-]{1,100}\/?$/.test(u.pathname)?'https://www.instagram.com'+u.pathname.replace(/\/?$/,'/'):null}catch{return null}}
+function canonical(value){try{const u=new URL(String(value).trim());if(u.protocol!=='https:'||!['instagram.com','www.instagram.com','m.instagram.com'].includes(u.hostname)||u.username||u.password||u.port)return null;if(/^\/(share|stories|explore|direct|accounts)\//.test(u.pathname))return null;const match=u.pathname.match(/^\/(?:(?:[A-Za-z0-9_.]+)\/)?(p|reel|reels)\/([A-Za-z0-9_-]{1,100})\/?$/);if(!match)return null;return 'https://www.instagram.com/'+(match[1]==='p'?'p':'reel')+'/'+match[2]+'/'}catch{return null}}
 function mount({isNew,urlInput,shopSelect,lookup}){
  if(!isNew)return {settle:async()=>{},destroy(){}};
  const note=document.createElement('p');note.className='cms-final-note';note.setAttribute('role','status');note.setAttribute('aria-live','polite');shopSelect.after(note);

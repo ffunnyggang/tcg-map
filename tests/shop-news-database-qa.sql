@@ -23,6 +23,8 @@ BEGIN
   SELECT sort_order INTO second_order FROM public.cms_block_items WHERE content_id=(third_result->>'content_id')::uuid;
   IF second_order>=first_order THEN RAISE EXCEPTION 'Latest first failed'; END IF;
   IF (SELECT shop_id FROM public.cms_contents WHERE id=(first_result->>'content_id')::uuid)<>'KR-SEO-013' THEN RAISE EXCEPTION 'Shop assignment failed'; END IF;
+  IF (SELECT title_hidden FROM public.cms_block_items WHERE content_id=(first_result->>'content_id')::uuid) IS DISTINCT FROM false THEN RAISE EXCEPTION 'Title hidden'; END IF;
+  IF (SELECT title FROM public.cms_contents WHERE id=(first_result->>'content_id')::uuid) IS DISTINCT FROM '__SHOP_NEWS_QA__' THEN RAISE EXCEPTION 'Title not persisted'; END IF;
   RAISE EXCEPTION USING ERRCODE='ZQ001',MESSAGE='ALL_QA_PASSED_ROLLBACK';
  EXCEPTION WHEN SQLSTATE 'ZQ001' THEN RAISE NOTICE 'Authorization, atomic registration, idempotency, duplicate prevention and newest-first QA passed; writes rolled back';
  END;

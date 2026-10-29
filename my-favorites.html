@@ -115,7 +115,8 @@
    const m=x.data,src=m.thumbnail_url||'';
    return '<article class="fav-map-card fav-market-card" data-kind="market" data-id="'+esc(x.id)+'"><a class="fav-card-link" href="/market.html#/listing/'+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-market-thumb" src="'+esc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge provider '+esc(m.provider||'')+'">'+esc(providerNames[m.provider]||'외부 플랫폼')+'</span><span class="fav-market-badge category">'+esc(categoryNames[m.tcg_category]||'기타')+'</span><span class="fav-market-badge">'+esc(typeNames[m.item_type]||'기타')+'</span></div><strong class="fav-market-title">'+esc(m.title||'거래')+'</strong><span class="fav-market-price">'+money(m.price)+'</span><span class="fav-market-location">'+pin+'<span>'+esc(marketAddress(m))+'</span></span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 거래 해제">'+heart+'</button></article>';
  }
- function productCard(x){const p=x.data;const src=p.image_path?'https://wdttzpbmqavaqfcbaywj.supabase.co/storage/v1/object/public/box-products/'+encodeURIComponent(p.image_path):'';const tcg=p.tcg_type==='one_piece'?'원피스':'포켓몬';return '<article class="fav-map-card fav-market-card" data-kind="products" data-id="'+esc(x.id)+'"><a class="fav-card-link" data-funy-link-mode="inapp" data-funy-inapp-presentation="page" href="/box-detail.html?id='+encodeURIComponent(x.id)+'&rev=20261028-postreview2">'+(src?'<img class="fav-market-thumb fav-product-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge category">BOX</span><span class="fav-market-badge">'+tcg+'</span></div><strong class="fav-market-title">'+esc(p.name_short_ko||p.name||'상품')+'</strong><span class="fav-market-price">'+(x.price!=null?'최저 '+money(x.price):'가격 정보 없음')+'</span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 상품 해제">'+heart+'</button></article>'}
+ function productCard(x){if(x.productType==='graded')return gradedCard(x);const p=x.data;const src=p.image_path?'https://wdttzpbmqavaqfcbaywj.supabase.co/storage/v1/object/public/box-products/'+encodeURIComponent(p.image_path):'';const tcg=p.tcg_type==='one_piece'?'원피스':'포켓몬';return '<article class="fav-map-card fav-market-card" data-kind="products" data-id="'+esc(x.id)+'"><a class="fav-card-link" data-funy-link-mode="inapp" data-funy-inapp-presentation="page" href="/box-detail.html?id='+encodeURIComponent(x.id)+'&rev=20261028-postreview2">'+(src?'<img class="fav-market-thumb fav-product-thumb" src="'+esc(src)+'" alt="" loading="lazy">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge category">BOX</span><span class="fav-market-badge">'+tcg+'</span></div><strong class="fav-market-title">'+esc(p.name_short_ko||p.name||'상품')+'</strong><span class="fav-market-price">'+(x.price!=null?'최저 '+money(x.price):'가격 정보 없음')+'</span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 상품 해제">'+heart+'</button></article>'}
+ function gradedCard(x){const p=x.data,src=Array.isArray(p.image_urls)&&/^https:\/\//i.test(p.image_urls[0]||'')?p.image_urls[0]:'',tcg=p.tcg_type==='one_piece'?'원피스':'포켓몬',title=[p.issue_year,p.set_name,'#'+p.card_number,p.card_name].filter(Boolean).join(' ');return '<article class="fav-map-card fav-market-card" data-kind="products" data-product-type="graded" data-id="'+esc(x.id)+'"><a class="fav-card-link" data-funy-link-mode="inapp" data-funy-inapp-presentation="page" href="/graded-card-detail.html?id='+encodeURIComponent(x.id)+'">'+(src?'<img class="fav-market-thumb fav-product-thumb" src="'+esc(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="fav-market-thumb"></span>')+'<div class="fav-market-copy"><div class="fav-market-badges"><span class="fav-market-badge category">'+tcg+'</span><span class="fav-market-badge">'+esc((p.grading_company==='BRG'?'brg':p.grading_company)+' '+p.grade)+'</span>'+(p.is_sample?'<span class="fav-market-badge">샘플</span>':'')+'</div><strong class="fav-market-title">'+esc(title)+'</strong><span class="fav-market-price">'+(p.price_krw==null?'가격 미정':money(p.price_krw))+'</span></div><span class="fav-chev" aria-hidden="true">›</span></a><button class="fav-remove" type="button" aria-label="관심 상품 해제">'+heart+'</button></article>'}
  function syncCounts(){
    $('#shopCount').textContent=String(items.filter(x=>x.kind==='shops').length);$('#productCount').textContent=String(items.filter(x=>x.kind==='products').length);
    $('#marketCount').textContent=String(items.filter(x=>x.kind==='market').length);
@@ -130,33 +131,38 @@
    root.querySelectorAll('.fav-remove').forEach(btn=>btn.onclick=async e=>{
      e.preventDefault();e.stopPropagation();
      const card=btn.closest('[data-id]'),id=card?.dataset.id,kind=card?.dataset.kind;if(!id||!kind)return;btn.disabled=true;
-     const q=kind==='shops'?A.client.from('shop_favorites').delete().eq('user_id',uid).eq('shop_id',id):kind==='products'?A.client.from('box_product_favorites').delete().eq('user_id',uid).eq('product_id',id):A.client.from('market_listing_favorites').delete().eq('user_id',uid).eq('listing_id',id);
+     const q=kind==='shops'?A.client.from('shop_favorites').delete().eq('user_id',uid).eq('shop_id',id):kind==='products'?A.client.from(card.dataset.productType==='graded'?'graded_product_favorites':'box_product_favorites').delete().eq('user_id',uid).eq('product_id',id):A.client.from('market_listing_favorites').delete().eq('user_id',uid).eq('listing_id',id);
      const {error}=await q;if(error){btn.disabled=false;alert('관심 목록 해제에 실패했습니다.');return}
-     items=items.filter(x=>!(x.kind===kind&&x.id===id));render();
+     items=items.filter(x=>!(x.kind===kind&&x.id===id&&(x.productType||'box')===(card.dataset.productType||'box')));render();
      toast(kind==='shops'?'관심 카드샵에서 해제했습니다.':kind==='products'?'관심 상품에서 해제했습니다.':'관심 거래에서 해제했습니다.');
    });
  }
  $$('.tab').forEach(b=>b.onclick=()=>{current=b.dataset.favTab;history.replaceState(null,'','#'+current);render()});
  async function load(){
-   const [shopFavRes,productFavRes,marketFavRes,marketBlockRes]=await Promise.all([
+   const [shopFavRes,productFavRes,marketFavRes,marketBlockRes,gradedFavRes]=await Promise.all([
      A.client.from('shop_favorites').select('shop_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
      A.client.from('box_product_favorites').select('product_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
      A.client.from('market_listing_favorites').select('listing_id,created_at').eq('user_id',uid).order('created_at',{ascending:false}),
-     A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',uid)
+     A.client.from('market_user_blocks').select('blocked_user_id').eq('blocker_user_id',uid),
+     A.client.from('graded_product_favorites').select('product_id,created_at').eq('user_id',uid).order('created_at',{ascending:false})
    ]);
-   if(shopFavRes.error)throw shopFavRes.error;if(productFavRes.error)throw productFavRes.error;if(marketFavRes.error)throw marketFavRes.error;
+   if(gradedFavRes.error)throw gradedFavRes.error;if(shopFavRes.error)throw shopFavRes.error;if(productFavRes.error)throw productFavRes.error;if(marketFavRes.error)throw marketFavRes.error;
    const blockedMarketUsers=new Set((marketBlockRes.data||[]).map(x=>String(x.blocked_user_id)));
+   const gradedFavs=gradedFavRes.data||[],gradedIds=gradedFavs.map(x=>x.product_id);
    const shopFavs=shopFavRes.data||[],productFavs=productFavRes.data||[],marketFavs=marketFavRes.data||[],shopIds=shopFavs.map(x=>x.shop_id),marketIds=marketFavs.map(x=>x.listing_id);
-   const [shopsRes,marketRes,productCatalogRes,productPricesRes]=await Promise.all([
+   const [shopsRes,marketRes,productCatalogRes,productPricesRes,gradedRes]=await Promise.all([
      shopIds.length?A.client.from('v_app_shops').select('*').in('id',shopIds):Promise.resolve({data:[],error:null}),
      marketIds.length?A.client.from('market_listings').select('id,title,price,thumbnail_url,provider,tcg_category,item_type,road_address,location_name,place_name,seller_user_id,listing_status,created_at').in('id',marketIds):Promise.resolve({data:[],error:null}),
      fetch('/data/box-products-v1.json').then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
-     fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/box-price-public').then(r=>r.ok?r.json():{rows:[],products:[]}).catch(()=>({rows:[],products:[]}))
+     fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/box-price-public').then(r=>r.ok?r.json():{rows:[],products:[]}).catch(()=>({rows:[],products:[]})),
+     gradedIds.length?A.client.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,price_krw,image_urls,is_sample').eq('status','active').in('id',gradedIds):Promise.resolve({data:[],error:null})
    ]);
-   if(shopsRes.error)throw shopsRes.error;if(marketRes.error)throw marketRes.error;
+   if(gradedRes.error)throw gradedRes.error;if(shopsRes.error)throw shopsRes.error;if(marketRes.error)throw marketRes.error;
    const shopBy=new Map((shopsRes.data||[]).map(x=>[String(x.id),x])),marketBy=new Map((marketRes.data||[]).filter(x=>!blockedMarketUsers.has(String(x.seller_user_id))).map(x=>[String(x.id),x]));
+   const gradedBy=new Map((gradedRes.data||[]).map(p=>[String(p.id),p]));
    const catalogBy=new Map((productCatalogRes.products||[]).map(p=>[p.id,p]));const policyBy=new Map((productPricesRes.products||[]).map(p=>[p.product_id,p]));const priceBy=new Map();for(const r of productPricesRes.rows||[]){const v=Number(r.price_krw);if(Number.isFinite(v)&&v>0&&policyBy.get(r.product_id)?.price_enabled===true)priceBy.set(r.product_id,Math.min(priceBy.get(r.product_id)??Infinity,v))}
    items=[
+     ...gradedFavs.map(f=>({kind:'products',productType:'graded',id:String(f.product_id),favAt:f.created_at,data:gradedBy.get(String(f.product_id))})).filter(x=>x.data),
      ...productFavs.map(f=>({kind:'products',id:String(f.product_id),favAt:f.created_at,data:catalogBy.get(String(f.product_id)),price:priceBy.get(String(f.product_id))})).filter(x=>x.data&&policyBy.get(x.id)?.is_active===true),
      ...shopFavs.map(f=>({kind:'shops',id:String(f.shop_id),favAt:f.created_at,data:shopBy.get(String(f.shop_id))})).filter(x=>x.data),
      ...marketFavs.map(f=>({kind:'market',id:String(f.listing_id),favAt:f.created_at,data:marketBy.get(String(f.listing_id))})).filter(x=>x.data)

@@ -110,6 +110,8 @@ async function openComposer(){
  const auth=window.FUNY_WEB_AUTH;
  try{await auth.init();if(!auth.session?.user){auth.goLogin('/box-detail.html?id='+encodeURIComponent(productId));return}}
  catch(error){console.warn(error);return}
+ const composeUrl='/talk.html?compose=box-review&product='+encodeURIComponent(productId)+'&embedComposer=1';
+ if(window.ReactNativeWebView?.postMessage){window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_INAPP_SHEET',url:new URL(composeUrl,location.origin).href}));return}
  if(overlay)return;
  overlay=elt('div','box-review-embed');
  const iframe=elt('iframe','');

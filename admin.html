@@ -265,7 +265,7 @@ async function verify(options={}){
   return false
  }
 }
-const CMS_PLACEMENTS={home:'HOME',pick_information:'PICK · 일정',pick_schedule:'PICK · 스케줄',pick_creator:'PICK · CREATOR',pick_review:'PICK · 깽퐌커플 리뷰'};
+const CMS_PLACEMENTS={home:'HOME',pick_shop_news:'PICK · 카드샵 소식',pick_information:'PICK · 정보',pick_schedule:'PICK · 일정',pick_creator:'PICK · CREATOR',pick_tools:'PICK · TCG TOOL',pick_review:'PICK · 깽퐌커플 리뷰'};
 const CMS_TYPES={shop:'추천 카드샵',news:'카드샵 소식',information:'정보',creator:'CREATOR',review:'리뷰',link:'링크'};
 function cmsDateValue(v){return v?String(v).slice(0,16):''}
 async function loadContentManager(){
@@ -1185,7 +1185,7 @@ document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>{adminTab
 $('adminGoogleLoginBtn').onclick=loginGoogleAdmin;$('headerLogout').onclick=()=>{token='';refreshToken='';sessionStorage.removeItem('funypin_admin_token');sessionStorage.removeItem('funypin_admin_refresh');location.reload()};(async()=>{token=sessionStorage.getItem('funypin_admin_token')||'';refreshToken=sessionStorage.getItem('funypin_admin_refresh')||'';if(token){const ok=await verify({silent:true});if(ok)return}await adoptWebAdminSession()})();
 </script><script src="admin-market-v1.js?v=20261018-allowlist-fix1"></script><script src="admin-popup-v1.js?v=20261013-v1"></script><script src="admin-notices-v1.js?v=20261005-v3"></script><script src="admin-community-v1.js?v=20261024-policy17"></script><script src="cms-link-enhancements.js?v=20261029-result-status"></script>
 <script src="cms-collection-enhancements.js?v=20261013-title-en"></script><script src="cms-structure-enhancements.js"></script><script src="/cms-instagram-image-admin.js?v=20261029-capture2"></script>
-<script src="/cms-final-fixes.js?v=20261029-capture1"></script><script src="cms-layout-fix.js?v=20261019-integrated-missions1"></script><script src="/admin-missions-integrated.js?v=20261023-syntax-fix4"></script><script src="/admin-my-events.js?v=20261020-my-events1"></script>
+<script src="/cms-final-fixes.js?v=20261029-capture1"></script><script src="cms-layout-fix.js?v=20261029-pick-tabs1"></script><script src="/admin-missions-integrated.js?v=20261023-syntax-fix4"></script><script src="/admin-my-events.js?v=20261020-my-events1"></script>
 <script src="cms-content-library.js?v=20261020-native-title-default-off1"></script>
 <script id="cms-default-home-v1">
 (()=>{

@@ -33,10 +33,11 @@ Deno.serve(async req=>{
  if(!(file instanceof File)||file.type!=='image/png'||file.size<100||file.size>8*1024*1024)return reply({error:'정상적인 캡처 이미지가 필요합니다.'},400);
  const source=new URL(url),parts=source.pathname.split('/'),prefix=BASE+'/storage/v1/object/public/cms-images/instagram-capture/'+parts[1]+'-'+parts[2]+'/';
  if(!settings||settings.kind!=='screenshot'||settings.enabled!==false||canonical(settings.source_url)!==url||!String(settings.source_image||'').startsWith(prefix))return reply({error:'현재 URL의 썸네일을 수집하고 이미지 영역에 적용해주세요.'},400);
+ const linkMode=data.link_mode??'external',presentation=data.inapp_presentation??'page';if(!['inapp','external'].includes(linkMode)||!['bottom_sheet','page'].includes(presentation))return reply({error:'연결 방식을 확인해주세요.'},400);
  const bytes=new Uint8Array(await file.arrayBuffer());if([137,80,78,71,13,10,26,10].some((v,i)=>bytes[i]!==v))return reply({error:'PNG 이미지 형식이 아닙니다.'},400);const view=new DataView(bytes.buffer),w=view.getUint32(16),h=view.getUint32(20);if(!w||!h||w>2160||h>2160)return reply({error:'썸네일 이미지 크기를 확인해주세요.'},400);
  const path='shop-news/'+auth.user.id+'/'+crypto.randomUUID()+'.png',image=db.storage.from('cms-images').getPublicUrl(path).data.publicUrl;
  const upload=await db.storage.from('cms-images').upload(path,bytes,{contentType:'image/png',upsert:false,cacheControl:'31536000'});if(upload.error)throw upload.error;
- const result=await user.rpc('publish_shop_news',{p_request:data.request_id,p_title:title,p_url:url,p_shop_id:data.shop_id||null,p_image:image,p_settings:settings});
+ const result=await user.rpc('publish_shop_news_link',{p_request:data.request_id,p_title:title,p_url:url,p_shop_id:data.shop_id||null,p_image:image,p_settings:settings,p_link_mode:linkMode,p_inapp_presentation:presentation});
  if(result.error){await db.storage.from('cms-images').remove([path]);return reply({error:result.error.message.includes('NEWS_ALREADY_REGISTERED')?'이미 카드샵 소식에 등록된 URL입니다.':result.error.message},result.error.code==='23505'?409:400)}
  if(result.data.already_registered&&result.data.image_url!==image)await db.storage.from('cms-images').remove([path]);return reply({...result.data,registered:true});
  }catch{return reply({error:'처리에 실패했습니다. 잠시 후 다시 시도해주세요.'},500)}

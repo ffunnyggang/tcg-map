@@ -14,4 +14,4 @@ const portrait=layout(540,675,'1:1',200);assert.equal(portrait.height,540);asser
 assert.equal(layout(540,675,'4:5').height,675);
 console.log('Media extraction allowlist, aspect layout and crop limits passed');
 
-const {createRequire}=await import('node:module');const require=createRequire(import.meta.url);const {PNG}=require('pngjs');const {cropMediaPng}=await import('../supabase/functions/cms-instagram-capture/crop.mjs');const raw=new PNG({width:1200,height:1200});raw.data.fill(255);const result=PNG.sync.read(cropMediaPng(PNG.sync.write(raw),960,1200,PNG));assert.equal(result.width,960);assert.equal(result.height,1200);
+const {createRequire}=await import('node:module');const require=createRequire(import.meta.url);const {PNG}=require('pngjs');const {cropMediaPng}=await import('../supabase/functions/cms-instagram-capture/crop.mjs');const raw=new PNG({width:1200,height:1200});raw.data.fill(255);const result=PNG.sync.read(cropMediaPng(new Uint8Array(PNG.sync.write(raw)),960,1200,PNG));assert.equal(result.width,960);assert.equal(result.height,1200);

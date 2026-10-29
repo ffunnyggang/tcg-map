@@ -21,16 +21,17 @@ Deno.serve(async req=>{
   const {data:isAdmin,error:adminError}=await user.rpc('is_funypin_admin');
   if(adminError||isAdmin!==true)return reply({error:'관리자 권한이 필요합니다.'},403);
   if(Number(req.headers.get('content-length')||0)>4096)return reply({error:'요청이 너무 큽니다.'},413);
-  const input=parseInstagram((await req.json()).url);
+  const body=await req.json(),input=parseInstagram(body.url);
   if(!input)return reply({error:'Instagram 게시물 또는 릴스 URL을 입력해주세요.',code:'INVALID_URL'},400);
   const userId=auth.user.id;if(active.has(userId))return reply({error:'진행 중인 캡처가 있습니다. 잠시 후 다시 시도해주세요.'},429);lock=userId;active.add(lock);
   const db=createClient(url,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
   // Immutable daily source cache avoids repeated external renders and preserves previous images.
-  const path=`instagram-capture/${input.kind}-${input.code}/${new Date().toISOString().slice(0,10)}-frame-v1.png`;
+  const stamp=new Date().toISOString(),revision=body.refresh===true?stamp.slice(0,16).replace(/[:T]/g,'-'):stamp.slice(0,10);
+  const path=`instagram-capture/${input.kind}-${input.code}/${revision}-frame-v2.png`;
   const image=db.storage.from('cms-images').getPublicUrl(path).data.publicUrl;
   const {data:cached}=await db.storage.from('cms-images').download(path);
   if(cached)return reply({image,source_url:input.url,provider:'thum.io',cached:true,width:1200,height:760,embed_width:540,embed_height:760});
-  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url);
+  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url)+'&frame=v2'+(body.refresh===true?'&revision='+revision:'');
   const endpoint='https://image.thum.io/get/width/1200/crop/760/png/noanimate/?url='+encodeURIComponent(target);
   const r=await fetch(endpoint,{signal:AbortSignal.timeout(50000),redirect:'error'});
   if(!r.ok)return reply({error:'캡처 서비스가 응답하지 않았습니다. 잠시 후 다시 시도해주세요.',code:'CAPTURE_UNAVAILABLE'},502);

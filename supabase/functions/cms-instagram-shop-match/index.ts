@@ -7,7 +7,7 @@ async function text(r:Response,max=1500000){if(!r.ok)throw Error('lookup');const
 Deno.serve(async req=>{if(req.method==='OPTIONS')return new Response('ok',{headers:cors});if(req.method!=='POST')return reply({error:'POST only'},405);try{
  const jwt=req.headers.get('authorization')?.replace(/^Bearer\s+/i,'')||'',user=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!,{global:{headers:{Authorization:'Bearer '+jwt}},auth:{persistSession:false}});
  const {data:auth,error}=await user.auth.getUser(jwt);if(error||!auth.user)return reply({error:'관리자 로그인 필요'},401);
- const {data:admin,error:adminError}=await user.rpc('is_funypin_admin');if(adminError||admin!==true)return reply({error:'관리자 권한 필요'},403);
+ const {data:admin,error:adminError}=await user.rpc('is_funypin_admin');if(adminError||admin!==true){const {data:newsAllowed,error:newsError}=await user.rpc('can_manage_shop_news');if(newsError||newsAllowed!==true)return reply({error:'관리자 권한 필요'},403);}
  if(Number(req.headers.get('content-length')||0)>2048)return reply({error:'요청이 너무 큽니다.'},413);
  const input=parsePost((await req.json()).url);if(!input)return reply({status:'unassigned',reason:'invalid_url'},400);
  const {data:shops,error:shopError}=await user.from('shops').select('id,name,instagram_url,is_active').eq('is_active',true);if(shopError)throw shopError;

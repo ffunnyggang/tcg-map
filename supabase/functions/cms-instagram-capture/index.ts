@@ -19,7 +19,7 @@ Deno.serve(async req=>{
   const {data:auth,error:authError}=await user.auth.getUser(jwt);
   if(authError||!auth.user)return reply({error:'관리자 로그인이 필요합니다.'},401);
   const {data:isAdmin,error:adminError}=await user.rpc('is_funypin_admin');
-  if(adminError||isAdmin!==true)return reply({error:'관리자 권한이 필요합니다.'},403);
+  if(adminError||isAdmin!==true){const {data:newsAllowed,error:newsError}=await user.rpc('can_manage_shop_news');if(newsError||newsAllowed!==true)return reply({error:'관리자 권한이 필요합니다.'},403);}
   if(Number(req.headers.get('content-length')||0)>4096)return reply({error:'요청이 너무 큽니다.'},413);
   const body=await req.json(),input=parseInstagram(body.url);
   if(!input)return reply({error:'Instagram 게시물 또는 릴스 URL을 입력해주세요.',code:'INVALID_URL'},400);

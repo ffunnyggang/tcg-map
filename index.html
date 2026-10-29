@@ -68,10 +68,12 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
  const iosTouch=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  if(iosTouch){
    track.style.touchAction='pan-y';
-   let finger=null,startX=0,startY=0,startScroll=0,axis='',suppressClickUntil=0;
+   let finger=null,startX=0,startY=0,startScroll=0,axis='',suppressClickUntil=0,velocity=0,lastX=0,lastTouchAt=0,momentumFrame=0,loopWidth=0;
+   const stopMomentum=()=>{cancelAnimationFrame(momentumFrame);momentumFrame=0};
    track.addEventListener('touchstart',e=>{
+     stopMomentum();velocity=0;
      if(e.touches.length!==1){finger=null;axis='';return}
-     const t=e.touches[0];finger=t.identifier;startX=t.clientX;startY=t.clientY;startScroll=track.scrollLeft;axis='';
+     const t=e.touches[0];finger=t.identifier;startX=t.clientX;lastX=t.clientX;lastTouchAt=performance.now();startY=t.clientY;startScroll=track.scrollLeft;axis='';loopWidth=track.firstElementChild?.getBoundingClientRect().width||0;
    },{passive:true});
    track.addEventListener('touchmove',e=>{
      if(finger===null||e.touches.length!==1)return;
@@ -80,7 +82,9 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
      if(!axis){if(Math.max(Math.abs(dx),Math.abs(dy))<7)return;axis=Math.abs(dx)>Math.abs(dy)?'x':'y'}
      if(axis!=='x')return;
      if(e.cancelable)e.preventDefault();
-     const width=track.firstElementChild?.getBoundingClientRect().width||0;
+     const now=performance.now(),dt=now-lastTouchAt;
+     if(dt>0){const sample=(lastX-t.clientX)/dt;velocity=dt>100?sample:velocity*.3+sample*.7;lastX=t.clientX;lastTouchAt=now}
+     const width=loopWidth;
      let next=startScroll-dx;
      if(width>track.clientWidth){
        if(next<0){startScroll+=width;next+=width}
@@ -88,7 +92,25 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
      }
      track.scrollLeft=next;suppressClickUntil=performance.now()+500;
    },{passive:false});
-   const finish=()=>{if(axis==='x')suppressClickUntil=performance.now()+500;finger=null;axis=''};
+   const finish=e=>{
+     if(axis==='x'){
+       suppressClickUntil=performance.now()+500;
+       if(e.type!=='touchcancel'&&performance.now()-lastTouchAt<90&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+         let speed=Math.max(-2.5,Math.min(2.5,velocity)),offset=track.scrollLeft,previousTime=performance.now();
+         const coast=now=>{
+           if(document.hidden){stopMomentum();return}
+           const dt=Math.min(now-previousTime,32);previousTime=now;
+           const decay=Math.exp(-dt/240);offset+=speed*240*(1-decay);speed*=decay;
+           if(loopWidth>track.clientWidth)offset=((offset%loopWidth)+loopWidth)%loopWidth;
+           track.scrollLeft=offset;
+           if(Math.abs(speed)>.025)momentumFrame=requestAnimationFrame(coast);else momentumFrame=0;
+         };
+         if(Math.abs(speed)>.025)momentumFrame=requestAnimationFrame(coast);
+       }
+     }
+     finger=null;axis='';
+   };
+   window.addEventListener('pagehide',stopMomentum,{once:true});
    track.addEventListener('touchend',finish,{passive:true});
    track.addEventListener('touchcancel',finish,{passive:true});
    track.addEventListener('click',e=>{if(performance.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation()}},true);

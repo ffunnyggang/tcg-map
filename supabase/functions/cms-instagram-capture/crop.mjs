@@ -1,0 +1,1 @@
+export function cropMediaPng(bytes,width,height,PNG){const source=PNG.sync.read(bytes);if(width<1||height<1||width>source.width||height>source.height)throw Error('Invalid media bounds');const out=new PNG({width,height});for(let y=0;y<height;y++)source.data.copy(out.data,y*width*4,y*source.width*4,(y*source.width+width)*4);return PNG.sync.write(out);}

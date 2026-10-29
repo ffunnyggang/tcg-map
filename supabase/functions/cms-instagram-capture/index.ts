@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
+import {PNG} from 'npm:pngjs@7.0.0';
+import {cropMediaPng} from './crop.mjs';
 import {mediaFromEmbed} from './media.mjs';
 const cors={"Access-Control-Allow-Origin":"https://funypin.kr","Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json","Cache-Control":"no-store"};
 const reply=(v:unknown,status=200)=>new Response(JSON.stringify(v),{status,headers:cors});
@@ -29,21 +31,22 @@ Deno.serve(async req=>{
   // Immutable daily source cache avoids repeated external renders and preserves previous images.
   const stamp=new Date().toISOString(),revision=body.refresh===true?stamp.slice(0,16).replace(/[:T]/g,'-'):stamp.slice(0,10);
   const mediaOnly=body.media_only===true;
-  const path=`instagram-capture/${input.kind}-${input.code}/${revision}-${mediaOnly?'media-v1':'frame-v3'}.png`;
+  const path=`instagram-capture/${input.kind}-${input.code}/${revision}-${mediaOnly?'media-v2':'frame-v3'}.png`;
   const image=db.storage.from('cms-images').getPublicUrl(path).data.publicUrl;
   const {data:cached}=await db.storage.from('cms-images').download(path);
   if(cached){if(mediaOnly){const size=pngSize(new Uint8Array(await cached.arrayBuffer()));if(size)return reply({image,source_url:input.url,provider:'thum.io',cached:true,media_only:true,...size});}else return reply({image,source_url:input.url,provider:'thum.io',cached:true,width:1200,height:760,embed_width:540,embed_height:760});}
   let media=null;if(mediaOnly){const response=await fetch(input.url+'embed/',{signal:AbortSignal.timeout(15000),redirect:'error',headers:{'User-Agent':'Mozilla/5.0'}});if(!response.ok)throw Error('공개 임베드 조회에 실패했습니다.');const html=new TextDecoder().decode(await boundedBody(response,3*1024*1024));media=mediaFromEmbed(html);}
   const captureWidth=1200,captureHeight=media?.height||760;
-  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url)+'&frame=v3'+(body.refresh===true?'&revision='+revision:'')+(media?'&media='+encodeURIComponent(media.url)+'&height='+media.height:'');
+  const target='https://funypin.kr/cms-instagram-capture-frame.html?url='+encodeURIComponent(input.url)+'&frame=v3'+(body.refresh===true?'&revision='+revision:'')+(media?'&media='+encodeURIComponent(media.url)+'&height='+media.height+'&width='+media.width:'');
   const endpoint=`https://image.thum.io/get/width/${captureWidth}/crop/${captureHeight}/png/noanimate/?url=`+encodeURIComponent(target);
   const r=await fetch(endpoint,{signal:AbortSignal.timeout(50000),redirect:'error'});
   if(!r.ok)return reply({error:'캡처 서비스가 응답하지 않았습니다. 잠시 후 다시 시도해주세요.',code:'CAPTURE_UNAVAILABLE'},502);
   const bytes=await boundedBody(r,8*1024*1024),size=pngSize(bytes);
   if(!size||size.width!==captureWidth||size.height!==captureHeight)return reply({error:'정상 크기의 캡처 이미지를 받지 못했습니다.',code:'INVALID_CAPTURE'},502);
-  const {error:upErr}=await db.storage.from('cms-images').upload(path,bytes,{contentType:'image/png',upsert:false,cacheControl:'31536000'});
+  const stored=media?cropMediaPng(bytes,media.width,media.height,PNG):bytes;
+  const {error:upErr}=await db.storage.from('cms-images').upload(path,stored,{contentType:'image/png',upsert:false,cacheControl:'31536000'});
   if(upErr&&!/already exists|duplicate/i.test(upErr.message))return reply({error:'캡처 이미지 저장에 실패했습니다.',code:'STORAGE_FAILED'},502);
-  return reply({image,source_url:input.url,provider:'thum.io',cached:false,width:captureWidth,height:captureHeight,media_only:mediaOnly,embed_width:540,embed_height:760});
+  return reply({image,source_url:input.url,provider:'thum.io',cached:false,width:media?.width||captureWidth,height:captureHeight,media_only:mediaOnly,embed_width:540,embed_height:760});
  }catch(e){return reply({error:e instanceof Error&&e.name==='TimeoutError'?'캡처 시간이 초과되었습니다. 다시 시도해주세요.':'캡처에 실패했습니다. 기존 이미지는 유지됩니다.',code:'CAPTURE_FAILED'},502)}
  finally{if(lock)active.delete(lock)}
 });

@@ -7,5 +7,5 @@ export function mediaFromEmbed(html){
  if(!src||!Number.isFinite(percent)||percent<50||percent>190)throw Error('게시물 이미지 영역을 확인하지 못했습니다. 공개 게시물인지 확인해주세요.');
  const u=new URL(src);
  if(u.protocol!=='https:'||u.username||u.password||u.port||!/(^|\.)(cdninstagram\.com|fbcdn\.net)$/i.test(u.hostname))throw Error('게시물 이미지 주소를 확인하지 못했습니다.');
- return {url:u.href,width:1200,height:Math.round(1200*percent/100)};
+ const ratio=percent/100,width=Math.min(1200,Math.floor(1200/ratio));return {url:u.href,width,height:Math.round(width*ratio)};
 }

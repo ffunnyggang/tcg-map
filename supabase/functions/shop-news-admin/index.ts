@@ -41,7 +41,7 @@ Deno.serve(async req=>{
  const path='shop-news/'+auth.user.id+'/'+crypto.randomUUID()+'.png',image=db.storage.from('cms-images').getPublicUrl(path).data.publicUrl;
  const upload=await db.storage.from('cms-images').upload(path,bytes,{contentType:'image/png',upsert:false,cacheControl:'31536000'});if(upload.error)throw upload.error;
  const result=await user.rpc('publish_instagram_content',{p_request:data.request_id,p_title:title,p_url:url,p_shop_id:placement==='pick_information'?null:data.shop_id||null,p_image:image,p_settings:settings,p_link_mode:linkMode,p_inapp_presentation:presentation,p_placement:placement});
- if(result.error){await db.storage.from('cms-images').remove([path]);return reply({error:result.error.message.includes('NEWS_ALREADY_REGISTERED')?'이미 카드샵 소식에 등록된 URL입니다.':result.error.message},result.error.code==='23505'?409:400)}
+ if(result.error){await db.storage.from('cms-images').remove([path]);return reply({error:result.error.message.includes('NEWS_ALREADY_REGISTERED')?'선택한 등록 위치에 이미 등록된 URL입니다.':result.error.message},result.error.code==='23505'?409:400)}
  if(result.data.already_registered&&result.data.image_url!==image)await db.storage.from('cms-images').remove([path]);return reply({...result.data,registered:true});
  }catch{return reply({error:'처리에 실패했습니다. 잠시 후 다시 시도해주세요.'},500)}
 });

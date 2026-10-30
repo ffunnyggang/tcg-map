@@ -22,7 +22,7 @@
     const write=target.closest('#pokamoFab');if(write){send('pokamo_write_click',{link_url:clean(write.getAttribute('href'))});return}
     const detailEl=target.closest('#detail-view a,#detail-view button');if(detailEl){
       const s=shop(),href=detailEl.getAttribute('href')||'';let action=actionLabel(detailEl);
-      if(detailEl.matches('.share-btn'))action='공유';else if(detailEl.id==='hero-back'||detailEl.id==='sticky-back')action='뒤로가기';else if(detailEl.matches('.quick-action'))action=clean(detailEl.textContent);else if(detailEl.matches('[data-review-card]'))action='리뷰_'+clean(detailEl.dataset.platform);else if(detailEl.matches('.google-place-more'))action='Google Maps 전체보기';else if(detailEl.matches('.other-shops-fab'))action='다른 카드샵 더 찾아보기';
+      if(detailEl.matches('.share-btn')){action='공유';if(s?.id)send('shop_share_click',{shop_id:s.id})}else if(detailEl.id==='hero-back'||detailEl.id==='sticky-back')action='뒤로가기';else if(detailEl.matches('.quick-action'))action=clean(detailEl.textContent);else if(detailEl.matches('[data-review-card]'))action='리뷰_'+clean(detailEl.dataset.platform);else if(detailEl.matches('.google-place-more'))action='Google Maps 전체보기';else if(detailEl.matches('.other-shops-fab'))action='다른 카드샵 더 찾아보기';
       send('shop_detail_click',{shop_id:s.id,shop_name:clean(s.name),action_name:action,link_url:clean(href)});
     }
   },true);
@@ -81,7 +81,7 @@
     if(detail){
       const id=location.hash.match(/#\/shop\/([^/?#]+)/i)?.[1]||'';
       const label=plain(detail.getAttribute('aria-label')||detail.textContent);
-      if(/길찾기|directions|route/i.test(label))track('shop_directions_click',{shop_id:id});
+      const href=String(detail.getAttribute('href')||'');const mapAction=detail.matches('.quick-action')&&(/naver\.me|map\.naver\.com|google\.com\/maps|maps\.app\.goo\.gl/i.test(href)||/^(네이버지도|Naver Map|Google Maps)$/i.test(label));if(mapAction||/길찾기|directions|route/i.test(label)){const platform=/naver|네이버/i.test(href+' '+label)?'naver':/google|구글/i.test(href+' '+label)?'google':'other';track('shop_directions_click',{shop_id:id,platform})}
       if(/전화|call|tel/i.test(label)||detail.getAttribute('href')?.startsWith('tel:'))track('shop_phone_click',{shop_id:id});
     }
   },true);

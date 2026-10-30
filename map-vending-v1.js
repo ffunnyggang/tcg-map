@@ -137,13 +137,13 @@
     tabs.addEventListener('click',e=>{const b=e.target.closest('.vm-tab');if(b)setTab(b.dataset.tab)});
 
     const panel=document.createElement('section');panel.id='vmPanel';panel.className='vm-panel';panel.hidden=true;
-    panel.innerHTML='<div class="vm-tools"><button class="vm-sort" type="button" data-sort="near">가까운 순</button><span class="vm-divider"></span><div class="vm-operators"></div></div><div id="vmList" class="vm-list"></div>';
+    panel.innerHTML='<div class="vm-tools"><select class="vm-sort" aria-label="자판기 정렬"><option value="near">가까운 순</option><option value="alpha">가나다 순</option></select><span class="vm-divider"></span><div class="vm-operators"></div></div><div id="vmList" class="vm-list"></div>';
     sheet.appendChild(panel);
     const ops=[['all','전체'],['롯데마트','롯데마트'],['이마트','이마트'],['롯데시네마','롯데시네마'],['메가박스','메가박스'],['CGV','CGV'],['기타','기타']];
     const strip=panel.querySelector('.vm-operators');
     strip.innerHTML=ops.map(([k,l])=>'<button class="vm-op'+(k==='all'?' active':'')+'" data-op="'+k+'">'+l+'</button>').join('');
     strip.addEventListener('click',e=>{const b=e.target.closest('.vm-op');if(!b)return;state.operator=b.dataset.op;strip.querySelectorAll('.vm-op').forEach(x=>x.classList.toggle('active',x===b));render()});
-    panel.querySelector('.vm-sort').addEventListener('click',e=>{state.sort=state.sort==='alpha'?'near':'alpha';e.currentTarget.textContent=state.sort==='near'?'가까운 순':'가나다 순';if(state.sort==='near'&&!window.FUNY_CURRENT_LOCATION)$('#map-location-btn')?.click();render()});
+    panel.querySelector('.vm-sort').addEventListener('change',e=>{state.sort=e.currentTarget.value==='alpha'?'alpha':'near';if(state.sort==='near'&&!window.FUNY_CURRENT_LOCATION)$('#map-location-btn')?.click();render()});
   }
   function buildLayerChip(){
     const track=$('#filters');if(!track||$('#vmLayerChip'))return;

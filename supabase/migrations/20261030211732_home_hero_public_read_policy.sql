@@ -1,0 +1,2 @@
+alter policy hero_banners_public_read on public.home_hero_banners using(is_active and (starts_at is null or starts_at<=now()) and (ends_at is null or ends_at>now()));
+create policy hero_banners_admin_read on public.home_hero_banners for select to authenticated using(public.is_funypin_admin());

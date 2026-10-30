@@ -11,7 +11,7 @@
   const SCORE={'KR-SEO-001':4.4444444444,'KR-SEO-010':4.2222222222,'KR-SEO-002':3.8888888889,'KR-SEO-007':3.8888888889,'KR-SEO-009':3.7777777778,'KR-SEO-006':3.5555555556,'KR-SEO-015':3.3333333333,'KR-SEO-012':3.3333333333,'KR-SEO-013':3.2222222222,'KR-SEO-005':3.1111111111,'KR-SEO-011':3,'KR-SEO-003':3,'KR-SEO-004':2.8888888889,'KR-SEO-014':2.7777777778,'KR-SEO-008':2.7777777778};
   const FEEDBACK_VISITS_KEY='funypin_feedback_shop_visits',FEEDBACK_DONE_KEY='funypin_feedback_submitted_at',COOLDOWN=30*24*60*60*1000;
   const activeFilters=new Set();
-  let sortMode='recommend',sortOpen=false,lastListHtml='';
+  let sortMode='popular',sortOpen=false,lastListHtml='';const sortStats=new Map();let statsReady=false;async function fetchSortStats(){try{const res=await fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/rest/v1/shop_sort_stats?select=shop_id,favorite_count,detail_views_30d,shares_30d,directions_30d,engagement_ready&limit=3000',{headers:{apikey:'sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq'}});if(!res.ok)throw Error(res.status);const rows=await res.json();rows.forEach(x=>sortStats.set(x.shop_id,x));statsReady=true;refresh('stats-loaded')}catch(e){console.warn('shop-sort stats unavailable',e)}}
 
   const normalize=v=>String(v??'').toLowerCase().replace(/\s+/g,'').trim();
   const currentCountry=()=>{try{return window.FUNY_MAP_COUNTRY?.get?.()||new URLSearchParams(location.search).get('country')||'KR'}catch(_){return'KR'}};
@@ -37,7 +37,7 @@
       if(here){const ac=coord(a),bc=coord(b),ad=ac?dist(here.lat,here.lng,ac.lat,ac.lng):Infinity,bd=bc?dist(here.lat,here.lng,bc.lat,bc.lng):Infinity;if(ad!==bd)return ad-bd}
       return koCompare(a,b);
     }
-    const events=window.FUNY_ACTIVE_EVENT_SHOPS instanceof Set?window.FUNY_ACTIVE_EVENT_SHOPS:null,ae=events?.has(a.id)?1:0,be=events?.has(b.id)?1:0;if(ae!==be)return be-ae;
+    if(sortMode==='favorite'||sortMode==='popular'){const get=id=>sortStats.get(id)||{};const av=get(a.id),bv=get(b.id);const maxima=[...sortStats.values()].reduce((m,v)=>[Math.max(m[0],Number(v.favorite_count||0)),Math.max(m[1],Number(v.detail_views_30d||0)),Math.max(m[2],Number(v.shares_30d||0)),Math.max(m[3],Number(v.directions_30d||0))],[0,0,0,0]);const score=v=>v.engagement_ready?(0.30*Number(v.favorite_count||0)/(maxima[0]||1)+0.25*Number(v.detail_views_30d||0)/(maxima[1]||1)+0.15*Number(v.shares_30d||0)/(maxima[2]||1)+0.30*Number(v.directions_30d||0)/(maxima[3]||1)):Number(v.favorite_count||0);const n=sortMode==='favorite'?Number(bv.favorite_count||0)-Number(av.favorite_count||0):score(bv)-score(av);return n||koCompare(a,b)}
     const ar=SCORE[a.id],br=SCORE[b.id];if(ar!=null||br!=null){const d=(br??-Infinity)-(ar??-Infinity);if(d)return d}
     return SHOPS.indexOf(a)-SHOPS.indexOf(b);
   }
@@ -77,16 +77,16 @@
   function scheduleSourceRefresh(reason,delay=180){clearTimeout(sourceRefreshTimer);sourceRefreshTimer=setTimeout(()=>refresh(reason),delay)}
   try{renderList=()=>refresh('renderList')}catch(_){}
   window.renderList=()=>refresh('renderList');
-  window.FUNY_MAP_LIST={refresh,setSort:v=>setSort(v,'api'),resetForCountryChange,getVisible:()=>window.FUNY_VISIBLE_SHOPS||[],getFilters:()=>[...activeFilters]};
+  window.FUNY_MAP_LIST={refresh,setSort:v=>setSort(v,'api'),resetForCountryChange,getVisible:()=>window.FUNY_VISIBLE_SHOPS||[],getFilters:()=>[...activeFilters]};setTimeout(fetchSortStats,0);
 
   function updateFilterVisual(){const root=document.getElementById('filters');if(!root)return;root.querySelectorAll('.filter-chip').forEach(b=>{const id=b.dataset.filter;b.classList.toggle('active',id==='all'?activeFilters.size===0:activeFilters.has(id))})}
-  function sortLabel(){return sortMode==='near'?'가까운 순':sortMode==='alpha'?'가나다 순':'추천 순'}
+  function sortLabel(){return ({popular:'인기 순',recommend:'추천 순',favorite:'관심 많은 순',near:'가까운 순',alpha:'가나다 순'})[sortMode]||'인기 순'}
   function updateSortVisual(){const label=document.getElementById('list-sort-label');if(label)label.textContent=sortLabel();document.querySelectorAll('[data-sort-value]').forEach(b=>b.classList.toggle('active',b.dataset.sortValue===sortMode))}
   function closeSort(){sortOpen=false;document.getElementById('list-sort-menu')?.classList.remove('open');document.getElementById('list-sort-button')?.setAttribute('aria-expanded','false')}
   function toggleSort(e){e?.preventDefault();e?.stopPropagation();sortOpen=!sortOpen;document.getElementById('list-sort-menu')?.classList.toggle('open',sortOpen);document.getElementById('list-sort-button')?.setAttribute('aria-expanded',sortOpen?'true':'false')}
   function resetForCountryChange(){
     activeFilters.clear();
-    sortMode='recommend';
+    sortMode='popular';
     closeSort();
     const search=document.getElementById('map-shop-search');
     const clear=document.getElementById('map-shop-search-clear');
@@ -97,12 +97,12 @@
     updateSortVisual();
   }
 
-  function setSort(value,reason='sort-change'){sortMode=['near','alpha'].includes(value)?value:'recommend';closeSort();updateSortVisual();if(sortMode==='near'&&!window.FUNY_CURRENT_LOCATION){document.getElementById('map-location-btn')?.click();setTimeout(()=>refresh(reason),80);return}refresh(reason)}
+  function setSort(value,reason='sort-change'){sortMode=['popular','recommend','favorite','near','alpha'].includes(value)?value:'popular';closeSort();updateSortVisual();if(sortMode==='near'&&!window.FUNY_CURRENT_LOCATION){document.getElementById('map-location-btn')?.click();setTimeout(()=>refresh(reason),80);return}refresh(reason)}
 
   const heading=document.querySelector('.list-heading');
   if(heading){
     heading.classList.add('list-heading-v2');
-    heading.innerHTML='<div class="list-title"><span class="list-title-label">CARD SHOP</span><span class="list-count" id="count"></span></div><div class="list-sort"><button id="list-sort-button" class="list-sort-button" type="button" aria-haspopup="menu" aria-expanded="false"><span id="list-sort-label">추천 순</span><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div id="list-sort-menu" class="list-sort-menu" role="menu"><button type="button" data-sort-value="recommend">추천 순</button><button type="button" data-sort-value="near">가까운 순</button><button type="button" data-sort-value="alpha">가나다 순</button></div></div>';
+    heading.innerHTML='<div class="list-title"><span class="list-title-label">CARD SHOP</span><span class="list-count" id="count"></span></div><div class="list-sort"><button id="list-sort-button" class="list-sort-button" type="button" aria-haspopup="menu" aria-expanded="false"><span id="list-sort-label">인기 순</span><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div id="list-sort-menu" class="list-sort-menu" role="menu"><button type="button" data-sort-value="popular">인기 순</button><button type="button" data-sort-value="recommend">추천 순</button><button type="button" data-sort-value="favorite">관심 많은 순</button><button type="button" data-sort-value="near">가까운 순</button><button type="button" data-sort-value="alpha">가나다 순</button></div></div>';
   }
 
   const style=document.createElement('style');

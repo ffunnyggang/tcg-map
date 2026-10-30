@@ -6,7 +6,7 @@
 
   const SB_URL='https://wdttzpbmqavaqfcbaywj.supabase.co';
   const SB_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
-  const state={tab:'shops',operator:'all',sort:'alpha',layer:true,rows:[],selected:null};
+  const state={tab:'shops',operator:'all',sort:'near',layer:true,rows:[],selected:null};
   const markers=new Map();
   let info=null,ready=false;
 
@@ -137,7 +137,7 @@
     tabs.addEventListener('click',e=>{const b=e.target.closest('.vm-tab');if(b)setTab(b.dataset.tab)});
 
     const panel=document.createElement('section');panel.id='vmPanel';panel.className='vm-panel';panel.hidden=true;
-    panel.innerHTML='<div class="vm-tools"><button class="vm-sort" type="button" data-sort="alpha">가나다 순</button><span class="vm-divider"></span><div class="vm-operators"></div></div><div id="vmList" class="vm-list"></div>';
+    panel.innerHTML='<div class="vm-tools"><button class="vm-sort" type="button" data-sort="near">가까운 순</button><span class="vm-divider"></span><div class="vm-operators"></div></div><div id="vmList" class="vm-list"></div>';
     sheet.appendChild(panel);
     const ops=[['all','전체'],['롯데마트','롯데마트'],['이마트','이마트'],['롯데시네마','롯데시네마'],['메가박스','메가박스'],['CGV','CGV'],['기타','기타']];
     const strip=panel.querySelector('.vm-operators');

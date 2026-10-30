@@ -1,8 +1,47 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-10-30T14:08:54.083094+00:00",
+  "updatedAt": "2026-10-30T19:22:34.040601+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "카드거래",
+      "title": "풍란 홀로카드 판매",
+      "author": "별의별자리",
+      "publishedAt": "2026-10-30T16:26:01.880512Z",
+      "excerpt": "풍란 홀로 10에 판매해용! 챗 주십쇼!",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/115f36f5-6f24-4daf-8f0c-51ee3d4b1149.webp?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/풍란-홀로카드-판매-dZnmY3wd",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "자유 게시판",
+      "title": "풍란홀로카드 찾고있어용",
+      "author": "별의별자리",
+      "publishedAt": "2026-10-30T16:24:31.519522Z",
+      "excerpt": "풍란홀로카드 찾고있어용",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/풍란홀로카드-찾고있어용-dlY6Vxbj",
+      "views": 1,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.01
+    },
+    {
+      "category": "카드 자랑",
+      "title": "해피금요일 카드깡 후기",
+      "author": "퐌퐌퐌",
+      "publishedAt": "2026-10-30T14:49:58.699111Z",
+      "excerpt": "💩💩💩💩 똥꿈음 여기까지",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/해피금요일-카드깡-후기-dZnmXMed",
+      "views": 16,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.16
+    },
     {
       "category": "카드거래",
       "title": "PCG등카 4장 10등급",
@@ -11,10 +50,10 @@
       "excerpt": "이거 사가실분 가격 제안 받아요 10등급이에요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/179336537662821e27b84a45fed50f8903fc6f73a4b460fbf5455c9790c449a15b196cf4429c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/PCG등카-4장-10등급-jb0MkywP",
-      "views": 23,
+      "views": 25,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.23
+      "popularityScore": 3.25
     },
     {
       "category": "자유 게시판",
@@ -37,10 +76,10 @@
       "excerpt": "안녕하세요 무니키스제로 일본판 깠는데 펜텀이랑 픽시 크림에서 2만원에 판매되던데 일괄 적정 가격 있을까요??",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1793354455472027c03add64b34ced3edc79503e90157c810f30080c5001b29e895695f70fab40.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일괄-3만원에-판매하면-팔릴까요-dlY6ylbj",
-      "views": 34,
+      "views": 36,
       "likes": 4,
       "comments": 0,
-      "popularityScore": 12.34
+      "popularityScore": 12.36
     },
     {
       "category": "카드 자랑",
@@ -50,10 +89,10 @@
       "excerpt": "해피프라이데이!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/17933527913289ff0db12bb45fb9038d9040ba441757f5bf9ff983361cbf8de53d26e2cb058d10.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/지하철깡-AO6o9knj",
-      "views": 18,
+      "views": 20,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.18
+      "popularityScore": 0.2
     },
     {
       "category": "자유 게시판",
@@ -115,10 +154,10 @@
       "excerpt": "카드볼트 볼거리 많아요~ 퍼니핀에서 위치 확인하고 놀러오세요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1793277095577c147e008372b29c3beef01b4a3428a48975f1b72e11c6233591f9e3bab8589c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/카드볼트-구경오세요⚡-A6X1mk9d",
-      "views": 29,
+      "views": 30,
       "likes": 6,
       "comments": 0,
-      "popularityScore": 18.29
+      "popularityScore": 18.3
     },
     {
       "category": "자유 게시판",
@@ -154,10 +193,10 @@
       "excerpt": "이제 퍼니핀에서 박스가격비교가능해요 ✌️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/b2a14290-5402-4f82-bec4-a922d0907647.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/소소한-업데이트-😁-AeD82BLj",
-      "views": 22,
+      "views": 23,
       "likes": 3,
       "comments": 1,
-      "popularityScore": 11.22
+      "popularityScore": 11.23
     },
     {
       "category": "카드거래",
@@ -232,23 +271,10 @@
       "excerpt": "이번 포켓몬카드 30주년 박스에서 운 좋게 카드볼트에서 단 한 박스 만에 뮤 RGB를 뽑으며 졸업하게 되었습니다! 😆 카드를 뽑은 것도 기분 좋은 일이었는데, 카드볼트 사장님의 추천으로 BRG 그레이딩까지 보내보게 되었습니다. 그리고 기다림 끝에 나온 결과는 바로...! 🎉 BRG GE",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/7b9f56f7-07bf-40d2-9ca2-03b58d59f9e6.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🍀-카드볼트에서-한-박스-만에-졸업한-뮤-RGB-💚-dz9pZG7P",
-      "views": 53,
+      "views": 56,
       "likes": 5,
       "comments": 2,
-      "popularityScore": 19.53
-    },
-    {
-      "category": "자유 게시판",
-      "title": "포켓몬 좋아합니다~ 카드게임도 배우고 싶어요",
-      "author": "HC",
-      "publishedAt": "2026-10-28T02:54:26.312477Z",
-      "excerpt": "포켓몬 좋아합니다~ 카드게임도 배우고 싶어요",
-      "image": "https://img.kr.gcp-karroter.net/community/community/20261028/97fbc5cf-65c7-41b6-982c-9406484ecdb0.jpeg?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-좋아합니다-카드게임도-배우고-싶어요-d9XNRMDP",
-      "views": 19,
-      "likes": 1,
-      "comments": 2,
-      "popularityScore": 7.19
+      "popularityScore": 19.56
     },
     {
       "category": "정보 공유",
@@ -355,19 +381,6 @@
       "popularityScore": 3.58
     },
     {
-      "category": "카드거래",
-      "title": "혹시나해서 거래글 올려봅니다.",
-      "author": "단꼬",
-      "publishedAt": "2026-10-21T13:44:11.325888Z",
-      "excerpt": "1. 포켓몬 30주년 일판 >> 3번, 12번, 25번, 26번 구매합니다. >> 2, 9, 14, 18, 20, 21번 과 교환 및 판매 가능합니다. 2. 30주년 한판 - 전종 피카츄 구매합니다. 3. 블래키 11, 님피아 5.5 판매 (한판 싱글카드) 4. AR 5종 제크로무 5,",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/b58e21aa-65f3-4b97-96dc-55ab13f6df30.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/혹시나해서-거래글-올려봅니다-Px8n4GDP",
-      "views": 14,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.14
-    },
-    {
       "category": "카드 자랑",
       "title": "어제 직뽑했어요",
       "author": "퐌퐌퐌",
@@ -401,10 +414,10 @@
       "excerpt": "RGB뮤 레드 노리고 시작해서 총 3천만원, 1500팩 이상 까서 드디어 나와주네요 ㅠㅠㅠ 루기아, 리자몽, FUR등 각각 전부 6장 - 10장 이상씩은 뜬 거 같고 추리고 추려서 100장 정도 전부 유학 보냈습니다! 좋은 결과로 돌아오길 ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792134003530d4b79dfb72eb4e865d3b709b2938d74dcb5ec77f2ff27d99dcba2dc7bf07c0da0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/총-3천만원어치-북미-30주년-카드깡-결과-dlYq1NYj",
-      "views": 224,
+      "views": 225,
       "likes": 3,
       "comments": 3,
-      "popularityScore": 17.240000000000002
+      "popularityScore": 17.25
     },
     {
       "category": "카드 자랑",
@@ -414,10 +427,10 @@
       "excerpt": "30주년 일본판이 왔습니다!!!바로 친구랑 만나서 같이 개봉했습니다ㅋㅈㅋ 리자몽이 안나온건 아쉽지만 fur등급 뮤츠가 나와서 행복하네요~",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792031131597841b42b5164ed49effd3ed1b2aa1c788d3391771cb403c2291eaa445060915150.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-개봉-PnN047WP",
-      "views": 84,
+      "views": 85,
       "likes": 3,
       "comments": 6,
-      "popularityScore": 21.84
+      "popularityScore": 21.85
     },
     {
       "category": "카드 자랑",
@@ -427,10 +440,10 @@
       "excerpt": "역시 피카츄가 제일 이쁘네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/17918835663818751865909df27dc7b4488fff586e81ad07175270edf5b92fdaedea686c50bc41.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/피카츄-좋아하니-선물받았어요-AramxGej",
-      "views": 103,
+      "views": 105,
       "likes": 5,
       "comments": 3,
-      "popularityScore": 22.03
+      "popularityScore": 22.05
     },
     {
       "category": "정보 공유",
@@ -574,19 +587,6 @@
       "likes": 2,
       "comments": 1,
       "popularityScore": 8.38
-    },
-    {
-      "category": "카드 자랑",
-      "title": "올드백 싱글카드 오리파 도전!🔥",
-      "author": "퐌퐌퐌",
-      "publishedAt": "2026-09-27T14:51:05.416488Z",
-      "excerpt": "왕십리 모아카드샵에 잠시 들렀다가 결국 올드백 싱글카드 도전!🔥 과연 어떤 카드를 뽑았을지… 결과는 영상에서 확인해주세요! 👀 남은 연휴도 즐겁게 보내시고, 깽퐌커플 그리고 FUNY PIN도 많•관•부 💜 📍 모아카드샵 서울 성동구 마조로5길 3-3, 2층 📣 FUNY PIN에서 ‘모아",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/17905205396633969123acbf8d7c4cc10597e838227e8da5201d9755195482723e154053e11a50.webp?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-싱글카드-오리파-도전🔥-PmVVLJxd",
-      "views": 37,
-      "likes": 2,
-      "comments": 0,
-      "popularityScore": 6.37
     },
     {
       "category": "정보 공유",

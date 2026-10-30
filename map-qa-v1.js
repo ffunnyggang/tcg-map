@@ -93,7 +93,7 @@
     let savedLayers={};
     try{const parsed=JSON.parse(localStorage.getItem(layerPrefsKey)||'{}');if(parsed&&typeof parsed==='object')savedLayers=parsed}catch(_){}
     const layerValue=(key)=>typeof savedLayers[key]==='boolean'?savedLayers[key]:true;
-    const state={tab:'shops',layers:{shops:layerValue('shops'),events:layerValue('events'),vending:layerValue('vending')},operator:'all',vendingSort:'alpha',selectedVending:null};
+    const state={tab:'shops',layers:{shops:layerValue('shops'),events:layerValue('events'),vending:layerValue('vending')},operator:'all',vendingSort:'near',selectedVending:null};
     function saveLayerPrefs(){try{localStorage.setItem(layerPrefsKey,JSON.stringify({shops:!!state.layers.shops,events:!!state.layers.events,vending:!!state.layers.vending}))}catch(_){}}
   const vendingMarkers=new Map();
 const $=s=>document.querySelector(s);
@@ -369,7 +369,7 @@ const $=s=>document.querySelector(s);
     [heading,sheet.querySelector('.shop-request-list-banner'),sheet.querySelector('#shop-list'),sheet.querySelector('#empty')].filter(Boolean).forEach(el=>el.classList.add('qa-shop-only'));
 
     const vp=document.createElement('section');vp.className='qa-vending-panel';vp.hidden=true;
-    vp.innerHTML='<div class="qa-vending-tools"><div class="list-sort qa-vending-list-sort"><button id="qaVendingSortButton" class="list-sort-button" type="button" aria-haspopup="menu" aria-expanded="false"><span id="qaVendingSortLabel">가나다 순</span><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div id="qaVendingSortMenu" class="list-sort-menu" role="menu"><button type="button" class="active" data-vending-sort="alpha">가나다 순</button><button type="button" data-vending-sort="near">가까운 순</button></div></div><span class="qa-tools-divider" aria-hidden="true"></span><div class="qa-operator-strip" id="qaOperatorStrip"></div></div><span class="qa-vending-summary" id="qaVendingSummary"></span><div class="qa-vending-list" id="qaVendingList"></div>';
+    vp.innerHTML='<div class="qa-vending-tools"><div class="list-sort qa-vending-list-sort"><button id="qaVendingSortButton" class="list-sort-button" type="button" aria-haspopup="menu" aria-expanded="false"><span id="qaVendingSortLabel">가까운 순</span><svg class="list-sort-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6.25 8 10l4-3.75"/></svg></button><div id="qaVendingSortMenu" class="list-sort-menu" role="menu"><button type="button" class="active" data-vending-sort="near">가까운 순</button><button type="button" data-vending-sort="alpha">가나다 순</button></div></div><span class="qa-tools-divider" aria-hidden="true"></span><div class="qa-operator-strip" id="qaOperatorStrip"></div></div><span class="qa-vending-summary" id="qaVendingSummary"></span><div class="qa-vending-list" id="qaVendingList"></div>';
     sheet.appendChild(vp);
     const ops=['all','롯데마트','이마트','롯데시네마','메가박스','CGV','기타'];
     $('#qaOperatorStrip').innerHTML=ops.map(x=>'<button type="button" class="qa-operator-chip'+(x==='all'?' active':'')+'" data-operator="'+x+'">'+(x==='all'?'전체':x)+'</button>').join('');

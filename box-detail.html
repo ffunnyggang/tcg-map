@@ -83,7 +83,7 @@ async function readReviews(){
    card.dataset.funyLinkMode='inapp';card.dataset.funyInappPresentation='page';
    const copy=elt('div','talk-card-copy box-review-copy');
    const badges=elt('div','box-review-badges');
-   badges.append(elt('span','funy-source funy','FUNY PIN'),elt('span','funy-category','카드깡 후기'),elt('span','funy-shop-chip',document.getElementById('productName')?.textContent||'상품'));
+   badges.append(elt('span','funy-category','카드깡 후기'),elt('span','funy-shop-chip',document.getElementById('productName')?.textContent||'상품'));
    const title=elt('h2','',review.title);
    const excerpt=elt('div','excerpt',review.body||'');
    const byline=elt('div','meta talk-list-author');

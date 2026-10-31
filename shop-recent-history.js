@@ -1,0 +1,10 @@
+/* Only an actually rendered detail emits funy:shop-detail-opened. No list/popup tracking. */
+(()=>{'use strict';if(window.FUNY_SHOP_RECENT)return;const M=window.FUNY_HOME_SHOP_MODEL;let lastId='',lastAt=0;
+ const A=()=>window.FUNY_WEB_AUTH,key=uid=>'funypin:recent-shops:v1:'+(uid||'guest');
+ const readLocal=uid=>{try{return M.recent(JSON.parse(localStorage.getItem(key(uid))||'[]'))}catch(_){return[]}};
+ const writeLocal=(uid,rows)=>{try{localStorage.setItem(key(uid),JSON.stringify(M.recent(rows)))}catch(_){}};
+ async function initAuth(){try{await A()?.init();return A()?.session?.user?.id||null}catch(_){return null}}
+ async function read(){const uid=await initAuth();if(!uid)return{rows:readLocal(null),local:true};try{const {data,error}=await A().client.from('shop_recent_views').select('shop_id,viewed_at').eq('user_id',uid).gte('viewed_at',new Date(Date.now()-30*864e5).toISOString()).order('viewed_at',{ascending:false}).limit(10);if(error)throw error;return{rows:M.recent(data),local:false}}catch(_){return{rows:readLocal(uid),local:true}}}
+ async function record(id){if(!/^(KR|JP)-[A-Z]{3}-\d{3}$/.test(id))return;const now=Date.now();if(id===lastId&&now-lastAt<3000)return;lastId=id;lastAt=now;const uid=await initAuth(),row={shop_id:id,viewed_at:new Date(now).toISOString()};writeLocal(uid,[row,...readLocal(uid).filter(x=>x.shop_id!==id)]);if(uid){try{const {error}=await A().client.from('shop_recent_views').upsert({...row,user_id:uid},{onConflict:'user_id,shop_id'});if(error)throw error;await A().client.from('shop_recent_views').delete().eq('user_id',uid).lt('viewed_at',new Date(now-30*864e5).toISOString())}catch(_){/* local copy remains usable */}}window.dispatchEvent(new CustomEvent('funy:recent-shops-changed'))}
+ window.FUNY_SHOP_RECENT={read};document.addEventListener('funy:shop-detail-opened',e=>record(String(e.detail?.shopId||'')));const detail=document.getElementById('detail'),view=document.getElementById('detail-view');if(view&&!view.hidden&&detail?.dataset.shopId)record(detail.dataset.shopId);
+})();

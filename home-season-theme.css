@@ -31,3 +31,22 @@ html[data-home-season="halloween"] .funy-season-fog{position:absolute;left:-25%;
 @keyframes funy-pumpkin-bob{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-12px) rotate(7deg)}}
 @keyframes funy-fog{from{transform:translateX(-9%)}to{transform:translateX(9%)}}
 @media(prefers-reduced-motion:reduce){html[data-home-season="halloween"] .funy-season-object,html[data-home-season="halloween"] .funy-season-fog{animation:none!important}}
+
+/* v4 individual section Halloween backgrounds, scoped to HOME theme only */
+html[data-home-season="halloween"] .home-notice-strip{background:linear-gradient(110deg,#fff0d4,#f9e7ff)!important;border-top:3px solid #c18be2!important;border-bottom:3px solid #eaa85e!important}
+html[data-home-season="halloween"] .home-notice-link{background:rgba(255,255,255,.92)!important;border:1px solid #e7c393!important}
+html[data-home-season="halloween"] .home-box-market{background:radial-gradient(circle at 93% 8%,#f9d9a9 0%,transparent 27%),linear-gradient(160deg,#f1e5ff,#fff0da)!important;border-bottom:5px solid #d5b4ed!important}
+html[data-home-season="halloween"] .home-box-top h2{color:#5c3576!important}
+html[data-home-season="halloween"] .home-box-top h2:after{content:" ✦ 🎃"!important;display:inline!important;font-size:15px!important}
+html[data-home-season="halloween"] .home-box-market .home-box-track{background:transparent!important}
+html[data-home-season="halloween"] .home-box-market .home-box-image{background:rgba(255,255,255,.78)!important;border-radius:11px}
+html[data-home-season="halloween"] .home-box-market .home-box-name{color:#382644!important}
+html[data-home-season="halloween"] .home-cms-shell,html[data-home-season="halloween"] .fp-cms-pilot{background:linear-gradient(180deg,#f3e7ff,#fff0dc 45%,#f0e9ff)!important}
+html[data-home-season="halloween"] .home-content-flow>section:not(.home-box-market),html[data-home-season="halloween"] .home-content-flow>.home-map-link,html[data-home-season="halloween"] .home-content-flow>.home-section-divider{background:linear-gradient(145deg,#eee0fd,#fce9da)!important}
+html[data-home-season="halloween"] .home-iframe-block,html[data-home-season="halloween"] .home-iframe-block .inpock-crop{background:#f4e8fa!important}
+html[data-home-season="halloween"] .home-map-link{background:linear-gradient(90deg,#eedcff,#ffe6c7)!important}
+html[data-home-season="halloween"] .home-content-flow>.home-section-divider{background:#ba8fd5!important}
+html[data-home-season="halloween"] .home-content-flow{background:repeating-linear-gradient(135deg,#ede0fa 0px,#ede0fa 36px,#f9ebdd 36px,#f9ebdd 72px)!important}
+html[data-home-season="halloween"] .home-cms-shell:before{content:"✦  👻  ✦";display:block;text-align:center;padding:11px;background:linear-gradient(90deg,#4d3068,#8c5684);color:#ffdfac;font-size:19px;letter-spacing:5px;pointer-events:none}
+html[data-home-season="halloween"] .home-iframe-block:before{content:"✦ 🦇 ✦";display:block;text-align:right;padding:8px 22px;background:#e8d8f5;color:#744597;font-size:14px;pointer-events:none}
+html[data-home-season="halloween"] .home-hero-banner{background:linear-gradient(90deg,#34214e,#6a3f70)!important}

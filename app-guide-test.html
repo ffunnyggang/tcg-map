@@ -61,7 +61,7 @@ button{font:inherit}
 .phone{position:relative;width:310px;height:632px;padding:11px;border-radius:46px;background:linear-gradient(135deg,#d8d2c9 0%,#b9b2a8 14%,#e6e1d9 29%,#aaa49b 47%,#d8d3cb 66%,#b3ada4 83%,#e7e2da 100%);border:1px solid rgba(137,130,120,.75);box-shadow:0 34px 72px rgba(42,38,34,.17),0 10px 24px rgba(70,62,53,.08),inset 0 1px 0 rgba(255,255,255,.72),inset 1px 0 0 rgba(255,255,255,.34),inset -1px 0 0 rgba(91,85,78,.20),inset 0 -1px 0 rgba(89,83,76,.30);overflow:hidden;transform:none}
 .phone::before{content:none}
 .phone::after{content:"";position:absolute;inset:5px;z-index:3;border-radius:40px;border:1px solid rgba(255,255,255,.42);box-shadow:inset 0 0 0 1px rgba(94,88,81,.10),inset 0 14px 22px rgba(255,255,255,.09),inset 8px 0 18px rgba(255,255,255,.055),inset -8px 0 18px rgba(61,57,52,.055);pointer-events:none}
-.phone iframe{display:block;width:390px;height:844px;border:0;border-radius:35px;background:#fff;transform:scale(.744);transform-origin:0 0;pointer-events:none}
+.phone iframe{position:absolute;top:11px;left:50%;display:block;width:390px;height:844px;border:0;border-radius:35px;background:#fff;transform:translateX(-50%) scale(.722);transform-origin:top center;pointer-events:none}
 .float-chip{position:absolute;z-index:5;padding:11px 14px;border:1px solid #e7e1f3;border-radius:15px;background:rgba(255,255,255,.94);box-shadow:0 14px 34px rgba(76,57,109,.1);font-size:12px;font-weight:800;color:#594f65}
 .float-chip.one{left:0;top:170px}.float-chip.two{right:0;bottom:135px}
 .section{padding:110px 0}
@@ -86,7 +86,7 @@ button{font:inherit}
 .phone.small{width:274px;height:558px;padding:10px;border-radius:41px;background:linear-gradient(135deg,#d9d3ca 0%,#b8b1a8 15%,#e5e0d8 30%,#aaa49b 48%,#d9d4cc 67%,#b1aba2 84%,#e5e0d8 100%);border:1px solid rgba(137,130,120,.72);box-shadow:0 28px 58px rgba(42,38,34,.15),0 8px 20px rgba(70,62,53,.06),inset 0 1px 0 rgba(255,255,255,.72),inset 1px 0 0 rgba(255,255,255,.30),inset -1px 0 0 rgba(91,85,78,.18),inset 0 -1px 0 rgba(89,83,76,.28);transform:none}
 .phone.small::before{content:none}
 .phone.small::after{content:"";position:absolute;inset:5px;z-index:3;border-radius:35px;border:1px solid rgba(255,255,255,.40);box-shadow:inset 0 0 0 1px rgba(94,88,81,.09),inset 0 12px 18px rgba(255,255,255,.08);pointer-events:none}
-.phone.small iframe{width:390px;height:844px;border-radius:31px;transform:scale(.651);transform-origin:0 0}
+.phone.small iframe{top:10px;width:390px;height:844px;border-radius:31px;transform:translateX(-50%) scale(.637);transform-origin:top center}
 .feature-row.reverse .phone.small{transform:none}
 .mini-label{position:absolute;left:26px;top:26px;padding:8px 11px;border-radius:999px;background:#fff;border:1px solid #e8e3ef;color:#7059b6;font-size:11px;font-weight:900;box-shadow:0 8px 20px rgba(76,57,109,.06)}
 .guide-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
@@ -129,7 +129,7 @@ button{font:inherit}
   .header-inner{width:calc(100% - 28px);height:60px}.header-nav{display:none}.header-cta{padding:9px 12px}
   .hero-inner,.wrap{width:calc(100% - 30px)}
   .hero-inner{padding:50px 0 62px;gap:28px}.hero h1{font-size:44px}.hero-desc{font-size:15px}
-  .hero-phone-wrap{min-height:520px}.orbit{width:410px;height:410px}.phone{width:260px;height:530px;padding:9px;border-radius:39px}.phone::after{inset:4px;border-radius:34px}.phone iframe{border-radius:31px;transform:scale(.615)}
+  .hero-phone-wrap{min-height:520px}.orbit{width:410px;height:410px}.phone{width:260px;height:530px;padding:9px;border-radius:39px}.phone::after{inset:4px;border-radius:34px}.phone iframe{top:9px;border-radius:31px;transform:translateX(-50%) scale(.606)}
   .float-chip{display:none}
   .section{padding:78px 0}.section-head{margin-bottom:42px}.section-head h2{font-size:34px}.section-head p{font-size:14px}
   .feature-visual{min-height:520px;border-radius:28px}.feature-copy h3{font-size:30px}.feature-copy p{font-size:14px}
@@ -173,7 +173,7 @@ button{font:inherit}
       <div class="orbit"></div>
       <div class="float-chip one">📍 내 주변 카드샵을 한눈에</div>
       <div class="float-chip two">👾 매장에서 퍼니몬 포획</div>
-      <div class="phone"><iframe title="FUNY PIN HOME 미리보기" src="https://funypin.kr/?appGuidePreview=1&guide=1" loading="eager"></iframe></div>
+      <div class="phone"><iframe title="FUNY PIN HOME 미리보기" src="./?appGuidePreview=1&guide=1" loading="eager"></iframe></div>
     </div>
   </div>
 </section>
@@ -193,7 +193,7 @@ button{font:inherit}
         <p>지역과 취급 TCG, 매장 특징을 기준으로 원하는 카드샵을 찾고 지도와 리스트에서 비교할 수 있습니다.</p>
         <ul class="feature-points"><li>한국·일본 카드샵 지도 탐색</li><li>지역·취급 TCG·매장 특징 필터</li><li>카드샵 상세 정보와 길찾기 연결</li></ul>
       </div>
-      <div class="feature-visual"><span class="mini-label">TCG MAP</span><div class="phone small"><iframe title="TCG MAP 미리보기" src="https://funypin.kr/shops.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
+      <div class="feature-visual"><span class="mini-label">TCG MAP</span><div class="phone small"><iframe title="TCG MAP 미리보기" src="./shops.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
     </div>
 
     <div class="feature-row reverse">
@@ -203,7 +203,7 @@ button{font:inherit}
         <p>기본 정보만 나열하지 않고 매장 사진, 특징, 취급 상품, 리뷰와 Instagram 소식까지 한 화면에서 확인할 수 있습니다.</p>
         <ul class="feature-points"><li>영업시간·역 정보·주차 등 방문 정보</li><li>매장 특징과 취급 TCG 한눈에 확인</li><li>카드샵 Instagram 최신 소식 연동</li></ul>
       </div>
-      <div class="feature-visual"><span class="mini-label">SHOP DETAIL</span><div class="phone small"><iframe title="카드샵 상세 미리보기" src="https://funypin.kr/shops.html?appGuidePreview=1&guide=1#/shop/KR-SEO-009" loading="lazy"></iframe></div></div>
+      <div class="feature-visual"><span class="mini-label">SHOP DETAIL</span><div class="phone small"><iframe title="카드샵 상세 미리보기" src="./shops.html?appGuidePreview=1&guide=1#/shop/KR-SEO-009" loading="lazy"></iframe></div></div>
     </div>
 
     <div class="feature-row">
@@ -213,7 +213,7 @@ button{font:inherit}
         <p>여러 판매처의 TCG BOX 가격을 비교해 최저가와 판매처 정보를 빠르게 확인할 수 있습니다.</p>
         <ul class="feature-points"><li>BOX 상품별 판매처 가격 비교</li><li>최저가 기준 정렬과 판매처 확인</li><li>제품 정보·후기 콘텐츠 연계</li></ul>
       </div>
-      <div class="feature-visual"><span class="mini-label">BOX PRICE</span><div class="phone small"><iframe title="BOX 가격비교 미리보기" src="https://funypin.kr/box-list.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
+      <div class="feature-visual"><span class="mini-label">BOX PRICE</span><div class="phone small"><iframe title="BOX 가격비교 미리보기" src="./box-list.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
     </div>
 
     <div class="feature-row reverse">
@@ -223,7 +223,7 @@ button{font:inherit}
         <p>PICK에서 TCG 일정과 콘텐츠를 확인하고, TALK에서 카드 자랑과 질문, 후기 등 수집가들의 이야기를 만나보세요.</p>
         <ul class="feature-points"><li>카드쇼·행사·TCG 일정 확인</li><li>카드샵 후기와 카드깡 후기</li><li>질문·정보 공유·수집 이야기</li></ul>
       </div>
-      <div class="feature-visual"><span class="mini-label">PICK · TALK</span><div class="phone small"><iframe title="TALK 미리보기" src="https://funypin.kr/talk.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
+      <div class="feature-visual"><span class="mini-label">PICK · TALK</span><div class="phone small"><iframe title="TALK 미리보기" src="./talk.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
     </div>
 
     <div class="feature-row">
@@ -233,7 +233,7 @@ button{font:inherit}
         <p>퍼니핀 자체 캐릭터 ‘퍼니몬’을 매장에서 발견하고 포획하며, 이벤트에 따라 응모권·쿠폰·리워드 등 다양한 혜택을 받을 수 있습니다.</p>
         <ul class="feature-points"><li>매장 반경 기반 퍼니몬 출몰</li><li>포획 기록과 나만의 도감</li><li>오프라인 이벤트·미션·리워드 연계</li></ul>
       </div>
-      <div class="feature-visual"><span class="mini-label">FUNY MON</span><div class="phone small"><iframe title="MY 퍼니몬 미리보기" src="https://funypin.kr/my-funymon.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
+      <div class="feature-visual"><span class="mini-label">FUNY MON</span><div class="phone small"><iframe title="MY 퍼니몬 미리보기" src="./my-funymon.html?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
     </div>
   </div>
 </section>
@@ -264,18 +264,18 @@ button{font:inherit}
     </div>
     <div class="preview-shell">
       <div class="preview-menu" role="tablist">
-        <button class="active" data-src="https://funypin.kr/?appGuidePreview=1&guide=1" data-title="HOME" data-desc="오늘 필요한 카드샵·BOX·콘텐츠를 한눈에 확인하는 시작 화면입니다.">HOME</button>
-        <button data-src="https://funypin.kr/shops.html?appGuidePreview=1&guide=1" data-title="TCG MAP" data-desc="한국과 일본의 카드샵을 지도에서 찾고 다양한 기준으로 탐색합니다.">TCG MAP</button>
-        <button data-src="https://funypin.kr/box-list.html?appGuidePreview=1&guide=1" data-title="BOX 가격비교" data-desc="여러 판매처의 BOX 가격을 비교하고 원하는 제품 정보를 확인합니다.">BOX</button>
-        <button data-src="https://funypin.kr/reviews.html?appGuidePreview=1&guide=1" data-title="PICK" data-desc="카드샵 후기, TCG 일정과 다양한 큐레이션 콘텐츠를 만나보세요.">PICK</button>
-        <button data-src="https://funypin.kr/talk.html?appGuidePreview=1&guide=1" data-title="TALK" data-desc="카드 자랑부터 질문과 후기까지 수집가들의 이야기가 모이는 커뮤니티입니다.">TALK</button>
-        <button data-src="https://funypin.kr/my.html?appGuidePreview=1&guide=1" data-title="MY" data-desc="관심 목록, 미션, 이벤트, 활동 기록과 나의 퍼니핀 생활을 관리합니다.">MY</button>
-        <button data-src="https://funypin.kr/my-funymon.html?appGuidePreview=1&guide=1" data-title="퍼니몬" data-desc="포획한 퍼니몬을 확인하고 도감을 채우는 위치 기반 수집 콘텐츠입니다.">퍼니몬</button>
-        <button data-src="https://funypin.kr/binder.html?appGuidePreview=1&guide=1" data-title="바인더" data-desc="나만의 카드 컬렉션을 바인더처럼 만들고 감상하고 공유할 수 있습니다.">바인더</button>
+        <button class="active" data-src="./?appGuidePreview=1&guide=1" data-title="HOME" data-desc="오늘 필요한 카드샵·BOX·콘텐츠를 한눈에 확인하는 시작 화면입니다.">HOME</button>
+        <button data-src="./shops.html?appGuidePreview=1&guide=1" data-title="TCG MAP" data-desc="한국과 일본의 카드샵을 지도에서 찾고 다양한 기준으로 탐색합니다.">TCG MAP</button>
+        <button data-src="./box-list.html?appGuidePreview=1&guide=1" data-title="BOX 가격비교" data-desc="여러 판매처의 BOX 가격을 비교하고 원하는 제품 정보를 확인합니다.">BOX</button>
+        <button data-src="./reviews.html?appGuidePreview=1&guide=1" data-title="PICK" data-desc="카드샵 후기, TCG 일정과 다양한 큐레이션 콘텐츠를 만나보세요.">PICK</button>
+        <button data-src="./talk.html?appGuidePreview=1&guide=1" data-title="TALK" data-desc="카드 자랑부터 질문과 후기까지 수집가들의 이야기가 모이는 커뮤니티입니다.">TALK</button>
+        <button data-src="./my.html?appGuidePreview=1&guide=1" data-title="MY" data-desc="관심 목록, 미션, 이벤트, 활동 기록과 나의 퍼니핀 생활을 관리합니다.">MY</button>
+        <button data-src="./my-funymon.html?appGuidePreview=1&guide=1" data-title="퍼니몬" data-desc="포획한 퍼니몬을 확인하고 도감을 채우는 위치 기반 수집 콘텐츠입니다.">퍼니몬</button>
+        <button data-src="./binder.html?appGuidePreview=1&guide=1" data-title="바인더" data-desc="나만의 카드 컬렉션을 바인더처럼 만들고 감상하고 공유할 수 있습니다.">바인더</button>
       </div>
       <div class="preview-stage">
         <div class="preview-copy"><span class="tag">LIVE UI PREVIEW</span><h3 id="previewTitle">HOME</h3><p id="previewDesc">오늘 필요한 카드샵·BOX·콘텐츠를 한눈에 확인하는 시작 화면입니다.</p></div>
-        <div class="preview-phone"><div class="phone small"><iframe id="previewFrame" title="FUNY PIN 앱 화면 미리보기" src="https://funypin.kr/?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
+        <div class="preview-phone"><div class="phone small"><iframe id="previewFrame" title="FUNY PIN 앱 화면 미리보기" src="./?appGuidePreview=1&guide=1" loading="lazy"></iframe></div></div>
       </div>
     </div>
   </div>

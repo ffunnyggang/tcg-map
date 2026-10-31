@@ -70,3 +70,12 @@ html[data-home-season="halloween"] .funy-season-layer{top:700px!important}
 /* Halloween: remove the visible separator immediately below HOME notices */
 html[data-home-season="halloween"] .home-notice-strip{border-bottom:0!important;box-shadow:none!important}
 html[data-home-season="halloween"] .home-notice-strip+.home-content-flow,html[data-home-season="halloween"] .home-notice-strip+.home-content-flow>.home-box-market:first-child{border-top:0!important;box-shadow:none!important}
+
+/* Halloween: shop recommendations only; keep notice and BOX boundaries untouched */
+html[data-home-season="halloween"] .home-cms-shell{position:relative;background:radial-gradient(circle at 8% 12%,#ffd6a2 0%,transparent 32%),linear-gradient(140deg,#e0c5f8,#fbe0c6 55%,#e4cdf9)!important;border-left:4px solid #a87bcc;border-right:4px solid #a87bcc}
+html[data-home-season="halloween"] .home-cms-shell::after{content:"👻  ✨  🦇";position:absolute;right:14px;top:7px;z-index:2;font-size:22px;letter-spacing:7px;pointer-events:none;filter:drop-shadow(0 2px 3px #5b2e7340);animation:funy-shop-halloween-float 5s ease-in-out infinite alternate}
+html[data-home-season="halloween"] .home-cms-shell .fp-cms{position:relative;z-index:1}
+html[data-home-season="halloween"] .home-iframe-block[aria-label="카드샵 추천"]{position:relative;background:linear-gradient(135deg,#dec4fb,#ffdfb9)!important;border-inline:4px solid #bb8bd9}
+html[data-home-season="halloween"] .home-iframe-block[aria-label="카드샵 추천"]::after{content:"🎃  ✦  👻";position:absolute;top:7px;right:13px;z-index:3;font-size:19px;pointer-events:none;animation:funy-shop-halloween-float 5s ease-in-out infinite alternate}
+@keyframes funy-shop-halloween-float{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-9px) rotate(4deg)}}
+@media(prefers-reduced-motion:reduce){html[data-home-season="halloween"] .home-cms-shell::after,html[data-home-season="halloween"] .home-iframe-block[aria-label="카드샵 추천"]::after{animation:none}}

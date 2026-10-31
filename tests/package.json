@@ -1,9 +1,11 @@
 {
   "devDependencies": {
-    "linkedom": "0.18.12"
+    "linkedom": "0.18.12",
+    "playwright": "1.62.1"
   },
   "private": true,
   "scripts": {
-    "test:binder": "node binder-core.mjs && node binder-ui.cjs && node binder-camera.cjs"
+    "test:binder": "node binder-core.mjs && node binder-ui.cjs && node binder-camera.cjs",
+    "test:coupons": "node test-cardroom-coupon.cjs && node coupon-browser.cjs"
   }
 }

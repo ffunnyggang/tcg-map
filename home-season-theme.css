@@ -66,3 +66,7 @@ html[data-home-season="halloween"] .home-map-link{background:#efd8ff!important;b
 html[data-home-season="halloween"] .home-content-flow>.home-section-divider{background:#a875c3!important}
 
 html[data-home-season="halloween"] .funy-season-layer{top:700px!important}
+
+/* Halloween: remove the visible separator immediately below HOME notices */
+html[data-home-season="halloween"] .home-notice-strip{border-bottom:0!important;box-shadow:none!important}
+html[data-home-season="halloween"] .home-notice-strip+.home-content-flow,html[data-home-season="halloween"] .home-notice-strip+.home-content-flow>.home-box-market:first-child{border-top:0!important;box-shadow:none!important}

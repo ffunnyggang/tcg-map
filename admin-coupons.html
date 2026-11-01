@@ -4,9 +4,9 @@
 <p id="notice" class="notice" role="status">관리자 권한을 확인하고 있습니다.</p><div id="app" hidden>
 <section class="panel"><div class="row"><h2 class="grow">1. 쿠폰 정보 등록</h2><button id="toggleCreate" type="button" aria-expanded="false">새 쿠폰 등록</button></div>
 <form id="createForm" hidden><fieldset id="createFields" style="border:0;padding:0;margin:0"><div class="grid">
-<label>쿠폰명 *<input name="title" required maxlength="80" placeholder="예: 더카드룸 방문 선물 쿠폰"></label>
+<label>쿠폰명 *<input name="title" required maxlength="80" placeholder="예: 포켓몬카드 일본판 3주년 1BOX"></label>
 <label>사용 매장·장소 *<input name="shop_name" required maxlength="120" placeholder="예: 더카드룸 홍대점"></label>
-<label class="full">혜택 내용 *<textarea name="benefit_text" required maxlength="1000" placeholder="교환할 상품과 수량을 구체적으로 적어주세요."></textarea></label>
+<label class="full">이벤트 내용 *<textarea name="benefit_text" required maxlength="1000" placeholder="이벤트 내용을 입력하세요."></textarea></label>
 <label class="full">혜택 이미지 *<input id="benefitFile" type="file" accept="image/jpeg,image/png,image/webp" required><span class="hint">JPG·PNG·WEBP, 최대 5MB. 고객에게 공개되는 혜택 이미지만 등록하세요.</span><br><img id="benefitPreview" class="preview" alt="혜택 이미지 미리보기" hidden></label>
 <label>사용 시작 (한국 시간) *<input name="starts_at" type="datetime-local" required></label><label>사용 종료 (한국 시간) *<input name="ends_at" type="datetime-local" required></label>
 <label class="full">쿠폰 사용 안내 *<textarea name="instructions" required maxlength="3000">매장에서 쿠폰 화면을 직원에게 보여주세요.

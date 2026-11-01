@@ -16,3 +16,6 @@
 .fhs-photo{isolation:isolate;z-index:0}.funy-home-shops .fhs-tile-heart{z-index:5;isolation:isolate;opacity:1;color:#a89eb9}.funy-home-shops .fhs-tile-heart::before{content:"";position:absolute;inset:2px;border-radius:50%;background:#fff;opacity:.72;pointer-events:none;z-index:0}.funy-home-shops .fhs-tile-heart svg{position:relative;z-index:1;filter:none}.funy-home-shops .fhs-tile-heart[aria-pressed=true]{color:#8062d8}.funy-home-shops .fhs-tile-heart[aria-pressed=true] svg{filter:none}
 /* Shared HOME section-title typography; main hero/title copy stays separate. */
 .home-content-flow .fhs-head h3,.home-content-flow .funy-news-head h2,.home-content-flow .home-box-top h2,.home-content-flow .funy-graded-head h2,.home-content-flow .funy-shorts-head h2,.home-content-flow [data-cms-placement="home"]>.fp-cms-block>.fp-cms-title{font-family:'Pretendard Variable',Pretendard,sans-serif!important;font-size:17px!important;font-weight:800!important;line-height:1.4!important;letter-spacing:-.03em!important}
+
+/* Compact photo-card favorites by 20%, preserving the existing touch target. */
+.funy-home-shops .fhs-tile-heart::before{inset:5px}.funy-home-shops .fhs-tile-heart svg{width:16.8px;height:16.8px}

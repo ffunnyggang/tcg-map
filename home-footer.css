@@ -2,7 +2,7 @@
 body.home-with-footer>.portal-shell{padding-bottom:0!important;background:#f7f7f9!important}
 /* The legacy fixed-nav backdrop painted over the end of the app footer. */
 body.home-with-footer.home-motion>.portal-shell::after{content:none!important;display:none!important}
-#homeFooter{box-sizing:border-box;position:relative;z-index:1;width:100%;margin:0;padding:24px 20px calc(148px + env(safe-area-inset-bottom,0px));border-top:0;background:#f7f7f9;color:#24212a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif}
+#homeFooter{box-sizing:border-box;position:relative;z-index:1;width:100%;margin:0;padding:24px 20px calc(184px + env(safe-area-inset-bottom,0px));border-top:0;background:#f7f7f9;color:#24212a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif}
 #homeFooter *{box-sizing:border-box}
 #homeFooter .home-footer-brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 #homeFooter .home-footer-identity{flex:1;min-width:0}
@@ -18,7 +18,7 @@ body.home-with-footer.home-motion>.portal-shell::after{content:none!important;di
 #homeFooter .home-footer-support,#homeFooter .home-footer-policies{display:flex;flex-wrap:wrap;column-gap:12px;row-gap:0}
 #homeFooter .home-footer-support a,#homeFooter .home-footer-policies a{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:7px 0;color:#655e6f;text-decoration:none;overflow-wrap:anywhere}
 #homeFooter .home-footer-support a{white-space:nowrap}
-#homeFooter .home-footer-policies{margin-top:11px;padding-top:10px;border-top:1px solid #e5e1e9;column-gap:13px}
+#homeFooter .home-footer-policies{margin-top:4px;padding-top:4px;border-top:1px solid #e5e1e9;column-gap:13px}
 #homeFooter .home-footer-policies .home-footer-privacy{font-weight:750;color:#39313f}
 #homeFooter .home-footer-business{margin-top:16px;font-size:12px;line-height:1.7}
 #homeFooter summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;list-style:none;color:#665e71;cursor:pointer}
@@ -31,7 +31,7 @@ body.home-with-footer.home-motion>.portal-shell::after{content:none!important;di
 #homeFooter .home-footer-notice{margin:17px 0 0;color:#807786;font-size:11px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
 #homeFooter .home-footer-copyright{margin:12px 0 0;color:#88808e;font-size:11px;line-height:1.7}
 #homeFooter a:focus-visible,#homeFooter summary:focus-visible{outline:2px solid #8062d8;outline-offset:3px;border-radius:5px}
-html.app-shell #homeFooter{padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+html.app-shell #homeFooter{padding-bottom:calc(128px + max(env(safe-area-inset-bottom,0px),var(--funy-native-safe-bottom,0px)))}
 @media(pointer:coarse){#homeFooter .home-footer-support a,#homeFooter .home-footer-policies a{min-height:44px}}
 
 /* Last CMS block margin must not collapse into a colored strip above the footer. */

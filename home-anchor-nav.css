@@ -1,0 +1,10 @@
+/* Overlay navigation appears after the hero passes the visible web/native header. */
+#homeAnchorNav{position:fixed;z-index:54;top:var(--home-anchor-top,54px);left:var(--home-anchor-left,0px);width:var(--home-anchor-width,100%);height:44px;box-sizing:border-box;display:flex;align-items:stretch;gap:0;padding:0 8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;background:rgba(255,255,255,.98);border-bottom:1px solid #eeeaf3;box-shadow:0 3px 10px rgba(38,31,48,.04)}
+#homeAnchorNav[hidden],#homeAnchorNav button[hidden]{display:none!important}
+#homeAnchorNav::-webkit-scrollbar{display:none}
+#homeAnchorNav button{position:relative;display:flex;align-items:center;justify-content:center;flex:1 0 46px;min-width:46px;min-height:44px;padding:0 9px;border:0;background:transparent;color:#908695;font:650 12px/1.4 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#homeAnchorNav button[aria-current="location"]{color:#7656ca;font-weight:800}
+#homeAnchorNav button[aria-current="location"]::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:3px;border-radius:3px 3px 0 0;background:#8062d8}
+#homeAnchorNav button:focus-visible{outline:2px solid #8062d8;outline-offset:-4px;border-radius:6px}
+/* More space above the HOME introduction; existing cards retain their spacing. */
+body.home-with-footer #funy-home-shops{padding-top:28px}

@@ -1,6 +1,8 @@
 /* HOME footer only. Reserve room for the browser's fixed navigation and LIVE PIN. */
-body.home-with-footer>.portal-shell{padding-bottom:0!important}
-#homeFooter{box-sizing:border-box;position:relative;width:100%;margin:0;padding:24px 20px calc(148px + env(safe-area-inset-bottom,0px));border-top:0;background:#f7f7f9;color:#24212a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif}
+body.home-with-footer>.portal-shell{padding-bottom:0!important;background:#f7f7f9!important}
+/* The legacy fixed-nav backdrop painted over the end of the app footer. */
+body.home-with-footer.home-motion>.portal-shell::after{content:none!important;display:none!important}
+#homeFooter{box-sizing:border-box;position:relative;z-index:1;width:100%;margin:0;padding:24px 20px calc(148px + env(safe-area-inset-bottom,0px));border-top:0;background:#f7f7f9;color:#24212a;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif}
 #homeFooter *{box-sizing:border-box}
 #homeFooter .home-footer-brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 #homeFooter .home-footer-identity{flex:1;min-width:0}
@@ -37,3 +39,6 @@ body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-blo
 
 /* Add breathing room below TCG TOOL while keeping the footer boundary seamless. */
 body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:has(a[href*="coin-flip.html"],a[data-funy-target-url*="coin-flip.html"]){padding-bottom:24px}
+
+/* Notices sit after the main content now, using the full service frame width. */
+body.home-with-footer>.portal-shell>.home-notice-strip{box-sizing:border-box;width:100%;margin:0;padding:10px 16px 24px;background:#fff}

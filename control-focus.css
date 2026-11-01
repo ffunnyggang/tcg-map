@@ -1,0 +1,26 @@
+/* FUNY PIN form-control focus policy.
+ * Keep focus, caret, validation borders, checked/selected states and normal button shadows.
+ * Suppress browser outlines and decorative focus halos without blurring controls.
+ */
+html body :is(input, textarea, select, button, summary, [role="button"], [role="combobox"], [role="listbox"], [contenteditable="true"], a[aria-haspopup]):not(:disabled):not([inert]):is(:focus, :focus-visible) {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), textarea, select, [role="combobox"], button[aria-haspopup], button[aria-expanded]):not(:disabled):not([inert]):is(:focus, :focus-visible) {
+  box-shadow: var(--funy-control-rest-shadow, none) !important;
+}
+/* Selects that already have decorative depth keep that depth, without the focus halo. */
+.map-filter-bar .country-filter-select {
+  --funy-control-rest-shadow: 0 5px 18px rgba(34,29,44,.11), inset 0 1px 0 rgba(255,255,255,.82);
+}
+.list-sort-select {
+  --funy-control-rest-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+}
+/* Existing custom-select and grouped-field wrappers draw their ring on focus-within. */
+html body :is(.pick-shop-filter, .rank-shop-filter, .keyin-box, .detail-more-native, .binder-system-menu, label):not(:disabled):not([inert]):focus-within {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+html body :is(.pick-shop-filter, .rank-shop-filter, .keyin-box):not(:disabled):not([inert]):focus-within {
+  box-shadow: var(--funy-control-rest-shadow, none) !important;
+}

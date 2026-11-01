@@ -1,3 +1,4 @@
+@import url("/control-focus.css?v=20261101-focus1");
 /* Browser only: native shells own their safe areas and status bar. */
 html.funy-web-safe:not(.app-shell){--funy-web-safe-top:env(safe-area-inset-top,0px)}
 @media(max-width:767px){

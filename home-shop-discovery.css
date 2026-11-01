@@ -18,4 +18,4 @@
 .home-content-flow .fhs-head h3,.home-content-flow .funy-news-head h2,.home-content-flow .home-box-top h2,.home-content-flow .funy-graded-head h2,.home-content-flow .funy-shorts-head h2,.home-content-flow [data-cms-placement="home"]>.fp-cms-block>.fp-cms-title{font-family:'Pretendard Variable',Pretendard,sans-serif!important;font-size:17px!important;font-weight:800!important;line-height:1.4!important;letter-spacing:-.03em!important}
 
 /* Compact photo-card favorites by 20%, preserving the existing touch target. */
-.funy-home-shops .fhs-tile-heart::before{inset:5px}.funy-home-shops .fhs-tile-heart svg{width:16.8px;height:16.8px}
+.funy-home-shops .fhs-tile-heart::before{inset:5px}.funy-home-shops .fhs-tile-heart svg{width:16.8px;height:16.8px;overflow:visible}

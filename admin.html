@@ -488,6 +488,15 @@ async function loadShopRequests(){
 }
 
 
+async function loadAllShopFeatureRows(){
+ const rows=[],seen=new Set(),pageSize=500;
+ for(let offset=0;;offset+=pageSize){
+  const page=await api('/rest/v1/shop_features?select=shop_id,feature_id,value,detail&order=shop_id.asc,feature_id.asc&limit='+pageSize+'&offset='+offset);
+  if(!Array.isArray(page))throw new Error('매장 특징 정보를 불러오지 못했습니다. 다시 조회해주세요.');
+  for(const row of page){const key=JSON.stringify([row.shop_id,row.feature_id]);if(seen.has(key))throw new Error('매장 특징 조회 결과가 중복됐습니다. 다시 조회해주세요.');seen.add(key);rows.push(row)}
+  if(page.length<pageSize)return rows;
+ }
+}
 async function ensureShopReferenceData(){
  if(shopRows.length&&tcgTypes.length&&featureTypes.length)return;
  const data=await Promise.all([
@@ -495,7 +504,7 @@ async function ensureShopReferenceData(){
   api('/rest/v1/tcg_types?select=id,code,name_ko&is_active=eq.true&order=sort_order.asc'),
   api('/rest/v1/features?select=id,code,name_ko&is_active=eq.true&order=sort_order.asc'),
   api('/rest/v1/shop_tcg?select=shop_id,tcg_id,status,detail'),
-  api('/rest/v1/shop_features?select=shop_id,feature_id,value,detail'),
+  loadAllShopFeatureRows(),
   api('/rest/v1/shop_images?select=*&order=shop_id.asc,sort_order.asc'),
   api('/rest/v1/shop_reviews?select=*&order=shop_id.asc'),
   api('/rest/v1/shop_contents?select=*&order=shop_id.asc,published_at.desc.nullslast,content_id.asc')
@@ -611,7 +620,7 @@ async function loadShopManager(){
    api('/rest/v1/tcg_types?select=id,code,name_ko&is_active=eq.true&order=sort_order.asc'),
    api('/rest/v1/features?select=id,code,name_ko&is_active=eq.true&order=sort_order.asc'),
    api('/rest/v1/shop_tcg?select=shop_id,tcg_id,status,detail'),
-   api('/rest/v1/shop_features?select=shop_id,feature_id,value,detail'),
+   loadAllShopFeatureRows(),
    api('/rest/v1/shop_images?select=*&order=shop_id.asc,sort_order.asc'),
    api('/rest/v1/shop_reviews?select=*&order=shop_id.asc'),
    api('/rest/v1/shop_contents?select=*&order=shop_id.asc,published_at.desc.nullslast,content_id.asc')
@@ -1203,4 +1212,3 @@ $('adminGoogleLoginBtn').onclick=loginGoogleAdmin;$('headerLogout').onclick=()=>
 <script src="assets/admin/funymon-history.js?v=20261016-ops6"></script><script src="live-pin-time-v1.js?v=20261013-direct1"></script><script src="admin-live-direct-v1.js?v=20261013-direct1"></script><script src="/admin-floating-v1.js?v=20261020-1"></script><script src="/admin-notifications-v1.js?v=20261027-auto17-tabs2"></script><script src="admin-store-products-tab.js?v=20261028-11"></script><script src="/home-shop-model.js?v=20261031-3"></script><script src="/home-shop-admin.js?v=20261031-3"></script></body></html>
 
 [executed on device: DESKTOP-J04L0T1 (a0585d7e-eca2-46ba-8618-c7f659930ace)]
-

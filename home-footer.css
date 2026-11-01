@@ -36,4 +36,4 @@ html.app-shell #homeFooter{padding-bottom:calc(32px + env(safe-area-inset-bottom
 body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:last-child{margin-bottom:0}
 
 /* Add breathing room below TCG TOOL while keeping the footer boundary seamless. */
-body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:has(a[href*="coin-flip.html"]){padding-bottom:24px}
+body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:has(a[href*="coin-flip.html"],a[data-funy-target-url*="coin-flip.html"]){padding-bottom:24px}

@@ -8,7 +8,17 @@
   function startHome(){
     const flow=document.querySelector('.home-content-flow');if(!flow||document.getElementById('homeUpcomingSchedule'))return;
     const section=document.createElement('section');section.id='homeUpcomingSchedule';section.className='review-schedule';section.dataset.scheduleView='home';section.setAttribute('aria-label','다가오는 TCG 일정');section.hidden=true;
-    section.innerHTML='<div class="home-schedule-head"><h2>다가오는 TCG 일정</h2><a href="/pick.html?tab=schedule" data-funy-link-mode="inapp" data-funy-inapp-presentation="page" aria-label="PICK 일정 더보기">더보기 ›</a></div><div class="upcoming-list review-schedule-list" aria-live="polite"><p class="review-schedule-meta">일정을 불러오는 중입니다.</p></div>';
+    section.innerHTML='<div class="home-schedule-head"><h2>다가오는 TCG 일정</h2><a href="/pick.html?tab=schedule" data-home-schedule-menu aria-label="PICK 일정 더보기">더보기 ›</a></div><div class="upcoming-list review-schedule-list" aria-live="polite"><p class="review-schedule-meta">일정을 불러오는 중입니다.</p></div>';
+
+    section.querySelector('[data-home-schedule-menu]').addEventListener('click',e=>{
+      if(e.defaultPrevented||e.button>0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+      if(!window.ReactNativeWebView?.postMessage)return;
+      e.preventDefault();e.stopPropagation();
+      const at=Date.now(),intentKey='funypin:pick:pending-tab:v1';
+      try{localStorage.setItem(intentKey,JSON.stringify({tab:'schedule',at}))}catch(_){}
+      try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/pick?__tabRefresh='+at}))}
+      catch(_){try{localStorage.removeItem(intentKey)}catch(_){}location.href='/pick.html?tab=schedule'}
+    });
     addStyle();const style=document.createElement('style');style.id='home-upcoming-schedule-style';style.textContent='#homeUpcomingSchedule{padding:22px 0 25px;background:#fff}#homeUpcomingSchedule[hidden]{display:none!important}#homeUpcomingSchedule .home-schedule-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}#homeUpcomingSchedule .home-schedule-head h2{margin:0;color:#181720;font-size:16px;font-weight:800;line-height:1.4}#homeUpcomingSchedule .home-schedule-head a{font-size:12px;font-weight:600;color:#8d8993;text-decoration:none;padding:8px 0;white-space:nowrap}#homeUpcomingSchedule .review-schedule-list{display:flex;flex-direction:column;gap:10px}#homeUpcomingSchedule .review-schedule-card{min-height:78px;padding:10px 12px;display:grid;grid-template-columns:58px minmax(0,1fr) 16px;align-items:center;gap:10px;border:1px solid #ece9ef;border-radius:17px;background:#fff;box-shadow:0 2px 8px rgba(38,31,48,.04);color:inherit;text-decoration:none}#homeUpcomingSchedule .review-schedule-date{width:58px;height:56px;border-radius:14px;background:#f0e9ff;display:flex;align-items:center;justify-content:center}#homeUpcomingSchedule .review-schedule-day{color:#7958d4;font-weight:850}#homeUpcomingSchedule .review-schedule-info{min-width:0}#homeUpcomingSchedule .review-schedule-name{overflow:hidden;margin:0;color:#26232b;font-size:14px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}#homeUpcomingSchedule .review-schedule-meta{font-size:12px;color:#8d8993;margin:0;padding:12px 0}';document.head.append(style);
     function sync(){const slot=flow.querySelector('[data-cms-placement="home"] .fp-cms-home-schedule-slot');if(!slot){section.hidden=true;section.remove();return}if(section.parentElement!==slot)slot.append(section);section.hidden=false}
     window.FUNY_HOME_SCHEDULE={sync};

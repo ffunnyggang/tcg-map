@@ -6,11 +6,11 @@ body.home-with-footer>.portal-shell{padding-bottom:0!important}
 #homeFooter .home-footer-identity{flex:1;min-width:0}
 #homeFooter .home-footer-brand{display:block;font-size:17px;font-weight:800;letter-spacing:-.4px}
 #homeFooter .home-footer-socials{display:flex;align-items:center;gap:8px;flex:none}
-#homeFooter .home-footer-social{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:13px;background:#ebe8ef;color:#665c72;text-decoration:none}
-#homeFooter .home-footer-social svg{display:block;width:23px;height:23px;pointer-events:none}
+#homeFooter .home-footer-social{display:grid;place-items:center;flex:none;width:35.2px;height:35.2px;border-radius:10.4px;background:#ebe8ef;color:#665c72;text-decoration:none}
+#homeFooter .home-footer-social svg{display:block;width:18.4px;height:18.4px;pointer-events:none}
 #homeFooter .home-footer-instagram{background:radial-gradient(circle at 28% 100%,#feda75 0%,#fa7e1e 25%,transparent 60%),linear-gradient(135deg,#4f5bd5 0%,#962fbf 45%,#d62976 75%,#fa7e1e 100%);color:#fff}
 #homeFooter .home-footer-kakao{background:#fee500;color:#3c1e1e}
-#homeFooter .home-footer-kakao svg{width:32px;height:30px}
+#homeFooter .home-footer-kakao svg{width:25.6px;height:24px}
 #homeFooter .home-footer-tagline{margin:7px 0 0;color:#807887;font-size:12px;line-height:1.6}
 #homeFooter a{font-size:12px;line-height:1.6;-webkit-tap-highlight-color:transparent}
 #homeFooter .home-footer-support,#homeFooter .home-footer-policies{display:flex;flex-wrap:wrap;column-gap:12px;row-gap:0}
@@ -34,3 +34,6 @@ html.app-shell #homeFooter{padding-bottom:calc(32px + env(safe-area-inset-bottom
 
 /* Last CMS block margin must not collapse into a colored strip above the footer. */
 body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:last-child{margin-bottom:0}
+
+/* Add breathing room below TCG TOOL while keeping the footer boundary seamless. */
+body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-block:has(a[href*="coin-flip.html"]){padding-bottom:24px}

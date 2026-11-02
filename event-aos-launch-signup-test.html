@@ -183,7 +183,8 @@ button,a{font:inherit}
      const data=await A.invokeFunction('android-launch-signup-event-test',{action});
      state=data;render();
    }catch(e){
-     root.innerHTML='<div class="login-card"><b>응모 정보를 불러오지 못했어요</b><p>'+esc(e?.message||e)+'</p><button class="btn primary" id="retryBtn" type="button">다시 시도</button></div>';
+     const detail=e?.data?.detail||e?.data?.message||e?.message||e;
+     root.innerHTML='<div class="login-card"><b>응모 정보를 불러오지 못했어요</b><p>'+esc(detail)+'</p><button class="btn primary" id="retryBtn" type="button">다시 시도</button></div>';
      $('#retryBtn').onclick=()=>sync();
    }finally{busy=false}
  }

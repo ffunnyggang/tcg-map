@@ -39,8 +39,8 @@ async function render(){
   if(!A?.session){A?.goLogin?.(location.href);return}
   btn.disabled=true;
   try{
-   if(on){const {error}=await A.client.from('shop_favorites').delete().eq('user_id',A.session.user.id).eq('shop_id',id);if(error)throw error;on=false;toast(localStorage.getItem('funy-pin-lang')==='en'?'Removed from Favorite Shops.':'관심 매장에서 해제했어요.')}
-   else{const {error}=await A.client.from('shop_favorites').insert({user_id:A.session.user.id,shop_id:id});if(error&&error.code!=='23505')throw error;on=true;toast(localStorage.getItem('funy-pin-lang')==='en'?'Added to Favorite Shops.':'관심 매장에 등록했어요.')}
+   if(on){const {error}=await A.client.from('shop_favorites').delete().eq('user_id',A.session.user.id).eq('shop_id',id);if(error)throw error;on=false;window.FUNY_TRACK?.('shop_favorite_remove',{shop_id:id,source:'shop_detail'});toast(localStorage.getItem('funy-pin-lang')==='en'?'Removed from Favorite Shops.':'관심 매장에서 해제했어요.')}
+   else{const {error}=await A.client.from('shop_favorites').insert({user_id:A.session.user.id,shop_id:id});if(error&&error.code!=='23505')throw error;on=true;window.FUNY_TRACK?.('shop_favorite_add',{shop_id:id,source:'shop_detail'});toast(localStorage.getItem('funy-pin-lang')==='en'?'Added to Favorite Shops.':'관심 매장에 등록했어요.')}
    draw();
   }catch(e){toast('관심 매장 처리에 실패했습니다.')}
   finally{btn.disabled=false}

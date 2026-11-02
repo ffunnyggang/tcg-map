@@ -114,6 +114,27 @@
     },
     {
       category:'이벤트 · 리워드 · 배지',
+      condition:'Android 출시 이벤트 · 기본 응모 1회 생성',
+      title:'Android 출시 이벤트 기본 응모 완료 🎉',
+      body:'FUNY PIN 회원 기본 응모 1회가 지급됐어요. 미션을 완료하면 당첨 기회를 더 늘릴 수 있어요.',
+      destination:'Android 출시 이벤트',
+    },
+    {
+      category:'이벤트 · 리워드 · 배지',
+      condition:'Android 출시 이벤트 · 11/2 19:00 이후 관심 카드샵 등록',
+      title:'관심 카드샵 미션 완료 💜',
+      body:'관심 카드샵 등록으로 응모 1회가 추가됐어요. 현재 N/3 응모 완료!',
+      destination:'Android 출시 이벤트',
+    },
+    {
+      category:'이벤트 · 리워드 · 배지',
+      condition:'Android 출시 이벤트 · Instagram 참여 + 총 3/3 달성',
+      title:'이벤트 응모 3/3 완료 🎉',
+      body:'Instagram 댓글 참여까지 완료되어 총 3회 응모됐어요. 11월 17일 당첨자 발표를 확인해주세요.',
+      destination:'Android 출시 이벤트',
+    },
+    {
+      category:'이벤트 · 리워드 · 배지',
       condition:'퍼니몬 이벤트 등 실제 응모 완료',
       title:'이벤트 응모가 완료됐어요',
       body:'{이벤트명} 응모가 정상적으로 완료되었습니다. · 필요 시 오늘 N회 / 총 N회',

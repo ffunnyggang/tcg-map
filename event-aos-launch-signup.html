@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -85,7 +85,7 @@ button,a{font:inherit}
 • 이벤트 기간: 2026. 11. 2(월) ~ 11. 15(일)<br>
 • 당첨자 발표: 2026. 11. 17(화)<br>
 • FUNY PIN 회원 로그인 시 기본 응모 1회<br>
-• 관심 카드샵 1곳 이상 등록 시 +1회<br>
+• 2026. 11. 2(월) 오후 7시 이후 관심 오후 7시 이후 1곳 등록 시 +1회<br>
 • Instagram 이벤트 게시물 댓글 참여 시 +1회<br>
 • 1인 최대 총 3회 응모<br>
 • Instagram 댓글 참여 +1회는 버튼 선택 즉시 반영됩니다.<br>
@@ -149,7 +149,7 @@ button,a{font:inherit}
    return '<article class="mission done"><div class="mission-head"><span class="icon">🎉</span><div class="mission-title"><b>FUNY PIN 회원</b><span>기존 회원 포함, 로그인하면 기본 응모</span></div><span class="reward">+1회</span></div><div class="status"><strong>✓ 기본 응모 완료</strong><span>필수 조건 없음</span></div></article>';
  }
  function missionFavorite(done,count){
-   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💜</span><div class="mission-title"><b>관심 카드샵 1곳 등록</b><span>내 취향 카드샵을 관심 목록에 저장</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'아직 미완료')+'</strong><span>'+(done?'관심 카드샵 등록 완료':'카드샵 1곳 이상 등록')+'</span></div>'+(done?'':'<div class="actions"><a class="btn primary" href="/shops.html">TCG MAP에서 등록하기</a></div>')+'</article>';
+   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💜</span><div class="mission-title"><b>관심 카드샵 1곳 등록</b><span>11/2(월) 오후 7시 이후 새로 등록한 카드샵만 인정</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'아직 미완료')+'</strong><span>'+(done?'관심 카드샵 등록 완료':'오후 7시 이후 1곳 등록')+'</span></div>'+(done?'':'<div class="actions"><a class="btn primary" href="/shops.html">TCG MAP에서 등록하기</a></div>')+'</article>';
  }
  function missionInstagram(done,code){
    const comment='신청완료 '+code;

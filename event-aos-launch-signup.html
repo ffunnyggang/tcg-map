@@ -100,7 +100,7 @@ button,a{font:inherit}
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s);
  const root=$('#authArea'),toastEl=$('#toast');
- const INSTAGRAM_EVENT_URL='https://www.instagram.com/funypin.kr/';
+ const INSTAGRAM_EVENT_URL='https://www.instagram.com/p/DfPSqR5H4bT/?img_index=1';
  let state=null,busy=false,timer=0;
  const toast=m=>{toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>toastEl.classList.remove('show'),1600)};
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

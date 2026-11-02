@@ -61,7 +61,7 @@ button,a{font:inherit}
 <meta name="theme-color" content="#ffffff">
 <link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1">
 <script defer src="/web-safe-area.js?v=20261023-safe1"></script>
-</head>
+<script src="/funy-analytics-core.js?v=20261102-stats1" data-ga-init="1" data-route-tracking="1"></script></head>
 <body>
 <main class="page">
 <header class="head">
@@ -102,6 +102,7 @@ button,a{font:inherit}
  const root=$('#authArea'),toastEl=$('#toast');
  const INSTAGRAM_EVENT_URL='https://www.instagram.com/p/DfPSqR5H4bT/?img_index=1';
  let state=null,busy=false,timer=0;
+ const track=(n,p={})=>window.FUNY_TRACK?.(n,{event_id:'EV-AOS-LAUNCH-SIGNUP-20261102',event_name:'FUNY PIN Android 출시 기념 이벤트',...p});
  const toast=m=>{toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>toastEl.classList.remove('show'),1600)};
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -127,6 +128,8 @@ button,a{font:inherit}
    try{
      const data=await A.invokeFunction('android-launch-signup-event',{action});
      state=data;render();
+     const entry=data?.entry||{};track('event_view',{entry_count:Number(entry.total||0)});
+     if(action==='instagram_participate'){track('event_instagram_entry',{entry_count:Number(entry.total||0)});if(Number(entry.total||0)===3)track('event_entry_complete',{entry_count:3});}
    }catch(e){
      const detail=e?.data?.detail||e?.data?.message||e?.message||e;
      root.innerHTML='<div class="login-card"><b>응모 정보를 불러오지 못했어요</b><p>'+esc(detail)+'</p><button class="btn primary" id="retryBtn" type="button">다시 시도</button></div>';
@@ -166,6 +169,7 @@ button,a{font:inherit}
  }
  function bind(){
    $('#goTcgMap')?.addEventListener('click',e=>{
+     track('event_mission_click',{mission_type:'favorite_shop'});
      if(A.isAppShell()&&window.ReactNativeWebView){
        e.preventDefault();
        window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/map'}));
@@ -177,6 +181,7 @@ button,a{font:inherit}
      try{await navigator.clipboard.writeText(text);toast('댓글 문구를 복사했습니다.')}catch(_){toast(text)}
    });
    $('#igParticipate')?.addEventListener('click',async()=>{
+     track('event_instagram_click',{mission_type:'instagram_comment'});
      const code=state?.entry?.instagramCode||'';
      const text='신청완료 '+code;
      try{await navigator.clipboard.writeText(text)}catch(_){}

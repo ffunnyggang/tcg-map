@@ -75,7 +75,7 @@ button,a{font:inherit}
 
 <section class="section">
 <h2>내 응모 현황</h2>
-<p class="section-desc">FUNY PIN 회원이면 기본 응모 1회가 지급되고, 미션마다 응모권이 1회씩 추가됩니다.</p>
+<p class="section-desc">기존 가입자를 포함한 모든 FUNY PIN 회원에게 기본 응모 1회가 지급되고, 미션마다 응모권이 1회씩 추가됩니다.</p>
 <div id="authArea"><div class="loading">로그인 정보를 확인하는 중...</div></div>
 </section>
 
@@ -84,7 +84,7 @@ button,a{font:inherit}
 <div class="notice">
 • 이벤트 기간: 2026. 11. 2(월) ~ 11. 15(일)<br>
 • 당첨자 발표: 2026. 11. 17(화)<br>
-• FUNY PIN 회원 로그인 시 기본 응모 1회<br>
+• 기존 가입자 포함, FUNY PIN 회원 로그인 시 기본 응모 1회<br>
 • 2026. 11. 2(월) 오후 7시 이후 관심 오후 7시 이후 1곳 등록 시 +1회<br>
 • Instagram 이벤트 게시물 댓글 참여 시 +1회<br>
 • 1인 최대 총 3회 응모<br>
@@ -136,7 +136,7 @@ button,a{font:inherit}
    const e=state?.entry||{base:1,favorite:0,instagram:0,total:1,max:3,instagramCode:''};
    const favDone=e.favorite>0,igDone=e.instagram>0,total=Math.max(1,Number(e.total||1)),pct=Math.max(0,Math.min(100,total/3*100));
    root.innerHTML=
-   '<div class="entry-box"><div class="entry-top"><div><span>현재 내 응모 횟수</span><div class="entry-num"><b>'+total+'</b> / 3</div></div><span>당첨 기회 '+total+'배</span></div><div class="entry-bar"><div class="entry-fill" style="width:'+pct+'%"></div></div><div class="entry-note">FUNY PIN 회원이면 기본 응모 완료! 아래 미션을 추가로 완료하면 추첨 풀에 응모권이 더 추가됩니다.</div></div>'+
+   '<div class="entry-box"><div class="entry-top"><div><span>현재 내 응모 횟수</span><div class="entry-num"><b>'+total+'</b> / 3</div></div><span>당첨 기회 '+total+'배</span></div><div class="entry-bar"><div class="entry-fill" style="width:'+pct+'%"></div></div><div class="entry-note">기존 가입자를 포함한 FUNY PIN 회원이라면 기본 응모 완료! 아래 미션을 추가로 완료하면 추첨 풀에 응모권이 더 추가됩니다.</div></div>'+
    '<div class="missions">'+
     missionBase()+
     missionFavorite(favDone,state?.favoriteCount||0)+
@@ -146,7 +146,7 @@ button,a{font:inherit}
  }
 
  function missionBase(){
-   return '<article class="mission done"><div class="mission-head"><span class="icon">🎉</span><div class="mission-title"><b>FUNY PIN 회원</b><span>기존 회원 포함, 로그인하면 기본 응모</span></div><span class="reward">+1회</span></div><div class="status"><strong>✓ 기본 응모 완료</strong><span>필수 조건 없음</span></div></article>';
+   return '<article class="mission done"><div class="mission-head"><span class="icon">🎉</span><div class="mission-title"><b>FUNY PIN 회원</b><span>기존 가입자 포함, 로그인하면 기본 응모</span></div><span class="reward">+1회</span></div><div class="status"><strong>✓ 기본 응모 완료</strong><span>필수 조건 없음</span></div></article>';
  }
  function missionFavorite(done,count){
    return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💜</span><div class="mission-title"><b>관심 카드샵 1곳 등록</b><span>11/2(월) 오후 7시 이후 새로 등록한 카드샵만 인정</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'아직 미완료')+'</strong><span>'+(done?'관심 카드샵 등록 완료':'오후 7시 이후 1곳 등록')+'</span></div>'+(done?'':'<div class="actions"><a class="btn primary" href="/shops.html">TCG MAP에서 등록하기</a></div>')+'</article>';

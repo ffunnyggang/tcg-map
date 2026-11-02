@@ -15,6 +15,11 @@ html,body{margin:0;background:#f4f1f8;color:var(--text);font-family:'Pretendard 
 button,a{font:inherit}
 .page{width:min(100%,430px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(34px,env(safe-area-inset-bottom))}
 .testbar{position:sticky;top:0;z-index:60;padding:8px 12px;background:#16121c;color:#fff;text-align:center;font-size:10px;font-weight:850;letter-spacing:.04em}
+.qa-switcher{position:sticky;top:31px;z-index:59;padding:8px 10px;border-bottom:1px solid #e8e2ee;background:rgba(255,255,255,.97);backdrop-filter:blur(12px)}
+.qa-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.qa-scroll::-webkit-scrollbar{display:none}
+.qa-step{flex:0 0 auto;height:30px;padding:0 10px;border:1px solid #e5deed;border-radius:999px;background:#fff;color:#766d7c;font-size:9.5px;font-weight:850;white-space:nowrap;cursor:pointer}
+.qa-step.on{border-color:#8062d8;background:#8062d8;color:#fff}
+.qa-hint{margin-top:6px;color:#9a929e;font-size:8.5px;text-align:center}
 .head{height:54px;padding:0 14px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;background:rgba(255,255,255,.97)}
 .back{width:40px;height:54px;border:0;background:none;font-size:29px;font-weight:300;color:#2f2933}
 .title{text-align:center;font-size:16px;font-weight:850}
@@ -63,6 +68,16 @@ button,a{font:inherit}
 <body>
 <main class="page">
 <div class="testbar">TEST PAGE · 일반 사용자에게 미노출 · 최종 확인 전 운영 오픈 금지</div>
+<div class="qa-switcher">
+  <div class="qa-scroll" id="qaStepBar">
+    <button class="qa-step" type="button" data-step="loggedout">0. 비로그인</button>
+    <button class="qa-step" type="button" data-step="base">1. 기본 1회</button>
+    <button class="qa-step" type="button" data-step="favorite">2. 관심매장 +1</button>
+    <button class="qa-step" type="button" data-step="complete">3. 전체 완료</button>
+    <button class="qa-step" type="button" data-step="actual">실제 계정</button>
+  </div>
+  <div class="qa-hint">화면 확인용 시뮬레이션 · 실제 계정 데이터는 변경하지 않습니다.</div>
+</div>
 <header class="head">
 <button class="back" type="button" onclick="history.length>1?history.back():location.href='/'" aria-label="뒤로가기">‹</button>
 <strong class="title">Android 출시 이벤트</strong><span></span>
@@ -102,14 +117,51 @@ button,a{font:inherit}
 (async()=>{
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s);
  const root=$('#authArea'),toastEl=$('#toast');
+ const params=new URLSearchParams(location.search);
+ const qaStep=params.get('step')||'actual';
+ const isSimulated=qaStep!=='actual';
  let state=null,busy=false,timer=0;
  const toast=m=>{toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>toastEl.classList.remove('show'),1600)};
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+ function bindQaSteps(){
+   document.querySelectorAll('.qa-step').forEach(btn=>{
+     btn.classList.toggle('on',btn.dataset.step===qaStep);
+     btn.addEventListener('click',()=>{
+       const u=new URL(location.href);
+       u.searchParams.set('qa','1');
+       u.searchParams.set('step',btn.dataset.step);
+       location.href=u.pathname+u.search;
+     });
+   });
+ }
+ bindQaSteps();
+
+ function renderLoggedOut(simulated=false){
+   root.innerHTML='<div class="login-card"><b>로그인하면 바로 응모할 수 있어요</b><p>'+(simulated?'QA 화면 시뮬레이션입니다. 실제 로그인 상태와 무관하게 비로그인 화면만 표시합니다.':'회원가입을 완료하면 기본 응모 1회가 자동 지급됩니다.')+'</p><button class="btn primary" id="loginBtn" type="button">로그인 / 회원가입</button></div>';
+   $('#loginBtn').onclick=()=>simulated?toast('시뮬레이션 화면입니다.'):A.goLogin(location.pathname+'?qa=1&step=actual');
+ }
+
+ function simulatedState(step){
+   if(step==='base')return {testMode:true,simulated:true,favoriteCount:0,entry:{base:1,favorite:0,instagram:0,total:1,max:3,instagramCode:'FPTEST1'}};
+   if(step==='favorite')return {testMode:true,simulated:true,favoriteCount:1,entry:{base:1,favorite:1,instagram:0,total:2,max:3,instagramCode:'FPTEST2',favoriteVerifiedAt:new Date().toISOString()}};
+   if(step==='complete')return {testMode:true,simulated:true,favoriteCount:1,entry:{base:1,favorite:1,instagram:1,total:3,max:3,instagramCode:'FPTEST3',favoriteVerifiedAt:new Date().toISOString(),instagramVerifiedAt:new Date().toISOString()}};
+   return null;
+ }
+
+ if(qaStep==='loggedout'){
+   renderLoggedOut(true);
+   return;
+ }
+ if(isSimulated){
+   state=simulatedState(qaStep);
+   render();
+   return;
+ }
+
  await A.init();
  if(!A.session){
-   root.innerHTML='<div class="login-card"><b>로그인하면 바로 응모할 수 있어요</b><p>테스트에서는 기존 회원도 기본 응모 1회를 지급해 전체 흐름을 확인할 수 있습니다.</p><button class="btn primary" id="loginBtn" type="button">로그인 / 회원가입</button></div>';
-   $('#loginBtn').onclick=()=>A.goLogin(location.pathname+location.search);
+   renderLoggedOut(false);
    return;
  }
 
@@ -128,13 +180,13 @@ button,a{font:inherit}
    const e=state?.entry||{base:1,favorite:0,instagram:0,total:1,max:3,instagramCode:''};
    const favDone=e.favorite>0,igDone=e.instagram>0,total=Math.max(1,Number(e.total||1)),pct=Math.max(0,Math.min(100,total/3*100));
    root.innerHTML=
-   '<div class="entry-box"><div class="entry-top"><div><span>현재 내 응모 횟수</span><div class="entry-num"><b>'+total+'</b> / 3</div></div><span>당첨 기회 '+total+'배</span></div><div class="entry-bar"><div class="entry-fill" style="width:'+pct+'%"></div></div><div class="entry-note">회원가입만으로 이미 응모 완료! 아래 미션을 추가로 완료하면 추첨 풀에 응모권이 더 추가됩니다.</div></div>'+
+   '<div class="entry-box"><div class="entry-top"><div><span>'+(state?.simulated?'QA 시뮬레이션 응모 횟수':'현재 내 응모 횟수')+'</span><div class="entry-num"><b>'+total+'</b> / 3</div></div><span>당첨 기회 '+total+'배</span></div><div class="entry-bar"><div class="entry-fill" style="width:'+pct+'%"></div></div><div class="entry-note">'+(state?.simulated?'선택한 단계의 화면만 미리보는 상태입니다. 실제 회원 데이터는 변경되지 않습니다.':'회원가입만으로 이미 응모 완료! 아래 미션을 추가로 완료하면 추첨 풀에 응모권이 더 추가됩니다.')+'</div></div>'+
    '<div class="missions">'+
     missionBase()+
     missionFavorite(favDone,state?.favoriteCount||0)+
     missionInstagram(igDone,e.instagramCode||'')+
    '</div>'+
-   '<details class="qa"><summary>QA 테스트 도구</summary><p>Instagram 실제 댓글 API 연동 전까지 댓글 미션은 테스트 인증 버튼으로 응모권 지급/초기화를 확인합니다.</p><button class="btn sub" id="igReset" type="button">Instagram 테스트 인증 초기화</button></details>';
+   (state?.simulated?'':'<details class="qa"><summary>QA 테스트 도구</summary><p>Instagram 실제 댓글 API 연동 전까지 댓글 미션은 테스트 인증 버튼으로 응모권 지급/초기화를 확인합니다.</p><button class="btn sub" id="igReset" type="button">Instagram 테스트 인증 초기화</button></details>');
    bind();
  }
 
@@ -149,13 +201,13 @@ button,a{font:inherit}
    return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남기기</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'댓글 인증 대기')+'</strong><span>'+(done?'인증 완료':'운영 전 테스트')+'</span></div><div class="codebox"><div class="code-label">내 전용 댓글 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div><div class="actions"><a class="btn dark" href="https://www.instagram.com/funypin.kr/" target="_blank" rel="noopener">Instagram 열기</a>'+(done?'':'<button class="btn primary" id="igTestVerify" type="button">댓글 인증 테스트 +1</button>')+'</div></article>';
  }
  function bind(){
-   $('#favCheck')?.addEventListener('click',()=>sync('sync'));
+   $('#favCheck')?.addEventListener('click',()=>state?.simulated?toast('QA 시뮬레이션 화면입니다.'):sync('sync'));
    $('#copyCode')?.addEventListener('click',async()=>{const code=state?.entry?.instagramCode||'';const text='신청완료 '+code;try{await navigator.clipboard.writeText(text);toast('댓글 문구를 복사했습니다.')}catch(_){toast(text)}});
-   $('#igTestVerify')?.addEventListener('click',()=>sync('instagram_test_verify'));
+   $('#igTestVerify')?.addEventListener('click',()=>state?.simulated?toast('QA 시뮬레이션 화면입니다.'):sync('instagram_test_verify'));
    $('#igReset')?.addEventListener('click',()=>sync('instagram_test_reset'));
  }
- window.addEventListener('pageshow',()=>{if(state&&!busy)sync('sync')});
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state&&!busy)sync('sync')});
+ window.addEventListener('pageshow',()=>{if(state&&!busy&&!state?.simulated)sync('sync')});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state&&!busy&&!state?.simulated)sync('sync')});
  await sync();
 })().catch(e=>{const root=document.getElementById('authArea');if(root)root.innerHTML='<div class="login-card"><b>페이지를 불러오지 못했어요</b><p>'+String(e?.message||e)+'</p></div>'});
 </script>

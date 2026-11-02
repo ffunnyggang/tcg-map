@@ -4,6 +4,8 @@ const DRAFT='funypin_draw_draft_v2',RUN='funypin_draw_run_v2',setup=document.bod
 const THEMES=['purple','gold','halloween','ocean'];
 function themeId(id){return THEMES.includes(id)?id:'purple'}
 function applyTheme(id){document.body.dataset.theme=themeId(id)}
+const EXAMPLES={title:'FUNY PIN 팔로우 이벤트',description:'이벤트 기간: 2026. 11. 2. ~ 11. 15.\n당첨자 발표: 2026. 11. 17.\n팔로우하고 댓글로 참여해주세요.',prize:'포켓몬 30주년 기념팩 (일본판) 1팩'};
+let previewPrizeIndex=0;
 let authorized=false,busy=false,confirmed=false,pool=[],winners=[],config=null,prizes=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function rnd(n){const a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n;do{crypto.getRandomValues(a)}while(a[0]>=lim);return a[0]%n}
@@ -11,11 +13,11 @@ async function adminToken(){let token=sessionStorage.getItem('funypin_admin_toke
 function parseEntries(text){const raw=text.split(/[\n,;\t ]+/).map(s=>s.trim().replace(/^@/,'').toLowerCase()).filter(Boolean);const invalid=raw.filter(x=>!/^[a-z0-9._]{1,30}$/.test(x));return {list:[...new Set(raw)],invalid,duplicates:raw.length-new Set(raw).size}}
 function total(){const n=Number($('configTotal').value);return Number.isInteger(n)&&n>=1&&n<=100?n:0}
 function readDraft(){return {theme:themeId($('configTheme')?.value),title:$('configTitle').value,description:$('configDescription').value,total:$('configTotal').value,prizes:prizes.slice(),warning:$('configWarning').value,entries:$('entries').value}}
-function preview(c,list){applyTheme(c.theme);$('eventTitle').textContent=c.title.trim()||'이벤트 추첨';$('eventDescription').textContent=c.description.trim();const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
+function preview(c,list){applyTheme(c.theme);$('eventTitle').textContent=c.title.trim()||(setup?EXAMPLES.title:'이벤트 추첨');$('eventDescription').textContent=c.description.trim()||(setup?EXAMPLES.description:'');if(setup&&$('setupPrizeText')){const i=Math.min(previewPrizeIndex,Math.max(0,c.prizes.length-1));$('setupPreviewRound').textContent=(i+1)+'번째 당첨자 · 미리보기';$('setupPrizeText').textContent=(c.prizes[i]||'').trim()||EXAMPLES.prize}const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
 function sync(){const data=parseEntries($('entries').value),n=total();preview({...readDraft(),prizes:prizes.slice(0,n)},data.list);$('count').textContent='참여자 '+data.list.length+'명'+(data.duplicates?' · 중복 '+data.duplicates+'건 제외':'')+(data.invalid.length?' · 잘못된 ID: '+data.invalid.slice(0,5).join(', '):'');try{localStorage.setItem(DRAFT,JSON.stringify(readDraft()))}catch(e){}}
-function renderPrizes(){const n=total();$('prizeFields').replaceChildren();for(let i=0;i<n;i++){if(typeof prizes[i]!=='string')prizes[i]='';const row=document.createElement('div');row.className='prize-row';const label=document.createElement('label');label.htmlFor='gift-'+i;label.textContent=(i+1)+'번째 경품';const input=document.createElement('input');input.id='gift-'+i;input.maxLength=200;input.placeholder='경품명 · 수량';input.value=prizes[i];input.addEventListener('input',()=>{prizes[i]=input.value;sync()});row.append(label,input);$('prizeFields').append(row)}sync()}
+function renderPrizes(){const n=total();$('prizeFields').replaceChildren();for(let i=0;i<n;i++){if(typeof prizes[i]!=='string')prizes[i]='';const row=document.createElement('div');row.className='prize-row';const label=document.createElement('label');label.htmlFor='gift-'+i;label.textContent=(i+1)+'번째 경품';const input=document.createElement('input');input.id='gift-'+i;input.maxLength=200;input.placeholder=EXAMPLES.prize;input.value=prizes[i];input.addEventListener('input',()=>{previewPrizeIndex=i;prizes[i]=input.value;sync()});row.append(label,input);$('prizeFields').append(row)}sync()}
 function setupPage(){
- $('setupView').hidden=false;
+ $('setupView').hidden=false;$('configTitle').placeholder=EXAMPLES.title;$('configDescription').placeholder=EXAMPLES.description;
  try{const d=JSON.parse(localStorage.getItem(DRAFT)||'null');if(d){for(const [id,key] of [['configTitle','title'],['configDescription','description'],['configTotal','total'],['configWarning','warning'],['entries','entries']])if(typeof d[key]==='string')$(id).value=d[key];if($('configTheme'))$('configTheme').value=themeId(d.theme);if(Array.isArray(d.prizes))prizes=d.prizes.slice(0,100).map(x=>typeof x==='string'?x:'')}}catch(e){}
  renderPrizes();
  ['configTitle','configDescription','configWarning','entries','configTheme'].forEach(id=>$(id).addEventListener('input',sync));

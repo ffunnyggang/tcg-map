@@ -50,6 +50,7 @@ p{margin:14px 0 0;color:#8f8996;font-size:15px;font-weight:600;line-height:1.55;
 </div>
 <script>
 (function(){
+  var PLAY_STORE='https://play.google.com/store/apps/details?id=kr.funypin.app';
   var APP_STORE='https://apps.apple.com/us/app/funy-pin/id6817652126';
   var qs=new URLSearchParams(location.search);
   var event=qs.get('event')||'';
@@ -104,17 +105,22 @@ p{margin:14px 0 0;color:#8f8996;font-size:15px;font-weight:600;line-height:1.55;
     location.href=appUrl();
   }
 
+  function openAndroidApp(){
+    location.href=appUrl().replace(/^funypin:/,'intent:')+'#Intent;scheme=funypin;package=kr.funypin.app;S.browser_fallback_url='+encodeURIComponent(PLAY_STORE)+';end';
+  }
+
   openBtn.onclick=function(){
     if(isIOS){openIOSApp();return}
-    if(isAndroid){location.href=webUrl();return}
+    if(isAndroid){openAndroidApp();return}
     location.href=webUrl();
   };
 
   if(isAndroid){
-    status.textContent='Android에서는 Web TCG MAP으로 이동합니다.';
-    openBtn.textContent='Web TCG MAP 열기';
-    storeBtn.style.display='none';
-    setTimeout(function(){location.replace(webUrl())},250);
+    status.textContent='아래 버튼을 눌러 FUNY PIN 앱을 열어주세요.';
+    openBtn.textContent='FUNY PIN 앱 열기';
+    storeBtn.href=PLAY_STORE;
+    storeBtn.textContent='Google Play에서 설치하기';
+    document.querySelector('.note').textContent='Android에서는 앱 열기 버튼을 눌러주세요. 앱이 설치되어 있지 않으면 Google Play로 이동합니다.';
   }else if(isIOS){
     status.textContent='FUNY PIN 앱을 확인하고 있어요.';
     setTimeout(openIOSApp,250);

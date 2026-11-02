@@ -86,7 +86,7 @@ button,a{font:inherit}
 • 당첨자 발표: 2026. 11. 17(화)<br>
 • 기존 가입자 포함, FUNY PIN 회원 로그인 시 기본 응모 1회<br>
 • 2026. 11. 2(월) 오후 7시 이후 관심 카드샵 1곳 이상 등록 시 +1회<br>
-• Instagram 이벤트 게시물 댓글 참여 시 +1회<br>
+• 관심 카드샵 미션 완료 후 Instagram 이벤트 게시물 댓글 참여 가능 · 완료 시 +1회<br>
 • 1인 최대 총 3회 응모<br>
 • Instagram 댓글 참여 +1회는 버튼 선택 즉시 반영됩니다.<br>
 • 최종 추첨 전에 실제 댓글 참여 여부를 확인하며, 댓글 미작성·삭제 등 조건 미충족 시 해당 +1회는 취소될 수 있습니다.<br>
@@ -146,7 +146,7 @@ button,a{font:inherit}
    '<div class="missions">'+
     missionBase()+
     missionFavorite(favDone,state?.favoriteCount||0)+
-    missionInstagram(igDone,e.instagramCode||'')+
+    missionInstagram(igDone,e.instagramCode||'',favDone)+
    '</div>';
    bind();
  }
@@ -157,9 +157,12 @@ button,a{font:inherit}
  function missionFavorite(done,count){
    return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💜</span><div class="mission-title"><b>관심 카드샵 1곳 등록</b><span>11/2(월) 오후 7시 이후 새로 등록한 카드샵만 인정</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'아직 미완료')+'</strong><span>'+(done?'관심 카드샵 등록 완료':'오후 7시 이후 1곳 등록')+'</span></div>'+(done?'':'<div class="actions"><a class="btn primary" id="goTcgMap" href="/shops.html">TCG MAP에서 등록하기</a></div>')+'</article>';
  }
- function missionInstagram(done,code){
+ function missionInstagram(done,code,unlocked){
    const comment='신청완료 '+code;
-   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남겨주세요</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 댓글 참여 완료':'아직 미참여')+'</strong><span>'+(done?'추첨 전 최종 확인':'선택 시 즉시 +1회')+'</span></div><div class="codebox"><div class="code-label">댓글에 남길 내 전용 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div>'+(done?'<div class="verify-note">※ 최종 추첨 전에 실제 댓글 참여 여부를 확인합니다. 댓글 미작성·삭제 등 조건에 맞지 않을 경우 Instagram 댓글 참여로 추가된 응모 1회는 취소될 수 있습니다.</div><a class="text-link" href="'+INSTAGRAM_EVENT_URL+'" target="_blank" rel="noopener">Instagram 게시물 확인하기 ›</a>':'<div class="actions"><button class="btn primary" id="igParticipate" type="button">댓글 참여하기</button></div><div class="verify-note">버튼 선택 시 +1회가 바로 반영됩니다. 최종 추첨 전 실제 댓글 참여 여부를 확인하며, 조건 미충족 시 해당 +1회는 취소될 수 있습니다.</div>')+'</article>';
+   if(!unlocked&&!done){
+     return '<article class="mission pending"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>관심 카드샵 미션 완료 후 참여할 수 있어요</span></div><span class="reward">+1회</span></div><div class="status"><strong>🔒 참여 잠김</strong><span>관심 카드샵 등록을 먼저 완료해주세요</span></div><div class="actions"><button class="btn primary" type="button" disabled>댓글 참여하기</button></div></article>';
+   }
+   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남겨주세요</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 댓글 참여 완료':'참여 가능')+'</strong><span>'+(done?'추첨 전 최종 확인':'관심 카드샵 미션 완료')+'</span></div><div class="codebox"><div class="code-label">댓글에 남길 내 전용 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div>'+(done?'<div class="verify-note">※ 최종 추첨 전에 실제 댓글 참여 여부를 확인합니다. 댓글 미작성·삭제 등 조건에 맞지 않을 경우 Instagram 댓글 참여로 추가된 응모 1회는 취소될 수 있습니다.</div><a class="text-link" href="'+INSTAGRAM_EVENT_URL+'" target="_blank" rel="noopener">Instagram 게시물 확인하기 ›</a>':'<div class="actions"><button class="btn primary" id="igParticipate" type="button">댓글 참여하기</button></div><div class="verify-note">버튼 선택 시 +1회가 바로 반영됩니다. 최종 추첨 전 실제 댓글 참여 여부를 확인하며, 조건 미충족 시 해당 +1회는 취소될 수 있습니다.</div>')+'</article>';
  }
  function bind(){
    $('#goTcgMap')?.addEventListener('click',e=>{

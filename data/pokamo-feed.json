@@ -1,6 +1,6 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-11-02T15:53:06.070503+00:00",
+  "updatedAt": "2026-11-02T23:30:37.437855+00:00",
   "count": 60,
   "items": [
     {
@@ -11,10 +11,10 @@
       "excerpt": "이건 혹시 얼마쯤 할까요?..",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261102/3a88be9c-0cea-4f6f-b74d-7530fd2a12e0.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이건-혹시-얼마쯤-할까요-AqrgVkBP",
-      "views": 1,
+      "views": 2,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.01
+      "popularityScore": 3.02
     },
     {
       "category": "정보 공유",
@@ -50,10 +50,10 @@
       "excerpt": "테레카 성수 방문해서 brg 현장 접수했어요 10등급 가즈아~🔥🔥🔥",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/179362817525635150887cfc15c686936fd470dae6cce8827edb5a9cf4b2b5a08c21ff75db6aa0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/brg-현장-접수-완료-dZnW8Qxd",
-      "views": 13,
+      "views": 15,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.13
+      "popularityScore": 3.15
     },
     {
       "category": "카드 자랑",
@@ -115,10 +115,10 @@
       "excerpt": "가격 문의 편하게 받습니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/9185c0a7-8772-48bd-a471-55bbb4de524f.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/25주년-뮤-ur-일판-관심-있으시면-채팅-주세요-dg363vXd",
-      "views": 2,
-      "likes": 1,
+      "views": 4,
+      "likes": 0,
       "comments": 0,
-      "popularityScore": 3.02
+      "popularityScore": 0.04
     },
     {
       "category": "카드거래",
@@ -180,10 +180,10 @@
       "excerpt": "드디어30종류 완료 드디어 30주년 파카츄 30종 다 모았네요^^ 2세트 만들려고 하는데 부족한거 제가 남는거랑 트레이드 원합니다 ^^",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/963857e8-d496-4828-9a0e-173a6df79d83.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년피카츄-jvxb7W3P",
-      "views": 30,
-      "likes": 1,
+      "views": 33,
+      "likes": 3,
       "comments": 0,
-      "popularityScore": 3.3
+      "popularityScore": 9.33
     },
     {
       "category": "자유 게시판",
@@ -349,10 +349,10 @@
       "excerpt": "올드백 90장 바인더 팝니다 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e5e42438-a429-4964-8915-339ed871dd8e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-총-90장팝니다-A4Qk5D1P",
-      "views": 24,
+      "views": 25,
       "likes": 2,
-      "comments": 4,
-      "popularityScore": 14.24
+      "comments": 5,
+      "popularityScore": 16.25
     },
     {
       "category": "카드 자랑",
@@ -362,10 +362,10 @@
       "excerpt": "이번 포켓몬카드 30주년 박스에서 운 좋게 카드볼트에서 단 한 박스 만에 뮤 RGB를 뽑으며 졸업하게 되었습니다! 😆 카드를 뽑은 것도 기분 좋은 일이었는데, 카드볼트 사장님의 추천으로 BRG 그레이딩까지 보내보게 되었습니다. 그리고 기다림 끝에 나온 결과는 바로...! 🎉 BRG GE",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/7b9f56f7-07bf-40d2-9ca2-03b58d59f9e6.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🍀-카드볼트에서-한-박스-만에-졸업한-뮤-RGB-💚-dz9pZG7P",
-      "views": 74,
+      "views": 75,
       "likes": 5,
       "comments": 2,
-      "popularityScore": 19.74
+      "popularityScore": 19.75
     },
     {
       "category": "정보 공유",
@@ -440,10 +440,10 @@
       "excerpt": "팔로우 이벤트 참여하세요🙇🏻‍♂️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792598133966d3ba9d4e4d5a1accec5321911e789c47266a8f7fb52a21e20077f1a0c6e09a140.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎉-포켓몬-30주년-기념팩-팔로우-이벤트-🎉-dZnE1ved",
-      "views": 67,
+      "views": 68,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.67
+      "popularityScore": 3.68
     },
     {
       "category": "카드 자랑",
@@ -479,10 +479,10 @@
       "excerpt": "RGB뮤 레드 노리고 시작해서 총 3천만원, 1500팩 이상 까서 드디어 나와주네요 ㅠㅠㅠ 루기아, 리자몽, FUR등 각각 전부 6장 - 10장 이상씩은 뜬 거 같고 추리고 추려서 100장 정도 전부 유학 보냈습니다! 좋은 결과로 돌아오길 ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792134003530d4b79dfb72eb4e865d3b709b2938d74dcb5ec77f2ff27d99dcba2dc7bf07c0da0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/총-3천만원어치-북미-30주년-카드깡-결과-dlYq1NYj",
-      "views": 244,
+      "views": 246,
       "likes": 3,
       "comments": 3,
-      "popularityScore": 17.44
+      "popularityScore": 17.46
     },
     {
       "category": "카드 자랑",
@@ -492,10 +492,10 @@
       "excerpt": "30주년 일본판이 왔습니다!!!바로 친구랑 만나서 같이 개봉했습니다ㅋㅈㅋ 리자몽이 안나온건 아쉽지만 fur등급 뮤츠가 나와서 행복하네요~",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792031131597841b42b5164ed49effd3ed1b2aa1c788d3391771cb403c2291eaa445060915150.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-개봉-PnN047WP",
-      "views": 95,
+      "views": 97,
       "likes": 3,
       "comments": 6,
-      "popularityScore": 21.95
+      "popularityScore": 21.97
     },
     {
       "category": "카드 자랑",
@@ -596,10 +596,10 @@
       "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
-      "views": 141,
+      "views": 142,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 13.41
+      "popularityScore": 13.42
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -648,10 +648,10 @@
       "excerpt": "카드볼트 방문하고 FUNY PIN으로 방문 인증하면, 추첨을 통해 총 3분께 경품을 드려요! 🎁 📅 이벤트 기간 9/22(화) ~ 9/27(일) 오후 10시까지 📢 당첨자 발표 9/28(월) 🎁 경품 • 포켓몬 퍼스트파트너 시리즈1 1BOX — 1명 • 유미의 세포들 콜렉션 카드 1BO",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/1790072548121996f7d5c3eb23c351e13ccd2b08b52152e0be071cb92a4e262b65e56f1e50edf0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🌕-FUNY-PIN-CARDVAULT-한가위-방문-인증-이벤트-🐰🍂-AeDJ1gZj",
-      "views": 30,
+      "views": 31,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.3
+      "popularityScore": 5.31
     },
     {
       "category": "카드깡/카드샵 후기",

@@ -19,3 +19,6 @@
 
 /* Compact photo-card favorites by 20%, preserving the existing touch target. */
 .funy-home-shops .fhs-tile-heart::before{inset:5px}.funy-home-shops .fhs-tile-heart svg{width:16.8px;height:16.8px;overflow:visible}
+
+/* Anchor the backdrop and icon to the same center across WebView button layouts. */
+.funy-home-shops .fhs-tile-heart{padding:0}.funy-home-shops .fhs-tile-heart::before{inset:auto;left:50%;top:50%;width:24px;height:24px;transform:translate(-50%,-50%)}.funy-home-shops .fhs-tile-heart svg{position:absolute;left:50%;top:50%;margin:0;display:block;transform:translate(-50%,-50%)}

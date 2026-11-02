@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<title>Android 출시 기념 회원가입 이벤트 TEST | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<style>
+*{box-sizing:border-box}
+:root{--p:#8062d8;--p2:#6749bd;--soft:#f6f2fb;--line:#e9e3ef;--text:#211d26;--muted:#817985;--green:#25a765}
+html,body{margin:0;background:#f4f1f8;color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.025em}
+button,a{font:inherit}
+.page{width:min(100%,430px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(34px,env(safe-area-inset-bottom))}
+.testbar{position:sticky;top:0;z-index:60;padding:8px 12px;background:#16121c;color:#fff;text-align:center;font-size:10px;font-weight:850;letter-spacing:.04em}
+.head{height:54px;padding:0 14px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;background:rgba(255,255,255,.97)}
+.back{width:40px;height:54px;border:0;background:none;font-size:29px;font-weight:300;color:#2f2933}
+.title{text-align:center;font-size:16px;font-weight:850}
+.hero{padding:22px 18px 24px;background:
+ radial-gradient(circle at 88% 4%,rgba(128,98,216,.19),transparent 29%),
+ linear-gradient(180deg,#fbf9ff 0,#fff 100%)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1d9ef;border-radius:999px;background:#fff;color:#6f50bb;font-size:10px;font-weight:900}
+.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#36b76c}
+.hero h1{margin:13px 0 10px;font-size:29px;line-height:1.16;letter-spacing:-.055em}
+.hero h1 em{font-style:normal;color:var(--p)}
+.hero p{margin:0;color:#6e6673;font-size:12px;line-height:1.6;word-break:keep-all}
+.prize{margin-top:18px;padding:18px;border:1px solid #e9e3f0;border-radius:20px;background:linear-gradient(145deg,#fff,#f7f3fc);display:grid;grid-template-columns:96px minmax(0,1fr);gap:15px;align-items:center}
+.prize-art{height:112px;border-radius:15px;background:linear-gradient(145deg,#fff6ce,#f3d477 45%,#d5a830);display:grid;place-items:center;box-shadow:0 9px 24px rgba(159,126,45,.12)}
+.prize-art span{display:block;text-align:center;color:#5a4610;font-weight:950;line-height:1.1}.prize-art b{display:block;font-size:28px}.prize-art small{font-size:9px;letter-spacing:.05em}
+.prize-copy small{display:block;color:#8b828f;font-size:9px;font-weight:750}.prize-copy strong{display:block;margin-top:4px;font-size:18px;line-height:1.35}.prize-copy p{margin:6px 0 0;font-size:10.5px;line-height:1.45}
+.section{padding:22px 18px;border-top:8px solid #f5f3f7}
+.section h2{margin:0;font-size:17px;letter-spacing:-.035em}
+.section-desc{margin:7px 0 0;color:#817985;font-size:11px;line-height:1.55}
+.entry-box{margin-top:14px;padding:18px;border-radius:19px;background:#17131e;color:#fff}
+.entry-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.entry-top span{color:#cfc7d7;font-size:11px;font-weight:700}.entry-num{font-size:31px;font-weight:950;line-height:1}.entry-num b{color:#c6aeff}
+.entry-bar{height:8px;margin-top:14px;border-radius:999px;background:#312b38;overflow:hidden}.entry-fill{height:100%;width:33.333%;border-radius:inherit;background:linear-gradient(90deg,#8062d8,#b18bf1);transition:width .35s ease}
+.entry-note{margin-top:11px;color:#cfc8d5;font-size:10px;line-height:1.5}
+.missions{display:grid;gap:10px;margin-top:15px}
+.mission{padding:15px;border:1px solid var(--line);border-radius:17px;background:#fff}
+.mission-head{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center}
+.icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#f0eafb;font-size:18px}
+.mission-title{min-width:0}.mission-title b{display:block;font-size:13px}.mission-title span{display:block;margin-top:3px;color:#8b838f;font-size:10px}
+.reward{height:25px;padding:0 8px;border-radius:999px;background:#eee8fa;color:#684ab7;display:inline-flex;align-items:center;font-size:10px;font-weight:900;white-space:nowrap}
+.mission.done{border-color:#d7ecdf;background:#fbfffc}.mission.done .icon{background:#e9f8ee}.mission.done .reward{background:#dff4e7;color:#238552}
+.status{margin-top:11px;padding-top:11px;border-top:1px solid #eee9f1;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#716a76;font-size:10.5px;line-height:1.45}
+.status strong{color:#4f4655}.done .status strong{color:#208553}
+.actions{display:flex;gap:7px;margin-top:10px}.btn{min-height:43px;padding:0 13px;border:0;border-radius:12px;font-size:11px;font-weight:850;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center}.btn.primary{flex:1;background:var(--p);color:#fff}.btn.sub{background:#f2edf8;color:#6749bd}.btn.dark{background:#17131e;color:#fff}.btn:disabled{opacity:.48;cursor:default}
+.codebox{margin-top:11px;padding:11px;border-radius:12px;background:#f7f4fa}
+.code-label{color:#8a8290;font-size:9.5px}.code-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px}.code-line code{font-family:inherit;font-size:12px;font-weight:850;color:#51359e}.copy{border:0;background:none;color:#8062d8;font-size:10px;font-weight:850}
+.notice{margin-top:15px;padding:14px;border-radius:14px;background:#f7f5f9;color:#746d79;font-size:10px;line-height:1.65}
+.login-card{margin-top:16px;padding:22px;border:1px solid #e8e2ee;border-radius:18px;text-align:center}.login-card b{display:block;font-size:14px}.login-card p{margin:7px 0 14px;color:#857e89;font-size:11px;line-height:1.55}
+.qa{margin-top:16px;padding:13px;border:1px dashed #d8ccea;border-radius:14px;background:#fbf9fe}.qa summary{cursor:pointer;color:#7256bd;font-size:10px;font-weight:900}.qa p{margin:8px 0;color:#8a8290;font-size:9.5px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:26px;z-index:80;transform:translate(-50%,16px);opacity:0;pointer-events:none;min-width:190px;max-width:calc(100% - 32px);padding:11px 14px;border-radius:12px;background:rgba(31,27,35,.94);color:#fff;text-align:center;font-size:10.5px;font-weight:800;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.loading{padding:38px 0;text-align:center;color:#8c8591;font-size:11px}
+</style>
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1">
+<script defer src="/web-safe-area.js?v=20261023-safe1"></script>
+</head>
+<body>
+<main class="page">
+<div class="testbar">TEST PAGE · 일반 사용자에게 미노출 · 최종 확인 전 운영 오픈 금지</div>
+<header class="head">
+<button class="back" type="button" onclick="history.length>1?history.back():location.href='/'" aria-label="뒤로가기">‹</button>
+<strong class="title">Android 출시 이벤트</strong><span></span>
+</header>
+
+<section class="hero">
+<span class="badge">ANDROID APP NOW AVAILABLE</span>
+<h1>회원가입만 해도<br><em>30주년 1BOX</em> 응모 완료!</h1>
+<p>Android 정식 출시를 기념해 FUNY PIN 신규 회원 이벤트를 준비했습니다. 회원가입만 하면 기본 1회 응모되고, 온보딩 미션을 완료할수록 당첨 확률이 높아집니다.</p>
+<div class="prize">
+<div class="prize-art"><span><small>POKÉMON CARD GAME</small><b>30th</b><small>JAPANESE · 1 BOX</small></span></div>
+<div class="prize-copy"><small>🎁 EVENT PRIZE · 1명 추첨</small><strong>포켓몬 30주년<br>기념 일판 1BOX</strong><p>최종 이벤트 기간과 발표일은 운영 오픈 시 확정합니다.</p></div>
+</div>
+</section>
+
+<section class="section">
+<h2>내 응모 현황</h2>
+<p class="section-desc">회원가입으로 기본 응모 1회가 지급되고, 미션마다 응모권이 1회씩 추가됩니다.</p>
+<div id="authArea"><div class="loading">로그인 정보를 확인하는 중...</div></div>
+</section>
+
+<section class="section">
+<h2>이벤트 안내</h2>
+<div class="notice">
+• 기본 응모: 이벤트 대상 회원가입 완료 시 1회<br>
+• 관심매장 1곳 이상 등록: +1회<br>
+• Instagram 이벤트 게시물 댓글 인증: +1회<br>
+• 1인 최대 총 3회 응모<br>
+• 최종 추첨 시 정상 회원 상태 및 참여 조건을 재확인할 수 있습니다.<br>
+• 현재 페이지는 QA용 테스트 페이지이며 실제 이벤트 기간/게시물 URL은 오픈 전에 확정됩니다.
+</div>
+</section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(async()=>{
+ const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s);
+ const root=$('#authArea'),toastEl=$('#toast');
+ let state=null,busy=false,timer=0;
+ const toast=m=>{toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>toastEl.classList.remove('show'),1600)};
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+ await A.init();
+ if(!A.session){
+   root.innerHTML='<div class="login-card"><b>로그인하면 바로 응모할 수 있어요</b><p>테스트에서는 기존 회원도 기본 응모 1회를 지급해 전체 흐름을 확인할 수 있습니다.</p><button class="btn primary" id="loginBtn" type="button">로그인 / 회원가입</button></div>';
+   $('#loginBtn').onclick=()=>A.goLogin(location.pathname+location.search);
+   return;
+ }
+
+ async function sync(action='sync'){
+   if(busy)return;busy=true;
+   try{
+     const data=await A.invokeFunction('android-launch-signup-event-test',{action});
+     state=data;render();
+   }catch(e){
+     root.innerHTML='<div class="login-card"><b>응모 정보를 불러오지 못했어요</b><p>'+esc(e?.message||e)+'</p><button class="btn primary" id="retryBtn" type="button">다시 시도</button></div>';
+     $('#retryBtn').onclick=()=>sync();
+   }finally{busy=false}
+ }
+
+ function render(){
+   const e=state?.entry||{base:1,favorite:0,instagram:0,total:1,max:3,instagramCode:''};
+   const favDone=e.favorite>0,igDone=e.instagram>0,total=Math.max(1,Number(e.total||1)),pct=Math.max(0,Math.min(100,total/3*100));
+   root.innerHTML=
+   '<div class="entry-box"><div class="entry-top"><div><span>현재 내 응모 횟수</span><div class="entry-num"><b>'+total+'</b> / 3</div></div><span>당첨 기회 '+total+'배</span></div><div class="entry-bar"><div class="entry-fill" style="width:'+pct+'%"></div></div><div class="entry-note">회원가입만으로 이미 응모 완료! 아래 미션을 추가로 완료하면 추첨 풀에 응모권이 더 추가됩니다.</div></div>'+
+   '<div class="missions">'+
+    missionBase()+
+    missionFavorite(favDone,state?.favoriteCount||0)+
+    missionInstagram(igDone,e.instagramCode||'')+
+   '</div>'+
+   '<details class="qa"><summary>QA 테스트 도구</summary><p>Instagram 실제 댓글 API 연동 전까지 댓글 미션은 테스트 인증 버튼으로 응모권 지급/초기화를 확인합니다.</p><button class="btn sub" id="igReset" type="button">Instagram 테스트 인증 초기화</button></details>';
+   bind();
+ }
+
+ function missionBase(){
+   return '<article class="mission done"><div class="mission-head"><span class="icon">🎉</span><div class="mission-title"><b>회원가입 완료</b><span>가입하면 자동으로 기본 응모</span></div><span class="reward">+1회</span></div><div class="status"><strong>✓ 기본 응모 완료</strong><span>필수 조건 없음</span></div></article>';
+ }
+ function missionFavorite(done,count){
+   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💜</span><div class="mission-title"><b>관심 카드샵 1곳 등록</b><span>내 취향 카드샵을 관심 목록에 저장</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'아직 미완료')+'</strong><span>현재 '+Number(count||0)+'곳 등록</span></div>'+(done?'':'<div class="actions"><a class="btn primary" href="/shops.html">TCG MAP에서 등록하기</a><button class="btn sub" id="favCheck" type="button">다시 확인</button></div>')+'</article>';
+ }
+ function missionInstagram(done,code){
+   const comment='신청완료 '+code;
+   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남기기</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'댓글 인증 대기')+'</strong><span>'+(done?'인증 완료':'운영 전 테스트')+'</span></div><div class="codebox"><div class="code-label">내 전용 댓글 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div><div class="actions"><a class="btn dark" href="https://www.instagram.com/funypin.kr/" target="_blank" rel="noopener">Instagram 열기</a>'+(done?'':'<button class="btn primary" id="igTestVerify" type="button">댓글 인증 테스트 +1</button>')+'</div></article>';
+ }
+ function bind(){
+   $('#favCheck')?.addEventListener('click',()=>sync('sync'));
+   $('#copyCode')?.addEventListener('click',async()=>{const code=state?.entry?.instagramCode||'';const text='신청완료 '+code;try{await navigator.clipboard.writeText(text);toast('댓글 문구를 복사했습니다.')}catch(_){toast(text)}});
+   $('#igTestVerify')?.addEventListener('click',()=>sync('instagram_test_verify'));
+   $('#igReset')?.addEventListener('click',()=>sync('instagram_test_reset'));
+ }
+ window.addEventListener('pageshow',()=>{if(state&&!busy)sync('sync')});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state&&!busy)sync('sync')});
+ await sync();
+})().catch(e=>{const root=document.getElementById('authArea');if(root)root.innerHTML='<div class="login-card"><b>페이지를 불러오지 못했어요</b><p>'+String(e?.message||e)+'</p></div>'});
+</script>
+</body>
+</html>

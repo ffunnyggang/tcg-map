@@ -5,6 +5,7 @@
   const SUPABASE_KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
   const SDK='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js';
   const RETURN_KEY='funy-web-auth-return';
+  const NATIVE_TOKEN_KEY='__funy_native_access_token_v1';
   const listeners=new Set();
   let client=null,readyPromise=null,currentSession=null,nativeAccessToken='';
 
@@ -15,7 +16,21 @@
     }catch(_){return !!window.ReactNativeWebView}
   };
   const lang=()=>{try{return localStorage.getItem('funy-pin-lang')==='en'?'en':'ko'}catch(_){return'ko'}};
-  const injectedAccessToken=()=>{try{return String(window.__FUNY_ACCESS_TOKEN||'').trim()}catch(_){return''}};
+  const nativeLoggedInState=()=>{try{const v=window.__FUNY_APP_CONTEXT?.loggedIn;return typeof v==='boolean'?v:null}catch(_){return null}};
+  const clearNativeToken=()=>{try{sessionStorage.removeItem(NATIVE_TOKEN_KEY)}catch(_){}};
+  const injectedAccessToken=()=>{
+    try{
+      if(!isAppShell())return String(window.__FUNY_ACCESS_TOKEN||'').trim();
+      const direct=String(window.__FUNY_ACCESS_TOKEN||'').trim();
+      const loggedIn=nativeLoggedInState();
+      if(direct){
+        try{sessionStorage.setItem(NATIVE_TOKEN_KEY,direct)}catch(_){}
+        return direct;
+      }
+      if(loggedIn===false){clearNativeToken();return''}
+      return String(sessionStorage.getItem(NATIVE_TOKEN_KEY)||'').trim();
+    }catch(_){return''}
+  };
   const emit=()=>{listeners.forEach(fn=>{try{fn(currentSession)}catch(_){}});try{window.dispatchEvent(new CustomEvent('funy:web-auth-change',{detail:{loggedIn:!!currentSession,user:currentSession?.user||null}}))}catch(_){}};
 
   function clearStoredAuth(){
@@ -67,7 +82,8 @@
         try{
           const {data:userData,error:userError}=await client.auth.getUser(nativeAccessToken);
           currentSession=(!userError&&userData?.user)?{access_token:nativeAccessToken,token_type:'bearer',user:userData.user}:null;
-        }catch(_){currentSession=null}
+          if(!currentSession){clearNativeToken();nativeAccessToken=''}
+        }catch(_){clearNativeToken();nativeAccessToken='';currentSession=null}
       }else{
         const {data}=await client.auth.getSession();
         currentSession=data?.session||null;
@@ -133,11 +149,37 @@
       error=result?.error||null;
     }catch(e){error=e}
     clearStoredAuth();
+    clearNativeToken();
+    nativeAccessToken='';
     currentSession=null;emit();
     if(error&&String(error?.code||error?.message||'').toLowerCase().includes('session_not_found')===false&&Number(error?.status||0)!==403){
       console.warn('[FUNY WEB AUTH] local sign-out warning',error);
     }
     return{ok:true}
+  }
+  async function refreshNativeSession(){
+    await init();
+    if(!isAppShell())return currentSession;
+    const token=injectedAccessToken();
+    if(!token){
+      if(nativeLoggedInState()===false){nativeAccessToken='';currentSession=null;emit()}
+      return currentSession;
+    }
+    if(token===nativeAccessToken&&currentSession?.user)return currentSession;
+    try{
+      const {data:userData,error:userError}=await client.auth.getUser(token);
+      if(userError||!userData?.user)throw userError||new Error('NATIVE_SESSION_INVALID');
+      nativeAccessToken=token;
+      currentSession={access_token:token,token_type:'bearer',user:userData.user};
+      try{sessionStorage.setItem(NATIVE_TOKEN_KEY,token)}catch(_){}
+      emit();
+      return currentSession;
+    }catch(_){
+      if(token===nativeAccessToken)nativeAccessToken='';
+      clearNativeToken();
+      currentSession=null;emit();
+      return null;
+    }
   }
   async function getUser(){
     await init();
@@ -190,7 +232,7 @@
 
   window.FUNY_WEB_AUTH={
     init,get client(){return client},get session(){return currentSession},getSession:async()=>{await init();return currentSession},
-    getUser,getProfile,invokeFunction,signInSocial,signOut,goLogin,requireLogin,
+    getUser,getProfile,invokeFunction,refreshNativeSession,signInSocial,signOut,goLogin,requireLogin,
     consumeReturn,rememberReturn,isAppShell,onChange(fn){listeners.add(fn);return()=>listeners.delete(fn)}
   };
   init().catch(e=>console.warn('[FUNY WEB AUTH] init failed',e));

@@ -1,21 +1,24 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const DRAFT='funypin_draw_draft_v2',RUN='funypin_draw_run_v2',setup=document.body.dataset.view==='setup';
+const THEMES=['purple','gold','halloween','ocean'];
+function themeId(id){return THEMES.includes(id)?id:'purple'}
+function applyTheme(id){document.body.dataset.theme=themeId(id)}
 let authorized=false,busy=false,confirmed=false,pool=[],winners=[],config=null,prizes=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function rnd(n){const a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n;do{crypto.getRandomValues(a)}while(a[0]>=lim);return a[0]%n}
 async function adminToken(){let token=sessionStorage.getItem('funypin_admin_token')||'',refresh=sessionStorage.getItem('funypin_admin_refresh')||'';const verify=async t=>{const r=await fetch(BASE+'/rest/v1/rpc/is_funypin_admin',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:'{}'});return r.ok&&await r.json()===true};if(token&&await verify(token))return token;if(refresh){const r=await fetch(BASE+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refresh})});if(r.ok){const x=await r.json();if(x.access_token&&await verify(x.access_token)){sessionStorage.setItem('funypin_admin_token',x.access_token);sessionStorage.setItem('funypin_admin_refresh',x.refresh_token||refresh);return x.access_token}}}const a=window.FUNY_WEB_AUTH;if(a){await a.init();if(a.session?.access_token&&await verify(a.session.access_token))return a.session.access_token}throw Error('통합 어드민에서 로그인한 후 같은 탭으로 열어주세요.')}
 function parseEntries(text){const raw=text.split(/[\n,;\t ]+/).map(s=>s.trim().replace(/^@/,'').toLowerCase()).filter(Boolean);const invalid=raw.filter(x=>!/^[a-z0-9._]{1,30}$/.test(x));return {list:[...new Set(raw)],invalid,duplicates:raw.length-new Set(raw).size}}
 function total(){const n=Number($('configTotal').value);return Number.isInteger(n)&&n>=1&&n<=100?n:0}
-function readDraft(){return {title:$('configTitle').value,description:$('configDescription').value,total:$('configTotal').value,prizes:prizes.slice(),warning:$('configWarning').value,entries:$('entries').value}}
-function preview(c,list){$('eventTitle').textContent=c.title.trim()||'이벤트 추첨';$('eventDescription').textContent=c.description.trim();const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
+function readDraft(){return {theme:themeId($('configTheme')?.value),title:$('configTitle').value,description:$('configDescription').value,total:$('configTotal').value,prizes:prizes.slice(),warning:$('configWarning').value,entries:$('entries').value}}
+function preview(c,list){applyTheme(c.theme);$('eventTitle').textContent=c.title.trim()||'이벤트 추첨';$('eventDescription').textContent=c.description.trim();const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
 function sync(){const data=parseEntries($('entries').value),n=total();preview({...readDraft(),prizes:prizes.slice(0,n)},data.list);$('count').textContent='참여자 '+data.list.length+'명'+(data.duplicates?' · 중복 '+data.duplicates+'건 제외':'')+(data.invalid.length?' · 잘못된 ID: '+data.invalid.slice(0,5).join(', '):'');try{localStorage.setItem(DRAFT,JSON.stringify(readDraft()))}catch(e){}}
 function renderPrizes(){const n=total();$('prizeFields').replaceChildren();for(let i=0;i<n;i++){if(typeof prizes[i]!=='string')prizes[i]='';const row=document.createElement('div');row.className='prize-row';const label=document.createElement('label');label.htmlFor='gift-'+i;label.textContent=(i+1)+'번째 경품';const input=document.createElement('input');input.id='gift-'+i;input.maxLength=200;input.placeholder='경품명 · 수량';input.value=prizes[i];input.addEventListener('input',()=>{prizes[i]=input.value;sync()});row.append(label,input);$('prizeFields').append(row)}sync()}
 function setupPage(){
  $('setupView').hidden=false;
- try{const d=JSON.parse(localStorage.getItem(DRAFT)||'null');if(d){for(const [id,key] of [['configTitle','title'],['configDescription','description'],['configTotal','total'],['configWarning','warning'],['entries','entries']])if(typeof d[key]==='string')$(id).value=d[key];if(Array.isArray(d.prizes))prizes=d.prizes.slice(0,100).map(x=>typeof x==='string'?x:'')}}catch(e){}
+ try{const d=JSON.parse(localStorage.getItem(DRAFT)||'null');if(d){for(const [id,key] of [['configTitle','title'],['configDescription','description'],['configTotal','total'],['configWarning','warning'],['entries','entries']])if(typeof d[key]==='string')$(id).value=d[key];if($('configTheme'))$('configTheme').value=themeId(d.theme);if(Array.isArray(d.prizes))prizes=d.prizes.slice(0,100).map(x=>typeof x==='string'?x:'')}}catch(e){}
  renderPrizes();
- ['configTitle','configDescription','configWarning','entries'].forEach(id=>$(id).addEventListener('input',sync));
+ ['configTitle','configDescription','configWarning','entries','configTheme'].forEach(id=>$(id).addEventListener('input',sync));
  $('configTotal').addEventListener('input',renderPrizes);
  $('complete').onclick=()=>{
   if(!authorized)return;
@@ -26,7 +29,7 @@ function setupPage(){
   if(prizes.slice(0,n).length!==n||prizes.slice(0,n).some(x=>!x.trim()))return fail('모든 당첨 순번의 경품을 입력해주세요.');
   if(data.invalid.length)return fail('형식이 올바르지 않은 참여자 ID를 수정해주세요.');
   if(data.list.length<n)return fail('당첨 인원 이상의 참여자가 필요합니다. 현재 '+data.list.length+'명입니다.');
-  const snapshot={title:d.title.trim(),description:d.description.trim(),prizes:prizes.slice(0,n).map(x=>x.trim()),warning:d.warning.trim(),entries:data.list};
+  const snapshot={theme:themeId(d.theme),title:d.title.trim(),description:d.description.trim(),prizes:prizes.slice(0,n).map(x=>x.trim()),warning:d.warning.trim(),entries:data.list};
   try{sessionStorage.setItem(RUN,JSON.stringify({config:snapshot,winners:[]}))}catch(e){return fail('추첨 설정을 저장하지 못했습니다. 브라우저 저장 허용 후 다시 시도해주세요.')}
   location.href='/event-draw.html';
  };

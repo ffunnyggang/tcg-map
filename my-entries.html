@@ -51,11 +51,22 @@
     root.innerHTML='<div class="my-loading">응모 내역을 불러오는 중...</div>';
     try{
       await sync();
-      const [{data,error},{data:signupEvent,error:signupError}]=await Promise.all([
+      const [{data,error},signupState]=await Promise.all([
         A.client.from('user_entries').select('id,title,description,code,status,created_at,source_type,metadata').order('created_at',{ascending:false}),
-        A.client.from('signup_event_entries').select('campaign_id,base_entry_count,favorite_bonus_count,instagram_bonus_count,instagram_code,instagram_verification_status,created_at,updated_at').eq('campaign_id','EV-AOS-LAUNCH-SIGNUP-20261102').maybeSingle()
+        A.invokeFunction('android-launch-signup-event',{action:'sync'}).catch(e=>{console.warn('[Android launch entry sync]',e?.message||e);return null})
       ]);
-      if(error)throw error;if(signupError)throw signupError;
+      if(error)throw error;
+      const se=signupState?.entry||null;
+      const signupEvent=se?{
+        campaign_id:signupState.campaignId||'EV-AOS-LAUNCH-SIGNUP-20261102',
+        base_entry_count:Number(se.base||0),
+        favorite_bonus_count:Number(se.favorite||0),
+        instagram_bonus_count:Number(se.instagram||0),
+        instagram_code:se.instagramCode||'',
+        instagram_verification_status:se.instagramVerificationStatus||'not_submitted',
+        created_at:se.baseQualifiedAt||new Date().toISOString(),
+        updated_at:new Date().toISOString()
+      }:null;
       if(!data?.length&&!signupEvent){root.innerHTML='<div class="my-empty"><strong>응모 내역이 없어요</strong>이벤트에 참여하면 이곳에서 응모 내역을 확인할 수 있어요.</div>';return}
       root.innerHTML='<div class="my-list">'+signupEventCard(signupEvent)+(data||[]).map(card).join('')+'</div>';
       root.querySelector('[data-signup-event]')?.addEventListener('click',()=>{location.href='/event-aos-launch-signup.html'});

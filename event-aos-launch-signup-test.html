@@ -35,6 +35,9 @@ button,a{font:inherit}
 .prize-art{height:112px;border-radius:15px;background:linear-gradient(145deg,#fff6ce,#f3d477 45%,#d5a830);display:grid;place-items:center;box-shadow:0 9px 24px rgba(159,126,45,.12)}
 .prize-art span{display:block;text-align:center;color:#5a4610;font-weight:950;line-height:1.1}.prize-art b{display:block;font-size:28px}.prize-art small{font-size:9px;letter-spacing:.05em}
 .prize-copy small{display:block;color:#8b828f;font-size:9px;font-weight:750}.prize-copy strong{display:block;margin-top:4px;font-size:18px;line-height:1.35}.prize-copy p{margin:6px 0 0;font-size:10.5px;line-height:1.45}
+.schedule{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.schedule-item{padding:12px;border:1px solid #ebe5f0;border-radius:14px;background:#fff}.schedule-item span{display:block;color:#918996;font-size:9px;font-weight:750}.schedule-item b{display:block;margin-top:4px;font-size:11px;line-height:1.35}
+.mission.pending{border-color:#eadfbd;background:#fffdf8}.mission.pending .icon{background:#fbf1d8}.mission.pending .reward{background:#f8edd0;color:#8a691f}.mission.pending .status strong{color:#8a691f}
+.verify-note{margin-top:10px;padding:10px 11px;border-radius:11px;background:#fff7e7;color:#7b6530;font-size:9.5px;line-height:1.55;word-break:keep-all}
 .section{padding:22px 18px;border-top:8px solid #f5f3f7}
 .section h2{margin:0;font-size:17px;letter-spacing:-.035em}
 .section-desc{margin:7px 0 0;color:#817985;font-size:11px;line-height:1.55}
@@ -89,7 +92,11 @@ button,a{font:inherit}
 <p>Android 정식 출시를 기념해 FUNY PIN 신규 회원 이벤트를 준비했습니다. 회원가입만 하면 기본 1회 응모되고, 온보딩 미션을 완료할수록 당첨 확률이 높아집니다.</p>
 <div class="prize">
 <div class="prize-art"><span><small>POKÉMON CARD GAME</small><b>30th</b><small>JAPANESE · 1 BOX</small></span></div>
-<div class="prize-copy"><small>🎁 EVENT PRIZE · 1명 추첨</small><strong>포켓몬 30주년<br>기념 일판 1BOX</strong><p>최종 이벤트 기간과 발표일은 운영 오픈 시 확정합니다.</p></div>
+<div class="prize-copy"><small>🎁 EVENT PRIZE · 1명 추첨</small><strong>포켓몬 30주년<br>기념 일판 1BOX</strong><p>보유한 응모 횟수만큼 당첨 기회가 늘어납니다.</p></div>
+</div>
+<div class="schedule">
+  <div class="schedule-item"><span>이벤트 기간</span><b>2026. 11. 2(월)<br>~ 11. 15(일)</b></div>
+  <div class="schedule-item"><span>당첨자 발표</span><b>2026. 11. 17(화)</b></div>
 </div>
 </section>
 
@@ -102,12 +109,16 @@ button,a{font:inherit}
 <section class="section">
 <h2>이벤트 안내</h2>
 <div class="notice">
-• 기본 응모: 이벤트 대상 회원가입 완료 시 1회<br>
-• 관심매장 1곳 이상 등록: +1회<br>
-• Instagram 이벤트 게시물 댓글 인증: +1회<br>
+• 이벤트 기간: 2026. 11. 2(월) ~ 11. 15(일)<br>
+• 당첨자 발표: 2026. 11. 17(화)<br>
+• 이벤트 기간 내 회원가입 완료 시 기본 응모 1회<br>
+• 관심 카드샵 1곳 이상 등록 시 +1회<br>
+• Instagram 이벤트 게시물 댓글 참여 시 +1회<br>
 • 1인 최대 총 3회 응모<br>
-• 최종 추첨 시 정상 회원 상태 및 참여 조건을 재확인할 수 있습니다.<br>
-• 현재 페이지는 QA용 테스트 페이지이며 실제 이벤트 기간/게시물 URL은 오픈 전에 확정됩니다.
+• Instagram 댓글 참여 +1회는 버튼 선택 즉시 반영됩니다.<br>
+• 최종 추첨 전에 실제 댓글 참여 여부를 확인하며, 댓글 미작성·삭제 등 조건 미충족 시 해당 +1회는 취소될 수 있습니다.<br>
+• 부정한 방법으로 참여한 경우 응모 또는 당첨이 취소될 수 있습니다.<br>
+• 현재 페이지는 최종 QA용이며 운영 메뉴에는 아직 노출되지 않습니다.
 </div>
 </section>
 </main>
@@ -118,6 +129,7 @@ button,a{font:inherit}
  const A=window.FUNY_WEB_AUTH,$=s=>document.querySelector(s);
  const root=$('#authArea'),toastEl=$('#toast');
  const params=new URLSearchParams(location.search);
+ const INSTAGRAM_EVENT_URL='https://www.instagram.com/funypin.kr/'; // 오픈 직전 실제 이벤트 게시물 URL로 교체
  const qaStep=params.get('step')||'actual';
  const isSimulated=qaStep!=='actual';
  let state=null,busy=false,timer=0;
@@ -145,7 +157,7 @@ button,a{font:inherit}
  function simulatedState(step){
    if(step==='base')return {testMode:true,simulated:true,favoriteCount:0,entry:{base:1,favorite:0,instagram:0,total:1,max:3,instagramCode:'FPTEST1'}};
    if(step==='favorite')return {testMode:true,simulated:true,favoriteCount:1,entry:{base:1,favorite:1,instagram:0,total:2,max:3,instagramCode:'FPTEST2',favoriteVerifiedAt:new Date().toISOString()}};
-   if(step==='complete')return {testMode:true,simulated:true,favoriteCount:1,entry:{base:1,favorite:1,instagram:1,total:3,max:3,instagramCode:'FPTEST3',favoriteVerifiedAt:new Date().toISOString(),instagramVerifiedAt:new Date().toISOString()}};
+   if(step==='complete')return {testMode:true,simulated:true,favoriteCount:1,entry:{base:1,favorite:1,instagram:1,total:3,max:3,instagramCode:'FPTEST3',favoriteVerifiedAt:new Date().toISOString(),instagramParticipatedAt:new Date().toISOString(),instagramVerificationStatus:'pending'}};
    return null;
  }
 
@@ -186,7 +198,7 @@ button,a{font:inherit}
     missionFavorite(favDone,state?.favoriteCount||0)+
     missionInstagram(igDone,e.instagramCode||'')+
    '</div>'+
-   (state?.simulated?'':'<details class="qa"><summary>QA 테스트 도구</summary><p>Instagram 실제 댓글 API 연동 전까지 댓글 미션은 테스트 인증 버튼으로 응모권 지급/초기화를 확인합니다.</p><button class="btn sub" id="igReset" type="button">Instagram 테스트 인증 초기화</button></details>');
+   (state?.simulated?'':'<details class="qa"><summary>QA 테스트 도구</summary><p>실제 계정에서는 댓글 참여 버튼 선택 시 +1회가 즉시 반영되고 검증 상태는 추첨 전 확인 대기로 저장됩니다. 현재 Instagram 링크는 프로필로 연결되며, 오픈 직전 실제 이벤트 게시물 URL로 교체합니다.</p><button class="btn sub" id="igReset" type="button">Instagram 참여 접수 초기화</button></details>');
    bind();
  }
 
@@ -198,12 +210,19 @@ button,a{font:inherit}
  }
  function missionInstagram(done,code){
    const comment='신청완료 '+code;
-   return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남기기</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 추가 응모 완료':'댓글 인증 대기')+'</strong><span>'+(done?'인증 완료':'운영 전 테스트')+'</span></div><div class="codebox"><div class="code-label">내 전용 댓글 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div><div class="actions"><a class="btn dark" href="https://www.instagram.com/funypin.kr/" target="_blank" rel="noopener">Instagram 열기</a>'+(done?'':'<button class="btn primary" id="igTestVerify" type="button">댓글 인증 테스트 +1</button>')+'</div></article>';
+   return '<article class="mission '+(done?'pending':'')+'"><div class="mission-head"><span class="icon">💬</span><div class="mission-title"><b>Instagram 댓글 참여</b><span>이벤트 게시물에 전용 코드를 댓글로 남겨주세요</span></div><span class="reward">+1회</span></div><div class="status"><strong>'+(done?'✓ 댓글 참여 접수 완료':'아직 미참여')+'</strong><span>'+(done?'추첨 전 최종 확인':'선택 시 즉시 +1회')+'</span></div><div class="codebox"><div class="code-label">댓글에 남길 내 전용 문구</div><div class="code-line"><code>'+esc(comment)+'</code><button class="copy" id="copyCode" type="button">복사</button></div></div>'+(done?'<div class="verify-note">※ 최종 추첨 전에 실제 댓글 참여 여부를 확인합니다. 댓글 미작성·삭제 등 조건에 맞지 않을 경우 Instagram 댓글 참여로 추가된 응모 1회는 취소될 수 있습니다.</div><div class="actions"><a class="btn dark" href="'+INSTAGRAM_EVENT_URL+'" target="_blank" rel="noopener">Instagram 게시물 확인하기</a></div>':'<div class="actions"><button class="btn primary" id="igParticipate" type="button">댓글 참여하기 · +1회</button></div><div class="verify-note">버튼 선택 시 +1회가 바로 반영됩니다. 최종 추첨 전 실제 댓글 참여 여부를 확인하며, 조건 미충족 시 해당 +1회는 취소될 수 있습니다.</div>')+'</article>';
  }
  function bind(){
    $('#favCheck')?.addEventListener('click',()=>state?.simulated?toast('QA 시뮬레이션 화면입니다.'):sync('sync'));
    $('#copyCode')?.addEventListener('click',async()=>{const code=state?.entry?.instagramCode||'';const text='신청완료 '+code;try{await navigator.clipboard.writeText(text);toast('댓글 문구를 복사했습니다.')}catch(_){toast(text)}});
-   $('#igTestVerify')?.addEventListener('click',()=>state?.simulated?toast('QA 시뮬레이션 화면입니다.'):sync('instagram_test_verify'));
+   $('#igParticipate')?.addEventListener('click',async()=>{
+     if(state?.simulated){toast('QA 시뮬레이션 화면입니다.');return}
+     const code=state?.entry?.instagramCode||'';
+     const text='신청완료 '+code;
+     try{await navigator.clipboard.writeText(text)}catch(_){}
+     await sync('instagram_participate');
+     location.href=INSTAGRAM_EVENT_URL;
+   });
    $('#igReset')?.addEventListener('click',()=>sync('instagram_test_reset'));
  }
  window.addEventListener('pageshow',()=>{if(state&&!busy&&!state?.simulated)sync('sync')});

@@ -15,7 +15,7 @@
 <script src="/web-auth.js?v=20261016-auth-fix1"></script>
 <script src="/funy-mon-account-migrate.js?v=20261015-entry-sync1"></script>
 <script src="/my-web-common.js?v=20261021-history-scroll1"></script>
-<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1"><script defer src="/web-safe-area.js?v=20261023-safe1"></script></head>
+<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1"><script defer src="/web-safe-area.js?v=20261023-safe1"></script><script src="/funy-analytics-core.js?v=20261102-stats1" data-ga-init="1" data-route-tracking="1"></script></head>
 <body>
 <div class="my-page">
   <header class="my-head funy-sub-header"><button class="my-back funy-sub-back" onclick="FUNY_MY_WEB.back()" aria-label="뒤로가기">‹</button><div class="my-title funy-sub-title">응모 내역</div></header>
@@ -26,6 +26,7 @@
 (async()=>{
   const H=FUNY_MY_WEB,A=await H.ready('/my-entries.html');if(!A)return;
   const root=document.getElementById('root'),toast=document.getElementById('toast');let toastTimer=0;
+  const track=(n,p={})=>window.FUNY_TRACK?.(n,p);track('entries_view',{page_path:location.pathname});
   const showToast=message=>{clearTimeout(toastTimer);toast.textContent=message;toast.classList.add('show');toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)};
   const claimLabel=value=>({awaiting_instagram:'Instagram ID 입력 필요',pending_review:'관리자 확인 대기',ready:'상품 처리 대기',verified:'확인 완료',dm_sent:'Instagram DM 발송 완료',fulfilled:'상품 전달 완료',expired:'처리 기간 만료',cancelled:'당첨 취소'}[value]||value||'처리 중');
   async function sync(){try{await window.FUNY_FUNYMON_ACCOUNT_MIGRATE?.run()}catch(e){console.warn('[FUNY MON entry sync]',e?.message||e)}try{await A.client.rpc('garapon_get_my_claims')}catch(e){console.warn('[GARAPON entry sync]',e?.message||e)}}
@@ -69,7 +70,7 @@
       }:null;
       if(!data?.length&&!signupEvent){root.innerHTML='<div class="my-empty"><strong>응모 내역이 없어요</strong>이벤트에 참여하면 이곳에서 응모 내역을 확인할 수 있어요.</div>';return}
       root.innerHTML='<div class="my-list">'+signupEventCard(signupEvent)+(data||[]).map(card).join('')+'</div>';
-      root.querySelector('[data-signup-event]')?.addEventListener('click',()=>{location.href='/event-aos-launch-signup.html'});
+      root.querySelector('[data-signup-event]')?.addEventListener('click',()=>{track('event_history_click',{event_id:'EV-AOS-LAUNCH-SIGNUP-20261102'});location.href='/event-aos-launch-signup.html'});
       root.querySelectorAll('[data-submit-claim]').forEach(button=>button.addEventListener('click',async()=>{
         const box=button.closest('[data-claim-box]'),input=box.querySelector('[data-instagram]'),id=input.value.trim().replace(/^@/,'').toLowerCase();
         if(!/^[a-z0-9._]{1,30}$/.test(id)){showToast('Instagram ID를 정확히 입력해주세요.');input.focus();return}

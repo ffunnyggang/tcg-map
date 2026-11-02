@@ -131,7 +131,7 @@
       condition:'Android 출시 이벤트 · Instagram 참여 + 총 3/3 달성',
       title:'이벤트 응모 3/3 완료 🎉',
       body:'Instagram 댓글 참여까지 완료되어 총 3회 응모됐어요. 11월 17일 당첨자 발표를 확인해주세요.',
-      destination:'Android 출시 이벤트',
+      destination:'MY > 응모 내역',
     },
     {
       category:'이벤트 · 리워드 · 배지',

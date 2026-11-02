@@ -6,11 +6,11 @@
 <title>Android 출시 기념 이벤트 | FUNY PIN</title>
 <link rel="icon" href="/favicon.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<script src="/web-auth.js?v=20261102-native-auth1"></script>
 <style>
 *{box-sizing:border-box}
 :root{--p:#8062d8;--p2:#6749bd;--soft:#f6f2fb;--line:#e9e3ef;--text:#211d26;--muted:#817985;--green:#25a765}
-html,body{margin:0;background:#f4f1f8;color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.025em}
+html,body{margin:0;background:#f4f1f8;color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:-.025em}html.app-shell .head{display:none!important}
 button,a{font:inherit}
 .page{width:min(100%,430px);min-height:100dvh;margin:auto;background:#fff;padding-bottom:max(34px,env(safe-area-inset-bottom))}
 .head{height:54px;padding:0 14px;display:grid;grid-template-columns:40px 1fr 40px;align-items:center;background:rgba(255,255,255,.97)}
@@ -85,7 +85,7 @@ button,a{font:inherit}
 • 이벤트 기간: 2026. 11. 2(월) ~ 11. 15(일)<br>
 • 당첨자 발표: 2026. 11. 17(화)<br>
 • 기존 가입자 포함, FUNY PIN 회원 로그인 시 기본 응모 1회<br>
-• 2026. 11. 2(월) 오후 7시 이후 관심 오후 7시 이후 1곳 등록 시 +1회<br>
+• 2026. 11. 2(월) 오후 7시 이후 관심 카드샵 1곳 이상 등록 시 +1회<br>
 • Instagram 이벤트 게시물 댓글 참여 시 +1회<br>
 • 1인 최대 총 3회 응모<br>
 • Instagram 댓글 참여 +1회는 버튼 선택 즉시 반영됩니다.<br>
@@ -107,10 +107,16 @@ button,a{font:inherit}
 
  function renderLoggedOut(){
    root.innerHTML='<div class="login-card"><b>로그인하면 바로 응모할 수 있어요</b><p>기존 회원을 포함해 FUNY PIN 회원이라면 기본 응모 1회가 자동 지급됩니다.</p><button class="btn primary" id="loginBtn" type="button">로그인 / 회원가입</button></div>';
-   $('#loginBtn').onclick=()=>A.goLogin(location.pathname);
+   $('#loginBtn').onclick=()=>{if(A.isAppShell()&&window.__FUNY_APP_CONTEXT?.loggedIn===true){location.reload();return}A.goLogin(location.pathname)};
  }
 
  await A.init();
+ if(!A.session&&A.isAppShell()&&typeof A.refreshNativeSession==='function'){
+   for(let i=0;i<4&&!A.session;i++){
+     if(i)await new Promise(r=>setTimeout(r,120));
+     await A.refreshNativeSession();
+   }
+ }
  if(!A.session){
    renderLoggedOut();
    return;

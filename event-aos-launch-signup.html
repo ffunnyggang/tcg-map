@@ -119,7 +119,7 @@ button,a{font:inherit}
  async function sync(action='sync'){
    if(busy)return;busy=true;
    try{
-     const data=await A.invokeFunction('android-launch-signup-event-test',{action});
+     const data=await A.invokeFunction('android-launch-signup-event',{action});
      state=data;render();
    }catch(e){
      const detail=e?.data?.detail||e?.data?.message||e?.message||e;

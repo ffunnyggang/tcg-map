@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="/web-responsive-420.css?v=20261101-focus1">
 <link rel="stylesheet" href="/my-dashboard-v3.css?v=20261020-mission-ring-stroke7">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
-<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1"><script defer src="/web-safe-area.js?v=20261023-safe1"></script></head>
+<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1"><script defer src="/web-safe-area.js?v=20261023-safe1"></script><script src="/funy-analytics-core.js?v=20261102-stats1" data-ga-init="1" data-route-tracking="1"></script></head>
 <body class="portal-body my-test-hub">
 <div class="test-shell">
 <header class="portal-header"><div class="portal-brand"><a class="portal-logo" href="./" aria-label="HOME"><img src="/favicon.svg?v=20261016-app-logo1" alt=""></a><strong>MY</strong></div></header>
@@ -29,6 +29,16 @@
 <div id="myToast" class="test-hub-toast" role="status" aria-live="polite"></div>
 <script src="/my-stable.js?v=20261022-open-binder3"></script>
 <script src="/funy-mon-account-migrate.js?v=20261014-account-link1"></script>
-<script defer src="/web-ranking-nudge-v1.js?v=20261027-web1"></script><script src="/web-my-notification-entry-v1.js?v=20261027-web2"></script></body>
+<script defer src="/web-ranking-nudge-v1.js?v=20261027-web1"></script><script src="/web-my-notification-entry-v1.js?v=20261027-web2"></script><script>
+(function(){
+  const track=(n,p={})=>window.FUNY_TRACK?.(n,p);
+  track('my_view',{page_path:location.pathname});
+  document.addEventListener('click',e=>{
+    const a=e.target instanceof Element?e.target.closest('main a, .my-content a, .my-menu a, .my-section a'):null;
+    if(!a)return;
+    track('my_menu_click',{menu_name:(a.textContent||a.getAttribute('aria-label')||'').trim().slice(0,80),link_url:(a.getAttribute('href')||'').slice(0,100)});
+  },true);
+})();
+</script></body>
 </html>
 

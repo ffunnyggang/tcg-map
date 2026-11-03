@@ -44,3 +44,12 @@
 .fhs-pref-foot [data-pref-reset]{background:#f4f2f6;color:#766f7e}
 .fhs-pref-foot [data-pref-apply]{flex:1;background:#795cc5;color:#fff}
 .fhs-pref-dialog :focus-visible{outline:2px solid #8062d8;outline-offset:3px}
+
+/* Keep centered SVG anchored while Sparkle Pop scales: animation must retain translate. */
+.funy-home-shops .fhs-tile-heart svg.funy-heart-pop-icon{animation-name:fhs-tile-heart-pop}
+.funy-home-shops .fhs-tile-heart svg.funy-heart-unpop-icon{animation-name:fhs-tile-heart-unpop}
+@keyframes fhs-tile-heart-pop{0%{transform:translate(-50%,-50%) scale(1)}30%{transform:translate(-50%,-50%) scale(1.2)}60%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes fhs-tile-heart-unpop{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(.85)}100%{transform:translate(-50%,-50%) scale(1)}}
+@media(prefers-reduced-motion:reduce){.funy-home-shops .fhs-tile-heart svg.funy-heart-pop-icon,.funy-home-shops .fhs-tile-heart svg.funy-heart-unpop-icon{animation:none!important}}
+/* In-app modal stacking: web sheet above all other web elements, native chrome uses its own DIM bridge. */
+.fhs-pref-overlay:not([hidden]){z-index:2147483600}

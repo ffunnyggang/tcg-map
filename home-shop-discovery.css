@@ -53,3 +53,9 @@
 @media(prefers-reduced-motion:reduce){.funy-home-shops .fhs-tile-heart svg.funy-heart-pop-icon,.funy-home-shops .fhs-tile-heart svg.funy-heart-unpop-icon{animation:none!important}}
 /* In-app modal stacking: web sheet above all other web elements, native chrome uses its own DIM bridge. */
 .fhs-pref-overlay:not([hidden]){z-index:2147483600}
+
+/* First display: reveal only decoded/loaded photos; keep the existing fallback underneath. */
+.fhs-photo .fhs-image.is-on:not([data-fhs-ready]){opacity:0}
+.fhs-shop-thumb>img:not([data-fhs-ready]){opacity:0}
+.fhs-shop-thumb>img[data-fhs-ready]{opacity:1;transition:opacity .22s ease-out}
+@media(prefers-reduced-motion:reduce){.fhs-shop-thumb>img[data-fhs-ready]{transition:none}}

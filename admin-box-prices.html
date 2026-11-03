@@ -81,7 +81,7 @@ document.querySelectorAll('input[name=inputMode]').forEach(r=>r.addEventListener
 async function call(action,payload={}){const r=await fetch(SUPA+'/functions/v1/box-price-admin',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+session,'Content-Type':'application/json'},body:JSON.stringify({action,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok){const detail=[d.message||d.error||'처리 실패',d.provider_status?'API '+d.provider_status:'',d.provider_code||d.provider_type||''].filter(Boolean).join(' · ');throw Error(detail)}return d}
 async function guard(){
   const notice=$('authNotice');
-  const showLogin=()=>{notice.replaceChildren(document.createTextNode('로그인 후 접근할 수 있습니다. '));const link=document.createElement('a');link.href='/login.html';link.textContent='퍼니핀 계정 로그인';link.addEventListener('click',()=>window.FUNY_WEB_AUTH?.rememberReturn('/admin-box-prices.html'));notice.append(link);notice.append(document.createTextNode(' · '));const admin=document.createElement('a');admin.href='/admin.html';admin.textContent='전체 관리자 로그인';notice.append(admin)};
+  const showLogin=()=>{notice.replaceChildren(document.createTextNode('로그인 후 접근할 수 있습니다. '));const link=document.createElement('a');link.href='/login.html';link.textContent='로그인';link.addEventListener('click',()=>window.FUNY_WEB_AUTH?.rememberReturn('/admin-box-prices.html'));notice.append(link)};
   let token=sessionStorage.getItem('funypin_admin_token')||'';
   let webToken='';
   try{const A=window.FUNY_WEB_AUTH;await A?.init();webToken=A?.session?.access_token||''}catch(e){console.warn('[BOX AUTH] web session unavailable',e)}

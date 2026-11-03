@@ -2,7 +2,7 @@
 create table public.overlay_generations (
  id uuid primary key,
  user_id uuid not null references auth.users(id) on delete cascade,
- mode text not null check (mode in ('original','independent','fullart')),
+ mode text not null check (mode in ('original','independent','fullart','illustration')),
  raw_path text not null unique,
  image_path text not null unique,
  result_kind text not null default 'provider' check (result_kind in ('provider','prepared')),

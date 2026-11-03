@@ -140,6 +140,8 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const $=id=>document.getElementById(id);
   const els={coin:$('coin'),rise:document.querySelector('.coin-rise'),shadow:document.querySelector('.coin-shadow'),stage:$('coinStage'),flip:$('flipButton'),kicker:$('resultKicker'),text:$('resultText'),sub:$('resultSub'),frontCount:$('frontCount'),backCount:$('backCount'),frontRate:$('frontRate'),backRate:$('backRate'),dailyTotal:$('dailyTotal'),historyList:$('historyList'),historyCount:$('historyCount'),reset:$('resetHistory'),toast:$('toast')};
   const isIOSApp=String(window.__FUNY_APP_CONTEXT?.platform||'').toLowerCase()==='ios';
+  // Keep device identity intact, but use the same Web Audio effects on iOS and Android.
+  const useIOSRealSfx=false;
   const IOS_REAL_SFX={
     launch:'https://assets.mixkit.co/active_storage/sfx/1939/1939-preview.mp3',
     spin:'https://assets.mixkit.co/active_storage/sfx/3183/3183-preview.mp3',
@@ -426,7 +428,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   function setBusy(v){busy=v;els.stage.disabled=v;els.flip.disabled=v;els.flip.textContent=v?(isEnglish()?'Flipping...':'코인 플립 중...'):(isEnglish()?'Flip Coin':'코인 던지기')}
   function showToast(message){clearTimeout(toastTimer);els.toast.textContent=message;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1500)}
   function initRealSfx(){
-    if(!isIOSApp||realSfx)return realSfx;
+    if(!useIOSRealSfx||realSfx)return realSfx;
     try{
       const make=(src,volume)=>{
         const a=new Audio(src);
@@ -447,7 +449,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     return realSfx;
   }
   async function primeRealSfx(){
-    if(!isIOSApp||!soundOn)return false;
+    if(!useIOSRealSfx||!soundOn)return false;
     const bank=initRealSfx();if(!bank)return false;
     if(realSfxPrimed)return true;
     try{
@@ -463,7 +465,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     }catch(_){return false}
   }
   function playReal(name,volume,loop=false){
-    if(!isIOSApp||!soundOn)return false;
+    if(!useIOSRealSfx||!soundOn)return false;
     const bank=initRealSfx(),a=bank?.[name];if(!a)return false;
     try{
       a.pause();a.currentTime=0;a.loop=loop;a.volume=volume;
@@ -545,7 +547,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     resonant(3100+Math.random()*260,.055,volume*.75,delay,(Math.random()-.5)*8);
   }
   function playLaunch(){
-    if(isIOSApp&&playReal('launch',.28,false)){
+    if(useIOSRealSfx&&playReal('launch',.28,false)){
       clearTimeout(realLaunchStopTimer);
       realLaunchStopTimer=setTimeout(()=>{try{realSfx?.launch.pause();realSfx.launch.currentTime=0}catch(_){}},240);
       return;
@@ -554,12 +556,12 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     brightPing(0,.092,.985);
   }
   function playSpin(durationMs){
-    if(isIOSApp&&playReal('spin',.17,true))return;
+    if(useIOSRealSfx&&playReal('spin',.17,true))return;
     const seconds=Math.max(1,durationMs/1000),count=Math.min(7,Math.max(3,Math.round(seconds)));
     for(let i=1;i<=count;i++){const d=(seconds*.68)*(i/(count+1));softTick(d,.007)}
   }
   function playLand(){
-    if(isIOSApp){
+    if(useIOSRealSfx){
       stopRealSpin();
       if(playReal('land',.42,false))return;
     }
@@ -621,14 +623,15 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   function finish(outcome,token){
     if(token!==flipToken)return;
-    if(isIOSApp)stopRealSpin();
+    if(useIOSRealSfx)stopRealSpin();
     history.push(outcome);if(history.length>20)history.shift();save();saveFace(outcome);applyFaceToggle();setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');
     els.kicker.textContent='RESULT';els.text.textContent=LABELS()[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent=isEnglish()?'The coin flip result is set.':'코인플립 결과가 결정되었습니다.';
     renderHistory();saveFlipToDb(outcome);playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
   }
   async function flip(){
     if(busy)return;
-    if(isIOSApp&&soundOn&&!realSfxPrimed)await primeRealSfx();
+    // Resume Web Audio inside the user's tap without delaying the coin animation.
+    const soundReady=soundOn?unlockAudio():Promise.resolve(null);
     const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     syncDurationFromStorage();
     const totalMs=flipSeconds*1000,ascentMs=reduced?180:470,descentMs=reduced?180:500,bounceMs=reduced?180:500,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
@@ -639,17 +642,16 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
     const tilt=(secureRandom()%9)-4;
     els.coin.style.transition='none';els.coin.style.transform=`rotateX(${finalAngle+50}deg) rotateZ(-10deg)`;
-    const soundReady=soundOn?(isIOSApp?primeRealSfx():unlockAudio()):Promise.resolve(null);
     animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt);
-    void Promise.resolve(soundReady).then(ctx=>{if(soundOn&&token===flipToken){playLaunch();if(isIOSApp||ctx)playSpin(totalMs)}});
+    void Promise.resolve(soundReady).then(ctx=>{if(soundOn&&busy&&token===flipToken){playLaunch();if(ctx)playSpin(totalMs)}});
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){
     if(busy||!history.length)return;history=[];save();renderResult();renderHistory();showToast(isEnglish()?"Today's history has been reset.":'내 오늘 기록을 초기화했어요.');track('coin_flip_reset');
   }
   $('backButton').addEventListener('click',()=>{try{if(window.ReactNativeWebView){window.ReactNativeWebView.postMessage(JSON.stringify({type:'NATIVE_BACK'}));return}}catch(_){}if(window.history.length>1)window.history.back();else location.href='./'});
-  [els.stage,els.flip].forEach(el=>el?.addEventListener('pointerdown',()=>{if(soundOn){if(isIOSApp){void primeRealSfx()}else{void unlockAudio();void unlockFallbackAudio()}}},{passive:true}));
-  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){if(isIOSApp){void primeRealSfx().then(ok=>{if(ok&&soundOn)playReal('land',.18,false)})}else{void unlockAudio().then(ctx=>{if(ctx&&soundOn)brightPing(0,.045,1)})}showToast('효과음을 켰어요.')}else{if(isIOSApp)stopAllRealSfx();showToast('효과음을 껐어요.')}track('coin_flip_sound_toggle',{sound_on:soundOn})});
+  [els.stage,els.flip].forEach(el=>el?.addEventListener('pointerdown',()=>{if(soundOn){if(useIOSRealSfx){void primeRealSfx()}else{void unlockAudio();void unlockFallbackAudio()}}},{passive:true}));
+  $('soundToggle').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem('funypin-coin-sound',soundOn?'on':'off')}catch(_){}syncSoundButton();if(soundOn){if(useIOSRealSfx){void primeRealSfx().then(ok=>{if(ok&&soundOn)playReal('land',.18,false)})}else{void unlockAudio().then(ctx=>{if(ctx&&soundOn)brightPing(0,.045,1)})}showToast('효과음을 켰어요.')}else{if(useIOSRealSfx)stopAllRealSfx();showToast('효과음을 껐어요.')}track('coin_flip_sound_toggle',{sound_on:soundOn})});
   $('faceToggle').addEventListener('click',toggleFace);
   $('durationToggle').addEventListener('click',cycleDuration);
   $('skinButton').addEventListener('click',()=>setSkinModal(true));$('skinClose').addEventListener('click',()=>setSkinModal(false));$('skinModal').addEventListener('click',e=>{if(e.target===$('skinModal'))setSkinModal(false)});
@@ -666,8 +668,8 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   const endCropPointer=e=>{if(!cropState.pointers.has(e.pointerId))return;cropState.pointers.delete(e.pointerId);try{cropStage.releasePointerCapture(e.pointerId)}catch(_){}if(cropState.pointers.size===1){const entry=[...cropState.pointers.entries()][0],p=entry[1];cropState.drag={id:entry[0],px:p.x,py:p.y,x:cropState.x,y:cropState.y};cropState.pinch=null}else{cropState.drag=null;cropState.pinch=null}};
   cropStage.addEventListener('pointerup',endCropPointer);cropStage.addEventListener('pointercancel',endCropPointer);
   els.stage.addEventListener('click',flip);els.flip.addEventListener('click',flip);els.reset.addEventListener('click',reset);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(isIOSApp){stopAllRealSfx();realSfxPrimed=false}if(busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(loadFace(),false)}}if(!document.hidden){ensureToday();syncDurationFromStorage();loadDailyStats();restoreDeviceSkinsSync();loadSkins()}});
-  if(isIOSApp)initRealSfx();restoreDeviceSkinsSync();syncSoundButton();syncDurationFromStorage();loadSkins();window.addEventListener('funy:auth-ready',()=>{cloudAuthCache=undefined;syncDurationFromStorage();loadSkins()});ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);showToast(isEnglish()?'A new day of results has started.':'새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',()=>{syncDurationFromStorage();restoreDeviceSkinsSync();loadSkins()});window.addEventListener('focus',()=>{syncDurationFromStorage();restoreDeviceSkinsSync()});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(useIOSRealSfx){stopAllRealSfx();realSfxPrimed=false}if(busy){flipToken++;setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');renderResult();align(loadFace(),false)}}if(!document.hidden){ensureToday();syncDurationFromStorage();loadDailyStats();restoreDeviceSkinsSync();loadSkins()}});
+  if(useIOSRealSfx)initRealSfx();restoreDeviceSkinsSync();syncSoundButton();syncDurationFromStorage();loadSkins();window.addEventListener('funy:auth-ready',()=>{cloudAuthCache=undefined;syncDurationFromStorage();loadSkins()});ensureToday();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);setInterval(()=>{const nowDate=kstDate();if(nowDate!==activeDate){activeDate=nowDate;history=[];save();renderResult();renderHistory();renderDailyStats(null);loadDailyStats();align(loadFace(),false);showToast(isEnglish()?'A new day of results has started.':'새로운 날짜의 기록이 시작됐어요.')}},15000);track('coin_flip_view');window.addEventListener('pagehide',()=>{cleanupCropSource()});window.addEventListener('pageshow',()=>{syncDurationFromStorage();restoreDeviceSkinsSync();loadSkins()});window.addEventListener('focus',()=>{syncDurationFromStorage();restoreDeviceSkinsSync()});
 })();
 </script>
 <script src="funy-i18n.js?v=20261014-coin-face1"></script><script src="/tool-share.js?v=20261017-1"></script></body>

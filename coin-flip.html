@@ -626,7 +626,7 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     if(useIOSRealSfx)stopRealSpin();
     history.push(outcome);if(history.length>20)history.shift();save();saveFace(outcome);applyFaceToggle();setBusy(false);cancelFlightAnimations();els.stage.classList.remove('flipping');els.coin.style.removeProperty('transition');
     els.kicker.textContent='RESULT';els.text.textContent=LABELS()[outcome]+'!';els.text.classList.add('emphasis');els.sub.textContent=isEnglish()?'The coin flip result is set.':'코인플립 결과가 결정되었습니다.';
-    renderHistory();saveFlipToDb(outcome);playLand();try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
+    renderHistory();saveFlipToDb(outcome);try{navigator.vibrate?.([30,30,55])}catch(_){}track('coin_flip_result',{result:outcome===0?'front':'back',flip_count:history.length});
   }
   async function flip(){
     if(busy)return;
@@ -643,7 +643,15 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     const tilt=(secureRandom()%9)-4;
     els.coin.style.transition='none';els.coin.style.transform=`rotateX(${finalAngle+50}deg) rotateZ(-10deg)`;
     animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt);
-    void Promise.resolve(soundReady).then(ctx=>{if(soundOn&&busy&&token===flipToken){playLaunch();if(ctx)playSpin(totalMs)}});
+    // On iOS WebKit AudioContext.resume() may settle well after the gesture. Never play a launch sound after the coin has risen.
+    const launchStartedAt=performance.now();
+    if(audio()){playLaunch();playSpin(totalMs)}
+    else void Promise.resolve(soundReady).then(ctx=>{
+      if(!soundOn||!busy||token!==flipToken||performance.now()-launchStartedAt>Math.min(250,totalMs*.10))return;
+      playLaunch();if(ctx)playSpin(totalMs);
+    });
+    // The coin contacts the floor at the 88% keyframe, before its final bounce settles.
+    setTimeout(()=>{if(soundOn&&busy&&token===flipToken)playLand()},Math.round(totalMs*.88));
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){

@@ -56,3 +56,15 @@ select count(*) filter(where engagement_ready) ready,count(*) total from public.
 - 공개 Edge 함수의 봇/프록시를 통한 요청 조작을 완전히 막지는 못함. 순위 전환 전에 서버 측 남용 감지, 접근 통제 강화 검토.
 - 기존 `shop_sort_stats.detail_views_30d` 수치의 최초 적재 경로는 미확인. 병행 집계에서 원본과 혼합 금지.
 - 롤백: WEB에서 `shops.html`의 tracker script include 제거하면 신규 수집 중지. DB staging tables/Cron은 별도 유지 가능; 필요시 cron job 중지 및 Edge function 비활성화.
+
+## iOS 미수집 원인 및 개선 (2026-11-03 추가)
+- **원인 확인:** iOS 앱 네이티브 라우터가 카드샵을 `mobile/app/shop/[id].tsx`로 열어 웹 `shops.html`의 `shop-activity-track-v1.js`가 실행되지 않음. 기존 iOS 빌드에서 0건이었던 주요 원인.
+- iOS 앱 셸 `FunyWebView`가 지도 카드샵 탭을 `EARLY_SHOP_CLICK`/네이티브 라우팅으로 가로챌 수 있음. 웹 쪽은 window-capture touch fallback 및 앱 UA 판별을 추가하고 운영 배포 확인.
+- **네이티브 패치 작성 (앱 빌드 미반영):** 작업 트리 `C:\Users\ALIC\Desktop\tcg-map-ios-next-qa\mobile`
+  - `lib/shopActivity.ts`: 수집 API 비차단 호출, `client_surface=app_native`, `app_platform=ios/android` 전송
+  - `app/shop/[id].tsx`: 실제 상세 로드 후 `detail_view`, 공유 버튼 `share_click`, 지도 버튼 `directions_click` 기록
+  - TypeScript `tsc --noEmit` 통과, `git diff --check` 통과
+  - 작업 트리에는 기존 다른 변경사항이 있어 전체 commit/빌드/앱 제출은 진행하지 않음. 다음 iOS QA/빌드에 선택적으로 포함하고 단말에서 검증해야 함.
+- 서버 Edge v2 및 migration `shop_activity_allow_native_app_surface`로 `app_native` 허용. POST `202 recorded=true` → DB `app_native / ios` 저장 검증 → QA 레코드 삭제.
+- **남은 검증:** 실제 설치 iOS 앱에서 새 빌드 설치 후 카드샵 상세·공유·길찾기 각 1회 → `shop_activity_events`에 `app_native/ios` 3종 기록 → 15분 후 `shop_activity_metrics_30d` 반영. 이전 앱 빌드에 자동 적용되지 않음.
+- GA4는 별도 수집 체계: 이 패치는 추천용 Supabase 통계 수집이며, iOS 네이티브 화면의 GA4 이벤트 추가는 별도 범위로 검토.

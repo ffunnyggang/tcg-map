@@ -149,7 +149,7 @@ Deno.serve(async request=>{
    const dailySaved=await db.from('box_price_daily').upsert(daily,{onConflict:'seller_name,product_id,price_date'});
    if(dailySaved.error)throw dailySaved.error;
    const sourceCode='box-upload-'+uploadId;
-   const src=await db.from('box_price_sources').upsert({source_code:sourceCode,source_name:job.seller_name,source_type:job.input_text==='[manual_price_entry]'?'manual_entry':job.input_text!==null&&job.input_text!==undefined?'uploaded_text':'uploaded_image',reference_label:job.input_text==='[manual_price_entry]'?'관리자 상품별 직접 가격 입력/검수':job.input_text!==null&&job.input_text!==undefined?'관리자 텍스트 입력 AI 추출/검수':'관리자 업로드 AI 추출/검수',received_date:new Date().toISOString().slice(0,10),price_effective_date:job.effective_date,date_note:'관리자 확인 후 등록'}, {onConflict:'source_code'}).select('id').single();
+   const src=await db.from('box_price_sources').upsert({source_code:sourceCode,source_name:job.seller_name,source_type:job.input_text!==null&&job.input_text!==undefined?'uploaded_text':'uploaded_image',reference_label:job.input_text==='[manual_price_entry]'?'관리자 상품별 직접 가격 입력/검수':job.input_text!==null&&job.input_text!==undefined?'관리자 텍스트 입력 AI 추출/검수':'관리자 업로드 AI 추출/검수',received_date:new Date().toISOString().slice(0,10),price_effective_date:job.effective_date,date_note:'관리자 확인 후 등록'}, {onConflict:'source_code'}).select('id').single();
    if(src.error)throw src.error;
    const records=validated.map(x=>({source_id:src.data.id,product_id:x.product_id,raw_product_name:x.raw_name,raw_price_text:String(x.price_krw),quoted_price_krw:x.price_krw,review_status:'approved'}));
    const saved=await db.from('box_shop_price_quotes').upsert(records,{onConflict:'source_id,product_id'});if(saved.error)throw saved.error;

@@ -1,7 +1,7 @@
 /* Shared HOME shop rules: browser, app WebViews and unit tests. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.FUNY_HOME_SHOP_MODEL=api})(typeof window==='undefined'?globalThis:window,()=>{
  'use strict';
- const themes={beginner:'입문자 추천',rare:'희귀싱글카드',box:'박스깡명당',oripa:'오리파맛집',play:'카드플레이',all_day:'24시간'};
+ const themes={beginner:'입문자추천',rare:'희귀싱글카드',box:'박스깡명당',oripa:'오리파맛집',play:'카드플레이',all_day:'24시간'};
  const regions={SEO:'서울',GGI:'경기',ICN:'인천',BSN:'부산',DGU:'대구',DJN:'대전',USN:'울산',GWN:'강원',CNM:'충남',JBK:'전북',JNM:'전남',TYO:'도쿄'};
  function config(value={}){const v=value&&typeof value==='object'?value:{};return {enabled:{today:v.enabled?.today!==false,browse:v.enabled?.browse!==false,themes:v.enabled?.themes!==false,mine:v.enabled?.mine!==false},subtitle:String(v.subtitle??'새로운 매장과 카드 수집 정보를 만나보세요'),today_notes:Object.fromEntries(Object.entries(v.today_notes&&typeof v.today_notes==='object'?v.today_notes:{}).filter(([,x])=>typeof x==='string').map(([k,x])=>[k,x.trim().slice(0,80)])),today:Array.isArray(v.today)?[...new Set(v.today.filter(x=>typeof x==='string'))]:[],themes:Object.fromEntries(Object.keys(themes).map(k=>[k,Array.isArray(v.themes?.[k])?[...new Set(v.themes[k].filter(x=>typeof x==='string'))]:[]]))}}
  const active=s=>s?.is_active===true&&!/폐업|영업종료|closed/i.test(s.status||'');

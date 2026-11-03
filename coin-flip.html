@@ -630,8 +630,8 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
   }
   async function flip(){
     if(busy)return;
-    if(useIOSRealSfx&&soundOn&&!realSfxPrimed)await primeRealSfx();
-    if(isIOSApp&&soundOn)await unlockAudio();
+    // Resume Web Audio inside the user's tap without delaying the coin animation.
+    const soundReady=soundOn?unlockAudio():Promise.resolve(null);
     const token=++flipToken,outcome=secureRandom()&1,reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     syncDurationFromStorage();
     const totalMs=flipSeconds*1000,ascentMs=reduced?180:470,descentMs=reduced?180:500,bounceMs=reduced?180:500,dwellMs=Math.max(0,totalMs-ascentMs-descentMs-bounceMs);
@@ -642,9 +642,8 @@ main{position:relative;z-index:1;padding:0 16px}.sound-toggle{width:38px;height:
     els.stage.classList.remove('flipping');void els.stage.offsetWidth;els.stage.classList.add('flipping');
     const tilt=(secureRandom()%9)-4;
     els.coin.style.transition='none';els.coin.style.transform=`rotateX(${finalAngle+50}deg) rotateZ(-10deg)`;
-    const soundReady=soundOn?(useIOSRealSfx?primeRealSfx():unlockAudio()):Promise.resolve(null);
     animateFlight(totalMs,ascentMs,dwellMs,descentMs,bounceMs,startAngle,finalAngle,tilt);
-    void Promise.resolve(soundReady).then(ctx=>{if(soundOn&&token===flipToken){playLaunch();if(useIOSRealSfx||ctx)playSpin(totalMs)}});
+    void Promise.resolve(soundReady).then(ctx=>{if(soundOn&&busy&&token===flipToken){playLaunch();if(ctx)playSpin(totalMs)}});
     try{navigator.vibrate?.(22)}catch(_){}track('coin_flip_start',{duration_seconds:flipSeconds,total_motion_ms:totalMs});setTimeout(()=>finish(outcome,token),totalMs);
   }
   function reset(){

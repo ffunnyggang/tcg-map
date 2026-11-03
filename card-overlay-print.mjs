@@ -1,4 +1,13 @@
 export const PRINT={scale:12,bleed:2,width:63,height:88,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
+// Extend edge pixels into the 2mm sacrificial bleed; never scale the card artwork.
+export function withCardBleed(image,createCanvas=document.createElement.bind(document,'canvas')){
+ const c=createCanvas();c.width=1072;c.height=1472;const g=c.getContext('2d'),b=32,w=1008,h=1408;
+ g.drawImage(image,0,0,image.width,image.height,b,b,w,h);
+ g.drawImage(image,0,0,image.width,1,b,0,w,b);g.drawImage(image,0,image.height-1,image.width,1,b,b+h,w,b);
+ g.drawImage(image,0,0,1,image.height,0,b,b,h);g.drawImage(image,image.width-1,0,1,image.height,b+w,b,b,h);
+ for(const [sx,sy,dx,dy]of[[0,0,0,0],[image.width-1,0,b+w,0],[0,image.height-1,0,b+h],[image.width-1,image.height-1,b+w,b+h]])g.drawImage(image,sx,sy,1,1,dx,dy,b,b);
+ return c;
+}
 export function artPlacement(rect,bleed=2,width=1024,height=1536){return{x:(rect.x+bleed)/(63+2*bleed)*width,y:(rect.y+bleed)/(88+2*bleed)*height,w:rect.w/(63+2*bleed)*width,h:rect.h/(88+2*bleed)*height};}
 export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,bleed/(63+2*bleed)*art.width,bleed/(88+2*bleed)*art.height,63/(63+2*bleed)*art.width,88/(88+2*bleed)*art.height,x,y,63*s,88*s);else g.drawImage(art,x-bleed*s,y-bleed*s,(63+bleed*2)*s,(88+bleed*2)*s);}
 export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false}={}){

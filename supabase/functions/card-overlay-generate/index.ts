@@ -35,6 +35,34 @@ Deno.serve(async(req:Request)=>{
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
   if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 50회 시도 한도'});
+  const savedHeaders={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
+  const outputBucket='overlay-generated-images';
+  const savedFetch=(path:string,options:RequestInit={})=>fetch(url+path,{...options,headers:{...savedHeaders,...options.headers},signal:AbortSignal.timeout(15000)});
+  const ownedQuery=(id:string)=>'/rest/v1/overlay_generations?id=eq.'+id+'&user_id=eq.'+encodeURIComponent(user.id);
+  const validId=(id:unknown)=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const readOwner=async(id:string)=>{const res=await savedFetch(ownedQuery(id)+'&select=*');if(!res.ok)throw Error('HISTORY_UNAVAILABLE');return (await res.json())[0];};
+  if(['generations','load_generation','save_result'].includes(data.action)){
+   if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   if(data.action==='generations'){
+    const res=await savedFetch('/rest/v1/overlay_generations?user_id=eq.'+encodeURIComponent(user.id)+'&select=id,mode,result_kind,width,height,window_rect,created_at&order=created_at.desc&limit=20');
+    if(!res.ok)return reply({error:'저장된 이미지 목록을 불러오지 못했어요.'},503);return reply({generations:await res.json()});
+   }
+   if(!validId(data.id))return reply({error:'올바른 저장 이미지가 아닙니다.'},400);
+   const row=await readOwner(data.id);if(!row)return reply({error:'저장 이미지를 찾을 수 없습니다.'},404);
+   const prefix=user.id+'/'+row.id+'/';if(!row.image_path.startsWith(prefix)||!row.raw_path.startsWith(prefix))throw Error('INVALID_IMAGE_PATH');
+   if(data.action==='load_generation'){
+    const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.image_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
+    if(!sign.ok)return reply({error:'저장 이미지를 불러오지 못했어요.'},503);const signed=await sign.json();
+    return reply({generation:{id:row.id,mode:row.mode,result_kind:row.result_kind,width:row.width,height:row.height,window_rect:row.window_rect,created_at:row.created_at,imageUrl:url+'/storage/v1'+signed.signedURL}});
+   }
+   let prepared;try{prepared=png(data.image,row.mode==='fullart');}catch{return reply({error:'저장할 이미지의 형식이나 크기가 올바르지 않습니다.'},400);}
+   const view=new DataView(prepared.buffer);if(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height)return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
+   const imagePath=prefix+'prepared.png';
+   const upload=await savedFetch('/storage/v1/object/'+outputBucket+'/'+imagePath,{method:'POST',headers:{'Content-Type':'image/png','x-upsert':'true'},body:prepared});if(!upload.ok)return reply({error:'이미지 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'},503);
+   const patch=await savedFetch(ownedQuery(data.id),{method:'PATCH',body:JSON.stringify({image_path:imagePath,result_kind:'prepared',updated_at:new Date().toISOString()})});
+   if(!patch.ok)return reply({error:'보정 이미지의 저장 정보를 갱신하지 못했어요. AI 원본은 보관됩니다.'},503);
+   return reply({stored:true,generationId:row.id});
+  }
   if(data.action==='references'||data.action==='reference'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    const h={apikey:service,Authorization:'Bearer '+service};
@@ -55,11 +83,14 @@ Deno.serve(async(req:Request)=>{
   }
   const independent=data.action==='generate_background',fullArt=data.action==='generate_fullart';
   const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
-  if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
-  if(fullArt&&Object.keys(data).some(k=>!['action','image'].includes(k)))return reply({error:'풀아트 모드에는 카드 이미지 한 장만 전송해 주세요.'},400);
+  if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme','printRect'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
+  if(fullArt&&Object.keys(data).some(k=>!['action','image','printRect'].includes(k)))return reply({error:'풀아트 모드에는 카드 이미지 한 장만 전송해 주세요.'},400);
   if(data.action!=='generate'&&!independent&&!fullArt)return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
+  const windowRect=data.printRect;
+  if(windowRect!==undefined&&(!windowRect||['x','y','w','h'].some(k=>typeof windowRect[k]!=='number'||!Number.isFinite(windowRect[k]))||windowRect.x<0||windowRect.y<0||windowRect.w<5||windowRect.h<5||windowRect.x+windowRect.w>63||windowRect.y+windowRect.h>88))return reply({error:'출력 창 좌표가 올바르지 않습니다.'},400);
+
   let image=new Uint8Array(),mask=new Uint8Array();try{if(!independent){image=png(data.image,fullArt);if(!fullArt)mask=png(data.mask);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
   const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=independent?1072:imageView.getUint32(16),imageHeight=independent?1472:imageView.getUint32(20);
   if(!independent&&!fullArt&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
@@ -113,6 +144,20 @@ Deno.serve(async(req:Request)=>{
   }
   const output=result.data?.[0]?.b64_json;if(typeof output!=='string')throw Error('NO_IMAGE');
   console.info('overlay generation completed',{requestId:response.headers.get('x-request-id'),...diagnostic});
-  return reply({image:output,requestId:response.headers.get('x-request-id')});
+  let generationId=null,storageSaved=false;
+  try{
+   if(output.length>28_000_000)throw Error('OUTPUT_TOO_LARGE');
+   const raw=Uint8Array.from(atob(output),c=>c.charCodeAt(0));
+   if(raw.length<24||raw.length>20*1024*1024||[137,80,78,71,13,10,26,10].some((v,i)=>raw[i]!==v))throw Error('INVALID_OUTPUT');
+   const view=new DataView(raw.buffer),width=view.getUint32(16),height=view.getUint32(20);
+   if(width!==imageWidth||height!==imageHeight)throw Error('OUTPUT_SIZE_MISMATCH');
+   const id=crypto.randomUUID(),rawPath=user.id+'/'+id+'/provider.png';
+   const upload=await savedFetch('/storage/v1/object/'+outputBucket+'/'+rawPath,{method:'POST',headers:{'Content-Type':'image/png','x-upsert':'false'},body:raw});if(!upload.ok)throw Error('OUTPUT_UPLOAD_FAILED');
+   const row={id,user_id:user.id,mode:fullArt?'fullart':independent?'independent':'original',raw_path:rawPath,image_path:rawPath,result_kind:'provider',width,height,window_rect:windowRect?Object.fromEntries(['x','y','w','h'].map(k=>[k,windowRect[k]])):null,model,prompt_version:diagnostic.promptVersion,request_id:response.headers.get('x-request-id')};
+   const saved=await savedFetch('/rest/v1/overlay_generations',{method:'POST',body:JSON.stringify(row)});
+   if(!saved.ok){await savedFetch('/storage/v1/object/'+outputBucket,{method:'DELETE',body:JSON.stringify({prefixes:[rawPath]})}).catch(()=>{});throw Error('OUTPUT_METADATA_FAILED');}
+   generationId=id;storageSaved=true;
+  }catch{console.error('overlay output persistence failed');}
+  return reply({image:output,requestId:response.headers.get('x-request-id'),generationId,storageSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });

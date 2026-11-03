@@ -22,3 +22,25 @@
 
 /* Anchor the backdrop and icon to the same center across WebView button layouts. */
 .funy-home-shops .fhs-tile-heart{padding:0}.funy-home-shops .fhs-tile-heart::before{inset:auto;left:50%;top:50%;width:24px;height:24px;transform:translate(-50%,-50%)}.funy-home-shops .fhs-tile-heart svg{position:absolute;left:50%;top:50%;margin:0;display:block;transform:translate(-50%,-50%)}
+
+/* HOME preference sheet; existing theme chips and shop tiles are retained. */
+.fhs-chips [data-theme="preference"]{display:inline-flex;align-items:center;gap:5px}
+.fhs-chips [data-theme="preference"] svg{width:15px;height:15px;flex:none}
+.fhs-pref-overlay{position:fixed;inset:0;z-index:2147483300;display:flex;align-items:flex-end;justify-content:center}
+.fhs-pref-overlay[hidden]{display:none!important}
+.fhs-pref-backdrop{position:absolute;inset:0;background:rgba(19,15,25,.53)}
+.fhs-pref-dialog{position:relative;width:min(100%,460px);max-height:90dvh;display:flex;flex-direction:column;border-radius:23px 23px 0 0;background:#fff;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 35px rgba(0,0,0,.14);font-family:'Pretendard Variable',Pretendard,sans-serif}
+.fhs-pref-grab{width:36px;height:4px;border-radius:99px;background:#ded8e6;margin:10px auto 14px;flex:none}
+.fhs-pref-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:0 19px 13px}
+.fhs-pref-head h2{font-size:19px;font-weight:800;margin:0 0 5px}.fhs-pref-head p{font-size:12px;color:#847c88;margin:0}
+.fhs-pref-close{width:44px;height:44px;border:0;background:transparent;color:#756e80;font-size:25px}
+.fhs-pref-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 19px 24px}
+.fhs-pref-group{border:0;padding:0;margin:18px 0 0}.fhs-pref-group legend{font-weight:750;font-size:14px;margin-bottom:12px}
+.fhs-pref-options{display:flex;flex-wrap:wrap;gap:8px}
+.fhs-pref-options button{border:1px solid #e9e5ed;background:#fff;color:#5e5966;border-radius:99px;min-height:44px;padding:9px 13px;font-size:12px}
+.fhs-pref-options button[aria-pressed="true"]{border-color:#bba1e6;background:#f2ecff;color:#6748ac;font-weight:800}
+.fhs-pref-foot{display:flex;gap:10px;padding:13px 19px 17px;border-top:1px solid #f0ecf4;flex:none}
+.fhs-pref-foot button{min-height:48px;border:0;border-radius:12px;padding:0 17px;font-size:13px;font-weight:800}
+.fhs-pref-foot [data-pref-reset]{background:#f4f2f6;color:#766f7e}
+.fhs-pref-foot [data-pref-apply]{flex:1;background:#795cc5;color:#fff}
+.fhs-pref-dialog :focus-visible{outline:2px solid #8062d8;outline-offset:3px}

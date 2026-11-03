@@ -1364,7 +1364,7 @@
         const {error}=await A.client.from('market_listing_favorites').insert({listing_id:id,user_id:A.session.user.id});if(error&&error.code!=='23505')throw error;
         marketToast('관심 목록에 추가했어요.');
       }
-      await updateMarketDetailStats(id,false);
+      const refreshed=await updateMarketDetailStats(id,false);if(!refreshed){btn.classList.toggle('is-on',!on);btn.dataset.on=on?'0':'1';btn.innerHTML=heartHtml(!on);btn.setAttribute('aria-pressed',String(!on))}window.FUNY_HEART_MOTION?.play(btn,!on);
     }catch(_){marketToast('관심 매물 처리에 실패했습니다.')}
     finally{btn.disabled=false}
   }

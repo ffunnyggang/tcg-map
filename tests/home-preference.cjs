@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),M=require('../home-shop-model.js');
+const shops=Array.from({length:24},(_,i)=>({id:'KR-SEO-'+i,name:'샵 '+String(i).padStart(2,'0'),country_code:i===23?'JP':'KR',is_active:i!==22,status:'영업',tcgCodes:i%3===0?['pokemon']:['one_piece'],featureCodes:i%2===0?['graded','box']:['oripa','buy']}));
+const stats=shops.map((s,i)=>({shop_id:s.id,favorite_count:i+1,detail_views_30d:i+1,shares_30d:0,directions_30d:0,engagement_ready:false}));
+assert.deepEqual(M.preferenceShops(shops,stats,{tcg:[],type:[],extra:[]}),[]);
+assert.deepEqual(M.preferenceShops(shops,[],{tcg:['pokemon'],type:[],extra:[]}),[]);
+let found=M.preferenceShops(shops,stats,{tcg:['pokemon','one_piece'],type:['graded'],extra:[]});
+assert.equal(found.length,10);assert(found.every(s=>s.country_code==='KR'&&s.is_active&&s.featureCodes.includes('graded')));
+found=M.preferenceShops(shops,stats,{tcg:['pokemon'],type:['graded'],extra:['buy']});
+assert.equal(found.length,0,'AND applied across all three groups');
+found=M.preferenceShops(shops,stats,{tcg:['pokemon'],type:[],extra:[]});
+assert(found.length>0&&found.every(s=>s.tcgCodes.includes('pokemon')));
+found=M.preferenceShops(shops,stats,{tcg:[],type:[],extra:['buy']});
+assert(found.every(s=>s.featureCodes.includes('buy')));
+console.log('HOME preference rules: real attribute codes, group OR/AND, active KR-only, max 10, no fake popularity PASS');

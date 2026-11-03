@@ -30,7 +30,7 @@ tr.review-row td:nth-child(5){grid-column:3;grid-row:2;font-size:10px}
 .product-thumb{width:48px;height:61px}
 .price-input{height:35px!important;padding:4px!important;max-width:92px}
 }
-.seller-label-line{display:flex;align-items:center;justify-content:space-between;gap:12px}.seller-label-line .seller-stats{margin:0;font-size:11px;font-weight:500;text-align:right} .input-modes{display:flex;flex-wrap:wrap;gap:10px 22px;border:0;padding:0;margin:18px 0 12px}.input-modes legend{font-size:12px;font-weight:700;margin-bottom:10px}.input-modes label{display:flex;align-items:center;gap:7px;font-size:14px;min-height:36px;cursor:pointer}.input-modes input{accent-color:#8062d8;width:17px;height:17px}#priceText{display:block;width:100%;min-height:190px;margin-top:8px;padding:12px;border:1px solid #ddd7e6;border-radius:10px;background:#fff;font:14px/1.6 inherit;resize:vertical}#textInput{margin-top:14px}</style></head><body><main class="wrap"><div class="heading"><h1>BOX 가격 관리</h1></div><div class="login" id="authNotice">관리자 로그인 상태를 확인하고 있습니다.</div><div id="app" hidden><div class="status" id="status" role="status" hidden></div><section class="panel"><h2>1. 가격표 등록</h2><div class="fields"><label class="field"><span class="seller-label-line"><span>판매처</span><span id="sellerStats" class="seller-stats">판매처 정보를 불러오는 중...</span></span><select id="seller"><option value="">판매처 선택</option><option value="__new__">+ 신규 등록</option></select><div id="newSellerControls" class="new-seller-controls" hidden><select id="shopSelect" aria-label="신규 판매처 카드샵 선택"><option value="">한국 카드샵 선택</option></select><button type="button" class="secondary" id="registerSeller">판매처 등록</button></div></label><label class="field">가격 기준일<input type="date" id="effectiveDate" required></label></div><fieldset class="input-modes"><legend>입력 방식</legend><label><input type="radio" name="inputMode" value="image" checked> 이미지 첨부</label><label><input type="radio" name="inputMode" value="text"> 직접 입력</label></fieldset><label class="upload" id="imageInput" for="file"><strong>가격표 이미지를 선택하거나 첨부하세요</strong><p class="muted">JPG·PNG·WebP / 장당 8MB 이하 · 최대 3장</p><input id="file" type="file" multiple accept="image/jpeg,image/png,image/webp"><div id="imagePreviews" class="image-previews"></div></label><div id="textInput" hidden><label class="field" for="priceText">가격표 텍스트</label><textarea id="priceText" maxlength="20000" rows="9" placeholder="상품명과 가격을 한 줄씩 입력하거나 붙여넣으세요.&#10;예) EB-05 히로인즈 에디션 Vol.2 박스 (일어판) 155,000원&#10;메가 드림 ex 박스 (일어판) 130,000원"></textarea><p class="muted">상품명·언어·구성·가격 단위(원/만원)를 명확히 입력해 주세요. 최대 20,000자.</p></div><p class="muted">퍼니핀에 등록된 BOX만 추출하며, 일반 BOX/논슈링크·팩 단위와 만원 단위 가격을 구분합니다. 기준일은 실제 가격표의 날짜를 지정하세요.</p><div class="actions"><button class="primary" id="extract">AI 가격 자동 추출</button></div></section><section class="panel" id="review" hidden><h2>2. 자동 추출 결과 확인 <span id="count" class="chip"></span></h2><p class="muted">잘못 인식된 제품은 선택 해제하고 가격을 수정하세요. 승인한 항목만 적용됩니다.</p><div class="table-scroll"><table><thead><tr><th>적용</th><th>이미지</th><th>상품명</th><th>추출 가격 (원)</th><th>신뢰도</th></tr></thead><tbody id="rows"></tbody></table></div><div class="actions"><button class="secondary" id="reset">다시 입력</button><button class="primary" id="apply">확인한 가격 일괄 적용</button></div></section></div></main>
+.seller-label-line{display:flex;align-items:center;justify-content:space-between;gap:12px}.seller-label-line .seller-stats{margin:0;font-size:11px;font-weight:500;text-align:right} .input-modes{display:flex;flex-wrap:wrap;gap:10px 22px;border:0;padding:0;margin:18px 0 12px}.input-modes legend{font-size:12px;font-weight:700;margin-bottom:10px}.input-modes label{display:flex;align-items:center;gap:7px;font-size:14px;min-height:36px;cursor:pointer}.input-modes input{accent-color:#8062d8;width:17px;height:17px}#priceText{display:block;width:100%;min-height:190px;margin-top:8px;padding:12px;border:1px solid #ddd7e6;border-radius:10px;background:#fff;font:14px/1.6 inherit;resize:vertical}#textInput{margin-top:14px}</style></head><body><main class="wrap"><div class="heading"><h1>BOX 가격 관리</h1></div><div class="login" id="authNotice">관리자 로그인 상태를 확인하고 있습니다.</div><div id="app" hidden><div class="status" id="status" role="status" hidden></div><section class="panel"><h2>1. 가격표 등록</h2><div class="fields"><label class="field"><span class="seller-label-line"><span>판매처</span><span id="sellerStats" class="seller-stats">판매처 정보를 불러오는 중...</span></span><select id="seller"><option value="">판매처 선택</option><option value="__new__">+ 신규 등록</option></select><div id="newSellerControls" class="new-seller-controls" hidden><select id="shopSelect" aria-label="신규 판매처 카드샵 선택"><option value="">한국 카드샵 선택</option></select><button type="button" class="secondary" id="registerSeller">판매처 등록</button></div></label><label class="field">가격 기준일<input type="date" id="effectiveDate" required></label></div><fieldset class="input-modes"><legend>입력 방식</legend><label><input type="radio" name="inputMode" value="image" checked> 이미지 첨부</label><label><input type="radio" name="inputMode" value="text"> 직접 입력</label><label><input type="radio" name="inputMode" value="manual"> 상품별 가격 입력</label></fieldset><label class="upload" id="imageInput" for="file"><strong>가격표 이미지를 선택하거나 첨부하세요</strong><p class="muted">JPG·PNG·WebP / 장당 8MB 이하 · 최대 3장</p><input id="file" type="file" multiple accept="image/jpeg,image/png,image/webp"><div id="imagePreviews" class="image-previews"></div></label><div id="textInput" hidden><label class="field" for="priceText">가격표 텍스트</label><textarea id="priceText" maxlength="20000" rows="9" placeholder="상품명과 가격을 한 줄씩 입력하거나 붙여넣으세요.&#10;예) EB-05 히로인즈 에디션 Vol.2 박스 (일어판) 155,000원&#10;메가 드림 ex 박스 (일어판) 130,000원"></textarea><p class="muted">상품명·언어·구성·가격 단위(원/만원)를 명확히 입력해 주세요. 최대 20,000자.</p></div><div id="manualInput" hidden><p class="muted">선택한 판매처에 기존 가격이 등록된 상품만 조회합니다. 변경할 가격만 입력해 주세요.</p><div id="manualMessage" class="muted" role="status">판매처를 선택해 주세요.</div><div class="table-scroll"><table><thead><tr><th>상품</th><th>기존 가격</th><th>변경 가격 (원)</th></tr></thead><tbody id="manualRows"></tbody></table></div></div><p class="muted">퍼니핀에 등록된 BOX만 추출하며, 일반 BOX/논슈링크·팩 단위와 만원 단위 가격을 구분합니다. 기준일은 실제 가격표의 날짜를 지정하세요.</p><div class="actions"><button class="primary" id="extract">AI 가격 자동 추출</button></div></section><section class="panel" id="review" hidden><h2>2. 자동 추출 결과 확인 <span id="count" class="chip"></span></h2><p class="muted">잘못 인식된 제품은 선택 해제하고 가격을 수정하세요. 승인한 항목만 적용됩니다.</p><div class="table-scroll"><table><thead><tr><th>적용</th><th>이미지</th><th>상품명</th><th>추출 가격 (원)</th><th>신뢰도</th></tr></thead><tbody id="rows"></tbody></table></div><div class="actions"><button class="secondary" id="reset">다시 입력</button><button class="primary" id="apply">확인한 가격 일괄 적용</button></div></section></div></main>
 <script src="/web-auth.js?v=20261018-web-auth10"></script><script>
 const SUPA='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 let session='',uploadId='',catalog=new Map(),raw=[],previous={},previewUrls=[],knownSellers=[],guardChecks=new Map();
@@ -41,11 +41,58 @@ function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',y
 $('effectiveDate').value=today();
 const getInputMode=()=>document.querySelector('input[name=inputMode]:checked')?.value||'image';
 function clearReview(){uploadId='';raw=[];guardChecks.clear();$('review').hidden=true;$('rows').replaceChildren()}
-document.querySelectorAll('input[name=inputMode]').forEach(r=>r.addEventListener('change',()=>{const text=getInputMode()==='text';$('imageInput').hidden=text;$('textInput').hidden=!text;clearReview()}));
+let manualProducts=[],manualRequest=0;
+function renderManual(){
+ const list=$('manualRows');list.replaceChildren();
+ for(const p of manualProducts){
+  const tr=document.createElement('tr'),name=document.createElement('td'),current=document.createElement('td'),cell=document.createElement('td');
+  name.className='product-title';name.textContent=p.product_name_short_ko||p.product_name_ko||p.product_id;
+  current.textContent=Number(p.current_price_krw).toLocaleString('ko-KR')+'원';
+  const input=document.createElement('input');input.type='number';input.min='1000';input.max='5000000';input.step='100';input.className='price-input';input.placeholder='가격 입력';input.dataset.id=p.product_id;
+  cell.append(input);tr.append(name,current,cell);list.append(tr);
+ }
+ $('manualMessage').textContent=manualProducts.length?manualProducts.length+'개 등록 상품 · 가격이 바뀐 상품에만 입력하세요.':'해당 판매처에 등록된 가격 상품이 없습니다.';
+}
+async function loadManualProducts(){
+ const request=++manualRequest;manualProducts=[];$('manualRows').replaceChildren();
+ const seller=$('seller').value,date=$('effectiveDate').value;
+ if(getInputMode()!=='manual')return;
+ if(!seller||seller==='__new__'||!date){$('manualMessage').textContent='판매처와 가격 기준일을 선택해 주세요.';return}
+ $('manualMessage').textContent='등록 상품을 불러오는 중…';
+ try{const d=await call('manual_list',{seller,effective_date:date});if(request!==manualRequest||getInputMode()!=='manual')return;manualProducts=d.products||[];renderManual()}
+ catch(e){if(request===manualRequest)$('manualMessage').textContent='상품 조회 실패: '+e.message}
+}
+document.querySelectorAll('input[name=inputMode]').forEach(r=>r.addEventListener('change',()=>{
+ const mode=getInputMode();$('imageInput').hidden=mode!=='image';$('textInput').hidden=mode!=='text';$('manualInput').hidden=mode!=='manual';
+ $('extract').textContent=mode==='manual'?'변경 가격 검토':'AI 가격 자동 추출';
+ clearReview();if(mode==='manual')loadManualProducts();else manualRequest++;
+}));
 async function call(action,payload={}){const r=await fetch(SUPA+'/functions/v1/box-price-admin',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+session,'Content-Type':'application/json'},body:JSON.stringify({action,...payload})});const d=await r.json().catch(()=>({}));if(!r.ok){const detail=[d.message||d.error||'처리 실패',d.provider_status?'API '+d.provider_status:'',d.provider_code||d.provider_type||''].filter(Boolean).join(' · ');throw Error(detail)}return d}
-async function guard(){let token=sessionStorage.getItem('funypin_admin_token')||'';if(!token){try{const A=window.FUNY_WEB_AUTH;await A?.init();token=A?.session?.access_token||''}catch(e){console.warn(e)}}if(!token){$('authNotice').textContent='로그인 후 접근할 수 있습니다. 관리자 로그인 또는 퍼니핀 계정 로그인 후 다시 이용해 주세요.';return}const r=await fetch(SUPA+'/rest/v1/rpc/can_manage_box_prices',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:'{}'});if(!r.ok||await r.json()!==true){$('authNotice').textContent='BOX 가격 관리 권한이 없습니다. 권한을 확인해 주세요.';return}session=token;$('authNotice').hidden=true;$('app').hidden=false;await loadSellers()}
+async function guard(){
+  const notice=$('authNotice');
+  const showLogin=()=>{notice.replaceChildren(document.createTextNode('로그인 후 접근할 수 있습니다. '));const link=document.createElement('a');link.href='/login.html';link.textContent='퍼니핀 계정 로그인';link.addEventListener('click',()=>window.FUNY_WEB_AUTH?.rememberReturn('/admin-box-prices.html'));notice.append(link);notice.append(document.createTextNode(' · '));const admin=document.createElement('a');admin.href='/admin.html';admin.textContent='전체 관리자 로그인';notice.append(admin)};
+  let token=sessionStorage.getItem('funypin_admin_token')||'';
+  let webToken='';
+  try{const A=window.FUNY_WEB_AUTH;await A?.init();webToken=A?.session?.access_token||''}catch(e){console.warn('[BOX AUTH] web session unavailable',e)}
+  if(!token)token=webToken;
+  if(!token){showLogin();return}
+  const check=async(t)=>fetch(SUPA+'/rest/v1/rpc/can_manage_box_prices',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:'{}'});
+  let r=await check(token);
+  if(r.status===401&&token!==webToken&&webToken){token=webToken;r=await check(token)}
+  if(r.status===401){
+    const refresh=sessionStorage.getItem('funypin_admin_refresh')||'';
+    if(refresh){
+      const res=await fetch(SUPA+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refresh})});
+      if(res.ok){const data=await res.json();if(data.access_token){token=data.access_token;sessionStorage.setItem('funypin_admin_token',token);if(data.refresh_token)sessionStorage.setItem('funypin_admin_refresh',data.refresh_token);r=await check(token)}}
+    }
+  }
+  if(r.status===401){showLogin();return}
+  if(!r.ok){notice.textContent='권한 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요. (HTTP '+r.status+')';return}
+  if(await r.json()!==true){notice.textContent='BOX 가격 관리 권한이 없습니다. 권한을 확인해 주세요.';return}
+  session=token;notice.hidden=true;$('app').hidden=false;await loadSellers();
+}
 async function loadSellers(selected=''){const d=await call('seller_options');knownSellers=d.sellers||[];const sel=$('seller');sel.replaceChildren(new Option('판매처 선택',''));for(const x of knownSellers)sel.add(new Option(x.display_name||x.seller_name,x.seller_name));sel.add(new Option('+ 신규 등록','__new__'));if(selected)sel.value=selected;$('sellerStats').textContent='현재 등록 판매처 '+knownSellers.length+'곳';const shops=$('shopSelect');shops.replaceChildren(new Option('한국 카드샵 선택',''));for(const shop of d.shops||[])shops.add(new Option(shop.name,shop.id));$('newSellerControls').hidden=sel.value!=='__new__'}
-$('seller').onchange=()=>{$('newSellerControls').hidden=$('seller').value!=='__new__'};
+$('seller').onchange=()=>{$('newSellerControls').hidden=$('seller').value!=='__new__';clearReview();loadManualProducts()};$('effectiveDate').addEventListener('change',()=>{clearReview();loadManualProducts()});
 $('registerSeller').onclick=async()=>{const shopId=$('shopSelect').value;if(!shopId){status('신규 등록할 카드샵을 선택해 주세요.');return}const b=$('registerSeller');b.disabled=true;try{const d=await call('register_seller',{shop_id:shopId});await loadSellers(d.seller);status(d.seller+' 판매처를 등록했습니다.')}catch(e){status('판매처 등록 실패: '+e.message)}finally{b.disabled=false}};
 $('file').addEventListener('change',()=>{const files=[...$('file').files];previewUrls.forEach(URL.revokeObjectURL);previewUrls=[];$('imagePreviews').replaceChildren();if(files.length>3){status('이미지는 최대 3장까지 선택할 수 있어요.');$('file').value='';return}for(const f of files){const url=URL.createObjectURL(f);previewUrls.push(url);const img=document.createElement('img');img.src=url;img.alt=f.name;$('imagePreviews').append(img)}});
 const base64=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file)});
@@ -53,7 +100,19 @@ function renderRows(){const list=$('rows');list.replaceChildren();raw.forEach((x
 $('extract').addEventListener('click',async()=>{
  const files=[...$('file').files],seller=$('seller').value,date=$('effectiveDate').value,mode=getInputMode(),text=$('priceText').value.trim();
  if(!seller||seller==='__new__'||!date){status('등록된 판매처와 기준일을 지정해 주세요.');return}
- if(mode==='text'&&(!text||text.length>20000)){status('가격표 텍스트를 1~20,000자 이내로 입력해 주세요.');return}
+ if(mode==='manual'){
+    const rows=[...$('manualRows').querySelectorAll('input[data-id]')].filter(el=>el.value.trim()!=='').map(el=>({product_id:el.dataset.id,price_krw:Number(el.value)}));
+    if(!rows.length){status('수정할 상품의 가격을 입력해 주세요.');return}
+    if(rows.length>100||rows.some(x=>!Number.isInteger(x.price_krw)||x.price_krw<1000||x.price_krw>5000000)){status('가격은 1,000~5,000,000원, 최대 100개까지 입력할 수 있습니다.');return}
+    const button=$('extract');button.disabled=true;clearReview();
+    try{
+      const d=await call('manual_prepare',{seller,effective_date:date,rows});
+      uploadId=d.upload_id;catalog=new Map((d.catalog||[]).map(x=>[x.product_id,x]));previous=d.previous_prices||{};raw=d.rows||[];guardChecks=new Map((d.checks||[]).map(c=>[c.product_id,c]));
+      renderRows();$('review').hidden=false;$('count').textContent=raw.length+'개 변경';status('변경 가격을 확인하고 적용해 주세요.');
+    }catch(e){status('가격 검토 실패: '+e.message)}finally{button.disabled=false}
+    return;
+  }
+  if(mode==='text'&&(!text||text.length>20000)){status('가격표 텍스트를 1~20,000자 이내로 입력해 주세요.');return}
  if(mode==='image'&&(!files.length||files.length>3)){status('이미지를 1~3장 첨부해 주세요.');return}
  if(mode==='image'&&files.some(f=>f.size>8000000||!['image/jpeg','image/png','image/webp'].includes(f.type))){status('JPG·PNG·WebP 이미지를 장당 8MB 이하로 선택해 주세요.');return}
  const btn=$('extract');btn.disabled=true;$('apply').disabled=true;

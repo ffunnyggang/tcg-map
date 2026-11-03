@@ -26,9 +26,9 @@
 /* HOME preference sheet; existing theme chips and shop tiles are retained. */
 .fhs-chips [data-theme="preference"]{display:inline-flex;align-items:center;gap:5px}
 .fhs-chips [data-theme="preference"] svg{width:15px;height:15px;flex:none}
-.fhs-pref-overlay{position:fixed;inset:0;z-index:2147483300;display:flex;align-items:flex-end;justify-content:center}
+.fhs-pref-overlay{position:fixed;inset:0;z-index:2147483300;display:flex;align-items:flex-end;justify-content:center;background:transparent!important;box-shadow:none!important;filter:none!important}
 .fhs-pref-overlay[hidden]{display:none!important}
-.fhs-pref-backdrop{position:absolute;inset:0;background:rgba(19,15,25,.53)}
+.fhs-pref-backdrop{position:absolute;inset:0;background:var(--funy-dim-color,rgba(20,16,24,.38))}
 .fhs-pref-dialog{position:relative;width:min(100%,460px);max-height:90dvh;display:flex;flex-direction:column;border-radius:23px 23px 0 0;background:#fff;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 35px rgba(0,0,0,.14);font-family:'Pretendard Variable',Pretendard,sans-serif}
 .fhs-pref-grab{width:36px;height:4px;border-radius:99px;background:#ded8e6;margin:10px auto 14px;flex:none}
 .fhs-pref-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:0 19px 13px}

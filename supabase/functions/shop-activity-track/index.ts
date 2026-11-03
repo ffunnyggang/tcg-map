@@ -30,7 +30,7 @@ Deno.serve(async(req)=>{
  const identity=ip?ip+'|'+ua:'fallback|'+ua+'|'+String(body.visitor_id||'').slice(0,40);
  const day=new Date().toISOString().slice(0,10);
  const actor=await hash('shop-activity-v1|'+day+'|'+identity,SERVICE);
- const surface=body.client_surface==='app_webview'?'app_webview':'web';
+ const surface=body.client_surface==='app_native'?'app_native':body.client_surface==='app_webview'?'app_webview':'web';
  const platform=['ios','android','web'].includes(String(body.app_platform))?String(body.app_platform):'unknown';
  try{
   const response=await fetch(API+'/rest/v1/rpc/ingest_shop_activity',{

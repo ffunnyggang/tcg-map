@@ -1,13 +1,14 @@
 // Test-only endpoint. No generation is enabled without explicit server-side configuration.
 // verify_jwt=false: validate every user token with this project Auth /user below.
 // This accepts current signing keys without trusting decoded client JWT claims.
+const FULL_ART_PROMPT="첨부한 카드 한 장을 원본으로 사용해 풀아트로 편집해줘. 이전 카드나 완성 예시의 캐릭터·글자·숫자·구도를 가져오지 마. 이번 원본에 보이는 내용만 기준으로 판단해줘.\n\n【작업 방식 — 가장 중요】\n원본 카드의 바깥 가장자리를 최종 화면의 기준으로 고정해줘. 원본 이미지 전체나 안쪽 일러스트를 확대·축소·이동하지 마.\n\n먼저 다음 요소를 원본에서 그대로 보존할 영역으로 분리해줘.\n1. 네 변과 둥근 모서리를 감싸는 바깥 홀로그램 띠\n2. 안쪽 일러스트에 있는 캐릭터와 기존 풍경 전체\n3. 카드의 모든 글자·숫자·기호·배지·기념 로고\n4. 하단 은색 구분선과 그 밖의 유지할 장식\n\n이 영역은 새로 그리거나 재해석하지 말고 원본 픽셀과 위치를 유지해줘. 특히 캐릭터의 얼굴, 몸, 귀, 팔, 발, 꼬리의 크기와 좌표를 바꾸지 마. 완성본의 캐릭터와 글자 위에 원본을 겹쳤을 때 정확히 포개져야 해.\n\n【편집할 영역만 지정】\n새로 생성하거나 교체할 부분은 아래 세 곳으로 한정해줘.\n- 안쪽 일러스트를 둘러싼 사각 프레임의 네 변\n- 일러스트 아래에 전국도감 정보 바가 있는 경우, 그 바와 바 안의 글자\n- 기존의 단색 카드 패널 배경\n\n전국도감 바가 없는 카드에는 없는 바를 만들지 마. 바를 제거한 자리에는 은색 선, 그림자, 글자 흔적이나 수평 경계가 남지 않게 해줘.\n\n【풍경 확장】\n원본 일러스트의 위·아래·왼쪽·오른쪽 끝에 있는 풍경을 바깥쪽으로 이어 그려줘. 원본의 화풍, 색, 빛, 원근감, 붓질·점묘 및 홀로그램 질감을 따라 이름과 HP 뒤, 기술과 설명 뒤, 하단 정보 뒤까지 하나의 연속된 장면을 만들어줘.\n\n특히 일러스트의 아래쪽 풍경은 제거한 도감 바 자리를 통과해 카드 하단까지 자연스럽게 이어져야 해. 프레임이 있던 네 변에도 사각형 윤곽, 색 차이, 붙여 넣은 자국이 보이면 안 돼. 새 풍경은 바깥 홀로그램 띠의 안쪽까지만 채워줘.\n\n【원본 요소 재배치 금지】\n이번 원본에 실제로 적힌 이름, HP, 속성·에너지 기호, 기술명과 설명, 데미지, 약점·저항력·후퇴 표시, 일러스트레이터, 카드 번호, 수록 번호, 하단 설명과 저작권 표기의 글자·숫자·줄바꿈·크기·위치를 그대로 유지해줘. 큰 기념 로고나 작은 배지가 있다면 각각 원래 위치와 크기로 보존하고 주변 배경만 바꿔줘. 원본에 없는 캐릭터, 정보, 장식은 추가하지 마.\n\n【최종 검사】\n원본과 결과물을 바깥 가장자리 기준으로 겹쳐 비교해줘. 캐릭터의 특징점, 모든 유지할 글자·기호·로고, 바깥 홀로그램 띠가 같은 좌표에 있는지 확인해줘. 하나라도 확대·이동·변형됐다면 그 부분은 생성 결과 대신 원본 요소를 복원해줘.\n\n최종 출력은 가로 63 × 세로 88mm 비율의 정면 카드 이미지 한 장. 카드 밖 여백, 손, 슬리브, 목업, 치수, 점선, 재단선은 넣지 마.";
 const origins = new Set(['https://funypin.kr','https://www.funypin.kr']);
 const env=(key:string)=>Deno.env.get(key)?.trim()||'';
-function png(data:unknown){
+function png(data:unknown,fullArt=false){
  if(typeof data!=='string'||!data.startsWith('data:image/png;base64,')||data.length>8_000_000)throw Error('PNG_REQUIRED');
  const raw=atob(data.slice(22)),b=Uint8Array.from(raw,c=>c.charCodeAt(0));
  if(b.length<24||[137,80,78,71,13,10,26,10].some((v,i)=>b[i]!==v))throw Error('PNG_REQUIRED');
- const d=new DataView(b.buffer);if(!((d.getUint32(16)===1024&&d.getUint32(20)===1536)||(d.getUint32(16)===1072&&d.getUint32(20)===1472)))throw Error('INVALID_SIZE');return b;
+ const d=new DataView(b.buffer),w=d.getUint32(16),h=d.getUint32(20);if(fullArt?!(w===1008&&h===1408):!((w===1024&&h===1536)||(w===1072&&h===1472)))throw Error('INVALID_SIZE');return b;
 }
 console.info('overlay_config '+JSON.stringify({apiKeyConfigured:!!env('OPENAI_API_KEY'),enabled:env('OVERLAY_ENABLED')==='true'}));
 Deno.serve(async(req:Request)=>{
@@ -52,15 +53,16 @@ Deno.serve(async(req:Request)=>{
    console.info('overlay client quality',{requestId:data.requestId,accepted:data.accepted,correlation:data.correlation,mae:data.mae});
    return reply({reported:true});
   }
-  const independent=data.action==='generate_background';
+  const independent=data.action==='generate_background',fullArt=data.action==='generate_fullart';
   const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
   if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
-  if(data.action!=='generate'&&!independent)return reply({error:'지원하지 않는 요청입니다.'},400);
+  if(fullArt&&Object.keys(data).some(k=>!['action','image'].includes(k)))return reply({error:'풀아트 모드에는 카드 이미지 한 장만 전송해 주세요.'},400);
+  if(data.action!=='generate'&&!independent&&!fullArt)return reply({error:'지원하지 않는 요청입니다.'},400);
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
-  let image=new Uint8Array(),mask=new Uint8Array();try{if(!independent){image=png(data.image);mask=png(data.mask);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
+  let image=new Uint8Array(),mask=new Uint8Array();try{if(!independent){image=png(data.image,fullArt);if(!fullArt)mask=png(data.mask);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
   const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=independent?1072:imageView.getUint32(16),imageHeight=independent?1472:imageView.getUint32(20);
-  if(!independent&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
+  if(!independent&&!fullArt&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
   // created using service credentials; clients receive no bucket access.
   const storageHeaders={apikey:service,Authorization:'Bearer '+service};
@@ -81,11 +83,12 @@ Deno.serve(async(req:Request)=>{
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';
   const diagnostic={model,promptVersion:'overlay-background-continuity-v2',imageHash:await digest(image),maskHash:await digest(mask)};
   const form=new FormData();form.set('model',model);form.set('size',imageWidth+'x'+imageHeight);form.set('quality','medium');form.set('n','1');form.set('output_format','png');
-  form.set('image[]',new Blob([image],{type:'image/png'}),'source.png');form.set('mask',new Blob([mask],{type:'image/png'}),'mask.png');
+  form.set('image[]',new Blob([image],{type:'image/png'}),'source.png');if(!fullArt)form.set('mask',new Blob([mask],{type:'image/png'}),'mask.png');
   const anchor=data.anchor;
   const hasAnchor=anchor&&['x','y','w','h'].every(k=>typeof anchor[k]==='number'&&Number.isFinite(anchor[k]))&&anchor.x>=0&&anchor.y>=0&&anchor.w>0&&anchor.h>0&&anchor.x+anchor.w<=imageWidth&&anchor.y+anchor.h<=imageHeight;
   const placement=hasAnchor?' The fixed source rectangle in the '+imageWidth+' by '+imageHeight+' canvas is x='+anchor.x.toFixed(1)+', y='+anchor.y.toFixed(1)+', width='+anchor.w.toFixed(1)+', height='+anchor.h.toFixed(1)+'.':'';
   form.set('prompt','Perform a localized background outpainting edit of the supplied canvas. The opaque region of the mask contains the fixed source illustration; keep this region unchanged at its exact pixel position and scale.'+placement+' Fill only the transparent masked area with the continuation of the existing environment. Continue the sky, horizon, ground, water, shadows, lighting and surface texture directly from each source edge. Keep the same horizon height and perspective. Do not recompose, recenter, zoom, rescale or move the source illustration. Do not redraw, repeat, mirror or duplicate its subject anywhere else. Do not extend a character or invent new body parts; only continue the surrounding scenery. Do not add characters, text, logos, borders, card UI or frames. Match the existing colors and texture at the boundary, without placing an outline, panel, collage seam or second copy of the illustration.');
+  if(fullArt){form.set('prompt',FULL_ART_PROMPT);Object.assign(diagnostic,{promptVersion:'card-fullart-preserve-v1',maskHash:undefined});}
   const background={model,size:'1072x1472',quality:'medium',n:1,output_format:'png',prompt:'Create a completely original portrait landscape of '+themes[data.theme]+'. Hand-painted illustration with subtle paper texture and calm natural colors. Continuous scenery across the entire canvas. No characters, creatures, animals, people, text, logos, frames or borders. This is an independent landscape, not a continuation of an existing image.'};
   if(independent)Object.assign(diagnostic,{promptVersion:'independent-landscape-v1',imageHash:undefined,maskHash:undefined});
   const response=await fetch('https://api.openai.com/v1/images/'+(independent?'generations':'edits'),{method:'POST',headers:{Authorization:'Bearer '+key,...(independent?{'Content-Type':'application/json'}:{})},body:independent?JSON.stringify(background):form,signal:AbortSignal.timeout(140000)});

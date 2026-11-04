@@ -5,7 +5,11 @@ scripts.forEach((code,i)=>new vm.Script(code,{filename:'box-detail:inline-'+i}))
 assert(html.includes('<script src="/products-hobbyselect.js?v=20261104-hobby1"></script>'));
 assert(html.includes('data.sources.push({source:online.source,quotes:{[id]:price}'));
 assert(html.includes('isOnline?online.url:null'));
-assert(html.includes("winner.source==='hobbyselect_online'"));
+assert(html.includes("original.style.textDecoration='none'"));
+assert(!html.includes("original.style.cssText='text-decoration:none;color:inherit'"));
+assert(!html.includes("?'제공 ':'기준 '"));
+assert(html.includes("'기준 '+src.price_effective_date.replaceAll('-','.')"));
+assert(html.includes("'기준 '+winner.price_effective_date.replaceAll('-','.')"));
 const context={window:{}};vm.runInNewContext(fs.readFileSync('products-hobbyselect.js','utf8'),context);
 const online=context.window.FUNY_HOBBYSELECT_BOX;
 const expected={jp_30th_celebration:265000,jp_shiny_star_v:201000,jp_terastal_fest_ex:189000,jp_inferno_x:185000,jp_shiny_treasure_ex:183000,jp_mega_dream_ex:138000,jp_storm_emerald:109000};

@@ -2,7 +2,7 @@
 (()=>{
  'use strict';
  const node=document.createElement('nav');
- node.id='productShopFilter';node.className='product-shop-filter';node.style.marginLeft='0px';node.style.paddingLeft='14px';node.setAttribute('aria-label','판매 카드샵 필터');
+ node.id='productShopFilter';node.className='product-shop-filter';node.setAttribute('aria-label','판매 카드샵 필터');
  const track=document.createElement('div');track.className='product-shop-track';node.append(track);
  const kindTabs=document.querySelector('.product-kind-tabs');
  const typeTabs=document.querySelector('.box-type-tabs');
@@ -63,19 +63,15 @@
    state.boxIds=new Set(all.find(x=>x.id===state.selected)?.products||[]);
    const fragment=document.createDocumentFragment();
    for(const info of [{id:'',name:'전체'},...all]){
-     const online=window.FUNY_HOBBYSELECT_BOX;
-     const external=!!online&&info.id===online.shopKey;
-     const b=document.createElement(external?'a':'button');
-     if(external){b.href=online.url;b.target='_blank';b.rel='noopener noreferrer';b.title='하비셀렉트 온라인 BOX 판매 페이지 열기';}
-     else b.type='button';
+     const b=document.createElement('button');b.type='button';
      b.className='product-shop-option';
      if(info.id===state.selected)b.classList.add('is-active');
-     if(!external)b.setAttribute('aria-pressed',String(info.id===state.selected));
-     b.setAttribute('aria-label',external?info.name+' 온라인샵 열기':info.name+' 상품만 보기');
+     b.setAttribute('aria-pressed',String(info.id===state.selected));
+     b.setAttribute('aria-label',info.name+' 상품만 보기');
      if(!info.id){const icon=document.createElement('span');icon.className='shop-avatar all-avatar';icon.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="3" y="13" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="13" width="8" height="8" rx="1.5" fill="currentColor"/></svg>';b.append(icon)}
      else b.append(avatar(info));
      const caption=document.createElement('span');caption.className='shop-option-name';caption.textContent=info.name;b.append(caption);
-     if(!external)b.addEventListener('click',()=>{
+     b.addEventListener('click',()=>{
        if(state.selected===info.id)return;
        state.selected=info.id;
        if(kind()==='box'){state.boxIds=new Set(all.find(x=>x.id===info.id)?.products||[]);window.render?.();}

@@ -29,6 +29,12 @@ for(const id of Object.keys(online.quotes))assert(catalog.has(id),'Unknown BOX i
 assert(fs.existsSync(online.logo));
 assert(html.includes('products-hobbyselect.js?v=20261104-hobby1'));
 assert(html.includes('...staticRows'));
-assert(filter.includes("document.createElement(external?'a':'button')"));
+assert(filter.includes("document.createElement('button')"));
+assert(!filter.includes("external?'a':'button'"));
+assert(filter.includes("b.setAttribute('aria-pressed',String(info.id===state.selected))"));
+const css=fs.readFileSync('products-shop-filter.css','utf8');
+assert(css.includes('margin:2px -14px 3px;background'));
+assert(css.includes('scroll-padding-inline:14px'));
+assert(!filter.includes("node.style.paddingLeft='14px'"));
 assert(filter.includes("!id.startsWith('online:')"));
 console.log('PASS products shop selector & Hobby Select static checks; inline scripts:',scripts.length);

@@ -1,0 +1,32 @@
+begin;
+do $qa$
+declare uid uuid; sid uuid; other_sid uuid; pid uuid; rev bigint; denied boolean;
+begin
+ select id into uid from auth.users where deleted_at is null and id not in(select u.id from auth.users u join public.admin_accounts a on lower(u.email)=a.email where a.is_active) limit 1;
+ if uid is null then raise exception 'QA_USER_MISSING';end if;
+ select id into sid from public.online_shops where slug='funycard';
+ select id into other_sid from public.online_shops where slug='hobbyselect';
+ select id,revision into pid,rev from public.graded_products where online_shop_id=sid and deleted_at is null limit 1;
+ insert into public.graded_online_shop_managers(online_shop_id,user_id,is_active) values(sid,uid,true),(other_sid,uid,true) on conflict(online_shop_id,user_id) do update set is_active=true;
+ perform set_config('request.jwt.claim.sub',uid::text,true);
+ perform public.manage_shop_graded_card('online:'||sid,pid,'update',rev,12000,'active','instagram','funycard');
+ if not exists(select 1 from public.graded_products where id=pid and price_krw=12000 and contact_type='instagram' and revision=rev+1) then raise exception 'UPDATE_FAILED';end if;
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||sid,pid,'update',rev,13000,'sold');exception when serialization_failure then denied:=true;end;
+ if not denied then raise exception 'CONFLICT_NOT_BLOCKED';end if;
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||other_sid,pid,'update',rev+1,13000,'sold');exception when others then if sqlerrm='PRODUCT_NOT_FOUND' then denied:=true;else raise;end if;end;
+ if not denied then raise exception 'CROSS_SHOP_NOT_BLOCKED';end if;
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||sid,pid,'update',rev+1,13000,'sold','phone','javascript:bad');exception when others then if sqlerrm='INVALID_CONTACT' then denied:=true;else raise;end if;end;
+ if not denied then raise exception 'INVALID_CONTACT_NOT_BLOCKED';end if;
+ perform public.manage_shop_graded_card('online:'||sid,pid,'delete',rev+1);
+ if not exists(select 1 from public.graded_products where id=pid and status='hidden' and deleted_at is not null) then raise exception 'DELETE_FAILED';end if;
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||sid,pid,'update',rev+2,13000,'active');exception when others then if sqlerrm='PRODUCT_NOT_FOUND' then denied:=true;else raise;end if;end;
+ if not denied then raise exception 'DELETED_RESURRECTED';end if;
+ update public.graded_online_shop_managers set is_active=false where user_id=uid and online_shop_id=sid;
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||sid,pid,'delete',rev+2);exception when insufficient_privilege then denied:=true;end;
+ if not denied then raise exception 'REVOKED_NOT_BLOCKED';end if;
+ perform set_config('request.jwt.claim.sub','',true);
+ denied:=false;begin perform public.manage_shop_graded_card('online:'||sid,pid,'delete',rev+2);exception when insufficient_privilege then denied:=true;end;
+ if not denied then raise exception 'UNAUTHENTICATED_NOT_BLOCKED';end if;
+end $qa$;
+rollback;
+select 'PASS: price/contact update, revision conflict, cross-shop isolation, invalid contact, soft deletion, deleted item lock, permission revocation and authentication' result;

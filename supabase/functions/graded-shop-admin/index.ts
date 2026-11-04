@@ -3,7 +3,7 @@ import {normalizeCard} from './normalize.ts';
 const BASE=Deno.env.get('SUPABASE_URL')!,ANON=Deno.env.get('SUPABASE_ANON_KEY')!,SERVICE=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const cors={'Access-Control-Allow-Origin':'https://funypin.kr','Access-Control-Allow-Headers':'authorization,apikey,content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Cache-Control':'no-store'};
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json'}});
-const errorMessages:Record<string,string>={REGISTERED_USER_REQUIRED:'퍼니핀 가입과 이메일 확인을 마친 계정이 필요합니다.',SHOP_NOT_FOUND:'운영 중인 카드샵을 선택해주세요.',SHOP_PERMISSION_REQUIRED:'해당 카드샵의 등록 권한이 없습니다.',DRAFT_EXPIRED:'카드정보 확인 시간이 만료됐습니다. PSA 번호를 다시 조회해주세요.',DRAFT_NOT_FOUND:'조회한 카드정보를 찾을 수 없습니다.',INVALID_PRICE:'판매가격은 1원부터 9,999,999,999원까지 정수로 입력해주세요.',ADMIN_REQUIRED:'전체 관리자만 권한을 설정할 수 있습니다.'};
+const errorMessages:Record<string,string>={REGISTERED_USER_REQUIRED:'퍼니핀 가입과 이메일 확인을 마친 계정이 필요합니다.',SHOP_NOT_FOUND:'운영 중인 카드샵을 선택해주세요.',SHOP_PERMISSION_REQUIRED:'해당 카드샵의 등록 권한이 없습니다.',DRAFT_EXPIRED:'카드정보 확인 시간이 만료됐습니다. PSA 번호를 다시 조회해주세요.',DRAFT_NOT_FOUND:'조회한 카드정보를 찾을 수 없습니다.',INVALID_PRICE:'판매가격은 1원부터 9,999,999,999원까지 정수로 입력해주세요.',PRODUCT_NOT_FOUND:'상품을 찾을 수 없습니다.',PRODUCT_CONFLICT:'다른 곳에서 수정된 상품입니다. 목록을 새로 불러온 뒤 다시 수정해주세요.',INVALID_CONTACT:'문의 방식과 연락처를 확인해주세요.',INVALID_STATUS:'판매 상태를 확인해주세요.',ADMIN_REQUIRED:'전체 관리자만 권한을 설정할 수 있습니다.'};
 Deno.serve(async req=>{
  if(req.method==='OPTIONS')return new Response('ok',{headers:cors});
  if(req.method!=='POST')return reply({error:'POST only'},405);
@@ -50,17 +50,25 @@ Deno.serve(async req=>{
  }
  if(action==='register'){
   if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(body.draft_id||'')||!Number.isSafeInteger(body.price_krw)||body.price_krw<1||body.price_krw>9999999999)return reply({error:errorMessages.INVALID_PRICE},400);
-  const r=await user.rpc('register_shop_graded_card',{p_draft_id:body.draft_id,p_price_krw:body.price_krw});
+  const r=await user.rpc('register_shop_graded_card_with_contact',{p_draft_id:body.draft_id,p_price_krw:body.price_krw,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null});
   if(r.error)return reply({error:r.error.code==='23505'?'이미 판매 중으로 등록된 PSA 번호입니다.':errorMessages[r.error.message]||'상품을 등록하지 못했습니다. 다시 확인해주세요.'},r.error.code==='23505'?409:r.error.code==='42501'?403:400);
   return reply({registered:true,product_id:r.data});
  }
  const shop=String(body.shop_id||'');
  const {data:allowed,error:permissionError}=await user.rpc('can_manage_graded_shop',{p_shop_id:shop});
  if(permissionError||allowed!==true)return reply({error:errorMessages.SHOP_PERMISSION_REQUIRED},403);
+ if(action==='update'||action==='delete'){
+  if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(body.product_id||'')||!Number.isSafeInteger(body.revision)||body.revision<0)return reply({error:'상품 정보를 확인해주세요.'},400);
+  if(action==='update'&&(!Number.isSafeInteger(body.price_krw)||body.price_krw<1||body.price_krw>9999999999))return reply({error:errorMessages.INVALID_PRICE},400);
+  const r=await user.rpc('manage_shop_graded_card',{p_shop_id:shop,p_product_id:body.product_id,p_action:action,p_revision:body.revision,p_price_krw:body.price_krw??null,p_status:body.status??null,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null});
+  if(r.error)return reply({error:r.error.code==='23505'?'이미 판매 중인 동일 PSA 번호가 있습니다.':errorMessages[r.error.message]||'상품 변경을 저장하지 못했습니다.'},r.error.code==='42501'?403:['40001','23505'].includes(r.error.code)?409:400);
+  return reply({product_id:r.data,updated:true});
+ }
  if(action==='list'){
-  const query=user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,is_sample,created_at');
-  const r=await (shop.startsWith('online:')?query.eq('online_shop_id',shop.slice(7)):query.eq('shop_id',shop)).order('created_at',{ascending:false}).limit(50);
-  if(r.error)throw r.error;return reply({rows:r.data});
+  const offset=body.offset??0;if(!Number.isSafeInteger(offset)||offset<0||offset>100000)return reply({error:'목록 범위를 확인해주세요.'},400);
+  const query=user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,is_sample,created_at,contact_type,contact_value,revision').is('deleted_at',null);
+  const r=await (shop.startsWith('online:')?query.eq('online_shop_id',shop.slice(7)):query.eq('shop_id',shop)).order('created_at',{ascending:false}).order('id').range(offset,offset+49);
+  if(r.error)throw r.error;return reply({rows:r.data,has_more:r.data.length===50});
  }
  if(action!=='lookup')return reply({error:'지원하지 않는 요청입니다.'},400);
  const cert=String(body.cert_number||'').trim().replace(/^PSA\s*/i,'');
@@ -91,4 +99,5 @@ Deno.serve(async req=>{
  return reply({card:metadata,draft_id:draft.data.id,expires_at:draft.data.expires_at,quota});
  }catch(e){if(e instanceof SyntaxError)return reply({error:'요청 형식을 확인해주세요.'},400);return reply({error:'처리하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요.'},502)}
 });
+
 

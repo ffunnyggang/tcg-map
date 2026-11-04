@@ -2,6 +2,7 @@
 .product-shop-filter{margin:2px -14px 3px;background:#fff;overflow:hidden;}
 .product-shop-track{display:flex;align-items:flex-start;gap:14px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:12px 14px 11px 24px;-webkit-overflow-scrolling:touch}
 .product-shop-track::-webkit-scrollbar{display:none}
+.product-shop-option:first-child{margin-inline-start:16px}
 .product-shop-option{flex:0 0 70px;display:flex;align-items:center;flex-direction:column;gap:7px;scroll-snap-align:start;min-width:0;padding:0;border:0;background:none;color:#827c8b;cursor:pointer}
 .product-shop-option .shop-avatar{width:62px;height:62px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;border:2px solid #e7e3ed;background:#f5f2fa;color:#7353b9;font-size:15px;font-weight:850;letter-spacing:-.6px;transition:border-color .2s,box-shadow .2s,transform .2s}
 .product-shop-option .shop-avatar img{display:block;width:100%;height:100%;object-fit:cover}

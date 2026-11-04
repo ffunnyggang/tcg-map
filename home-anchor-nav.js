@@ -12,7 +12,11 @@ function start(){
   {key:'tools',selectors:['.home-content-flow [data-cms-placement="home"]>.fp-cms-block:has(a[href*="coin-flip.html"],a[data-funy-target-url*="coin-flip.html"])']},
   {key:'notice',selectors:['.home-notice-strip']}
  ];
- const buttons=[...nav.querySelectorAll('[data-home-anchor]')];let frame=0,active='',entries=[],top=0,barHeight=44;
+ const buttons=[...nav.querySelectorAll('[data-home-anchor]')];
+ // Keep anchor keys, targets, and scroll behavior unchanged; localize presentation only.
+ let english=false;try{english=(window.FUNY_I18N?.getLang?.()||localStorage.getItem('funy-pin-lang'))==='en'}catch(_){}
+ if(english){const labels={discover:'Discover',news:'News',products:'Products',talk:'TALK',tools:'Tools',notice:'Notices'};nav.setAttribute('aria-label','HOME section shortcuts');buttons.forEach(b=>{const label=labels[b.dataset.homeAnchor];if(label){b.textContent=label;b.setAttribute('aria-label',label)}})}
+ let frame=0,active='',entries=[],top=0,barHeight=44;
  const visible=el=>el&&!el.hidden&&el.getClientRects().length>0&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden';
  const headerBottom=()=>{const header=document.querySelector('.portal-header');return visible(header)?Math.max(0,header.getBoundingClientRect().bottom):0};
  const setVar=(name,value)=>{if(nav.style.getPropertyValue(name)!==value)nav.style.setProperty(name,value)};

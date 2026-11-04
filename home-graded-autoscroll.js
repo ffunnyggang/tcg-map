@@ -6,7 +6,7 @@
  let section=null,rail=null,observer=null,visibility=null,raf=0,baseWidth=0,last=0,position=0,pauseUntil=0,autoSpeed=0,visible=false,touching=false,suppressClickUntil=0,axis='',startX=0,startY=0,startScroll=0;
  const reduce=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  const app=()=>!!window.ReactNativeWebView||document.documentElement.classList.contains('app-shell')||new URLSearchParams(location.search).get('app')==='1';
- const measure=()=>{const first=rail?.querySelector('.funy-graded-card:not([data-funy-scroll-clone])'),clone=rail?.querySelector('.funy-graded-card[data-funy-scroll-clone]');baseWidth=first&&clone?clone.offsetLeft-first.offsetLeft:0;if(baseWidth<=0)baseWidth=0};
+ const measure=()=>{const first=rail?.querySelector('.funy-graded-card:not([data-funy-scroll-clone])'),clone=rail?.querySelector('.funy-graded-card[data-funy-scroll-clone]');const offset=first&&clone?clone.offsetLeft-first.offsetLeft:0;const fallback=clone&&rail?.scrollWidth>0?rail.scrollWidth/2:0;baseWidth=Math.max(0,offset||fallback);if(baseWidth>0)position=((rail.scrollLeft%baseWidth)+baseWidth)%baseWidth};
  const pause=()=>{pauseUntil=performance.now()+2000;autoSpeed=0};
  const normalize=v=>baseWidth>0?((v%baseWidth)+baseWidth)%baseWidth:v;
  function duplicate(){
@@ -20,6 +20,7 @@
  function frame(ts){
   if(!rail?.isConnected){raf=0;return}
   if(!last)last=ts;
+  if(visible&&baseWidth<=rail.clientWidth)measure();
   if(!reduce()&&!touching&&!document.hidden&&visible&&baseWidth>rail.clientWidth&&ts>pauseUntil){
    const dt=Math.min(ts-last,32),target=app()?.036:.028,decay=Math.exp(-dt/280);
    position+=target*dt+(autoSpeed-target)*280*(1-decay);
@@ -34,7 +35,7 @@
   duplicate();
   observer=new MutationObserver(()=>{if(!rail.isConnected)return;duplicate()});
   observer.observe(rail,{childList:true});
-  if(typeof IntersectionObserver!=='undefined'){visibility=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??false},{threshold:.04});visibility.observe(section)}else visible=true;
+  if(typeof IntersectionObserver!=='undefined'){visibility=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??false;if(visible)measure()},{threshold:.04});visibility.observe(section)}else visible=true;
   ['pointerdown','wheel','focusin'].forEach(type=>rail.addEventListener(type,pause,{passive:true}));
   rail.addEventListener('scroll',()=>{if(touching||performance.now()<pauseUntil){position=rail.scrollLeft;pause()}},{passive:true});
   rail.addEventListener('touchstart',e=>{touching=true;pause();const t=e.touches[0];if(!t)return;startX=t.clientX;startY=t.clientY;startScroll=rail.scrollLeft;axis=''}, {passive:true});
@@ -51,7 +52,7 @@
   const finish=()=>{touching=false;axis='';position=rail.scrollLeft;pause()};
   ['touchend','touchcancel'].forEach(type=>rail.addEventListener(type,finish,{passive:true}));
   rail.addEventListener('click',e=>{if(performance.now()<suppressClickUntil){e.preventDefault();e.stopImmediatePropagation()}},true);
-  window.addEventListener('resize',measure,{passive:true});
+  window.addEventListener('resize',measure,{passive:true});if(typeof ResizeObserver!=='undefined'){const sizeObserver=new ResizeObserver(measure);sizeObserver.observe(rail);window.addEventListener('pagehide',()=>sizeObserver.disconnect(),{once:true})}
   raf=requestAnimationFrame(frame);
   window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);observer?.disconnect();visibility?.disconnect();window.removeEventListener('resize',measure)},{once:true});
  }

@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('box-detail.html','utf8');
+const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]).filter(Boolean);
+scripts.forEach((code,i)=>new vm.Script(code,{filename:'box-detail:inline-'+i}));
+assert(html.includes('<script src="/products-hobbyselect.js?v=20261104-hobby1"></script>'));
+assert(html.includes('data.sources.push({source:online.source,quotes:{[id]:price}'));
+assert(html.includes('isOnline?online.url:null'));
+assert(html.includes("winner.source==='hobbyselect_online'"));
+const context={window:{}};vm.runInNewContext(fs.readFileSync('products-hobbyselect.js','utf8'),context);
+const online=context.window.FUNY_HOBBYSELECT_BOX;
+const expected={jp_30th_celebration:265000,jp_shiny_star_v:201000,jp_terastal_fest_ex:189000,jp_inferno_x:185000,jp_shiny_treasure_ex:183000,jp_mega_dream_ex:138000,jp_storm_emerald:109000};
+for(const [id,price] of Object.entries(expected))assert.equal(online.quotes[id],price);
+assert.equal(Object.keys(online.quotes).length,7);
+assert.equal(online.url,'https://hobbyselect.co.kr/category/BOX/24/');
+const catalog=JSON.parse(fs.readFileSync('data/box-products-v1.json','utf8')).products;
+for(const id of Object.keys(expected))assert(catalog.some(p=>p.id===id));
+console.log('PASS box-detail Hobby Select 7 seller quotes, external link and JS syntax');

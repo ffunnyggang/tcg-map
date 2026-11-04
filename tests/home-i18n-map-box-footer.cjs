@@ -1,0 +1,31 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
+const {parseHTML}=require('C:/Users/ALIC/Desktop/funy-web-qa-deps/node_modules/linkedom');
+const dir=path.resolve(__dirname,'..');
+function footer(lang){
+ const html=fs.readFileSync(path.join(dir,'index.html'),'utf8');
+ const {window}=parseHTML(html);
+ window.localStorage={getItem:k=>k==='funy-pin-lang'?lang:null};
+ window.FUNY_I18N={getLang:()=>lang};
+ vm.runInNewContext(fs.readFileSync(path.join(dir,'home-footer-i18n.js'),'utf8'),{document:window.document,window,localStorage:window.localStorage});
+ return window.document.querySelector('#homeFooter');
+}
+const en=footer('en'),ko=footer('ko');
+assert.equal(en.querySelector('.home-footer-tagline').textContent,'Connecting card shops with the joy of collecting.');
+assert.equal(en.querySelector('.home-footer-support a').textContent,'Contact Support');
+assert.equal(en.querySelector('.home-footer-policies a').textContent,'Terms of Service');
+assert.match(en.querySelector('.home-footer-business summary').textContent,/Business Information/);
+assert.equal(en.querySelectorAll('.home-footer-business dt')[2].textContent,'Business Registration No.');
+assert.equal(en.querySelectorAll('.home-footer-business dd')[2].textContent,ko.querySelectorAll('.home-footer-business dd')[2].textContent,'legal ID must remain unchanged');
+assert.equal(ko.querySelector('.home-footer-tagline').textContent,'카드샵과 수집의 즐거움을 연결합니다.');
+assert.equal(en.querySelector('.home-footer-notice').querySelectorAll('br').length,1);
+const src=fs.readFileSync(path.join(dir,'index.html'),'utf8');
+const box=src.match(/<script id="home-box-market-js">([\s\S]*?)<\/script>/);
+assert(box,'HOME BOX script exists');new Function(box[1]);
+assert(box[1].includes("p.name_short_en||p.name_en||p.name_short_ko||p.name"));
+assert(box[1].includes("englishBox?'From ₩'"));
+const shop=fs.readFileSync(path.join(dir,'home-shop-discovery.js'),'utf8');
+assert(shop.includes('city,city_en,area,area_en,address,address_en,nearest_station,nearest_station_en'));
+assert(shop.includes("min walk from '+station"),'TCG MAP walk format');
+assert(shop.includes("replaceAll('~','–')"),'TCG MAP operating hours conversion');
+assert(shop.includes("data-funy-i18n=\"off\">'+esc(hoursText(s))"),'no generic translation over-render');
+console.log('PASS HOME footer KO/EN and legal values, BOX existing EN catalog, shop location/hours MAP parity and JS syntax');

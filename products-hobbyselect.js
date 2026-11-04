@@ -15,6 +15,7 @@ window.FUNY_HOBBYSELECT_BOX=Object.freeze({
   jp_inferno_x:185000,
   jp_shiny_treasure_ex:183000,
   jp_mega_dream_ex:138000,
-  jp_storm_emerald:109000
+  jp_storm_emerald:109000,
+  jp_30th_first_partners_9set:225000
  })
 });

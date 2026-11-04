@@ -713,6 +713,20 @@
       "contents_description": "1BOX / 24팩",
       "retail_price_amount": 5760,
       "retail_price_currency": "JPY"
+    },
+    {
+      "id": "jp_30th_first_partners_9set",
+      "name": "포켓몬 TCG 30주년 퍼스트 파트너즈 9종 세트 (일어판)",
+      "name_en": "Pokemon TCG 30th First Partners 9-Set (Japanese Ver.)",
+      "language": "JP",
+      "type": "SPECIAL_BOX",
+      "release_date": null,
+      "image_path": "assets/box-products/jp_30th_first_partners_9set.webp",
+      "tcg_type": "pokemon",
+      "product_code": "BOX-PKM-JP-30TH-FIRSTPARTNERS-9SET",
+      "name_short_ko": "30주년 퍼스트 파트너즈 9종 세트 (일어판)",
+      "name_short_en": "30th First Partners 9-Set",
+      "contents_description": "퍼스트 파트너즈 9종 세트"
     }
   ]
 }

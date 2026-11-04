@@ -10,3 +10,6 @@ html.app-shell .portal-main{padding-top:0!important}
 html.app-shell .shops-page-pad{padding-top:0!important}
 
 html.app-shell body .info-tabs,html.app-shell body .talk-body>.filters{top:0!important}
+/* 2026-11-04: approved shared transparent web header symbol, 33px wide. */
+body .portal-brand .portal-logo{width:33px!important;height:37px!important;display:inline-grid!important;place-items:center!important;flex:none!important}
+body .portal-brand .portal-logo img{display:block!important;width:33px!important;height:37px!important;max-width:33px!important;max-height:37px!important;object-fit:contain!important}

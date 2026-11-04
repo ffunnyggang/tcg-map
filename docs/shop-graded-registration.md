@@ -1,9 +1,10 @@
 # Shop graded-card registration
 
 - URL: /admin-graded-products.html
-- Admin menu: STORE > 등급카드 등록·매장 권한 (desktop/mobile).
+- Admin menu: STORE > 등급카드 등록 (desktop/mobile).
+- All shop registration grants/revocations are managed at /admin-box-permissions.html, alongside existing page permissions.
 - Full admins can select an active shop and an existing verified FUNY PIN account email to grant/revoke registration access.
-- Shop accounts see only their assigned active shops. A single shop is automatically selected.
+- Shop accounts see every assigned active shop automatically, with its name/address, recent products and isolated registration form. There is no shop selector for shop accounts. Full admins retain a shop selector.
 - Flow: PSA cert number -> server Renaiss lookup -> slab/card preview -> confirm -> KRW selling price -> publish to graded_products.
 - The browser cannot submit card metadata or arbitrary seller details. A server-created draft binds user, shop and normalized card metadata for 30 minutes. The publish RPC rechecks current shop access.
 - Only Pokemon / One Piece PSA records with year, set, card number/name, grade and a slab image can publish. No guessed game or ordinary card-image substitution.
@@ -18,6 +19,7 @@
 - Renaiss commercial-use / storage and image-display permissions should follow the account's approved agreement.
 - First release includes registration and a recent-products list. Editing price or sold/hidden status is outside this release.
 - UI QA: node tools/check-graded-registration.cjs
+- Permissions QA: node tools/check-graded-permissions.cjs
 - Normalizer QA: deno test supabase/functions/graded-shop-admin/normalize_test.ts
 - SQL authorization QA: tools/qa-shop-graded-registration.sql (one transaction, rolls back every fixture).
 - Rollback: remove admin links / page and disable graded-shop-admin. Keep schema and published products to avoid deleting user data.

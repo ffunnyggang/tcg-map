@@ -49,7 +49,7 @@ Deno.serve(async req=>{
  const {data:allowed,error:permissionError}=await user.rpc('can_manage_graded_shop',{p_shop_id:shop});
  if(permissionError||allowed!==true)return reply({error:errorMessages.SHOP_PERMISSION_REQUIRED},403);
  if(action==='list'){
-  const r=await user.from('graded_products').select('id,card_name,price_krw,status,cert_number,created_at').eq('shop_id',shop).eq('is_sample',false).order('created_at',{ascending:false}).limit(50);
+  const r=await user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,created_at').eq('shop_id',shop).eq('is_sample',false).order('created_at',{ascending:false}).limit(50);
   if(r.error)throw r.error;return reply({rows:r.data});
  }
  if(action!=='lookup')return reply({error:'지원하지 않는 요청입니다.'},400);

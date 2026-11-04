@@ -124,8 +124,19 @@ Deno.serve(async request=>{
    const parsed=JSON.parse(raw.choices?.[0]?.message?.content||'{"rows":[]}');
    const known=new Set((catalog||[]).map(p=>p.product_id));const used=new Set();
    const candidates=Array.isArray(parsed.rows)?parsed.rows:[];
-   const diagnostics={ai_rows:candidates.length,unmatched_ids:candidates.filter(x=>!known.has(x?.product_id)).length,invalid_prices:candidates.filter(x=>known.has(x?.product_id)&&(!Number.isInteger(x?.price_krw)||x.price_krw<1000||x.price_krw>5000000)).length,finish_reason:String(raw.choices?.[0]?.finish_reason||'unknown').slice(0,30),model:String(raw.model||'unknown').slice(0,80)};
-   const rows=candidates.filter(x=>{if(!known.has(x.product_id)||used.has(x.product_id))return false;used.add(x.product_id);return Number.isInteger(x.price_krw)&&x.price_krw>=1000&&x.price_krw<=5000000}).map(x=>({product_id:x.product_id,raw_name:String(x.raw_name||'').slice(0,130),price_krw:x.price_krw,confidence:Math.max(0,Math.min(1,Number(x.confidence)||0)),note:String(x.note||'').slice(0,150)}));
+   // Normalize only unambiguous KRW integers. Never infer '24.9' as 249,000.
+   const toKrw=value=>{
+     if(typeof value==='number')return Number.isSafeInteger(value)?value:null;
+     if(typeof value!=='string')return null;
+     const cleaned=value.trim().replace(/\s*원\s*$/u,'').trim();
+     if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(cleaned))return null;
+     const n=Number(cleaned.replace(/,/g,''));return Number.isSafeInteger(n)?n:null;
+   };
+   const priceKinds={number:0,numeric_string:0,other_string:0,other:0};
+   for(const x of candidates){const v=x?.price_krw;const k=typeof v==='number'?'number':typeof v==='string'?(toKrw(v)===null?'other_string':'numeric_string'):'other';priceKinds[k]++;}
+   const normalized=candidates.map(x=>({...x,price_krw:toKrw(x?.price_krw)}));
+   const diagnostics={ai_rows:candidates.length,unmatched_ids:normalized.filter(x=>!known.has(x?.product_id)).length,invalid_prices:normalized.filter(x=>known.has(x?.product_id)&&(!Number.isInteger(x?.price_krw)||x.price_krw<1000||x.price_krw>5000000)).length,price_kinds:priceKinds,finish_reason:String(raw.choices?.[0]?.finish_reason||'unknown').slice(0,30),model:String(raw.model||'unknown').slice(0,80)};
+   const rows=normalized.filter(x=>{if(!known.has(x.product_id)||used.has(x.product_id))return false;used.add(x.product_id);return Number.isInteger(x.price_krw)&&x.price_krw>=1000&&x.price_krw<=5000000}).map(x=>({product_id:x.product_id,raw_name:String(x.raw_name||'').slice(0,130),price_krw:x.price_krw,confidence:Math.max(0,Math.min(1,Number(x.confidence)||0)),note:String(x.note||'').slice(0,150)}));
    console.info('box-price-extract-diagnostics',JSON.stringify({...diagnostics,matched_rows:rows.length,input_mode:inputMode,image_count:imageData.length}));
    const paths=[];for(const x of imageData){const path='screenshots/'+effectiveDate+'/'+crypto.randomUUID()+'.'+({ 'image/png':'png','image/webp':'webp','image/jpeg':'jpg'})[x.mime];const uploaded=await db.storage.from('box-price-screenshots').upload(path,x.bytes,{contentType:x.mime,upsert:false});if(uploaded.error)throw uploaded.error;paths.push(path)}
    const saved=await db.from('box_price_uploads').insert({seller_name:seller,effective_date:effectiveDate,storage_path:paths[0]||null,input_text:inputMode==='text'?inputText:null,status:'extracted',created_by:userData.user.id,raw_extraction:rows}).select('id').single();if(saved.error)throw saved.error;

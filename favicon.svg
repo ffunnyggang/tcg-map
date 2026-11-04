@@ -1,18 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 40" role="img" aria-label="FUNY PIN">
-  <defs>
-    <linearGradient id="funyPinGrad" x1="8" y1="3" x2="27" y2="29" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#B093F4"/>
-      <stop offset=".48" stop-color="#8062D8"/>
-      <stop offset="1" stop-color="#6749BD"/>
-    </linearGradient>
-    <radialGradient id="funyPinButton" cx="35%" cy="25%" r="75%">
-      <stop stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#EEE9FB"/>
-    </radialGradient>
-  </defs>
-  <ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="#7557C8" opacity=".10"/>
-  <ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="#7557C8" opacity=".16"/>
-  <path fill="url(#funyPinGrad)" d="M18 2.8A10.5 10.5 0 0 0 7.5 13.3c0 7.7 10.5 17.8 10.5 17.8s10.5-10.1 10.5-17.8A10.5 10.5 0 0 0 18 2.8Z"/>
-  <path d="M7.75 13.05h6.38a4.2 4.2 0 0 1 7.74 0h6.38v1.15h-6.08a4.2 4.2 0 0 1-8.34 0H7.75Z" fill="#FFFFFF"/>
-  <circle cx="18" cy="13.65" r="3.15" fill="url(#funyPinButton)"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="purple" x1="0" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="#B85DFF"/><stop offset="0.44" stop-color="#7B3DFF"/><stop offset="1" stop-color="#4B00C6"/></linearGradient><linearGradient id="deep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#230954"/><stop offset="1" stop-color="#0D032B"/></linearGradient><clipPath id="pin"><path d="M 256 74 C 175 74 112 135 112 213 C 112 292 185 375 249 448 C 253 453 259 453 263 448 C 327 375 400 292 400 213 C 400 135 337 74 256 74 Z"/></clipPath></defs><g transform="translate(25.6 0) scale(12.8)">
+<ellipse cx="18" cy="36.2" rx="12" ry="3.6" fill="#7557C8" opacity=".10"/>
+<ellipse cx="18" cy="36.2" rx="7.2" ry="2.05" fill="#7557C8" opacity=".16"/>
+</g><g transform="translate(256 11) scale(0.83) translate(-256 0)"><g transform="translate(-30.720 -35.200) scale(1.12)"><g id="symbol"><path d="M 256 74 C 175 74 112 135 112 213 C 112 292 185 375 249 448 C 253 453 259 453 263 448 C 327 375 400 292 400 213 C 400 135 337 74 256 74 Z" fill="url(#purple)"/><g clip-path="url(#pin)"><path d="M 104 236 H 408" stroke="white" stroke-width="14"/></g><circle cx="256" cy="236" r="60" fill="white"/><circle cx="256" cy="236" r="46" fill="url(#purple)"/><circle cx="256" cy="236" r="35" fill="white"/></g></g></g></svg>

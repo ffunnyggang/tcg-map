@@ -2,3 +2,7 @@
 # a project-verified user via Auth /user before parsing data or reserving quota.
 [functions.card-overlay-generate]
 verify_jwt = false
+
+# Verifies each bearer token with Auth.getUser before checking shop assignment.
+[functions.graded-shop-admin]
+verify_jwt = false

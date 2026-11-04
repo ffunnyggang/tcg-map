@@ -1,0 +1,23 @@
+# Shop graded-card registration
+
+- URL: /admin-graded-products.html
+- Admin menu: STORE > 등급카드 등록·매장 권한 (desktop/mobile).
+- Full admins can select an active shop and an existing verified FUNY PIN account email to grant/revoke registration access.
+- Shop accounts see only their assigned active shops. A single shop is automatically selected.
+- Flow: PSA cert number -> server Renaiss lookup -> slab/card preview -> confirm -> KRW selling price -> publish to graded_products.
+- The browser cannot submit card metadata or arbitrary seller details. A server-created draft binds user, shop and normalized card metadata for 30 minutes. The publish RPC rechecks current shop access.
+- Only Pokemon / One Piece PSA records with year, set, card number/name, grade and a slab image can publish. No guessed game or ordinary card-image substitution.
+- Registered products use shops.id; shop name/address/location are read from the actual shop record.
+- Active non-sample PSA certs are unique across shops. Publishing the same draft twice returns the original product id without changing its price.
+- Existing sample products and favorites are preserved.
+- No accounts receive manager access automatically.
+- Renaiss credentials (optional): SUPABASE Edge Function secrets RENAISS_API_KEY and RENAISS_API_SECRET. Never put them in frontend files or git. Without both, the documented public daily IP quota applies.
+- The Edge Function verifies bearer JWTs using Supabase Auth.getUser before role/shop checks. verify_jwt=false is intentional to support the project's current signing setup; it does not allow unauthenticated operations.
+- Successful card lookups cache normalized metadata for 6 hours; draft expiry is 30 minutes. The original checked_at/source_url is saved with the product.
+- Source images are referenced by HTTPS URL; they are not copied into FUNY PIN storage.
+- Renaiss commercial-use / storage and image-display permissions should follow the account's approved agreement.
+- First release includes registration and a recent-products list. Editing price or sold/hidden status is outside this release.
+- UI QA: node tools/check-graded-registration.cjs
+- Normalizer QA: deno test supabase/functions/graded-shop-admin/normalize_test.ts
+- SQL authorization QA: tools/qa-shop-graded-registration.sql (one transaction, rolls back every fixture).
+- Rollback: remove admin links / page and disable graded-shop-admin. Keep schema and published products to avoid deleting user data.

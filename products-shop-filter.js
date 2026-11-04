@@ -38,6 +38,8 @@
    return [...choices.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
  }
  function thumbnail(info){
+   const online=window.FUNY_HOBBYSELECT_BOX;
+   if(online&&info.id===online.shopKey)return online.logo;
    const images=metadata.get(info.id)?.images;
    if(!Array.isArray(images))return '';
    const first=images.find(x=>x.is_primary)||images.find(x=>x.type==='thumbnail')||images[0];
@@ -61,13 +63,19 @@
    state.boxIds=new Set(all.find(x=>x.id===state.selected)?.products||[]);
    const fragment=document.createDocumentFragment();
    for(const info of [{id:'',name:'전체'},...all]){
-     const b=document.createElement('button');b.type='button';b.className='product-shop-option';
+     const online=window.FUNY_HOBBYSELECT_BOX;
+     const external=!!online&&info.id===online.shopKey;
+     const b=document.createElement(external?'a':'button');
+     if(external){b.href=online.url;b.target='_blank';b.rel='noopener noreferrer';b.title='하비셀렉트 온라인 BOX 판매 페이지 열기';}
+     else b.type='button';
+     b.className='product-shop-option';
      if(info.id===state.selected)b.classList.add('is-active');
-     b.setAttribute('aria-pressed',String(info.id===state.selected));b.setAttribute('aria-label',info.name+' 상품만 보기');
+     if(!external)b.setAttribute('aria-pressed',String(info.id===state.selected));
+     b.setAttribute('aria-label',external?info.name+' 온라인샵 열기':info.name+' 상품만 보기');
      if(!info.id){const icon=document.createElement('span');icon.className='shop-avatar all-avatar';icon.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="3" y="13" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="13" width="8" height="8" rx="1.5" fill="currentColor"/></svg>';b.append(icon)}
      else b.append(avatar(info));
      const caption=document.createElement('span');caption.className='shop-option-name';caption.textContent=info.name;b.append(caption);
-     b.addEventListener('click',()=>{
+     if(!external)b.addEventListener('click',()=>{
        if(state.selected===info.id)return;
        state.selected=info.id;
        if(kind()==='box'){state.boxIds=new Set(all.find(x=>x.id===info.id)?.products||[]);window.render?.();}
@@ -79,7 +87,7 @@
    const left=track.scrollLeft;
    track.replaceChildren(fragment);
    track.scrollLeft=state.selected?left:0;
-   const ids=all.map(x=>x.id).filter(id=>!metadata.has(id)&&!id.startsWith('name:')).sort().join(',');
+   const ids=all.map(x=>x.id).filter(id=>!metadata.has(id)&&!id.startsWith('name:')&&!id.startsWith('online:')).sort().join(',');
    if(ids&&ids!==lastIds&&!loadingMeta){lastIds=ids;void loadMetadata(ids.split(','));}
  }
  async function loadMetadata(ids){

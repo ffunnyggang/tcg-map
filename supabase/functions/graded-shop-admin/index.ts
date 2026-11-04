@@ -18,19 +18,28 @@ Deno.serve(async req=>{
  const {data:isAdmin,error:adminError}=await user.rpc('is_funypin_admin');
  if(adminError)throw adminError;
  if(action==='bootstrap'){
-  let shops;
-  if(isAdmin===true){shops=await db.from('shops').select('id,name,address').eq('is_active',true).order('name')}
-  else{const managers=await user.from('graded_shop_managers').select('shop_id').eq('user_id',auth.user.id).eq('is_active',true);if(managers.error)throw managers.error;const ids=managers.data.map(x=>x.shop_id);shops=ids.length?await db.from('shops').select('id,name,address').in('id',ids).eq('is_active',true).order('name'):{data:[],error:null}}
-  if(shops.error)throw shops.error;
-  return reply({is_admin:isAdmin===true,shops:shops.data,api_mode:Deno.env.get('RENAISS_API_KEY')&&Deno.env.get('RENAISS_API_SECRET')?'partner':'public'});
+  let physicalIds:string[]|null=null,onlineIds:string[]|null=null;
+  if(isAdmin!==true){
+   const [p,o]=await Promise.all([user.from('graded_shop_managers').select('shop_id').eq('user_id',auth.user.id).eq('is_active',true),user.from('graded_online_shop_managers').select('online_shop_id').eq('user_id',auth.user.id).eq('is_active',true)]);
+   if(p.error||o.error)throw p.error||o.error;
+   physicalIds=p.data.map(x=>x.shop_id);onlineIds=o.data.map(x=>x.online_shop_id);
+  }
+  let pQuery=db.from('shops').select('id,name,address').eq('is_active',true).order('name'),oQuery=db.from('online_shops').select('id,name,address').eq('is_active',true).order('name');
+  if(physicalIds)pQuery=pQuery.in('id',physicalIds);
+  if(onlineIds)oQuery=oQuery.in('id',onlineIds);
+  const [p,o]=await Promise.all([physicalIds?.length===0?Promise.resolve({data:[],error:null}):pQuery,onlineIds?.length===0?Promise.resolve({data:[],error:null}):oQuery]);
+  if(p.error||o.error)throw p.error||o.error;
+  const shops=[...(p.data||[]).map(s=>({...s,kind:'physical'})),...(o.data||[]).map(s=>({...s,id:'online:'+s.id,kind:'online'}))];
+  return reply({is_admin:isAdmin===true,shops,api_mode:Deno.env.get('RENAISS_API_KEY')&&Deno.env.get('RENAISS_API_SECRET')?'partner':'public'});
  }
  if(action==='permission_list'){
   if(isAdmin!==true)return reply({error:errorMessages.ADMIN_REQUIRED},403);
-  const r=await db.from('graded_shop_managers').select('shop_id,user_id,is_active,updated_at,shops(name)').order('updated_at',{ascending:false}).limit(100);
-  if(r.error)throw r.error;
-  const ids=[...new Set(r.data.map(x=>x.user_id))],emails=new Map();
+  const [p,o]=await Promise.all([db.from('graded_shop_managers').select('shop_id,user_id,is_active,updated_at,shops(name)').order('updated_at',{ascending:false}).limit(100),db.from('graded_online_shop_managers').select('online_shop_id,user_id,is_active,updated_at,online_shops(name)').order('updated_at',{ascending:false}).limit(100)]);
+  if(p.error||o.error)throw p.error||o.error;
+  const rows=[...(p.data||[]).map(x=>({...x,kind:'physical'})),...(o.data||[]).map(x=>({...x,shop_id:'online:'+x.online_shop_id,shops:x.online_shops,kind:'online'}))].sort((a,b)=>b.updated_at.localeCompare(a.updated_at));
+  const ids=[...new Set(rows.map(x=>x.user_id))],emails=new Map();
   for(const id of ids){const r=await db.auth.admin.getUserById(id);emails.set(id,r.data.user?.email||id)}
-  return reply({rows:r.data.map(x=>({...x,email:emails.get(x.user_id)}))});
+  return reply({rows:rows.map(x=>({...x,email:emails.get(x.user_id)}))});
  }
  if(action==='permission_set'){
   if(isAdmin!==true)return reply({error:errorMessages.ADMIN_REQUIRED},403);
@@ -49,7 +58,8 @@ Deno.serve(async req=>{
  const {data:allowed,error:permissionError}=await user.rpc('can_manage_graded_shop',{p_shop_id:shop});
  if(permissionError||allowed!==true)return reply({error:errorMessages.SHOP_PERMISSION_REQUIRED},403);
  if(action==='list'){
-  const r=await user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,created_at').eq('shop_id',shop).eq('is_sample',false).order('created_at',{ascending:false}).limit(50);
+  const query=user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,is_sample,created_at');
+  const r=await (shop.startsWith('online:')?query.eq('online_shop_id',shop.slice(7)):query.eq('shop_id',shop)).order('created_at',{ascending:false}).limit(50);
   if(r.error)throw r.error;return reply({rows:r.data});
  }
  if(action!=='lookup')return reply({error:'지원하지 않는 요청입니다.'},400);
@@ -76,8 +86,9 @@ Deno.serve(async req=>{
  // Recheck assignment after a potentially slow upstream request.
  const check=await user.rpc('can_manage_graded_shop',{p_shop_id:shop});
  if(check.error||check.data!==true)return reply({error:errorMessages.SHOP_PERMISSION_REQUIRED},403);
- const draft=await db.from('graded_registration_drafts').insert({user_id:auth.user.id,shop_id:shop,cert_number:cert,metadata}).select('id,expires_at').single();
+ const draft=await db.from('graded_registration_drafts').insert({user_id:auth.user.id,shop_id:shop.startsWith('online:')?null:shop,online_shop_id:shop.startsWith('online:')?shop.slice(7):null,cert_number:cert,metadata}).select('id,expires_at').single();
  if(draft.error)throw draft.error;
  return reply({card:metadata,draft_id:draft.data.id,expires_at:draft.data.expires_at,quota});
  }catch(e){if(e instanceof SyntaxError)return reply({error:'요청 형식을 확인해주세요.'},400);return reply({error:'처리하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요.'},502)}
 });
+

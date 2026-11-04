@@ -2,7 +2,7 @@
 (()=>{
  'use strict';
  const node=document.createElement('nav');
- node.id='productShopFilter';node.className='product-shop-filter';node.setAttribute('aria-label','판매 카드샵 필터');
+ node.id='productShopFilter';node.className='product-shop-filter';node.style.marginLeft='0px';node.style.paddingLeft='14px';node.setAttribute('aria-label','판매 카드샵 필터');
  const track=document.createElement('div');track.className='product-shop-track';node.append(track);
  const kindTabs=document.querySelector('.product-kind-tabs');
  const typeTabs=document.querySelector('.box-type-tabs');
@@ -78,7 +78,7 @@
    }
    const left=track.scrollLeft;
    track.replaceChildren(fragment);
-   track.scrollLeft=left;
+   track.scrollLeft=state.selected?left:0;
    const ids=all.map(x=>x.id).filter(id=>!metadata.has(id)&&!id.startsWith('name:')).sort().join(',');
    if(ids&&ids!==lastIds&&!loadingMeta){lastIds=ids;void loadMetadata(ids.split(','));}
  }

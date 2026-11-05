@@ -1,0 +1,1 @@
+.product-image-pending{opacity:0}.product-image-ready{opacity:1;transition:opacity .12s ease-out}@media(prefers-reduced-motion:reduce){.product-image-ready{transition:none}}.graded-loading-hero{aspect-ratio:1/1.15;background:#faf9fc}.graded-loading-line{height:20px;margin:18px 16px;background:#f5f3f8;border-radius:5px;width:65%}

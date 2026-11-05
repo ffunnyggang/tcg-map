@@ -58,7 +58,7 @@ function setupPage(){
  };
 }
 function validConfig(c){return c&&typeof c.title==='string'&&typeof c.description==='string'&&typeof c.warning==='string'&&Array.isArray(c.prizes)&&c.prizes.length>=1&&c.prizes.length<=100&&c.prizes.every(x=>typeof x==='string'&&x.trim())&&Array.isArray(c.entries)&&c.entries.length>=c.prizes.length&&new Set(c.entries).size===c.entries.length&&c.entries.every(x=>typeof x==='string'&&/^[a-z0-9._]{1,30}$/.test(x))}
-function update(){if(!config)return;const n=winners.length,next=n+1,done=n>=config.prizes.length;$('round').textContent=done?'추첨 완료':winnerLabel(n,config);$('stage').textContent=Math.min(next,config.prizes.length)+' / '+config.prizes.length;$('prizeText').textContent=done?'모든 당첨자가 선정됐습니다.':config.prizes[n];$('draw').disabled=!authorized||!confirmed||busy||!pool.length||done;$('draw').textContent=done?'추첨 완료':winnerLabel(n,config)+' 추첨 시작';$('downloadResults').disabled=!n;$('editConfig').disabled=!authorized||busy||n>0;$('newEvent').disabled=!authorized||busy}
+function update(){if(!config)return;const n=winners.length,next=n+1,done=n>=config.prizes.length;$('round').textContent=done?'추첨 완료':winnerLabel(n,config);$('stage').textContent=Math.min(next,config.prizes.length)+' / '+config.prizes.length;$('prizeText').textContent=done?'모든 당첨자가 선정됐습니다.':config.prizes[n];$('draw').disabled=!authorized||!confirmed||busy||!pool.length||done;$('draw').textContent=done?'추첨 완료':winnerLabel(n,config)+' 추첨 시작';$('downloadResults').disabled=!n;$('editConfig').textContent=n>0?'다시 추첨하기':'설정 수정';$('editConfig').disabled=!authorized||busy;$('newEvent').disabled=!authorized||busy}
 function renderWinner(w,i){const item=document.createElement('div');item.className='winner on';const num=document.createElement('div');num.className='num';num.textContent=ranked(config)?winnerLabel(i,config):i+1;if(ranked(config)){const rank=config.prizes.length-i;num.className+=' rank-badge'+(rank<=3?' medal-'+rank:'');}const body=document.createElement('div'),name=document.createElement('b'),gift=document.createElement('small');name.textContent='@'+w;gift.textContent=config.prizes[i];body.append(name,gift);item.append(num,body);ranked(config)?$('results').prepend(item):$('results').append(item)}
 function drawPage(){
  let state;try{state=JSON.parse(sessionStorage.getItem(RUN)||'null')}catch(e){}
@@ -68,7 +68,13 @@ function drawPage(){
  winners.forEach(renderWinner);if(winners.length)$('slotId').textContent='@'+winners[winners.length-1];
  $('warningText').textContent=config.warning;$('rules').hidden=winners.length>=config.prizes.length;
  $('accept').onclick=()=>{confirmed=true;$('rules').hidden=true;$('status').textContent='추첨 준비 완료';update()};
- $('editConfig').onclick=()=>{if(authorized&&!busy&&!winners.length)location.href='/event-draw-setup.html?mode=edit'};
+ $('editConfig').onclick=async()=>{
+  if(!authorized||busy)return;
+  if(!winners.length){location.href='/event-draw-setup.html?mode=edit';return}
+  try{sessionStorage.setItem(RUN,JSON.stringify({config,winners:[]}))}catch(e){$('status').textContent='재추첨 준비를 저장하지 못했습니다. 다시 시도해주세요.';return}
+  winners=[];pool=config.entries.slice();confirmed=true;$('results').replaceChildren();$('slot').classList.remove('won');$('slotId').textContent='READY?';$('finale').classList.remove('show');update();
+  await $('draw').onclick();
+ };
  $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 다운로드해주세요.'))return;location.href='/event-draw-setup.html?mode=new'};
  $('draw').onclick=async()=>{
   if(!authorized||!confirmed||busy||!pool.length||winners.length>=config.prizes.length)return;

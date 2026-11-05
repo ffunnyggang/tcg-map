@@ -11,3 +11,6 @@
 
 .graded-visit-dialog{width:min(420px,calc(100% - 32px));border:0;border-radius:20px;padding:24px;color:#28232e;box-shadow:0 12px 48px #0003}.graded-visit-dialog::backdrop{background:#0006}.graded-visit-dialog h2{font-size:18px;margin:0 0 16px}.graded-visit-dialog p{font-size:14px;line-height:1.6}.graded-visit-dialog small{display:block;color:#918996;font-size:11px;margin:14px 0}.graded-visit-dialog a{display:block;margin:16px 0}.graded-visit-dialog button{width:100%;padding:12px;border:0;border-radius:10px;background:#8062d8;color:white;margin-top:12px}
 
+
+
+.graded-visit-message{white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;border-radius:10px;background:#f8f5fc}.graded-visit-info{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;font-size:13px;line-height:1.6;margin:20px 0}.graded-visit-info dt{font-weight:750;color:#28232e}.graded-visit-info dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.graded-visit-maps{display:flex;gap:12px;flex-wrap:wrap}.graded-visit-maps a{font-size:12px}

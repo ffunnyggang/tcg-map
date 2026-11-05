@@ -81,13 +81,14 @@ Deno.serve(async req=>{
   const key=Deno.env.get('RENAISS_API_KEY'),secret=Deno.env.get('RENAISS_API_SECRET'),headers:Record<string,string>={Accept:'application/json'};
   if(Boolean(key)!==Boolean(secret))return reply({error:'Renaiss API 인증 설정을 확인해주세요.'},503);
   if(key&&secret){headers['X-Api-Key']=key;headers['X-Api-Secret']=secret}
-  const response=await fetch('https://api.renaissos.com/v1/graded/PSA'+cert,{headers,redirect:'error',signal:AbortSignal.timeout(75000)});
+  const response=await fetch('https://api.renaissos.com/v1/graded/PSA'+cert+(body.pending===true?'?cached=1':''),{headers,redirect:'error',signal:AbortSignal.timeout(75000)});
   quota={remaining:response.headers.get('X-RateLimit-Remaining'),reset:response.headers.get('X-RateLimit-Reset')};
   if(response.status===429)return reply({error:'Renaiss 일일 조회 한도에 도달했습니다. 한도 초기화 후 다시 시도해주세요.',quota},429);
   if([401,403].includes(response.status))return reply({error:'Renaiss API 접근 권한을 확인해주세요.'},502);
-  if(response.status===202)return reply({error:'Renaiss에서 카드정보를 확인 중입니다. 잠시 후 다시 조회해주세요.'},503);
+  if(response.status===202){const seconds=Number(response.headers.get('Retry-After'));return reply({pending:true,retry_after:Number.isFinite(seconds)&&seconds>0?Math.min(30,Math.max(5,Math.ceil(seconds))):10,quota},202)}
   if(!response.ok)return reply({error:'Renaiss에서 카드정보를 가져오지 못했습니다. 잠시 후 다시 시도해주세요.'},502);
   const raw=await response.json();
+  if(body.pending===true&&raw.found===false&&!raw.item&&!raw.card)return reply({pending:true,retry_after:10,quota},202);
   try{metadata=normalizeCard(raw,cert)}catch(e){return reply({error:e instanceof Error?e.message:'카드정보를 확인할 수 없습니다.'},422)}
   const saved=await db.from('graded_cert_cache').upsert({cert_number:cert,metadata,fetched_at:new Date().toISOString()});
   if(saved.error)throw saved.error;
@@ -100,6 +101,7 @@ Deno.serve(async req=>{
  return reply({card:metadata,draft_id:draft.data.id,expires_at:draft.data.expires_at,quota});
  }catch(e){if(e instanceof SyntaxError)return reply({error:'요청 형식을 확인해주세요.'},400);return reply({error:'처리하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요.'},502)}
 });
+
 
 
 

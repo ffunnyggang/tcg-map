@@ -91,17 +91,18 @@ function resetTool(){
  renderPrizes();$('complete').disabled=!authorized;
 }
 function showSetup(fresh){if(fresh)resetTool();$('drawView').hidden=true;$('setupView').hidden=false;$('rules').hidden=true;sync();window.scrollTo(0,0)}
-function lockMember(message){authorized=false;memberId=null;resetTool();$('memberContent').hidden=true;$('memberGate').hidden=false;$('memberMessage').textContent=message||'로그인 회원만 이용할 수 있어요.'}
+function lockMember(message){$('memberLoading').hidden=true;authorized=false;memberId=null;resetTool();$('memberContent').hidden=true;$('memberGate').hidden=false;$('memberMessage').textContent=message||'로그인 회원만 이용할 수 있어요.'}
 let authEpoch=0;
 async function checkMember(){
  const check=++authEpoch;
+ if(!authorized){$('memberLoading').hidden=false;$('memberGate').hidden=true}
  try{const auth=window.FUNY_WEB_AUTH;await auth.init();const session=auth.session;
  if(!session?.access_token){if(check===authEpoch&&!departed)lockMember();return}
  const {data,error}=await auth.client.auth.getUser(session.access_token);
  if(check!==authEpoch||departed)return;
  if(error||!data?.user||data.user.is_anonymous){lockMember('로그인 후 이벤트 추첨기를 이용해주세요.');return}
  if(memberId&&memberId!==data.user.id)resetTool();
- memberId=data.user.id;authorized=true;$('complete').disabled=imageLoading;$('memberGate').hidden=true;$('memberContent').hidden=false;if(config)update();
+ $('memberLoading').hidden=true;memberId=data.user.id;authorized=true;$('complete').disabled=imageLoading;$('memberGate').hidden=true;$('memberContent').hidden=false;if(config)update();
  }catch(e){if(check===authEpoch&&!departed)lockMember('로그인 상태를 확인하지 못했어요. 다시 확인해주세요.')}
 }
 async function init(){

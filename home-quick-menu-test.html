@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>FUNY PIN | HOME 맞춤 퀵메뉴 테스트</title>
-<link rel="stylesheet" href="home-quick-menu-kt-test.css?v=20261106-kt2">
+<link rel="stylesheet" href="home-quick-menu-kt-test.css?v=20261106-kt3">
 </head>
 <body>
 <div class="preview-label">FUNY PIN · 개인화 퀵메뉴 UI 테스트 <span>운영 HOME 미반영</span></div>
@@ -20,7 +20,7 @@
       <span class="hero-count">1 / 5</span>
     </section>
     <div id="homeNotice" class="notice"><b>공지</b><span>내가 자주 쓰는 기능을 퀵메뉴로 설정해 보세요.</span></div>
-    <section id="quickSection" class="quick-section" aria-labelledby="quickTitle">
+    <section id="quickSection" class="quick-section" hidden aria-labelledby="quickTitle">
       <div class="quick-heading"><h2 id="quickTitle">나의 퀵메뉴</h2><button id="openEditor" type="button" class="quick-edit">편집</button></div>
       <div class="quick-scroller" id="quickScroller"><div id="quickItems" class="quick-items"></div></div>
     </section>
@@ -38,15 +38,11 @@
     <div class="sheet-toolbar"><span id="selectionCount" aria-live="polite">4개 선택</span><button id="clearAll" class="clear-all" type="button">전체해제</button></div>
     <div class="sheet-content">
       <div id="menuGrid" class="menu-grid" aria-label="퀵메뉴 후보 선택"></div>
-      <p class="order-hint">메뉴는 선택한 순서대로 HOME에 표시됩니다. 해제 후 다시 선택하면 마지막에 추가됩니다.</p>
-      <details class="section-config"><summary>퀵메뉴 영역 표시·위치 설정</summary>
-        <div class="section-config-row"><span>HOME 퀵메뉴 노출</span><button type="button" id="sectionToggle" class="switch" role="switch" aria-checked="true">ON</button></div>
-        <div class="section-config-row"><span>HOME 내 위치</span><div class="position-group"><button type="button" id="positionBefore">추천 위</button><button type="button" id="positionAfter">추천 아래</button></div></div>
-      </details>
+      <p class="order-hint">선택하면 앞쪽에 1번부터 배치돼요. 해제하고 다시 선택하면 마지막 번호로 추가됩니다.</p>
     </div>
     <footer class="sheet-footer"><button id="saveEditor" type="button" class="save">저장</button></footer>
   </section>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script src="home-quick-menu-kt-test.js?v=20261106-kt2"></script>
+<script src="home-quick-menu-kt-test.js?v=20261106-kt3"></script>
 </body></html>

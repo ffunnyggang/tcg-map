@@ -2,48 +2,52 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow"><link rel="icon" href="/favicon.svg">
-<title>HOME 나의 퀵메뉴 테스트 | FUNY PIN</title>
-<style>
-:root{--purple:#7859d4;--ink:#211d28;--muted:#8c8495;--line:#eae5ef;--bg:#f8f6fb;--safe-bottom:env(safe-area-inset-bottom,0px);font-family:Pretendard,'Pretendard Variable',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);background:#eeeaf3}
-*{box-sizing:border-box}body{margin:0}button,a{font:inherit;-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
-.test-note{max-width:420px;margin:0 auto;padding:9px 13px;background:#201b2b;color:#e7dff9;font-size:11px;line-height:1.5;text-align:center}
-.phone{width:min(100%,420px);min-height:100dvh;margin:auto;background:#fff;overflow:hidden;position:relative;padding-bottom:104px}
-.head{height:55px;display:flex;align-items:center;justify-content:space-between;padding:0 17px;background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid #f3eff8}
-.brand{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:900;letter-spacing:-.02em}.brand img{width:30px;height:33px;object-fit:contain}.head small{font-size:10px;color:var(--purple);font-weight:800;background:#f5f0ff;border-radius:99px;padding:6px 9px}
-.hero{margin:15px 14px 0;background:linear-gradient(120deg,#7857d8,#a88ce7);border-radius:18px;min-height:130px;padding:22px 22px 20px;color:#fff;position:relative;overflow:hidden}
-.hero::after{content:'✦';position:absolute;font-size:125px;right:-12px;top:-21px;opacity:.13}.hero small{font-weight:800;font-size:10px;letter-spacing:.11em}.hero h1{font-size:22px;line-height:1.33;margin:10px 0 5px;letter-spacing:-.05em}.hero p{font-size:11px;margin:0;color:#eee6ff;line-height:1.45}
-.notice{margin:12px 14px 15px;border:1px solid #eeeaf3;border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;font-size:11px;color:#554c5f}.notice b{font-size:10px;color:var(--purple)}
-.quick{padding:17px 14px 19px;border-top:9px solid #f8f6fb;border-bottom:9px solid #f8f6fb}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.section-head h2{margin:0;font-size:17px;letter-spacing:-.045em}.section-head p{font-size:10px;color:var(--muted);margin:5px 0 0}.edit-btn{display:flex;align-items:center;gap:5px;border:0;background:#f3edfd;color:#7150bf;font-size:11px;font-weight:800;border-radius:10px;padding:9px 10px;white-space:nowrap}
-.shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.shortcut{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;font-size:10px;font-weight:700;text-align:center;line-height:1.3}.shortcut-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}.shortcut-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:#f4effd;color:#7758d0;transition:transform .16s ease}.shortcut:active .shortcut-icon{transform:scale(.93)}.shortcut-icon svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.recommend{padding:18px 14px}.recommend h2{font-size:17px;margin:0 0 12px;letter-spacing:-.035em}.rec-card{display:flex;align-items:center;border:1px solid #eeeaf4;border-radius:14px;padding:12px;gap:12px;margin-bottom:8px}.rec-thumb{width:70px;height:70px;background:linear-gradient(135deg,#f1ecfb,#ddd6f0);border-radius:11px;display:grid;place-items:center;color:#9880c3;font-size:23px}.rec-card strong{display:block;font-size:13px}.rec-card p{font-size:11px;color:var(--muted);margin:6px 0 0}.nav{position:fixed;z-index:7;bottom:max(8px,var(--safe-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 26px),394px);height:65px;border:1px solid #eee9f2;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-radius:21px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding:5px;box-shadow:0 8px 28px #271c4314}.nav a{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;font-size:9px;font-weight:700;color:#938a9c;height:55px}.nav a:first-child{color:var(--purple);background:#f5f1fd;border-radius:16px}.nav svg{width:20px;height:20px}
-.scrim{position:fixed;inset:0;z-index:20;background:#1d172c78;display:none;align-items:flex-end;justify-content:center}.scrim.open{display:flex}.sheet{width:min(100%,420px);height:min(90dvh,735px);display:flex;flex-direction:column;background:#fff;border-radius:24px 24px 0 0;box-shadow:0 -8px 42px #1e142c28;padding-bottom:var(--safe-bottom);animation:slide .23s ease both}@keyframes slide{from{transform:translateY(25px);opacity:.75}to{transform:none;opacity:1}}.handle{width:37px;height:4px;background:#dcd6e4;border-radius:3px;margin:10px auto 14px}.sheet-top{padding:0 19px 14px;border-bottom:1px solid #f0ebf4}.sheet-header{display:flex;align-items:center;justify-content:space-between}.sheet-header h2{font-size:19px;margin:0;letter-spacing:-.04em}.close{border:0;background:#f5f3f7;color:#6c6370;border-radius:50%;font-size:21px;width:33px;height:33px}.sheet-desc{font-size:11px;color:var(--muted);margin:8px 0 0;line-height:1.5}.selection{display:flex;align-items:center;justify-content:space-between;margin-top:15px;font-size:12px;font-weight:800}.counter{color:var(--purple)}.slot-row{display:flex;gap:8px;margin-top:9px}.slot{flex:1;min-width:0;min-height:62px;border:1px solid #e9e0f7;border-radius:11px;background:#faf8fd;text-align:center;display:grid;align-content:center;gap:4px;padding:6px 3px;position:relative}.slot svg{width:17px;height:17px;margin:auto;color:var(--purple)}.slot small{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.slot .remove{position:absolute;right:2px;top:2px;width:18px;height:18px;border:0;background:white;color:#8e8399;border-radius:50%;font-size:14px;line-height:15px}.slot.empty{border-style:dashed;color:#b8afc1}.slot.empty strong{font-size:15px}.slot-controls{display:flex;justify-content:center;gap:3px}.slot-controls button{font-size:9px;border:1px solid #e4dcf1;background:#fff;color:#654aab;border-radius:5px;padding:2px 5px;min-width:22px}.sheet-scroll{overflow-y:auto;flex:1;padding:15px 18px 20px;overscroll-behavior:contain}.search{width:100%;height:42px;border:1px solid #e9e3ee;border-radius:12px;padding:0 13px;font-size:12px;background:#fbfafc;color:var(--ink)}.group{margin-top:19px}.group h3{margin:0 0 10px;font-size:12px}.group-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.option{border:1px solid #eae5f0;background:#fff;border-radius:13px;min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;position:relative;padding:10px 4px;color:#635a6b}.option svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.option span{font-size:10px;font-weight:750}.option.selected{background:#f8f4ff;border-color:#b6a4e8;color:#704dc4}.option.selected::after{content:'✓';position:absolute;right:6px;top:4px;font-size:11px;color:var(--purple);font-weight:900}.option[disabled]{opacity:.42;cursor:not-allowed}.option small{font-size:8px;color:#a69aa8}.no-results{padding:40px 15px;text-align:center;color:#9e92a4;font-size:12px}.sheet-foot{padding:12px 18px 16px;border-top:1px solid #eeeaf3;background:#fff;display:grid;grid-template-columns:90px 1fr;gap:9px}.reset{background:#f5f2f8;border:0;color:#665a72;border-radius:12px;font-size:12px;font-weight:800}.save{background:var(--purple);border:0;color:#fff;border-radius:12px;height:46px;font-size:13px;font-weight:850}.save:disabled{opacity:.45}.toast{position:fixed;z-index:25;bottom:94px;left:50%;transform:translateX(-50%);background:#282030;color:#fff;border-radius:20px;padding:11px 16px;font-size:11px;font-weight:700;box-shadow:0 5px 20px #0003;display:none;white-space:nowrap;max-width:90vw}.toast.show{display:block}
-@media(max-width:360px){.quick{padding-left:11px;padding-right:11px}.shortcut-icon{width:53px;height:53px}.sheet-scroll{padding-left:14px;padding-right:14px}}
-</style><link rel="stylesheet" href="/home-quick-menu-blocks-test.css?v=20261106-blocks1">
+<meta name="robots" content="noindex,nofollow"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>FUNY PIN | HOME 맞춤 퀵메뉴 테스트</title>
+<link rel="stylesheet" href="home-quick-menu-kt-test.css?v=20261106-kt1">
 </head>
 <body>
-<div class="test-note">FUNY PIN HOME · 퀵메뉴 UX 테스트 페이지 (운영 HOME 미변경)</div>
-<div class="phone">
-<header class="head"><a class="brand" href="/"><img src="/favicon.svg" alt=""><span>FUNY PIN</span></a><button id="homeLayoutBtn" class="layout-edit-btn" type="button">⚙ HOME 편집</button></header>
-<section class="hero"><small>FUNY PIN · COLLECT YOUR MOMENTS</small><h1>나만의 카드 수집,<br>퍼니핀에서 시작하세요.</h1><p>취향에 맞는 카드샵과 TCG 소식을 확인해 보세요.</p></section>
-<div class="notice" id="homeNotice"><b>공지</b> 내가 자주 쓰는 기능을 HOME에 등록해 보세요.</div>
-<section class="quick" id="quickSection" aria-labelledby="quickTitle"><div class="section-head"><div><h2 id="quickTitle">나의 퀵메뉴</h2><p>자주 사용하는 기능으로 바로 이동하세요.</p></div><button id="openEditor" class="edit-btn" type="button">✎ 편집</button></div><div id="shortcuts" class="shortcuts"></div></section>
-<section class="recommend" id="recommendSection"><h2>오늘의 추천 카드샵</h2><div class="rec-card"><div class="rec-thumb">✦</div><div><strong>내 취향의 카드샵을 발견해 보세요</strong><p>기존 HOME 카드샵 추천 콘텐츠 유지</p></div></div><div class="rec-card"><div class="rec-thumb">▣</div><div><strong>BOX 가격 비교</strong><p>오늘의 주요 상품 시세를 한눈에 확인</p></div></div></section>
+<div class="preview-label">FUNY PIN · 개인화 퀵메뉴 UI 테스트 <span>운영 HOME 미반영</span></div>
+<div class="phone" id="phone">
+  <header class="header">
+    <a class="brand" href="/"><img src="/favicon.svg" alt=""><strong>FUNY PIN</strong></a>
+    <button id="openHomeSettings" class="header-settings" type="button" aria-label="HOME 퀵메뉴 설정">⚙</button>
+  </header>
+  <main class="home">
+    <section class="hero" aria-label="FUNY PIN 이벤트 배너">
+      <div class="hero-copy"><small>DISCOVER YOUR COLLECTION</small><h1>찾고 싶은 카드샵,<br>모두 퍼니핀에서!</h1><p>내 주변 카드샵부터 TCG 콘텐츠까지</p></div>
+      <div class="hero-graphic" aria-hidden="true">✦<span>FUNY<br>PIN</span></div>
+      <span class="hero-count">1 / 5</span>
+    </section>
+    <div id="homeNotice" class="notice"><b>공지</b><span>내가 자주 쓰는 기능을 퀵메뉴로 설정해 보세요.</span></div>
+    <section id="quickSection" class="quick-section" aria-labelledby="quickTitle">
+      <div class="quick-heading"><h2 id="quickTitle">나의 퀵메뉴</h2><button id="openEditor" type="button" class="quick-edit">편집</button></div>
+      <div class="quick-scroller" id="quickScroller"><div id="quickItems" class="quick-items"></div></div>
+    </section>
+    <section id="recommendSection" class="recommend">
+      <h2>오늘의 추천 카드샵</h2>
+      <div class="recommend-card"><span class="recommend-photo">✧</span><div><strong>취향에 맞는 카드샵 찾기</strong><p>다양한 카드샵과 새로운 소식을 발견해 보세요.</p></div></div>
+      <div class="recommend-card"><span class="recommend-photo purple">▣</span><div><strong>주요 카드 BOX 시세</strong><p>현재 주요 상품 가격을 비교해 보세요.</p></div></div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="주요 메뉴"><a href="/" class="active"><span data-icon="home"></span>HOME</a><a href="/shops.html"><span data-icon="shops"></span>TCG MAP</a><a href="/pick.html"><span data-icon="pick"></span>PICK</a><a href="/talk.html"><span data-icon="talk"></span>TALK</a><a href="/my.html"><span data-icon="my"></span>MY</a></nav>
 </div>
-<nav class="nav" aria-label="주요 메뉴"><a href="/"><span id="nav-home"></span>HOME</a><a href="/shops.html"><span id="nav-map"></span>TCG MAP</a><a href="/pick.html"><span id="nav-pick"></span>PICK</a><a href="/talk.html"><span id="nav-talk"></span>TALK</a><a href="/my.html"><span id="nav-my"></span>MY</a></nav>
-<div class="scrim" id="scrim" aria-hidden="true"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-<div class="handle"></div><div class="sheet-top">
-<div class="sheet-header"><h2 id="sheetTitle">HOME 퀵메뉴 블록 편집</h2><button class="close" id="closeEditor" aria-label="닫기" type="button">×</button></div>
-<p class="sheet-desc">메뉴 블록을 ON/OFF하고, 켜진 블록을 드래그해 순서를 변경해 보세요. 최대 4개까지 선택할 수 있습니다.</p>
-<div class="home-block-config"><div class="block-config-title"><strong>HOME 퀵메뉴 영역</strong><button class="toggle" id="toggleSection" type="button" role="switch" aria-label="HOME 퀵메뉴 영역 표시" aria-checked="true"><span class="toggle-knob"></span><b>ON</b></button></div>
-<div class="block-position"><span>HOME 내 위치</span><div class="position-actions"><button id="positionTop" type="button">↑ 추천 위</button><button id="positionBottom" type="button">↓ 추천 아래</button></div></div></div>
-<div class="selection"><span>사용 중인 메뉴 블록 <small>⠿ 를 잡고 이동 / ▲▼ 이동 가능</small></span><span class="counter" id="counter">4 / 4</span></div>
+<div class="scrim" id="scrim" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+    <header class="sheet-header"><h2 id="editorTitle">자주 찾는 메뉴를 설정하세요. <small>(최대 10개)</small></h2><button id="closeEditor" class="close" type="button" aria-label="닫기">×</button></header>
+    <div class="sheet-toolbar"><span id="selectionCount" aria-live="polite">4개 선택</span><button id="clearAll" class="clear-all" type="button">전체해제</button></div>
+    <div class="sheet-content">
+      <div id="menuGrid" class="menu-grid" aria-label="퀵메뉴 후보 선택"></div>
+      <p class="order-hint">선택한 블록을 길게 끌거나 ◀ ▶ 버튼을 눌러 순서를 바꿀 수 있어요.</p>
+      <div id="selectedOrder" class="selected-order" aria-label="선택한 메뉴 순서"></div>
+      <details class="section-config"><summary>퀵메뉴 영역 표시·위치 설정</summary>
+        <div class="section-config-row"><span>HOME 퀵메뉴 노출</span><button type="button" id="sectionToggle" class="switch" role="switch" aria-checked="true">ON</button></div>
+        <div class="section-config-row"><span>HOME 내 위치</span><div class="position-group"><button type="button" id="positionBefore">추천 위</button><button type="button" id="positionAfter">추천 아래</button></div></div>
+      </details>
+    </div>
+    <footer class="sheet-footer"><button id="saveEditor" type="button" class="save">저장</button></footer>
+  </section>
 </div>
-<div class="sheet-scroll" id="editorScroll"><div class="block-list" id="activeBlocks" aria-label="사용 중인 퀵메뉴 블록"></div>
-<div class="add-menu-head"><strong>메뉴 추가 · OFF 목록</strong><span>ON으로 바꾸면 HOME에 추가</span></div>
-<input class="search" id="menuSearch" type="search" placeholder="기능 검색 (예: 등급카드, 이벤트)" aria-label="퀵메뉴 검색"><div id="catalog"></div></div>
-<div class="sheet-foot"><button class="reset" id="resetEditor" type="button">초기화</button><button class="save" id="saveEditor" type="button">설정 저장</button></div>
-</div></div>
 <div id="toast" class="toast" role="status"></div>
-<script src="/home-quick-menu-blocks-test.js?v=20261106-blocks1"></script>
+<script src="home-quick-menu-kt-test.js?v=20261106-kt1"></script>
 </body></html>

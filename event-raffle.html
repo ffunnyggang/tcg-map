@@ -30,8 +30,8 @@ html body .setup .raffle-select select{-webkit-appearance:none!important;-moz-ap
 <p id="authMessage" class="auth-message" role="status"></p>
 <div id="setupView" hidden>
 <section class="setup"><h2>이벤트 설정</h2><label for="configTheme">테마 스킨</label><div class="raffle-select"><select id="configTheme"><option value="purple">퍼니 퍼플 · 기본</option><option value="gold">블랙 골드</option><option value="halloween">할로윈 오렌지</option><option value="ocean">미드나잇 블루</option><option value="image">이미지 첨부</option></select></div><label for="configEffect">당첨 효과</label><div class="raffle-select"><select id="configEffect"><option value="basic">기본</option><option value="fancy">화려하게</option></select></div><div id="imageThemeControls" hidden><label for="configPattern">배경 이미지</label><input autocomplete="off" id="configPattern" type="file" accept="image/png,image/jpeg,image/webp"><p class="notice">PNG·JPG·WebP, 최대 10MB. 첨부 후 전체 배경 또는 패턴 배경을 선택하세요. 전체 배경은 화면 가로폭에 맞춰 원본 비율로 표시됩니다.</p><div class="image-layout-row"><img id="patternPreview" alt="첨부한 배경 이미지 미리보기" hidden><fieldset id="imageLayoutOptions" class="image-layout-options" aria-label="배경 적용 방식" hidden><label><input autocomplete="off" id="imageFull" type="radio" name="imageLayout" value="full">전체 배경</label><label><input autocomplete="off" id="imagePattern" type="radio" name="imageLayout" value="pattern" checked>패턴 배경</label></fieldset></div><button id="removePattern" class="secondary" type="button">이미지 제거</button><p id="imageStatus" class="notice" role="status"></p></div>
-<label for="configTitle">이벤트명</label><input autocomplete="off" id="configTitle" maxlength="120" value="이벤트 명을 입력하세요" placeholder="이벤트 명을 입력하세요">
-<label for="configDescription">이벤트 내용 · 기간 · 발표 안내</label><textarea autocomplete="off" id="configDescription" maxlength="1000" placeholder="이벤트 기간 YYYY. MM. DD ~ MM. DD">이벤트 기간 YYYY. MM. DD ~ MM. DD</textarea>
+<label for="configTitle">이벤트명</label><input autocomplete="off" id="configTitle" maxlength="120" placeholder="이벤트 명을 입력하세요">
+<label for="configDescription">이벤트 내용 · 기간 · 발표 안내</label><textarea autocomplete="off" id="configDescription" maxlength="1000" placeholder="이벤트 기간 YYYY. MM. DD ~ MM. DD"></textarea>
 <label for="configRankMode">당첨자 표시 방식</label><div class="raffle-select"><select id="configRankMode"><option value="sequence">순번 표시</option><option value="medals" selected>등수 표시 · 금/은/동 · 기본</option></select></div><p class="notice">등수 표시 선택 시 마지막 당첨자가 1등입니다. 3명 기준으로 3등(동) → 2등(은) → 1등(금) 순서로 추첨합니다.</p><label for="configTotal">당첨 인원</label><input autocomplete="off" id="configTotal" type="number" min="1" max="100" step="1" value="3">
 <p class="notice">추첨할 순서대로 경품을 입력하세요. 예: 1번째는 3등 경품, 2번째는 2등 경품, 3번째는 1등 경품. 같은 경품은 각각 동일하게 입력할 수 있습니다.</p>
 <div id="prizeFields"></div>
@@ -59,4 +59,4 @@ document.getElementById('raffleShare').onclick=async()=>{
  }catch(e){if(e.name!=='AbortError')notify('공유하지 못했어요. 다시 시도해주세요.')}
 };
 })();
-</script><script src="/event-raffle.js?v=20261105-copy1"></script></body></html>
+</script><script src="/event-raffle.js?v=20261105-required1"></script></body></html>

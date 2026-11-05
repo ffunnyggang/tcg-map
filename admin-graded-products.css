@@ -8,3 +8,6 @@
 
 /* Native disclosure keeps the full card row keyboard and touch accessible. */
 .registered-item{display:block}.registered-summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;font-weight:400}.registered-summary::-webkit-details-marker{display:none}.registered-summary::marker{content:''}.registered-item[open]>.registered-summary{margin-bottom:12px}.registered-chevron{display:flex;align-items:center;justify-content:center;flex:none;width:28px;height:44px;color:#8b7e99}.registered-chevron svg{width:20px;height:20px;transition:transform .15s ease}.registered-item[open] .registered-chevron svg{transform:rotate(180deg)}.registered-summary:focus-visible{outline:2px solid #b9a6e9;outline-offset:4px;border-radius:8px}.product-edit-form input[readonly]{background:#eeeaf3;color:#938a9d}@media(prefers-reduced-motion:reduce){.registered-chevron svg{transition:none}}
+
+/* Match this admin workspace width at every viewport and browser zoom level. */
+.shell>.funy-sub-header{width:100%!important;max-width:none!important}

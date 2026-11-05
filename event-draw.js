@@ -1,9 +1,16 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),BASE='https://wdttzpbmqavaqfcbaywj.supabase.co',KEY='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const DRAFT='funypin_draw_draft_v3',RUN='funypin_draw_run_v2',setup=document.body.dataset.view==='setup';
-const THEMES=['purple','gold','halloween','ocean'];
+const THEMES=['purple','gold','halloween','ocean','image'];
 function themeId(id){return THEMES.includes(id)?id:'purple'}
-function applyTheme(id){document.body.dataset.theme=themeId(id)}
+function safePattern(value){return typeof value==='string'&&value.length<700000&&/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(value)?value:''}
+let patternImage='',imageLoading=false;
+function applyTheme(id,image){document.body.dataset.theme=themeId(id);const pattern=safePattern(image);document.body.style.setProperty('--draw-pattern',pattern?'url("'+pattern+'")':'none');if($('imageThemeControls')){$('imageThemeControls').hidden=themeId(id)!=='image';$('patternPreview').hidden=!pattern;if(pattern)$('patternPreview').src=pattern}}
+function decodeImage(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('이미지를 읽을 수 없습니다. PNG·JPG·WebP 파일로 다시 시도해주세요.'))};img.src=url})}
+async function uploadPattern(){const file=$('configPattern').files[0];if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>10*1024*1024){$('imageStatus').textContent='10MB 이하의 PNG·JPG·WebP 이미지를 선택해주세요.';$('configPattern').value='';return}
+ imageLoading=true;$('complete').disabled=true;$('imageStatus').textContent='배경 패턴을 만드는 중입니다.';
+ try{const img=await decodeImage(file),canvas=document.createElement('canvas');canvas.width=300;canvas.height=220;const ctx=canvas.getContext('2d'),scale=Math.min(180/img.naturalWidth,105/img.naturalHeight);ctx.translate(150,110);ctx.rotate(-24*Math.PI/180);ctx.drawImage(img,-img.naturalWidth*scale/2,-img.naturalHeight*scale/2,img.naturalWidth*scale,img.naturalHeight*scale);const result=safePattern(canvas.toDataURL('image/png'));if(!result)throw Error('이미지 변환에 실패했습니다. 다른 이미지를 선택해주세요.');patternImage=result;$('configTheme').value='image';sync();$('imageStatus').textContent='이미지를 배경 패턴으로 적용했습니다.'}catch(e){$('imageStatus').textContent=e.message}finally{imageLoading=false;$('complete').disabled=!authorized;$('configPattern').value=''}
+}
 let authorized=false,busy=false,confirmed=false,pool=[],winners=[],config=null,prizes=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function rnd(n){const a=new Uint32Array(1),lim=Math.floor(4294967296/n)*n;do{crypto.getRandomValues(a)}while(a[0]>=lim);return a[0]%n}
@@ -12,26 +19,36 @@ function parseEntries(text){const raw=text.split(/[\n,;\t ]+/).map(s=>s.trim().r
 function total(){const n=Number($('configTotal').value);return Number.isInteger(n)&&n>=1&&n<=100?n:0}
 function ranked(c){return c?.rankMode==='medals'}
 function winnerLabel(i,c){const rank=c.prizes.length-i;return ranked(c)?(rank===1?'🥇 ':rank===2?'🥈 ':rank===3?'🥉 ':'')+rank+'등':(i+1)+'번째 당첨자'}
-function readDraft(){return {rankMode:$('configRankMode')?.value==='medals'?'medals':'sequence',theme:themeId($('configTheme')?.value),title:$('configTitle').value,description:$('configDescription').value,total:$('configTotal').value,prizes:prizes.slice(),warning:$('configWarning').value,entries:$('entries').value}}
-function preview(c,list){applyTheme(c.theme);$('eventTitle').textContent=c.title.trim()||'이벤트 추첨';$('eventDescription').textContent=c.description.trim();const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
+function readDraft(){return {patternImage,rankMode:$('configRankMode')?.value==='medals'?'medals':'sequence',theme:themeId($('configTheme')?.value),title:$('configTitle').value,description:$('configDescription').value,total:$('configTotal').value,prizes:prizes.slice(),warning:$('configWarning').value,entries:$('entries').value}}
+function preview(c,list){applyTheme(c.theme,c.patternImage);$('eventTitle').textContent=c.title.trim()||'이벤트 추첨';$('eventDescription').textContent=c.description.trim();const oldPrizes=$('previewPrizes');if(oldPrizes){oldPrizes.replaceChildren();oldPrizes.hidden=true}$('previewCount').textContent='당첨 '+c.prizes.length+'명 · 참여자 '+list.length+'명'}
 function sync(){const data=parseEntries($('entries').value),n=total();preview({...readDraft(),prizes:prizes.slice(0,n)},data.list);$('count').textContent='참여자 '+data.list.length+'명'+(data.duplicates?' · 중복 '+data.duplicates+'건 제외':'')+(data.invalid.length?' · 잘못된 ID: '+data.invalid.slice(0,5).join(', '):'');try{localStorage.setItem(DRAFT,JSON.stringify(readDraft()))}catch(e){}}
 function renderPrizes(){const n=total();$('prizeFields').replaceChildren();for(let i=0;i<n;i++){if(typeof prizes[i]!=='string')prizes[i]='경품 입력 (예: 🎁포켓몬 30주년 기념 일판 1팩)';const row=document.createElement('div');row.className='prize-row';const label=document.createElement('label');label.htmlFor='gift-'+i;label.textContent=ranked(readDraft())?winnerLabel(i,{rankMode:'medals',prizes:Array(n)} )+' 경품':(i+1)+'번째 경품';const input=document.createElement('input');input.id='gift-'+i;input.maxLength=200;input.placeholder='경품 입력 (예: 🎁포켓몬 30주년 기념 일판 1팩)';input.value=prizes[i];input.addEventListener('input',()=>{prizes[i]=input.value;sync()});row.append(label,input);$('prizeFields').append(row)}sync()}
 function setupPage(){
  $('setupView').hidden=false;
- try{const d=JSON.parse(localStorage.getItem(DRAFT)||'null');if(d){for(const [id,key] of [['configTitle','title'],['configDescription','description'],['configTotal','total'],['configWarning','warning'],['entries','entries']])if(typeof d[key]==='string')$(id).value=d[key];if($('configTheme'))$('configTheme').value=themeId(d.theme);if($('configRankMode'))$('configRankMode').value=d.rankMode==='medals'?'medals':'sequence';if(Array.isArray(d.prizes))prizes=d.prizes.slice(0,100).map(x=>typeof x==='string'?x:'')}}catch(e){}
+ try{
+  const mode=new URLSearchParams(location.search).get('mode');
+  let d=mode==='new'?null:JSON.parse(localStorage.getItem(DRAFT)||'null');
+  if(mode==='edit'){const run=JSON.parse(sessionStorage.getItem(RUN)||'null');if(run?.config&&validConfig(run.config)){const c=run.config;d={...c,total:String(c.prizes.length),entries:c.entries.join('\n')}}}
+  if(d){for(const [id,key] of [['configTitle','title'],['configDescription','description'],['configTotal','total'],['configWarning','warning'],['entries','entries']])if(typeof d[key]==='string')$(id).value=d[key];$('configTheme').value=themeId(d.theme);$('configRankMode').value=d.rankMode==='medals'?'medals':'sequence';patternImage=safePattern(d.patternImage);if(Array.isArray(d.prizes))prizes=d.prizes.slice(0,100).map(x=>typeof x==='string'?x:'')}
+  if(mode==='new'||mode==='edit')history.replaceState(null,'',location.pathname);
+ }catch(e){}
+ $('configPattern').addEventListener('change',uploadPattern);
+ $('removePattern').onclick=()=>{patternImage='';$('imageStatus').textContent='배경 이미지를 제거했습니다.';sync()};
+
  renderPrizes();
  ['configTitle','configDescription','configWarning','entries','configTheme'].forEach(id=>$(id).addEventListener('input',sync));
  $('configTotal').addEventListener('input',renderPrizes);$('configRankMode')?.addEventListener('change',renderPrizes);
  $('complete').onclick=()=>{
-  if(!authorized)return;
+  if(!authorized||imageLoading)return;
   const d=readDraft(),n=total(),data=parseEntries(d.entries);const fail=m=>$('configStatus').textContent=m;
+  if(d.theme==='image'&&!safePattern(d.patternImage))return fail('배경 패턴으로 사용할 이미지를 첨부해주세요.');
   if(!d.title.trim())return fail('이벤트명을 입력해주세요.');
   if(!d.description.trim())return fail('이벤트 내용을 입력해주세요.');
   if(!n)return fail('당첨 인원은 1~100명의 정수로 입력해주세요.');
   if(prizes.slice(0,n).length!==n||prizes.slice(0,n).some(x=>!x.trim()))return fail('모든 당첨 순번의 경품을 입력해주세요.');
   if(data.invalid.length)return fail('형식이 올바르지 않은 참여자 ID를 수정해주세요.');
   if(data.list.length<n)return fail('당첨 인원 이상의 참여자가 필요합니다. 현재 '+data.list.length+'명입니다.');
-  const snapshot={rankMode:d.rankMode,theme:themeId(d.theme),title:d.title.trim(),description:d.description.trim(),prizes:prizes.slice(0,n).map(x=>x.trim()),warning:d.warning.trim(),entries:data.list};
+  const snapshot={patternImage:safePattern(d.patternImage),rankMode:d.rankMode,theme:themeId(d.theme),title:d.title.trim(),description:d.description.trim(),prizes:prizes.slice(0,n).map(x=>x.trim()),warning:d.warning.trim(),entries:data.list};
   try{sessionStorage.setItem(RUN,JSON.stringify({config:snapshot,winners:[]}))}catch(e){return fail('추첨 설정을 저장하지 못했습니다. 브라우저 저장 허용 후 다시 시도해주세요.')}
   location.href='/event-draw.html';
  };
@@ -47,8 +64,8 @@ function drawPage(){
  winners.forEach(renderWinner);if(winners.length)$('slotId').textContent='@'+winners[winners.length-1];
  $('warningText').textContent=config.warning;$('rules').hidden=winners.length>=config.prizes.length;
  $('accept').onclick=()=>{confirmed=true;$('rules').hidden=true;$('status').textContent='추첨 준비 완료';update()};
- $('editConfig').onclick=()=>{if(authorized&&!busy&&!winners.length)location.href='/event-draw-setup.html'};
- $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 다운로드해주세요.'))return;location.href='/event-draw-setup.html'};
+ $('editConfig').onclick=()=>{if(authorized&&!busy&&!winners.length)location.href='/event-draw-setup.html?mode=edit'};
+ $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 다운로드해주세요.'))return;location.href='/event-draw-setup.html?mode=new'};
  $('draw').onclick=async()=>{
   if(!authorized||!confirmed||busy||!pool.length||winners.length>=config.prizes.length)return;
   busy=true;update();$('status').textContent='참여자 셔플 중...';

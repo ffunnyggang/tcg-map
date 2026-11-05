@@ -53,9 +53,11 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
     return;
   }
 
+  const themedRaffle=target.pathname==='/event-raffle.html';
+  if(themedRaffle){document.documentElement.style.background='#150b24';document.body.style.background='#150b24';frame.style.background='#150b24'}
   const css=[
-    'html,body{background:#fff!important}',
-    'body>header,body>.header,body>.head,.shell>header,.shell>.header,.shell>.head,.page>header,.page>.header,.page>.head,.portal-shell>.portal-header,.portal-header,.app-header,.site-header,.main-header{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
+    themedRaffle?'':'html,body{background:#fff!important}',
+    'body>header,body>.header,body>.head,.shell>header,.shell>.header,.shell>.head,.page>header,.page>.header,.page>.head,.portal-shell>.portal-header,.portal-header,.app-header,.site-header,.main-header,.raffle-toolbar{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
     '.portal-bottom-nav,.shops-bottom-nav,.mobile-bottom-nav,.bottom-navigation,#bottom-nav,#bottomNav,.funy-lang-switch{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;min-height:0!important;max-height:0!important;margin:0!important;padding:0!important;border:0!important;pointer-events:none!important}',
     '.live-pin-entry-wrap,.live-pin-detail-entry{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}',
     '.info-tabs{top:0!important}',

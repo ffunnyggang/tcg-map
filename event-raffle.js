@@ -65,7 +65,7 @@ function drawPage(){
   winners=[];pool=config.entries.slice();confirmed=true;$('results').replaceChildren();$('slot').classList.remove('won');$('slotId').textContent='READY?';$('finale').classList.remove('show');update();
   $('status').textContent='재추첨 준비 완료 · 추첨 시작 버튼을 눌러주세요.';
  };
- $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 다운로드해주세요.'))return;showSetup(true)};
+ $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 복사해주세요.'))return;showSetup(true)};
  $('draw').onclick=async()=>{
   if(!authorized||!confirmed||busy||!pool.length||winners.length>=config.prizes.length)return;
   const epoch=generation;busy=true;update();const fancy=config.effect==='fancy';if(fancy)$('slot').classList.add('run');$('status').textContent='참여자 셔플 중...';
@@ -78,9 +78,25 @@ function drawPage(){
   $('finaleTitle').textContent='🎉 '+winnerLabel(winners.length-1,config);$('finaleId').textContent='@'+winner;$('finalePrize').textContent=gift;$('finale').classList.add('show');if(fancy){const rank=ranked(config)?config.prizes.length-winners.length+1:2;fancyConfetti(rank);if(rank===1){const flash=document.createElement('div');flash.className='draw-fancy-flash';document.body.append(flash);setTimeout(()=>flash.remove(),750)}await wait(rank===1?3400:2500)}else{confetti();await wait(2400)}
   if(epoch!==generation||departed)return;$('finale').classList.remove('show');$('slot').classList.remove('won');busy=false;update();
  };
- $('downloadResults').onclick=()=>{if(!winners.length)return;const lines=[config.title,config.description,''];winners.forEach((id,i)=>lines.push(winnerLabel(i,config)+' · @'+id+' · '+config.prizes[i]));const url=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='funypin-draw-results.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+ $('downloadResults').onclick=async()=>{
+  if(!authorized||!config||!winners.length)return;
+  const lines=[config.title,config.description,''];
+  winners.forEach((id,i)=>lines.push(winnerLabel(i,config)+' · @'+id+' · '+config.prizes[i]));
+  const text=lines.join('\n'),epoch=generation;
+  let copied=false;
+  // Copy inside the tap gesture for older iOS/Android WebViews.
+  const active=document.activeElement,field=document.createElement('textarea');
+  field.value=text;field.readOnly=true;field.setAttribute('aria-label','추첨 결과 복사');
+  Object.assign(field.style,{position:'fixed',top:'0',left:'0',width:'1px',height:'1px',opacity:'0',fontSize:'16px'});
+  try{document.body.append(field);field.focus({preventScroll:true});field.select();field.setSelectionRange(0,field.value.length);copied=document.execCommand('copy')}catch(_){}finally{field.remove();try{active?.focus({preventScroll:true})}catch(_){}}
+  if(!copied&&navigator.clipboard?.writeText){try{await navigator.clipboard.writeText(text);copied=true}catch(_){}}
+  if(epoch!==generation||departed)return;
+  resultCopyToast(copied?'추첨 결과를 복사했어요.':'복사하지 못했어요. 다시 시도해주세요.');
+ };
  update();return true;
 }
+let resultCopyTimer;
+function resultCopyToast(message){const el=$('shareToast');el.textContent=message;el.hidden=false;clearTimeout(resultCopyTimer);resultCopyTimer=setTimeout(()=>{if(!departed)el.hidden=true},2200)}
 function fancyConfetti(rank){const colors=['#ffe8a9','#ffcb63','#ffffff','#bcb7c4','#e6a75d'];for(let i=0;i<(rank===1?125:rank===2?75:40);i++){const e=document.createElement('span');e.className='confetti fancy-confetti';e.style.left=rnd(100)+'vw';e.style.background=colors[rnd(3)];e.style.animationDelay=(rnd(400)/1000)+'s';document.body.append(e);setTimeout(()=>e.remove(),2200)}}
 function confetti(){const colors=['#ffe18e','#c8a0ff','#ff77c6','#fff'];for(let i=0;i<70;i++){const e=document.createElement('span');e.className='confetti';e.style.left=rnd(100)+'vw';e.style.background=colors[rnd(colors.length)];e.style.animationDelay=rnd(400)+'ms';document.body.append(e);setTimeout(()=>e.remove(),2500)}}
 

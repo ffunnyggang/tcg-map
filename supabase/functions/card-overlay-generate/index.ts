@@ -68,10 +68,16 @@ Deno.serve(async(req:Request)=>{
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    const h={apikey:service,Authorization:'Bearer '+service};
    if(data.action==='references'){
-    const res=await fetch(url+'/rest/v1/overlay_art_references?select=id,card_number,display_name,art_rect,descriptor&order=card_number.asc&limit=500',{headers:h});
-    if(!res.ok)throw Error('CATALOG_UNAVAILABLE');return reply({references:await res.json()});
+    const references=[];
+    // Stable unique-id order prevents equal card numbers across languages from shifting pages.
+    for(let page=0;page<10;page++){
+     const res=await fetch(url+'/rest/v1/overlay_art_references?select=id,card_number,display_name,art_rect,descriptor&order=id.asc&limit=500&offset='+page*500,{headers:h});
+     if(!res.ok)throw Error('CATALOG_UNAVAILABLE');const rows=await res.json();if(!Array.isArray(rows))throw Error('CATALOG_UNAVAILABLE');references.push(...rows);
+     if(rows.length<500)return reply({references});
+    }
+    throw Error('CATALOG_TOO_LARGE');
    }
-   if(typeof data.id!=='string'||!/^(?:(?:30th|me55cc)-en-[0-9]{3}|m6a-ko-[0-9A-HJKMNP-TV-Z]{26})$/.test(data.id))return reply({error:'올바른 참조 카드가 아닙니다.'},400);
+   if(typeof data.id!=='string'||!/^(?:(?:30th|me55cc)-en-[0-9]{3}|m6a-ko-[0-9A-HJKMNP-TV-Z]{26}|m6a-ja-(?:[0-9]{3}|151152|gra|fir|wat|lig|psy|fig|dar|met))$/.test(data.id))return reply({error:'올바른 참조 카드가 아닙니다.'},400);
    const res=await fetch(url+'/rest/v1/overlay_art_references?select=id,display_name,card_number,image_path,art_rect&id=eq.'+data.id,{headers:h});if(!res.ok)throw Error('CATALOG_UNAVAILABLE');const row=(await res.json())[0];if(!row)return reply({error:'등록된 이미지가 없습니다.'},404);
    const sign=await fetch(url+'/storage/v1/object/sign/overlay-art-references/'+row.image_path,{method:'POST',headers:{...h,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})});if(!sign.ok)throw Error('IMAGE_UNAVAILABLE');const signed=await sign.json();return reply({reference:{...row,imageUrl:url+'/storage/v1'+signed.signedURL}});
   }

@@ -37,30 +37,48 @@ const find=id=>data.find(x=>x.id===id),$=s=>document.querySelector(s);
 const svg=id=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+(icons[id]||icons.box)+'</svg>';
 function valid(x){return x&&Array.isArray(x.selected)&&x.selected.length<=10&&new Set(x.selected).size===x.selected.length&&x.selected.every(id=>find(id))}
 function load(){
-  try{const x=JSON.parse(localStorage.getItem(KEY));if(valid(x))return{selected:x.selected,visible:x.visible!==false,position:x.position==='after'?'after':'before'}}catch(_){}
-  try{const x=JSON.parse(localStorage.getItem(OLD));if(x&&Array.isArray(x.active)&&x.active.every(id=>find(id)))return{selected:x.active,visible:x.visible!==false,position:x.placement==='bottom'?'after':'before'}}catch(_){}
-  return{selected:[...DEFAULT],visible:true,position:'before'};
+ try{const x=JSON.parse(localStorage.getItem(KEY));if(valid(x))return{selected:x.selected}}catch(_){}
+ try{const x=JSON.parse(localStorage.getItem(OLD));if(x&&Array.isArray(x.active)&&x.active.length<=10&&x.active.every(id=>find(id)))return{selected:x.active}}catch(_){}
+ return{selected:[...DEFAULT]};
 }
-const copy=x=>({selected:[...x.selected],visible:x.visible,position:x.position});
+const copy=x=>({selected:[...x.selected]});
 let saved=load(),draft=copy(saved),beforeOpen=null;
+let adminLayout={is_enabled:true,position:'before_recommend'};
+async function loadAdminLayout(){
+ try{
+  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),4000);
+  let response;
+  try{response=await fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/rest/v1/home_quick_menu_settings?id=eq.1&select=is_enabled,position',{
+    headers:{apikey:'sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq'},signal:ctrl.signal
+  })}finally{clearTimeout(timer)}
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const settings=(await response.json())?.[0];
+  if(!settings)throw new Error('Settings unavailable');
+  adminLayout={is_enabled:settings.is_enabled===true,position:settings.position==='after_recommend'?'after_recommend':'before_recommend'};
+ }catch(err){console.warn('[FUNY PIN quick menu] using default test layout:',err.message)}
+ renderHome();
+}
 function toast(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1700)}
 function renderHome(){
  const section=$('#quickSection'),list=$('#quickItems');list.replaceChildren();
- if(saved.position==='after')$('#recommendSection').after(section);else $('#homeNotice').after(section);
- section.hidden=!saved.visible;
+ if(adminLayout.position==='after_recommend')$('#recommendSection').after(section);else $('#homeNotice').after(section);
+ section.hidden=!adminLayout.is_enabled;
  for(const id of saved.selected){const item=find(id),a=document.createElement('a');a.href=item.href;a.className='quick-tile';a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';a.innerHTML='<span class="quick-glyph">'+svg(id)+'</span><strong>'+item.label+'</strong>';list.append(a)}
  const add=document.createElement('button');add.className='quick-tile add';add.type='button';add.setAttribute('aria-label','퀵메뉴 추가');add.textContent='+';add.addEventListener('click',openEditor);list.append(add);
 }
 function renderEditor(){
  const grid=$('#menuGrid');grid.replaceChildren();
- for(const item of data){
-  const isOn=draft.selected.includes(item.id),btn=document.createElement('button');btn.type='button';btn.className='menu-choice'+(isOn?' selected':'');btn.dataset.menuId=item.id;btn.setAttribute('aria-pressed',String(isOn));btn.setAttribute('aria-label',item.label+(isOn?' 선택됨':' 선택하기'));btn.innerHTML='<span>'+item.label+'</span><i class="indicator" aria-hidden="true">'+(isOn?'✓':'+')+'</i>';
+ const menuOrder=[...draft.selected.map(find),...data.filter(item=>!draft.selected.includes(item.id))];
+ for(const item of menuOrder){
+  const number=draft.selected.indexOf(item.id)+1,isOn=number>0,btn=document.createElement('button');
+  btn.type='button';btn.className='menu-choice'+(isOn?' selected':'');btn.dataset.menuId=item.id;
+  btn.setAttribute('aria-pressed',String(isOn));btn.setAttribute('aria-label',item.label+(isOn?' '+number+'번 선택됨':' 선택하기'));
+  btn.innerHTML='<span>'+item.label+'</span><i class="indicator" aria-hidden="true">'+(isOn?String(number):'+')+'</i>';
   grid.append(btn);
  }
  $('#selectionCount').textContent=draft.selected.length+' / 10개 선택';
  $('#clearAll').disabled=draft.selected.length===0;
- $('#sectionToggle').setAttribute('aria-checked',String(draft.visible));$('#sectionToggle').textContent=draft.visible?'ON':'OFF';
- $('#positionBefore').classList.toggle('active',draft.position==='before');$('#positionAfter').classList.toggle('active',draft.position==='after');
+
 }
 function openEditor(){beforeOpen=document.activeElement;draft=copy(saved);$('#scrim').classList.add('open');$('#scrim').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderEditor();$('#closeEditor').focus()}
 function closeEditor(){$('#scrim').classList.remove('open');$('#scrim').setAttribute('aria-hidden','true');document.body.style.overflow='';beforeOpen?.focus()}
@@ -74,9 +92,6 @@ $('#menuGrid').addEventListener('click',e=>{
  renderEditor();
 });
 $('#clearAll').addEventListener('click',()=>{draft.selected=[];renderEditor()});
-$('#sectionToggle').addEventListener('click',()=>{draft.visible=!draft.visible;renderEditor()});
-$('#positionBefore').addEventListener('click',()=>{draft.position='before';renderEditor()});
-$('#positionAfter').addEventListener('click',()=>{draft.position='after';renderEditor()});
 $('#saveEditor').addEventListener('click',()=>{
  if(!valid(draft))return;
  try{localStorage.setItem(KEY,JSON.stringify(draft))}catch(_){toast('설정을 저장하지 못했어요');return}
@@ -88,5 +103,5 @@ document.addEventListener('keydown',e=>{
  if(e.key==='Tab'){const els=[...$('#scrim').querySelectorAll('button:not(:disabled),summary')].filter(x=>x.getClientRects().length);if(!els.length)return;const first=els[0],last=els[els.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
 });
 for(const item of document.querySelectorAll('[data-icon]'))item.innerHTML=svg(item.dataset.icon);
-renderHome();
+loadAdminLayout();
 })();

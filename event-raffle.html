@@ -43,8 +43,8 @@ html body .setup .raffle-select select{-webkit-appearance:none!important;-moz-ap
 </div>
 <div id="drawView" hidden>
 <section class="card"><div class="round"><strong id="round"></strong><span class="tag" id="stage"></span></div><div class="prize" id="prizeText"></div><div class="slot" id="slot"><strong id="slotId">READY?</strong></div><div class="status" id="status" aria-live="polite">관리자 로그인 확인 중입니다.</div><button class="primary" id="draw" disabled>추첨 대기</button></section>
-<section class="results"><h2>🏆 당첨자 발표</h2><div id="results"></div></section><section class="draw-actions" aria-label="추첨 관리"><button class="secondary" id="downloadResults" disabled>추첨 결과 다운로드</button><button class="secondary" id="editConfig" disabled>설정 수정</button><button class="secondary" id="newEvent" disabled>새 이벤트 설정</button></section>
-<p class="notice">입력한 이벤트 정보·참여자·이미지·추첨 결과는 저장하지 않습니다. 새로고침하거나 페이지를 떠나면 모두 초기화됩니다. 결과 파일은 다운로드 버튼을 직접 누를 때만 생성됩니다.</p>
+<section class="results"><h2>🏆 당첨자 발표</h2><div id="results"></div></section><section class="draw-actions" aria-label="추첨 관리"><button class="secondary" id="downloadResults" disabled>추첨 결과 복사하기</button><button class="secondary" id="editConfig" disabled>설정 수정</button><button class="secondary" id="newEvent" disabled>새 이벤트 설정</button></section>
+<p class="notice">입력한 이벤트 정보·참여자·이미지·추첨 결과는 저장하지 않습니다. 새로고침하거나 페이지를 떠나면 모두 초기화됩니다. 추첨 결과 복사하기 버튼을 누르면 결과가 클립보드에 복사됩니다.</p>
 </div></div></main>
 <div class="rules" id="rules" hidden role="dialog" aria-modal="true" aria-labelledby="rulesHeading"><div class="panel"><div class="rules-kicker">DRAW NOTICE</div><h2 id="rulesHeading">추첨 안내</h2><p id="warningText" style="font-weight:750"></p><button class="primary" id="accept">확인 · 추첨 준비</button></div></div>
 <div class="finale" id="finale"><div><h2 id="finaleTitle"></h2><strong id="finaleId"></strong><p id="finalePrize"></p></div></div>
@@ -59,4 +59,4 @@ document.getElementById('raffleShare').onclick=async()=>{
  }catch(e){if(e.name!=='AbortError')notify('공유하지 못했어요. 다시 시도해주세요.')}
 };
 })();
-</script><script src="/event-raffle.js?v=20261105-loading1"></script></body></html>
+</script><script src="/event-raffle.js?v=20261105-copy1"></script></body></html>

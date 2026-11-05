@@ -37,3 +37,14 @@ The private reference bucket accepts PNG and WebP (5 MiB maximum), retaining the
 Validation: 61 server tests pass, including Japanese numeric/Energy/LEGEND IDs, malformed-ID rejection, 531-row pagination and next-page failure. Native canvas decodes the stored WebP format and rescaled Japanese samples match their own source descriptors. Normal-frame Japanese 001/002 also match the English artwork anchors. Strong foil/colour differences can reduce cross-language similarity (Classic Pikachu sample); scores are not accuracy probabilities and users must visually confirm candidates. Adding Japanese source images supplies same-language references without introducing a language filter.
 
 The source-data import is separate from AI image generation. The temporary import function is restricted to this fixed metadata/hash manifest with an expiring random token and disabled after verification. Public launch/menu exposure is unchanged.
+
+
+## Load a DB image as the source photo — 2026-11-05
+
+The photo-preparation area now has a private catalog picker. It lists all stored reference records through the existing authenticated `references` action, supports language and registered-name/exact-number search, and pages the UI in groups of 24. Only a selected image is downloaded through the existing `reference` signed-URL action; no thumbnail batch or AI request is made.
+
+A selected single portrait image is copied as the complete source card (756×1056 working canvas), without camera corner detection. Valid stored `art_rect` coordinates are applied and remain adjustable. Existing generated/imported artwork, reference-crop replacement, sample state and history-only state are cleared using the normal photo reset. Both card-type and illustration-window confirmation remain unchecked. Existing generation modes receive the selected DB image as their source according to their original behavior; merely opening or choosing a card does not generate an image or consume generation quota.
+
+Landscape images and the Japanese 151/152 composite can be previewed but cannot be stretched into a single portrait card. Other nonstandard cards remain outside the existing normal-frame expansion scope. Closing the dialog or selecting a different result invalidates pending image responses. Catalog/login errors leave the current card unchanged. Test-account access and Storage privacy are unchanged.
+
+Validation: seven new catalog tests cover filtering, all 531 records, portrait constraints, logged-out behavior, complete-source loading and prior-state reset, late responses after closing, and access failures. Together with the existing full-art/print-flow tests, 14 tests pass. Authenticated live selection still requires a permitted account session.

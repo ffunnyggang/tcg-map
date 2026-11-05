@@ -1,3 +1,4 @@
+import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';
 import {prepareFullCard,inspectFullArt} from './card-fullart-test.mjs?v=20261104-fullart1';
 import {artDescriptor,rankArtwork} from './card-overlay-match.mjs?v=20261027-reference1';
 import {blendBackground} from './card-overlay-blend.mjs?v=20261023-independent1';
@@ -16,7 +17,7 @@ function canvas(w,h){const c=document.createElement('canvas');c.width=w;c.height
 async function load(file){if(!file||file.size>15*1024*1024)throw Error('15MB 이하 JPG·PNG·WebP 이미지를 선택해 주세요.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('JPG·PNG·WebP로 저장한 이미지를 선택해 주세요.');const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();if(img.width*img.height>40000000)throw Error('이미지 해상도가 너무 커요. 크기를 줄여 주세요.');const scale=Math.min(1,1800/Math.max(img.width,img.height)),c=canvas(Math.round(img.width*scale),Math.round(img.height*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;}finally{URL.revokeObjectURL(url);}}
 function isFullCardMode(mode=$('generationMode').value){return mode==='fullart'||mode==='illustration';}
 function matchingFullArt(){return !!fullArtResult&&fullArtResultMode===$('generationMode').value;}
-function update(){let valid=false;try{rect();valid=true;}catch{}$('generate').disabled=busy||savedLoading||historyOnly||!card||!valid||!$('confirmed').checked||!$('pokemonConfirmed').checked||!ready;const full=isFullCardMode(),hasResult=full?matchingFullArt():!!art,reviewed=full?$('fullArtAccepted').checked:!alignmentReview||$('acceptAlignment').checked;for(const id of ['png','pdf'])$(id).disabled=busy||!hasResult||!valid||!reviewed;$('correct').disabled=busy||corners.length!==4;$('loadSaved').disabled=busy||savedLoading;$('fullArtPng').disabled=busy||savedLoading||!matchingFullArt()||!$('fullArtAccepted').checked;}
+function update(){let valid=false;try{rect();valid=true;}catch{}$('generate').disabled=busy||savedLoading||historyOnly||!card||!valid||!$('confirmed').checked||!$('pokemonConfirmed').checked||!ready;const full=isFullCardMode(),hasResult=full?matchingFullArt():!!art,reviewed=full?$('fullArtAccepted').checked:!alignmentReview||$('acceptAlignment').checked;for(const id of ['png','pdf'])$(id).disabled=busy||!hasResult||!valid||!reviewed;$('correct').disabled=busy||corners.length!==4;$('loadSaved').disabled=busy||savedLoading;$('openCatalog').disabled=busy||savedLoading;$('fullArtPng').disabled=busy||savedLoading||!matchingFullArt()||!$('fullArtAccepted').checked;}
 function draw(){cv.style.borderRadius=card&&$('shape').value==='round'?'4.76% / 3.41%':'0';ctx.clearRect(0,0,cv.width,cv.height);$('empty').hidden=!!photo;if(!photo)return;if(!card){ctx.drawImage(photo,0,0);ctx.lineWidth=3;ctx.strokeStyle='#a273dc';ctx.fillStyle='#a273dc';corners.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x*cv.width,p.y*cv.height,10,0,7);ctx.fill();ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText(i+1,p.x*cv.width-4,p.y*cv.height+4);ctx.fillStyle='#a273dc';});if(corners.length>1){ctx.beginPath();corners.forEach((p,i)=>i?ctx.lineTo(p.x*cv.width,p.y*cv.height):ctx.moveTo(p.x*cv.width,p.y*cv.height));if(corners.length===4)ctx.closePath();ctx.stroke();}return;}if(art)drawArt(ctx,$('rawPreview').checked&&rawArt?rawArt:art,0,0,S,artBleed,true);else ctx.drawImage(card,0,0,W,H);try{const r=rect();if(art&&!$('rawPreview').checked){if($('assembled').checked)ctx.drawImage(card,r.x*S,r.y*S,r.w*S,r.h*S,r.x*S,r.y*S,r.w*S,r.h*S);else{ctx.fillStyle='white';ctx.fillRect(r.x*S,r.y*S,r.w*S,r.h*S);}}ctx.strokeStyle='#b264d0';ctx.lineWidth=2;ctx.setLineDash([9,5]);const t=Number($('tolerance').value)||0;ctx.strokeRect((r.x-t)*S,(r.y-t)*S,(r.w+2*t)*S,(r.h+2*t)*S);ctx.setLineDash([]);}catch{}drawSeams();update();}
 function resetReview(){$('seamDetails').hidden=true;rawArt=null;alignmentReview=false;$('acceptAlignment').checked=false;$('alignmentReview').hidden=true;$('rawPreview').checked=false;}
 function setPhoto(p){savedEpoch++;historyOnly=false;$('storageStatus').textContent='';resetFullArt();clearReference();resetReview();$('qualityStatus').textContent='';sampleMode=false;$('scanOption').hidden=true;$('windowStatus').textContent='';photo=p;card=null;art=null;artBleed=0;corners=[];revision++;cv.width=p.width;cv.height=p.height;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('settings').disabled=true;$('cornerName').textContent=names[0];$('cornerTools').hidden=false;$('previewTitle').textContent='카드 외곽 확인';$('zoom').value='1';applyZoom();}
@@ -136,3 +137,46 @@ async function loadSavedGeneration(id){
  fullArtMode();$('previewTitle').textContent='저장된 생성 이미지';$('windowStatus').textContent=r?'저장된 일러스트 창 좌표를 적용했어요. 실물 카드와 다시 확인해 주세요.':'창 좌표가 저장되지 않은 결과예요. 출력 전에 창 위치를 맞춰 주세요.';$('qualityStatus').textContent='저장 결과를 불러왔어요. 새 AI 생성을 하려면 원본 카드 사진을 다시 선택해 주세요.';$('storageStatus').textContent=isFullCardMode(row.mode)?'저장된 전체 카드 편집 결과를 불러왔어요.':row.result_kind==='prepared'?'출력용 보정 결과를 불러왔어요.':'AI 원본 결과를 불러왔어요. 보정 전 배경일 수 있으므로 경계를 확인해 주세요.';$('savedStatus').textContent='불러오기 완료 · 생성 횟수를 사용하지 않았습니다.';draw();
  }catch(e){$('savedStatus').textContent=e.message||'저장 이미지를 열지 못했어요.';}finally{savedLoading=false;update();}
 }
+
+// Source picker reuses the private reference API; it never requests AI generation.
+let catalogRows=[],catalogCurrentPage=0,catalogEpoch=0,catalogSelectionEpoch=0,catalogSelected=null,catalogFetching=false;
+function resetCatalogSelection(){catalogSelectionEpoch++;catalogSelected=null;$('catalogUse').disabled=true;$('catalogImage').hidden=true;$('catalogImage').removeAttribute('src');$('catalogSelected').textContent='카드를 선택하면 원본 이미지가 표시됩니다.';$('catalogImageStatus').textContent='';}
+function renderCatalog(){
+ const result=catalogPage(catalogRows,{language:$('catalogLanguage').value,search:$('catalogSearch').value,page:catalogCurrentPage});catalogCurrentPage=result.page;
+ $('catalogResults').replaceChildren();$('catalogStatus').textContent=catalogRows.length+'개 저장 이미지 · 검색 결과 '+result.total+'개';$('catalogPageLabel').textContent=(result.page+1)+' / '+result.pages;
+ $('catalogPrev').disabled=catalogFetching||result.page===0;$('catalogNext').disabled=catalogFetching||result.page>=result.pages-1;
+ if(!result.total){const p=document.createElement('p');p.className='hint';p.textContent='검색 결과가 없습니다. 언어 또는 검색어를 바꿔 주세요.';$('catalogResults').append(p);}
+ for(const row of result.rows){const b=document.createElement('button'),name=document.createElement('strong'),detail=document.createElement('span');b.type='button';b.setAttribute('aria-pressed',String(catalogSelected?.row.id===row.id));name.textContent=row.card_number+' · '+row.display_name;detail.textContent=catalogLabel(row);b.append(name,detail);b.onclick=()=>selectCatalogImage(row);$('catalogResults').append(b);}
+}
+async function openCatalog(){
+ if(busy||savedLoading)return;const epoch=++catalogEpoch;catalogRows=[];catalogCurrentPage=0;catalogFetching=true;resetCatalogSelection();$('catalogResults').replaceChildren();$('catalogLanguage').value='all';$('catalogSearch').value='';$('catalogLanguage').disabled=true;$('catalogSearch').disabled=true;$('catalogPrev').disabled=true;$('catalogNext').disabled=true;$('catalogPageLabel').textContent='';$('catalogLogin').hidden=true;$('catalogStatus').textContent='비공개 카드 목록을 불러오고 있어요…';$('catalogDialog').showModal();
+ try{
+  if(!A||!await A.getSession()){if(epoch!==catalogEpoch)return;$('catalogStatus').textContent='카드 DB는 로그인한 테스트 계정만 이용할 수 있어요.';$('catalogLogin').hidden=!A;return;}
+  const d=await A.invokeFunction('card-overlay-generate',{action:'references'});if(epoch!==catalogEpoch||!$('catalogDialog').open)return;
+  catalogRows=Array.isArray(d.references)?d.references:[];$('catalogLanguage').disabled=false;$('catalogSearch').disabled=false;catalogFetching=false;renderCatalog();
+ }catch(e){if(epoch!==catalogEpoch)return;$('catalogStatus').textContent=e.message||'카드 목록을 불러오지 못했어요. 닫은 뒤 다시 열어 주세요.';$('catalogLogin').hidden=e.status!==401;}
+ finally{if(epoch===catalogEpoch)catalogFetching=false;}
+}
+async function selectCatalogImage(row){
+ resetCatalogSelection();renderCatalog();const epoch=catalogEpoch,selection=++catalogSelectionEpoch;$('catalogSelected').textContent=row.card_number+' · '+row.display_name+' · '+catalogLabel(row);$('catalogImageStatus').textContent='원본 이미지를 불러오고 있어요…';
+ try{
+  const d=await A.invokeFunction('card-overlay-generate',{action:'reference',id:row.id});if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch)return;
+  const image=new Image();image.crossOrigin='anonymous';image.src=d.reference.imageUrl;await image.decode();if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch||!$('catalogDialog').open)return;
+  catalogSelected={row:{...row,...d.reference},image};$('catalogImage').src=image.src;$('catalogImage').alt=row.display_name+' '+catalogLabel(row);$('catalogImage').hidden=false;
+  const usable=catalogPortrait(row,image);$('catalogUse').disabled=!usable;$('catalogImageStatus').textContent=usable?'원본 '+image.naturalWidth+'×'+image.naturalHeight+'px · 불러온 뒤 일러스트 창을 확인해 주세요.':'가로형 또는 두 카드 합본은 세로 카드 한 장으로 불러올 수 없습니다. 다른 이미지를 선택해 주세요.';renderCatalog();
+ }catch(e){if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch)return;$('catalogImageStatus').textContent=e.message||'원본 이미지를 불러오지 못했어요. 카드를 다시 선택해 주세요.';}
+}
+function useCatalogImage(){
+ if(busy||savedLoading||!catalogSelected||!catalogPortrait(catalogSelected.row,catalogSelected.image))return;
+ const {row,image}=catalogSelected,p=canvas(image.naturalWidth,image.naturalHeight);p.getContext('2d').drawImage(image,0,0);setPhoto(p);
+ card=canvas(W,H);card.getContext('2d').drawImage(p,0,0,W,H);cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;
+ const n=Number(row.card_number);$('layout').value=row.id.startsWith('me55cc-')||(n>=136&&n<=150)?'classic':'modern';
+ if(row.art_rect&&validRect(row.art_rect)){for(const k of ['x','y','w','h'])$(k).value=row.art_rect[k];$('windowStatus').textContent='DB에 저장된 일러스트 창 좌표를 적용했어요. 실물 카드와 경계를 확인하고 필요한 경우 미세 조절해 주세요.';}
+ else autoWindow();
+ $('previewTitle').textContent='DB 카드 · '+row.display_name;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('qualityStatus').textContent='DB 원본 카드 이미지를 불러왔어요. AI는 실행하지 않았습니다.';draw();fullArtMode();$('catalogDialog').close();toast(row.card_number+' · '+row.display_name+' 원본을 불러왔어요. 일러스트 창을 확인해 주세요.');
+}
+$('openCatalog').onclick=openCatalog;$('catalogClose').onclick=()=>$('catalogDialog').close();$('catalogUse').onclick=useCatalogImage;
+$('catalogDialog').addEventListener('close',()=>{catalogEpoch++;catalogFetching=false;resetCatalogSelection();});
+$('catalogLogin').onclick=()=>A?.goLogin(location.href);
+for(const id of ['catalogLanguage','catalogSearch'])$(id).addEventListener(id==='catalogSearch'?'input':'change',()=>{catalogCurrentPage=0;resetCatalogSelection();renderCatalog();});
+$('catalogPrev').onclick=()=>{catalogCurrentPage--;resetCatalogSelection();renderCatalog();};$('catalogNext').onclick=()=>{catalogCurrentPage++;resetCatalogSelection();renderCatalog();};

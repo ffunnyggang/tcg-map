@@ -32,12 +32,13 @@
        if(row.tcg_type!==game)continue;
        const id=row.shop_id||'name:'+row.seller_name;
        if(!row.seller_name||id==='name:')continue;
-       if(!choices.has(id))choices.set(id,{id,name:row.seller_name,products:new Set()});
+       if(!choices.has(id))choices.set(id,{id,name:row.seller_name,logo_url:row.logo_url||'',products:new Set()});
      }
    }
    return [...choices.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko'));
  }
  function thumbnail(info){
+   if(info.logo_url){try{const url=new URL(info.logo_url,location.origin);if(url.protocol==='https:')return url.href}catch{}}
    const online=window.FUNY_HOBBYSELECT_BOX;
    if(online&&info.id===online.shopKey)return online.logo;
    const images=metadata.get(info.id)?.images;

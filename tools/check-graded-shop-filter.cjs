@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.join(__dirname,'..'),graded=fs.readFileSync(path.join(root,'graded-products-v1.js'),'utf8'),filter=fs.readFileSync(path.join(root,'products-shop-filter.js'),'utf8');
+const shop=vm.runInNewContext('('+graded.match(/function gradedShop\(p\)\{[^\n]+/)[0]+')');
+const online={id:'online-id',name:'퍼니카드',logo_url:'/assets/shop-logo/funycard.webp'};
+const products=[{id:'p1',is_sample:true,online_shop_id:online.id,online_shops:online,tcg_type:'pokemon'},{id:'p2',is_sample:true,online_shop_id:online.id,online_shops:online,tcg_type:'one_piece'},{id:'p3',shop_id:'offline-id',shops:{name:'오프라인 매장'},tcg_type:'pokemon'},{id:'p4',seller_name:'미연결 판매처',tcg_type:'pokemon'}];
+assert.equal(shop(products[0]).shop_id,'online:online-id');assert.equal(shop(products[0]).seller_name,'퍼니카드');assert.equal(shop(products[0]).logo_url,online.logo_url);assert.equal(shop(products[2]).shop_id,'offline-id');assert.equal(shop(products[3]).shop_id,'name:미연결 판매처');
+let game='pokemon';const context={window:{FUNY_GRADED_SHOPS:products.map(shop)},type:()=>game,kind:()=> 'graded',Map,Set};vm.createContext(context);vm.runInContext(filter.slice(filter.indexOf(' function options(){'),filter.indexOf(' function thumbnail(info){'))+'\nthis.options=options;',context);
+let choices=context.options();assert.equal(choices.filter(s=>s.id==='online:online-id').length,1);assert.equal(choices.find(s=>s.id==='online:online-id').logo_url,online.logo_url);game='one_piece';choices=context.options();assert.equal(choices.length,1);assert.equal(choices[0].name,'퍼니카드');
+assert(graded.includes('items.map(gradedShop)'));assert(graded.includes('list.filter(p=>gradedShop(p).shop_id===selected)'));assert(graded.includes('online_shops(id,name,logo_url)'));assert(!graded.includes('items.filter(p=>!p.is_sample)'));
+console.log('PASS: online/offline identity, sample inclusion, registered logo, TCG options, seller filter mapping');

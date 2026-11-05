@@ -1,0 +1,2 @@
+alter policy graded_favorite_add on public.graded_product_favorites with check ((select auth.uid())=user_id and exists(select 1 from public.graded_products p where p.id=graded_product_favorites.product_id and p.status in ('active','reserved') and p.deleted_at is null));
+alter policy graded_view_add on public.graded_product_views with check(exists(select 1 from public.graded_products p where p.id=graded_product_views.product_id and p.status in ('active','reserved') and p.deleted_at is null));

@@ -48,9 +48,10 @@ Deno.serve(async req=>{
   if(r.error)return reply({error:errorMessages[r.error.message]||'권한 설정을 저장하지 못했습니다.'},r.error.code==='42501'?403:400);
   return reply(r.data);
  }
+ const validPrice=()=>body.price_on_request===true?body.price_krw===null:((body.price_on_request===undefined||body.price_on_request===false)&&Number.isSafeInteger(body.price_krw)&&body.price_krw>=1&&body.price_krw<=9999999999);
  if(action==='register'){
-  if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(body.draft_id||'')||!Number.isSafeInteger(body.price_krw)||body.price_krw<1||body.price_krw>9999999999)return reply({error:errorMessages.INVALID_PRICE},400);
-  const r=await user.rpc('register_shop_graded_card_with_contact',{p_draft_id:body.draft_id,p_price_krw:body.price_krw,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null});
+  if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(body.draft_id||'')||!validPrice())return reply({error:errorMessages.INVALID_PRICE},400);
+  const r=await user.rpc('register_shop_graded_card_priced',{p_draft_id:body.draft_id,p_price_krw:body.price_krw,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null,p_price_on_request:body.price_on_request??false});
   if(r.error)return reply({error:r.error.code==='23505'?'이미 판매 중으로 등록된 PSA 번호입니다.':errorMessages[r.error.message]||'상품을 등록하지 못했습니다. 다시 확인해주세요.'},r.error.code==='23505'?409:r.error.code==='42501'?403:400);
   return reply({registered:true,product_id:r.data});
  }
@@ -59,14 +60,14 @@ Deno.serve(async req=>{
  if(permissionError||allowed!==true)return reply({error:errorMessages.SHOP_PERMISSION_REQUIRED},403);
  if(action==='update'||action==='delete'){
   if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(body.product_id||'')||!Number.isSafeInteger(body.revision)||body.revision<0)return reply({error:'상품 정보를 확인해주세요.'},400);
-  if(action==='update'&&(!Number.isSafeInteger(body.price_krw)||body.price_krw<1||body.price_krw>9999999999))return reply({error:errorMessages.INVALID_PRICE},400);
-  const r=await user.rpc('manage_shop_graded_card',{p_shop_id:shop,p_product_id:body.product_id,p_action:action,p_revision:body.revision,p_price_krw:body.price_krw??null,p_status:body.status??null,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null});
+  if(action==='update'&&(!validPrice()))return reply({error:errorMessages.INVALID_PRICE},400);
+  const r=await user.rpc('manage_shop_graded_card_priced',{p_shop_id:shop,p_product_id:body.product_id,p_action:action,p_revision:body.revision,p_price_krw:body.price_krw??null,p_status:body.status??null,p_contact_type:body.contact_type??'none',p_contact_value:body.contact_value??null,p_price_on_request:body.price_on_request??false});
   if(r.error)return reply({error:r.error.code==='23505'?'이미 판매 중인 동일 PSA 번호가 있습니다.':errorMessages[r.error.message]||'상품 변경을 저장하지 못했습니다.'},r.error.code==='42501'?403:['40001','23505'].includes(r.error.code)?409:400);
   return reply({product_id:r.data,updated:true});
  }
  if(action==='list'){
   const offset=body.offset??0;if(!Number.isSafeInteger(offset)||offset<0||offset>100000)return reply({error:'목록 범위를 확인해주세요.'},400);
-  const query=user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,status,cert_number,is_sample,created_at,contact_type,contact_value,revision').is('deleted_at',null);
+  const query=user.from('graded_products').select('id,tcg_type,grading_company,grade,issue_year,set_name,card_number,card_name,image_urls,price_krw,price_on_request,status,cert_number,is_sample,created_at,contact_type,contact_value,revision').is('deleted_at',null);
   const r=await (shop.startsWith('online:')?query.eq('online_shop_id',shop.slice(7)):query.eq('shop_id',shop)).order('created_at',{ascending:false}).order('id').range(offset,offset+49);
   if(r.error)throw r.error;return reply({rows:r.data,has_more:r.data.length===50});
  }
@@ -99,5 +100,6 @@ Deno.serve(async req=>{
  return reply({card:metadata,draft_id:draft.data.id,expires_at:draft.data.expires_at,quota});
  }catch(e){if(e instanceof SyntaxError)return reply({error:'요청 형식을 확인해주세요.'},400);return reply({error:'처리하지 못했습니다. 연결 상태를 확인하고 다시 시도해주세요.'},502)}
 });
+
 
 

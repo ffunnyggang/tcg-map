@@ -73,7 +73,7 @@ function drawPage(){
   if(!winners.length){location.href='/event-draw-setup.html?mode=edit';return}
   try{sessionStorage.setItem(RUN,JSON.stringify({config,winners:[]}))}catch(e){$('status').textContent='재추첨 준비를 저장하지 못했습니다. 다시 시도해주세요.';return}
   winners=[];pool=config.entries.slice();confirmed=true;$('results').replaceChildren();$('slot').classList.remove('won');$('slotId').textContent='READY?';$('finale').classList.remove('show');update();
-  await $('draw').onclick();
+  $('status').textContent='재추첨 준비 완료 · 추첨 시작 버튼을 눌러주세요.';
  };
  $('newEvent').onclick=()=>{if(!authorized||busy)return;if(winners.length&&!confirm('새 이벤트 설정으로 이동할까요? 현재 결과는 먼저 다운로드해주세요.'))return;location.href='/event-draw-setup.html?mode=new'};
  $('draw').onclick=async()=>{

@@ -2,12 +2,13 @@
 <p id="authMessage" class="auth-message" role="status"></p>
 <div id="setupView" hidden>
 <section class="setup"><h2>이벤트 설정</h2><label for="configTheme">테마 스킨</label><select id="configTheme"><option value="purple">퍼니 퍼플 · 기본</option><option value="gold">블랙 골드</option><option value="halloween">할로윈 오렌지</option><option value="ocean">미드나잇 블루</option></select>
-<label for="configTitle">이벤트명</label><input id="configTitle" maxlength="120" placeholder="예: FUNY PIN 할로윈 팔로우 이벤트">
-<label for="configDescription">이벤트 내용 · 기간 · 발표 안내</label><textarea id="configDescription" maxlength="1000" placeholder="이벤트 기간과 발표 안내 등을 입력하세요."></textarea>
-<label for="configRankMode">당첨자 표시 방식</label><select id="configRankMode"><option value="sequence">순번 표시 · 기본</option><option value="medals">등수 표시 · 금/은/동</option></select><p class="notice">등수 표시 선택 시 마지막 당첨자가 1등입니다. 3명 기준으로 3등(동) → 2등(은) → 1등(금) 순서로 추첨합니다.</p><label for="configTotal">당첨 인원</label><input id="configTotal" type="number" min="1" max="100" step="1" value="3">
+<label for="configTitle">이벤트명</label><input id="configTitle" maxlength="120" value="이벤트 명을 입력하세요" placeholder="이벤트 명을 입력하세요">
+<label for="configDescription">이벤트 내용 · 기간 · 발표 안내</label><textarea id="configDescription" maxlength="1000" placeholder="이벤트 기간 YYYY. MM. DD ~ MM. DD">이벤트 기간 YYYY. MM. DD ~ MM. DD</textarea>
+<label for="configRankMode">당첨자 표시 방식</label><select id="configRankMode"><option value="sequence">순번 표시</option><option value="medals" selected>등수 표시 · 금/은/동 · 기본</option></select><p class="notice">등수 표시 선택 시 마지막 당첨자가 1등입니다. 3명 기준으로 3등(동) → 2등(은) → 1등(금) 순서로 추첨합니다.</p><label for="configTotal">당첨 인원</label><input id="configTotal" type="number" min="1" max="100" step="1" value="3">
 <p class="notice">추첨할 순서대로 경품을 입력하세요. 예: 1번째는 3등 경품, 2번째는 2등 경품, 3번째는 1등 경품. 같은 경품은 각각 동일하게 입력할 수 있습니다.</p>
 <div id="prizeFields"></div>
-<label for="configWarning">추첨 안내</label><textarea id="configWarning" maxlength="1000">당첨자 선정 후 팔로우 및 참여 조건이 모두 확인되지 않을 경우 당첨이 취소될 수 있습니다.</textarea>
+<label for="configWarning">추첨 안내</label><textarea id="configWarning" maxlength="1000">당첨된 ID는 다음 등수에서 제외됩니다.
+당첨자 선정 후 팔로우 및 참여 조건이 모두 확인되지 않을 경우 당첨이 취소될 수 있습니다.</textarea>
 </section>
 <section class="setup"><h2>이벤트 참여자</h2><p class="notice">참여 조건을 확인한 Instagram ID를 한 줄에 하나씩 입력하세요. 중복 ID는 1명으로 처리하며 팔로우·공유 여부나 공유 가중치는 자동 판정하지 않습니다.</p><label for="entries">참여자 Instagram ID</label><textarea id="entries" placeholder="@instagram_id&#10;@another_id" style="min-height:170px"></textarea><p class="count" id="count" aria-live="polite"></p>
 <button class="primary" id="complete" disabled>설정 완료 · 추첨 페이지로 이동</button><p class="notice" id="configStatus" aria-live="polite"></p></section>
@@ -17,6 +18,6 @@
 <section class="results"><h2>🏆 당첨자 발표</h2><div id="results"></div></section><section class="draw-actions" aria-label="추첨 관리"><button class="secondary" id="downloadResults" disabled>추첨 결과 다운로드</button><button class="secondary" id="editConfig" disabled>설정 수정</button><button class="secondary" id="newEvent" disabled>새 이벤트 설정</button></section>
 <p class="notice">추첨 결과는 현재 브라우저 탭에 임시 저장되어 새로고침 후 이어갈 수 있습니다. 탭을 닫기 전 결과를 다운로드해주세요. 서버 저장 및 DM 자동 발송은 하지 않습니다.</p>
 </div></main>
-<div class="rules" id="rules" hidden role="dialog" aria-modal="true" aria-labelledby="rulesHeading"><div class="panel"><div class="rules-kicker">DRAW NOTICE</div><h2 id="rulesHeading">추첨 안내</h2><p><strong>당첨된 ID는 이후 추첨에서 제외됩니다.</strong></p><p class="rules-warning" id="warningText"></p><button class="primary" id="accept">확인 · 추첨 준비</button></div></div>
+<div class="rules" id="rules" hidden role="dialog" aria-modal="true" aria-labelledby="rulesHeading"><div class="panel"><div class="rules-kicker">DRAW NOTICE</div><h2 id="rulesHeading">추첨 안내</h2><p id="warningText" style="font-weight:750"></p><button class="primary" id="accept">확인 · 추첨 준비</button></div></div>
 <div class="finale" id="finale"><div><h2 id="finaleTitle"></h2><strong id="finaleId"></strong><p id="finalePrize"></p></div></div>
-<script src="/event-draw.js?v=20261102-medals1"></script></body></html>
+<script src="/event-draw.js?v=20261105-defaults1"></script></body></html>

@@ -28,4 +28,4 @@ body[data-theme="image"]::before{background-image:var(--draw-pattern,none);backg
 .image-layout-options{display:grid;gap:12px;min-width:0;margin:0;padding:0;border:0}
 .image-layout-options label{display:flex;align-items:center;gap:8px;margin:0;white-space:nowrap;font-size:13px}
 .setup .image-layout-options input[type="radio"]{width:18px;height:18px;min-height:0;padding:0;margin:0;accent-color:#b48ae8}
-body[data-theme="image"][data-image-mode="full"]::before{background-image:var(--draw-full,none);background-repeat:no-repeat;background-position:center;background-size:cover;opacity:.35}
+body[data-theme="image"][data-image-mode="full"]::before{background-image:var(--draw-full,none);background-repeat:no-repeat;background-position:center top;background-size:100% auto;opacity:.35}

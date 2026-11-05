@@ -1,1 +1,24 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');const html=fs.readFileSync('admin.html','utf8'),js=fs.readFileSync('admin-shop-visit-qr-integrated.js','utf8'),legacy=fs.readFileSync('admin-shop-visit-qr.html','utf8');const matches=[...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)];let count=0;for(const m of matches){if(!m[2].trim()||/application\/ld\+json/i.test(m[1]))continue;new vm.Script(m[2]);count++}new vm.Script(js);const reward=html.indexOf('class="admin-group-title">리워드</div>');assert(reward>0);assert(html.slice(reward,reward+170).includes('data-admin-tab="visitqr"'));assert.equal((html.match(/data-admin-tab="visitqr"/g)||[]).length,2);assert(html.includes("if(adminTab==='visitqr')return window.loadAdminVisitQR?.()"));assert(html.includes("'onlineshops','visitqr'"));assert(html.includes("visitqr:['매장 QR 발급 관리'"));assert(html.includes('/admin-shop-visit-qr-integrated.js?v=20261105-visitqr1'));assert(js.includes("window.loadAdminVisitQR=async"));for(const a of ['admin_list','admin_create','admin_disable'])assert(js.includes("'"+a+"'"));assert(legacy.includes('location.replace("/admin.html?tab=visitqr")'));console.log('PASS integrated QR admin; inline scripts',count);
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const html=fs.readFileSync('admin.html','utf8');
+const nav=fs.readFileSync('cms-layout-fix.js','utf8');
+const missions=fs.readFileSync('admin-missions-integrated.js','utf8');
+const qr=fs.readFileSync('admin-shop-visit-qr-integrated.js','utf8');
+const legacy=fs.readFileSync('admin-shop-visit-qr.html','utf8');
+for(const [name,source] of [['nav',nav],['mission',missions],['qr',qr]])new vm.Script(source,{filename:name});
+const inline=[...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)];
+for(const [,attrs,source] of inline){if(!source.trim()||/application\/ld\+json/i.test(attrs))continue;new vm.Script(source)}
+assert(!html.includes('<div class="admin-group-title">리워드</div>'),'Duplicate reward group in static admin');
+assert.equal((html.match(/data-admin-tab="visitqr"/g)||[]).length,1,'Mobile QR tab should be the only static menu item');
+assert(nav.includes('adminMissionMenuGroup'));
+assert(nav.includes("qrButton.dataset.adminTab='visitqr'"));
+assert(nav.includes('adminMissionMobileLink'));
+assert(nav.includes('mission.after(qrMobile)'));
+assert(nav.includes('existing.click()'));
+assert(missions.includes('adminMissionMenuLink'));
+assert(html.includes("if(adminTab==='visitqr')return window.loadAdminVisitQR?.()"));
+assert(html.includes('cms-layout-fix.js?v=20261105-reward-qr2'));
+assert(html.includes('/admin-shop-visit-qr-integrated.js?v=20261105-visitqr1'));
+assert(qr.includes('window.loadAdminVisitQR=async'));
+for(const action of ['admin_list','admin_create','admin_disable'])assert(qr.includes("'"+action+"'"));
+assert(legacy.includes('location.replace("/admin.html?tab=visitqr")'));
+console.log('PASS: QR manager placed next to existing mission under single reward group, web admin routes intact');

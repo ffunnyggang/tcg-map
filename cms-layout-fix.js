@@ -35,6 +35,16 @@
       if(eventGroup)desktop.insertBefore(group,eventGroup);else desktop.appendChild(group);
       const button=group.querySelector('#adminMissionMenuLink');
       if(button)button.onclick=openMissionAdmin;
+      const qrButton=document.createElement('button');
+      qrButton.type='button';
+      qrButton.dataset.adminTab='visitqr';
+      qrButton.textContent='매장 QR 발급 관리';
+      qrButton.onclick=()=>{
+        const existing=document.querySelector('#mobileTabs [data-admin-tab="visitqr"]');
+        if(existing)existing.click();
+        else location.assign('/admin.html?tab=visitqr');
+      };
+      group.querySelector('.admin-group-items')?.appendChild(qrButton);
     }
     const mobile=document.getElementById('mobileTabs');
     if(mobile&&!document.getElementById('adminMissionMobileLink')){
@@ -46,6 +56,9 @@
       const eventButton=mobile.querySelector('[data-admin-tab="event"]');
       mobile.insertBefore(button,eventButton||null);
     }
+    const mission=document.getElementById('adminMissionMobileLink');
+    const qrMobile=mobile?.querySelector('[data-admin-tab="visitqr"]');
+    if(mission&&qrMobile&&qrMobile.previousElementSibling!==mission)mission.after(qrMobile);
   }
   function apply(){
     installMissionAdminMenu();

@@ -33,8 +33,6 @@
 .menu-choice .indicator{position:absolute;right:-5px;top:-8px;background:white;border:1px solid #91859b;width:22px;height:22px;border-radius:50%;font-size:20px;font-weight:350;display:grid;place-items:center;line-height:18px}
 .menu-choice.selected{border:1.5px solid #9c87d8;background:#f6f1ff;color:#6949c3}.menu-choice.selected .indicator{background:var(--accent);border-color:var(--accent);color:white;font-size:13px;font-weight:800}
 .order-hint{font-size:10px;color:#94899c;margin:22px 1px 10px;line-height:1.5}
-.selected-order{display:flex;gap:7px;overflow-x:auto;min-height:44px;padding:2px 0 5px;scrollbar-width:thin}
-.order-chip{min-width:75px;flex:0 0 auto;height:38px;border:1px solid #e4d7f7;border-radius:10px;background:#f9f6fe;display:flex;align-items:center;gap:3px;padding:4px 7px;color:#6f53b9;font-size:10px;font-weight:750;touch-action:pan-x}.order-chip.dragging{opacity:.45}.order-chip.drag-target{outline:2px solid var(--accent)}.order-chip .grip{border:0;background:none;padding:2px 3px;font-size:16px;color:#9785c7;cursor:grab;touch-action:none}.order-chip .chip-label{max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.order-chip .move{border:0;background:none;color:#8062d8;font-size:10px;padding:2px}
 .section-config{margin-top:19px;border:1px solid #efebf2;border-radius:13px;padding:12px}.section-config summary{font-size:11px;font-weight:750;cursor:pointer;color:#5d5369}
 .section-config-row{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px;color:#71687a}
 .switch{border:0;border-radius:99px;background:#ada4b4;color:#fff;min-width:48px;padding:7px;font-weight:800;font-size:10px}.switch[aria-checked=true]{background:var(--accent)}

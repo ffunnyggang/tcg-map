@@ -2,3 +2,6 @@
 body:has(dialog[open]){overflow:hidden}
 
 .art-shell.in-progress .intro{display:none}.art-shell.in-progress .stepper{margin-top:3px}.art-shell.in-progress main{padding-top:20px}
+
+.nudge-pad[data-edit-mode=size] button{font-size:12px;font-weight:700;white-space:nowrap}
+

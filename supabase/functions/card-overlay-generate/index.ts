@@ -63,7 +63,7 @@ Deno.serve(async(req:Request)=>{
    if(data.action==='load_generation'){
     const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.image_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
     if(!sign.ok)return reply({error:'저장 이미지를 불러오지 못했어요.'},503);const signed=await sign.json();
-    return reply({generation:{id:row.id,mode:row.mode,result_kind:row.result_kind,width:row.width,height:row.height,window_rect:row.window_rect,created_at:row.created_at,imageUrl:url+'/storage/v1'+signed.signedURL}});
+    return reply({generation:{id:row.id,mode:row.mode,result_kind:row.result_kind,width:row.width,height:row.height,window_rect:row.window_rect,source_card_label:row.source_card_label,created_at:row.created_at,imageUrl:url+'/storage/v1'+signed.signedURL}});
    }
    let prepared;try{prepared=png(data.image,['fullart','illustration'].includes(row.mode));}catch{return reply({error:'저장할 이미지의 형식이나 크기가 올바르지 않습니다.'},400);}
    const view=new DataView(prepared.buffer);if(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height)return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);

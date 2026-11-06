@@ -79,7 +79,7 @@ async function setup(browser,{active=true,order=5,user=false}={}){
   assert.deepEqual(auth.errors,[]);
   console.log('SIGNED-IN PASS RLS-scoped user preference POST, 15-item picker');
   const index=fs.readFileSync(root+'/index.html','utf8');
-  assert(index.includes('home-quick-menu-v1.js?v=20261106-prod1'));
+  assert(index.includes('home-quick-menu-v1.js?v=20261106-appnavsheet2'));
   assert(index.includes('home-quick-menu-v1.css?v=20261106-left20'));
   console.log('INDEX ASSET PASS');
  }finally{await browser.close()}

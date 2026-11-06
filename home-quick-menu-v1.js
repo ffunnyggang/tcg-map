@@ -80,6 +80,16 @@ function renderEditor(){
  $('#fqm-count').textContent=english()?draft.length+' / 10 selected':draft.length+' / 10개 선택';
  $('#fqm-clear').disabled=draft.length===0;
 }
+// The app tab bar is native React Native UI, not a DOM layer. The existing
+// FUNY_WEB_OVERLAY_STATE bridge hides it while this WebView sheet is open.
+function notifyNativeSheet(open){
+ try{
+  window.ReactNativeWebView?.postMessage(JSON.stringify({
+   type:'FUNY_WEB_OVERLAY_STATE',open:!!open,
+   source:'home-quick-menu',navMode:open?'hide':'none'
+  }));
+ }catch(err){console.warn('[FUNY PIN quick menu] native overlay sync unavailable',err)}
+}
 function openEditor(){
  if($('#fqm-overlay'))return;
  lastFocus=document.activeElement;draft=[...selected];
@@ -105,11 +115,14 @@ function openEditor(){
   renderEditor();
  });
  overlay.querySelector('#fqm-save').addEventListener('click',save);
- document.body.classList.add('fqm-modal-open');renderEditor();overlay.querySelector('#fqm-close').focus();
+ document.body.classList.add('fqm-modal-open');notifyNativeSheet(true);renderEditor();overlay.querySelector('#fqm-close').focus();
 }
 function closeEditor(){
  if(saveBusy)return;
- $('#fqm-overlay')?.remove();document.body.classList.remove('fqm-modal-open');lastFocus?.focus();
+ const wasOpen=!!$('#fqm-overlay');
+ $('#fqm-overlay')?.remove();document.body.classList.remove('fqm-modal-open');
+ if(wasOpen)notifyNativeSheet(false);
+ lastFocus?.focus();
 }
 async function save(){
  if(saveBusy||!allowed(draft))return;saveBusy=true;
@@ -150,6 +163,8 @@ function sync(){
  host=slot;slot.innerHTML='<div class="fqm-scroll" aria-label="나의 퀵메뉴"><div class="fqm-rail"></div></div>';
  render();
 }
+document.addEventListener('funy:native-overlay-dismiss',()=>{if($('#fqm-overlay'))closeEditor()});
+window.addEventListener('pagehide',()=>{if($('#fqm-overlay'))notifyNativeSheet(false)});
 document.addEventListener('keydown',e=>{
  if(!$('#fqm-overlay'))return;
  if(e.key==='Escape'){closeEditor();return}

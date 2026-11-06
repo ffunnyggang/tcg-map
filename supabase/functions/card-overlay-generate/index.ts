@@ -101,7 +101,7 @@ Deno.serve(async(req:Request)=>{
   if(data.action==='generate_mobile'){
    if(!allowed)return reply({error:'현재 테스트 계정만 사용할 수 있습니다.'},403);
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 일반 일러스트 창이 없는 타입으로 현재 확장을 지원하지 않습니다.'},400);
-   data.action='generate_illustration';
+   data.action='generate_fullart';
   }
   // Source labels are descriptive metadata, never trusted as cache identity or proof of image ownership.
   const sourceReferenceId=data.sourceReferenceId,sourceCardLabel=data.sourceCardLabel;

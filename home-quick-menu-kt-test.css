@@ -64,3 +64,16 @@
 .menu-choice .indicator svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .menu-choice.selected .indicator{font-size:12px;font-weight:850}
 @media(max-width:365px){.quick-tile{width:clamp(65px,calc((100vw - 55.5px)/4.5),82px);min-width:clamp(65px,calc((100vw - 55.5px)/4.5),82px);height:84px}.preview-variants{padding-inline:10px}.preview-variants button{padding:8px}}
+
+/* Approved FUNY PIN emoji-only quick menu, compact center-aligned editor. */
+.preview-variants{display:none!important}
+.sheet{height:auto;min-height:0;max-height:min(90dvh,730px);padding-bottom:0;border-radius:24px 24px 0 0}
+.sheet-handle{width:38px;height:4px;flex:0 0 4px;margin:10px auto 7px;border-radius:4px;background:#d6cfdd}
+.sheet-header{padding-top:12px}
+.sheet-content{flex:0 1 auto;min-height:0;padding-bottom:9px}
+.sheet-footer{padding:9px 15px 0!important;border-top:1px solid #f3eef7;margin:0}
+.sheet-footer .save{display:flex;align-items:center;justify-content:center;text-align:center;margin:0;min-height:52px}
+.menu-choice{display:flex;align-items:center;justify-content:center;text-align:center}
+.menu-choice span{width:100%;text-align:center;display:flex;align-items:center;justify-content:center;line-height:1.35}
+.menu-choice .indicator{right:-4px;top:-7px}
+@media(max-width:365px){.sheet{height:auto;min-height:0;max-height:90dvh}.sheet-content{padding-bottom:8px}}

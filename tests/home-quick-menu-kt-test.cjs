@@ -31,7 +31,7 @@ const expected=[
   await page.waitForSelector('.quick-tile');
   const menu=()=>page.$$eval('.menu-choice',els=>els.map(el=>({id:el.dataset.menuId,label:el.querySelector('span').textContent,badge:el.querySelector('.indicator').textContent})));
   assert.deepEqual(await page.$$eval('.quick-items a',els=>els.map(el=>el.getAttribute('href'))),expected.slice(0,4).map(x=>x[2]),'fresh defaults from allowed catalog');
-  await page.click('#openEditor');
+  await page.click('.quick-tile.add');
   const observed=await menu();
   assert.equal(observed.length,15,'exactly 15 entries');
   assert.deepEqual(observed.map(x=>[x.id,x.label]),expected.map(x=>x.slice(0,2)));
@@ -47,7 +47,7 @@ const expected=[
   assert.deepEqual(urls,['/pick.html?tab=creator','/pick.html?tab=shop_news','/pick.html?tab=schedule','/pick.html?tab=information','/tcg-tools.html']);
   await page.reload({waitUntil:'domcontentloaded'});
   assert.deepEqual(await page.$$eval('.quick-items a',els=>els.map(el=>el.getAttribute('href'))),urls,'saved selection maintained');
-  await page.click('#openEditor');
+  await page.click('.quick-tile.add');
   await page.click('[data-menu-id="shop_news"]');await page.click('[data-menu-id="shop_news"]');
   assert.deepEqual((await menu()).slice(0,5).map(x=>x.id),['creator','schedule','information','tools','shop_news']);
   await page.click('#closeEditor');

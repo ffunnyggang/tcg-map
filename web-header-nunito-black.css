@@ -1,0 +1,6 @@
+/* FUNY PIN web header titles only: HOME, PICK, TALK, MY. */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+body.portal-body .portal-header .portal-brand > strong{
+  font-family:'Nunito','Pretendard Variable',Pretendard,sans-serif!important;
+  font-weight:900!important;
+}

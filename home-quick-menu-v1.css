@@ -1,6 +1,6 @@
 /* FUNY PIN HOME quick menu — production, isolated styles */
 .fp-cms .fp-cms-quick-menu-slot{display:block;width:calc(100% + 32px);margin:0 -16px 14px;background:#f7f5fa;padding:16px 0 18px;box-sizing:border-box}
-.fqm-scroll{width:100%;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding:0 12px}
+.fqm-scroll{width:100%;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding:0 12px 0 20px}
 .fqm-scroll::-webkit-scrollbar{display:none}
 .fqm-rail{display:flex;align-items:stretch;gap:9px;width:max-content;padding-right:12px}
 .fqm-tile{box-sizing:border-box;width:clamp(65px,calc((min(100vw,420px) - 55.5px)/4.5),82px);min-width:clamp(65px,calc((min(100vw,420px) - 55.5px)/4.5),82px);height:87px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:9px 2px;border:1px solid #eeebf3;border-radius:15px;background:#fff;color:#453b50;text-align:center;text-decoration:none;box-shadow:0 2px 8px #31244508;scroll-snap-align:start;-webkit-tap-highlight-color:transparent}

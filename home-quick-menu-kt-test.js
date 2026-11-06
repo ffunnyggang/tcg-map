@@ -42,6 +42,15 @@ const data=[
 ['binder','내 바인더','/binder.html']
 ].map(([id,label,href])=>({id,label,href}));
 const find=id=>data.find(x=>x.id===id),$=s=>document.querySelector(s);
+const EMOJI={favorite:'💜',box:'📦',graded:'🏅',market:'🤝',events:'🎁',coupons:'🎟️',mon:'👾',ranking:'🏆',shop_news:'📣',information:'💡',schedule:'📅',creator:'🎨',tools:'🛠️',entries:'📋',binder:'📒'};
+let visualStyle='svg';
+const styleKey='funypin.home.quick-menu.test.visual-style.v1';
+try{visualStyle=localStorage.getItem(styleKey)==='emoji'?'emoji':'svg'}catch(_){}
+function styledIcon(id){return visualStyle==='emoji'?'<span class="quick-emoji" aria-hidden="true">'+(EMOJI[id]||'✨')+'</span>':svg(id)}
+const PLUS_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+function updateVariant(){for(const [key,value] of [['variantSvg','svg'],['variantEmoji','emoji']]){const b=document.getElementById(key);b?.classList.toggle('is-active',visualStyle===value);b?.setAttribute('aria-pressed',String(visualStyle===value))}}
+function changeStyle(next){visualStyle=next;try{localStorage.setItem(styleKey,next)}catch(_){}updateVariant();renderHome()}
+
 const svg=id=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+(icons[id]||icons.box)+'</svg>';
 function valid(x){return x&&Array.isArray(x.selected)&&x.selected.length<=10&&new Set(x.selected).size===x.selected.length&&x.selected.every(id=>find(id))}
 function load(){
@@ -73,8 +82,8 @@ function renderHome(){
  const section=$('#quickSection'),list=$('#quickItems');list.replaceChildren();
  if(adminLayout.position==='after_recommend')$('#recommendSection').after(section);else $('#homeNotice').after(section);
  section.hidden=!adminLayout.is_enabled;
- for(const id of saved.selected){const item=find(id),a=document.createElement('a');a.href=item.href;a.className='quick-tile';a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';a.innerHTML='<span class="quick-glyph">'+svg(id)+'</span><strong>'+item.label+'</strong>';list.append(a)}
- const add=document.createElement('button');add.className='quick-tile add';add.type='button';add.setAttribute('aria-label','퀵메뉴 추가');add.textContent='+';add.addEventListener('click',openEditor);list.append(add);
+ for(const id of saved.selected){const item=find(id),a=document.createElement('a');a.href=item.href;a.className='quick-tile';a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';a.innerHTML='<span class="quick-glyph">'+styledIcon(id)+'</span><strong>'+item.label+'</strong>';list.append(a)}
+ const add=document.createElement('button');add.className='quick-tile add';add.type='button';add.setAttribute('aria-label','퀵메뉴 추가');add.innerHTML='<span class="quick-add-icon">'+PLUS_SVG+'</span>';add.addEventListener('click',openEditor);list.append(add);
 }
 function renderEditor(){
  const grid=$('#menuGrid');grid.replaceChildren();
@@ -83,7 +92,7 @@ function renderEditor(){
   const number=draft.selected.indexOf(item.id)+1,isOn=number>0,btn=document.createElement('button');
   btn.type='button';btn.className='menu-choice'+(isOn?' selected':'');btn.dataset.menuId=item.id;
   btn.setAttribute('aria-pressed',String(isOn));btn.setAttribute('aria-label',item.label+(isOn?' '+number+'번 선택됨':' 선택하기'));
-  btn.innerHTML='<span>'+item.label+'</span><i class="indicator" aria-hidden="true">'+(isOn?String(number):'+')+'</i>';
+  btn.innerHTML='<span>'+item.label+'</span><i class="indicator" aria-hidden="true">'+(isOn?String(number):PLUS_SVG)+'</i>';
   grid.append(btn);
  }
  $('#selectionCount').textContent=draft.selected.length+' / 10개 선택';
@@ -92,7 +101,10 @@ function renderEditor(){
 }
 function openEditor(){beforeOpen=document.activeElement;draft=copy(saved);$('#scrim').classList.add('open');$('#scrim').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderEditor();$('#closeEditor').focus()}
 function closeEditor(){$('#scrim').classList.remove('open');$('#scrim').setAttribute('aria-hidden','true');document.body.style.overflow='';beforeOpen?.focus()}
-$('#openEditor').addEventListener('click',openEditor);$('#openHomeSettings').addEventListener('click',openEditor);$('#closeEditor').addEventListener('click',closeEditor);
+$('#closeEditor').addEventListener('click',closeEditor);
+$('#variantSvg').addEventListener('click',()=>changeStyle('svg'));
+$('#variantEmoji').addEventListener('click',()=>changeStyle('emoji'));
+updateVariant();
 $('#scrim').addEventListener('click',e=>{if(e.target===$('#scrim'))closeEditor()});
 $('#menuGrid').addEventListener('click',e=>{
  const btn=e.target.closest('[data-menu-id]');if(!btn)return;const id=btn.dataset.menuId;

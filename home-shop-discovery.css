@@ -59,3 +59,14 @@
 .fhs-shop-thumb>img:not([data-fhs-ready]){opacity:0}
 .fhs-shop-thumb>img[data-fhs-ready]{opacity:1;transition:opacity .22s ease-out}
 @media(prefers-reduced-motion:reduce){.fhs-shop-thumb>img[data-fhs-ready]{transition:none}}
+
+/* HOME > My shops: small logo-and-area cards, horizontal swipe only. */
+.fhs-mini-track{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding:2px 1px 7px}
+.fhs-mini-track::-webkit-scrollbar{display:none}
+.fhs-mini-card{box-sizing:border-box;flex:0 0 140px;width:140px;height:54px;display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #ece7f1;border-radius:12px;background:#fff;color:#28232e;text-decoration:none!important;scroll-snap-align:start;min-width:0}
+.fhs-mini-logo{position:relative;flex:0 0 38px;width:38px;height:38px;overflow:hidden;border-radius:9px;background:#f3eff7}
+.fhs-mini-logo .fhs-default-image{gap:0}.fhs-mini-logo .fhs-default-image svg{width:14px;height:18px}.fhs-mini-logo .fhs-default-image>span{font-size:4px}
+.fhs-mini-logo>img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover}
+.fhs-mini-info{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;justify-content:center;gap:3px;overflow:hidden}
+.fhs-mini-info strong,.fhs-mini-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.fhs-mini-info strong{font-size:11px;line-height:1.25;font-weight:800}.fhs-mini-info small{font-size:10px;line-height:1.2;font-weight:500;color:#908898}

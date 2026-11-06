@@ -9,6 +9,7 @@ const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+(LANGUAGES[selected.source_language]||'샘플'):'';}
 function update(){
+ document.querySelector('.art-shell').classList.toggle('in-progress',step>1);
  document.querySelectorAll('.step').forEach((el,i)=>el.hidden=i+1!==step);
  document.querySelectorAll('.stepper li').forEach((el,i)=>{el.classList.toggle('done',i+1<step);if(i+1===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
  document.querySelectorAll('.selected-name').forEach(el=>el.textContent=infoName());$('demoBanner').hidden=!demo;

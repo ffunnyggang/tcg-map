@@ -12,3 +12,11 @@
 .ahq-form button:disabled{opacity:.55}
 .ahq-message{font-size:11px;color:#756781;margin:11px 0 0;min-height:16px}
 @media(max-width:480px){.admin-home-quick-card{padding:13px}.ahq-top{align-items:center}.ahq-top>a{font-size:10px}.ahq-form button{width:100%}}
+/* Integrated into the native CMS HOME draggable block list. */
+#cmsBlockList .cms-quick-menu-block{border-color:#e8dff5}
+#cmsBlockList .cms-quick-menu-block .cms-block-icon{background:#f4eeff;color:#7657d6;font-size:24px;display:flex;justify-content:center;align-items:center}
+#cmsBlockList .cms-quick-menu-block .cms-block-copy b{color:#31263f}
+#cmsBlockList .cms-quick-menu-block .cms-block-copy span{color:#8f849c}
+#cmsBlockList .cms-quick-menu-block .cms-quick-preview{display:flex;align-items:center;justify-content:center;text-decoration:none;color:#7657d6}
+#cmsBlockList .cms-quick-menu-block .cms-drag{cursor:grab}
+#cmsBlockList .cms-quick-menu-block .cms-drag:active{cursor:grabbing}

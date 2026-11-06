@@ -150,7 +150,7 @@ Promise.all([fetch('data/box-products-v1.json').then(r=>r.json()),fetch('data/bo
  const io=new IntersectionObserver(x=>{visible=x[0]?.isIntersecting??false});io.observe(section);
  let lastFrameAt=Date.now();function move(ts){lastFrameAt=Date.now();if(last&&!touching&&!document.hidden&&visible&&ts>pauseUntil){const dt=Math.min(ts-last,32),target=appMotion?0.036:0.028,decay=Math.exp(-dt/280);position+=target*dt+(autoSpeed-target)*280*(1-decay);autoSpeed=target+(autoSpeed-target)*decay;const w=autoWidth;if(w>0&&position>=w)position%=w;track.scrollLeft=position}else{autoSpeed=0}last=ts;raf=requestAnimationFrame(move)}
  raf=requestAnimationFrame(move);let lastScrollAt=Date.now();const fallback=setInterval(()=>{if(touching||document.hidden||!visible||Date.now()-lastFrameAt<600||performance.now()<pauseUntil)return;const w=track.firstElementChild?.getBoundingClientRect().width||0;if(w>0){position+=1.5;if(position>=w)position-=w;track.scrollLeft=position;lastScrollAt=Date.now()}},110);window.addEventListener('pagehide',()=>{clearInterval(fallback);cancelAnimationFrame(raf);window.removeEventListener('resize',measureAutoWidth);io.disconnect()},{once:true});
-}).catch(error=>{console.warn('HOME BOX load',error);section.hidden=false;track.textContent='가격 정보를 불러오는 중 문제가 발생했습니다.'})})();</script><script defer src="/home-app-install-banner.js?v=20261106-first1"></script></body></html>
+}).catch(error=>{console.warn('HOME BOX load',error);section.hidden=false;track.textContent='가격 정보를 불러오는 중 문제가 발생했습니다.'})})();</script><script defer src="/home-app-install-banner.js?v=20261106-i18n2"></script></body></html>
 
 
 

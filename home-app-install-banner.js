@@ -1,4 +1,4 @@
-/* HOME mobile-web install banner; keeps the existing sticky portal header unchanged. */
+/* Shared mobile-web install banner for HOME, PICK, TALK, MY; keeps sticky headers unchanged. */
 (()=>{'use strict';
  const root=document.getElementById('funyAppInstallBanner');
  if(!root)return;
@@ -33,7 +33,9 @@
  try{hiddenUntil=Number(localStorage.getItem(dismissKey)||0)||0}catch(_){}
  if(hiddenUntil>now)return;
  const report=(type,extra={})=>{
-  const params={promo_placement:'top_banner',source_page:'home',target_platform:platform,client_surface:'WEB',app_platform:'web',promo_variant:'v1',...extra};
+  const page=location.pathname.toLowerCase();
+  const sourcePage=/\/(?:pick|reviews)\.html$/.test(page)?'pick':/\/talk\.html$/.test(page)?'talk':/\/my\.html$/.test(page)?'my':'home';
+  const params={promo_placement:'top_banner',source_page:sourcePage,target_platform:platform,client_surface:'WEB',app_platform:'web',promo_variant:'v1',...extra};
   try{if(typeof window.gtag==='function')window.gtag('event',type,params)}catch(_){}
  };
  const suppress=days=>{try{localStorage.setItem(dismissKey,String(Date.now()+days*86400000))}catch(_){}};

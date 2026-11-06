@@ -1,48 +1,71 @@
-/* FUNY PIN | CMS HOME quick-menu block settings (test-only render until production approval). */
+/* FUNY PIN | Quick menu is a native-looking item in CMS > HOME block list.
+   Settings apply to the isolated HOME test page until explicit production approval. */
 (()=>{'use strict';
- const id='adminHomeQuickMenuSettings';
- const mount=()=>{
-  const main=document.querySelector('.cms-builder-main'),page=document.getElementById('cmsPage');
-  if(!main||!page||document.getElementById(id))return;
-  const card=document.createElement('section');card.id=id;card.className='admin-home-quick-card';
-  card.innerHTML='<div class="ahq-top"><div><strong>나의 퀵메뉴 · HOME</strong><p>노출 여부와 위치를 관리합니다. 현재는 별도 테스트 HOME에서만 적용됩니다.</p></div><a href="/home-quick-menu-test.html" target="_blank" rel="noopener noreferrer">테스트 보기</a></div>'+
-    '<div class="ahq-form"><label>퀵메뉴 노출<select id="ahqEnabled"><option value="true">ON</option><option value="false">OFF</option></select></label>'+
-    '<label>HOME 내 위치<select id="ahqPosition"><option value="before_recommend">오늘의 추천 카드샵 위</option><option value="after_recommend">오늘의 추천 카드샵 아래</option></select></label>'+
-    '<button type="button" id="ahqSave">설정 저장</button></div>'+
-    '<p class="ahq-message" id="ahqMessage" role="status">설정을 불러오는 중입니다.</p>';
-  const before=main.querySelector('#cmsBlockList');if(before)main.insertBefore(card,before);else main.append(card);
-  const enabled=card.querySelector('#ahqEnabled'),position=card.querySelector('#ahqPosition'),save=card.querySelector('#ahqSave'),message=card.querySelector('#ahqMessage');
-  let loaded=false;
-  const show=()=>{card.hidden=page.value!=='home';if(!card.hidden&&!loaded)load()};
-  const load=async()=>{
-    if(loaded)return;
-    enabled.disabled=true;position.disabled=true;save.disabled=true;
-    try{
-      if(typeof api!=='function')throw new Error('운영 어드민 인증 모듈을 찾지 못했습니다.');
-      const rows=await api('/rest/v1/home_quick_menu_settings?id=eq.1&select=id,is_enabled,position');
-      const cfg=rows?.[0];if(!cfg)throw new Error('퀵메뉴 설정이 등록되어 있지 않습니다.');
-      enabled.value=cfg.is_enabled?'true':'false';
-      position.value=cfg.position==='after_recommend'?'after_recommend':'before_recommend';
-      loaded=true;enabled.disabled=false;position.disabled=false;save.disabled=false;
-      message.textContent='현재 설정을 불러왔습니다. 저장 시 테스트 HOME에 반영됩니다.';
-    }catch(err){message.textContent='설정 조회 실패: '+String(err?.message||err)}
-  };
-  save.addEventListener('click',async()=>{
-    if(!loaded)return;
-    save.disabled=true;message.textContent='설정 저장 중...';
-    try{
-      const patch={is_enabled:enabled.value==='true',position:position.value,updated_at:new Date().toISOString()};
-      await api('/rest/v1/home_quick_menu_settings?id=eq.1',{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(patch)});
-      const rows=await api('/rest/v1/home_quick_menu_settings?id=eq.1&select=is_enabled,position');
-      if(rows?.[0]?.is_enabled!==patch.is_enabled||rows?.[0]?.position!==patch.position)throw new Error('저장된 설정을 확인하지 못했습니다.');
-      message.textContent='저장 완료 · 테스트 HOME에서 확인할 수 있습니다.';
-    }catch(err){message.textContent='저장 실패: '+String(err?.message||err)}
-    finally{save.disabled=false}
+ const BLOCK_ID='__funy_home_quick_menu__', settingsPath='/rest/v1/home_quick_menu_settings?id=eq.1';
+ let settings=null,orderMap=new Map(),loading=false,failed=false;
+ const list=()=>document.querySelector('#cmsBlockList');
+ const isHome=()=>document.querySelector('#cmsPage')?.value==='home';
+ const report=e=>console.warn('[FUNY PIN HOME quick menu admin]',e);
+ async function read(){
+  if(loading||settings||failed)return;
+  if(typeof api!=='function')return;
+  loading=true;
+  try{
+   const [rows,home]=await Promise.all([
+    api(settingsPath+'&select=id,is_enabled,position,sort_order'),
+    api('/rest/v1/cms_blocks?placement=eq.home&select=id,sort_order')
+   ]);
+   if(!rows?.[0])throw new Error('퀵메뉴 설정을 불러오지 못했습니다.');
+   settings={...rows[0]};
+   orderMap=new Map((home||[]).map(x=>[x.id,Number(x.sort_order)]));
+   mount();
+  }catch(e){failed=true;report(e)}finally{loading=false}
+ }
+ function createBlock(){
+  const card=document.createElement('div');
+  card.className='cms-block-card cms-quick-menu-block';card.draggable=true;
+  card.dataset.quickMenuBlock='1';card.dataset.quickMenuBlockId=BLOCK_ID;
+  const handle=document.createElement('div');handle.className='cms-drag';handle.textContent='⠿';card.append(handle);
+  const glyph=document.createElement('div');glyph.className='cms-block-icon';glyph.textContent='📱';card.append(glyph);
+  const copy=document.createElement('div');copy.className='cms-block-copy';
+  const title=document.createElement('b');title.textContent='나의 퀵메뉴';copy.append(title);
+  const meta=document.createElement('span');meta.textContent='기능형 블록 · 사용자 선택형 · 테스트 HOME 적용';copy.append(meta);card.append(copy);
+  const actions=document.createElement('div');actions.className='cms-block-actions';
+  const toggle=document.createElement('button');toggle.type='button';toggle.className='cms-toggle'+(settings.is_enabled?' on':'');toggle.dataset.quickMenuToggle='1';toggle.setAttribute('aria-label','나의 퀵메뉴 노출 '+(settings.is_enabled?'ON':'OFF'));toggle.setAttribute('aria-pressed',String(settings.is_enabled));actions.append(toggle);
+  const view=document.createElement('a');view.href='/home-quick-menu-test.html';view.target='_blank';view.rel='noopener noreferrer';view.className='cms-icon-btn cms-quick-preview';view.textContent='↗';view.title='퀵메뉴 테스트 페이지';view.setAttribute('aria-label','퀵메뉴 테스트 화면 열기');actions.append(view);
+  card.append(actions);
+  toggle.addEventListener('click',async()=>{
+   toggle.disabled=true;
+   try{
+    const next=!settings.is_enabled;
+    await api(settingsPath,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({is_enabled:next,updated_at:new Date().toISOString()})});
+    const check=(await api(settingsPath+'&select=is_enabled'))?.[0];
+    if(check?.is_enabled!==next)throw Error('저장값 검증에 실패했습니다.');
+    settings.is_enabled=next;toggle.classList.toggle('on',next);
+    toggle.setAttribute('aria-pressed',String(next));
+    toggle.setAttribute('aria-label','나의 퀵메뉴 노출 '+(next?'ON':'OFF'));
+   }catch(e){alert('퀵메뉴 ON/OFF 변경 실패: '+String(e.message||e))}
+   finally{toggle.disabled=false}
   });
-  page.addEventListener('change',show);show();
- };
- const feed=document.getElementById('feed')||document.body;
- const observer=new MutationObserver(()=>mount());observer.observe(feed,{childList:true,subtree:true});
+  return card;
+ }
+ function mount(){
+  const target=list();
+  if(!isHome()||!target)return;
+  if(!settings){read();return}
+  if(target.querySelector('[data-quick-menu-block]'))return;
+  const card=createBlock(),native=[...target.querySelectorAll('[data-block-id]')];
+  const next=native.find(n=>(orderMap.get(n.dataset.blockId)??Number.MAX_SAFE_INTEGER)>Number(settings.sort_order));
+  if(next)target.insertBefore(card,next);else target.append(card);
+ }
+ function onOrderSaved(sortOrder,position,homeRows){
+  if(!settings)return;
+  settings.sort_order=sortOrder;settings.position=position;
+  if(Array.isArray(homeRows))orderMap=new Map(homeRows);
+ }
+ const target=document.getElementById('feed')||document.body;
+ const observer=new MutationObserver(()=>mount());
+ observer.observe(target,{subtree:true,childList:true});
  mount();
- window.FUNY_ADMIN_QUICK_MENU={mount};
+ window.FUNY_ADMIN_QUICK_MENU={mount,onOrderSaved,blockId:BLOCK_ID};
 })();

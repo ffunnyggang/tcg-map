@@ -1,7 +1,6 @@
 import {NOTICE_VERSION,LANGUAGES,validWindow,insetWindow,nudgeWindow,pageCards,cardFilename} from './card-art-core.mjs?v=20261107-mobile1';
 import {makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261104-saved1';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
-import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 let step=1,rows=[],language='ko',query='',page=0,selected=null,source=null,cut=null,result=null,ready=false,busy=false,selecting=false,exporting=false,demo=false,renderEpoch=0,selectionEpoch=0,toastTimer,searchTimer,draft=null,tuneMode='position',catalogEpoch=0;
 const refs=new Map(),noticeKey='funypin-card-art-notice-'+NOTICE_VERSION;
@@ -42,11 +41,9 @@ async function generate(){
  busy=true;update();$('generationError').hidden=true;$('workingDialog').showModal();const sourceSnapshot=source,selectionSnapshot=selected,windowSnapshot={...cut};
  try{if(demo){await new Promise(resolve=>setTimeout(resolve,700));result=demoArt();$('storageStatus').textContent='샘플 결과 · AI 미사용 · DB 저장 안 함';}else{
   if(!ready)throw Error('현재 계정은 AI 생성 준비가 되지 않았어요.');
-  const asset=await A.invokeFunction('card-overlay-generate',{action:'symbol_asset'}),symbol=await imageFrom(asset.symbol.imageUrl);
   const d=await A.invokeFunction('card-overlay-generate',{action:'generate_mobile',image:sourceSnapshot.toDataURL('image/png'),sourceReferenceId:selectionSnapshot.id,printRect:windowSnapshot});
-  const image=await imageFrom('data:image/png;base64,'+d.image);if(image.width!==1008||image.height!==1408)throw Error('생성 결과 크기가 맞지 않아요. 운영자에게 문의해 주세요.');const output=canvas(1008,1408);output.getContext('2d').drawImage(image,0,0);compositeSharedSymbol(output,symbol,asset.symbol.placement);result=output;
-  $('storageStatus').textContent=d.storageSaved?'AI 원본은 비공개 저장됐어요. 최종 도안을 저장하고 있어요.':'생성은 완료됐지만 DB 저장에 실패했어요. 결과를 다운로드해 주세요.';
-  if(d.storageSaved&&d.generationId){try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:d.generationId,image:output.toDataURL('image/png')});$('storageStatus').textContent='심볼이 합성된 최종 이미지를 계정에 비공개 저장했어요.';}catch{$('storageStatus').textContent='AI 원본은 저장됐지만 최종 합성본 저장에 실패했어요. 지금 PDF를 다운로드해 주세요.';}}
+  const image=await imageFrom('data:image/png;base64,'+d.image);if(image.width!==1008||image.height!==1408)throw Error('생성 결과 크기가 맞지 않아요. 운영자에게 문의해 주세요.');const output=canvas(1008,1408);output.getContext('2d').drawImage(image,0,0);result=output;
+  $('storageStatus').textContent=d.storageSaved?'카드 전체 풀아트 결과를 계정에 비공개 저장했어요.':d.storageMessage||'생성은 완료됐지만 DB 저장에 실패했어요. 지금 PDF를 다운로드해 주세요.';
  }
  $('showArt').checked=true;goStep(4);
  }catch(e){const el=$('generationError');el.hidden=false;el.textContent=(e.message==='LOGIN_REQUIRED'?'로그인 후 다시 이용해 주세요.':e.message||'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?' · 문의용 ID: '+e.data.requestId:'');if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.textContent='다시 로그인하기';b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;el.append(document.createTextNode(' 같은 요청을 반복하지 말고 운영자에게 문의해 주세요.'));}}

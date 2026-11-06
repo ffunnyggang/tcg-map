@@ -42,6 +42,15 @@ Deno.serve(async(req:Request)=>{
   const ownedQuery=(id:string)=>'/rest/v1/overlay_generations?id=eq.'+id+'&user_id=eq.'+encodeURIComponent(user.id);
   const validId=(id:unknown)=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   const readOwner=async(id:string)=>{const res=await savedFetch(ownedQuery(id)+'&select=*');if(!res.ok)throw Error('HISTORY_UNAVAILABLE');return (await res.json())[0];};
+  if(data.action==='symbol_asset'){
+   if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   const res=await savedFetch('/rest/v1/overlay_symbol_assets?id=eq.anniversary-yellow-v1&select=image_path,placement');
+   if(!res.ok)return reply({error:'공통 심볼 정보를 불러오지 못했어요.'},503);
+   const row=(await res.json())[0];if(!row||row.image_path!=='shared-assets/anniversary-yellow-v1.png')return reply({error:'공통 심볼이 준비되지 않았어요.'},503);
+   const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.image_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
+   if(!sign.ok)return reply({error:'공통 심볼을 불러오지 못했어요.'},503);const signed=await sign.json();
+   return reply({symbol:{imageUrl:url+'/storage/v1'+signed.signedURL,placement:row.placement}});
+  }
   if(['generations','load_generation','save_result'].includes(data.action)){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(data.action==='generations'){
@@ -187,4 +196,5 @@ Deno.serve(async(req:Request)=>{
   return reply({image:output,requestId:response.headers.get('x-request-id'),generationId,storageSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });
+
 

@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-11-05T20:40:38.062954+00:00",
+  "updatedAt": "2026-11-06T01:33:27.860627+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "구매 원하시면 연락주세여",
+      "author": "모찌",
+      "publishedAt": "2026-11-05T23:13:48.874522Z",
+      "excerpt": "구매 원하시면 연락주세여",
+      "image": "https://img.kr.gcp-karroter.net/community/community/20261105/bfc1748f-d56c-4523-addf-3fd2d5dd6166.jpeg?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/구매-원하시면-연락주세여-Px8J4N6P",
+      "views": 3,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.03
+    },
     {
       "category": "자유 게시판",
       "title": "핫플 남대문!!",
@@ -11,10 +24,10 @@
       "excerpt": "놀러갔다가 만난 치이카와 핸드타월 👻 짱귀 👍👍",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/8c7d80e4-62d8-4ab5-9ff8-fd23f7c58a1f.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/핫플-남대문-ARo2aKvP",
-      "views": 4,
+      "views": 12,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.04
+      "popularityScore": 3.12
     },
     {
       "category": "카드 자랑",
@@ -24,10 +37,10 @@
       "excerpt": "‪문구점 사장님과 친하게 지낸 덕분에 한박스‬ ‪7만원에 구매했는데 복각에서 리자몽이!!‬ ‪팬텀까지 나왔네요ㅎㅎ‬ ‪리자몽 진짜 너무 갖고 싶었는데‬ ‪이렇게 나오다니ㅜㅜ 행복합니다~‬ ‪초판 리자몽 카드랑 비교해봤는데 ‬ ‪똑같아서 신기했어요ㅋㅋ‬",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/17938643789395e42c0e4799e79d24e0a219a16d71b27a8b84a9c8edb9820bf0f610717c677f90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-리자몽-떴어요-jvxz1xXP",
-      "views": 43,
+      "views": 46,
       "likes": 2,
       "comments": 2,
-      "popularityScore": 10.43
+      "popularityScore": 10.46
     },
     {
       "category": "자유 게시판",
@@ -63,10 +76,10 @@
       "excerpt": "일괄1.8팝니다 따로팔면 그이상 가격나와요 택배거래 0.2추가 4.19탑이나 수유역 or 신용산역 직거래합니다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/0b3acc6e-0f92-48ee-934e-05681df9e30b.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드SRARMA일괄18판매-dDOB78pP",
-      "views": 8,
+      "views": 9,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.08
+      "popularityScore": 3.09
     },
     {
       "category": "자유 게시판",
@@ -223,19 +236,6 @@
       "likes": 3,
       "comments": 5,
       "popularityScore": 19.27
-    },
-    {
-      "category": "자유 게시판",
-      "title": "30주년 Fur",
-      "author": "오랑지",
-      "publishedAt": "2026-11-01T11:44:52.321595Z",
-      "excerpt": "30주년 Fur",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-Fur-dJyR9vkP",
-      "views": 24,
-      "likes": 2,
-      "comments": 2,
-      "popularityScore": 10.24
     },
     {
       "category": "카드거래",

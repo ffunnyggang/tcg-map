@@ -1,5 +1,5 @@
-// Static online BOX seller; independent of admin, Supabase, and shop filters.
-// Prices supplied on 2026-11-04; update this file explicitly when prices change.
+// Online BOX seller metadata and offline fallback prices supplied on 2026-11-04.
+// Live approved prices are managed in box_price_daily; they take priority over this fallback.
 window.FUNY_HOBBYSELECT_BOX=Object.freeze({
  source:'hobbyselect_online',
  shopKey:'online:hobbyselect',

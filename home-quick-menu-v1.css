@@ -30,7 +30,7 @@
 .fqm-choice-badge svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .fqm-choice.selected .fqm-choice-badge{background:#8062d8;border-color:#8062d8;color:#fff}
 .fqm-sheet-footer{flex:0 0 auto;margin:0;padding:9px 15px 0;background:#fff;border-top:1px solid #f3eef7}
-.fqm-save{width:100%;min-height:calc(52px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;text-align:center;border:0;border-radius:11px 11px 0 0;background:#8062d8;color:#fff;font-size:15px;font-weight:750;cursor:pointer}
+.fqm-save{box-sizing:border-box;width:100%;height:52px;min-height:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:center;text-align:center;border:0;border-radius:11px 11px 0 0;background:#8062d8;color:#fff;font-size:15px;font-weight:750;cursor:pointer}
 .fqm-save:disabled{opacity:.55}
 .fqm-toast{box-sizing:border-box;position:fixed;bottom:calc(98px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:100000;display:none;max-width:92vw;white-space:nowrap;background:#292130;color:#fff;padding:11px 15px;border-radius:99px;font-size:11px}
 .fqm-toast.show{display:block}

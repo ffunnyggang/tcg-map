@@ -68,7 +68,7 @@ async function loadAdminLayout(){
   if(!response.ok)throw new Error('HTTP '+response.status);
   const settings=(await response.json())?.[0];
   if(!settings)throw new Error('Settings unavailable');
-  adminLayout={is_enabled:settings.is_enabled===true,position:Number(settings.sort_order)>=10?'after_recommend':'before_recommend',sort_order:Number(settings.sort_order)||5};
+  adminLayout={is_enabled:settings.is_enabled===true,position:settings.position==='after_recommend'?'after_recommend':'before_recommend',sort_order:Number(settings.sort_order)||5};
  }catch(err){console.warn('[FUNY PIN quick menu] using default test layout:',err.message)}
  renderHome();
 }

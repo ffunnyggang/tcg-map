@@ -163,7 +163,7 @@ function sync(){
  host=slot;slot.innerHTML='<div class="fqm-scroll" aria-label="나의 퀵메뉴"><div class="fqm-rail"></div></div>';
  render();
 }
-document.addEventListener('funy:native-overlay-dismiss',()=>{if($('#fqm-overlay'))closeEditor()});
+window.addEventListener('funy:native-overlay-dismiss',()=>{if($('#fqm-overlay'))closeEditor()});
 window.addEventListener('pagehide',()=>{if($('#fqm-overlay'))notifyNativeSheet(false)});
 document.addEventListener('keydown',e=>{
  if(!$('#fqm-overlay'))return;

@@ -8,6 +8,40 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261101-focus1">
 <link rel="stylesheet" href="/ux-ui-guide.css?v=20261025-guide1">
+
+<style id="brand-logo-visual-guide">
+.logo-demo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 15px}
+.logo-demo{min-width:0;border:1px solid #e9e5ed;border-radius:15px;background:#fff;padding:12px;overflow:hidden}
+.logo-demo-head{font-size:11px;font-weight:800;color:#4b268e;margin:0 0 9px}
+.logo-demo-head small{display:block;font-size:10px;font-weight:500;color:#82768d;margin-top:3px}
+.logo-demo-stage{min-height:123px;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:6px;background:#faf8fe;position:relative;padding:12px}
+.logo-demo-stage>img{width:70px;height:80px;object-fit:contain;flex-shrink:0}
+.logo-demo-caption{font-size:10px;line-height:1.55;color:#77717d;margin:8px 0 0}
+.logo-demo-name{font:900 clamp(14px,2vw,23px)/1 Arial,sans-serif;color:#4b00c6;letter-spacing:-.04em;white-space:nowrap}
+.logo-demo-stage.is-dark{background:#201047}
+.logo-demo-stage.is-dark .logo-demo-name{color:#fff}
+.logo-demo-stage.is-gradient{background:linear-gradient(125deg,#7B3DFF,#4B00C6)}
+.logo-demo-stage.is-gradient .logo-demo-name{color:#fff}
+.logo-demo-stage.is-lavender{background:#f0ebfb}
+.logo-demo-stack{flex-direction:column;gap:0}
+.logo-demo-stack>img{width:64px;height:74px}
+.logo-demo-palette{display:flex;gap:8px;align-items:center}
+.logo-demo-dot{width:53px;height:53px;border-radius:50%;box-shadow:0 2px 8px #3d1c6620}
+.logo-demo-icon{width:93px;height:93px;border-radius:23px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px #391b7118}
+.logo-demo-icon.dark{background:#17083c}
+.logo-demo-icon img{width:75px;height:80px;object-fit:contain}
+.logo-demo-sizes{display:flex;align-items:end;gap:10px}
+.logo-demo-sizes img{object-fit:contain}
+.logo-demo-clear{padding:18px;border:1px dashed #9d82ca;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+.logo-demo-clear:before{content:"X";position:absolute;top:3px;left:4px;font-size:10px;color:#7958b5}
+.logo-demo-clear img{width:68px;height:70px;object-fit:contain}
+.logo-demo-dont{display:flex;gap:10px;align-items:center}
+.logo-demo-dont>div{position:relative;background:#fff;border-radius:10px;padding:5px}
+.logo-demo-dont img{width:54px;height:61px;object-fit:contain}
+.logo-demo-dont>div:after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:#ea5269;transform:rotate(-30deg)}
+@media(max-width:1000px){.logo-demo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.logo-demo-grid{grid-template-columns:1fr}.logo-demo-stage{min-height:120px}.logo-demo-name{font-size:21px}}
+</style>
 </head>
 <body>
 <div class="guide-shell">
@@ -47,6 +81,19 @@
 
 
   <section id="brand-logo"><h2>브랜드 로고 · Logo Identity</h2><p class="lead">확정된 FUNY PIN 리뉴얼 로고를 WEB · iOS · Android · Admin · CMS · 인쇄물에서 일관되게 사용합니다. 브랜드 심볼과 워드마크는 디자인 요소가 아닌 승인된 원본 자산입니다.</p>
+
+    <div class="logo-demo-grid" aria-label="FUNY PIN 브랜드 로고 시각적 사용 예시">
+      <div class="logo-demo"><div class="logo-demo-head">01 · 브랜드 심볼<small>기본형 · 심볼 단독</small></div><div class="logo-demo-stage"><img src="/favicon.svg" alt="FUNY PIN 공식 핀 심볼"></div><p class="logo-demo-caption">원본 로고 심볼 사용 · 비율·중앙 원형 유지</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">02 · 로고 조합<small>가로형 · 세로형 구조</small></div><div class="logo-demo-stage"><img src="/favicon.svg" alt=""><span class="logo-demo-name">FUNY PIN</span></div><p class="logo-demo-caption">배치 구조 예시 · 실제 워드마크는 반드시 승인 원본 에셋 사용</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">03 · 컬러 시스템<small>브랜드 전용 퍼플</small></div><div class="logo-demo-stage"><div class="logo-demo-palette"><div title="#7B3DFF" class="logo-demo-dot" style="background:#7B3DFF"></div><div title="#4B00C6" class="logo-demo-dot" style="background:#4B00C6"></div><div title="브랜드 그라데이션" class="logo-demo-dot" style="background:linear-gradient(#7B3DFF,#4B00C6)"></div></div></div><p class="logo-demo-caption">Light #7B3DFF · Dark #4B00C6 · Gradient</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">04 · 앱 아이콘<small>라이트 / 다크 사용 예시</small></div><div class="logo-demo-stage"><div class="logo-demo-icon"><img src="/favicon.svg" alt="라이트 배경 심볼"></div><div class="logo-demo-icon dark"><img src="/favicon.svg" alt="다크 배경 심볼"></div></div><p class="logo-demo-caption">OS별 마스크·안전 영역 확인 · 예시는 런처 원본이 아님</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">05 · 워드마크<small>원본 글자 윤곽 필수</small></div><div class="logo-demo-stage"><span class="logo-demo-name">FUNY PIN</span></div><p class="logo-demo-caption">텍스트는 배치 안내용 표기 · 제작 시 재조판하지 않고 공식 로고 파일 사용</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">06 · 최소 사이즈<small>화면 가독성 체크</small></div><div class="logo-demo-stage"><div class="logo-demo-sizes"><img src="/favicon.svg" width="80" height="80" alt="80px 심볼"><img src="/favicon.svg" width="56" height="56" alt="56px 심볼"><img src="/favicon.svg" width="40" height="40" alt="40px 심볼"><img src="/favicon.svg" width="28" height="28" alt="28px 심볼"></div></div><p class="logo-demo-caption">작은 크기에서는 심볼 단독 · 중앙 링 선명도 검수</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">07 · 배경별 사용<small>화이트 / 라벤더 / 다크</small></div><div class="logo-demo-stage" style="padding:0;gap:0;overflow:hidden"><div style="flex:1;background:#fff;display:grid;place-items:center;height:123px"><img src="/favicon.svg" width="55" alt=""></div><div style="flex:1;background:#f0ebfb;display:grid;place-items:center;height:123px"><img src="/favicon.svg" width="55" alt=""></div><div style="flex:1;background:#201047;display:grid;place-items:center;height:123px"><img src="/favicon.svg" width="55" alt=""></div></div><p class="logo-demo-caption">다크 배경은 승인된 전용 반전 에셋이 있을 때 교체</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">08 · 보호 여백<small>Clear Space = X</small></div><div class="logo-demo-stage"><div class="logo-demo-clear"><img src="/favicon.svg" alt="로고 보호 여백 예시"></div></div><p class="logo-demo-caption">주변 요소와 최소 X 이상 간격 · 원형 프로필 잘림 확인</p></div>
+      <div class="logo-demo"><div class="logo-demo-head">09 · 사용 금지<small>브랜드 일관성</small></div><div class="logo-demo-stage"><div class="logo-demo-dont"><div><img src="/favicon.svg" style="filter:hue-rotate(135deg)" alt="임의 색상 변경 금지"></div><div><img src="/favicon.svg" style="transform:rotate(25deg)" alt="임의 회전 금지"></div><div><img src="/favicon.svg" style="filter:drop-shadow(0 0 7px #7300ff)" alt="임의 효과 금지"></div></div></div><p class="logo-demo-caption">임의 색상 변경 · 회전 · 발광 효과 추가 금지</p></div>
+    </div>
+    <p style="margin:0 0 18px;font-size:11px;color:#77717d;line-height:1.7">※ 시각 예시의 심볼은 실제 서비스의 <code>/favicon.svg</code>를 참조합니다. 조합형의 글자와 아이콘 프레임은 사용 구조를 보여주는 설명용이며, 최종 배포 자산은 승인된 원본 로고 파일로 교체해야 합니다.</p>
     <div class="grid">
       <div class="card"><h3>로고 형태와 사용처</h3>
         <div class="rule"><b>심볼형</b><span>보라색 그라데이션 지도 핀과 중앙의 흰색 원·가로선이 결합된 확정 형태. 작은 공간, 지도·퀵메뉴·앱 실행 아이콘 등에 사용</span></div>

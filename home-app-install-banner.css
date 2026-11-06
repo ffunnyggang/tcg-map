@@ -1,6 +1,6 @@
 /* FUNY PIN mobile WEB app-install banner. HOME only; not app WebView. */
 .funy-app-install-banner[hidden]{display:none!important}
-.funy-app-install-banner{box-sizing:border-box;position:relative;z-index:1;width:100%;min-height:72px;padding:10px 12px;background:#fff;border-bottom:1px solid #f1edf6;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.funy-app-install-banner{box-sizing:border-box;position:relative;z-index:1;width:100%;min-height:72px;padding:10px 12px;background:#f4effb;border-bottom:1px solid #e6ddf4;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .funy-app-install-inner{display:flex;align-items:center;gap:9px;min-height:52px}
 .funy-app-install-icon{box-sizing:border-box;flex:0 0 46px;width:46px;height:46px;border-radius:11px;object-fit:cover;background:#f1eaf9}
 .funy-app-install-copy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}

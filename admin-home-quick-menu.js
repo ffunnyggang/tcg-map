@@ -43,6 +43,7 @@
     if(check?.is_enabled!==next)throw Error('저장값 검증에 실패했습니다.');
     settings.is_enabled=next;toggle.classList.toggle('on',next);
     toggle.setAttribute('aria-pressed',String(next));
+    document.querySelector('#cmsPreview')?.contentWindow?.location.reload();
     toggle.setAttribute('aria-label','나의 퀵메뉴 노출 '+(next?'ON':'OFF'));
    }catch(e){alert('퀵메뉴 ON/OFF 변경 실패: '+String(e.message||e))}
    finally{toggle.disabled=false}

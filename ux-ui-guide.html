@@ -9,46 +9,14 @@
 <link rel="stylesheet" href="/funy-ui-guide.css?v=20261101-focus1">
 <link rel="stylesheet" href="/ux-ui-guide.css?v=20261025-guide1">
 
-<style id="brand-logo-visual-guide">
-.logo-demo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 15px}
-.logo-demo{min-width:0;border:1px solid #e9e5ed;border-radius:15px;background:#fff;padding:12px;overflow:hidden}
-.logo-demo-head{font-size:11px;font-weight:800;color:#4b268e;margin:0 0 9px}
-.logo-demo-head small{display:block;font-size:10px;font-weight:500;color:#82768d;margin-top:3px}
-.logo-demo-stage{min-height:123px;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:6px;background:#faf8fe;position:relative;padding:12px}
-.logo-demo-stage>img{width:70px;height:80px;object-fit:contain;flex-shrink:0}
-.logo-demo-caption{font-size:10px;line-height:1.55;color:#77717d;margin:8px 0 0}
-.logo-demo-name{font:900 clamp(14px,2vw,23px)/1 Arial,sans-serif;color:#4b00c6;letter-spacing:-.04em;white-space:nowrap}
-.logo-demo-stage.is-dark{background:#201047}
-.logo-demo-stage.is-dark .logo-demo-name{color:#fff}
-.logo-demo-stage.is-gradient{background:linear-gradient(125deg,#7B3DFF,#4B00C6)}
-.logo-demo-stage.is-gradient .logo-demo-name{color:#fff}
-.logo-demo-stage.is-lavender{background:#f0ebfb}
-.logo-demo-stack{flex-direction:column;gap:0}
-.logo-demo-stack>img{width:64px;height:74px}
-.logo-demo-palette{display:flex;gap:8px;align-items:center}
-.logo-demo-dot{width:53px;height:53px;border-radius:50%;box-shadow:0 2px 8px #3d1c6620}
-.logo-demo-icon{width:93px;height:93px;border-radius:23px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px #391b7118}
-.logo-demo-icon.dark{background:#17083c}
-.logo-demo-icon img{width:75px;height:80px;object-fit:contain}
-.logo-demo-sizes{display:flex;align-items:end;gap:10px}
-.logo-demo-sizes img{object-fit:contain}
-.logo-demo-clear{padding:18px;border:1px dashed #9d82ca;background:#fff;display:flex;align-items:center;justify-content:center;position:relative}
-.logo-demo-clear:before{content:"X";position:absolute;top:3px;left:4px;font-size:10px;color:#7958b5}
-.logo-demo-clear img{width:68px;height:70px;object-fit:contain}
-.logo-demo-dont{display:flex;gap:10px;align-items:center}
-.logo-demo-dont>div{position:relative;background:#fff;border-radius:10px;padding:5px}
-.logo-demo-dont img{width:54px;height:61px;object-fit:contain}
-.logo-demo-dont>div:after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:#ea5269;transform:rotate(-30deg)}
-@media(max-width:1000px){.logo-demo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){.logo-demo-grid{grid-template-columns:1fr}.logo-demo-stage{min-height:120px}.logo-demo-name{font-size:21px}}
-</style>
+
 </head>
 <body>
 <div class="guide-shell">
 <aside class="guide-nav">
   <div class="guide-brand"><img src="/favicon.svg" alt=""><div><strong>FUNY PIN</strong><small>UX/UI GUIDE · 2026.10.26</small></div></div>
   <div class="nav-links">
-    <a href="#principles">원칙</a><a href="#sources">공통 소스</a><a href="#brand-logo">브랜드 로고</a><a href="#overlay">DIM · Overlay</a><a href="#header">Header</a><a href="#safearea">Safe Area</a><a href="#tokens">Design Tokens</a><a href="#components">Components</a><a href="#navigation">Navigation</a><a href="#checklist">수정 체크리스트</a>
+    <a href="#principles">원칙</a><a href="#sources">공통 소스</a><a href="#overlay">DIM · Overlay</a><a href="#header">Header</a><a href="#safearea">Safe Area</a><a href="#tokens">Design Tokens</a><a href="#components">Components</a><a href="#navigation">Navigation</a><a href="#checklist">수정 체크리스트</a>
   </div>
 </aside>
 <main class="guide-main">
@@ -79,67 +47,6 @@
     </div>
   </section>
 
-
-  <section id="brand-logo"><h2>브랜드 로고 · Logo Identity</h2><p class="lead">확정된 FUNY PIN 리뉴얼 로고를 WEB · iOS · Android · Admin · CMS · 인쇄물에서 일관되게 사용합니다. 브랜드 심볼과 워드마크는 디자인 요소가 아닌 승인된 원본 자산입니다.</p>
-
-
-
-    <div class="card" style="margin-bottom:14px">
-      <h3>재사용 가능한 로고 디자인 소스 · SVG</h3>
-      <p style="margin:0 0 12px;color:#77717d;font-size:11px;line-height:1.7">브랜드 가이드와 제공된 개별 로고 이미지를 바탕으로 제작한 SVG 디자인 소스입니다. 이미지 시트에서 잘라낸 비트맵이 아니라 개별 벡터 경로와 그라데이션으로 구성했습니다. 이 파일은 디자인·개발 작업용 복원본이며, 확정된 원본 AI와 완전 일치한다고 간주하지 않습니다.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
-        <figure style="margin:0;background:#fff;border:1px solid #e9e5ed;border-radius:12px;padding:14px;text-align:center"><img src="/assets/brand/source/funy-pin-horizontal.svg" alt="FUNY PIN 가로형 벡터 로고" loading="lazy" style="width:100%;height:110px;object-fit:contain"><figcaption style="font-size:11px;color:#675776">가로형 로고</figcaption><a href="/assets/brand/source/funy-pin-horizontal.svg" download style="display:inline-block;margin-top:6px;font-size:11px;color:#6749bd">SVG 소스 열기 · 저장</a></figure>
-        <figure style="margin:0;background:#fff;border:1px solid #e9e5ed;border-radius:12px;padding:14px;text-align:center"><img src="/assets/brand/source/funy-pin-vertical.svg" alt="FUNY PIN 세로형 벡터 로고" loading="lazy" style="width:100%;height:110px;object-fit:contain"><figcaption style="font-size:11px;color:#675776">세로형 로고</figcaption><a href="/assets/brand/source/funy-pin-vertical.svg" download style="display:inline-block;margin-top:6px;font-size:11px;color:#6749bd">SVG 소스 열기 · 저장</a></figure>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:11px">
-        <a href="/assets/brand/source/funy-pin-symbol.svg" download>심볼 SVG</a><a href="/assets/brand/source/funy-pin-wordmark.svg" download>워드마크 SVG</a><a href="/assets/brand/source/funy-pin-icon-light.svg" download>라이트 아이콘 SVG</a><a href="/assets/brand/source/funy-pin-icon-dark.svg" download>다크 아이콘 SVG</a>
-      </div>
-    </div>
-    <div class="logo-demo-grid" aria-label="FUNY PIN 브랜드 로고 9개 디자인 소스 예시">
-      <div class="logo-demo"><div class="logo-demo-head">01 · 브랜드 심볼<small>기본형</small></div><div class="logo-demo-stage"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="벡터 심볼" loading="lazy" style=""></div><p class="logo-demo-caption">형태·중앙 링·흰색 가로선 분리된 벡터 소스</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">02 · 로고 조합<small>가로형 · 세로형</small></div><div class="logo-demo-stage" style="flex-direction:column;gap:5px"><img src="/assets/brand/source/funy-pin-horizontal.svg" alt="가로형 벡터 로고" loading="lazy" style="width:100%;max-width:245px;height:58px"><img src="/assets/brand/source/funy-pin-vertical.svg" alt="세로형 벡터 로고" loading="lazy" style="width:70px;height:58px"></div><p class="logo-demo-caption">두 조합 모두 글자 윤곽을 포함한 SVG</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">03 · 컬러 시스템<small>브랜드 전용 퍼플</small></div><div class="logo-demo-stage"><div class="logo-demo-palette"><div class="logo-demo-dot" style="background:#7B3DFF"></div><div class="logo-demo-dot" style="background:#4B00C6"></div><div class="logo-demo-dot" style="background:linear-gradient(#7B3DFF,#4B00C6)"></div></div></div><p class="logo-demo-caption">#7B3DFF → #4B00C6 · 상단 → 하단</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">04 · 앱 아이콘<small>라이트 / 다크</small></div><div class="logo-demo-stage" style="gap:12px"><img src="/assets/brand/source/funy-pin-icon-light.svg" alt="라이트 앱 아이콘" loading="lazy" style="width:94px;height:94px"><img src="/assets/brand/source/funy-pin-icon-dark.svg" alt="다크 앱 아이콘" loading="lazy" style="width:94px;height:94px"></div><p class="logo-demo-caption">벡터 마스터 · 실제 OS 배포 시 플랫폼 규격으로 PNG 내보내기</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">05 · 로고 타입<small>브랜드 워드마크</small></div><div class="logo-demo-stage"><img src="/assets/brand/source/funy-pin-wordmark.svg" alt="FUNY PIN 워드마크 벡터" loading="lazy" style="width:100%;max-width:240px;height:82px"></div><p class="logo-demo-caption">폰트 의존성 없는 글자 경로 · 최종 원본 대조 필요</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">06 · 최소 사이즈<small>128 / 96 / 64 / 48 / 32px</small></div><div class="logo-demo-stage"><div class="logo-demo-sizes" style="gap:5px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="74px 심볼" loading="lazy" style="width:74px;height:74px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="55px 심볼" loading="lazy" style="width:55px;height:55px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="40px 심볼" loading="lazy" style="width:40px;height:40px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="30px 심볼" loading="lazy" style="width:30px;height:30px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="22px 심볼" loading="lazy" style="width:22px;height:22px"></div></div><p class="logo-demo-caption">모바일 렌더링·중앙 링 식별성 검수</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">07 · 배경별 사용<small>화이트 / 라이트 / 다크</small></div><div class="logo-demo-stage" style="gap:5px;padding:6px"><div style="flex:1;min-width:0;height:95px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:7px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="배경별 심볼" loading="lazy" style="width:45px;height:60px"></div><div style="flex:1;min-width:0;height:95px;display:flex;align-items:center;justify-content:center;background:#f0ebfb;border-radius:7px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="배경별 심볼" loading="lazy" style="width:45px;height:60px"></div><div style="flex:1;min-width:0;height:95px;display:flex;align-items:center;justify-content:center;background:#201047;border-radius:7px"><img src="/assets/brand/source/funy-pin-symbol.svg" alt="배경별 심볼" loading="lazy" style="width:45px;height:60px"></div></div><p class="logo-demo-caption">배경별 명도 차이 확인 · 반전형은 별도 승인 필요</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">08 · 보호 여백<small>Clear Space = X</small></div><div class="logo-demo-stage"><div class="logo-demo-clear"><img src="/assets/brand/source/funy-pin-horizontal.svg" alt="로고 보호 여백" loading="lazy" style="width:190px;height:70px;max-width:100%"></div></div><p class="logo-demo-caption">X = 심볼 중심 원 지름 · 주변 최소 X 여백</p></div>
-      <div class="logo-demo"><div class="logo-demo-head">09 · 사용 금지<small>변형 · 회전 · 임의 효과</small></div><div class="logo-demo-stage" style="font-size:12px;color:#b34454;font-weight:700;text-align:center;line-height:2">✕ 비율 왜곡<br>✕ 임의 컬러 변경<br>✕ 회전·발광 효과<br>✕ 임의 서체 교체</div><p class="logo-demo-caption">심볼과 워드마크 모두 동일 규칙</p></div>
-    </div>
-    <p style="margin:0 0 18px;font-size:11px;color:#77717d;line-height:1.7">※ 이 SVG 6종은 첨부 로고를 참고하여 새로 구성한 편집용 디자인 소스입니다. 승인 원본과의 픽셀 단위 동일성 및 인쇄 품질은 검증 전이며, 외부 배포·상표 출원용 최종 마스터로 사용하기 전 원본과 대조하세요.</p>
-    <div class="grid">
-      <div class="card"><h3>로고 형태와 사용처</h3>
-        <div class="rule"><b>심볼형</b><span>보라색 그라데이션 지도 핀과 중앙의 흰색 원·가로선이 결합된 확정 형태. 작은 공간, 지도·퀵메뉴·앱 실행 아이콘 등에 사용</span></div>
-        <div class="rule"><b>가로형</b><span>심볼 + <strong>FUNY PIN</strong> 워드마크. 서비스 헤더, 배너, 공식 홍보물에서 우선 사용</span></div>
-        <div class="rule"><b>세로형</b><span>심볼 상단 + 워드마크 하단. 정사각형 프로필·소개·브랜드 카드 등 세로 배치가 적합할 때 사용</span></div>
-        <div class="rule"><b>워드마크</b><span>원본 FUNY PIN 레터링만 사용. 일반 시스템 폰트나 유사 폰트로 재조판하지 않음</span></div>
-      </div>
-      <div class="card"><h3>원본 · 컬러 · 배경</h3>
-        <div class="rule"><b>원본 우선</b><span>최종 승인된 로고 원본 SVG/AI 또는 고해상도 투명 PNG를 그대로 사용. 스크린샷에서 추출·AI 재생성·자동 벡터 트레이싱으로 대체 금지</span></div>
-        <div class="rule"><b>브랜드 컬러</b><span>로고 전용 기준색 <code>#7B3DFF</code> → <code>#4B00C6</code> 보라 그라데이션(상단 → 하단). 제품 UI 토큰 <code>#8062D8</code>과 용도를 구분</span></div>
-        <div class="rule"><b>밝은 배경</b><span>화이트 또는 연한 라벤더 위 컬러 로고를 기본으로 사용</span></div>
-        <div class="rule"><b>어두운 배경</b><span>승인된 다크·반전 로고 에셋 사용. 로고의 컬러·그라데이션을 임의로 반전하거나 효과를 추가하지 않음</span></div>
-      </div>
-      <div class="card"><h3>크기 · 여백 · 정렬</h3>
-        <div class="rule"><b>비율</b><span>심볼·워드마크는 원본 가로세로 비율 유지. 각각의 크기를 조절할 때도 승인된 결합형 배치를 우선</span></div>
-        <div class="rule"><b>보호 여백</b><span>로고 주위 최소 여백은 심볼 중앙 원의 바깥 지름 X 이상을 기본으로 확보. 가장자리와 붙지 않도록 배치</span></div>
-        <div class="rule"><b>작은 크기</b><span>워드마크 가독성이 떨어지는 영역에는 심볼 단독 사용. 16px·32px·48px·128px에서 선과 원형 요소 식별성 확인</span></div>
-        <div class="rule"><b>원형 프로필</b><span>원형 마스킹 영역에 워드마크가 닿지 않도록 텍스트 크기만 조정 가능. 심볼 크기와 위치는 유지하는 별도 프로필용 에셋으로 관리</span></div>
-      </div>
-      <div class="card"><h3>앱 아이콘 · 배포</h3>
-        <div class="rule"><b>iOS</b><span>1024×1024px 정사각형 마스터와 승인된 다크 변형을 별도로 관리. 라운드 마스킹은 OS가 담당하므로 중복 테두리·그림자 추가 금지</span></div>
-        <div class="rule"><b>Android</b><span>Google Play 스토어용 512×512px PNG와 런처용 Adaptive foreground/background 에셋을 구분. 중앙 안전 영역과 원형·라운드 마스크 미리보기 확인</span></div>
-        <div class="rule"><b>대표 아이콘</b><span>작은 화면에서는 심볼형 우선. 서비스명 포함형은 가독성이 확보된 프로필·홍보용 대안으로 사용</span></div>
-        <div class="rule"><b>배포 규칙</b><span>브랜드 원본 → 단일 마스터 → 플랫폼별 PNG export. OS별로 로고를 각각 재생성하지 않으며 출시 전 스토어·홈 화면에서 QA</span></div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:14px"><h3>사용 금지 · QA 체크</h3>
-      <div class="rule"><b class="dont">금지</b><span>확정 로고의 심볼 구조·중앙 링·가로선·워드마크 폰트·그라데이션을 임의 수정하거나 AI로 재해석</span></div>
-      <div class="rule"><b class="dont">금지</b><span>비율 왜곡, 임의 회전, 글로우·외곽선·추가 그림자, 브랜드와 무관한 배경 패턴, OS 아이콘별 제각각인 심볼 크기</span></div>
-      <div class="rule"><b>QA</b><span>원본 대조 → 밝은/어두운 배경 → 작은 크기 → 원형·라운드 마스크 → 실제 모바일 → 워드마크 외곽선 선명도 순서로 검수</span></div>
-      <div class="rule"><b>저작권</b><span>로고 관련 타사 IP 유사성·상표권 및 외부 자산 사용 허락은 별도 검토. 법적 검토 없이 안전성을 단정하지 않음</span></div>
-    </div>
-  </section>
 
   <section id="overlay"><h2>03. DIM · Modal · Overlay</h2><p class="lead">최상단 바텀시트·모달·팝업은 하나의 modal contract를 사용합니다. 화면 전체는 같은 농도로 보이되, 동일한 물리 픽셀에 DIM이 겹치면 안 됩니다.</p>
     <div class="grid">

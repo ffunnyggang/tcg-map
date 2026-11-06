@@ -52,7 +52,10 @@ function render(){
  rail.replaceChildren();
  for(const id of selected){const item=BY_ID.get(id);if(!item)continue;
   const a=document.createElement('a');a.className='fqm-tile';a.href=item.href;
-  a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';
+  // Native PICK tabs and TCG market must bypass the app's document-start CMS link interceptor.
+  if(!['shop_news','information','schedule','creator','market'].includes(id)){
+   a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';
+  }
   if(['shop_news','information','schedule','creator'].includes(id)){
    a.addEventListener('click',e=>{
     if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;

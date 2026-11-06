@@ -30,6 +30,8 @@ body.market-standalone-page{background:#fff}
 .market-standalone-loading{width:min(100%,420px);min-height:100dvh;margin:auto;display:grid;place-items:center;background:#fff;color:#99919d;font-size:12px}
 body.market-standalone-page .market-overlay{max-width:420px}
 html:not(.app-shell) body.market-standalone-page .market-overlay-head{padding-top:env(safe-area-inset-top,0px);height:calc(54px + env(safe-area-inset-top,0px));min-height:calc(54px + env(safe-area-inset-top,0px))}
+html.app-shell body.market-standalone-page .market-overlay-head{display:none!important}
+html.app-shell body.market-standalone-page .market-overlay-filter-row{top:0!important}
 </style>
 <meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/web-safe-area.css?v=20261101-focus1"><script defer src="/web-safe-area.js?v=20261023-safe1"></script></head>
 <body>

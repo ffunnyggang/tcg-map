@@ -53,6 +53,17 @@ function render(){
  for(const id of selected){const item=BY_ID.get(id);if(!item)continue;
   const a=document.createElement('a');a.className='fqm-tile';a.href=item.href;
   a.dataset.funyLinkMode='inapp';a.dataset.funyInappPresentation='page';
+  if(['shop_news','information','schedule','creator'].includes(id)){
+   a.addEventListener('click',e=>{
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    if(!window.ReactNativeWebView?.postMessage)return;
+    e.preventDefault();e.stopPropagation();
+    const at=Date.now(),intentKey='funypin:pick:pending-tab:v1';
+    try{localStorage.setItem(intentKey,JSON.stringify({tab:id,at}))}catch(_){}
+    try{window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/pick?__tabRefresh='+at}))
+    }catch(err){try{localStorage.removeItem(intentKey)}catch(_){}location.href=item.href}
+   });
+  }
   a.setAttribute('aria-label',label(item));
   const graphic=document.createElement('span');graphic.className='fqm-emoji';graphic.textContent=item.emoji;graphic.setAttribute('aria-hidden','true');
   const title=document.createElement('span');title.className='fqm-label';title.textContent=label(item);

@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const KEY='funypin.home.quick-menu.test.kt.v1',OLD='funypin.home.quick-menu.test.blocks.v2',DEFAULT=['shops','favorite','box','pick'];
+const KEY='funypin.home.quick-menu.test.kt.v1',OLD='funypin.home.quick-menu.test.blocks.v2',DEFAULT=['favorite','box','graded','market'];
 const icons={
 home:'<path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
 shops:'<path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-7h6v7"/><path d="M2 10h20"/>',
@@ -15,30 +15,40 @@ mon:'<rect x="5" y="4" width="14" height="17" rx="3"/><circle cx="12" cy="11" r=
 ranking:'<path d="M7 20h10M12 16v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v2c0 2 1 3 4 4M17 6h3v2c0 2-1 3-4 4"/>',
 badges:'<path d="m12 2 3 2 4-1 1 4 3 3-3 3 1-4-3-3 3-3 1-4 4 1z"/><path d="m9 10 2 2 4-4"/>',
 market:'<path d="M3 8h18l-2-5H5zM5 8v13h14V8M9 21v-8h6v8"/>',
-raffle:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 11h10M12 8v6M8 18l4 3 4-3"/>'
+raffle:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 11h10M12 8v6M8 18l4 3 4-3"/>',
+shop_news:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/><circle cx="19" cy="5" r="3" fill="currentColor"/>',
+information:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+schedule:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 15h3"/>',
+creator:'<path d="m4 20 4-.5L20 7.5 16.5 4 4.5 16z"/><path d="m14.5 6 3.5 3.5M4 20h16"/>',
+tools:'<path d="M15 5a5 5 0 0 0 6 6l-9 9-4-4 9-9A5 5 0 0 0 15 5z"/><path d="m4 4 5 5"/>',
+entries:'<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+binder:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M12 8h5M12 12h5M12 16h5"/>'
 };
 const data=[
-['shops','카드샵 찾기','/shops.html'],
 ['favorite','관심 목록','/my-favorites.html'],
 ['box','BOX 시세','/products.html?kind=box'],
-['pick','PICK 콘텐츠','/pick.html'],
 ['graded','등급카드','/products.html?kind=graded'],
-['talk','TALK','/talk.html'],
+['market','TCG 거래','/market.html'],
 ['events','이벤트','/my-events.html'],
 ['coupons','쿠폰함','/my-coupons.html'],
-['mon','퍼니몬','/my-funymon.html'],
+['mon','퍼니몬 도감','/my-funymon.html'],
 ['ranking','랭킹','/ranking.html'],
-['market','TCG 거래','/market.html'],
-['raffle','추첨기','/event-raffle.html'],
-['badges','배지','/my-badges.html'],
-['my','MY','/my.html']
+['shop_news','카드샵 소식','/pick.html?tab=shop_news'],
+['information','TCG 정보','/pick.html?tab=information'],
+['schedule','TCG 일정','/pick.html?tab=schedule'],
+['creator','CREATOR','/pick.html?tab=creator'],
+['tools','TCG TOOL','/tcg-tools.html'],
+['entries','내 응모 내역','/my-entries.html'],
+['binder','내 바인더','/binder.html']
 ].map(([id,label,href])=>({id,label,href}));
 const find=id=>data.find(x=>x.id===id),$=s=>document.querySelector(s);
 const svg=id=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+(icons[id]||icons.box)+'</svg>';
 function valid(x){return x&&Array.isArray(x.selected)&&x.selected.length<=10&&new Set(x.selected).size===x.selected.length&&x.selected.every(id=>find(id))}
 function load(){
- try{const x=JSON.parse(localStorage.getItem(KEY));if(valid(x))return{selected:x.selected}}catch(_){}
- try{const x=JSON.parse(localStorage.getItem(OLD));if(x&&Array.isArray(x.active)&&x.active.length<=10&&x.active.every(id=>find(id)))return{selected:x.active}}catch(_){}
+ // Preserve the order of still-available menu IDs when a previous test catalog changes.
+ const compatible=ids=>Array.isArray(ids)?[...new Set(ids.filter(id=>find(id)))].slice(0,10):null;
+ try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&Array.isArray(x.selected)){const kept=compatible(x.selected);return{selected:kept.length?kept:[...DEFAULT]}}}catch(_){}
+ try{const x=JSON.parse(localStorage.getItem(OLD));if(x&&Array.isArray(x.active)){const kept=compatible(x.active);return{selected:kept.length?kept:[...DEFAULT]}}}catch(_){}
  return{selected:[...DEFAULT]};
 }
 const copy=x=>({selected:[...x.selected]});

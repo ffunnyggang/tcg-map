@@ -41,3 +41,26 @@
 .toast{position:fixed;bottom:94px;left:50%;transform:translateX(-50%);z-index:30;background:#292130;color:white;padding:10px 14px;border-radius:99px;font-size:11px;white-space:nowrap;display:none}.toast.show{display:block}
 @media(max-width:365px){.sheet{height:min(90dvh,750px)}.sheet-header{padding-left:13px;padding-right:12px}.sheet-content{padding-left:12px;padding-right:12px}.menu-grid{gap:11px 5px}.menu-choice{height:67px}.menu-choice span{font-size:9px}.quick-tile{width:69px;min-width:69px}}
 @media(prefers-reduced-motion:reduce){.sheet{animation:none}}
+
+
+/* FUNY PIN HOME quick-menu design study: controls live outside the mocked HOME. */
+.preview-label{border-bottom:1px solid #483b56}
+.preview-variants{width:min(100%,420px);display:flex;align-items:center;gap:7px;margin:0 auto;padding:11px 13px;background:#f9f7fc;border-bottom:1px solid #ece5f3}
+.preview-variants>span{font-size:11px;font-weight:750;color:#5e526b;margin-right:auto}
+.preview-variants button{padding:8px 10px;border:1px solid #ded4ed;background:#fff;border-radius:10px;color:#726581;font-size:11px;font-weight:700}
+.preview-variants button.is-active{background:#8062d8;border-color:#8062d8;color:white}
+.quick-section{padding:16px 0 18px;margin:14px 0 23px;background:#f7f5fa}
+.quick-scroller{padding:0 12px;scroll-snap-type:x proximity;touch-action:pan-x;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.quick-items{gap:9px;padding-right:12px}
+.quick-tile{width:clamp(65px,calc((min(100vw,420px) - 24px - 31.5px)/4.5),82px);min-width:clamp(65px,calc((min(100vw,420px) - 24px - 31.5px)/4.5),82px);height:87px;border:1px solid #eeebf3;border-radius:15px;gap:9px;scroll-snap-align:start;box-shadow:0 2px 8px #31244508;transition:background .15s,transform .15s}
+.quick-tile .quick-glyph{width:33px;height:33px;color:#8062d8}
+.quick-glyph svg{width:28px;height:28px}
+.quick-emoji{font-size:26px;line-height:1;display:grid;place-items:center}
+.quick-tile strong{color:#453b50;font-size:10px;font-weight:700}
+.quick-tile.add{font-size:initial;color:#8062d8}
+.quick-add-icon{width:33px;height:33px;border-radius:50%;display:grid;place-items:center;background:#f5f0fc;color:#8062d8}
+.quick-add-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round}
+.menu-choice .indicator{font-style:normal;display:grid;place-items:center;background:#fff;border:1px solid #d0c6da;color:#8062d8;box-shadow:0 1px 3px #2b18350e}
+.menu-choice .indicator svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.menu-choice.selected .indicator{font-size:12px;font-weight:850}
+@media(max-width:365px){.quick-tile{width:clamp(65px,calc((100vw - 55.5px)/4.5),82px);min-width:clamp(65px,calc((100vw - 55.5px)/4.5),82px);height:84px}.preview-variants{padding-inline:10px}.preview-variants button{padding:8px}}

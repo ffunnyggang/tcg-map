@@ -45,7 +45,7 @@ Deno.serve(async(req:Request)=>{
   if(['generations','load_generation','save_result'].includes(data.action)){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(data.action==='generations'){
-    const res=await savedFetch('/rest/v1/overlay_generations?user_id=eq.'+encodeURIComponent(user.id)+'&select=id,mode,result_kind,width,height,window_rect,created_at&order=created_at.desc&limit=20');
+    const res=await savedFetch('/rest/v1/overlay_generations?user_id=eq.'+encodeURIComponent(user.id)+'&select=id,mode,result_kind,width,height,window_rect,source_reference_id,source_card_label,created_at&order=created_at.desc&limit=20');
     if(!res.ok)return reply({error:'저장된 이미지 목록을 불러오지 못했어요.'},503);return reply({generations:await res.json()});
    }
    if(!validId(data.id))return reply({error:'올바른 저장 이미지가 아닙니다.'},400);
@@ -87,6 +87,19 @@ Deno.serve(async(req:Request)=>{
    if(!valid)return reply({error:'올바른 품질 보고가 아닙니다.'},400);
    console.info('overlay client quality',{requestId:data.requestId,accepted:data.accepted,correlation:data.correlation,mae:data.mae});
    return reply({reported:true});
+  }
+  // Source labels are descriptive metadata, never trusted as cache identity or proof of image ownership.
+  const sourceReferenceId=data.sourceReferenceId,sourceCardLabel=data.sourceCardLabel;
+  delete data.sourceReferenceId;delete data.sourceCardLabel;
+  if(sourceCardLabel!=null&&(typeof sourceCardLabel!=='string'||sourceCardLabel.length>160))return reply({error:'카드 정보는 160자 이내로 입력해 주세요.'},400);
+  let sourceLabel=typeof sourceCardLabel==='string'?sourceCardLabel.trim():null,sourceId=null;
+  if(sourceReferenceId!=null){
+   if(typeof sourceReferenceId!=='string'||! /^[a-zA-Z0-9-]{1,80}$/.test(sourceReferenceId))return reply({error:'올바른 원본 카드가 아닙니다.'},400);
+   if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   const ref=await savedFetch('/rest/v1/overlay_art_references?id=eq.'+encodeURIComponent(sourceReferenceId)+'&select=id,display_name,card_number,source_language');
+   if(!ref.ok)return reply({error:'원본 카드 정보를 확인하지 못했어요.'},503);
+   const row=(await ref.json())[0];if(!row)return reply({error:'등록된 원본 카드가 없습니다.'},400);
+   sourceId=row.id;sourceLabel=[row.display_name,row.card_number,row.source_language].join(' · ');
   }
   const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=data.action==='generate_fullart'||illustration;
   const paletteMode=data.action==='generate_palette_background',extractMode=data.action==='generate_background_extract',noImage=independent||paletteMode;
@@ -166,7 +179,7 @@ Deno.serve(async(req:Request)=>{
    if(width!==imageWidth||height!==imageHeight)throw Error('OUTPUT_SIZE_MISMATCH');
    const id=crypto.randomUUID(),rawPath=user.id+'/'+id+'/provider.png';
    const upload=await savedFetch('/storage/v1/object/'+outputBucket+'/'+rawPath,{method:'POST',headers:{'Content-Type':'image/png','x-upsert':'false'},body:raw});if(!upload.ok)throw Error('OUTPUT_UPLOAD_FAILED');
-   const row={id,user_id:user.id,mode:illustration?'illustration':fullArt?'fullart':independent?'independent':'original',raw_path:rawPath,image_path:rawPath,result_kind:'provider',width,height,window_rect:windowRect?Object.fromEntries(['x','y','w','h'].map(k=>[k,windowRect[k]])):null,model,prompt_version:diagnostic.promptVersion,request_id:response.headers.get('x-request-id')};
+   const row={id,user_id:user.id,source_reference_id:sourceId,source_card_label:sourceLabel||null,mode:illustration?'illustration':fullArt?'fullart':independent?'independent':'original',raw_path:rawPath,image_path:rawPath,result_kind:'provider',width,height,window_rect:windowRect?Object.fromEntries(['x','y','w','h'].map(k=>[k,windowRect[k]])):null,model,prompt_version:diagnostic.promptVersion,request_id:response.headers.get('x-request-id')};
    const saved=await savedFetch('/rest/v1/overlay_generations',{method:'POST',body:JSON.stringify(row)});
    if(!saved.ok){await savedFetch('/storage/v1/object/'+outputBucket,{method:'DELETE',body:JSON.stringify({prefixes:[rawPath]})}).catch(()=>{});throw Error('OUTPUT_METADATA_FAILED');}
    generationId=id;storageSaved=true;
@@ -174,3 +187,4 @@ Deno.serve(async(req:Request)=>{
   return reply({image:output,requestId:response.headers.get('x-request-id'),generationId,storageSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });
+

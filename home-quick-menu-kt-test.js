@@ -43,14 +43,9 @@ const data=[
 ].map(([id,label,href])=>({id,label,href}));
 const find=id=>data.find(x=>x.id===id),$=s=>document.querySelector(s);
 const EMOJI={favorite:'💜',box:'📦',graded:'🏅',market:'🤝',events:'🎁',coupons:'🎟️',mon:'👾',ranking:'🏆',shop_news:'📣',information:'💡',schedule:'📅',creator:'🎨',tools:'🛠️',entries:'📋',binder:'📒'};
-let visualStyle='svg';
-const styleKey='funypin.home.quick-menu.test.visual-style.v1';
-try{visualStyle=localStorage.getItem(styleKey)==='emoji'?'emoji':'svg'}catch(_){}
+const visualStyle='emoji';
 function styledIcon(id){return visualStyle==='emoji'?'<span class="quick-emoji" aria-hidden="true">'+(EMOJI[id]||'✨')+'</span>':svg(id)}
 const PLUS_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
-function updateVariant(){for(const [key,value] of [['variantSvg','svg'],['variantEmoji','emoji']]){const b=document.getElementById(key);b?.classList.toggle('is-active',visualStyle===value);b?.setAttribute('aria-pressed',String(visualStyle===value))}}
-function changeStyle(next){visualStyle=next;try{localStorage.setItem(styleKey,next)}catch(_){}updateVariant();renderHome()}
-
 const svg=id=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+(icons[id]||icons.box)+'</svg>';
 function valid(x){return x&&Array.isArray(x.selected)&&x.selected.length<=10&&new Set(x.selected).size===x.selected.length&&x.selected.every(id=>find(id))}
 function load(){
@@ -62,18 +57,18 @@ function load(){
 }
 const copy=x=>({selected:[...x.selected]});
 let saved=load(),draft=copy(saved),beforeOpen=null;
-let adminLayout={is_enabled:true,position:'before_recommend'};
+let adminLayout={is_enabled:true,position:'before_recommend',sort_order:5};
 async function loadAdminLayout(){
  try{
   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),4000);
   let response;
-  try{response=await fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/rest/v1/home_quick_menu_settings?id=eq.1&select=is_enabled,position',{
+  try{response=await fetch('https://wdttzpbmqavaqfcbaywj.supabase.co/rest/v1/home_quick_menu_settings?id=eq.1&select=is_enabled,position,sort_order',{
     headers:{apikey:'sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq'},signal:ctrl.signal
   })}finally{clearTimeout(timer)}
   if(!response.ok)throw new Error('HTTP '+response.status);
   const settings=(await response.json())?.[0];
   if(!settings)throw new Error('Settings unavailable');
-  adminLayout={is_enabled:settings.is_enabled===true,position:settings.position==='after_recommend'?'after_recommend':'before_recommend'};
+  adminLayout={is_enabled:settings.is_enabled===true,position:Number(settings.sort_order)>=10?'after_recommend':'before_recommend',sort_order:Number(settings.sort_order)||5};
  }catch(err){console.warn('[FUNY PIN quick menu] using default test layout:',err.message)}
  renderHome();
 }
@@ -102,9 +97,7 @@ function renderEditor(){
 function openEditor(){beforeOpen=document.activeElement;draft=copy(saved);$('#scrim').classList.add('open');$('#scrim').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderEditor();$('#closeEditor').focus()}
 function closeEditor(){$('#scrim').classList.remove('open');$('#scrim').setAttribute('aria-hidden','true');document.body.style.overflow='';beforeOpen?.focus()}
 $('#closeEditor').addEventListener('click',closeEditor);
-$('#variantSvg').addEventListener('click',()=>changeStyle('svg'));
-$('#variantEmoji').addEventListener('click',()=>changeStyle('emoji'));
-updateVariant();
+
 $('#scrim').addEventListener('click',e=>{if(e.target===$('#scrim'))closeEditor()});
 $('#menuGrid').addEventListener('click',e=>{
  const btn=e.target.closest('[data-menu-id]');if(!btn)return;const id=btn.dataset.menuId;

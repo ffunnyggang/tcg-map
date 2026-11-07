@@ -49,6 +49,13 @@ Deno.serve(async(req:Request)=>{
   const readOwner=async(id:string)=>{const res=await savedFetch(ownedQuery(id)+'&select=*');if(!res.ok)throw Error('HISTORY_UNAVAILABLE');return (await res.json())[0];};
   if(data.action==='symbol_asset'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   if(data.assetId!==undefined){
+    if(data.assetId!=='anniversary-yellow-umbreon-v1')return reply({error:'올바른 공통 심볼이 아닙니다.'},400);
+    const r=await savedFetch('/rest/v1/overlay_symbol_assets?id=eq.anniversary-yellow-umbreon-v1&select=image_path,placement');
+    if(!r.ok)return reply({error:'공통 심볼을 불러오지 못했어요.'},503);const asset=(await r.json())[0];
+    if(asset?.image_path!=='assets/overlay/anniversary-yellow-umbreon-v1.png')return reply({error:'공통 심볼이 준비되지 않았어요.'},503);
+    return reply({symbol:{imageUrl:'https://funypin.kr/'+asset.image_path,placement:asset.placement}});
+   }
    const res=await savedFetch('/rest/v1/overlay_symbol_assets?id=eq.anniversary-yellow-v1&select=image_path,placement');
    if(!res.ok)return reply({error:'공통 심볼 정보를 불러오지 못했어요.'},503);
    const row=(await res.json())[0];if(!row||row.image_path!=='shared-assets/anniversary-yellow-v1.png')return reply({error:'공통 심볼이 준비되지 않았어요.'},503);
@@ -71,7 +78,7 @@ Deno.serve(async(req:Request)=>{
     return reply({generation:{id:row.id,mode:row.mode,prompt_version:row.prompt_version,result_kind:row.result_kind,width:row.width,height:row.height,window_rect:row.window_rect,source_card_label:row.source_card_label,created_at:row.created_at,imageUrl:url+'/storage/v1'+signed.signedURL}});
    }
    let prepared;try{prepared=png(data.image,['fullart','illustration'].includes(row.mode));}catch{return reply({error:'저장할 이미지의 형식이나 크기가 올바르지 않습니다.'},400);}
-   const view=new DataView(prepared.buffer);const widePrepared=['card-fullart-layers-v1','card-fullart-wide-v1','card-fullart-wide-v2','card-fullart-wide-v3','card-fullart-wide-tcg-v1','card-fullart-wide-openai-v1','card-fullart-wide-runware-v1','card-fullart-wide-adobe-v1'].includes(row.prompt_version)&&view.getUint32(16)===1008&&view.getUint32(20)===1408;if(!widePrepared&&(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height))return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
+   const view=new DataView(prepared.buffer);const widePrepared=['card-fullart-header-layers-v1','card-fullart-layers-v1','card-fullart-wide-v1','card-fullart-wide-v2','card-fullart-wide-v3','card-fullart-wide-tcg-v1','card-fullart-wide-openai-v1','card-fullart-wide-runware-v1','card-fullart-wide-adobe-v1'].includes(row.prompt_version)&&view.getUint32(16)===1008&&view.getUint32(20)===1408;if(!widePrepared&&(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height))return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
    const savedWindow=data.printRect;
    if(savedWindow!==undefined&&(!widePrepared||!savedWindow||['x','y','w','h'].some(k=>typeof savedWindow[k]!=='number'||!Number.isFinite(savedWindow[k]))||savedWindow.x<0||savedWindow.y<0||savedWindow.w<5||savedWindow.h<5||savedWindow.x+savedWindow.w>63||savedWindow.y+savedWindow.h>88))return reply({error:'출력 창 좌표가 올바르지 않습니다.'},400);
    const imagePath=prefix+'prepared.png';
@@ -126,12 +133,14 @@ Deno.serve(async(req:Request)=>{
    const row=(await ref.json())[0];if(!row)return reply({error:'등록된 원본 카드가 없습니다.'},400);
    sourceId=row.id;sourceLabel=[row.display_name,row.card_number,row.source_language].join(' · ');
   }
+  const headerOnly=data.action==='generate_header';
   const wide=data.action==='generate_fullart_wide',aligned=data.action==='generate_fullart_aligned',fixed=data.action==='generate_fullart_fixed'||wide;
-  const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=data.action==='generate_fullart'||aligned||fixed||illustration;
+  const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=headerOnly||data.action==='generate_fullart'||aligned||fixed||illustration;
   const paletteMode=data.action==='generate_palette_background',extractMode=data.action==='generate_background_extract',noImage=independent||paletteMode;
   const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
   if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme','printRect'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
-  if(fullArt&&Object.keys(data).some(k=>!(wide?['action','image','mask','printRect','wideLayout','widePrompt','wideLayers']:fixed?['action','image','mask','printRect']:['action','image','printRect']).includes(k)))return reply({error:'풀아트 모드에는 카드 이미지 한 장만 전송해 주세요.'},400);
+  if(fullArt&&Object.keys(data).some(k=>!(wide?['action','image','mask','printRect','wideLayout','widePrompt','wideLayers','wideHeader']:fixed?['action','image','mask','printRect']:['action','image','printRect']).includes(k)))return reply({error:'풀아트 모드에는 카드 이미지 한 장만 전송해 주세요.'},400);
+  if(data.wideHeader!==undefined&&(!wide||data.wideHeader!==true||data.wideLayers!==true||data.widePrompt!==undefined))return reply({error:'상단 분리 생성 설정이 올바르지 않습니다.'},400);
   if(data.wideLayers!==undefined&&(!wide||data.wideLayers!==true||data.wideLayout!=='bottom-v1'||data.widePrompt!==undefined||!data.printRect))return reply({error:'레이어 분리 생성 설정이 올바르지 않습니다.'},400);
   if(data.widePrompt!==undefined&&(!wide||data.wideLayout!=='bottom-v1'||!Object.hasOwn(WIDE_REFERENCE_PROMPTS,data.widePrompt)))return reply({error:'올바른 비교 프롬프트를 선택해 주세요.'},400);
   if(paletteMode&&(!Object.hasOwn(themes,data.theme)||!Array.isArray(data.palette)||data.palette.length!==4||!data.palette.every((color:unknown)=>typeof color==='string'&&/^#[0-9a-fA-F]{6}$/.test(color))||Object.keys(data).some(k=>!['action','theme','palette','printRect'].includes(k))))return reply({error:'배경 테마와 색상값 4개만 전송할 수 있습니다.'},400);
@@ -192,6 +201,12 @@ Deno.serve(async(req:Request)=>{
    diagnostic.promptVersion='card-fullart-layers-v1';
   }
   if(originalPrompt!==undefined){form.set('prompt',ORIGINAL_REFERENCE_PROMPTS[originalPrompt]);diagnostic.promptVersion='card-fullart-original-'+originalPrompt+'-v1';}
+  if(wide&&data.wideHeader)diagnostic.promptVersion='card-fullart-header-layers-v1';
+  if(headerOnly){
+   form.set('background','transparent');form.set('quality','high');
+   form.set('prompt','Extract ONLY a transparent upper-header overlay from this one source card. Output a full uncropped 1008x1408 PNG canvas registered to the exact original card bounds. Keep original positions, sizes, colors, letter shapes and thin original outlines. Top left: retain the evolution stage label (or BASIC label), evolution portrait badge if present, and card name. Exclude the evolves-from text line, such as 이브이에서 진화 or Evolves from Eevee, including its background strip. Top right: retain HP, the actual HP number, and the type/energy icon. Keep the source language verbatim. Do not invent an evolution portrait when absent. Everything else must be actual alpha transparency: no illustration, scenery, card panel, inner or outer border, anniversary badge, attacks, descriptions, lower numbers, separators or copyright. Preserve full-canvas empty space rather than cropping to the header. Clean antialiased contours with no detached speckles, background remnants or added thick outlines. Do not move, enlarge, redraw or change the retained content. This transparent layer will be composited over separately generated art locally.');
+   diagnostic.promptVersion='card-header-only-v1';
+  }
   const response=await fetch('https://api.openai.com/v1/images/'+(noImage?'generations':'edits'),{method:'POST',headers:{Authorization:'Bearer '+key,...(noImage?{'Content-Type':'application/json'}:{})},body:noImage?JSON.stringify(background):form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();
   if(!response.ok){

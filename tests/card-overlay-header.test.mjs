@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {headerTransparency} from '../card-overlay-header.mjs';
+test('opaque and empty plates are rejected, genuine header alpha is accepted',()=>{const p=new Uint8ClampedArray(100*140*4);assert.equal(headerTransparency(p,100,140).valid,false);for(let i=0;i<100*140;i++)p[i*4+3]=255;assert.equal(headerTransparency(p,100,140).valid,false);p.fill(0);for(let i=0;i<100;i++)p[i*4+3]=255;assert.equal(headerTransparency(p,100,140).valid,true);});

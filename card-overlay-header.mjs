@@ -11,3 +11,15 @@ export async function decodeHeaderLayer(base64,canvas){
  // The scope of this option is the upper card header, never lower descriptions.
  g.clearRect(0,Math.ceil(1408*.24),1008,1408);return out;
 }
+
+export function textTransparency(pixels,width,height){
+ let clear=0,solid=0;for(let i=3;i<pixels.length;i+=4){if(pixels[i]<16)clear++;if(pixels[i]>128)solid++;}
+ return {valid:clear/(width*height)>.5&&solid>width*height*.001,clearRatio:clear/(width*height)};
+}
+export async function decodeTextLayer(base64,canvas){
+ const image=new Image();image.src='data:image/png;base64,'+base64;await image.decode();
+ if(image.width!==1008||image.height!==1408)throw Error('전체 텍스트 레이어의 크기가 요청 규격과 다릅니다. 배경 생성은 시작하지 않았어요.');
+ const out=canvas(1008,1408),g=out.getContext('2d');g.drawImage(image,0,0);
+ if(!textTransparency(g.getImageData(0,0,1008,1408).data,1008,1408).valid)throw Error('전체 텍스트 레이어가 투명 이미지로 생성되지 않았거나 비어 있습니다. 배경 생성은 시작하지 않았어요.');
+ return out;
+}

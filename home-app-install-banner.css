@@ -3,8 +3,8 @@
 .funy-app-install-banner[hidden]{display:none!important}
 .funy-app-install-banner{box-sizing:border-box;position:relative;z-index:1;width:100%;min-height:72px;padding:10px 12px;background:#f4effb;border-bottom:1px solid #e6ddf4;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .funy-app-install-inner{display:flex;align-items:center;gap:9px;min-height:52px}
-.funy-app-install-icon{box-sizing:border-box;display:block;flex:0 0 51px;width:51px;height:51px;padding:0;border:0;outline:0;box-shadow:none;border-radius:11px;object-fit:cover;background:transparent;clip-path:inset(2px round 10px)}
-.funy-app-install-copy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}
+.funy-app-install-icon{box-sizing:border-box;display:block;flex:0 0 47px;width:47px;height:47px;padding:0;border:0;outline:0;box-shadow:none;border-radius:11px;object-fit:cover;background:transparent;clip-path:inset(2px round 10px)}
+.funy-app-install-copy{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}
 .funy-app-install-name{font-family:'Nunito','Pretendard Variable',Pretendard,sans-serif;font-size:13px;line-height:1.3;font-weight:900;color:#26202d;white-space:nowrap}
 .funy-app-install-subtitle{font-size:10px;line-height:1.35;color:#77707f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .funy-app-install-meta{font-size:9px;line-height:1.2;color:#9a92a0;white-space:nowrap}

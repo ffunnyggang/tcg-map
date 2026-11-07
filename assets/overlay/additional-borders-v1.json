@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "renderer": "card-overlay-shape.mjs:fittedBorder",
+  "card": {
+    "widthMM": 63,
+    "heightMM": 88,
+    "renderWidth": 1008,
+    "renderHeight": 1408
+  },
+  "notes": "Generated raw textures include alpha-edge residue. Always apply fittedBorder before compositing; never draw raw files directly. Selection UI is not added by this asset registration.",
+  "assets": [
+    {
+      "id": "silver-glitter-border-v1",
+      "label": "실버 글리터",
+      "path": "assets/overlay/silver-glitter-border-v1.png",
+      "generation": "Built-in image generation; reference outer-border extraction; transparent interior, no text or symbols."
+    },
+    {
+      "id": "gold-star-border-v1",
+      "label": "골드 별무늬 글리터",
+      "path": "assets/overlay/gold-star-border-v1.png",
+      "generation": "Built-in image generation; reference outer-border extraction; transparent interior, no text or symbols."
+    },
+    {
+      "id": "silver-satin-border-v1",
+      "label": "새틴 실버",
+      "path": "assets/overlay/silver-satin-border-v1.png",
+      "generation": "Built-in image generation; reference outer-border extraction; transparent interior, no text or symbols."
+    }
+  ]
+}

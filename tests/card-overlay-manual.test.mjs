@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {adjustMatrix,coversCard,IDENTITY_WIDE,renderManual,manualMask} from '../card-overlay-manual.mjs';
+test('identity keeps the source footprint in original card coordinates',()=>{assert.deepEqual(adjustMatrix(IDENTITY_WIDE,{}),IDENTITY_WIDE);assert.ok(coversCard(IDENTITY_WIDE,1648,2048));});
+test('drag is measured in card pixels independent of generator offsets',()=>{const m=adjustMatrix(IDENTITY_WIDE,{x:16,y:-32});assert.equal(m[4]+320,16);assert.equal(m[5]+80,-32);});
+test('resizing is around card centre without altering original coordinates',()=>{const m=adjustMatrix(IDENTITY_WIDE,{scale:2});assert.equal(m[0]*824+m[4],504);assert.equal(m[3]*784+m[5],704);});
+test('coverage rejects translation, shrinkage, singular and invalid transforms',()=>{assert.equal(coversCard(adjustMatrix(IDENTITY_WIDE,{x:321}),1648,2048),false);assert.equal(coversCard(adjustMatrix(IDENTITY_WIDE,{scale:.25}),1648,2048),false);assert.equal(coversCard([0,0,0,0,0,0],1648,2048),false);assert.equal(coversCard([NaN,0,0,1,0,0],1648,2048),false);});
+test('rotated coverage checks all corners, not just bounding box',()=>{assert.equal(coversCard([0,1,-1,0,1648,0],1648,2048),true);assert.equal(coversCard([.7,.7,-.7,.7,504,-100],1648,2048),false);});
+test('render uses the same affine transform before cropping to card size',()=>{const calls=[],context={setTransform:(...a)=>calls.push(a),drawImage:(...a)=>calls.push(a),resetTransform:()=>calls.push('reset')},image={};const result=renderManual(image,IDENTITY_WIDE,(width,height)=>({width,height,getContext:()=>context}));assert.deepEqual([result.width,result.height],[1008,1408]);assert.deepEqual(calls,[IDENTITY_WIDE,[image,0,0],'reset']);});
+test('manual restoration clears old artwork mask and uses the chosen cut window',()=>{const calls=[],g={drawImage:()=>{},clearRect:(...a)=>calls.push(['clear',...a]),fillRect:(...a)=>calls.push(['fill',...a])};manualMask({}, {x:5,y:10,w:53,h:35},{x:6,y:11,w:51,h:33},()=>({getContext:()=>g}));assert.deepEqual(calls,[['clear',80,160,848,560],['fill',96,176,816,528]]);});

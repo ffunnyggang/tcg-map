@@ -15,7 +15,7 @@ export function searchWide(source,generated,r){
  const fine={...best};for(let k=-2;k<=2;k++)for(let a=-2;a<=2;a++)for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++)accept({...fine,scale:fine.scale+k*.002,angle:fine.angle+a*.2,dx:fine.dx+x*.2,dy:fine.dy+y*.2});
  return best;
 }
-export async function alignWide(source,generated,artRect,canvas){
+export async function alignWide(source,generated,artRect,canvas,{allowManual=false}={}){
  if(generated.width!==WIDE.width||generated.height!==WIDE.height)throw Error('확장 생성 결과 크기가 요청 규격과 다릅니다.');
  const padded=padCard(source,canvas),tw=160,th=Math.round(tw*WIDE.height/WIDE.width),sx=tw/WIDE.width,sy=th/WIDE.height;
  const tiny=im=>{const c=canvas(tw,th);c.getContext('2d').drawImage(im,0,0,tw,th);return c.getContext('2d').getImageData(0,0,tw,th);};
@@ -23,13 +23,13 @@ export async function alignWide(source,generated,artRect,canvas){
  const art={x:(WIDE.padX+artRect.x*16)*sx,y:(WIDE.padY+artRect.y*16)*sy,w:artRect.w*16*sx,h:artRect.h*16*sy};
  const original=tiny(padded),target=tiny(generated);
  const match=typeof Worker==='undefined'?searchWide(original,target,art):await new Promise((resolve,reject)=>{const worker=new Worker(new URL('./card-overlay-wide-worker.mjs?v=20261107-bottom1',import.meta.url),{type:'module'});const timeout=setTimeout(()=>{worker.terminate();reject(Error('자동 정렬 시간이 초과됐어요. 다시 생성하지 않고 종료합니다.'));},45000);worker.onmessage=e=>{clearTimeout(timeout);worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.match);};worker.onerror=()=>{clearTimeout(timeout);worker.terminate();reject(Error('이 브라우저에서 자동 정렬을 실행하지 못했어요.'));};worker.postMessage({source:original,generated:target,rect:art});});
- if(!match||match.correlation<.9||match.mae>35)throw Error('원본과 충분히 일치하는 위치를 찾지 못했어요. 자동 재생성은 하지 않습니다. AI 원본은 저장 내역에서 확인할 수 있어요.');
+ if(!match||match.correlation<.9||match.mae>35){if(allowManual)return {matrix:[1,0,0,1,-WIDE.padX,-WIDE.padY],trusted:false};throw Error('원본과 충분히 일치하는 위치를 찾지 못했어요. 자동 재생성은 하지 않습니다. AI 원본은 저장 내역에서 확인할 수 있어요.');}
  const cardBox={x:WIDE.padX*sx,y:WIDE.padY*sy,w:WIDE.cardWidth*sx,h:WIDE.cardHeight*sy};
- if(!covered(match,tw,th,cardBox))throw Error('정렬 후 카드 영역에 빈 공간이 남아 출력하지 않았어요. AI 원본은 저장 내역에서 확인해 주세요.');
+ const complete=covered(match,tw,th,cardBox);if(!complete&&!allowManual)throw Error('정렬 후 카드 영역에 빈 공간이 남아 출력하지 않았어요. AI 원본은 저장 내역에서 확인해 주세요.');
  // Invert the sampled source-to-generated transform, including thumbnail axis scaling.
  const angle=match.angle*Math.PI/180,a=Math.cos(angle)*match.scale,b=Math.sin(angle)*match.scale;
  const tx=match.cx-a*match.cx+b*match.cy+match.dx,ty=match.cy-b*match.cx-a*match.cy+match.dy,det=a*a+b*b;
  const A=a/det,B=-b/det* sx/sy,C=b/det*sy/sx,D=a/det,E=(-a*tx-b*ty)/det/sx-WIDE.padX,F=(b*tx-a*ty)/det/sy-WIDE.padY;
  const result=canvas(WIDE.cardWidth,WIDE.cardHeight),g=result.getContext('2d');g.setTransform(A,B,C,D,E,F);g.drawImage(generated,0,0);g.resetTransform();
- return {image:result,match};
+ return {image:result,match,matrix:[A,B,C,D,E,F],trusted:complete};
 }

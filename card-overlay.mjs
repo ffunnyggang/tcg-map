@@ -1,7 +1,8 @@
 const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingface.co/pearsonkyle/tcg-frame-removal-klein4b"},"openai":{"label":"OpenAI 가이드 참고","url":"https://developers.openai.com/api/docs/guides/image-prompting"},"runware":{"label":"Runware 가이드 참고","url":"https://runware.ai/docs/learn/image-outpainting"},"adobe":{"label":"Adobe 가이드 참고","url":"https://www.adobe.com/kr/products/photoshop/generative-fill.html"}};
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
 function isWideMode(mode){return mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
-import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-refs1';
+import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
+import {reviewWideAlignment,IDENTITY_WIDE} from './card-overlay-manual.mjs?v=20261107-manual1';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';
@@ -14,7 +15,7 @@ import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,i
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
 import {drawArt,artPlacement,makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261104-saved1';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
-let sourceReferenceId=null,fixedArtRect=null;
+let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;
 let referenceCard=null,referenceSearch=0,fullArtResult=null,fullArtSource=null,historyOnly=false,savedLoading=false,savedEpoch=0,fullArtIsSample=false,fullArtResultMode=null;
 const names=['왼쪽 위','오른쪽 위','오른쪽 아래','왼쪽 아래'];
@@ -23,8 +24,8 @@ function rect(){const r=Object.fromEntries(['x','y','w','h'].map(k=>[k,Number($(
 function canvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
 async function load(file){if(!file||file.size>15*1024*1024)throw Error('15MB 이하 JPG·PNG·WebP 이미지를 선택해 주세요.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('JPG·PNG·WebP로 저장한 이미지를 선택해 주세요.');const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();if(img.width*img.height>40000000)throw Error('이미지 해상도가 너무 커요. 크기를 줄여 주세요.');const scale=Math.min(1,1800/Math.max(img.width,img.height)),c=canvas(Math.round(img.width*scale),Math.round(img.height*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;}finally{URL.revokeObjectURL(url);}}
 function isFullCardMode(mode=$('generationMode').value){return mode==='fullart'||mode==='fullart_aligned'||mode==='fullart_fixed'||isWideMode(mode)||mode==='illustration';}
-function matchingFullArt(){return !!fullArtResult&&fullArtResultMode===$('generationMode').value;}
-function update(){let valid=false;try{rect();valid=true;}catch{}$('generate').disabled=busy||savedLoading||historyOnly||!card||!valid||!$('confirmed').checked||!$('pokemonConfirmed').checked||!ready;const full=isFullCardMode(),hasResult=full?matchingFullArt():!!art,reviewed=full?$('fullArtAccepted').checked:!alignmentReview||$('acceptAlignment').checked;for(const id of ['png','pdf'])$(id).disabled=busy||!hasResult||!valid||!reviewed;$('correct').disabled=busy||corners.length!==4;$('loadSaved').disabled=busy||savedLoading;$('openCatalog').disabled=busy||savedLoading;$('fullArtPng').disabled=busy||savedLoading||!matchingFullArt()||!$('fullArtAccepted').checked;}
+function matchingFullArt(){return !!fullArtResult&&fullArtResultMode===$('generationMode').value&&(fullArtResultMode!=='fullart_wide'||!wideManualState||!wideManualState.cutRect||['x','y','w','h'].every(k=>Number($(k).value)===wideManualState.cutRect[k])&&Number($('tolerance').value)===wideManualState.tolerance);}
+function update(){$('manualAdjust').disabled=busy||savedLoading;let valid=false;try{rect();valid=true;}catch{}$('generate').disabled=busy||savedLoading||historyOnly||!card||!valid||!$('confirmed').checked||!$('pokemonConfirmed').checked||!ready;const full=isFullCardMode(),hasResult=full?matchingFullArt():!!art,reviewed=full?$('fullArtAccepted').checked:!alignmentReview||$('acceptAlignment').checked;for(const id of ['png','pdf'])$(id).disabled=busy||!hasResult||!valid||!reviewed;$('correct').disabled=busy||corners.length!==4;$('loadSaved').disabled=busy||savedLoading;$('openCatalog').disabled=busy||savedLoading;$('fullArtPng').disabled=busy||savedLoading||!matchingFullArt()||!$('fullArtAccepted').checked;}
 function draw(){cv.style.borderRadius=card&&$('shape').value==='round'?'4.76% / 3.41%':'0';ctx.clearRect(0,0,cv.width,cv.height);$('empty').hidden=!!photo;if(!photo)return;if(!card){ctx.drawImage(photo,0,0);ctx.lineWidth=3;ctx.strokeStyle='#a273dc';ctx.fillStyle='#a273dc';corners.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x*cv.width,p.y*cv.height,10,0,7);ctx.fill();ctx.fillStyle='white';ctx.font='bold 13px sans-serif';ctx.fillText(i+1,p.x*cv.width-4,p.y*cv.height+4);ctx.fillStyle='#a273dc';});if(corners.length>1){ctx.beginPath();corners.forEach((p,i)=>i?ctx.lineTo(p.x*cv.width,p.y*cv.height):ctx.moveTo(p.x*cv.width,p.y*cv.height));if(corners.length===4)ctx.closePath();ctx.stroke();}return;}if(art)drawArt(ctx,$('rawPreview').checked&&rawArt?rawArt:art,0,0,S,artBleed,true);else ctx.drawImage(card,0,0,W,H);try{const r=rect();if(art&&!$('rawPreview').checked){if($('assembled').checked)ctx.drawImage(card,r.x*S,r.y*S,r.w*S,r.h*S,r.x*S,r.y*S,r.w*S,r.h*S);else{ctx.fillStyle='white';ctx.fillRect(r.x*S,r.y*S,r.w*S,r.h*S);}}ctx.strokeStyle='#b264d0';ctx.lineWidth=2;ctx.setLineDash([9,5]);const t=Number($('tolerance').value)||0;ctx.strokeRect((r.x-t)*S,(r.y-t)*S,(r.w+2*t)*S,(r.h+2*t)*S);ctx.setLineDash([]);}catch{}drawSeams();update();}
 function resetReview(){$('seamDetails').hidden=true;rawArt=null;alignmentReview=false;$('acceptAlignment').checked=false;$('alignmentReview').hidden=true;$('rawPreview').checked=false;}
 function setPhoto(p){fixedArtRect=null;sourceReferenceId=null;$('sourceCardLabel').value='';$('sourceCardLabel').readOnly=false;savedEpoch++;historyOnly=false;$('storageStatus').textContent='';resetFullArt();clearReference();resetReview();$('qualityStatus').textContent='';sampleMode=false;$('scanOption').hidden=true;$('windowStatus').textContent='';photo=p;card=null;art=null;artBleed=0;corners=[];revision++;cv.width=p.width;cv.height=p.height;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('settings').disabled=true;$('cornerName').textContent=names[0];$('cornerTools').hidden=false;$('previewTitle').textContent='카드 외곽 확인';$('zoom').value='1';applyZoom();}
@@ -90,7 +91,7 @@ $('findReference').onclick=async()=>{
  }catch(e){$('referenceStatus').textContent='참조 DB를 불러오지 못했어요. 촬영 이미지로 계속할 수 있습니다. '+(e.message||'');}finally{$('findReference').disabled=false;}
 };
 
-function resetFullArt(){fullArtResultMode=null;fullArtIsSample=false;fullArtResult=null;fullArtSource=null;$('fullArtPanel').hidden=true;$('fullArtAccepted').checked=false;$('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtImage').removeAttribute('src');}
+function resetFullArt(){wideManualState=null;$('manualAdjust').hidden=true;fullArtResultMode=null;fullArtIsSample=false;fullArtResult=null;fullArtSource=null;$('fullArtPanel').hidden=true;$('fullArtAccepted').checked=false;$('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtImage').removeAttribute('src');}
 const fullArtInfoText=$('fullArtInfo').textContent;
 function fullArtMode(){
  const mode=$('generationMode').value,active=isFullCardMode(),illustration=mode==='illustration';
@@ -99,8 +100,10 @@ function fullArtMode(){
   $('fullArtStatus').textContent='출력 경로 확인용 샘플 · AI 미사용 · 서버 저장 안 함. 글자·테두리 제거와 풍경 확장은 수행하지 않은 그림입니다. 아래 확인란을 선택하면 기존 사각·라운드 도안과 PNG·A4 PDF를 테스트할 수 있습니다.';
  }
  $('symbolPanel').hidden=!illustration;
- $('fullArtPanel').hidden=!active||!matchingFullArt();$('fullArtInfo').hidden=!active;$('bgExtractPanel').hidden=mode!=='bg_extract';
+ $('manualAdjust').hidden=!wideManualState||mode!=='fullart_wide';$('manualAdjust').disabled=busy||savedLoading;
+ $('fullArtPanel').hidden=!active||(!matchingFullArt()&&!(wideManualState&&mode==='fullart_wide'));$('fullArtInfo').hidden=!active;$('bgExtractPanel').hidden=mode!=='bg_extract';
  $('fullArtInfo').textContent=illustration?'카드 전체 이미지를 외부 AI로 전송합니다. 새 풀아트 프롬프트를 바탕으로 원래 그림의 위치·크기를 유지하고, 모든 글자·기호·로고·배지·안쪽 프레임·바깥 테두리를 지운 자리를 풍경으로 채우도록 요청합니다. 참조 이미지 대체는 적용하지 않습니다. 픽셀 보존과 완전한 제거는 보장되지 않으므로 원본과 비교해 주세요. 절단선 없는 PNG와 기존 사각·라운드 도안 PNG·A4 PDF를 저장할 수 있습니다. 도안 바깥 2mm는 가장자리 픽셀을 연장합니다.':isWideMode(mode)?'원본 크기를 유지하고 상단 5mm·하단 35mm·좌우 20mm 여백을 추가해 생성합니다. 생성 전 보존 영역을 확인하고, 생성 후 일러스트 기준 위치·배율·회전을 자동 정렬해 카드 크기로 자릅니다. 글자·기호는 칠한 영역만 원본으로 복원합니다. 일치도가 낮거나 빈 공간이 남으면 출력하지 않습니다. 큰 이미지 요청으로 비용·시간이 늘어날 수 있으며 경계 연결은 직접 확인해 주세요.':mode==='fullart_fixed'?'원본 일러스트와 테두리를 고정하고, 보존할 글자·기호를 마스크에 추가로 칠한 뒤 생성합니다. 보존 영역은 원본 픽셀로 복원하며 출력 절단 창 조절과 무관합니다. 보존 영역 밖의 연결 품질은 원본과 비교해 주세요.':mode==='fullart_aligned'?'원본 카드 전체와 선택한 창 좌표를 전송합니다. 기존 풀아트 지침에 원본 위치·배율·절단 경계 연결을 강조하는 지침을 추가합니다. 마스크 없이 프롬프트만 개선한 비교 테스트 옵션이며, 정확한 위치 보존은 보장되지 않습니다. 원본과 비교 후 출력해 주세요.':fullArtInfoText;
+ if(mode==='fullart_wide')$('fullArtInfo').textContent+=' 자동 정렬에 실패해도 수동 맞추기로 이어집니다. 생성 후 크기·위치를 직접 조절하고 확정해야 출력할 수 있습니다.';
  if(wideVariant(mode)){const info=WIDE_REFERENCES[wideVariant(mode)];$('fullArtInfo').textContent+=' '+info.label+'의 원칙을 현재 API용으로 재작성한 비교 옵션입니다. 원자료의 모델·기능 자체를 실행하지 않습니다. 기존 넓게 확장 지침에 참고 지침만 추가하며, 옵션별 생성은 각각 1회 차감됩니다. ';const link=document.createElement('a');link.href=info.url;link.textContent='참고 자료';link.target='_blank';link.rel='noopener noreferrer';$('fullArtInfo').append(link);}
  $('fullArtHeading').textContent=illustration?'일러스트만 확장 · 테스트 결과':'카드 전체 풀아트 · 테스트 결과';
  $('fullArtImage').alt=illustration?'글자·테두리 없는 일러스트 확장 결과':'풀아트 편집 결과';
@@ -112,7 +115,7 @@ $('generationMode').onchange=()=>{facePosition={x:.5,y:.35};invalidateFacePrevie
 $('fullArtOriginal').onchange=()=>{if(fullArtResult&&fullArtSource)$('fullArtImage').src=($('fullArtOriginal').checked?fullArtSource:fullArtResult).toDataURL('image/png');};
 async function generateFullArt(r){
  const source=prepareFullCard(card,canvas),rev=revision,mode=$('generationMode').value,illustration=mode==='illustration';
- const wide=isWideMode(mode),fixed=mode==='fullart_fixed'||wide;
+ const wide=isWideMode(mode),fixed=mode==='fullart_fixed'||wide;if(mode!=='fullart_wide')wideManualState=null;
  const preserveRect=fixed?(fixedArtRect?{...fixedArtRect}:detectArtWindow(analyze(card),$('layout').value).rect):null;
  const mask=fixed?await reviewFixedMask(source,preserveRect,canvas):null;if(fixed&&!mask){toast('생성을 취소했어요. 횟수는 사용하지 않았습니다.');return;}
  if(wide)resetFullArt();
@@ -120,19 +123,29 @@ async function generateFullArt(r){
  const symbol=illustration?await loadSharedSymbol():null;
  $('qualityStatus').textContent=(illustration?'일러스트만 확장 중':'카드 전체 풀아트 편집 중')+' · 자동 재시도 없음';
  const d=await A.invokeFunction('card-overlay-generate',{action:wide?'generate_fullart_wide':fixed?'generate_fullart_fixed':illustration?'generate_illustration':mode==='fullart_aligned'?'generate_fullart_aligned':'generate_fullart',image:input.toDataURL('image/png'),printRect:r,...(fixed?{mask:inputMask.toDataURL('image/png')} :{}),...(wide?{wideLayout:'bottom-v1',...(wideVariant(mode)?{widePrompt:wideVariant(mode)}:{})}:{}),...sourceMetadata()});if(rev!==revision)return;
- const image=new Image();image.src='data:image/png;base64,'+d.image;await image.decode();let aligned=null;if(wide){$('qualityStatus').textContent='원본 일러스트 위치·크기·회전을 비교해 정렬하고 있어요.';aligned=await alignWide(source,image,preserveRect,canvas);}const working=aligned?aligned.image:image,quality=inspectFullArt(source,working,r),result=canvas(working.width,working.height);result.getContext('2d').drawImage(working,0,0);if(fixed){const restored=restoreFixed(source,result,mask,canvas);result.getContext('2d').drawImage(restored,0,0);}if(symbol)compositeSharedSymbol(result,symbol.image,symbol.placement);
+ const image=new Image();image.src='data:image/png;base64,'+d.image;await image.decode();let aligned=null;if(wide){$('qualityStatus').textContent='원본 일러스트 위치·크기·회전을 비교해 정렬하고 있어요.';if(mode==='fullart_wide'){if(image.width!==1648||image.height!==2048)throw Error('확장 생성 이미지 크기가 요청 규격과 다릅니다.');try{aligned=await alignWide(source,image,preserveRect,canvas,{allowManual:true});}catch{aligned={matrix:[...IDENTITY_WIDE],trusted:false};}if(rev!==revision)return;wideManualState={source,image,mask,artRect:preserveRect,initial:aligned.matrix,trusted:aligned.trusted,d};fullArtSource=source;$('fullArtImage').src=image.src;$('fullArtStatus').textContent='생성 완료 · 수동 맞추기를 확정한 뒤 출력할 수 있습니다.';showStorage(d);fullArtMode();await editWideResult();return;}aligned=await alignWide(source,image,preserveRect,canvas);}const working=aligned?aligned.image:image,quality=inspectFullArt(source,working,r),result=canvas(working.width,working.height);result.getContext('2d').drawImage(working,0,0);if(fixed){const restored=restoreFixed(source,result,mask,canvas);result.getContext('2d').drawImage(restored,0,0);}if(symbol)compositeSharedSymbol(result,symbol.image,symbol.placement);
  fullArtResultMode=mode;fullArtIsSample=false;sampleMode=false;fullArtResult=result;fullArtSource=source;if(symbol||fixed)await storePreparedResult(d,result);else showStorage(d);$('fullArtAccepted').checked=false;$('fullArtOriginal').checked=false;$('fullArtImage').src=result.toDataURL('image/png');$('fullArtPanel').hidden=false;
- $('fullArtStatus').textContent=(wide?'사방 20mm 확장 후 자동 정렬·카드 크기 추출을 완료했습니다. 보존 영역은 원본으로 복원했습니다. 경계 연결은 직접 확인해 주세요. ':fixed?'보존 마스크 영역은 원본 픽셀로 복원했습니다. 바깥 그림의 연결과 중복 윤곽은 직접 확인해 주세요. ':quality.accepted?'일러스트 창의 자동 비교는 통과했습니다.':'일러스트 창에서 원본과 차이가 감지됐습니다.')+(illustration?' 글자·기호·로고·안팎 테두리의 완전한 제거와 배경 연결은 자동 검증되지 않았습니다.':' 전체 글자·기호·로고·테두리의 좌표와 픽셀은 자동 검증되지 않았습니다.')+(symbol?' 저장된 노란색 30주년 심볼을 자동 합성했습니다.':'')+' 입력 원본 보기로 비교해 주세요. 1008×1408px · 63:88 비율 · 절단선 없음.';
+ $('fullArtStatus').textContent=(wide?'상단 5mm·하단 35mm·좌우 20mm 확장 후 자동 정렬·카드 크기 추출을 완료했습니다. 보존 영역은 원본으로 복원했습니다. 경계 연결은 직접 확인해 주세요. ':fixed?'보존 마스크 영역은 원본 픽셀로 복원했습니다. 바깥 그림의 연결과 중복 윤곽은 직접 확인해 주세요. ':quality.accepted?'일러스트 창의 자동 비교는 통과했습니다.':'일러스트 창에서 원본과 차이가 감지됐습니다.')+(illustration?' 글자·기호·로고·안팎 테두리의 완전한 제거와 배경 연결은 자동 검증되지 않았습니다.':' 전체 글자·기호·로고·테두리의 좌표와 픽셀은 자동 검증되지 않았습니다.')+(symbol?' 저장된 노란색 30주년 심볼을 자동 합성했습니다.':'')+' 입력 원본 보기로 비교해 주세요. 1008×1408px · 63:88 비율 · 절단선 없음.';
  $('qualityStatus').textContent='풀아트 결과는 위 별도 영역에 표시됩니다. 아래 기존 출력 설정으로 절단선 PNG·A4 PDF를 저장할 수 있습니다.';fullArtMode();toast('편집이 완료됐어요. 원본과 비교한 뒤 PNG 또는 출력 도안으로 저장하세요.');
 }
+async function editWideResult(){
+ const session=wideManualState;if(!session)return;
+ const cut=rect(),t=Number($('tolerance').value)||0,visible={x:cut.x-t,y:cut.y-t,w:cut.w+2*t,h:cut.h+2*t};if(t<0||t>.5||!validRect(visible))throw Error('창 여유가 카드 범위를 넘습니다. 출력 설정을 확인해 주세요.');
+ const picked=await reviewWideAlignment({...session,cutRect:visible,canvas});if(!picked||session!==wideManualState){if(!fullArtResult)toast('생성 이미지는 유지됩니다. 일러스트 연결 맞추기 버튼으로 이어서 조절하세요.');return;}
+ session.current=picked.matrix;session.cutRect=cut;session.tolerance=t;fullArtResult=picked.image;fullArtSource=session.source;fullArtResultMode='fullart_wide';fullArtIsSample=false;sampleMode=false;
+ $('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtAccepted').checked=true;$('fullArtImage').src=fullArtResult.toDataURL('image/png');
+ $('fullArtStatus').textContent='수동 위치·크기를 적용했습니다. 절단 창 안의 원본과 보존한 글자·테두리를 합성한 결과이며 PNG·PDF에도 동일하게 적용됩니다. 창 위치를 변경하면 다시 맞추기를 확정해 주세요.';
+ await storePreparedResult(session.d,fullArtResult,cut);$('qualityStatus').textContent='수동 보정 완료 · AI 추가 호출 없음';fullArtMode();update();
+}
+$('manualAdjust').onclick=async()=>{if(busy||savedLoading||!wideManualState)return;busy=true;update();try{await editWideResult();}catch(e){toast(e.message);}finally{busy=false;update();}};
 $('fullArtPng').onclick=()=>{if(busy||!matchingFullArt()||!$('fullArtAccepted').checked)return;const name=exportName(fullArtResultMode==='illustration'?'illustration-63x88':'fullart-63x88','png');fullArtResult.toBlob(b=>b?download(b,name):toast('이미지를 만들지 못했어요.'),'image/png');};
 fullArtMode();
 
 function sourceMetadata(){return {sourceReferenceId,sourceCardLabel:$('sourceCardLabel').value.trim()};}
 function showStorage(d){$('storageStatus').textContent=d.storageSaved?'생성 이미지를 내 계정에 비공개로 저장했어요.':d.storageMessage||'생성은 완료됐지만 서버 저장을 확인하지 못했어요. 현재 결과를 다운로드해 주세요.';}
-async function storePreparedResult(d,image){
+async function storePreparedResult(d,image,printRect){
  showStorage(d);if(!d.storageSaved||!d.generationId)return;
- try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:d.generationId,image:image.toDataURL('image/png')});$('storageStatus').textContent='AI 원본과 출력용 보정 결과를 내 계정에 비공개로 저장했어요.';}
+ try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:d.generationId,image:image.toDataURL('image/png'),...(printRect?{printRect}:{})});$('storageStatus').textContent='AI 원본과 출력용 보정 결과를 내 계정에 비공개로 저장했어요.';}
  catch{$('storageStatus').textContent='AI 원본은 저장됐지만 출력용 보정 결과 저장에 실패했어요. 현재 결과를 다운로드해 주세요.';}
 }
 $('loadSaved').onclick=async()=>{

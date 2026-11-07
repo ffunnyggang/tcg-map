@@ -134,3 +134,6 @@ $function$
 
 revoke all on function public.funy_mon_evergreen_capture(double precision,double precision,text,text,uuid) from public,anon;
 grant execute on function public.funy_mon_evergreen_capture(double precision,double precision,text,text,uuid) to authenticated;
+
+-- Nearby lookup runs with caller RLS; it only reads public active-shop/event data.
+alter function public.funy_mon_evergreen_nearby(double precision,double precision) security invoker;

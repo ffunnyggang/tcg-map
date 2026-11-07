@@ -21,7 +21,7 @@
   if(subtitle)subtitle.textContent=en?'Your TCG card shop map, on the go':'내 손안의 TCG 카드샵 지도';
   if(meta)meta.textContent=en?'Free · iOS / Android':'무료 · iOS / Android';
   if(icon)icon.alt=en?'FUNY PIN app icon':'FUNY PIN 앱 아이콘';
-  action.textContent=en?(isIOS?'Get':'Find app'):(isIOS?'설치':'앱 찾기');
+  action.textContent=en?'Get':'설치';
   action.setAttribute('aria-label',en?(isIOS?'Get FUNY PIN on the App Store':'Find FUNY PIN on Google Play'):(isIOS?'App Store에서 FUNY PIN 설치':'Google Play에서 FUNY PIN 검색'));
   close.setAttribute('aria-label',en?'Dismiss app install banner':'앱 설치 배너 닫기');
  };

@@ -117,7 +117,8 @@ Deno.serve(async(req:Request)=>{
    const row=(await ref.json())[0];if(!row)return reply({error:'등록된 원본 카드가 없습니다.'},400);
    sourceId=row.id;sourceLabel=[row.display_name,row.card_number,row.source_language].join(' · ');
   }
-  const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=data.action==='generate_fullart'||illustration;
+  const aligned=data.action==='generate_fullart_aligned';
+  const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=data.action==='generate_fullart'||aligned||illustration;
   const paletteMode=data.action==='generate_palette_background',extractMode=data.action==='generate_background_extract',noImage=independent||paletteMode;
   const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
   if(independent&&(!Object.hasOwn(themes,data.theme)||Object.keys(data).some(k=>!['action','theme','printRect'].includes(k))))return reply({error:'배경 테마만 전송해 주세요. 원본 이미지는 사용할 수 없습니다.'},400);
@@ -128,7 +129,7 @@ Deno.serve(async(req:Request)=>{
   if(!allowed)return reply({error:'AI 생성 테스트 대상 계정이 아닙니다.'},403);
   if(!ready)return reply({error:'AI 생성 연결 준비 중입니다.'},503);
   const windowRect=data.printRect;
-  if(mobileWindowEdit&&!windowRect)return reply({error:'일러스트 창 좌표가 필요합니다.'},400);
+  if((mobileWindowEdit||aligned)&&!windowRect)return reply({error:'일러스트 창 좌표가 필요합니다.'},400);
   if(windowRect!==undefined&&(!windowRect||['x','y','w','h'].some(k=>typeof windowRect[k]!=='number'||!Number.isFinite(windowRect[k]))||windowRect.x<0||windowRect.y<0||windowRect.w<5||windowRect.h<5||windowRect.x+windowRect.w>63||windowRect.y+windowRect.h>88))return reply({error:'출력 창 좌표가 올바르지 않습니다.'},400);
 
   let image=new Uint8Array(),mask=new Uint8Array();try{if(!noImage){image=png(data.image,fullArt);if(!fullArt)mask=png(data.mask);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
@@ -165,6 +166,11 @@ Deno.serve(async(req:Request)=>{
   const background={model,size:'1072x1472',quality:'medium',n:1,output_format:'png',prompt:'Create a completely original portrait landscape of '+themes[data.theme]+'. Hand-painted illustration with subtle paper texture and calm natural colors. Continuous scenery across the entire canvas. No characters, creatures, animals, people, text, logos, frames or borders. This is an independent landscape, not a continuation of an existing image.'};
   if(independent)Object.assign(diagnostic,{promptVersion:'independent-landscape-v1',imageHash:undefined,maskHash:undefined});
   if(paletteMode){background.prompt='Create an original hand-painted portrait landscape of '+themes[data.theme]+'. Use these sampled colors from top, right, bottom, and left edges as the environment palette: '+data.palette.join(', ')+'. Blend them into sky, terrain, lighting, and textures. Continuous natural scenery without foreground subjects. Do not add characters, creatures, animals, people, text, logos, borders or card frames. This is original scenery, not a recreation of existing artwork.';Object.assign(diagnostic,{promptVersion:'palette-landscape-v1',imageHash:undefined,maskHash:undefined});}
+  if(aligned){
+   const r=windowRect;
+   form.set('prompt',FULL_ART_PROMPT+'\n\n'+"【실물 오버레이용 좌표 보존 — 추가 우선 지침】\n이 결과는 실제 카드 위에 얹고 지정한 창을 잘라 사용하는 출력 도안이다. 보기 좋은 새 구도를 만드는 작업이 아니다. 카드 외곽을 동일한 좌표계로 사용하고 기존 일러스트 전체를 원래 위치와 배율에 고정한다. 화면을 넓게 보이게 하기 위한 줌아웃, 캐릭터 재배치, 자세 변경, 카메라 이동, 원근 재구성을 하지 않는다.\n원본 캐릭터의 눈·귀 끝·발끝·꼬리와 배경의 선·사물·명암 경계를 각각 같은 위치에 유지한다. 원본에 잘려 보이는 신체를 완성하기 위해 캐릭터 전체를 이동하거나 축소하지 않는다. 추가 공간이 필요하면 원본 밖의 배경만 확장한다.\n지정된 창의 네 변과 맞닿는 풍경의 색상, 선의 교차 위치, 방향, 굵기, 원근을 그대로 이어 그린다. 창 안쪽과 바깥쪽에 서로 다른 위치의 캐릭터가 중복되거나 이중 윤곽이 생기면 안 된다. 단순히 창 안쪽만 원본으로 덮는 것으로 연결 오류를 숨기지 않는다.\n기존 지침의 글자·숫자·기호·로고·바깥 띠 보존을 유지한다. 전국도감 바와 그 안의 글자만 기존 지침대로 제거한다. 최종 카드 크기와 원본 요소의 좌표는 변경하지 않는다."+'\n출력 캔버스: '+imageWidth+' × '+imageHeight+'px. 선택한 절단 창의 좌상단 x='+(r.x*imageWidth/63).toFixed(3)+', y='+(r.y*imageHeight/88).toFixed(3)+', 너비='+(r.w*imageWidth/63).toFixed(3)+', 높이='+(r.h*imageHeight/88).toFixed(3)+'px. 이 좌표는 원본 전체 카드 기준이며 창에 맞추어 원본을 재배치하지 않는다.');
+   diagnostic.promptVersion='card-fullart-aligned-v1';
+  }
   const response=await fetch('https://api.openai.com/v1/images/'+(noImage?'generations':'edits'),{method:'POST',headers:{Authorization:'Bearer '+key,...(noImage?{'Content-Type':'application/json'}:{})},body:noImage?JSON.stringify(background):form,signal:AbortSignal.timeout(140000)});
   const result=await response.json();
   if(!response.ok){

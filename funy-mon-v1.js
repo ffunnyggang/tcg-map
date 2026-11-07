@@ -429,9 +429,9 @@
     try{
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
       const captureHeaders={'Content-Type':'application/json',Authorization:'Bearer '+auth.token};
-      const captureUrl=meta.evergreen?SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_capture':ENDPOINT;
+      const captureUrl=meta.evergreen?SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_capture_at_origin':ENDPOINT;
        if(meta.evergreen)captureHeaders.apikey=SUPABASE_KEY;
-       const payload=meta.evergreen?{p_anonymous_id:anonId(),p_shop_id:meta.shop.id,p_monster_id:meta.def.id,p_lat:pos.coords.latitude,p_lng:pos.coords.longitude}:{anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+       const payload=meta.evergreen?{p_anonymous_id:anonId(),p_shop_id:meta.shop.id,p_monster_id:meta.def.id,p_lat:pos.coords.latitude,p_lng:pos.coords.longitude,p_origin_lat:meta.originLat,p_origin_lng:meta.originLng}:{anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude};
        const fetchPromise=fetch(captureUrl,{method:'POST',headers:captureHeaders,body:JSON.stringify(payload)});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
       if(!res.ok||data.error){
@@ -525,7 +525,7 @@
       const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat+off.lat,lng+off.lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:160+i,icon:{content:html,anchor:new naver.maps.Point(24,34)}});
       const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
       if(hiddenKeys.has(key)){marker.setMap(null);return}
-      const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,key};
+      const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,originLat:pos.coords.latitude,originLng:pos.coords.longitude,key};
       marker.__funyMonKey=key;evergreenMarkers.push(marker);
       naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
     });

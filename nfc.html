@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>NFC 방문인증 | FUNY PIN</title><link rel="icon" href="/favicon.svg">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#f8f6fa;color:#241e2b;font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:420px;min-height:100dvh;margin:auto;padding:24px 18px 48px;background:#fff}.brand{font-size:13px;font-weight:800;color:#7c4ed5}.panel{margin-top:22px;border:1px solid #ebe5f0;border-radius:18px;padding:20px 18px;box-shadow:0 4px 18px #3c235708}h1{font-size:23px;margin:10px 0}.muted{font-size:13px;line-height:1.7;color:#766e7f}.shop{margin:20px 0 15px;border-radius:13px;background:#f6f2fc;padding:16px}.shop strong{font-size:18px}.shop small{display:block;margin-top:6px;color:#7c6b8c}button{border:0;border-radius:12px;padding:15px 13px;font-size:14px;font-weight:800;width:100%;cursor:pointer}button.primary{background:#7b3dff;color:#fff}button.secondary{background:#f3eef8;color:#6342ab;margin-top:10px}button[disabled]{opacity:.55;cursor:wait}#status{white-space:pre-line;line-height:1.5;font-size:13px;color:#7350bc;min-height:24px;margin-top:12px}.note{border-top:1px solid #eee7f4;margin-top:20px;padding-top:15px;font-size:11px;line-height:1.7;color:#8a8190}</style></head>
+<body><main class="wrap"><div class="brand">FUNY PIN · NFC CHECK-IN</div>
+<section class="panel"><h1>매장 방문인증</h1><p class="muted">매장에서 NFC 태그를 터치하셨나요? 위치를 확인하고 방문인증을 진행할 수 있습니다.</p>
+<div class="shop"><strong id="shopName">매장 확인 중…</strong><small id="shopDetail">NTAG213 · NFC 파일럿</small></div>
+<button id="checkin" type="button" class="primary" disabled>GPS 확인 후 방문인증</button>
+<button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
+<p id="status" role="status" aria-live="polite">NFC 태그를 확인하고 있어요.</p>
+<p class="note">첫 파일럿은 MY 미션·코인 보상에 반영되지 않습니다. NFC 태그에 저장된 URL은 복사할 수 있으므로 NFC 접촉만으로 방문을 인정하지 않으며, 로그인과 매장 반경 50m·GPS 정확도 50m 이내 조건을 함께 확인합니다.</p></section></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),submit=$('checkin'),login=$('login'),status=$('status');
+const token=(new URLSearchParams(location.search).get('t')||'').toLowerCase(),endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-pilot',key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const messages={invalid_tag:'등록되지 않았거나 사용 중지된 NFC 태그예요.',login_required:'퍼니핀 로그인이 필요해요.',too_far:'매장 반경 50m 이내에서 다시 시도해 주세요.',low_accuracy:'GPS 정확도가 낮아요. 위치를 다시 확인해 주세요.',invalid_request:'인증 정보를 확인하고 다시 시도해 주세요.',rate_limited:'요청이 많아요. 잠시 후 다시 시도해 주세요.',server_error:'인증을 처리하지 못했어요. 다시 시도해 주세요.'};
+let shopId='';
+function tell(message){status.textContent=message}
+async function api(body,access=''){
+ const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{})},body:JSON.stringify(body),cache:'no-store'});
+ const data=await response.json().catch(()=>({ok:false,error:'server_error'}));
+ if(!response.ok||!data.ok)throw Error(messages[data.error]||messages.server_error);
+ return data;
+}
+async function authSession(){
+ const a=window.FUNY_WEB_AUTH;await a?.init();if(!a?.client)throw Error(messages.login_required);
+ let access=String(window.__FUNY_ACCESS_TOKEN||a.session?.access_token||'');
+ if(!access&&window.ReactNativeWebView){await new Promise(r=>setTimeout(r,900));access=String(window.__FUNY_ACCESS_TOKEN||a.session?.access_token||'')}
+ if(!access)throw Error(messages.login_required);
+ const {data,error}=await a.client.auth.getUser(access);
+ if(error||!data?.user)throw Error(messages.login_required);
+ return access;
+}
+login.onclick=()=>window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
+submit.onclick=async()=>{
+ submit.disabled=true;login.hidden=true;tell('로그인과 현재 위치를 확인 중이에요.');
+ try{
+  const access=await authSession();
+  if(!navigator.geolocation)throw Error('현재 기기에서 위치 서비스를 사용할 수 없어요.');
+  const point=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(
+   x=>resolve({lat:x.coords.latitude,lng:x.coords.longitude,accuracy:x.coords.accuracy,fix_time:x.timestamp||Date.now()}),
+   e=>reject(Error(e.code===1?'위치 권한을 허용해 주세요.':'GPS를 확인하지 못했어요. 다시 시도해 주세요.')),
+   {enableHighAccuracy:true,maximumAge:0,timeout:15000}
+  ));
+  if(point.accuracy>50||!Number.isFinite(point.accuracy))throw Error(messages.low_accuracy);
+  tell('매장과 NFC 태그를 확인 중이에요.');
+  const result=await api({action:'checkin',token,...point},access);
+  tell(result.new?'NFC 방문인증 테스트 완료!\\n(MY 보상·미션에는 반영되지 않습니다.)':'오늘 이 매장에서 NFC 방문인증 테스트를 이미 완료했어요.');
+  if(result.new){try{window.FUNY_TRACK?.('shop_visit_nfc_pilot',{shop_id:shopId,pilot:true})}catch(_){}}
+ }catch(e){tell(e.message||messages.server_error);if(e.message===messages.login_required)login.hidden=false}
+ finally{submit.disabled=!shopId}
+};
+(async()=>{
+ if(!/^[a-f0-9]{48}$/.test(token)){tell(messages.invalid_tag);$('shopName').textContent='유효하지 않은 NFC 태그';return}
+ try{
+  const result=await api({action:'info',token});
+  shopId=result.shop_id;$('shopName').textContent=result.shop_name;
+  $('shopDetail').textContent='NTAG213 · 테스트 방문인증 (보상 없음)';
+  submit.disabled=false;tell('태그 확인 완료. 방문인증 버튼을 눌러 주세요.');
+ }catch(e){$('shopName').textContent='태그 확인 실패';tell(e.message||messages.server_error)}
+})();
+})();
+</script></body></html>

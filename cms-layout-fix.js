@@ -45,6 +45,7 @@
         else location.assign('/admin.html?tab=visitqr');
       };
       group.querySelector('.admin-group-items')?.appendChild(qrButton);
+      const nfcButton=document.createElement('button');nfcButton.type='button';nfcButton.dataset.adminTab='nfcvisit';nfcButton.textContent='매장 NFC 인증 관리';nfcButton.onclick=()=>{const mobileButton=document.querySelector('#mobileTabs [data-admin-tab="nfcvisit"]');if(mobileButton)mobileButton.click();else location.assign('/admin.html?tab=nfcvisit')};group.querySelector('.admin-group-items')?.appendChild(nfcButton);
     }
     const mobile=document.getElementById('mobileTabs');
     if(mobile&&!document.getElementById('adminMissionMobileLink')){
@@ -59,6 +60,7 @@
     const mission=document.getElementById('adminMissionMobileLink');
     const qrMobile=mobile?.querySelector('[data-admin-tab="visitqr"]');
     if(mission&&qrMobile&&qrMobile.previousElementSibling!==mission)mission.after(qrMobile);
+    const nfcMobile=mobile?.querySelector('[data-admin-tab="nfcvisit"]');if(qrMobile&&nfcMobile&&nfcMobile.previousElementSibling!==qrMobile)qrMobile.after(nfcMobile);
   }
   function apply(){
     installMissionAdminMenu();

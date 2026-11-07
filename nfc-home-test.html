@@ -8,7 +8,7 @@
 <button id="primary" type="button">현재 위치로 테스트 URL 발급</button><button id="login" type="button" class="secondary" hidden>로그인하기</button>
 <div id="result" hidden><p class="url" id="url"></p><button type="button" class="secondary" id="copy">URL 복사하기</button><p>복사한 주소를 NFC Tools 앱에서 URL/URI로 저장한 후 NTAG213에 기록하세요. 기존 태그에 기록된 주소를 덮어쓸 수 있습니다.</p></div>
 <div class="result" id="distance" hidden></div><p id="status" role="status" aria-live="polite"></p>
-<button id="revoke" type="button" class="secondary" hidden>이 테스트 URL 무효화</button>
+<button id="shorten" type="button" class="secondary" hidden>NFC에 넣을 짧은 URL 발급</button><button id="revoke" type="button" class="secondary" hidden>이 테스트 URL 무효화</button>
 <p class="foot">이 페이지는 집에서 사용하는 일회성 파일럿입니다. 기준 좌표는 서버에 비공개로 저장하고 같은 계정만 검증할 수 있습니다. NFC URL을 공개 게시물 등에 공유하지 마세요. GPS 위치는 측정 오차가 있으므로 집 안에서도 재측정이 필요할 수 있습니다.</p></section></main>
 <script>
 (()=>{'use strict';
@@ -16,7 +16,7 @@ const $=id=>document.getElementById(id),btn=$('primary'),status=$('status'),logi
 const endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-home-test';
 const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 const raw=(new URLSearchParams(location.search).get('t')||'').toLowerCase();
-const isVerification=/^[0-9a-f]{48}$/.test(raw);
+const isVerification=/^(?:[0-9a-f]{20}|[0-9a-f]{48})$/.test(raw);
 const messages={login_required:'로그인한 사용자만 사용할 수 있습니다.',forbidden:'퍼니핀 관리자 계정으로 로그인한 상태에서 발급해 주세요.',invalid_token:'테스트 URL이 유효하지 않거나 발급 계정과 다릅니다.',expired:'테스트 URL이 만료됐습니다. 새 URL을 발급해 주세요.',low_accuracy:'GPS 오차 반경이 50m를 초과했습니다. 창가나 실외에서 다시 측정해 주세요.',too_far:'기준 위치에서 50m 이상 떨어져 있어 인증되지 않았습니다.',limit_reached:'유효한 테스트 URL은 계정당 3개까지 발급할 수 있습니다.',rate_limited:'요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.',server_error:'서버 요청에 실패했습니다.'};
 const tell=s=>status.textContent=s;
 function setLogin(){login.hidden=false}
@@ -59,6 +59,7 @@ if(isVerification){
  $('info').textContent='집에 등록된 테스트 기준 위치와 현재 측정 위치를 서버에서 비교합니다. 주소나 정확한 기준 좌표는 표시되지 않습니다.';
  btn.textContent='GPS 50m 인증 테스트';
  $('revoke').hidden=false;
+ $('shorten').hidden=false;
 }else if(raw){
  btn.disabled=true;tell('잘못된 NFC 테스트 URL입니다.');
 }
@@ -84,6 +85,16 @@ btn.onclick=async()=>{
  finally{btn.disabled=!!raw&&!isVerification}
 };
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('url').textContent);tell('URL을 복사했습니다.')}catch(e){tell('URL을 길게 눌러 복사해 주세요.')}};
+$('shorten').onclick=async()=>{
+ const button=$('shorten');button.disabled=true;tell('NFC 기록용 짧은 주소를 발급하고 있어요.');
+ try{
+  const out=await request('shorten',{token:raw});
+  $('url').textContent=out.url;
+  result.hidden=false;
+  tell('짧은 NFC 주소 발급 완료! URL 복사 버튼으로 복사한 뒤 NFC Tools에서 기록해 주세요. 기존 긴 URL도 계속 사용할 수 있습니다.');
+ }catch(e){tell(e.message||messages.server_error);if(e.message===messages.login_required)setLogin()}
+ finally{button.disabled=false}
+};
 $('revoke').onclick=async()=>{if(!confirm('집 테스트 URL을 무효화하시겠습니까?'))return;try{await request('revoke',{token:raw});btn.disabled=true;$('revoke').disabled=true;tell('테스트 URL을 무효화했습니다.')}catch(e){tell(e.message||messages.server_error)}};
 if(isVerification){request('info',{token:raw}).then(x=>tell('등록된 테스트 URL입니다. GPS 확인 버튼을 눌러 주세요.')).catch(e=>{tell(e.message||messages.server_error);if(e.message===messages.login_required)setLogin()})}
 })();

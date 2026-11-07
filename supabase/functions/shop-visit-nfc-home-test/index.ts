@@ -6,8 +6,8 @@ const db=createClient(BASE,SERVICE,{auth:{persistSession:false,autoRefreshToken:
 const origins=new Set(["https://funypin.kr","https://www.funypin.kr"]);
 const hex=(bytes:Uint8Array)=>Array.from(bytes).map(x=>x.toString(16).padStart(2,"0")).join("");
 const hash=async(input:string)=>hex(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(input))));
-const random=()=>{const a=new Uint8Array(24);crypto.getRandomValues(a);return hex(a)};
-const validToken=/^[a-f0-9]{48}$/;
+const random=()=>{const a=new Uint8Array(10);crypto.getRandomValues(a);return hex(a)};
+const validToken=/^(?:[a-f0-9]{20}|[a-f0-9]{48})$/;
 const coordinate=(value:unknown)=>typeof value==="number"&&Number.isFinite(value)?value:NaN;
 const haversine=(a:number,b:number,c:number,d:number)=>{
  const r=Math.PI/180,dl=(d-b)*r,dp=(c-a)*r,ca=a*r,cc=c*r;
@@ -45,14 +45,22 @@ Deno.serve(async(req)=>{
    const expires=new Date(Date.now()+7*24*3600*1000).toISOString();
    const {error}=await db.from("shop_visit_nfc_home_tests").insert({owner_id:uid,token_hash:await hash(secret),latitude:lat,longitude:lng,accuracy_m:Math.round(accuracy),expires_at:expires});
    if(error)throw error;
-   return reply({ok:true,url:"https://funypin.kr/nfc-home-test.html?t="+secret,expires_at:expires,range_m:50});
+   return reply({ok:true,url:"https://funypin.kr/h.html#"+secret,expires_at:expires,range_m:50});
   }
   if(!validToken.test(raw))return reply({ok:false,error:"invalid_token"},400);
-  const {data:test,error:lookupError}=await db.from("shop_visit_nfc_home_tests").select("id,owner_id,latitude,longitude,created_at,expires_at,revoked_at").eq("token_hash",await hash(raw)).maybeSingle();
+  const digest=await hash(raw);
+  const {data:test,error:lookupError}=await db.from("shop_visit_nfc_home_tests").select("id,owner_id,latitude,longitude,created_at,expires_at,revoked_at").or("token_hash.eq."+digest+",short_token_hash.eq."+digest).maybeSingle();
   if(lookupError)throw lookupError;
   if(!test||test.owner_id!==uid)return reply({ok:false,error:"invalid_token"},404);
   if(test.revoked_at||Date.parse(test.expires_at)<Date.now())return reply({ok:false,error:"expired"},410);
   if(action==="info")return reply({ok:true,range_m:50,expires_at:test.expires_at});
+  if(action==="shorten"){
+   // Owner-only short alias for an already issued (long) URL; original URL remains valid.
+   const short=random();
+   const {error}=await db.from("shop_visit_nfc_home_tests").update({short_token_hash:await hash(short)}).eq("id",test.id).eq("owner_id",uid);
+   if(error)throw error;
+   return reply({ok:true,url:"https://funypin.kr/h.html#"+short,expires_at:test.expires_at});
+  }
   if(action==="revoke"){
    const {error}=await db.from("shop_visit_nfc_home_tests").update({revoked_at:new Date().toISOString()}).eq("id",test.id).eq("owner_id",uid);
    if(error)throw error;

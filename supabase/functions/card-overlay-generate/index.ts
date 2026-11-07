@@ -69,9 +69,11 @@ Deno.serve(async(req:Request)=>{
    }
    let prepared;try{prepared=png(data.image,['fullart','illustration'].includes(row.mode));}catch{return reply({error:'저장할 이미지의 형식이나 크기가 올바르지 않습니다.'},400);}
    const view=new DataView(prepared.buffer);const widePrepared=['card-fullart-wide-v1','card-fullart-wide-v2','card-fullart-wide-v3','card-fullart-wide-tcg-v1','card-fullart-wide-openai-v1','card-fullart-wide-runware-v1','card-fullart-wide-adobe-v1'].includes(row.prompt_version)&&view.getUint32(16)===1008&&view.getUint32(20)===1408;if(!widePrepared&&(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height))return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
+   const savedWindow=data.printRect;
+   if(savedWindow!==undefined&&(!widePrepared||!savedWindow||['x','y','w','h'].some(k=>typeof savedWindow[k]!=='number'||!Number.isFinite(savedWindow[k]))||savedWindow.x<0||savedWindow.y<0||savedWindow.w<5||savedWindow.h<5||savedWindow.x+savedWindow.w>63||savedWindow.y+savedWindow.h>88))return reply({error:'출력 창 좌표가 올바르지 않습니다.'},400);
    const imagePath=prefix+'prepared.png';
    const upload=await savedFetch('/storage/v1/object/'+outputBucket+'/'+imagePath,{method:'POST',headers:{'Content-Type':'image/png','x-upsert':'true'},body:prepared});if(!upload.ok)return reply({error:'이미지 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'},503);
-   const patch=await savedFetch(ownedQuery(data.id),{method:'PATCH',body:JSON.stringify({image_path:imagePath,result_kind:'prepared',...(widePrepared?{width:1008,height:1408}:{}),updated_at:new Date().toISOString()})});
+   const patch=await savedFetch(ownedQuery(data.id),{method:'PATCH',body:JSON.stringify({image_path:imagePath,result_kind:'prepared',...(savedWindow?{window_rect:Object.fromEntries(['x','y','w','h'].map(k=>[k,savedWindow[k]]))}:{}),...(widePrepared?{width:1008,height:1408}:{}),updated_at:new Date().toISOString()})});
    if(!patch.ok)return reply({error:'보정 이미지의 저장 정보를 갱신하지 못했어요. AI 원본은 보관됩니다.'},503);
    return reply({stored:true,generationId:row.id});
   }

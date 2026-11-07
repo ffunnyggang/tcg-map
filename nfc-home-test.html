@@ -1,0 +1,82 @@
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>집 NFC 테스트 | FUNY PIN</title><link rel="icon" href="/favicon.svg">
+<script src="/web-auth.js?v=20261018-web-auth10"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#f8f6fa;color:#241e2b;font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:430px;min-height:100dvh;margin:auto;background:white;padding:24px 18px 40px}.brand{font-size:13px;font-weight:800;color:#7952c8}.panel{border:1px solid #eee6f5;border-radius:17px;padding:20px 18px;margin-top:24px}h1{font-size:22px;margin:10px 0}p{font-size:13px;color:#7c7385;line-height:1.7}.soft{background:#f6f2fc;padding:15px;border-radius:12px;font-size:12px;line-height:1.65;color:#665574}.url{overflow-wrap:anywhere;word-break:break-all;font-size:12px;color:#7654bb;user-select:all;margin:13px 0}button{width:100%;border:0;background:#7b3dff;color:#fff;border-radius:12px;padding:14px;font-weight:800;font-size:14px;cursor:pointer}button.secondary{background:#f2edf9;color:#6041a1;margin-top:9px}button:disabled{opacity:.5;cursor:wait}#status{white-space:pre-line;color:#7250bc;font-size:13px;line-height:1.6;min-height:24px}.result{font-size:28px;font-weight:850;text-align:center;color:#7352c3;margin:14px 0}.foot{border-top:1px solid #f0eaf4;margin-top:20px;padding-top:15px;font-size:11px;color:#8e8494}</style></head>
+<body><main class="wrap"><div class="brand">FUNY PIN · NFC TEST</div><section class="panel"><h1 id="title">집 NFC 테스트 URL 발급</h1><p id="intro">집에서 이 페이지를 열고 현재 위치를 기준으로 테스트 전용 URL을 발급하세요. 개인 주소와 GPS 좌표는 URL에 표시되지 않습니다.</p>
+<div class="soft" id="info">관리자 계정으로 로그인한 상태에서, 집 안에서 GPS 위치를 측정해 기준점으로 등록합니다. 유효기간은 7일이며 반경 50m 검증만 진행합니다. 실제 카드샵 방문 및 미션 보상에는 일절 반영되지 않습니다.</div>
+<button id="primary" type="button">현재 위치로 테스트 URL 발급</button><button id="login" type="button" class="secondary" hidden>로그인하기</button>
+<div id="result" hidden><p class="url" id="url"></p><button type="button" class="secondary" id="copy">URL 복사하기</button><p>복사한 주소를 NFC Tools 앱에서 URL/URI로 저장한 후 NTAG213에 기록하세요. 기존 태그에 기록된 주소를 덮어쓸 수 있습니다.</p></div>
+<div class="result" id="distance" hidden></div><p id="status" role="status" aria-live="polite"></p>
+<button id="revoke" type="button" class="secondary" hidden>이 테스트 URL 무효화</button>
+<p class="foot">이 페이지는 집에서 사용하는 일회성 파일럿입니다. 기준 좌표는 서버에 비공개로 저장하고 같은 계정만 검증할 수 있습니다. NFC URL을 공개 게시물 등에 공유하지 마세요. GPS 위치는 측정 오차가 있으므로 집 안에서도 재측정이 필요할 수 있습니다.</p></section></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),btn=$('primary'),status=$('status'),login=$('login'),result=$('result');
+const endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-home-test';
+const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const raw=(new URLSearchParams(location.search).get('t')||'').toLowerCase();
+const isVerification=/^[0-9a-f]{48}$/.test(raw);
+const messages={login_required:'로그인한 사용자만 사용할 수 있습니다.',forbidden:'퍼니핀 관리자 계정으로 로그인한 상태에서 발급해 주세요.',invalid_token:'테스트 URL이 유효하지 않거나 발급 계정과 다릅니다.',expired:'테스트 URL이 만료됐습니다. 새 URL을 발급해 주세요.',low_accuracy:'GPS 정확도가 50m보다 낮습니다. 위치 권한을 확인한 뒤 다시 측정해 주세요.',too_far:'기준 위치에서 50m 이상 떨어져 있어 인증되지 않았습니다.',limit_reached:'유효한 테스트 URL은 계정당 3개까지 발급할 수 있습니다.',rate_limited:'요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.',server_error:'서버 요청에 실패했습니다.'};
+const tell=s=>status.textContent=s;
+function setLogin(){login.hidden=false}
+login.onclick=()=>window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
+async function identity(){
+ const auth=window.FUNY_WEB_AUTH;await auth?.init();
+ if(!auth?.client)throw Error(messages.login_required);
+ let bearer=String(window.__FUNY_ACCESS_TOKEN||auth.session?.access_token||'');
+ if(!bearer&&window.ReactNativeWebView){await new Promise(r=>setTimeout(r,1000));bearer=String(window.__FUNY_ACCESS_TOKEN||auth.session?.access_token||'')}
+ if(!bearer)throw Error(messages.login_required);
+ const {data,error}=await auth.client.auth.getUser(bearer);
+ if(error||!data?.user)throw Error(messages.login_required);
+ return bearer;
+}
+async function request(action,body={}){
+ const bearer=await identity();
+ const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,Authorization:'Bearer '+bearer,'Content-Type':'application/json'},body:JSON.stringify({action,...body}),cache:'no-store'});
+ const data=await response.json().catch(()=>({ok:false,error:'server_error'}));
+ if(!response.ok||!data.ok)throw Error(messages[data.error]||messages.server_error);
+ return data;
+}
+function gps(){return new Promise((resolve,reject)=>{
+ if(!navigator.geolocation)return reject(Error('기기에서 GPS를 지원하지 않습니다.'));
+ navigator.geolocation.getCurrentPosition(
+ p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,fix_time:p.timestamp||Date.now()}),
+ e=>reject(Error(e.code===1?'위치 권한이 거부되었습니다. 기기 설정에서 허용해 주세요.':'현재 위치를 확인하지 못했습니다.')),
+ {enableHighAccuracy:true,maximumAge:0,timeout:15000});
+})}
+if(isVerification){
+ $('title').textContent='집 NFC 방문인증 테스트';
+ $('intro').textContent='NTAG213을 인식했습니다. 같은 관리자 계정으로 로그인 후 GPS 반경 50m 테스트를 진행합니다.';
+ $('info').textContent='집에 등록된 테스트 기준 위치와 현재 측정 위치를 서버에서 비교합니다. 주소나 정확한 기준 좌표는 표시되지 않습니다.';
+ btn.textContent='GPS 50m 인증 테스트';
+ $('revoke').hidden=false;
+}else if(raw){
+ btn.disabled=true;tell('잘못된 NFC 테스트 URL입니다.');
+}
+btn.onclick=async()=>{
+ btn.disabled=true;login.hidden=true;result.hidden=true;$('distance').hidden=true;
+ try{
+  if(isVerification){
+   tell('GPS를 측정 중입니다.');
+   const point=await gps();if(point.accuracy>50)throw Error(messages.low_accuracy);
+   tell('등록된 집 기준 위치와 비교 중입니다.');
+   const out=await request('verify',{token:raw,...point});
+   $('distance').hidden=false;$('distance').textContent='인증 성공 · '+out.distance_m+'m';
+   tell('집 NFC 테스트 성공! 실제 매장 방문·MY 미션에는 반영되지 않습니다.');
+  }else{
+   tell('집의 현재 GPS 위치를 측정 중입니다.');
+   const point=await gps();if(point.accuracy>50)throw Error(messages.low_accuracy);
+   tell('테스트 기준 위치를 등록 중입니다.');
+   const out=await request('create',point);
+   $('url').textContent=out.url;result.hidden=false;
+   tell('전용 URL 발급 완료 · 7일간 유효합니다. NFC 태그에 URL을 기록해 주세요.');
+  }
+ }catch(e){tell(e.message||messages.server_error);if(e.message===messages.login_required)setLogin()}
+ finally{btn.disabled=!!raw&&!isVerification}
+};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('url').textContent);tell('URL을 복사했습니다.')}catch(e){tell('URL을 길게 눌러 복사해 주세요.')}};
+$('revoke').onclick=async()=>{if(!confirm('집 테스트 URL을 무효화하시겠습니까?'))return;try{await request('revoke',{token:raw});btn.disabled=true;$('revoke').disabled=true;tell('테스트 URL을 무효화했습니다.')}catch(e){tell(e.message||messages.server_error)}};
+if(isVerification){request('info',{token:raw}).then(x=>tell('등록된 테스트 URL입니다. GPS 확인 버튼을 눌러 주세요.')).catch(e=>{tell(e.message||messages.server_error);if(e.message===messages.login_required)setLogin()})}
+})();
+</script></body></html>

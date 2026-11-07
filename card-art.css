@@ -5,3 +5,5 @@ body:has(dialog[open]){overflow:hidden}
 
 .nudge-pad[data-edit-mode=size] button{font-size:12px;font-weight:700;white-space:nowrap}
 
+
+.tune-viewport{overflow:hidden;touch-action:none;overscroll-behavior:contain;scrollbar-width:none;cursor:grab;user-select:none;-webkit-user-select:none}.tune-viewport::-webkit-scrollbar{display:none}.tune-viewport.dragging{cursor:grabbing}

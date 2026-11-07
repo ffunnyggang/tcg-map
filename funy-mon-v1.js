@@ -501,10 +501,11 @@
     clearTimeout(evergreenExpiryTimer);
     evergreenMarkers.forEach(marker=>{
       try{marker.setMap(null)}catch(_){}
-      const i=markers.indexOf(marker);if(i>=0)markers.splice(i,1);
-      if(marker.__funyMonKey)markerKeys.delete(marker.__funyMonKey);
+      // Evergreen markers are separate from the event marker arrays.
     });evergreenMarkers=[];
   }
+  function syncEvergreenVisibility(){evergreenMarkers.forEach(marker=>{try{marker.setMap(!hiddenByRoute()&&!hiddenKeys.has(marker.__funyMonKey)?naverMap:null)}catch(_){}})}
+  window.addEventListener('hashchange',syncEvergreenVisibility);
   async function findEvergreen(){
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){showMessage('지도를 불러오는 중이에요','잠시 후 다시 시도해주세요.');return}
     let pos;
@@ -525,10 +526,10 @@
       const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
       if(hiddenKeys.has(key)){marker.setMap(null);return}
       const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,key};
-      marker.__funyMonKey=key;markerKeys.add(key);markers.push(marker);evergreenMarkers.push(marker);
+      marker.__funyMonKey=key;evergreenMarkers.push(marker);
       naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
     });
-    syncVisibility();
+    syncEvergreenVisibility();
     evergreenExpiryTimer=setTimeout(clearEvergreen,1800000-Date.now()%1800000+1000);
     try{naverMap.panTo(new naver.maps.LatLng(pos.coords.latitude,pos.coords.longitude))}catch(_){}
     if(!evergreenMarkers.length)showMessage('새로운 퍼니몬을 준비하고 있어요','다음 출몰 시간에 다시 확인해주세요.');

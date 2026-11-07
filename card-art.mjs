@@ -73,7 +73,7 @@ async function generate(){
   if(!await matchIllustration()){toast('생성 이미지는 유지됩니다. 연결 맞추기를 이어서 완료해 주세요.');return;}
   reviewPublisher.reset();reviewPosted=false;showExpanded=true;$('compareArt').textContent='원본 보기';$('compareArt').setAttribute('aria-pressed','false');goStep(3);
 
- }catch(e){const el=$('generationError');el.hidden=false;el.textContent=(e.message==='LOGIN_REQUIRED'?'로그인 후 다시 이용해 주세요.':e.message||'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?' · 문의용 ID: '+e.data.requestId:'');if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.textContent='다시 로그인하기';b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;el.append(document.createTextNode(' 같은 요청을 반복하지 말고 운영자에게 문의해 주세요.'));}}
+ }catch(e){const el=$('generationError');el.hidden=false;el.textContent=(e.message==='LOGIN_REQUIRED'?'로그인 후 다시 이용해 주세요.':e.message||'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?' · 문의용 ID: '+e.data.requestId:'');if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.textContent='다시 로그인하기';b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent='카드 다시 선택하기';b.style.cssText='display:block;margin-top:12px;min-height:44px';b.onclick=()=>{if(busy||exporting||reviewPosting)return;startAgain();connect();$('search').focus();};el.append(b);}}
  finally{busy=false;$('workingDialog').close();update();}
 }
 $('workingDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();});window.addEventListener('beforeunload',e=>{if(busy||reviewPosting){e.preventDefault();e.returnValue='';}});

@@ -115,6 +115,13 @@ Deno.serve(async(req:Request)=>{
   const originalPrompt=data.originalPrompt;
   if(originalPrompt!==undefined&&(data.action!=='generate_fullart'||typeof originalPrompt!=='string'||!Object.hasOwn(ORIGINAL_REFERENCE_PROMPTS,originalPrompt)))return reply({error:'올바른 공개 원문 옵션을 선택해 주세요.'},400);
   delete data.originalPrompt;
+  const mobileLayerAction=data.action==='generate_mobile_text'||data.action==='generate_mobile_layers';
+  if(mobileLayerAction){
+   if(!allowed)return reply({error:'현재 테스트 계정만 사용할 수 있습니다.'},403);
+   if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
+   data.action=data.action==='generate_mobile_text'?'generate_text_layer':'generate_fullart_wide';
+   if(data.action==='generate_fullart_wide'&&(data.wideHeader!=='fulltext-v1'||data.wideLayers!==true||data.wideLayout!=='bottom-v1'))return reply({error:'레이어 생성 설정이 올바르지 않습니다.'},400);
+  }
   const mobileWindowEdit=data.action==='generate_mobile';
   if(mobileWindowEdit){
    if(!allowed)return reply({error:'현재 테스트 계정만 사용할 수 있습니다.'},403);

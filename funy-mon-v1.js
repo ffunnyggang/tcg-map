@@ -429,12 +429,16 @@
     try{
       const effectDone=new Promise(resolve=>setTimeout(resolve,620));const positionPromise=getPosition();const pos=await positionPromise;
       const captureHeaders={'Content-Type':'application/json',Authorization:'Bearer '+auth.token};
-      const fetchPromise=fetch(ENDPOINT,{method:'POST',headers:captureHeaders,body:JSON.stringify({anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude})});
+      const captureUrl=meta.evergreen?SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_capture':ENDPOINT;
+       if(meta.evergreen)captureHeaders.apikey=SUPABASE_KEY;
+       const payload=meta.evergreen?{p_anonymous_id:anonId(),p_shop_id:meta.shop.id,p_monster_id:meta.def.id,p_lat:pos.coords.latitude,p_lng:pos.coords.longitude}:{anonymous_id:anonId(),shop_id:meta.shop.id,monster_id:meta.def.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+       const fetchPromise=fetch(captureUrl,{method:'POST',headers:captureHeaders,body:JSON.stringify(payload)});
       await effectDone;const res=await fetchPromise;const data=await res.json().catch(()=>({error:'invalid_response'}));
-      if(!res.ok){
+      if(!res.ok||data.error){
         if(data.error==='too_far')showMessage('포획 가능 거리 밖이에요','현재 위치에서 '+meta.shop.name+'까지 약 '+data.distance_m+'m예요. 포획 가능 거리는 '+(data.required_m||100)+'m 이내예요.');
         else if(data.error==='daily_catch_limit')showMessage('오늘 포획 가능 횟수를 모두 사용했어요','이 이벤트에서는 하루 '+data.limit+'회까지 포획할 수 있어요.');
-        else if(data.error==='already_caught_today')showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
+        else if(data.error==='retry_later')showMessage('다시 도전할 수 있는 시간이 아니에요','같은 퍼니몬은 잠시 후 다시 도전할 수 있어요.');
+         else if(data.error==='already_caught_today')showMessage('오늘 포획을 완료했어요','내일 다시 도전해주세요.');
         else if(data.error==='event_unavailable')showMessage('이벤트에 참여할 수 없어요','이벤트가 종료되었거나 현재 운영 중이 아니에요.');
         else if(data.error==='monster_unavailable')showMessage('포획할 수 없는 퍼니몬이에요','이벤트 설정이 변경되었어요. 지도를 새로고침해주세요.');
         else if(data.error==='shop_unavailable')showMessage('카드샵 정보를 확인할 수 없어요','잠시 후 다시 시도해주세요.');
@@ -490,5 +494,44 @@
   }
   window.addEventListener('hashchange',()=>{syncVisibility();setTimeout(syncEventDetailBanner,0)});window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(spawn,450);setTimeout(()=>{if(!started){tries=0;spawn()}},2500);setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
   renderPendingEntryButton();setTimeout(syncEventDetailBanner,300);
-  window.FUNY_MON_PROTO={respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
+
+  // Evergreen is isolated from scheduled-event markers and event reward handling.
+  let evergreenMarkers=[],evergreenExpiryTimer=0;
+  function clearEvergreen(){
+    clearTimeout(evergreenExpiryTimer);
+    evergreenMarkers.forEach(marker=>{
+      try{marker.setMap(null)}catch(_){}
+      const i=markers.indexOf(marker);if(i>=0)markers.splice(i,1);
+      if(marker.__funyMonKey)markerKeys.delete(marker.__funyMonKey);
+    });evergreenMarkers=[];
+  }
+  async function findEvergreen(){
+    if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){showMessage('지도를 불러오는 중이에요','잠시 후 다시 시도해주세요.');return}
+    let pos;
+    try{pos=await getPosition()}catch(_){showMessage('위치 확인이 필요해요','위치 권한을 허용한 후 주변 퍼니몬을 찾아주세요.');return}
+    let list;
+    try{
+      const resp=await fetch(SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_nearby',{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_lat:pos.coords.latitude,p_lng:pos.coords.longitude}),cache:'no-store'});
+      if(!resp.ok)throw Error('HTTP '+resp.status);list=await resp.json();
+    }catch(_){showMessage('퍼니몬을 불러오지 못했어요','잠시 후 다시 시도해주세요.');return}
+    clearEvergreen();
+    if(!Array.isArray(list)||!list.length){showMessage('주변에 출몰한 퍼니몬이 없어요','다른 카드샵 주변이나 다음 출몰 시간에 다시 확인해주세요.');return}
+    list.forEach((row,i)=>{
+      const def=defById(row.monster_id),lat=Number(row.latitude),lng=Number(row.longitude);
+      if(!def||!Number.isFinite(lat)||!Number.isFinite(lng))return;
+      const shop={id:row.shop_id,name:row.shop_name,_coord:{lat,lng}},off=offsets[0];
+      const html='<div class="funy-mon-marker '+def.cls+' move-'+(i%3)+'" role="button" aria-label="'+def.name+' 포획"><span class="funy-mon-sprite"><img src="'+def.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
+      const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat+off.lat,lng+off.lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:160+i,icon:{content:html,anchor:new naver.maps.Point(24,34)}});
+      const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
+      if(hiddenKeys.has(key)){marker.setMap(null);return}
+      const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,key};
+      marker.__funyMonKey=key;markerKeys.add(key);markers.push(marker);evergreenMarkers.push(marker);
+      naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
+    });
+    syncVisibility();
+    evergreenExpiryTimer=setTimeout(clearEvergreen,1800000-Date.now()%1800000+1000);
+    try{naverMap.panTo(new naver.maps.LatLng(pos.coords.latitude,pos.coords.longitude))}catch(_){}
+    if(!evergreenMarkers.length)showMessage('새로운 퍼니몬을 준비하고 있어요','다음 출몰 시간에 다시 확인해주세요.');
+  }
+  window.FUNY_MON_PROTO={findEvergreen,respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
 })();

@@ -6,11 +6,11 @@ const FULL_ART_PROMPT="첨부한 카드 한 장을 원본으로 사용해 풀아
 const ILLUSTRATION_PROMPT="첨부한 카드 한 장을 원본으로 사용해 카드 정보와 테두리가 없는 순수 일러스트로 확장 편집해줘. 이전 카드나 완성 예시의 캐릭터·글자·숫자·구도를 가져오지 말고 이번 원본에 보이는 그림만 기준으로 판단해줘.\n\n【작업 방식 — 가장 중요】\n원본 카드의 바깥 가장자리를 최종 화면의 좌표 기준으로 고정해줘. 원본 이미지 전체나 안쪽 일러스트를 확대·축소·이동하지 마. 안쪽 일러스트에 있는 캐릭터와 기존 풍경 전체는 보존해줘. 특히 얼굴, 몸, 귀, 팔, 발, 꼬리의 크기와 좌표를 바꾸지 마. 완성본의 원래 일러스트 위에 원본을 겹쳤을 때 같은 위치와 크기로 포개져야 해.\n\n【제거하고 풍경으로 채울 영역】\n카드의 모든 글자·숫자·기호·카드 정보·로고·배지·장식을 제거해줘. 이름, HP, 속성·에너지 기호, 기술명과 설명, 데미지, 약점·저항력·후퇴 표시, 전국도감 바와 그 안의 글자, 일러스트레이터, 카드 번호, 수록 번호, 하단 설명과 저작권 표기, 큰 기념 로고와 작은 배지도 남기지 마.\n일러스트를 둘러싼 사각 프레임 네 변, 카드 바깥 가장자리의 테두리와 홀로그램 띠, 둥근 모서리 장식, 하단 은색 구분선, 단색 카드 패널도 제거해줘. 원래 풍경 속 물체와 캐릭터의 무늬는 카드 UI와 구분해 보존해줘.\n제거한 자리는 주변 풍경으로 채우고 글자 흔적, 은색 선, 그림자, 수평 경계, 사각 윤곽을 남기지 마. 원본에 없는 정보 바나 장식을 새로 만들지 마.\n\n【풍경 확장】\n원본 일러스트의 위·아래·왼쪽·오른쪽 끝에 있는 풍경을 바깥쪽으로 이어 그려줘. 원본의 화풍, 색, 빛, 원근감, 붓질·점묘와 풍경의 질감을 따라 카드 전체를 하나의 연속된 장면으로 만들어줘. 아래쪽 풍경은 제거한 도감 바와 기술 패널 자리를 통과해 카드 하단까지 자연스럽게 이어줘. 바깥 테두리가 있던 영역도 풍경으로 채워 이미지의 네 변 끝까지 빈틈없이 이어줘. 홀로그램 테두리를 새로 만들지 마.\n프레임이 있던 네 변에 색 차이, 붙여 넣은 자국이나 사각형 경계를 남기지 마. 원본 캐릭터를 다시 그리거나 반복·복제·미러링하지 마. 캐릭터의 몸을 연장하거나 새로운 신체 부위, 다른 캐릭터, 글자, 로고, 프레임을 추가하지 마. 새로 생성하는 내용은 주변 풍경으로 한정해줘.\n\n【최종 검사】\n원본과 결과물을 바깥 가장자리 기준으로 겹쳐 비교해줘. 원래 일러스트와 캐릭터의 특징점이 같은 좌표와 크기에 있는지 확인하고, 확대·이동·변형된 부분은 원본 그림으로 복원해줘. 카드의 글자·숫자·기호·로고·배지·구분선·내부 프레임·바깥 테두리가 남아 있지 않은지도 확인해줘.\n\n최종 출력은 가로 63 × 세로 88mm 비율의 정면 순수 일러스트 이미지 한 장. 직사각형 캔버스 네 모서리까지 풍경으로 채워줘. 카드 밖 여백, 손, 슬리브, 목업, 치수, 점선, 재단선은 넣지 마.";
 const origins = new Set(['https://funypin.kr','https://www.funypin.kr']);
 const env=(key:string)=>Deno.env.get(key)?.trim()||'';
-function png(data:unknown,fullArt=false){
- if(typeof data!=='string'||!data.startsWith('data:image/png;base64,')||data.length>8_000_000)throw Error('PNG_REQUIRED');
+function png(data:unknown,fullArt=false,wide=false){
+ if(typeof data!=='string'||!data.startsWith('data:image/png;base64,')||data.length>(wide?16_000_000:8_000_000))throw Error('PNG_REQUIRED');
  const raw=atob(data.slice(22)),b=Uint8Array.from(raw,c=>c.charCodeAt(0));
  if(b.length<24||[137,80,78,71,13,10,26,10].some((v,i)=>b[i]!==v))throw Error('PNG_REQUIRED');
- const d=new DataView(b.buffer),w=d.getUint32(16),h=d.getUint32(20);if(fullArt?!(w===1008&&h===1408):!((w===1024&&h===1536)||(w===1072&&h===1472)))throw Error('INVALID_SIZE');return b;
+ const d=new DataView(b.buffer),w=d.getUint32(16),h=d.getUint32(20);if(wide?!(w===1648&&h===2048):fullArt?!(w===1008&&h===1408):!((w===1024&&h===1536)||(w===1072&&h===1472)))throw Error('INVALID_SIZE');return b;
 }
 console.info('overlay_config '+JSON.stringify({apiKeyConfigured:!!env('OPENAI_API_KEY'),enabled:env('OVERLAY_ENABLED')==='true'}));
 Deno.serve(async(req:Request)=>{
@@ -67,10 +67,10 @@ Deno.serve(async(req:Request)=>{
     return reply({generation:{id:row.id,mode:row.mode,result_kind:row.result_kind,width:row.width,height:row.height,window_rect:row.window_rect,source_card_label:row.source_card_label,created_at:row.created_at,imageUrl:url+'/storage/v1'+signed.signedURL}});
    }
    let prepared;try{prepared=png(data.image,['fullart','illustration'].includes(row.mode));}catch{return reply({error:'저장할 이미지의 형식이나 크기가 올바르지 않습니다.'},400);}
-   const view=new DataView(prepared.buffer);if(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height)return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
+   const view=new DataView(prepared.buffer);const widePrepared=row.prompt_version==='card-fullart-wide-v1'&&view.getUint32(16)===1008&&view.getUint32(20)===1408;if(!widePrepared&&(view.getUint32(16)!==row.width||view.getUint32(20)!==row.height))return reply({error:'생성 결과와 저장할 이미지의 크기가 다릅니다.'},400);
    const imagePath=prefix+'prepared.png';
    const upload=await savedFetch('/storage/v1/object/'+outputBucket+'/'+imagePath,{method:'POST',headers:{'Content-Type':'image/png','x-upsert':'true'},body:prepared});if(!upload.ok)return reply({error:'이미지 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'},503);
-   const patch=await savedFetch(ownedQuery(data.id),{method:'PATCH',body:JSON.stringify({image_path:imagePath,result_kind:'prepared',updated_at:new Date().toISOString()})});
+   const patch=await savedFetch(ownedQuery(data.id),{method:'PATCH',body:JSON.stringify({image_path:imagePath,result_kind:'prepared',...(widePrepared?{width:1008,height:1408}:{}),updated_at:new Date().toISOString()})});
    if(!patch.ok)return reply({error:'보정 이미지의 저장 정보를 갱신하지 못했어요. AI 원본은 보관됩니다.'},503);
    return reply({stored:true,generationId:row.id});
   }
@@ -117,7 +117,7 @@ Deno.serve(async(req:Request)=>{
    const row=(await ref.json())[0];if(!row)return reply({error:'등록된 원본 카드가 없습니다.'},400);
    sourceId=row.id;sourceLabel=[row.display_name,row.card_number,row.source_language].join(' · ');
   }
-  const aligned=data.action==='generate_fullart_aligned',fixed=data.action==='generate_fullart_fixed';
+  const wide=data.action==='generate_fullart_wide',aligned=data.action==='generate_fullart_aligned',fixed=data.action==='generate_fullart_fixed'||wide;
   const independent=data.action==='generate_background',illustration=data.action==='generate_illustration',fullArt=data.action==='generate_fullart'||aligned||fixed||illustration;
   const paletteMode=data.action==='generate_palette_background',extractMode=data.action==='generate_background_extract',noImage=independent||paletteMode;
   const themes:Record<string,string>={forest:'a sunlit woodland clearing with foliage, moss and grasses',meadow:'an open grassy meadow under a softly clouded sky',ocean:'a calm ocean shoreline with gentle waves',space:'a quiet starfield with soft distant nebulae'};
@@ -132,7 +132,7 @@ Deno.serve(async(req:Request)=>{
   if((mobileWindowEdit||aligned)&&!windowRect)return reply({error:'일러스트 창 좌표가 필요합니다.'},400);
   if(windowRect!==undefined&&(!windowRect||['x','y','w','h'].some(k=>typeof windowRect[k]!=='number'||!Number.isFinite(windowRect[k]))||windowRect.x<0||windowRect.y<0||windowRect.w<5||windowRect.h<5||windowRect.x+windowRect.w>63||windowRect.y+windowRect.h>88))return reply({error:'출력 창 좌표가 올바르지 않습니다.'},400);
 
-  let image=new Uint8Array(),mask=new Uint8Array();try{if(!noImage){image=png(data.image,fullArt);if(!fullArt||fixed)mask=png(data.mask,fullArt);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
+  let image=new Uint8Array(),mask=new Uint8Array();try{if(!noImage){image=png(data.image,fullArt,wide);if(!fullArt||fixed)mask=png(data.mask,fullArt,wide);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
   const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=noImage?1072:imageView.getUint32(16),imageHeight=noImage?1472:imageView.getUint32(20);
   if(!noImage&&(!fullArt||fixed)&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
@@ -167,6 +167,7 @@ Deno.serve(async(req:Request)=>{
   if(independent)Object.assign(diagnostic,{promptVersion:'independent-landscape-v1',imageHash:undefined,maskHash:undefined});
   if(paletteMode){background.prompt='Create an original hand-painted portrait landscape of '+themes[data.theme]+'. Use these sampled colors from top, right, bottom, and left edges as the environment palette: '+data.palette.join(', ')+'. Blend them into sky, terrain, lighting, and textures. Continuous natural scenery without foreground subjects. Do not add characters, creatures, animals, people, text, logos, borders or card frames. This is original scenery, not a recreation of existing artwork.';Object.assign(diagnostic,{promptVersion:'palette-landscape-v1',imageHash:undefined,maskHash:undefined});}
   if(fixed){form.set('prompt',FULL_ART_PROMPT+'\n\n원본 고정 합성 모드: 첨부한 마스크의 불투명 영역은 원본 그대로 보존할 일러스트·텍스트·기호·테두리이며, 투명 영역만 배경 편집 대상으로 사용한다. 원본 카드의 좌표계, 배율, 구도, 캐릭터 자세를 바꾸지 않는다. 보호 영역 가장자리의 선·색·원근을 같은 위치에서 이어 그린다. 보호된 캐릭터를 바깥에 중복 생성하지 않는다. 별도의 출력 절단 창 좌표는 편집 범위를 의미하지 않는다.');Object.assign(diagnostic,{promptVersion:'card-fullart-fixed-v1',maskHash:await digest(mask)});}
+  if(wide){form.set('prompt','Create an extended background art layer from the attached padded source. The canvas is 1648x2048 pixels. The original card is exactly 1008x1408 pixels at x=320,y=320. The 320-pixel margin on every side is editable overscan, not a border to retain. Keep original illustration position, scale, pose and perspective within these absolute coordinates. Extend its scenery across the former card panels and all four margins; replace gray padding completely. Respect opaque alpha-mask regions. Preserve the original illustration and continue lines and colors from its actual edges. Do not recenter, zoom, duplicate characters or add extra objects. Remove unprotected card text and frame graphics, replacing them with scenery; protected source text and symbols will be restored locally. Edge-to-edge continuous scenery, no cut guides or new lettering.');diagnostic.promptVersion='card-fullart-wide-v1';}
   if(aligned){
    const r=windowRect;
    form.set('prompt',FULL_ART_PROMPT+'\n\n'+"【실물 오버레이용 좌표 보존 — 추가 우선 지침】\n이 결과는 실제 카드 위에 얹고 지정한 창을 잘라 사용하는 출력 도안이다. 보기 좋은 새 구도를 만드는 작업이 아니다. 카드 외곽을 동일한 좌표계로 사용하고 기존 일러스트 전체를 원래 위치와 배율에 고정한다. 화면을 넓게 보이게 하기 위한 줌아웃, 캐릭터 재배치, 자세 변경, 카메라 이동, 원근 재구성을 하지 않는다.\n원본 캐릭터의 눈·귀 끝·발끝·꼬리와 배경의 선·사물·명암 경계를 각각 같은 위치에 유지한다. 원본에 잘려 보이는 신체를 완성하기 위해 캐릭터 전체를 이동하거나 축소하지 않는다. 추가 공간이 필요하면 원본 밖의 배경만 확장한다.\n지정된 창의 네 변과 맞닿는 풍경의 색상, 선의 교차 위치, 방향, 굵기, 원근을 그대로 이어 그린다. 창 안쪽과 바깥쪽에 서로 다른 위치의 캐릭터가 중복되거나 이중 윤곽이 생기면 안 된다. 단순히 창 안쪽만 원본으로 덮는 것으로 연결 오류를 숨기지 않는다.\n기존 지침의 글자·숫자·기호·로고·바깥 띠 보존을 유지한다. 전국도감 바와 그 안의 글자만 기존 지침대로 제거한다. 최종 카드 크기와 원본 요소의 좌표는 변경하지 않는다."+'\n출력 캔버스: '+imageWidth+' × '+imageHeight+'px. 선택한 절단 창의 좌상단 x='+(r.x*imageWidth/63).toFixed(3)+', y='+(r.y*imageHeight/88).toFixed(3)+', 너비='+(r.w*imageWidth/63).toFixed(3)+', 높이='+(r.h*imageHeight/88).toFixed(3)+'px. 이 좌표는 원본 전체 카드 기준이며 창에 맞추어 원본을 재배치하지 않는다.');

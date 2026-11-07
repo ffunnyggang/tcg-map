@@ -75,12 +75,20 @@ window.loadAdminNfcVisit=async()=>{
    const [res,pilotCounts]=await Promise.all([apiCall('admin_list'),history()]);
    const box=$('nfcList');box.replaceChildren();
    if(!res.tags?.length){box.textContent='발급된 NFC 태그가 없습니다.';return}
+   const shopIds=[...new Set(res.tags.map(t=>t.shop_id).filter(Boolean))];
+   let shopNames={};
+   if(shopIds.length){
+    try{
+     const rows=await api('/rest/v1/shops?select=id,name&id=in.('+shopIds.map(encodeURIComponent).join(',')+')');
+     shopNames=Object.fromEntries((rows||[]).map(shop=>[shop.id,shop.name]));
+    }catch(e){console.warn('[NFC] shop names unavailable; keeping IDs',e)}
+   }
    for(const t of res.tags){
     const item=document.createElement('div');item.className='tag';
     const title=document.createElement('div'),strong=document.createElement('strong'),sub=document.createElement('small');
-    strong.textContent=t.shop_id+(t.label?' · '+t.label:'');
+    strong.textContent=(shopNames[t.shop_id]||t.shop_id)+(t.label?' · '+t.label:'');
     const pilotCount=Number(pilotCounts?.[t.shop_id]||0);
-    sub.textContent=(t.status==='active'?'활성':t.status==='revoked'?'폐기':'중지')+
+    sub.textContent='매장 ID '+t.shop_id+' · '+(t.status==='active'?'활성':t.status==='revoked'?'폐기':'중지')+
      ' · '+(t.reward_enabled?'정식 MY 연동 ON':'파일럿 · 보상 OFF')+
      ' · 현장 파일럿 '+pilotCount+'건'+
      ' · '+new Date(t.created_at).toLocaleString('ko-KR');

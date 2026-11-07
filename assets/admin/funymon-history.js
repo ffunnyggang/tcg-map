@@ -19,13 +19,13 @@ const kstDay=v=>new Date(new Date(v).getTime()+9*3600000).toISOString().slice(0,
 const todayKst=()=>kstDay(new Date().toISOString());
 
 function tabs(){
-  return '<div class="fmh-tabs"><button class="fmh-tab '+(state.mode==='events'?'on':'')+'" data-fmh-mode="events">이벤트 관리</button><button class="fmh-tab '+(state.mode==='history'?'on':'')+'" data-fmh-mode="history">포획 · 참여 이력</button></div>';
+  return '<div class="fmh-tabs" role="tablist" aria-label="FUNY MON 관리"><button type="button" role="tab" aria-selected="'+(state.mode==='evergreen')+'" class="fmh-tab '+(state.mode==='evergreen'?'on':'')+'" data-fmh-mode="evergreen">상시 운영</button><button type="button" role="tab" aria-selected="'+(state.mode==='events')+'" class="fmh-tab '+(state.mode==='events'?'on':'')+'" data-fmh-mode="events">이벤트 관리</button><button type="button" role="tab" aria-selected="'+(state.mode==='history')+'" class="fmh-tab '+(state.mode==='history'?'on':'')+'" data-fmh-mode="history">포획 · 참여 이력</button></div>';
 }
 function bindTabs(){
   document.querySelectorAll('[data-fmh-mode]').forEach(b=>b.onclick=()=>{
     const next=b.dataset.fmhMode;if(next===state.mode)return;
     state.mode=next;
-    if(next==='events')window.loadFunyMonRewards?.();else loadHistory();
+    if(next==='history')loadHistory();else window.loadFunyMonRewards?.();
   });
 }
 async function loadOps(force=false){
@@ -270,6 +270,6 @@ document.addEventListener('click',e=>{
   const rwSave=e.target.closest?.('[data-mon-save]');if(rwSave&&!rwSave.dataset.fmhBypass){e.preventDefault();e.stopImmediatePropagation();validateRewardSave(rwSave)}
 },true);
 const observer=new MutationObserver(()=>{clearTimeout(window.__fmhTimer);window.__fmhTimer=setTimeout(enhanceEvents,30)});observer.observe(document.documentElement,{subtree:true,childList:true});
-window.FunyMonHistoryAdmin={load:loadHistory,enhanceEvents,refreshOps:()=>loadOps(true)};
+window.FunyMonHistoryAdmin={load:loadHistory,enhanceEvents,refreshOps:()=>loadOps(true),getMode:()=>state.mode,ensureTabs:()=>{const f=document.getElementById('feed');if(f&&!f.querySelector('.fmh-tabs')){f.insertAdjacentHTML('afterbegin',tabs());bindTabs()}}};
 setTimeout(enhanceEvents,0);
 })();

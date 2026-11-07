@@ -71,13 +71,15 @@
     removeControl();lastSignature='evergreen';
     control=document.createElement('div');control.id='funymonFindControl';
     control.className='funymon-find-control map-location-control';
-    control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="주변 퍼니몬 찾기" title="주변 퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">주변 퍼니몬 찾기</span><span class="funymon-find-arrow" aria-hidden="true">›</span></button>';
+    control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="주변 퍼니몬 찾기" title="주변 퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">퍼니몬 찾기</span><span class="funymon-find-arrow" aria-hidden="true">›</span></button>';
     wrap.appendChild(control);
     control.querySelector('#funymonFindButton')?.addEventListener('click',e=>{
       e.preventDefault();e.stopPropagation();
       window.FUNY_MON_PROTO?.findEvergreen?.();
       try{if(typeof gtag==='function')gtag('event','funymon_evergreen_find_click',{source_page:'tcg_map'})}catch(_){}
     });
+    if(expandedShownThisLoad)control.classList.add('is-collapsed');
+    else {expandedShownThisLoad=true;scheduleCollapse(4)}
   }
   async function refresh(){
     try{

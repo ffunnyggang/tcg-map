@@ -1,6 +1,7 @@
+import {reviewMobileAlignment} from './card-art-align.mjs?v=20261108-cycle1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-parity1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
-import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
+import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
 import {composeLayers} from './card-overlay-layers.mjs?v=20261108-cardfit1';
 import {alignWide} from './card-overlay-wide.mjs?v=20261107-wide3';
 import {attachArtGestures} from './card-art-gestures.mjs?v=20261107-gesture1';
@@ -22,12 +23,11 @@ const layerFlow=createLayerFlow({invoke:body=>A.invokeFunction('card-overlay-gen
 function resetLayers(){layerSession=null;layerFlow.reset();}
 function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,layerSession.layers,canvas);squareResult=null;drawResult();}
 async function saveLayers(){if(!layerSession?.data.generationId||!result)return;try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:layerSession.data.generationId,image:result.toDataURL('image/png'),printRect:resultWindow});}catch{console.warn('Final artwork persistence failed');}}
-function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;$('layerText').checked=l.showText;$('layerSymbol').checked=l.showSymbol;$('layerBorder').checked=l.showBorder;$('borderStyle').value=l.borderId;$('symbolSide').value=l.symbolSide||'right';}
-async function matchIllustration(){if(!layerSession)return false;const picked=await reviewWideAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});composeMobileLayers();syncLayerControls();await saveLayers();return true;}
+function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:['텍스트·기호',l.showText?'ON':'OFF'],layerSymbol:['30주년 심볼',l.showSymbol?(l.symbolSide==='left'?'왼쪽':'오른쪽'):'OFF'],layerBorder:['테두리',l.showBorder?({'holographic-border-v1':'홀로','silver-satin-border-v1':'실버','silver-glitter-border-v1':'실버 글리터','gold-star-border-v1':'골드 글리터'}[l.borderId]):'OFF'],layerCorner:['모서리',shape==='round'?'라운드':'사각']};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
+async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});composeMobileLayers();syncLayerControls();await saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(e.message);}finally{busy=false;update();}};
-for(const [id,key]of [['layerText','showText'],['layerSymbol','showSymbol'],['layerBorder','showBorder']])$(id).onchange=()=>{if(!layerSession||busy||exporting)return;layerSession.layers={...layerSession.layers,[key]:$(id).checked};composeMobileLayers();};
-$('borderStyle').onchange=()=>{if(!layerSession||busy||exporting)return;const a=layerSession.assets.borders.find(a=>a.id===$('borderStyle').value);if(a){layerSession.layers={...layerSession.layers,border:a.image,borderId:a.id,showBorder:true};syncLayerControls();composeMobileLayers();}};
-$('symbolSide').onchange=()=>{if(!layerSession||busy||exporting)return;const side=$('symbolSide').value==='left'?'left':'right',a=layerSession.assets[side];layerSession.layers={...layerSession.layers,symbol:a.image,placement:a.placement,symbolSide:side};composeMobileLayers();};
+function cycleLayer(kind){if(!layerSession||busy||exporting||reviewPosting)return;const l=layerSession.layers;if(kind==='text')l.showText=!l.showText;if(kind==='symbol'){const next=!l.showSymbol?'right':l.symbolSide==='left'?'off':'left';l.showSymbol=next!=='off';if(l.showSymbol){const a=layerSession.assets[next];l.symbolSide=next;l.symbol=a.image;l.placement=a.placement;}}if(kind==='border'){const ids=['holographic-border-v1','silver-satin-border-v1','silver-glitter-border-v1','gold-star-border-v1'];const i=l.showBorder?ids.indexOf(l.borderId)+1:0;l.showBorder=i<ids.length;if(l.showBorder){const a=layerSession.assets.borders.find(a=>a.id===ids[i]);l.borderId=a.id;l.border=a.image;}}if(kind==='corner')setShape(shape==='round'?'square':'round');else composeMobileLayers();syncLayerControls();}
+$('layerText').onclick=()=>cycleLayer('text');$('layerSymbol').onclick=()=>cycleLayer('symbol');$('layerBorder').onclick=()=>cycleLayer('border');$('layerCorner').onclick=()=>cycleLayer('corner');
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+(LANGUAGES[selected.source_language]||'샘플'):'';}
 function update(){
@@ -40,7 +40,7 @@ function update(){
  $('next').disabled=busy||selecting||exporting||(step===1?!source:step===2?!validWindow(cut)||!$('confirm').checked||!ready:!result);
  $('actionHint').textContent=selecting?'카드 원본을 불러오고 있어요':'';$('actionHint').hidden=!selecting;
  $('back').disabled=busy||exporting||reviewPosting;$('downloadAgain').disabled=exporting||reviewPosting;$('completeAgain').disabled=exporting||reviewPosting;
- document.querySelectorAll('[data-shape],#layerOptions input,#layerOptions select,#adjustJoin,#openTune').forEach(b=>b.disabled=busy||exporting||reviewPosting);
+ document.querySelectorAll('[data-shape],#layerOptions button,#adjustJoin,#openTune').forEach(b=>b.disabled=busy||exporting||reviewPosting);
 }
 
 function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=outputArt().toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
@@ -68,7 +68,7 @@ async function generate(){
  try{
   if(!ready)throw Error('현재 계정은 AI 생성 준비가 되지 않았어요.');
   layerSession=await layerFlow.generate(sourceSnapshot,selectionSnapshot.id,windowSnapshot,message=>$('workingTitle').textContent=message,{...selectionSnapshot.art_rect});
-  if(!layerSession.initial){$('workingTitle').textContent='원본과 연결 위치를 비교하고 있어요';try{const aligned=await alignWide(sourceSnapshot,layerSession.image,windowSnapshot,canvas,{allowManual:true});layerSession.initial=aligned.matrix;layerSession.trusted=aligned.trusted;}catch{layerSession.initial=[...IDENTITY_WIDE];layerSession.trusted=false;}}
+  if(!layerSession.initial){layerSession.layers.showSymbol=false;$('workingTitle').textContent='원본과 연결 위치를 비교하고 있어요';try{const aligned=await alignWide(sourceSnapshot,layerSession.image,windowSnapshot,canvas,{allowManual:true});layerSession.initial=aligned.matrix;layerSession.trusted=aligned.trusted;}catch{layerSession.initial=[...IDENTITY_WIDE];layerSession.trusted=false;}}
   $('workingDialog').close();
   if(!await matchIllustration()){toast('생성 이미지는 유지됩니다. 연결 맞추기를 이어서 완료해 주세요.');return;}
   reviewPublisher.reset();reviewPosted=false;showExpanded=true;$('compareArt').textContent='원본 보기';$('compareArt').setAttribute('aria-pressed','false');goStep(3);

@@ -63,19 +63,35 @@
       scheduleCollapse(setting.collapse_seconds);
     }
   }
+  async function renderEvergreen(){
+    const rows=await get('funy_mon_evergreen_settings?select=is_enabled&id=eq.true&limit=1');
+    if(!rows?.[0]?.is_enabled){removeControl();return}
+    const wrap=document.querySelector('.map-wrap-hero');if(!wrap)return;
+    if(control&&lastSignature==='evergreen')return;
+    removeControl();lastSignature='evergreen';
+    control=document.createElement('div');control.id='funymonFindControl';
+    control.className='funymon-find-control map-location-control';
+    control.innerHTML='<button id="funymonFindButton" class="funymon-find-btn map-location-btn" type="button" aria-label="주변 퍼니몬 찾기" title="주변 퍼니몬 찾기"><span class="funymon-find-emoji" aria-hidden="true">👾</span><span class="funymon-find-label">주변 퍼니몬 찾기</span><span class="funymon-find-arrow" aria-hidden="true">›</span></button>';
+    wrap.appendChild(control);
+    control.querySelector('#funymonFindButton')?.addEventListener('click',e=>{
+      e.preventDefault();e.stopPropagation();
+      window.FUNY_MON_PROTO?.findEvergreen?.();
+      try{if(typeof gtag==='function')gtag('event','funymon_evergreen_find_click',{source_page:'tcg_map'})}catch(_){}
+    });
+  }
   async function refresh(){
     try{
       const japan=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
       if(japan){removeControl();return}
       const settings=await get('funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds&id=eq.default&limit=1');
       const setting=settings?.[0];
-      if(!setting?.is_enabled||!setting.event_id){removeControl();return}
+      if(!setting?.is_enabled||!setting.event_id){await renderEvergreen();return}
       const events=await get('funy_mon_events?select=id,shop_id,starts_at,ends_at,is_force_paused,is_archived,target_type&id=eq.'+encodeURIComponent(setting.event_id)+'&limit=1');
       const ev=events?.[0];
-      if(!activeEvent(ev)){removeControl();return}
+      if(!activeEvent(ev)){await renderEvergreen();return}
       const shops=await get('shops?select=id,name,is_active&id=eq.'+encodeURIComponent(ev.shop_id)+'&is_active=eq.true&limit=1');
       const shop=shops?.[0];
-      if(!shop){removeControl();return}
+      if(!shop){await renderEvergreen();return}
       render(ev,setting,shop);
     }catch(e){
       console.warn('[FUNY PIN] FUNYMON map find unavailable',e);

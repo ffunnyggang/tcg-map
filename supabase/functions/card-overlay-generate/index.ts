@@ -50,7 +50,7 @@ Deno.serve(async(req:Request)=>{
   if(data.action==='symbol_asset'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(data.assetId!==undefined){
-    const assets:Record<string,string>={'anniversary-yellow-umbreon-v1':'assets/overlay/anniversary-yellow-umbreon-v1.png','holographic-border-v1':'assets/overlay/holographic-border-v1.png','silver-glitter-border-v1':'assets/overlay/silver-glitter-border-v1.png','gold-star-border-v1':'assets/overlay/gold-star-border-v1.png','silver-satin-border-v1':'assets/overlay/silver-satin-border-v1.png'};
+    const assets:Record<string,string>={'anniversary-yellow-umbreon-v1':'assets/overlay/anniversary-yellow-umbreon-v1.png','holographic-border-v1':'assets/overlay/holographic-border-v2.png','silver-glitter-border-v1':'assets/overlay/silver-glitter-border-v1.png','gold-star-border-v1':'assets/overlay/gold-star-border-v1.png','silver-satin-border-v1':'assets/overlay/silver-satin-border-v1.png'};
     if(typeof data.assetId!=='string'||!Object.hasOwn(assets,data.assetId))return reply({error:'올바른 공통 심볼이 아닙니다.'},400);
     const r=await savedFetch('/rest/v1/overlay_symbol_assets?id=eq.'+encodeURIComponent(data.assetId)+'&select=image_path,placement');
     if(!r.ok)return reply({error:'공통 심볼을 불러오지 못했어요.'},503);const asset=(await r.json())[0];

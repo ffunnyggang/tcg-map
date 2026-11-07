@@ -36,7 +36,7 @@ Deno.serve(async(req:Request)=>{
   const allowed=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
   const ready=allowed&&enabled&&!!key;
-  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 50회 시도 한도'});
+  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 100회 시도 한도'});
   const savedHeaders={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   const outputBucket='overlay-generated-images';
   const savedFetch=(path:string,options:RequestInit={})=>fetch(url+path,{...options,headers:{...savedHeaders,...options.headers},signal:AbortSignal.timeout(15000)});
@@ -150,7 +150,7 @@ Deno.serve(async(req:Request)=>{
    if(res.ok)return true;const error=await res.json().catch(()=>({}));if(res.status!==409&&error.error!=='Duplicate'&&error.code!=='Duplicate'&&error.message!=='The resource already exists')throw Error('QUOTA_UNAVAILABLE');
   }return false;}
   // Allowlisted QA accounts have no per-account daily attempt limit.
-  if(!await reserve('global',50))return reply({error:'오늘 테스트 전체 생성 한도에 도달했어요.'},429);
+  if(!await reserve('global',100))return reply({error:'오늘 테스트 전체 생성 한도에 도달했어요.'},429);
   const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';
   const diagnostic={model,promptVersion:'overlay-background-continuity-v2',imageHash:await digest(image),maskHash:await digest(mask)};

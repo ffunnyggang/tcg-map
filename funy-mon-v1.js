@@ -520,7 +520,7 @@
     list.forEach((row,i)=>{
       const def=defById(row.monster_id),lat=Number(row.latitude),lng=Number(row.longitude);
       if(!def||!Number.isFinite(lat)||!Number.isFinite(lng))return;
-      const shop={id:row.shop_id,name:row.shop_name,_coord:{lat,lng}},off=offsets[0];
+      const shop={id:row.shop_id,name:row.shop_name,_coord:{lat,lng}},off=offsets[(Math.max(1,Number(row.slot)||1)-1)%offsets.length];
       const html='<div class="funy-mon-marker '+def.cls+' move-'+(i%3)+'" role="button" aria-label="'+def.name+' 포획"><span class="funy-mon-sprite"><img src="'+def.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
       const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat+off.lat,lng+off.lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:160+i,icon:{content:html,anchor:new naver.maps.Point(24,34)}});
       const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
@@ -530,7 +530,7 @@
       naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
     });
     syncEvergreenVisibility();
-    evergreenExpiryTimer=setTimeout(clearEvergreen,1800000-Date.now()%1800000+1000);
+    evergreenExpiryTimer=setTimeout(clearEvergreen,1800000-(Date.now()%1800000)+1000);
     try{naverMap.panTo(new naver.maps.LatLng(pos.coords.latitude,pos.coords.longitude))}catch(_){}
     if(!evergreenMarkers.length)showMessage('새로운 퍼니몬을 준비하고 있어요','다음 출몰 시간에 다시 확인해주세요.');
   }

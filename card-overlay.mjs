@@ -1,4 +1,4 @@
-import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-wide1';
+import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-bottom1';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';
@@ -115,7 +115,7 @@ async function generateFullArt(r){
  const input=wide?padCard(source,canvas):source,inputMask=wide?padCard(mask,canvas,true):mask;
  const symbol=illustration?await loadSharedSymbol():null;
  $('qualityStatus').textContent=(illustration?'일러스트만 확장 중':'카드 전체 풀아트 편집 중')+' · 자동 재시도 없음';
- const d=await A.invokeFunction('card-overlay-generate',{action:wide?'generate_fullart_wide':fixed?'generate_fullart_fixed':illustration?'generate_illustration':mode==='fullart_aligned'?'generate_fullart_aligned':'generate_fullart',image:input.toDataURL('image/png'),printRect:r,...(fixed?{mask:inputMask.toDataURL('image/png')} :{}),...sourceMetadata()});if(rev!==revision)return;
+ const d=await A.invokeFunction('card-overlay-generate',{action:wide?'generate_fullart_wide':fixed?'generate_fullart_fixed':illustration?'generate_illustration':mode==='fullart_aligned'?'generate_fullart_aligned':'generate_fullart',image:input.toDataURL('image/png'),printRect:r,...(fixed?{mask:inputMask.toDataURL('image/png')} :{}),...(wide?{wideLayout:'bottom-v1'}:{}),...sourceMetadata()});if(rev!==revision)return;
  const image=new Image();image.src='data:image/png;base64,'+d.image;await image.decode();let aligned=null;if(wide){$('qualityStatus').textContent='원본 일러스트 위치·크기·회전을 비교해 정렬하고 있어요.';aligned=await alignWide(source,image,preserveRect,canvas);}const working=aligned?aligned.image:image,quality=inspectFullArt(source,working,r),result=canvas(working.width,working.height);result.getContext('2d').drawImage(working,0,0);if(fixed){const restored=restoreFixed(source,result,mask,canvas);result.getContext('2d').drawImage(restored,0,0);}if(symbol)compositeSharedSymbol(result,symbol.image,symbol.placement);
  fullArtResultMode=mode;fullArtIsSample=false;sampleMode=false;fullArtResult=result;fullArtSource=source;if(symbol||fixed)await storePreparedResult(d,result);else showStorage(d);$('fullArtAccepted').checked=false;$('fullArtOriginal').checked=false;$('fullArtImage').src=result.toDataURL('image/png');$('fullArtPanel').hidden=false;
  $('fullArtStatus').textContent=(wide?'사방 20mm 확장 후 자동 정렬·카드 크기 추출을 완료했습니다. 보존 영역은 원본으로 복원했습니다. 경계 연결은 직접 확인해 주세요. ':fixed?'보존 마스크 영역은 원본 픽셀로 복원했습니다. 바깥 그림의 연결과 중복 윤곽은 직접 확인해 주세요. ':quality.accepted?'일러스트 창의 자동 비교는 통과했습니다.':'일러스트 창에서 원본과 차이가 감지됐습니다.')+(illustration?' 글자·기호·로고·안팎 테두리의 완전한 제거와 배경 연결은 자동 검증되지 않았습니다.':' 전체 글자·기호·로고·테두리의 좌표와 픽셀은 자동 검증되지 않았습니다.')+(symbol?' 저장된 노란색 30주년 심볼을 자동 합성했습니다.':'')+' 입력 원본 보기로 비교해 주세요. 1008×1408px · 63:88 비율 · 절단선 없음.';

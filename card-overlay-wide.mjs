@@ -1,5 +1,5 @@
-export const WIDE={width:1648,height:2048,pad:320,cardWidth:1008,cardHeight:1408};
-export function padCard(source,canvas,transparent=false){const c=canvas(WIDE.width,WIDE.height),g=c.getContext('2d');if(!transparent){g.fillStyle='#d9d9d9';g.fillRect(0,0,c.width,c.height);}g.drawImage(source,WIDE.pad,WIDE.pad);return c;}
+export const WIDE={width:1648,height:2048,padX:320,padY:80,cardWidth:1008,cardHeight:1408};
+export function padCard(source,canvas,transparent=false){const c=canvas(WIDE.width,WIDE.height),g=c.getContext('2d');if(!transparent){g.fillStyle='#d9d9d9';g.fillRect(0,0,c.width,c.height);}g.drawImage(source,WIDE.padX,WIDE.padY);return c;}
 export function mappedPoint(x,y,m){const a=m.angle*Math.PI/180,c=Math.cos(a)*m.scale,s=Math.sin(a)*m.scale;return{x:m.cx+c*(x-m.cx)-s*(y-m.cy)+m.dx,y:m.cy+s*(x-m.cx)+c*(y-m.cy)+m.dy};}
 export function covered(m,W,H,box){return [[box.x,box.y],[box.x+box.w,box.y],[box.x,box.y+box.h],[box.x+box.w,box.y+box.h]].every(([x,y])=>{const p=mappedPoint(x,y,m);return p.x>=1&&p.y>=1&&p.x<W-1&&p.y<H-1;});}
 export function searchWide(source,generated,r){
@@ -20,16 +20,16 @@ export async function alignWide(source,generated,artRect,canvas){
  const padded=padCard(source,canvas),tw=160,th=Math.round(tw*WIDE.height/WIDE.width),sx=tw/WIDE.width,sy=th/WIDE.height;
  const tiny=im=>{const c=canvas(tw,th);c.getContext('2d').drawImage(im,0,0,tw,th);return c.getContext('2d').getImageData(0,0,tw,th);};
  await new Promise(r=>setTimeout(r,0));
- const art={x:(WIDE.pad+artRect.x*16)*sx,y:(WIDE.pad+artRect.y*16)*sy,w:artRect.w*16*sx,h:artRect.h*16*sy};
+ const art={x:(WIDE.padX+artRect.x*16)*sx,y:(WIDE.padY+artRect.y*16)*sy,w:artRect.w*16*sx,h:artRect.h*16*sy};
  const original=tiny(padded),target=tiny(generated);
- const match=typeof Worker==='undefined'?searchWide(original,target,art):await new Promise((resolve,reject)=>{const worker=new Worker(new URL('./card-overlay-wide-worker.mjs?v=20261107-wide1',import.meta.url),{type:'module'});const timeout=setTimeout(()=>{worker.terminate();reject(Error('자동 정렬 시간이 초과됐어요. 다시 생성하지 않고 종료합니다.'));},45000);worker.onmessage=e=>{clearTimeout(timeout);worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.match);};worker.onerror=()=>{clearTimeout(timeout);worker.terminate();reject(Error('이 브라우저에서 자동 정렬을 실행하지 못했어요.'));};worker.postMessage({source:original,generated:target,rect:art});});
+ const match=typeof Worker==='undefined'?searchWide(original,target,art):await new Promise((resolve,reject)=>{const worker=new Worker(new URL('./card-overlay-wide-worker.mjs?v=20261107-bottom1',import.meta.url),{type:'module'});const timeout=setTimeout(()=>{worker.terminate();reject(Error('자동 정렬 시간이 초과됐어요. 다시 생성하지 않고 종료합니다.'));},45000);worker.onmessage=e=>{clearTimeout(timeout);worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.match);};worker.onerror=()=>{clearTimeout(timeout);worker.terminate();reject(Error('이 브라우저에서 자동 정렬을 실행하지 못했어요.'));};worker.postMessage({source:original,generated:target,rect:art});});
  if(!match||match.correlation<.9||match.mae>35)throw Error('원본과 충분히 일치하는 위치를 찾지 못했어요. 자동 재생성은 하지 않습니다. AI 원본은 저장 내역에서 확인할 수 있어요.');
- const cardBox={x:WIDE.pad*sx,y:WIDE.pad*sy,w:WIDE.cardWidth*sx,h:WIDE.cardHeight*sy};
+ const cardBox={x:WIDE.padX*sx,y:WIDE.padY*sy,w:WIDE.cardWidth*sx,h:WIDE.cardHeight*sy};
  if(!covered(match,tw,th,cardBox))throw Error('정렬 후 카드 영역에 빈 공간이 남아 출력하지 않았어요. AI 원본은 저장 내역에서 확인해 주세요.');
  // Invert the sampled source-to-generated transform, including thumbnail axis scaling.
  const angle=match.angle*Math.PI/180,a=Math.cos(angle)*match.scale,b=Math.sin(angle)*match.scale;
  const tx=match.cx-a*match.cx+b*match.cy+match.dx,ty=match.cy-b*match.cx-a*match.cy+match.dy,det=a*a+b*b;
- const A=a/det,B=-b/det* sx/sy,C=b/det*sy/sx,D=a/det,E=(-a*tx-b*ty)/det/sx-WIDE.pad,F=(b*tx-a*ty)/det/sy-WIDE.pad;
+ const A=a/det,B=-b/det* sx/sy,C=b/det*sy/sx,D=a/det,E=(-a*tx-b*ty)/det/sx-WIDE.padX,F=(b*tx-a*ty)/det/sy-WIDE.padY;
  const result=canvas(WIDE.cardWidth,WIDE.cardHeight),g=result.getContext('2d');g.setTransform(A,B,C,D,E,F);g.drawImage(generated,0,0);g.resetTransform();
  return {image:result,match};
 }

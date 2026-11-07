@@ -26,11 +26,11 @@ Deno.serve(async req=>{
   if(action==="info"){
    if(!reToken.test(tag))return send({ok:false,error:"invalid_tag"},400);
    const digest=await sha(tag);
-   const {data:row,error}=await admin.from("shop_visit_nfc_tags").select("id,shop_id,status,shops!inner(name,is_active,country_code)").eq("token_hash",digest).eq("status","active").eq("shops.is_active",true).eq("shops.country_code","KR").maybeSingle();
+   const {data:row,error}=await admin.from("shop_visit_nfc_tags").select("id,shop_id,status,reward_enabled,shops!inner(name,is_active,country_code)").eq("token_hash",digest).eq("status","active").eq("shops.is_active",true).eq("shops.country_code","KR").maybeSingle();
    if(error)throw error;
    if(!row)return send({ok:false,error:"invalid_tag"},404);
    const shop=Array.isArray(row.shops)?row.shops[0]:row.shops;
-   return send({ok:true,shop_id:row.shop_id,shop_name:shop?.name||"카드샵",pilot:true});
+   return send({ok:true,shop_id:row.shop_id,shop_name:shop?.name||"카드샵",pilot:row.reward_enabled!==true,reward_enabled:row.reward_enabled===true});
   }
   const bearer=req.headers.get("authorization")||"";
   const jwt=bearer.match(/^Bearer\s+(.+)$/i)?.[1];
@@ -43,12 +43,35 @@ Deno.serve(async req=>{
    const {data:yes,error}=await scoped.rpc("is_funypin_admin");
    return !error&&yes===true;
   };
-  if(action==="admin_list"||action==="admin_create"||action==="admin_disable"){
+  if(action==="admin_list"||action==="admin_create"||action==="admin_disable"||action==="admin_mode"||action==="admin_attempts"){
    if(!await authorizedAdmin())return send({ok:false,error:"forbidden"},403);
    if(action==="admin_list"){
-    const {data:tags,error}=await admin.from("shop_visit_nfc_tags").select("id,shop_id,tag_type,status,label,created_at,revoked_at").order("created_at",{ascending:false}).limit(100);
+    const {data:tags,error}=await admin.from("shop_visit_nfc_tags").select("id,shop_id,tag_type,status,label,reward_enabled,reward_enabled_at,created_at,revoked_at").order("created_at",{ascending:false}).limit(100);
     if(error)throw error;
     return send({ok:true,tags:tags||[]});
+   }
+   if(action==="admin_attempts"){
+    const {data:logs,error}=await admin.from("shop_visit_nfc_attempts").select("id,tag_id,shop_id,result,distance_m,accuracy_m,reward_applied,created_at").order("created_at",{ascending:false}).limit(80);
+    if(error)throw error;
+    const {data:pilotRows,error:pilotError}=await admin.from("shop_visit_nfc_pilot_checkins").select("tag_id,shop_id,verified_at").order("verified_at",{ascending:false}).limit(100);
+    if(pilotError)throw pilotError;
+    return send({ok:true,logs:logs||[],pilot_count_by_shop:(pilotRows||[]).reduce((m,r)=>{m[r.shop_id]=(m[r.shop_id]||0)+1;return m},{} as Record<string,number>)});
+   }
+   if(action==="admin_mode"){
+    const tagId=String(data.tag_id||"");
+    const enabled=data.enabled===true;
+    if(!/^[0-9a-f-]{36}$/.test(tagId)||data.acknowledge!==true)return send({ok:false,error:"invalid_request"},400);
+    const {data:current,error:lookupError}=await admin.from("shop_visit_nfc_tags").select("id,shop_id,status").eq("id",tagId).maybeSingle();
+    if(lookupError)throw lookupError;
+    if(!current||current.status!=="active")return send({ok:false,error:"invalid_tag"},400);
+    if(enabled){
+     const {count,error:pilotError}=await admin.from("shop_visit_nfc_pilot_checkins").select("id",{head:true,count:"exact"}).eq("shop_id",current.shop_id);
+     if(pilotError)throw pilotError;
+     if(!count)return send({ok:false,error:"pilot_required"},400);
+    }
+    const {data:updated,error}=await admin.from("shop_visit_nfc_tags").update({reward_enabled:enabled,reward_enabled_at:enabled?new Date().toISOString():null,reward_enabled_by:enabled?uid:null}).eq("id",tagId).eq("status","active").select("id,reward_enabled").maybeSingle();
+    if(error)throw error;
+    return send({ok:!!updated,tag:updated});
    }
    if(action==="admin_create"){
     const shopId=String(data.shop_id||"");
@@ -64,7 +87,7 @@ Deno.serve(async req=>{
    }
    const id=String(data.tag_id||"");
    if(!/^[0-9a-f-]{36}$/.test(id))return send({ok:false,error:"invalid_tag"},400);
-   const {data:updated,error}=await admin.from("shop_visit_nfc_tags").update({status:"revoked",revoked_at:new Date().toISOString()}).eq("id",id).eq("status","active").select("id").maybeSingle();
+   const {data:updated,error}=await admin.from("shop_visit_nfc_tags").update({status:"revoked",revoked_at:new Date().toISOString(),reward_enabled:false,reward_enabled_at:null,reward_enabled_by:null}).eq("id",id).eq("status","active").select("id").maybeSingle();
    if(error)throw error;
    return send({ok:!!updated});
   }
@@ -73,12 +96,12 @@ Deno.serve(async req=>{
    const lat=Number(data.lat),lng=Number(data.lng),accuracy=Number(data.accuracy),fixTime=Number(data.fix_time);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!Number.isFinite(accuracy)||!Number.isFinite(fixTime)||Math.abs(Date.now()-fixTime)>30000)return send({ok:false,error:"invalid_request"},400);
    const digest=await sha(tag);
-   const {data:result,error}=await admin.rpc("nfc_pilot_verify",{p_user:uid,p_token_hash:digest,p_lat:lat,p_lng:lng,p_accuracy:accuracy});
+   const {data:result,error}=await admin.rpc("nfc_visit_verify_v2",{p_user:uid,p_token_hash:digest,p_lat:lat,p_lng:lng,p_accuracy:accuracy});
    if(error)throw error;
    const reason=result?.ok?(result.new?"success":"already_checked_in"):String(result?.error||"invalid_request");
    const allowed=new Set(["success","already_checked_in","invalid_tag","low_accuracy","too_far","invalid_request","rate_limited","server_error"]);
    // Failure/success audit is best effort; no token, raw location or credential is logged.
-   await admin.from("shop_visit_nfc_attempts").insert({user_id:uid,result:allowed.has(reason)?reason:"invalid_request"}).then(()=>{});
+   await admin.from("shop_visit_nfc_attempts").insert({user_id:uid,tag_id:result?.tag_id||null,shop_id:result?.shop_id||null,result:allowed.has(reason)?reason:"invalid_request",distance_m:Number.isFinite(Number(result?.distance_m))&&result?.distance_m!=null?Number(result.distance_m):null,accuracy_m:Number.isFinite(accuracy)?Math.round(accuracy):null,reward_applied:result?.reward_applied===true}).then(()=>{});
    return send(result,result?.ok?200:400);
   }
   return send({ok:false,error:"unknown_action"},400);

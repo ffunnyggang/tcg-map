@@ -1,11 +1,11 @@
 import {attachArtGestures} from './card-art-gestures.mjs?v=20261107-gesture1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-window2';
-import {NOTICE_VERSION,LANGUAGES,validWindow,insetWindow,nudgeWindow,pageCards,cardFilename} from './card-art-core.mjs?v=20261107-window1';
+import {LANGUAGES,validWindow,insetWindow,nudgeWindow,pageCards,cardFilename} from './card-art-core.mjs?v=20261107-copy1';
 import {makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261107-window1';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 let step=1,rows=[],language='ko',query='',page=0,selected=null,source=null,cut=null,result=null,resultWindow=null,ready=false,busy=false,selecting=false,exporting=false,demo=false,renderEpoch=0,selectionEpoch=0,toastTimer,searchTimer,draft=null,tuneMode='position',catalogEpoch=0;
-const refs=new Map(),noticeKey='funypin-card-art-notice-'+NOTICE_VERSION;
+const refs=new Map();
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+(LANGUAGES[selected.source_language]||'샘플'):'';}
@@ -16,12 +16,12 @@ function update(){
  document.querySelectorAll('.selected-name').forEach(el=>el.textContent=infoName());$('demoBanner').hidden=!demo;
  $('next').textContent=exporting?'PDF를 준비하고 있어요':step===1?'선택한 카드로 계속':step===2?'이 창으로 계속':step===3?(result?'결과 다시 보기':demo?'샘플 결과 보기':'확장 아트 만들기'):'출력 도안 PDF 받기';
  $('next').disabled=busy||selecting||exporting||(step===1?!source:step===2?!validWindow(cut):step===3?!$('confirm').checked||(!demo&&!ready):!result);
- $('actionHint').textContent=selecting?'선택한 카드 원본을 불러오고 있어요':step===1?(selected?infoName():'확장할 카드를 선택해 주세요'):step===2?'실물 카드의 그림 위치와 비교해 주세요':step===3?(demo?'AI 미사용 · 생성 횟수 사용 없음':result?'저장된 현재 결과를 확인합니다 · 추가 생성 없음':ready?'AI 생성 요청은 테스트 시도 횟수에 포함됩니다':'현재 계정의 AI 생성 연결 상태를 확인해 주세요'):'A4 · 실제 크기 100% · 페이지 맞춤 해제';
+ $('actionHint').textContent=selecting?'선택한 카드 원본을 불러오고 있어요':step===1?(selected?infoName():'확장할 카드를 선택해 주세요'):step===2?'실물 카드의 그림 위치와 비교해 주세요':step===3?(demo?'AI 미사용 · 생성 횟수 사용 없음':result?'현재 결과를 확인합니다 · 추가 생성 없음':ready?'AI 생성 요청은 테스트 시도 횟수에 포함됩니다':'현재 계정의 AI 생성 연결 상태를 확인해 주세요'):'A4 · 실제 크기 100% · 페이지 맞춤 해제';
  $('back').disabled=busy||exporting;$('startAgain').disabled=busy||exporting;$('demo').disabled=busy;
 }
 function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawWindow($('confirmCanvas'),cut);if(n===4)drawResult();window.scrollTo({top:0,behavior:'instant'});}
-function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,(c.id==='windowCanvas'||c.id==='tuneCanvas')?.3:1);}
-function drawResult(){if(!source||!result||!resultWindow)return;const c=$('resultCanvas'),g=c.getContext('2d');drawCardOverlay(g,source,result,resultWindow,c.width,c.height,$('showArt').checked);if($('showArt').checked)drawCutGuide(g,resultWindow,c.width,c.height);}
+function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,.3);}
+function drawResult(){if(!source||!result||!resultWindow)return;const c=$('resultCanvas'),g=c.getContext('2d');drawCardOverlay(g,source,result,resultWindow,c.width,c.height,$('showArt').checked);if($('showArt').checked)drawCutGuide(g,resultWindow,c.width,c.height,.3);}
 async function reference(id){if(!refs.has(id)){const pending=A.invokeFunction('card-overlay-generate',{action:'reference',id}).then(d=>d.reference).catch(e=>{refs.delete(id);throw e;});refs.set(id,pending);}return refs.get(id);}
 async function imageFrom(url){const im=new Image();im.crossOrigin='anonymous';im.src=url;await im.decode();return im;}
 function renderCards(){
@@ -37,16 +37,15 @@ $('login').onclick=()=>A?.goLogin(location.href);$('reloadCatalog').onclick=conn
 for(const b of document.querySelectorAll('[data-language]'))b.onclick=()=>{if(busy)return;language=b.dataset.language;page=0;document.querySelectorAll('[data-language]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderCards();};
 $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{query=$('search').value;page=0;renderCards();},250);};$('prevPage').onclick=()=>{page--;renderCards();};$('nextPage').onclick=()=>{page++;renderCards();};
 $('next').onclick=()=>{if($('next').disabled)return;if(step===1)goStep(2);else if(step===2)goStep(3);else if(step===3)result?goStep(4):generate();else downloadPDF();};$('back').onclick=()=>{if(busy||exporting)return;if(step>1)goStep(step-1);else location.href='/tcg-tools.html';};$('confirm').onchange=update;$('showArt').onchange=drawResult;
-$('startAgain').onclick=()=>{selectionEpoch++;selected=null;source=null;result=null;resultWindow=null;cut=null;demo=false;selecting=false;$('confirm').checked=false;$('storageStatus').textContent='';goStep(1);renderCards();};
+$('startAgain').onclick=()=>{selectionEpoch++;selected=null;source=null;result=null;resultWindow=null;cut=null;demo=false;selecting=false;$('confirm').checked=false;goStep(1);renderCards();};
 async function generate(){
  if(busy||!source||!selected||!validWindow(cut)||!$('confirm').checked)return;
  busy=true;update();$('generationError').hidden=true;$('workingDialog').showModal();const sourceSnapshot=source,selectionSnapshot=selected,windowSnapshot={...cut};
- try{if(demo){await new Promise(resolve=>setTimeout(resolve,700));result=restoreSourceWindow(demoArt(),sourceSnapshot,windowSnapshot);resultWindow=Object.freeze({...windowSnapshot});$('storageStatus').textContent='샘플 결과 · AI 미사용 · DB 저장 안 함';}else{
+ try{if(demo){await new Promise(resolve=>setTimeout(resolve,700));result=restoreSourceWindow(demoArt(),sourceSnapshot,windowSnapshot);resultWindow=Object.freeze({...windowSnapshot});}else{
   if(!ready)throw Error('현재 계정은 AI 생성 준비가 되지 않았어요.');
   const d=await A.invokeFunction('card-overlay-generate',{action:'generate_mobile',image:sourceSnapshot.toDataURL('image/png'),sourceReferenceId:selectionSnapshot.id,printRect:windowSnapshot});
   const image=await imageFrom('data:image/png;base64,'+d.image);if(image.width!==1008||image.height!==1408)throw Error('생성 결과 크기가 맞지 않아요. 운영자에게 문의해 주세요.');const output=canvas(1008,1408);output.getContext('2d').drawImage(image,0,0);restoreSourceWindow(output,sourceSnapshot,windowSnapshot);result=output;resultWindow=Object.freeze({...windowSnapshot});
-  $('storageStatus').textContent=d.storageSaved?'AI 원본은 저장됐어요. 창 위치를 고정한 최종 결과를 저장하고 있어요.':d.storageMessage||'생성은 완료됐지만 DB 저장에 실패했어요. 지금 PDF를 다운로드해 주세요.';
-  if(d.storageSaved&&d.generationId){try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:d.generationId,image:output.toDataURL('image/png')});$('storageStatus').textContent='2단계 창 위치를 적용한 최종 풀아트 결과를 비공개 저장했어요.';}catch{$('storageStatus').textContent='AI 원본은 저장됐지만 최종 합성본 저장에 실패했어요. 지금 PDF를 다운로드해 주세요.';}}
+  if(d.storageSaved&&d.generationId){try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:d.generationId,image:output.toDataURL('image/png')});}catch{console.warn('Final artwork persistence failed');}}
  }
  $('showArt').checked=true;goStep(4);
  }catch(e){const el=$('generationError');el.hidden=false;el.textContent=(e.message==='LOGIN_REQUIRED'?'로그인 후 다시 이용해 주세요.':e.message||'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?' · 문의용 ID: '+e.data.requestId:'');if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.textContent='다시 로그인하기';b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;el.append(document.createTextNode(' 같은 요청을 반복하지 말고 운영자에게 문의해 주세요.'));}}
@@ -60,10 +59,10 @@ function renderTune(){drawWindow($('tuneCanvas'),draft);$('tuneStatus').textCont
 $('cancelTune').onclick=()=>$('tuneDialog').close();const tuneGestures=attachArtGestures($('tuneViewport'),$('tuneCanvas'),$('tuneZoom'));$('tuneDialog').addEventListener('close',()=>tuneGestures.clear());
 for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{tuneMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderTune();};
 for(const b of document.querySelectorAll('[data-direction]')){let start,repeat;const stop=()=>{clearTimeout(start);clearInterval(repeat);};const change=()=>{if(draft){draft=nudgeWindow(draft,tuneMode,b.dataset.direction);renderTune();}};b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);change();start=setTimeout(()=>repeat=setInterval(change,80),350);};b.onpointerup=stop;b.onpointercancel=stop;b.onlostpointercapture=stop;b.onclick=e=>{if(e.detail===0)change();};}
-$('resetTune').onclick=()=>{draft=insetWindow(selected.art_rect);renderTune();};$('applyTune').onclick=()=>{if(!validWindow(draft))return;if(JSON.stringify(cut)!==JSON.stringify(draft)){cut={...draft};result=null;resultWindow=null;$('confirm').checked=false;$('storageStatus').textContent='';}drawWindow($('windowCanvas'),cut);$('tuneDialog').close();update();};
-// One versioned notice, rendered in both places from the same template.
+$('resetTune').onclick=()=>{draft=insetWindow(selected.art_rect);renderTune();};$('applyTune').onclick=()=>{if(!validWindow(draft))return;if(JSON.stringify(cut)!==JSON.stringify(draft)){cut={...draft};result=null;resultWindow=null;$('confirm').checked=false;}drawWindow($('windowCanvas'),cut);$('tuneDialog').close();update();};
+// The same entry notice and footer content; always show on page entry.
 $('modalNotice').append($('noticeContent').content.cloneNode(true));$('footerNotice').append($('noticeContent').content.cloneNode(true));
-$('acceptNotice').onclick=()=>{if($('hideNotice').checked)try{localStorage.setItem(noticeKey,'hidden');}catch{}$('noticeDialog').close();};$('reopenNotice').onclick=()=>{$('hideNotice').checked=false;$('noticeDialog').showModal();};try{if(localStorage.getItem(noticeKey)!=='hidden')$('noticeDialog').showModal();}catch{$('noticeDialog').showModal();}
+$('acceptNotice').onclick=()=>$('noticeDialog').close();$('reopenNotice').onclick=()=>$('noticeDialog').showModal();$('noticeDialog').showModal();window.addEventListener('pageshow',e=>{if(e.persisted&&!$('noticeDialog').open)$('noticeDialog').showModal();});
 function demoArt(){const c=canvas(1008,1408),g=c.getContext('2d'),bg=g.createLinearGradient(0,0,0,c.height);bg.addColorStop(0,'#d9e5ec');bg.addColorStop(.5,'#e5ebd2');bg.addColorStop(1,'#8fab96');g.fillStyle=bg;g.fillRect(0,0,c.width,c.height);g.fillStyle='#fff2bf';g.beginPath();g.arc(730,240,65,0,7);g.fill();for(const [y,color]of[[580,'#b8cbb3'],[850,'#99b29c'],[1100,'#799a84']]){g.fillStyle=color;g.beginPath();g.moveTo(0,1408);g.lineTo(0,y);g.bezierCurveTo(300,y-180,700,y+100,1008,y-40);g.lineTo(1008,1408);g.fill();}return c;}
 $('demo').onclick=()=>{if(busy)return;selectionEpoch++;selecting=false;renderEpoch++;demo=true;selected={id:'demo',display_name:'출력 테스트용 카드',card_number:'SAMPLE',source_language:'sample',art_rect:{x:5,y:13,w:53,h:33}};source=canvas(1008,1408);const g=source.getContext('2d'),art=demoArt(),r=selected.art_rect;g.fillStyle='#f1ece3';g.fillRect(0,0,1008,1408);g.drawImage(art,r.x*16,r.y*16,r.w*16,r.h*16,r.x*16,r.y*16,r.w*16,r.h*16);g.fillStyle='#9b8aa6';g.font='bold 30px sans-serif';g.fillText('PRINT TEST SAMPLE',80,120);g.font='24px sans-serif';g.fillText('AI NOT USED',80,930);cut=insetWindow(r);result=null;resultWindow=null;$('confirm').checked=false;$('generationError').hidden=true;goStep(2);};
 update();connect();

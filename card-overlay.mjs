@@ -1,13 +1,14 @@
+import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeHeaderLayer} from './card-overlay-header.mjs?v=20261108-header1';
 let aiHeaderDraft=null;
 import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261108-header1';
-function isManualMode(mode){return mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}
+function isManualMode(mode){return mode==='fullart_layer_atlas'||mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}
 const ORIGINAL_REFERENCES={"tcg": {"label": "공개 원문 단독 · TCG Frame Removal", "prompt": "Remove the card name, HP, energy type icons, attack names and damage, weakness, resistance, retreat cost, set number, and illustrator credit. Paint over those areas with a natural continuation of the existing artwork.", "url": "https://huggingface.co/pearsonkyle/tcg-frame-removal-klein4b"}, "runware": {"label": "공개 예문 단독 · Runware (하늘·언덕)", "prompt": "open sky and distant hills", "url": "https://runware.ai/docs/learn/image-outpainting"}};
 function originalVariant(mode){return mode.startsWith("fullart_original_")?mode.slice("fullart_original_".length):null;}
 function isOriginalMode(mode){return Object.hasOwn(ORIGINAL_REFERENCES,originalVariant(mode));}
 const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingface.co/pearsonkyle/tcg-frame-removal-klein4b"},"openai":{"label":"OpenAI 가이드 참고","url":"https://developers.openai.com/api/docs/guides/image-prompting"},"runware":{"label":"Runware 가이드 참고","url":"https://runware.ai/docs/learn/image-outpainting"},"adobe":{"label":"Adobe 가이드 참고","url":"https://www.adobe.com/kr/products/photoshop/generative-fill.html"}};
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
-function isWideMode(mode){return mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
+function isWideMode(mode){return mode==="fullart_layer_atlas"||mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
 import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
 import {reviewWideAlignment,IDENTITY_WIDE} from './card-overlay-manual.mjs?v=20261108-header1';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
@@ -110,6 +111,7 @@ function fullArtMode(){
  $('manualAdjust').hidden=!wideManualState||wideManualState.mode!==mode;$('manualAdjust').disabled=busy||savedLoading;
  $('fullArtPanel').hidden=!active||(!matchingFullArt()&&!(wideManualState&&wideManualState.mode===mode));$('fullArtInfo').hidden=!active;$('bgExtractPanel').hidden=mode!=='bg_extract';
  $('fullArtInfo').textContent=illustration?'카드 전체 이미지를 외부 AI로 전송합니다. 새 풀아트 프롬프트를 바탕으로 원래 그림의 위치·크기를 유지하고, 모든 글자·기호·로고·배지·안쪽 프레임·바깥 테두리를 지운 자리를 풍경으로 채우도록 요청합니다. 참조 이미지 대체는 적용하지 않습니다. 픽셀 보존과 완전한 제거는 보장되지 않으므로 원본과 비교해 주세요. 절단선 없는 PNG와 기존 사각·라운드 도안 PNG·A4 PDF를 저장할 수 있습니다. 도안 바깥 2mm는 가장자리 픽셀을 연장합니다.':isWideMode(mode)?'원본 크기를 유지하고 상단 5mm·하단 35mm·좌우 20mm 여백을 추가해 생성합니다. 생성 전 보존 영역을 확인하고, 생성 후 일러스트 기준 위치·배율·회전을 자동 정렬해 카드 크기로 자릅니다. 글자·기호는 칠한 영역만 원본으로 복원합니다. 일치도가 낮거나 빈 공간이 남으면 출력하지 않습니다. 큰 이미지 요청으로 비용·시간이 늘어날 수 있으며 경계 연결은 직접 확인해 주세요.':mode==='fullart_fixed'?'원본 일러스트와 테두리를 고정하고, 보존할 글자·기호를 마스크에 추가로 칠한 뒤 생성합니다. 보존 영역은 원본 픽셀로 복원하며 출력 절단 창 조절과 무관합니다. 보존 영역 밖의 연결 품질은 원본과 비교해 주세요.':mode==='fullart_aligned'?'원본 카드 전체와 선택한 창 좌표를 전송합니다. 기존 풀아트 지침에 원본 위치·배율·절단 경계 연결을 강조하는 지침을 추가합니다. 마스크 없이 프롬프트만 개선한 비교 테스트 옵션이며, 정확한 위치 보존은 보장되지 않습니다. 원본과 비교 후 출력해 주세요.':fullArtInfoText;
+ if(mode==='fullart_layer_atlas')$('fullArtInfo').textContent='AI 1회로 일러스트와 상단 텍스트·기호를 좌우로 나눈 PNG 한 장을 요청하고, 기기에서 두 레이어로 분리합니다. 상단 레이어는 원본 배경·패널·무늬 없이 실제 투명 배경으로 요청합니다. 좌표나 투명도가 맞지 않으면 실패로 안내하며 자동 재요청하지 않습니다. 큰 출력 이미지이므로 1회 요청이 비용 절반을 뜻하지는 않습니다. 생성 후 일러스트 위치·크기를 조절하고 상단 레이어와 노란 심볼을 각각 ON/OFF할 수 있습니다. DB에는 AI 원본 묶음과 확정 합성본을 저장하며 편집 상태는 현재 화면에서만 유지됩니다.';
  if(mode==='fullart_header_layers')$('fullArtInfo').textContent='AI가 상단 이름·진화 배지·HP·속성 기호를 투명 레이어로 추출하고, 일러스트를 별도로 넓게 생성합니다. 진화 설명·기술·하단 정보·테두리는 제외합니다. AI 요청은 총 2회이며 각각 한도를 사용합니다. 일러스트 위치·크기를 조절하고 상단 레이어와 공통 노란 심볼을 각각 ON/OFF 하세요. 한쪽 실패 시 자동 재시도하지 않습니다. 상단 추출 완료 후 배경 실패 시 같은 원본으로 다시 누르면 현재 화면에 보관된 상단을 재사용합니다. DB에는 각 AI 원본과 최종 합성본을 저장합니다. 편집 상태는 현재 화면에서만 유지됩니다.';
  if(mode==='fullart_layers')$('fullArtInfo').textContent='선택한 일러스트 창을 기준으로 배경만 넓게 생성합니다. 텍스트·숫자·기호와 외곽 띠는 원본에서 시험 추출하며, AI로 다시 생성하지 않습니다. 추출을 확인한 뒤 배경을 맞추고 두 레이어를 각각 ON/OFF 하세요. AI 요청은 1회입니다. 별도 레이어 편집 상태는 현재 화면에서 유지되고 DB에는 최종 합성 이미지가 저장됩니다.';
  if(isOriginalMode(mode)){const info=ORIGINAL_REFERENCES[originalVariant(mode)];$('fullArtInfo').textContent='공개된 예문만 단독 전송합니다. 기존 풀아트·위치 보존·배경 연결 지침을 추가하지 않습니다. 원본 카드 전체(1008×1408)를 현재 OpenAI 이미지 API로 편집하며, 마스크·확장 여백·자동 정렬·심볼 합성은 사용하지 않습니다. 해당 자료의 모델이나 서비스를 실행하는 옵션은 아닙니다. '+(originalVariant(mode)==='runware'?'하늘과 먼 언덕을 지정하는 예문으로, 카드 프레임 제거를 지시하지 않습니다. ':'')+'실제 전송 프롬프트: '+info.prompt+' ';const link=document.createElement('a');link.href=info.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='원문 출처';$('fullArtInfo').append(link);}
@@ -124,6 +126,7 @@ function fullArtMode(){
 $('generationMode').onchange=()=>{facePosition={x:.5,y:.35};invalidateFacePreview();$('extractCanvas').style.display='none';fullArtMode();};$('fullArtAccepted').onchange=update;
 $('fullArtOriginal').onchange=()=>{if(fullArtResult&&fullArtSource)$('fullArtImage').src=($('fullArtOriginal').checked?fullArtSource:fullArtResult).toDataURL('image/png');};
 async function generateFullArt(r){
+ if($('generationMode').value==='fullart_layer_atlas')return generateLayerAtlas(r);
  const source=prepareFullCard(card,canvas),rev=revision,mode=$('generationMode').value,illustration=mode==='illustration';
  const wide=isWideMode(mode),fixed=mode==='fullart_fixed'||wide;if(!isManualMode(mode))wideManualState=null;
  const aiLayers=mode==='fullart_header_layers',layered=mode==='fullart_layers',preserveRect=(layered||aiLayers)?{...r}:fixed?(fixedArtRect?{...fixedArtRect}:detectArtWindow(analyze(card),$('layout').value).rect):null;
@@ -148,13 +151,27 @@ async function generateFullArt(r){
  $('fullArtStatus').textContent=(wide?'상단 5mm·하단 35mm·좌우 20mm 확장 후 자동 정렬·카드 크기 추출을 완료했습니다. 보존 영역은 원본으로 복원했습니다. 경계 연결은 직접 확인해 주세요. ':fixed?'보존 마스크 영역은 원본 픽셀로 복원했습니다. 바깥 그림의 연결과 중복 윤곽은 직접 확인해 주세요. ':quality.accepted?'일러스트 창의 자동 비교는 통과했습니다.':'일러스트 창에서 원본과 차이가 감지됐습니다.')+(illustration?' 글자·기호·로고·안팎 테두리의 완전한 제거와 배경 연결은 자동 검증되지 않았습니다.':' 전체 글자·기호·로고·테두리의 좌표와 픽셀은 자동 검증되지 않았습니다.')+(symbol?' 저장된 노란색 30주년 심볼을 자동 합성했습니다.':'')+' 입력 원본 보기로 비교해 주세요. 1008×1408px · 63:88 비율 · 절단선 없음.';
  $('qualityStatus').textContent='풀아트 결과는 위 별도 영역에 표시됩니다. 아래 기존 출력 설정으로 절단선 PNG·A4 PDF를 저장할 수 있습니다.';fullArtMode();toast('편집이 완료됐어요. 원본과 비교한 뒤 PNG 또는 출력 도안으로 저장하세요.');
 }
+async function generateLayerAtlas(r){
+ const source=prepareFullCard(card,canvas),rev=revision,mode='fullart_layer_atlas';
+ const symbol=await loadSharedSymbol('anniversary-yellow-umbreon-v1');if(rev!==revision)return;
+ resetFullArt();$('qualityStatus').textContent='AI 1회 요청 · 확장 일러스트와 투명 상단 레이어를 함께 생성하고 있어요.';
+ const d=await A.invokeFunction('card-overlay-generate',{action:'generate_layer_atlas',image:source.toDataURL('image/png'),printRect:r,...sourceMetadata()});if(rev!==revision)return;
+ showStorage(d);const raw=new Image();raw.src='data:image/png;base64,'+d.image;await raw.decode();
+ $('fullArtImage').src=raw.src;$('fullArtPanel').hidden=false;$('fullArtStatus').textContent='생성 원본 · 두 레이어의 크기와 투명도를 확인 중입니다.';
+ let separated;try{separated=splitLayerAtlas(raw,canvas);}catch(e){$('fullArtStatus').textContent=e.message;$('qualityStatus').textContent='생성은 끝났지만 레이어 분리 검사를 통과하지 못했습니다. 원본 묶음과 저장 상태를 확인해 주세요.';throw e;}const {background:image,text}=separated;
+ $('qualityStatus').textContent='두 레이어 분리 완료 · 일러스트 정렬 중입니다. AI 추가 호출 없음';
+ let aligned;try{aligned=await alignWide(source,image,r,canvas,{allowManual:true});}catch{aligned={matrix:[...IDENTITY_WIDE],trusted:false};}if(rev!==revision)return;
+ const layers={kind:'ai-header',text,symbol:symbol.image,placement:symbol.placement,showText:true,showSymbol:true};
+ wideManualState={mode,layers,source,image,mask:windowMask(r,canvas),artRect:{...r},initial:aligned.matrix,trusted:aligned.trusted,d};fullArtSource=source;
+ $('fullArtStatus').textContent='1회 생성·레이어 분리 완료 · 연결 맞추기에서 조절하고 확정해 주세요.';fullArtMode();await editWideResult();
+}
 async function editWideResult(){
  const session=wideManualState;if(!session)return;
  const cut=rect(),t=Number($('tolerance').value)||0,visible={x:cut.x-t,y:cut.y-t,w:cut.w+2*t,h:cut.h+2*t};if(t<0||t>.5||!validRect(visible))throw Error('창 여유가 카드 범위를 넘습니다. 출력 설정을 확인해 주세요.');
  const picked=await reviewWideAlignment({...session,cutRect:visible,canvas});if(!picked||session!==wideManualState){if(!fullArtResult)toast('생성 이미지는 유지됩니다. 일러스트 연결 맞추기 버튼으로 이어서 조절하세요.');return;}
  session.current=picked.matrix;session.cutRect=cut;session.tolerance=t;fullArtResult=picked.image;fullArtSource=session.source;fullArtResultMode=session.mode||'fullart_wide';if(picked.layers)session.layers=picked.layers;fullArtIsSample=false;sampleMode=false;
  $('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtAccepted').checked=true;$('fullArtImage').src=fullArtResult.toDataURL('image/png');
- $('fullArtStatus').textContent=(session.layers?.kind==='ai-header'?'상단 텍스트·기호와 노란 심볼의 ON/OFF를 적용했습니다. 상단과 배경은 각각 저장을 요청하며 최종 합성본을 출력합니다. 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?'레이어 선택을 적용했습니다. 원본·배경·텍스트·테두리 편집 상태는 현재 화면에서만 유지되고, DB에는 합성된 결과가 저장됩니다. ':'')+'수동 위치·크기를 적용했습니다. 절단 창 안의 원본과 보존한 글자·테두리를 합성한 결과이며 PNG·PDF에도 동일하게 적용됩니다. 창 위치를 변경하면 다시 맞추기를 확정해 주세요.';
+ $('fullArtStatus').textContent=(session.mode==='fullart_layer_atlas'?'1회 생성 결과를 분리해 상단 텍스트·기호와 노란 심볼의 ON/OFF를 적용했습니다. AI 원본 묶음과 최종 합성본을 저장하며 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?.kind==='ai-header'?'상단 텍스트·기호와 노란 심볼의 ON/OFF를 적용했습니다. 상단과 배경은 각각 저장을 요청하며 최종 합성본을 출력합니다. 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?'레이어 선택을 적용했습니다. 원본·배경·텍스트·테두리 편집 상태는 현재 화면에서만 유지되고, DB에는 합성된 결과가 저장됩니다. ':'')+'수동 위치·크기를 적용했습니다. 절단 창 안의 원본과 보존한 글자·테두리를 합성한 결과이며 PNG·PDF에도 동일하게 적용됩니다. 창 위치를 변경하면 다시 맞추기를 확정해 주세요.';
  await storePreparedResult(session.d,fullArtResult,cut);$('qualityStatus').textContent='수동 보정 완료 · AI 추가 호출 없음';fullArtMode();update();
 }
 $('manualAdjust').onclick=async()=>{if(busy||savedLoading||!wideManualState)return;busy=true;update();try{await editWideResult();}catch(e){toast(e.message);}finally{busy=false;update();}};
@@ -173,7 +190,7 @@ $('loadSaved').onclick=async()=>{
  try{const d=await A.invokeFunction('card-overlay-generate',{action:'generations'});if(!d.generations?.length){$('savedStatus').textContent='저장된 생성 이미지가 없습니다. 저장 기능 적용 이후 성공한 결과부터 보관됩니다.';return;}
  $('savedStatus').textContent='최근 생성 이미지 20개까지 표시합니다. 불러오기는 AI를 호출하지 않으며 생성 횟수를 사용하지 않습니다.';
  const modes={illustration:'일러스트만 확장',fullart:'카드 전체 풀아트',independent:'독립 배경',original:'원본 기반 확장'};
- for(const row of d.generations){const b=document.createElement('button');b.type='button';b.textContent=new Date(row.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · '+(row.source_card_label||'카드 정보 미등록')+' · '+((row.prompt_version==='card-header-only-v1'?'상단 텍스트·기호 (투명 레이어)':row.prompt_version==='card-fullart-header-layers-v1'?'AI 일러스트 + 상단 레이어':row.prompt_version==='card-fullart-layers-v1'?'레이어 분리 · 배경 맞추기':null)||Object.entries(ORIGINAL_REFERENCES).find(([key])=>row.prompt_version==='card-fullart-original-'+key+'-v1')?.[1].label||Object.entries(WIDE_REFERENCES).find(([key])=>row.prompt_version==='card-fullart-wide-'+key+'-v1')?.[1].label||modes[row.mode]||'생성 이미지');b.onclick=()=>loadSavedGeneration(row.id);$('savedResults').append(b);}
+ for(const row of d.generations){const b=document.createElement('button');b.type='button';b.textContent=new Date(row.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · '+(row.source_card_label||'카드 정보 미등록')+' · '+((row.prompt_version==='card-layer-atlas-v1'?'AI 1회 · 일러스트 + 상단 레이어':row.prompt_version==='card-header-only-v1'?'상단 텍스트·기호 (투명 레이어)':row.prompt_version==='card-fullart-header-layers-v1'?'AI 일러스트 + 상단 레이어':row.prompt_version==='card-fullart-layers-v1'?'레이어 분리 · 배경 맞추기':null)||Object.entries(ORIGINAL_REFERENCES).find(([key])=>row.prompt_version==='card-fullart-original-'+key+'-v1')?.[1].label||Object.entries(WIDE_REFERENCES).find(([key])=>row.prompt_version==='card-fullart-wide-'+key+'-v1')?.[1].label||modes[row.mode]||'생성 이미지');b.onclick=()=>loadSavedGeneration(row.id);$('savedResults').append(b);}
  }catch(e){$('savedStatus').textContent=e.message||'저장된 이미지를 불러오지 못했어요.';}finally{savedLoading=false;update();}
 };
 async function loadSavedGeneration(id){
@@ -181,6 +198,7 @@ async function loadSavedGeneration(id){
  try{const d=await A.invokeFunction('card-overlay-generate',{action:'load_generation',id}),row=d.generation,img=new Image();img.crossOrigin='anonymous';img.src=row.imageUrl;await img.decode();if(img.width!==row.width||img.height!==row.height)throw Error('저장 이미지의 크기가 기록과 다릅니다.');if(epoch!==savedEpoch)return;
  const restored=canvas(img.width,img.height);restored.getContext('2d').drawImage(img,0,0);sourceReferenceId=null;$('sourceCardLabel').value=row.source_card_label||'';$('sourceCardLabel').readOnly=true;resetFullArt();clearReference();resetReview();historyOnly=true;revision++;sampleMode=false;
  if(row.prompt_version==='card-header-only-v1'){art=null;fullArtResult=null;$('fullArtImage').src=img.src;$('fullArtPanel').hidden=false;$('fullArtOriginal').disabled=true;$('fullArtStatus').textContent='상단 텍스트·기호 투명 레이어 원본입니다. 완성 도안이 아니므로 카드 도안 출력은 비활성화됩니다.';return;}
+ if(row.width===3296&&row.height===2048){art=null;fullArtResult=null;$('fullArtImage').src=img.src;$('fullArtPanel').hidden=false;$('fullArtOriginal').disabled=true;$('fullArtStatus').textContent='AI 1회 생성 원본 묶음입니다. 왼쪽은 일러스트, 오른쪽은 상단 투명 레이어입니다. 확정 합성본이 아니므로 도안 출력은 비활성화됩니다.';return;}
  if(row.width===1648&&row.height===2048){art=null;fullArtResult=null;$('fullArtImage').src=img.src;$('fullArtPanel').hidden=false;$('fullArtOriginal').disabled=true;$('fullArtStatus').textContent='확장 생성 원본 · 정렬 전 이미지입니다. 카드 도안 출력은 비활성화됩니다. 다른 카드를 불러와 새로 테스트할 수 있어요.';return;}
  const r=row.window_rect;if(r&&validRect(r))for(const [k,v]of Object.entries(r))if(['x','y','w','h'].includes(k))$(k).value=v;
  const view=canvas(W,H);if(isFullCardMode(row.mode))view.getContext('2d').drawImage(img,0,0,W,H);else drawArt(view.getContext('2d'),img,0,0,S,2,true);photo=view;card=view;art=null;artBleed=2;cv.width=W;cv.height=H;corners=[];$('cornerTools').hidden=true;$('settings').disabled=false;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;

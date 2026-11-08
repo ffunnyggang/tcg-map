@@ -12,7 +12,7 @@ const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingfa
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
 function isWideMode(mode){return mode==="fullart_layer_atlas"||mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
 import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
-import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
+import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261109-selectfix1';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';

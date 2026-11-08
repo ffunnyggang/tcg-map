@@ -65,29 +65,52 @@ Deno.serve(async(req:Request)=>{
    if(!member)throw Error('LAYER_MEMBER_MISSING');return member;
   };
   const layerKey=(member:any,kind:'text'|'illustration')=>layerVersions[kind]+':'+member.artwork_key+(kind==='text'?':'+member.language:'');
+
+  // Resolve one validated cached artwork across languages and users; keep text language-specific.
+  const sharedLayer=async(referenceId:string,kind:'text'|'illustration')=>{
+   const member=await memberFor(referenceId),version=layerVersions[kind],cacheKey=layerKey(member,kind);
+   const lookup=async()=>{
+    const r=await savedFetch('/rest/v1/overlay_layer_assets?cache_key=eq.'+encodeURIComponent(cacheKey)+'&select=generation_id,prompt_version');
+    if(!r.ok)throw Error('LAYER_CACHE_UNAVAILABLE');
+    return (await r.json())[0]||null;
+   };
+   let asset=await lookup();
+   if(!asset){
+    const matches=await savedFetch('/rest/v1/overlay_artwork_members?artwork_key=eq.'+encodeURIComponent(member.artwork_key)+'&select=reference_id,language');
+    if(!matches.ok)throw Error('LAYER_MEMBERS_UNAVAILABLE');
+    const ids=(await matches.json()).filter((m:any)=>kind==='illustration'||m.language===member.language).map((m:any)=>m.reference_id).filter((v:unknown)=>typeof v==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(v));
+    if(ids.length){
+     const prior=await savedFetch('/rest/v1/overlay_generations?source_reference_id='+encodeURIComponent('in.('+ids.join(',')+')')+'&prompt_version=eq.'+encodeURIComponent(version)+'&order=created_at.desc&limit=100&select=id,user_id,raw_path,source_reference_id,prompt_version,width,height');
+     if(!prior.ok)throw Error('LAYER_RECOVERY_UNAVAILABLE');
+     const row=(await prior.json()).find((g:any)=>validId(g.id)&&validId(g.user_id)&&g.raw_path===g.user_id+'/'+g.id+'/provider.png'&&g.prompt_version===version&&((kind==='text'&&g.width===1008&&g.height===1408)||(kind==='illustration'&&((g.width===1648&&g.height===2048)||(g.width===1008&&g.height===1408)))));
+     if(row){
+      const published=await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({cache_key:cacheKey,layer_kind:kind,generation_id:row.id,source_reference_id:row.source_reference_id,prompt_version:version})});
+      if(!published.ok)throw Error('LAYER_RECOVERY_SAVE_FAILED');
+      asset=await lookup();
+      if(!asset)throw Error('LAYER_RECOVERY_UNAVAILABLE');
+     }
+    }
+   }
+   if(!asset)return null;
+   if(asset.prompt_version!==version||!validId(asset.generation_id))throw Error('INVALID_LAYER_ASSET');
+   const g=await savedFetch('/rest/v1/overlay_generations?id=eq.'+asset.generation_id+'&select=id,user_id,raw_path,prompt_version,width,height');
+   if(!g.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
+   const row=(await g.json())[0];
+   if(!row||!validId(row.id)||!validId(row.user_id)||row.prompt_version!==version||row.raw_path!==row.user_id+'/'+row.id+'/provider.png'||!((kind==='text'&&row.width===1008&&row.height===1408)||(kind==='illustration'&&((row.width===1648&&row.height===2048)||(row.width===1008&&row.height===1408)))))throw Error('INVALID_LAYER_PATH');
+   return row;
+  };
   if(data.action==='layer_cache'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
    if(!ready)return reply({error:'이미지 생성 서비스를 준비하고 있어요.'},503);
    const quota=await cardAccess('claim',data.sourceReferenceId);if(!quota.ok)return quotaError(quota);
-   const member=await memberFor(data.sourceReferenceId),layers:any={};
+   const layers:any={};
    for(const kind of ['text','illustration'] as const){
-    const r=await savedFetch('/rest/v1/overlay_layer_assets?cache_key=eq.'+encodeURIComponent(layerKey(member,kind))+'&select=generation_id,prompt_version');
-    if(!r.ok)throw Error('LAYER_CACHE_UNAVAILABLE');let asset=(await r.json())[0];
-    if(!asset){
-     // Recover a completed raw layer if publication failed after durable generation storage.
-     const prior=await savedFetch('/rest/v1/overlay_generations?user_id=eq.'+encodeURIComponent(user.id)+'&source_reference_id=eq.'+encodeURIComponent(data.sourceReferenceId)+'&prompt_version=eq.'+layerVersions[kind]+'&order=created_at.desc&limit=1&select=id,prompt_version');
-     if(!prior.ok)throw Error('LAYER_RECOVERY_UNAVAILABLE');const row=(await prior.json())[0];if(!row)continue;
-     asset={generation_id:row.id,prompt_version:row.prompt_version};
-     const published=tester?await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({...asset,cache_key:layerKey(member,kind),layer_kind:kind,source_reference_id:data.sourceReferenceId})}):null;
-     if(published&&!published.ok)throw Error('LAYER_RECOVERY_SAVE_FAILED');
-    }
-    if(asset.prompt_version!==layerVersions[kind]||!validId(asset.generation_id))throw Error('INVALID_LAYER_ASSET');
-    const g=await savedFetch('/rest/v1/overlay_generations?id=eq.'+asset.generation_id+'&select=id,user_id,raw_path,prompt_version');
-    if(!g.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');const row=(await g.json())[0];
-    if(!row||row.prompt_version!==layerVersions[kind]||row.raw_path!==row.user_id+'/'+row.id+'/provider.png')throw Error('INVALID_LAYER_PATH');
+    const row=await sharedLayer(data.sourceReferenceId,kind);
+    if(!row)continue;
     const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.raw_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
-    if(!sign.ok)throw Error('LAYER_SIGN_FAILED');const signed=await sign.json();
+    if(!sign.ok)throw Error('LAYER_SIGN_FAILED');
+    const signed=await sign.json();
     layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null};
    }
    return reply({layers,quota});
@@ -209,7 +232,23 @@ Deno.serve(async(req:Request)=>{
   let image=new Uint8Array(),mask=new Uint8Array();try{if(!noImage){image=png(data.image,fullArt,wide);if(!fullArt||fixed)mask=png(data.mask,fullArt,wide);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
   const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=atlas?3296:noImage?1072:imageView.getUint32(16),imageHeight=atlas?2048:noImage?1472:imageView.getUint32(20);
   if(!noImage&&(!fullArt||fixed)&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
-  if(mobileLayerAction){const quota=await cardAccess(textOnly?'text':'illustration',sourceId);if(!quota.ok)return quotaError(quota);}
+  if(mobileLayerAction){
+   const quota=await cardAccess(textOnly?'text':'illustration',sourceId);
+   if(!quota.ok)return quotaError(quota);
+   // Race-safe preflight: no paid generation when a validated layer already exists.
+   const cached=await sharedLayer(sourceId,textOnly?'text':'illustration');
+   if(cached){
+    const file=await savedFetch('/storage/v1/object/'+outputBucket+'/'+cached.raw_path);
+    if(!file.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
+    const bytes=new Uint8Array(await file.arrayBuffer());
+    if(bytes.length<24||bytes.length>20*1024*1024||[137,80,78,71,13,10,26,10].some((b,i)=>bytes[i]!==b))throw Error('INVALID_LAYER_IMAGE');
+    const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    if(dv.getUint32(16)!==cached.width||dv.getUint32(20)!==cached.height)throw Error('INVALID_LAYER_IMAGE');
+    let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
+    console.info('overlay layer cache hit',{kind:textOnly?'text':'illustration'});
+    return reply({image:btoa(binary),generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null});
+   }
+  }
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
   // created using service credentials; clients receive no bucket access.
   const storageHeaders={apikey:service,Authorization:'Bearer '+service};
@@ -308,8 +347,8 @@ Deno.serve(async(req:Request)=>{
    const saved=await savedFetch('/rest/v1/overlay_generations',{method:'POST',body:JSON.stringify(row)});
    if(!saved.ok){await savedFetch('/storage/v1/object/'+outputBucket,{method:'DELETE',body:JSON.stringify({prefixes:[rawPath]})}).catch(()=>{});throw Error('OUTPUT_METADATA_FAILED');}
    generationId=id;storageSaved=true;
-   // Only QA-reviewed accounts publish cross-account assets; member output stays private and reusable.
-   if(mobileLayerAction&&sourceId&&tester){
+   // Publish validated layers from both regular members and testers without exposing personal history.
+   if(mobileLayerAction&&sourceId){
     const member=await memberFor(sourceId),kind=textOnly?'text':'illustration';
     const cached=await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({cache_key:layerKey(member,kind),layer_kind:kind,generation_id:id,source_reference_id:sourceId,prompt_version:layerVersions[kind]})});
     if(!cached.ok)throw Error('LAYER_CACHE_SAVE_FAILED');layerCacheSaved=true;

@@ -32,3 +32,8 @@ body:has(dialog[open]){overflow:hidden}
 .join-compare span{display:inline-block;min-width:24px;margin-left:3px;color:#81718e}
 .join-compare[aria-pressed=true]{background:#eee5f6;border-color:#9b7bb4}
 #compareArt{width:132px;min-width:132px;max-width:132px;height:44px;flex:0 0 132px;padding:8px 10px;white-space:nowrap}
+
+.window-recommendation{text-align:center;margin:-14px 0 22px}
+.join-compare{transform:scale(.7);transform-origin:top right}
+.output-spec .print-note span{position:relative;padding-left:10px}
+.output-spec .print-note span::before{content:"";position:absolute;left:1px;top:.78em;width:3px;height:3px;border-radius:50%;background:currentColor}

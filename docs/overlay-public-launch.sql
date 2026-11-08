@@ -11,6 +11,11 @@ create table if not exists public.overlay_card_daily_usage (
 alter table public.overlay_card_daily_usage enable row level security;
 revoke all on public.overlay_card_daily_usage from public,anon,authenticated;
 grant select,insert,update on public.overlay_card_daily_usage to service_role;
+create table if not exists public.overlay_quota_exempt_accounts(user_id uuid primary key references auth.users(id) on delete cascade);
+alter table public.overlay_quota_exempt_accounts enable row level security;
+revoke all on public.overlay_quota_exempt_accounts from public,anon,authenticated;
+grant select on public.overlay_quota_exempt_accounts to service_role;
+-- Provision designated accounts privately through server-side administration.
 CREATE OR REPLACE FUNCTION public.overlay_card_access(p_user uuid, p_reference text DEFAULT NULL::text, p_mode text DEFAULT 'status'::text)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -22,7 +27,7 @@ declare
  n integer; refs jsonb; attempts integer; unlimited boolean;
 begin
  if p_mode not in ('status','claim','text','illustration') or p_user is null then raise exception 'INVALID_QUOTA_REQUEST'; end if;
- select coalesce((raw_app_meta_data->>'card_overlay_unlimited')='true',false) into unlimited from auth.users where id=p_user;
+ select exists(select 1 from public.overlay_quota_exempt_accounts where user_id=p_user) into unlimited;
  unlimited:=coalesce(unlimited,false);
  -- Serialize tabs and devices for this account; transaction lock releases on return.
  perform pg_advisory_xact_lock(hashtextextended('overlay-card:'||p_user::text,0));

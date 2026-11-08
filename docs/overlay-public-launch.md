@@ -5,7 +5,7 @@ Landing: `/card-art.html`. CMS banner uses existing in-app page navigation. No C
 - Korea time Nov 8, 2026 00:00 inclusive through Nov 15 00:00 exclusive. Calendar-day launch chosen by operator.
 - Signed-in, non-anonymous members. Admin test generation paths remain allowlisted.
 - Three distinct card references per account per Korea day. A reference includes language. Charge once when the user starts generating, including cache hits and failures; retrying that same card on the same day is idempotent. Text and art do not each consume a card. Adjustment/export do not consume cards.
-- Card reservations serialized in Postgres across tabs/devices. Three provider attempts per layer/reference/day, separate from the visible card count; no automatic retries. Existing global provider safety budget of 100 attempts/day retained; cache hits do not consume that provider budget.
+- Card reservations serialized in Postgres across tabs/devices. Three provider attempts per layer/reference/day, separate from the visible card count; no automatic retries. Operator-approved global provider safety budget is 500 attempts/day during the free week (100 outside it); cache hits do not consume that provider budget.
 - All new layer outputs retain private DB/Storage records. QA-owned outputs can publish shared assets; general members can recover/reuse their own layers but cannot poison another member's shared cache with modified client inputs.
 - November 15: reject new free claims, cache retrieval and generation. Existing in-page results can still be exported. No coin debit or pricing is implemented; the page says coin access is being prepared.
 

@@ -70,14 +70,15 @@ Deno.serve(async request=>{
  if(action==='seller_options'){const [sellers,shops,online]=await Promise.all([db.from('box_price_sellers').select('seller_name,shop_id,online_shop_id').order('seller_name'),db.from('v_app_shops').select('id,name').like('id','KR-%').order('name').limit(2000),db.from('online_shops').select('id,name,is_active')]);if(sellers.error||shops.error||online.error)throw sellers.error||shops.error||online.error;const registered=new Set((sellers.data||[]).map(x=>x.shop_id));const names=new Set((sellers.data||[]).map(x=>x.seller_name.replace(/\s/g,'')));const shopNames=new Map((shops.data||[]).map(x=>[x.id,x.name]));const onlineNames=new Map((online.data||[]).map(x=>[x.id,x.name]));return reply({sellers:(sellers.data||[]).map(x=>({...x,display_name:x.online_shop_id?onlineNames.get(x.online_shop_id)||x.seller_name:x.shop_id?shopNames.get(x.shop_id)||x.seller_name:x.seller_name})),shops:(shops.data||[]).filter(x=>!registered.has(x.id)&&!names.has(String(x.name||'').replace(/\s/g,'')))});}
  if(action==='register_seller'){const shopId=String(body.shop_id||'');if(!/^KR-[A-Z]{3}-\d{3}$/.test(shopId))return reply({error:'SHOP_ID_INVALID'},400);const shop=await db.from('v_app_shops').select('id,name').eq('id',shopId).single();if(shop.error||!shop.data)return reply({error:'SHOP_NOT_FOUND'},404);const name=String(shop.data.name||'').trim();if(!name)return reply({error:'SHOP_NAME_EMPTY'},400);const saved=await db.from('box_price_sellers').insert({seller_name:name,shop_id:shopId});if(saved.error)return reply({error:'SELLER_EXISTS',message:'이미 등록된 판매처이거나 이름이 중복됩니다.'},409);return reply({seller:name,shop_id:shopId});}
 
- if(action==='manual_delete'){
+ if(action==='seller_visibility'||action==='manual_delete'){
    const seller=String(body.seller||'').trim(),productId=String(body.product_id||'').trim();
-   if(!seller||seller.length>100||!productId||productId.length>200)return reply({error:'INVALID_PRODUCT'},400);
-   // Remove this seller/product registration across dates so an older quote cannot reappear.
-   // Uploaded source records remain as audit history; the public API reads box_price_daily only.
-   const deleted=await db.from('box_price_daily').delete({count:'exact'}).eq('seller_name',seller).eq('product_id',productId);
-   if(deleted.error)throw deleted.error;
-   return reply({deleted:deleted.count||0});
+   const visible=action==='manual_delete'?false:body.is_visible;
+   if(!seller||seller.length>100||!productId||productId.length>200||typeof visible!=='boolean')return reply({error:'INVALID_VISIBILITY'},400);
+   const exists=await db.from('box_price_daily').select('product_id').eq('seller_name',seller).eq('product_id',productId).limit(1);
+   if(exists.error)throw exists.error;if(!exists.data?.length)return reply({error:'NOT_FOUND'},404);
+   const saved=await db.from('box_seller_product_visibility').upsert({seller_name:seller,product_id:productId,is_visible:visible,updated_at:new Date().toISOString()},{onConflict:'seller_name,product_id'});
+   if(saved.error)throw saved.error;
+   return reply({saved:true,is_visible:visible});
  }
  if(action==='manual_list'||action==='manual_prepare'){
    const seller=String(body.seller||'').trim().slice(0,100),effectiveDate=String(body.effective_date||'');
@@ -93,7 +94,9 @@ Deno.serve(async request=>{
    const latest=new Map();for(const row of history.data||[])if(!latest.has(row.product_id))latest.set(row.product_id,row);
    const products=await db.from('box_products').select('product_id,product_name_ko,product_name_short_ko,image_path,is_active,price_enabled').in('product_id',[...latest.keys()].length?[...latest.keys()]:['__none__']);
    if(products.error)throw products.error;
-   const available=(products.data||[]).filter(x=>x.is_active===true&&x.price_enabled===true).map(p=>({...p,current_price_krw:latest.get(p.product_id).price_krw,current_date:latest.get(p.product_id).price_date,updated_at:latest.get(p.product_id).updated_at})).sort((a,b)=>(a.product_name_short_ko||a.product_name_ko||'').localeCompare(b.product_name_short_ko||b.product_name_ko||'','ko'));
+   const visibility=await db.from('box_seller_product_visibility').select('product_id,is_visible').eq('seller_name',seller);if(visibility.error)throw visibility.error;
+   const hidden=new Set((visibility.data||[]).filter(x=>!x.is_visible).map(x=>x.product_id));
+   const available=(products.data||[]).filter(x=>x.is_active===true&&x.price_enabled===true).map(p=>({...p,is_visible:!hidden.has(p.product_id),current_price_krw:latest.get(p.product_id).price_krw,current_date:latest.get(p.product_id).price_date,updated_at:latest.get(p.product_id).updated_at})).sort((a,b)=>(a.product_name_short_ko||a.product_name_ko||'').localeCompare(b.product_name_short_ko||b.product_name_ko||'','ko'));
    if(action==='manual_list')return reply({products:available});
    const requested=Array.isArray(body.rows)?body.rows:[];
    if(!requested.length||requested.length>100)return reply({error:'INVALID_REVIEW',message:'변경할 상품을 1~100개 선택해 주세요.'},400);
@@ -193,3 +196,4 @@ Deno.serve(async request=>{
  return reply({error:'UNKNOWN_ACTION'},400);
  }catch(e){return reply({error:'SERVER_ERROR',message:String(e?.message||e).slice(0,250)},500)}
 });
+

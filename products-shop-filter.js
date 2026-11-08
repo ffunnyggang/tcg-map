@@ -13,7 +13,7 @@
  const metadata=new Map();
  let lastIds='',loadingMeta=false;
  const kind=()=>document.querySelector('.product-kind-tab[aria-selected="true"]')?.dataset.kind||'box';
- const type=()=>document.querySelector('.box-type-tab.is-active')?.dataset.type||'pokemon';
+ const type=()=>document.querySelector('.box-type-tab.is-active')?.dataset.type||'all';
  const products=()=>new Map((window.BOX_PRODUCTS||[]).map(p=>[p.id,p.tcg_type||(p.id.startsWith('op_')?'one_piece':'pokemon')]));
  const boxSource=()=>window.FUNY_BOX_SHOP_QUOTES||{rows:[],sellerShopIds:{},sellerNames:{}};
  function options(){
@@ -21,7 +21,7 @@
    if(current==='box'){
      const data=boxSource(),types=products();
      for(const row of data.rows){
-       if(types.get(row.product_id)!==game||!(Number(row.price_krw)>0))continue;
+       if((game!=='all'&&types.get(row.product_id)!==game)||!(Number(row.price_krw)>0))continue;
        const shopId=data.sellerShopIds[row.seller]||'name:'+row.seller;
        const name=data.sellerNames[row.seller]||row.seller;
        if(!choices.has(shopId))choices.set(shopId,{id:shopId,name,products:new Set()});
@@ -29,7 +29,7 @@
      }
    }else{
      for(const row of window.FUNY_GRADED_SHOPS||[]){
-       if(row.tcg_type!==game)continue;
+       if(game!=='all'&&row.tcg_type!==game)continue;
        const id=row.shop_id||'name:'+row.seller_name;
        if(!row.seller_name||id==='name:')continue;
        if(!choices.has(id))choices.set(id,{id,name:row.seller_name,logo_url:row.logo_url||'',products:new Set()});

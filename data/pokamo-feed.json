@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-11-08T00:36:37.089980+00:00",
+  "updatedAt": "2026-11-08T07:21:08.848110+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "새로운카드판매소식",
+      "author": "시크릿쥬쥬",
+      "publishedAt": "2026-11-08T00:47:39.903852Z",
+      "excerpt": "새로운카드판매소식",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/새로운카드판매소식-AO6z775j",
+      "views": 40,
+      "likes": 2,
+      "comments": 0,
+      "popularityScore": 6.4
+    },
     {
       "category": "카드 자랑",
       "title": "30주년 복각 솔가레오!",
@@ -11,10 +24,10 @@
       "excerpt": "rgb도 나와랏!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/17940622714526b77e8f73ff0346dd441a42d3cbc054db226dfed3b9e093dd99302e8c306daaf0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-복각-솔가레오-P21D3wvA",
-      "views": 22,
+      "views": 23,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.22
+      "popularityScore": 0.23
     },
     {
       "category": "자유 게시판",
@@ -24,10 +37,10 @@
       "excerpt": "네네 잇습니다 드래곤볼카드",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/네네-잇습니다-d9X8OpeP",
-      "views": 2,
+      "views": 3,
       "likes": 1,
       "comments": 2,
-      "popularityScore": 7.02
+      "popularityScore": 7.03
     },
     {
       "category": "자유 게시판",
@@ -50,10 +63,10 @@
       "excerpt": "포켓몬카드 일괄 판매합니다 psa 케이스 5개 드려요 탑로더 300개랑 일판 서비스 카드도 드립니자 가격 180",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261107/0b674dc8-5360-4ffd-a564-429b6d6f098d.png?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-일괄-판매합니다-psa-케이스-5개-드려요-탑로더-300개랑-일판-서비스-카드도-d7Lx7x9j",
-      "views": 29,
+      "views": 30,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.29
+      "popularityScore": 3.3
     },
     {
       "category": "자유 게시판",
@@ -102,10 +115,10 @@
       "excerpt": "151 피카츄 구매 원하시면 연락주세요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/8da588ba-10b5-4a54-901d-5df64791ca65.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/151피카츄-d9XpYzDP",
-      "views": 6,
+      "views": 7,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.06
+      "popularityScore": 0.07
     },
     {
       "category": "자유 게시판",
@@ -167,10 +180,10 @@
       "excerpt": "놀러갔다가 만난 치이카와 핸드타월 👻 짱귀 👍👍",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/8c7d80e4-62d8-4ab5-9ff8-fd23f7c58a1f.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/핫플-남대문-ARo2aKvP",
-      "views": 15,
+      "views": 16,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.15
+      "popularityScore": 3.16
     },
     {
       "category": "카드 자랑",
@@ -180,10 +193,10 @@
       "excerpt": "‪문구점 사장님과 친하게 지낸 덕분에 한박스‬ ‪7만원에 구매했는데 복각에서 리자몽이!!‬ ‪팬텀까지 나왔네요ㅎㅎ‬ ‪리자몽 진짜 너무 갖고 싶었는데‬ ‪이렇게 나오다니ㅜㅜ 행복합니다~‬ ‪초판 리자몽 카드랑 비교해봤는데 ‬ ‪똑같아서 신기했어요ㅋㅋ‬",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/17938643789395e42c0e4799e79d24e0a219a16d71b27a8b84a9c8edb9820bf0f610717c677f90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-리자몽-떴어요-jvxz1xXP",
-      "views": 63,
+      "views": 67,
       "likes": 2,
       "comments": 2,
-      "popularityScore": 10.63
+      "popularityScore": 10.67
     },
     {
       "category": "자유 게시판",
@@ -193,23 +206,10 @@
       "excerpt": "뮤츠뽑고싶은데 나라를 구해야 하는건가요? ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/3fc11242-1989-452a-9641-62e6c9ceb014.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/실물보고싶어요ㅜㅜ-A04DzvYA",
-      "views": 65,
+      "views": 66,
       "likes": 3,
       "comments": 3,
-      "popularityScore": 15.65
-    },
-    {
-      "category": "자유 게시판",
-      "title": "리자몽, mur, 그 밖에 psa10 카드들",
-      "author": "리라랜드고덕",
-      "publishedAt": "2026-11-04T01:25:41.121383Z",
-      "excerpt": "리자몽, mur, 그 밖에 psa10 카드들",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/리자몽-mur-그-밖에-psa10-카드들-dEb1q6nj",
-      "views": 20,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.2
+      "popularityScore": 15.66
     },
     {
       "category": "카드거래",
@@ -427,10 +427,10 @@
       "excerpt": "올드백 90장 바인더 팝니다 연락주세요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/e5e42438-a429-4964-8915-339ed871dd8e.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/올드백-총-90장팝니다-A4Qk5D1P",
-      "views": 50,
+      "views": 54,
       "likes": 3,
       "comments": 8,
-      "popularityScore": 25.5
+      "popularityScore": 25.54
     },
     {
       "category": "카드 자랑",
@@ -492,10 +492,10 @@
       "excerpt": "팔로우 이벤트 참여하세요🙇🏻‍♂️",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792598133966d3ba9d4e4d5a1accec5321911e789c47266a8f7fb52a21e20077f1a0c6e09a140.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🎉-포켓몬-30주년-기념팩-팔로우-이벤트-🎉-dZnE1ved",
-      "views": 75,
+      "views": 76,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.75
+      "popularityScore": 3.76
     },
     {
       "category": "카드 자랑",
@@ -531,10 +531,10 @@
       "excerpt": "RGB뮤 레드 노리고 시작해서 총 3천만원, 1500팩 이상 까서 드디어 나와주네요 ㅠㅠㅠ 루기아, 리자몽, FUR등 각각 전부 6장 - 10장 이상씩은 뜬 거 같고 추리고 추려서 100장 정도 전부 유학 보냈습니다! 좋은 결과로 돌아오길 ㅎㅎ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/1792134003530d4b79dfb72eb4e865d3b709b2938d74dcb5ec77f2ff27d99dcba2dc7bf07c0da0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/총-3천만원어치-북미-30주년-카드깡-결과-dlYq1NYj",
-      "views": 265,
+      "views": 267,
       "likes": 3,
       "comments": 3,
-      "popularityScore": 17.65
+      "popularityScore": 17.67
     },
     {
       "category": "정보 공유",
@@ -713,10 +713,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 179,
+      "views": 180,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.79
+      "popularityScore": 9.8
     },
     {
       "category": "카드깡/카드샵 후기",

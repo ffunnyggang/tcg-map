@@ -37,13 +37,24 @@ Deno.serve(async(req:Request)=>{
   const body=await req.text();if(body.length>17_000_000)return reply({error:'이미지 크기가 너무 큽니다.'},413);
   let data;try{data=JSON.parse(body);}catch{return reply({error:'올바른 요청이 아닙니다.'},400);}
   // app_metadata is admin-controlled; never authorize from user_metadata.
-  const allowed=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
+  const tester=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
+  const publicAction=['status','mobile_catalog','reference','symbol_asset','layer_cache','generate_mobile_text','generate_mobile_layers','save_result'].includes(data.action);
+  const allowed=tester||publicAction;
   const ready=allowed&&enabled&&!!key;
-  if(data.action==='status')return reply({ready,allowed,apiConfigured:allowed?!!key:undefined,message:!allowed?'현재 지정된 테스트 계정만 AI 생성을 사용할 수 있습니다.':!key?'테스트 계정 등록 완료 · AI API 키 연결 준비 중입니다. 확장 아트 불러오기는 사용할 수 있습니다.':!enabled?'테스트 계정 등록 완료 · AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 테스트 계정별 횟수 제한 없음 · 전체 하루 100회 시도 한도'});
+
   const savedHeaders={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   const outputBucket='overlay-generated-images';
   const savedFetch=(path:string,options:RequestInit={})=>fetch(url+path,{...options,headers:{...savedHeaders,...options.headers},signal:AbortSignal.timeout(15000)});
+  const cardAccess=async(mode:string,referenceId:string|null=null)=>{
+   const res=await savedFetch('/rest/v1/rpc/overlay_card_access',{method:'POST',body:JSON.stringify({p_user:user.id,p_reference:referenceId,p_mode:mode})});
+   if(!res.ok)throw Error('CARD_QUOTA_UNAVAILABLE');return await res.json();
+  };
+  const quotaError=(q:any)=>reply({error:({FREE_PERIOD_ENDED:'무료 이용 기간이 종료됐어요. 퍼니코인 이용은 준비 중입니다.',CARD_DAILY_LIMIT:'오늘은 카드 3장을 모두 이용했어요. 내일 다시 이용해 주세요.',CARD_RESERVATION_REQUIRED:'카드를 다시 선택한 뒤 확장 아트 만들기를 눌러 주세요.',CARD_RETRY_LIMIT:'이 카드의 오늘 재시도 한도에 도달했어요. 다른 카드를 선택해 주세요.'} as Record<string,string>)[q.code]||'카드 이용 정보를 확인하지 못했어요.',code:q.code,quota:q},q.code==='FREE_PERIOD_ENDED'?403:429);
+  if(data.action==='status'){
+   if(data.surface!=='mobile')return reply({ready:tester&&ready,allowed:tester,message:!tester?'현재 계정은 테스트 화면을 이용할 수 없습니다.':!key?'AI API 키 연결 준비 중입니다.':!enabled?'AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 운영 테스트 화면'});
+   const quota=await cardAccess('status');return reply({ready:ready&&quota.active,allowed:true,quota,message:!quota.active?'무료 이용 기간이 종료됐어요. 퍼니코인 이용은 준비 중입니다.':!ready?'이미지 생성 서비스를 준비하고 있어요. 잠시 후 다시 이용해 주세요.':'계정당 하루 카드 3장까지 무료로 이용할 수 있어요.'});
+  }
   const ownedQuery=(id:string)=>'/rest/v1/overlay_generations?id=eq.'+id+'&user_id=eq.'+encodeURIComponent(user.id);
   const validId=(id:unknown)=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   const readOwner=async(id:string)=>{const res=await savedFetch(ownedQuery(id)+'&select=*');if(!res.ok)throw Error('HISTORY_UNAVAILABLE');return (await res.json())[0];};
@@ -57,6 +68,8 @@ Deno.serve(async(req:Request)=>{
   if(data.action==='layer_cache'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
+   if(!ready)return reply({error:'이미지 생성 서비스를 준비하고 있어요.'},503);
+   const quota=await cardAccess('claim',data.sourceReferenceId);if(!quota.ok)return quotaError(quota);
    const member=await memberFor(data.sourceReferenceId),layers:any={};
    for(const kind of ['text','illustration'] as const){
     const r=await savedFetch('/rest/v1/overlay_layer_assets?cache_key=eq.'+encodeURIComponent(layerKey(member,kind))+'&select=generation_id,prompt_version');
@@ -66,8 +79,8 @@ Deno.serve(async(req:Request)=>{
      const prior=await savedFetch('/rest/v1/overlay_generations?user_id=eq.'+encodeURIComponent(user.id)+'&source_reference_id=eq.'+encodeURIComponent(data.sourceReferenceId)+'&prompt_version=eq.'+layerVersions[kind]+'&order=created_at.desc&limit=1&select=id,prompt_version');
      if(!prior.ok)throw Error('LAYER_RECOVERY_UNAVAILABLE');const row=(await prior.json())[0];if(!row)continue;
      asset={generation_id:row.id,prompt_version:row.prompt_version};
-     const published=await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({...asset,cache_key:layerKey(member,kind),layer_kind:kind,source_reference_id:data.sourceReferenceId})});
-     if(!published.ok)throw Error('LAYER_RECOVERY_SAVE_FAILED');
+     const published=tester?await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({...asset,cache_key:layerKey(member,kind),layer_kind:kind,source_reference_id:data.sourceReferenceId})}):null;
+     if(published&&!published.ok)throw Error('LAYER_RECOVERY_SAVE_FAILED');
     }
     if(asset.prompt_version!==layerVersions[kind]||!validId(asset.generation_id))throw Error('INVALID_LAYER_ASSET');
     const g=await savedFetch('/rest/v1/overlay_generations?id=eq.'+asset.generation_id+'&select=id,user_id,raw_path,prompt_version');
@@ -77,7 +90,7 @@ Deno.serve(async(req:Request)=>{
     if(!sign.ok)throw Error('LAYER_SIGN_FAILED');const signed=await sign.json();
     layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null};
    }
-   return reply({layers});
+   return reply({layers,quota});
   }
   if(data.action==='symbol_asset'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
@@ -154,6 +167,7 @@ Deno.serve(async(req:Request)=>{
    data.action=data.action==='generate_mobile_text'?'generate_text_layer':'generate_fullart_wide';
    if(data.action==='generate_fullart_wide'&&(data.wideHeader!=='fulltext-v1'||data.wideLayers!==true||data.wideLayout!=='bottom-v1'))return reply({error:'레이어 생성 설정이 올바르지 않습니다.'},400);
   }
+  if(!mobileLayerAction&&!tester)return reply({error:'지원하지 않는 생성 방식입니다.'},403);
   const mobileWindowEdit=data.action==='generate_mobile';
   if(mobileWindowEdit){
    if(!allowed)return reply({error:'현재 테스트 계정만 사용할 수 있습니다.'},403);
@@ -195,6 +209,7 @@ Deno.serve(async(req:Request)=>{
   let image=new Uint8Array(),mask=new Uint8Array();try{if(!noImage){image=png(data.image,fullArt,wide);if(!fullArt||fixed)mask=png(data.mask,fullArt,wide);}}catch{return reply({error:'이미지 형식 또는 크기가 올바르지 않습니다.'},400);}
   const imageView=new DataView(image.buffer),maskView=new DataView(mask.buffer),imageWidth=atlas?3296:noImage?1072:imageView.getUint32(16),imageHeight=atlas?2048:noImage?1472:imageView.getUint32(20);
   if(!noImage&&(!fullArt||fixed)&&(imageWidth!==maskView.getUint32(16)||imageHeight!==maskView.getUint32(20)))return reply({error:'이미지와 마스크 크기가 다릅니다.'},400);
+  if(mobileLayerAction){const quota=await cardAccess(textOnly?'text':'illustration',sourceId);if(!quota.ok)return quotaError(quota);}
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
   // created using service credentials; clients receive no bucket access.
   const storageHeaders={apikey:service,Authorization:'Bearer '+service};
@@ -210,7 +225,7 @@ Deno.serve(async(req:Request)=>{
    if(res.ok)return true;const error=await res.json().catch(()=>({}));if(res.status!==409&&error.error!=='Duplicate'&&error.code!=='Duplicate'&&error.message!=='The resource already exists')throw Error('QUOTA_UNAVAILABLE');
   }return false;}
   // Allowlisted QA accounts have no per-account daily attempt limit.
-  if(!await reserve('global',100))return reply({error:'오늘 테스트 전체 생성 한도에 도달했어요.'},429);
+  if(!await reserve('global',100))return reply({error:'오늘 준비된 이미지 생성 수량이 모두 소진됐어요. 내일 다시 이용해 주세요.'},429);
   const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';
   const diagnostic={model,promptVersion:'overlay-background-continuity-v2',imageHash:await digest(image),maskHash:await digest(mask)};
@@ -275,7 +290,7 @@ Deno.serve(async(req:Request)=>{
    else if(response.status===401)message='OpenAI API 키 인증에 실패했습니다. 서버에 등록한 키의 유효기간과 상태를 확인해 주세요.';
    else if(response.status===403)message='OpenAI 이미지 생성 권한이 없습니다. API 프로젝트의 모델 권한과 필요한 인증을 확인해 주세요.';
    else if(code==='model_not_found'||response.status===404)message='설정된 이미지 생성 모델을 사용할 수 없습니다. 운영자가 모델 설정과 접근 권한을 확인해야 합니다.';
-   return reply({error:message+' 이번 요청은 생성 시도 횟수에 포함됩니다.',code:code||'PROVIDER_ERROR',requestId},code==='moderation_blocked'?400:response.status===429?429:502);
+   return reply({error:message+(mobileLayerAction?' 같은 카드의 재시도는 카드 이용 횟수를 추가로 차감하지 않아요.':' 이번 요청은 생성 시도 횟수에 포함됩니다.'),code:code||'PROVIDER_ERROR',requestId},code==='moderation_blocked'?400:response.status===429?429:502);
   }
   const output=result.data?.[0]?.b64_json;if(typeof output!=='string')throw Error('NO_IMAGE');
   console.info('overlay generation completed',{requestId:response.headers.get('x-request-id'),...diagnostic});
@@ -292,7 +307,8 @@ Deno.serve(async(req:Request)=>{
    const saved=await savedFetch('/rest/v1/overlay_generations',{method:'POST',body:JSON.stringify(row)});
    if(!saved.ok){await savedFetch('/storage/v1/object/'+outputBucket,{method:'DELETE',body:JSON.stringify({prefixes:[rawPath]})}).catch(()=>{});throw Error('OUTPUT_METADATA_FAILED');}
    generationId=id;storageSaved=true;
-   if(mobileLayerAction&&sourceId){
+   // Only QA-reviewed accounts publish cross-account assets; member output stays private and reusable.
+   if(mobileLayerAction&&sourceId&&tester){
     const member=await memberFor(sourceId),kind=textOnly?'text':'illustration';
     const cached=await savedFetch('/rest/v1/overlay_layer_assets?on_conflict=cache_key',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({cache_key:layerKey(member,kind),layer_kind:kind,generation_id:id,source_reference_id:sourceId,prompt_version:layerVersions[kind]})});
     if(!cached.ok)throw Error('LAYER_CACHE_SAVE_FAILED');layerCacheSaved=true;

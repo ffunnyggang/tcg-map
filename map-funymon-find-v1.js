@@ -67,7 +67,7 @@
     const rows=await get('funy_mon_evergreen_settings?select=is_enabled&id=eq.true&limit=1');
     if(!rows?.[0]?.is_enabled){removeControl();return}
     const wrap=document.querySelector('.map-wrap-hero');if(!wrap)return;
-    if(control&&lastSignature==='evergreen')return;
+    if(control&&lastSignature==='evergreen'){window.FUNY_MON_PROTO?.autoFindEvergreen?.();return;}
     removeControl();lastSignature='evergreen';
     control=document.createElement('div');control.id='funymonFindControl';
     control.className='funymon-find-control map-location-control';
@@ -80,11 +80,12 @@
     });
     if(expandedShownThisLoad)control.classList.add('is-collapsed');
     else {expandedShownThisLoad=true;scheduleCollapse(4)}
+    window.FUNY_MON_PROTO?.autoFindEvergreen?.();
   }
   async function refresh(){
     try{
       const japan=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
-      if(japan){removeControl();return}
+      if(japan){window.FUNY_MON_PROTO?.clearEvergreen?.();removeControl();return}
       const settings=await get('funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds&id=eq.default&limit=1');
       const setting=settings?.[0];
       if(!setting?.is_enabled||!setting.event_id){await renderEvergreen();return}
@@ -102,6 +103,8 @@
   }
 
   refresh();
+  // Map assets and native WebView bridges may finish after this controller loads.
+  [600,1600,3400].forEach(ms=>setTimeout(()=>window.FUNY_MON_PROTO?.autoFindEvergreen?.(),ms));
   window.addEventListener('pageshow',refresh);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
   window.addEventListener('funy:mapdatachange',refresh);

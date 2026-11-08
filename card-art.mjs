@@ -1,5 +1,5 @@
 import {defaultArtWindow} from './card-art-window-presets.mjs?v=20261108-presets1';
-import {reviewMobileAlignment} from './card-art-align.mjs?v=20261108-polish2';
+import {reviewMobileAlignment} from './card-art-align.mjs?v=20261108-compare1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';

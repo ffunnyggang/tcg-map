@@ -26,3 +26,9 @@ body:has(dialog[open]){overflow:hidden}
 .icon-button{-webkit-appearance:none;appearance:none;color:#111;-webkit-text-fill-color:#111}
 .art-header #back{color:#111!important}
 .art-header [hidden]{display:none!important}
+
+.join-image{position:relative;width:100%}
+.join-compare{position:absolute;z-index:1;min-height:36px;padding:6px 10px;border:1px solid #e3d8ec;border-radius:18px;background:#fffffff2;color:#34293e;-webkit-text-fill-color:#34293e;font-size:11px;font-weight:700;white-space:nowrap;touch-action:manipulation}
+.join-compare span{display:inline-block;min-width:24px;margin-left:3px;color:#81718e}
+.join-compare[aria-pressed=true]{background:#eee5f6;border-color:#9b7bb4}
+#compareArt{width:132px;min-width:132px;max-width:132px;height:44px;flex:0 0 132px;padding:8px 10px;white-space:nowrap}

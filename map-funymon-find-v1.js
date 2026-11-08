@@ -65,7 +65,8 @@
   }
   async function renderEvergreen(){
     const rows=await get('funy_mon_evergreen_settings?select=is_enabled&id=eq.true&limit=1');
-    if(!rows?.[0]?.is_enabled){removeControl();return}
+    if(!rows?.[0]?.is_enabled){window.FUNY_MON_PROTO?.setEvergreenEnabled?.(false);removeControl();return}
+    window.FUNY_MON_PROTO?.setEvergreenEnabled?.(true);
     const wrap=document.querySelector('.map-wrap-hero');if(!wrap)return;
     if(control&&lastSignature==='evergreen'){window.FUNY_MON_PROTO?.autoFindEvergreen?.();return;}
     removeControl();lastSignature='evergreen';
@@ -85,7 +86,7 @@
   async function refresh(){
     try{
       const japan=document.body.classList.contains('country-japan')||window.FUNY_MAP_COUNTRY?.get?.()==='JP';
-      if(japan){window.FUNY_MON_PROTO?.clearEvergreen?.();removeControl();return}
+      if(japan){window.FUNY_MON_PROTO?.setEvergreenEnabled?.(false);removeControl();return}
       const settings=await get('funy_mon_map_settings?select=id,is_enabled,event_id,collapse_seconds&id=eq.default&limit=1');
       const setting=settings?.[0];
       if(!setting?.is_enabled||!setting.event_id){await renderEvergreen();return}
@@ -95,9 +96,11 @@
       const shops=await get('shops?select=id,name,is_active&id=eq.'+encodeURIComponent(ev.shop_id)+'&is_active=eq.true&limit=1');
       const shop=shops?.[0];
       if(!shop){await renderEvergreen();return}
+      window.FUNY_MON_PROTO?.setEvergreenEnabled?.(false);
       render(ev,setting,shop);
     }catch(e){
       console.warn('[FUNY PIN] FUNYMON map find unavailable',e);
+      window.FUNY_MON_PROTO?.setEvergreenEnabled?.(false);
       removeControl();
     }
   }

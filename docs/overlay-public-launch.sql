@@ -11,20 +11,26 @@ create table if not exists public.overlay_card_daily_usage (
 alter table public.overlay_card_daily_usage enable row level security;
 revoke all on public.overlay_card_daily_usage from public,anon,authenticated;
 grant select,insert,update on public.overlay_card_daily_usage to service_role;
-create or replace function public.overlay_card_access(p_user uuid,p_reference text default null,p_mode text default 'status')
-returns jsonb language plpgsql security invoker set search_path = '' as $$
+CREATE OR REPLACE FUNCTION public.overlay_card_access(p_user uuid, p_reference text DEFAULT NULL::text, p_mode text DEFAULT 'status'::text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SET search_path TO ''
+AS $function$
 declare
  d date := (now() at time zone 'Asia/Seoul')::date;
  active boolean := now() >= '2026-11-08 00:00:00+09'::timestamptz and now() < '2026-11-15 00:00:00+09'::timestamptz;
- n integer; refs jsonb; attempts integer;
+ n integer; refs jsonb; attempts integer; unlimited boolean;
 begin
  if p_mode not in ('status','claim','text','illustration') or p_user is null then raise exception 'INVALID_QUOTA_REQUEST'; end if;
+ select coalesce((raw_app_meta_data->>'card_overlay_unlimited')='true',false) into unlimited from auth.users where id=p_user;
+ unlimited:=coalesce(unlimited,false);
  -- Serialize tabs and devices for this account; transaction lock releases on return.
  perform pg_advisory_xact_lock(hashtextextended('overlay-card:'||p_user::text,0));
  select count(*),coalesce(jsonb_agg(reference_id),'[]'::jsonb) into n,refs from public.overlay_card_daily_usage where user_id=p_user and usage_date=d;
  if p_mode <> 'status' then
   if not active then return jsonb_build_object('ok',false,'code','FREE_PERIOD_ENDED','active',false,'used',n,'limit',3,'references',refs); end if;
   if p_reference is null or not exists(select 1 from public.overlay_art_references where id=p_reference) then return jsonb_build_object('ok',false,'code','INVALID_REFERENCE'); end if;
+  if unlimited then return jsonb_build_object('ok',true,'active',active,'unlimited',true,'used',n,'limit',null,'references',refs,'day',d,'endsAt','2026-11-15T00:00:00+09:00'); end if;
   if p_mode='claim' then
    if not (refs ? p_reference) then
     if n>=3 then return jsonb_build_object('ok',false,'code','CARD_DAILY_LIMIT','active',true,'used',n,'limit',3,'references',refs); end if;
@@ -38,7 +44,8 @@ begin
    update public.overlay_card_daily_usage set text_attempts=text_attempts+case when p_mode='text' then 1 else 0 end,illustration_attempts=illustration_attempts+case when p_mode='illustration' then 1 else 0 end where user_id=p_user and usage_date=d and reference_id=p_reference;
   end if;
  end if;
- return jsonb_build_object('ok',true,'active',active,'used',n,'limit',3,'references',refs,'day',d,'endsAt','2026-11-15T00:00:00+09:00');
-end $$;
+ return jsonb_build_object('ok',true,'active',active,'unlimited',unlimited,'used',n,'limit',case when unlimited then null else 3 end,'references',refs,'day',d,'endsAt','2026-11-15T00:00:00+09:00');
+end $function$
+;
 revoke all on function public.overlay_card_access(uuid,text,text) from public,anon,authenticated;
 grant execute on function public.overlay_card_access(uuid,text,text) to service_role;

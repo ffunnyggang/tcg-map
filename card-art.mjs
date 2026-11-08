@@ -68,7 +68,7 @@ $('next').onclick=()=>{if($('next').disabled)return;if(step===1)goStep(2);else i
 function startAgain(){if(busy||exporting||reviewPosting)return;resetLayers();clearTimeout(searchTimer);query='';page=0;language='all';$('search').value='';document.querySelectorAll('[data-language]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.language==='all')));$('generationError').hidden=true;setShape('round');selectionEpoch++;selected=null;source=null;result=null;resultWindow=null;cut=null;selecting=false;squareResult=null;reviewPublisher.reset();reviewPosted=false;$('reviewBody').value='';$('reviewBody').disabled=false;$('reviewSubmit').disabled=false;$('reviewStatus').textContent='';$('reviewLink').hidden=true;$('confirm').checked=false;goStep(1);renderCards();}
 async function generate(){
  if(busy||!source||!selected||!validWindow(cut)||!$('confirm').checked)return;
- busy=true;update();$('generationError').hidden=true;$('workingTitle').textContent='카드 밖으로 풍경을 넓히고 있어요';$('workingDialog').showModal();const minimumMotion=new Promise(resolve=>setTimeout(resolve,2000));const sourceSnapshot=source,selectionSnapshot=selected,windowSnapshot={...cut};
+ busy=true;update();$('generationError').hidden=true;$('workingTitle').textContent='카드 밖으로 풍경을 넓히고 있어요';$('workingDialog').showModal();const minimumMotion=new Promise(resolve=>setTimeout(resolve,8000));const sourceSnapshot=source,selectionSnapshot=selected,windowSnapshot={...cut};
  try{
   if(!ready)throw Error('현재 계정은 AI 생성 준비가 되지 않았어요.');
   layerSession=layerSession||await layerFlow.generate(sourceSnapshot,selectionSnapshot.id,windowSnapshot,()=>{},{...selectionSnapshot.art_rect});

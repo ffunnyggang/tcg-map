@@ -106,3 +106,20 @@ A?.onChange?.(()=>{if(!busy)connect();});
 
 
 $('clearSearch').onpointerdown=e=>e.preventDefault();$('clearSearch').onclick=()=>{$('search').value='';$('search').oninput();$('search').focus();};
+
+/* Keep native header/status-bar dim in sync with every artwork dialog. */
+let artOverlayOpen=false;
+function syncArtOverlay(force=false){
+ const open=!!document.querySelector('dialog[open]');
+ if(!force&&open===artOverlayOpen)return;
+ artOverlayOpen=open;
+ try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',source:'card-art',open,navMode:open?'dim':'none'}));}catch{}
+ window.FUNY_WEB_SAFE_AREA_REFRESH?.();
+}
+new MutationObserver(()=>syncArtOverlay()).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
+window.addEventListener('pageshow',()=>syncArtOverlay(true));
+window.addEventListener('pagehide',()=>{
+ artOverlayOpen=false;
+ try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',source:'card-art',open:false,navMode:'none'}));}catch{}
+});
+syncArtOverlay(true);

@@ -497,8 +497,8 @@
 
   // Evergreen markers remain separate from reward-event markers and their visibility lifecycle.
   let evergreenMarkers=[],evergreenExpiryTimer=0,evergreenRequest=null,evergreenRequestVersion=0;
-  let lastEvergreenFetch=0,autoNativeAttempted=false,evergreenOrigin=null,evergreenEnabled=false;
-  function setEvergreenEnabled(enabled){evergreenEnabled=!!enabled;if(!evergreenEnabled){evergreenRequestVersion++;clearEvergreen();}}
+  let lastEvergreenFetch=0,autoNativeAttempted=false,evergreenOrigin=null,evergreenEnabled=false,evergreenLocationGranted=false;
+  function setEvergreenEnabled(enabled){evergreenEnabled=!!enabled;if(!evergreenEnabled){evergreenRequestVersion++;lastEvergreenFetch=0;clearEvergreen();}}
   function clearEvergreen(){
     clearTimeout(evergreenExpiryTimer);evergreenExpiryTimer=0;
     evergreenMarkers.forEach(marker=>{try{marker.setMap(null)}catch(_){}});
@@ -530,6 +530,7 @@
         if(!automatic)showMessage('위치 확인이 필요해요','위치 권한을 허용한 후 주변 퍼니몬을 찾아주세요.');
         return;
       }
+      evergreenLocationGranted=true;
       if(!currentMapIsKorea()||document.hidden)return;
       let list;
       try{
@@ -589,7 +590,7 @@
     if(window.ReactNativeWebView&&window.__FUNY_NATIVE_GEO_BRIDGED){
       // Existing native bridge knows OS permissions; only attempt once per page load
       // unless the user manually requests another search.
-      if(autoNativeAttempted&&!previouslyGranted)return;
+      if(autoNativeAttempted&&!previouslyGranted&&!evergreenLocationGranted)return;
       autoNativeAttempted=true;
       return findEvergreen({auto:true});
     }

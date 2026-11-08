@@ -497,7 +497,8 @@
 
   // Evergreen markers remain separate from reward-event markers and their visibility lifecycle.
   let evergreenMarkers=[],evergreenExpiryTimer=0,evergreenRequest=null,evergreenRequestVersion=0;
-  let lastEvergreenFetch=0,autoNativeAttempted=false,evergreenOrigin=null;
+  let lastEvergreenFetch=0,autoNativeAttempted=false,evergreenOrigin=null,evergreenEnabled=false;
+  function setEvergreenEnabled(enabled){evergreenEnabled=!!enabled;if(!evergreenEnabled){evergreenRequestVersion++;clearEvergreen();}}
   function clearEvergreen(){
     clearTimeout(evergreenExpiryTimer);evergreenExpiryTimer=0;
     evergreenMarkers.forEach(marker=>{try{marker.setMap(null)}catch(_){}});
@@ -514,7 +515,7 @@
   }
   async function findEvergreen(options={}){
     const automatic=options.auto===true;
-    if(!currentMapIsKorea()||location.hash.includes('/shop/'))return;
+    if(!evergreenEnabled||!currentMapIsKorea()||location.hash.includes('/shop/'))return;
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){
       if(!automatic)showMessage('지도를 불러오는 중이에요','잠시 후 다시 시도해주세요.');
       return;
@@ -539,7 +540,7 @@
         if(!automatic)showMessage('퍼니몬을 불러오지 못했어요','잠시 후 다시 시도해주세요.');
         return;
       }
-      if(requestVersion!==evergreenRequestVersion||!currentMapIsKorea()||document.hidden)return;
+      if(requestVersion!==evergreenRequestVersion||!evergreenEnabled||!currentMapIsKorea()||document.hidden)return;
       lastEvergreenFetch=Date.now();
       clearEvergreen();
       if(!Array.isArray(list)||!list.length){
@@ -575,7 +576,7 @@
     return evergreenRequest;
   }
   async function autoFindEvergreen({force=false,previouslyGranted=false}={}){
-    if(!currentMapIsKorea()||location.hash.includes('/shop/')||document.hidden)return;
+    if(!evergreenEnabled||!currentMapIsKorea()||location.hash.includes('/shop/')||document.hidden)return;
     if(!force&&lastEvergreenFetch&&Date.now()-lastEvergreenFetch<120000)return;
     if(evergreenRequest)return;
     if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap))return;
@@ -603,5 +604,5 @@
   window.addEventListener('funy:locationchange',()=>{if(!evergreenMarkers.length)autoFindEvergreen()});
   document.addEventListener('visibilitychange',()=>{syncEvergreenVisibility();if(!document.hidden)autoFindEvergreen()});
   window.addEventListener('pageshow',()=>autoFindEvergreen());
-  window.FUNY_MON_PROTO={findEvergreen,autoFindEvergreen,clearEvergreen,respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
+  window.FUNY_MON_PROTO={findEvergreen,autoFindEvergreen,clearEvergreen,setEvergreenEnabled,respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
 })();

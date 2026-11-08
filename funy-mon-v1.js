@@ -495,44 +495,113 @@
   window.addEventListener('hashchange',()=>{syncVisibility();setTimeout(syncEventDetailBanner,0)});window.addEventListener('funy:shops-source',()=>{if(!started){tries=0;spawn()}});window.addEventListener('pageshow',()=>{if(!started){tries=0;spawn()}else syncVisibility()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!started){tries=0;spawn()}});new MutationObserver(()=>{if(!started)spawn();else syncVisibility()}).observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(spawn,450);setTimeout(()=>{if(!started){tries=0;spawn()}},2500);setTimeout(()=>{if(!started){tries=0;spawn()}},6000);
   renderPendingEntryButton();setTimeout(syncEventDetailBanner,300);
 
-  // Evergreen is isolated from scheduled-event markers and event reward handling.
-  let evergreenMarkers=[],evergreenExpiryTimer=0;
+  // Evergreen markers remain separate from reward-event markers and their visibility lifecycle.
+  let evergreenMarkers=[],evergreenExpiryTimer=0,evergreenRequest=null,evergreenRequestVersion=0;
+  let lastEvergreenFetch=0,autoNativeAttempted=false,evergreenOrigin=null;
   function clearEvergreen(){
-    clearTimeout(evergreenExpiryTimer);
+    clearTimeout(evergreenExpiryTimer);evergreenExpiryTimer=0;
+    evergreenMarkers.forEach(marker=>{try{marker.setMap(null)}catch(_){}});
+    evergreenMarkers=[];evergreenOrigin=null;
+  }
+  function syncEvergreenVisibility(){
+    const hide=hiddenByRoute()||document.hidden;
     evergreenMarkers.forEach(marker=>{
-      try{marker.setMap(null)}catch(_){}
-      // Evergreen markers are separate from the event marker arrays.
-    });evergreenMarkers=[];
-  }
-  function syncEvergreenVisibility(){evergreenMarkers.forEach(marker=>{try{marker.setMap(!hiddenByRoute()&&!hiddenKeys.has(marker.__funyMonKey)?naverMap:null)}catch(_){}})}
-  window.addEventListener('hashchange',syncEvergreenVisibility);
-  async function findEvergreen(){
-    if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){showMessage('지도를 불러오는 중이에요','잠시 후 다시 시도해주세요.');return}
-    let pos;
-    try{pos=await getPosition()}catch(_){showMessage('위치 확인이 필요해요','위치 권한을 허용한 후 주변 퍼니몬을 찾아주세요.');return}
-    let list;
-    try{
-      const resp=await fetch(SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_nearby',{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_lat:pos.coords.latitude,p_lng:pos.coords.longitude}),cache:'no-store'});
-      if(!resp.ok)throw Error('HTTP '+resp.status);list=await resp.json();
-    }catch(_){showMessage('퍼니몬을 불러오지 못했어요','잠시 후 다시 시도해주세요.');return}
-    clearEvergreen();
-    if(!Array.isArray(list)||!list.length){showMessage('주변에 출몰한 퍼니몬이 없어요','다른 카드샵 주변이나 다음 출몰 시간에 다시 확인해주세요.');return}
-    list.forEach((row,i)=>{
-      const def=defById(row.monster_id),lat=Number(row.latitude),lng=Number(row.longitude);
-      if(!def||!Number.isFinite(lat)||!Number.isFinite(lng))return;
-      const shop={id:row.shop_id,name:row.shop_name,_coord:{lat,lng}},off=offsets[(Math.max(1,Number(row.slot)||1)-1)%offsets.length];
-      const html='<div class="funy-mon-marker '+def.cls+' move-'+(i%3)+'" role="button" aria-label="'+def.name+' 포획"><span class="funy-mon-sprite"><img src="'+def.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
-      const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat+off.lat,lng+off.lng),map:hiddenByRoute()?null:naverMap,clickable:true,zIndex:160+i,icon:{content:html,anchor:new naver.maps.Point(24,34)}});
-      const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
-      if(hiddenKeys.has(key)){marker.setMap(null);return}
-      const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,originLat:pos.coords.latitude,originLng:pos.coords.longitude,key};
-      marker.__funyMonKey=key;evergreenMarkers.push(marker);
-      naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
+      try{marker.setMap(!hide&&!hiddenKeys.has(marker.__funyMonKey)?naverMap:null)}catch(_){}
     });
-    syncEvergreenVisibility();
-    evergreenExpiryTimer=setTimeout(clearEvergreen,1800000-(Date.now()%1800000)+1000);
-    try{naverMap.panTo(new naver.maps.LatLng(pos.coords.latitude,pos.coords.longitude))}catch(_){}
-    if(!evergreenMarkers.length)showMessage('새로운 퍼니몬을 준비하고 있어요','다음 출몰 시간에 다시 확인해주세요.');
   }
-  window.FUNY_MON_PROTO={findEvergreen,respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
+  function currentMapIsKorea(){
+    return !document.body.classList.contains('country-japan')&&window.FUNY_MAP_COUNTRY?.get?.()!=='JP';
+  }
+  async function findEvergreen(options={}){
+    const automatic=options.auto===true;
+    if(!currentMapIsKorea()||location.hash.includes('/shop/'))return;
+    if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap)){
+      if(!automatic)showMessage('지도를 불러오는 중이에요','잠시 후 다시 시도해주세요.');
+      return;
+    }
+    if(evergreenRequest)return evergreenRequest;
+    const requestVersion=++evergreenRequestVersion;
+    evergreenRequest=(async()=>{
+      let pos;
+      try{
+        pos=options.position||await getPosition();
+      }catch(_){
+        if(!automatic)showMessage('위치 확인이 필요해요','위치 권한을 허용한 후 주변 퍼니몬을 찾아주세요.');
+        return;
+      }
+      if(!currentMapIsKorea()||document.hidden)return;
+      let list;
+      try{
+        const resp=await fetch(SUPABASE_URL+'/rest/v1/rpc/funy_mon_evergreen_nearby',{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_lat:pos.coords.latitude,p_lng:pos.coords.longitude}),cache:'no-store'});
+        if(!resp.ok)throw Error('HTTP '+resp.status);
+        list=await resp.json();
+      }catch(_){
+        if(!automatic)showMessage('퍼니몬을 불러오지 못했어요','잠시 후 다시 시도해주세요.');
+        return;
+      }
+      if(requestVersion!==evergreenRequestVersion||!currentMapIsKorea()||document.hidden)return;
+      lastEvergreenFetch=Date.now();
+      clearEvergreen();
+      if(!Array.isArray(list)||!list.length){
+        if(!automatic)showMessage('주변에 출몰한 퍼니몬이 없어요','다른 카드샵 주변이나 다음 출몰 시간에 다시 확인해주세요.');
+        return;
+      }
+      evergreenOrigin={latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+      list.forEach((row,i)=>{
+        const def=defById(row.monster_id),lat=Number(row.latitude),lng=Number(row.longitude);
+        if(!def||!Number.isFinite(lat)||!Number.isFinite(lng))return;
+        const shop={id:row.shop_id,name:row.shop_name,_coord:{lat,lng}};
+        const slot=Math.max(1,Number(row.slot)||1),off=offsets[(slot-1)%offsets.length];
+        const html='<div class="funy-mon-marker '+def.cls+' move-'+(i%3)+'" role="button" aria-label="'+def.name+' 포획"><span class="funy-mon-sprite"><img src="'+def.asset+'" alt="" draggable="false"></span><span class="funy-mon-shadow"></span></div>';
+        const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat+off.lat,lng+off.lng),map:naverMap,clickable:true,zIndex:160+i,icon:{content:html,anchor:new naver.maps.Point(24,34)}});
+        const key='evergreen|'+shop.id+'|'+def.id+'|'+row.monster_rotation;
+        marker.__funyMonKey=key;
+        if(hiddenKeys.has(key)){marker.setMap(null);return}
+        const meta={marker,shop,def,event:{title:'퍼니몬 상시 운영'},evergreen:true,originLat:pos.coords.latitude,originLng:pos.coords.longitude,key};
+        evergreenMarkers.push(marker);
+        naver.maps.Event.addListener(marker,'click',()=>{if(!busy)catchMonster(meta)});
+      });
+      syncEvergreenVisibility();
+      // Refresh on the next 30-minute change rather than disappearing indefinitely.
+      evergreenExpiryTimer=setTimeout(()=>{
+        clearEvergreen();
+        if(currentMapIsKorea()&&!document.hidden)autoFindEvergreen({force:true,previouslyGranted:true});
+      },1800000-(Date.now()%1800000)+1000);
+      if(!automatic){
+        try{naverMap.panTo(new naver.maps.LatLng(pos.coords.latitude,pos.coords.longitude))}catch(_){}
+        if(!evergreenMarkers.length)showMessage('새로운 퍼니몬을 준비하고 있어요','다음 출몰 시간에 다시 확인해주세요.');
+      }
+    })().finally(()=>{evergreenRequest=null});
+    return evergreenRequest;
+  }
+  async function autoFindEvergreen({force=false,previouslyGranted=false}={}){
+    if(!currentMapIsKorea()||location.hash.includes('/shop/')||document.hidden)return;
+    if(!force&&lastEvergreenFetch&&Date.now()-lastEvergreenFetch<120000)return;
+    if(evergreenRequest)return;
+    if(!(window.naver&&naver.maps&&typeof naverMap!=='undefined'&&naverMap))return;
+    // Reuse a location already obtained by the map's existing location control.
+    const cur=window.FUNY_CURRENT_LOCATION;
+    if(cur&&Number.isFinite(Number(cur.lat))&&Number.isFinite(Number(cur.lng))
+        &&Date.now()-Number(cur.ts||0)<90000){
+      return findEvergreen({auto:true,position:{coords:{latitude:Number(cur.lat),longitude:Number(cur.lng)}}});
+    }
+    if(window.ReactNativeWebView&&window.__FUNY_NATIVE_GEO_BRIDGED){
+      // Existing native bridge knows OS permissions; only attempt once per page load
+      // unless the user manually requests another search.
+      if(autoNativeAttempted&&!previouslyGranted)return;
+      autoNativeAttempted=true;
+      return findEvergreen({auto:true});
+    }
+    if(!navigator.geolocation||!navigator.permissions?.query)return;
+    try{
+      const permission=await navigator.permissions.query({name:'geolocation'});
+      if(permission.state==='granted')return findEvergreen({auto:true});
+    }catch(_){/* Permissions API not supported: keep explicit find button. */}
+  }
+  window.addEventListener('hashchange',()=>{syncEvergreenVisibility();if(currentMapIsKorea()&&!location.hash.includes('/shop/'))autoFindEvergreen()});
+  window.addEventListener('funy:mapdatachange',()=>{syncEvergreenVisibility()});
+  window.addEventListener('funy:locationchange',()=>{if(!evergreenMarkers.length)autoFindEvergreen()});
+  document.addEventListener('visibilitychange',()=>{syncEvergreenVisibility();if(!document.hidden)autoFindEvergreen()});
+  window.addEventListener('pageshow',()=>autoFindEvergreen());
+  window.FUNY_MON_PROTO={findEvergreen,autoFindEvergreen,clearEvergreen,respawn:()=>{clear();started=false;tries=0;try{localStorage.removeItem(DAILY_KEY)}catch(_){}spawn()},count:()=>markers.length,history:historyItems,pendingEntries:pendingEntries,targetShop:()=>TARGET_SHOP_ID};
 })();

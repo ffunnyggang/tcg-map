@@ -42,7 +42,7 @@ function update(){
  $('next').textContent=exporting?'PDF를 준비하고 있어요':step===1?'선택한 카드로 계속':step===2?(result?'완성 아트 보기':layerFlow.hasPending()?'일러스트 연결 맞추기':'확장 아트 만들기'):'출력 도안 PDF 받기';
  $('next').disabled=busy||selecting||exporting||(step===1?!source:step===2?!validWindow(cut)||!$('confirm').checked||!ready:!result);
  $('actionHint').textContent=selecting?'카드 원본을 불러오고 있어요':'';$('actionHint').hidden=!selecting;
- $('back').disabled=busy||exporting||reviewPosting;$('downloadAgain').disabled=exporting||reviewPosting;$('completeAgain').disabled=exporting||reviewPosting;
+ $('back').disabled=busy||exporting||reviewPosting;$('downloadAgain').disabled=exporting||reviewPosting;$('completeAgain').disabled=exporting||reviewPosting;$('completeHome').disabled=exporting||reviewPosting;
  document.querySelectorAll('[data-shape],#layerOptions button,#adjustJoin,#openTune').forEach(b=>b.disabled=busy||exporting||reviewPosting);
 }
 
@@ -86,6 +86,8 @@ async function downloadPDF(){if(exporting||!result||!resultWindow)return;exporti
 function setShape(value){shape=value;document.querySelectorAll('[data-shape]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.shape===shape)));$('resultCanvas').style.borderRadius=shape==='round'?'10px':'0';document.querySelector('.card-stage.result').classList.toggle('square',shape==='square');if(layerSession?.current)composeMobileLayers();else if(result)drawResult();}
 for(const b of document.querySelectorAll('[data-shape]'))b.onclick=()=>{if(!exporting)setShape(b.dataset.shape);};
 $('closeCompletion').onclick=()=>{if(!exporting&&!reviewPosting)location.href='/tcg-tools.html';};
+$('completeHome').onclick=()=>{if(exporting||reviewPosting)return;if(window.ReactNativeWebView?.postMessage){window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)'}));return;}location.href='/';};
+$('reviewLink').onclick=e=>{if(!window.ReactNativeWebView?.postMessage)return;e.preventDefault();e.stopPropagation();const postId=new URL(e.currentTarget.href).hash.split('/')[2];try{const at=Date.now();localStorage.setItem('funypin:talk:pending-tab:v1',JSON.stringify({tab:'all',postId,at}));window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/talk?__tabRefresh='+at}));}catch{location.href=e.currentTarget.href;}};
 $('downloadAgain').onclick=downloadPDF;$('completeAgain').onclick=startAgain;
 // Adjustment is staged until Apply. Previous results are invalidated only on an actual change.
 $('openTune').onclick=()=>{if(!source||!cut)return;draft={...cut};tuneMode='position';document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode==='position')));renderTune();$('tuneDialog').showModal();tuneGestures.reset();};
@@ -98,7 +100,7 @@ $('resetTune').onclick=()=>{draft=defaultArtWindow(selected);renderTune();};$('a
 // The same entry notice and footer content; always show on page entry.
 $('modalNotice').append($('noticeContent').content.cloneNode(true));$('stepNotice').append($('noticeContent').content.cloneNode(true));
 $('acceptNotice').onclick=()=>$('noticeDialog').close();$('noticeDialog').showModal();window.addEventListener('pageshow',e=>{if(e.persisted&&!$('noticeDialog').open)$('noticeDialog').showModal();});
-$('reviewForm').onsubmit=async e=>{e.preventDefault();if(reviewPosting||reviewPosted||!result)return;const body=$('reviewBody').value.trim();if(!body)return;reviewPosting=true;$('reviewSubmit').disabled=true;$('reviewBody').disabled=true;$('reviewStatus').textContent='후기를 등록하고 있어요.';update();try{const id=await reviewPublisher.publish({image:outputArt(),title:(selected.display_name+' 확장 아트 사용 후기').slice(0,80),body});reviewPosted=true;$('reviewStatus').textContent='TALK 자유게시판에 후기를 등록했어요.';$('reviewLink').href='/talk.html#/post/'+encodeURIComponent(id);$('reviewLink').hidden=false;}catch(err){$('reviewStatus').textContent=err.message||'후기 등록에 실패했어요.';$('reviewBody').disabled=false;}finally{reviewPosting=false;$('reviewSubmit').disabled=reviewPosted;update();}};
+$('reviewForm').onsubmit=async e=>{e.preventDefault();if(reviewPosting||reviewPosted||!result)return;const body=$('reviewBody').value.trim();if(!body)return;reviewPosting=true;$('reviewSubmit').disabled=true;$('reviewBody').disabled=true;$('reviewStatus').textContent='후기를 등록하고 있어요.';update();try{const id=await reviewPublisher.publish({image:outputArt(),title:(selected.display_name+' 확장 아트 사용 후기').slice(0,80),body});reviewPosted=true;$('reviewStatus').textContent='TALK 자유게시판에 후기를 등록했어요.';$('reviewLink').href='/talk.html?from=card-art#/post/'+encodeURIComponent(id);$('reviewLink').hidden=false;}catch(err){$('reviewStatus').textContent=err.message||'후기 등록에 실패했어요.';$('reviewBody').disabled=false;}finally{reviewPosting=false;$('reviewSubmit').disabled=reviewPosted;update();}};
 update();connect();
 A?.onChange?.(()=>{if(!busy)connect();});
 

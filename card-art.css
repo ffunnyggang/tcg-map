@@ -53,3 +53,6 @@ body:has(dialog[open]){overflow:hidden}
 .completion-links{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:16px}
 .completion-links #completeAgain{margin:0}
 .completion-links button{white-space:nowrap}
+
+#completion .completion-links{width:100%;justify-content:center;gap:24px}
+#completion .completion-links button{flex:0 0 auto;width:auto;margin:0;text-align:center}

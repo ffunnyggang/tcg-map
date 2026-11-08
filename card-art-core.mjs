@@ -8,9 +8,12 @@ export function pageCards(rows,language,query,page=0){const q=clean(query),numer
 export function cardFilename(card){return ('FUNY PIN - AI EXTENDED ART_'+card.display_name+'-'+card.card_number+'-'+card.source_language+'.pdf').normalize('NFKC').replace(/[<>:"/\\|?*\u0000-\u001f]/g,'-').replace(/\s+/g,' ');}
 
 
+const ART_NAME_ALIASES=[['피카츄','ピカチュウ','Pikachu']];
 export function searchArtCards(rows,language,query,page=0){
  const q=clean(query);if(!q)return {rows:[],total:0,pages:1,page:0};
  const numeric=/^\d+(?:\/\d+)?$/.test(q)?Number(q.split('/')[0]):null;
- const matches=rows.filter(r=>(language==='all'||r.source_language===language)&&(numeric!==null?Number(r.card_number)===numeric:clean(r.display_name+' '+r.card_number).includes(q))).sort((a,b)=>String(a.card_number).localeCompare(String(b.card_number),'ko',{numeric:true})||a.source_language.localeCompare(b.source_language)||a.id.localeCompare(b.id));
+ const aliases=ART_NAME_ALIASES.find(names=>names.some(name=>clean(name)===q));
+ const terms=aliases?aliases.map(clean):[q];
+ const matches=rows.filter(r=>(language==='all'||r.source_language===language)&&(numeric!==null?Number(r.card_number)===numeric:terms.some(term=>clean(r.display_name+' '+r.card_number).includes(term)))).sort((a,b)=>String(a.card_number).localeCompare(String(b.card_number),'ko',{numeric:true})||a.source_language.localeCompare(b.source_language)||a.id.localeCompare(b.id));
  const pages=Math.max(1,Math.ceil(matches.length/12)),current=Math.max(0,Math.min(page,pages-1));return {rows:matches.slice(current*12,current*12+12),total:matches.length,pages,page:current};
 }

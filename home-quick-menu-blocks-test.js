@@ -22,8 +22,8 @@ const GROUPS=[
 {title:'카드샵·상품',items:[
 {id:'shops',label:'카드샵 찾기',href:'/shops.html',guest:true},
 {id:'favorite',label:'관심 목록',href:'/my-favorites.html',guest:false},
-{id:'box',label:'BOX 시세',href:'/products.html?kind=box',guest:true},
-{id:'graded',label:'등급카드',href:'/products.html?kind=graded',guest:true},
+{id:'box',label:'BOX 시세',href:'/store.html?kind=box',guest:true},
+{id:'graded',label:'등급카드',href:'/store.html?kind=graded',guest:true},
 {id:'market',label:'TCG 거래',href:'/market.html',guest:true}]},
 {title:'콘텐츠·커뮤니티',items:[
 {id:'pick',label:'PICK 콘텐츠',href:'/pick.html',guest:true},

@@ -26,8 +26,8 @@ binder:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M12 8h5
 };
 const data=[
 ['favorite','관심 목록','/my-favorites.html'],
-['box','BOX 시세','/products.html?kind=box'],
-['graded','등급카드','/products.html?kind=graded'],
+['box','BOX 시세','/store.html?kind=box'],
+['graded','등급카드','/store.html?kind=graded'],
 ['market','TCG 거래','/market.html'],
 ['events','이벤트','/my-events.html'],
 ['coupons','쿠폰함','/my-coupons.html'],

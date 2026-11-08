@@ -51,7 +51,7 @@ async function setup(browser,{active=true,order=5,user=false}={}){
   await page.locator('[data-quick-id="box"]').click();
   assert.deepEqual(await page.$$eval('.fqm-choice.selected .fqm-choice-badge',x=>x.map(el=>el.textContent)),['1','2','3','4']);
   await page.locator('#fqm-save').click();
-  assert.deepEqual(await page.$$eval('.fqm-tile[href]',x=>x.map(el=>el.getAttribute('href'))),['/my-favorites.html','/products.html?kind=graded','/market.html','/products.html?kind=box']);
+  assert.deepEqual(await page.$$eval('.fqm-tile[href]',x=>x.map(el=>el.getAttribute('href'))),['/my-favorites.html','/store.html?kind=graded','/market.html','/store.html?kind=box']);
   assert.equal(await page.$eval('.fqm-sheet',()=>false).catch(()=>true),true);
   for(const width of [320,360,390,420,600,768]){
    await page.setViewport({width,height:844});

@@ -8,8 +8,8 @@ const LEGACY='funypin.home.quick-menu.test.kt.v1';
 const DEFAULT=['favorite','box','graded','market'];
 const MENU=[
 ['favorite','관심 목록','Favorites','/my-favorites.html','💜'],
-['box','BOX 시세','BOX Prices','/products.html?kind=box','📦'],
-['graded','등급카드','Graded Cards','/products.html?kind=graded','🏅'],
+['box','BOX 시세','BOX Prices','/store.html?kind=box','📦'],
+['graded','등급카드','Graded Cards','/store.html?kind=graded','🏅'],
 ['market','TCG 거래','TCG Market','/market.html','🤝'],
 ['events','이벤트','Events','/my-events.html','🎁'],
 ['coupons','쿠폰함','Coupons','/my-coupons.html','🎟️'],

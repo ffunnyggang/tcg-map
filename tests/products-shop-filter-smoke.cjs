@@ -1,9 +1,9 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const html=fs.readFileSync('products.html','utf8');
+const html=fs.readFileSync('store.html','utf8');
 const filter=fs.readFileSync('products-shop-filter.js','utf8');
 const graded=fs.readFileSync('graded-products-v1.js','utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]).filter(Boolean);
-for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'products.html:inline-'+i});
+for(const [i,code] of scripts.entries())new vm.Script(code,{filename:'store.html:inline-'+i});
 assert(/products-shop-filter\.js\?v=20261104-/.test(html));
 assert(html.includes('window.BOX_PRODUCTS=BOX_PRODUCTS'));
 assert(html.includes('const allEntries=quotes.sources.filter'));

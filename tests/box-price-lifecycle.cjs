@@ -1,7 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=require('node:path').join(__dirname,'..');
 const read=p=>fs.readFileSync(root+'/'+p,'utf8');
-for(const p of ['admin-box-prices.html','products.html','box-detail.html','index.html']){
+for(const p of ['admin-box-prices.html','store.html','box-detail.html','index.html']){
  for(const m of read(p).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
   if(/src=|application\/(?:ld\+)?json/.test(m[1])||!m[2].trim())continue;
   new vm.Script(m[2],{filename:p});

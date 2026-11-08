@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),fs=require('fs');
 const root='C:/Users/ALIC/Desktop/tcg-map-web-preference-heart-qa';
 const expected=[
 ['favorite','관심 목록','/my-favorites.html'],
-['box','BOX 시세','/products.html?kind=box'],
-['graded','등급카드','/products.html?kind=graded'],
+['box','BOX 시세','/store.html?kind=box'],
+['graded','등급카드','/store.html?kind=graded'],
 ['market','TCG 거래','/market.html'],
 ['events','이벤트','/my-events.html'],
 ['coupons','쿠폰함','/my-coupons.html'],
@@ -64,7 +64,7 @@ const expected=[
    window.fetch=async()=>({ok:true,json:async()=>[{is_enabled:true,position:'before_recommend'}]});
   });
   await second.goto('file:///'+root+'/home-quick-menu-test.html',{waitUntil:'domcontentloaded'});
-  assert.deepEqual(await second.$$eval('.quick-items a',els=>els.map(el=>el.getAttribute('href'))),['/products.html?kind=box','/products.html?kind=graded','/my-favorites.html']);
+  assert.deepEqual(await second.$$eval('.quick-items a',els=>els.map(el=>el.getAttribute('href'))),['/store.html?kind=box','/store.html?kind=graded','/my-favorites.html']);
   const pickSource=fs.readFileSync(root+'/pick.html','utf8');
   assert(pickSource.includes("['shop_news','information','schedule','creator','tools','review'].includes(requestedTab)"),'PICK direct tab whitelist');
   const actualTabs=[...pickSource.matchAll(/data-tab="([^"]+)"/g)].map(m=>m[1]);

@@ -1,4 +1,4 @@
-import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{readFileSync}from'node:fs';import{pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide}from'../card-art-geometry.mjs';import{makePrintSheet}from'../card-overlay-print.mjs';
+import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{readFileSync}from'node:fs';import{pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide}from'../card-art-geometry.mjs';import{drawArtWatermark,makePrintSheet}from'../card-overlay-print.mjs';
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
 function recorder(){const calls=[];const g=new Proxy({},{get:(_,k)=>typeof k==='string'?(...v)=>calls.push([k,...v]):undefined,set:()=>true});return {g,calls};}
 test('source review and generated preview draw the exact same physical cut-window',()=>{for(const [width,height]of[[756,1056],[1008,1408]]){const {g,calls}=recorder(),p=pixelWindow(r,width,height);drawCutGuide(g,r,width,height);assert.deepEqual(calls.filter(c=>c[0]==='strokeRect').map(c=>c.slice(1)),[[p.x,p.y,p.w,p.h],[p.x,p.y,p.w,p.h]]);const src={},result={};drawCardOverlay(g,src,result,r,width,height,true);assert.ok(calls.some(c=>c[0]==='rect'&&c[1]===p.x&&c[2]===p.y&&c[3]===p.w&&c[4]===p.h));assert.ok(calls.some(c=>c[0]==='clip'&&c[1]==='evenodd'));}});
@@ -33,4 +33,45 @@ test('public PDF trim adds half a millimetre per edge without scaling art or mov
   assert.deepEqual(roundGuide,shape==='round'?['roundRect',114,114,768,1068,36]:undefined);
   assert.ok(output.some(c=>c[0]==='fillText'&&c[1]===`64 x 89 mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED 1.5 mm`));
  }
+});
+
+test('public PDF watermark is inside both trim shapes and absent from the admin default', (t) => {
+ const {g,calls}=recorder();
+ globalThis.document={createElement:()=>({getContext:()=>g})};
+ t.after(()=>delete globalThis.document);
+ const art={width:1072,height:1472};
+ makePrintSheet(art,r);
+ assert.equal(calls.some(c=>c[1]==='funypin.kr'),false);
+ for(const shape of ['round','square']){
+  calls.length=0;
+  makePrintSheet(art,r,{shape,trimMargin:.5,watermark:true});
+  const mark=calls.filter(c=>c[1]==='funypin.kr');
+  assert.equal(mark.length,2);
+  assert.deepEqual(mark.map(c=>c[0]),['strokeText','fillText']);
+  for(const [, , x,y] of mark){
+   assert.equal(x,69.5*12);
+   assert.ok(Math.abs(y-96.7*12)<1e-9);
+  }
+ }
+});
+
+test('result preview draws the watermark with text enabled or disabled, and skips original comparison',()=>{
+ const source=readFileSync(new URL('../card-art.mjs',import.meta.url),'utf8');
+ const drawResult=source.match(/^function drawResult\(\).*$/m)[0];
+ const {g,calls}=recorder();
+ const canvas={width:756,height:1056,getContext:()=>g};
+ const state=vm.createContext({
+  source:{},result:{},resultWindow:r,$:()=>canvas,shape:'round',showExpanded:true,
+  outputArt:()=>state.result,drawCardOverlay,drawCutGuide,drawArtWatermark
+ });
+ for(const showText of [true,false]){
+  state.result={showText};
+  calls.length=0;
+  vm.runInContext(drawResult+';drawResult()',state);
+  assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]==='funypin.kr'));
+ }
+ state.showExpanded=false;
+ calls.length=0;
+ vm.runInContext('drawResult()',state);
+ assert.equal(calls.some(c=>c[1]==='funypin.kr'),false);
 });

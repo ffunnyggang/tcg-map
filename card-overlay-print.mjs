@@ -10,7 +10,24 @@ export function withCardBleed(image,createCanvas=document.createElement.bind(doc
 }
 export function artPlacement(rect,bleed=2,width=1024,height=1536){return{x:(rect.x+bleed)/(63+2*bleed)*width,y:(rect.y+bleed)/(88+2*bleed)*height,w:rect.w/(63+2*bleed)*width,h:rect.h/(88+2*bleed)*height};}
 export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,bleed/(63+2*bleed)*art.width,bleed/(88+2*bleed)*art.height,63/(63+2*bleed)*art.width,88/(88+2*bleed)*art.height,x,y,63*s,88*s);else g.drawImage(art,x-bleed*s,y-bleed*s,(63+bleed*2)*s,(88+bleed*2)*s);}
-export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0}={}){
+// Position on the original card footprint so preview and PDF share the same baseline.
+export function drawArtWatermark(g,x,y,width,height){
+ const scale=width/PRINT.width;
+ const right=x+width-3.5*scale;
+ const baseline=y+height-1.3*height/PRINT.height;
+ g.save();
+ g.font=`600 ${1.15*scale}px sans-serif`;
+ g.textAlign='right';
+ g.textBaseline='alphabetic';
+ g.lineJoin='round';
+ g.lineWidth=.12*scale;
+ g.strokeStyle='#fff';
+ g.fillStyle='#242424';
+ g.strokeText('funypin.kr',right,baseline);
+ g.fillText('funypin.kr',right,baseline);
+ g.restore();
+}
+export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false}={}){
  const S=PRINT.scale,c=document.createElement('canvas');c.width=83*S;c.height=118*S;const g=c.getContext('2d'),x=10*S,y=10*S,t=Number(tolerance);if(!Number.isFinite(t)||t<0||t>.5)throw Error('창 여유는 0~0.5mm로 지정해 주세요.');if(r.x-t<0||r.y-t<0||r.x+r.w+t>63||r.y+r.h+t>88)throw Error('창 여유가 카드 외곽을 넘어요.');
  if(!Number.isFinite(trimMargin)||trimMargin<0||trimMargin>bleed)throw Error('재단선 확장 값이 올바르지 않습니다.');
  const left=x-trimMargin*S,top=y-trimMargin*S;
@@ -23,6 +40,7 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
  g.fillStyle='#777';g.textAlign='center';g.font=`${1.7*S}px sans-serif`;g.fillText('CUT OUT INSIDE',wx+ww/2,wy+wh/2);
  if(shape==='round'){const guideOffset=trimMargin?0:.06*S;g.strokeStyle='#777';g.lineWidth=.1*S;g.setLineDash([.65*S,.5*S]);g.beginPath();g.roundRect(left-guideOffset,top-guideOffset,trimWidth*S+2*guideOffset,trimHeight*S+2*guideOffset,PRINT.cornerRadius*S);g.stroke();g.setLineDash([]);}
  g.strokeStyle='#555';g.lineWidth=.12*S;for(const [px,py]of[[left,top],[right,top],[left,bottom],[right,bottom]]){const dx=px===left?-1:1,dy=py===top?-1:1;g.beginPath();g.moveTo(px+dx*2.4*S,py);g.lineTo(px+dx*4*S,py);g.moveTo(px,py+dy*2.4*S);g.lineTo(px,py+dy*4*S);g.stroke();}
+ if(watermark)drawArtWatermark(g,x,y,PRINT.width*S,PRINT.height*S);
  g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,5*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,103*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
 }
 

@@ -19,7 +19,7 @@ const MENU=[
 ['information','TCG 정보','TCG Info','/pick.html?tab=information','💡'],
 ['schedule','TCG 일정','TCG Schedule','/pick.html?tab=schedule','📅'],
 ['creator','CREATOR','CREATOR','/pick.html?tab=creator','🎨'],
-['tools','TCG TOOL','TCG TOOL','/tcg-tools.html','🛠️'],
+['tools','TCG TOOL','TCG TOOL','/pick.html?tab=tools','🛠️'],
 ['entries','내 응모 내역','My Entries','/my-entries.html','📋'],
 ['binder','내 바인더','My Binder','/binder.html','📒']
 ].map(([id,ko,en,href,emoji])=>({id,ko,en,href,emoji}));

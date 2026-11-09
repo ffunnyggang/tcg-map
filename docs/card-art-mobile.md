@@ -8,7 +8,7 @@ The server mobile catalog excludes separate Classic Collection data. An explicit
 
 Canonical source images use the existing private signed-reference API. Generation mode is fixed to the exact FULL_ART_PROMPT used by the admin '카드 전체 풀아트 편집 · 새 옵션' mode. Card text, symbols, logos and outer border are requested to remain in place. No separate shared-symbol fetch/compositing occurs. The confirmed cut-window coordinates are frozen for each result, source pixels inside that window are restored after AI, and the final composited image is saved through the existing private prepared-result action with mode=fullart. The original provider image remains retained. Shared output reuse is not implemented by this change.
 
-Print settings: 63x88mm, round R3mm (test value), 2mm outer bleed, cut-window guide, local edge-pixel bleed, A4 100% scale and card-information filename. Native shells use file sharing when available, otherwise browser PDF download. Actual iOS/Android devices, physical printing and authenticated live AI generation remain final QA gates.
+Print settings: 64x89mm trim centered on the 63x88mm card, round R3mm (test value), 1.5mm outer bleed, cut-window guide, local edge-pixel bleed, A4 100% scale and card-information filename. Native shells use file sharing when available, otherwise browser PDF download. Actual iOS/Android devices, physical printing and authenticated live AI generation remain final QA gates.
 
 Validation: 74 server/core tests pass including mobile source restrictions before spending, catalog scope, fixed prompt routing, 0.2mm inset, bounded adjustment and search pagination. Browser demo and PDF checks are recorded separately after deployment.
 

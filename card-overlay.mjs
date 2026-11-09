@@ -12,7 +12,7 @@ const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingfa
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
 function isWideMode(mode){return mode==="fullart_layer_atlas"||mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
 import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
-import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261109-selectfix1';
+import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261109-longpress2';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';
@@ -66,6 +66,7 @@ $('sample').onclick=()=>{if(busy)return;fixedArtRect=null;sourceReferenceId=null
 connection();
 function applyZoom(){const z=Number($('zoom').value),stage=$('previewStage');stage.classList.toggle('zoomed',z>1);stage.style.setProperty('--zoom-width',(Math.min(stage.clientWidth-40,420)*z)+'px');}
 $('zoom').onchange=applyZoom;$('shape').onchange=()=>{refreshCardShape();draw();};window.addEventListener('resize',applyZoom);
+for(const b of document.querySelectorAll('[data-move]')){b.draggable=false;for(const type of ['selectstart','dragstart','contextmenu'])b.addEventListener(type,e=>e.preventDefault());}
 for(const b of document.querySelectorAll('[data-move]'))b.onclick=()=>{if(busy||!card)return;const [dx,dy]=b.dataset.move.split(',').map(Number),r=rect(),next={...r,x:Math.round((r.x+dx)*10)/10,y:Math.round((r.y+dy)*10)/10};if(!validRect(next))return;$('x').value=next.x;$('y').value=next.y;$('x').oninput();};
 let stream=null,cameraSession=0,cameraTimer,previousFrame=null,stableSince=0,lastCameraPoints=null,cameraOpening=false;
 const video=$('cameraVideo'),cameraDialog=$('cameraDialog');

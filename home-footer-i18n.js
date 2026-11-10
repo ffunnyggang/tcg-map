@@ -8,6 +8,7 @@
  aria('#homeFooter','FUNY PIN Service Information');
  footer.setAttribute('aria-label','FUNY PIN Service Information');
  set('.home-footer-tagline','Connecting card shops with the joy of collecting.');
+ set('.home-footer-about summary span','About FUNY PIN · 한국어 · 日本語 · 简体中文');
  aria('.home-footer-socials','Official social channels');
  aria('.home-footer-instagram','FUNY PIN Official Instagram');
  aria('.home-footer-kakao','FUNY PIN KakaoTalk Open Chat');

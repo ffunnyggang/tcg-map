@@ -42,3 +42,9 @@ body.home-with-footer .home-content-flow [data-cms-placement="home"]>.fp-cms-blo
 
 /* Notices sit after the main content now, using the full service frame width. */
 body.home-with-footer>.portal-shell>.home-notice-strip{box-sizing:border-box;width:100%;margin:0;padding:10px 16px 24px;background:#fff}
+
+/* Readable multilingual service information within the existing HOME footer. */
+#homeFooter .home-footer-about{margin:0 0 12px;border-block:1px solid #e5e1e9;font-size:12px;line-height:1.75}
+#homeFooter .home-footer-about section{margin:12px 0 18px}
+#homeFooter .home-footer-about h2{margin:0 0 6px;font-size:13px;line-height:1.6;font-weight:700;color:#655e6f}
+#homeFooter .home-footer-about p{margin:0;color:#807786;overflow-wrap:anywhere}

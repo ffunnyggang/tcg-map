@@ -1,10 +1,8 @@
-/* FUNY PIN global language switch */
-.funy-lang-switch{position:static!important;top:auto!important;right:auto!important;z-index:120;display:flex!important;align-items:center;margin-left:auto!important;padding:0;background:transparent;height:54px!important}
-body.funy-lang-home .funy-lang-switch{display:flex!important}
-.funy-lang-switch button{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#8062d8;height:28px;min-width:44px;padding:0 4px;font:800 11.5px/1 'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.025em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.funy-lang-icon{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
-.funy-lang-switch button:active{opacity:.58}
-@media(max-width:430px){.funy-lang-switch{top:auto!important;right:auto!important;height:54px!important}.funy-lang-switch button{height:28px;min-width:42px;padding:0 3px;font-size:11.5px;gap:4px}.funy-lang-icon{width:15px;height:15px}}
+/* Match the compact KO / EN control in the Extended Art header. */
+.funy-lang-switch{position:static!important;top:auto!important;right:auto!important;z-index:120;display:flex!important;flex:0 0 auto;align-items:center;margin-left:auto!important;box-sizing:border-box;padding:2px;border:1px solid #e8e1ef;border-radius:16px;background:#f4f1f8;height:33px!important}
+.funy-lang-switch button{appearance:none;-webkit-appearance:none;box-sizing:border-box;height:27px;min-width:33px;padding:0 8px;border:0;border-radius:14px;background:transparent;color:#8d8595;font-size:10px;font-weight:800;line-height:1;letter-spacing:0;cursor:pointer}
+.funy-lang-switch button[aria-pressed="true"]{background:#fff;color:#6749bd}
+.funy-lang-switch button:focus-visible{outline:2px solid #aa8bcc;outline-offset:2px}
 
 /* EN overflow guards: preserve existing KO layout and structure */
 html[lang="en"] .header-more-menu{width:min(270px,calc(100vw - 28px))}
@@ -25,13 +23,6 @@ html[lang="en"] .popular-sort button{flex:0 0 auto}
 html[lang="en"] .pokamo-fab{width:auto;min-width:154px;max-width:205px}
 html[lang="en"] .portal-bottom-nav a span,
 html[lang="en"] .shops-bottom-nav a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* Header-aligned language control */
-.funy-lang-switch{position:static!important;height:54px!important;margin-left:auto!important;align-items:center!important}
-.funy-lang-switch button{height:32px;align-items:center;justify-content:center;line-height:1}
-.funy-lang-icon{display:block}
-.funy-lang-switch button span{display:flex;align-items:center;height:15px;line-height:15px}
-@media(max-width:430px){.funy-lang-switch{height:54px!important}.funy-lang-switch button{height:32px}}
 
 /* QA floating action polish */
 .live-pin-entry{background:#17151B!important;box-shadow:0 8px 24px rgba(17,16,21,.24)!important}

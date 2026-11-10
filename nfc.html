@@ -39,6 +39,11 @@ h1{font-size:25px;letter-spacing:-.045em;line-height:1.28;text-align:center;marg
 .step{display:flex;align-items:center;gap:11px;font-size:12px;color:#665e71;font-weight:650}
 .dot{width:21px;height:21px;flex:0 0 21px;display:grid;place-items:center;border-radius:50%;background:#eee7f9;color:#7c54cc;font-size:11px;font-weight:850}
 .dot.checked{background:#ede7fa}
+.step{border-radius:9px;padding:4px 5px;transition:background .2s,color .2s}
+.step.active{background:#f0e9ff;color:#5d2cb6;font-weight:800}
+.step.active .dot{background:#7b3dff;color:#fff}
+.step.complete .dot{background:#e5f5ed;color:#168052}
+.step.complete{color:#5c5468}
 .status{margin-top:17px;border-radius:12px;padding:12px 13px;background:#f8f5fd;color:#6d52a8;display:flex;align-items:flex-start;gap:9px;min-height:43px}
 .status svg{width:17px;height:17px;flex:0 0 17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;margin-top:1px}
 .status p{margin:0;font-size:12px;font-weight:650;line-height:1.55;white-space:pre-line;word-break:keep-all}
@@ -86,13 +91,13 @@ html.app-shell .content{padding-top:24px}
   <p class="lead" id="lead">NFC 태그를 확인한 후<br>현재 위치에서 방문을 인증해 주세요.</p>
   <div class="shop">
    <div class="shop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5h18l-2-7H5l-2 7Z"/><path d="M5 10.5v10h14v-10"/><path d="M9 20.5v-7h6v7"/><path d="M3 10.5c0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0"/></svg></div>
-   <div class="shop-info"><small id="shopVisitLabel">방문할 카드샵</small><div class="shop-name" id="shopName">매장을 확인하고 있어요</div></div>
+   <div class="shop-info"><small id="shopVisitLabel">방문한 카드샵</small><div class="shop-name" id="shopName">매장을 확인하고 있어요</div></div>
   </div>
   <div><span class="mode" id="mode" hidden>인증 방식 확인 중</span></div>
   <div class="steps" id="steps">
-   <div class="step"><span class="dot checked">✓</span> NFC 태그 확인</div>
-   <div class="step"><span class="dot">2</span> 로그인 · 위치 확인</div>
-   <div class="step"><span class="dot">3</span> 방문인증 완료</div>
+   <div class="step" data-step="1"><span class="dot checked">✓</span> NFC 태그 확인</div>
+   <div class="step" data-step="2"><span class="dot">2</span> 로그인 · GPS 인증</div>
+   <div class="step" data-step="3"><span class="dot">3</span> 방문인증 완료</div>
   </div>
   <div class="progress" id="progress" hidden aria-hidden="true"><div></div></div>
   <div class="status" id="statusBox" role="status" aria-live="polite" aria-atomic="true">
@@ -112,10 +117,10 @@ html.app-shell .content{padding-top:24px}
    <button id="login" type="button" class="secondary" hidden>FUNY PIN 앱에서 로그인하기</button>
    <!-- MY 방문기록 전용 페이지는 후속 버전 범위. 완료 화면의 인증 내역으로 대체. -->
    <a id="retryMap" href="/shops.html" class="button-link secondary" hidden>TCG MAP으로 이동</a>
-   <p class="caption" id="buttonNote">GPS 정확도는 ±50m 이내여야 합니다. 인증 가능 매장 거리는 매장별 모드에 따라 다릅니다.</p>
+   <p class="caption" id="buttonNote">매장 기준 50m 이내에서 인증할 수 있으며, GPS 정확도도 ±50m 이내여야 합니다.</p>
   </div>
  </section>
- <p class="footnote" id="footnote">NTAG213은 고정 URL이므로 NFC 접촉만으로 방문이 인정되지 않습니다. 인증 시 로그인을 확인하고 위치를 서버에서 검증합니다. 테스트(보상 없음)는 매장 반경 2km, 정식 방문인증은 50m 기준이며 GPS 정확도는 모두 ±50m 이내여야 합니다.</p>
+ <p class="footnote" id="footnote">NFC 태그 인식 후 로그인 및 GPS 위치를 확인합니다. 매장 반경 50m, GPS 오차 반경 ±50m 이내에서 인증되며, 같은 카드샵은 하루 한 번만 방문 기록에 반영됩니다.</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -216,10 +221,17 @@ function status(message,kind='info'){
 }
 function stage(state){
  const progress=state==='checking'||state==='submitting';
+ const index=state==='success'||state==='duplicate'?3:state==='checking'||state==='submitting'||state==='ready'||state==='auth'?2:state==='error'?(shopReady?2:1):1;
+ document.querySelectorAll('#steps [data-step]').forEach(el=>{
+  const n=Number(el.getAttribute('data-step'));
+  el.classList.toggle('active',n===index);
+  el.classList.toggle('complete',n<index);
+ });
+ $('steps').hidden=false;
  $('progress').hidden=!progress;
  $('heroIcon').className='icon-circle'+(state==='success'||state==='duplicate'?' good':state==='error'?' warning':'');
  $('eyebrow').textContent=state==='success'?'CHECK-IN COMPLETE':state==='duplicate'?'ALREADY CHECKED IN':state==='error'?'PLEASE TRY AGAIN':'NFC CHECK-IN';
- $('steps').hidden=state==='success'||state==='duplicate';
+ // Keep the completed final stage visible to clarify the journey.
  $('checkin').disabled=busy||!shopReady||completed||(inApp&&loginState!=='logged_in');
  appOpen.disabled=busy||!shopReady||completed;
  $('retryMap').hidden=!(state==='error'&&!shopReady);
@@ -303,20 +315,20 @@ submit.onclick=async()=>{
    ?new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(savedAt))
    :(savedDate?savedDate+' (한국시간)':'저장된 인증 일시를 확인할 수 없습니다.');
   $('verifiedStatus').textContent=newVisit?'방문인증 완료':'오늘 이미 인증 완료';
-  $('verifiedMode').textContent=isLive?'정식 방문인증 · MY 기록 대상':'파일럿 방문인증 · MY 보상 미반영';
+  $('verifiedMode').textContent=rewarded?'방문 기록 저장 · 미션 및 방문 랭킹 반영':'방문 기록 확인 · 중복 미션·랭킹 집계 없음';
   stage(newVisit?'success':'duplicate');
   if(newVisit){
    $('heading').textContent='방문인증 완료!';
    $('lead').textContent=result.shop_name+' 방문을 확인했습니다.';
-   status(rewarded?'MY 방문 기록과 미션에 반영됐어요.':'NFC 방문인증이 완료됐어요. 현재 매장은 파일럿으로 운영 중이며 MY 미션·코인에는 반영되지 않습니다.','good');
+   status(rewarded?'MY 방문 기록에 저장되고 미션과 방문 랭킹에 반영됐어요.':'방문인증이 완료됐어요. 기존 방문 기록이 있는 경우 추가 미션·랭킹 집계는 발생하지 않습니다.','good');
   }else{
    $('heading').textContent='오늘 이미 인증했어요';
    $('lead').textContent='같은 매장에서는 하루에 한 번만 방문이 인정됩니다.';
-   status(isLive?'기존 방문 기록이 유지되며 추가 보상은 지급되지 않습니다.':'오늘의 NFC 파일럿 인증 기록이 이미 있어요.','good');
+   status('오늘의 방문 기록이 이미 있어요. 같은 카드샵 방문은 하루 한 번만 집계됩니다.','good');
   }
   submit.hidden=true;
   login.hidden=true;
-  $('mode').textContent=isLive?'정식 인증 · 50m':'파일럿 테스트 · 2km · 보상 미반영';
+  $('mode').textContent='GPS 인증 · 매장 반경 50m';
   if(newVisit){try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shopId,is_new:true,source:isLive?'nfc_ntag213_gps':'nfc_ntag213_pilot',reward_applied:rewarded})}catch(_){}}
  }catch(e){
   const reason=e?.message||messages.server_error;
@@ -328,12 +340,12 @@ submit.onclick=async()=>{
  if(!/^[a-f0-9]{48}$/.test(token)){$('shopName').textContent='NFC 태그를 확인할 수 없습니다.';fail(messages.invalid_tag);return}
  try{
   const data=await api({action:'info',token});
-  shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;maxDistance=rewardEnabled?50:2000;shopReady=true;
-  $('buttonNote').textContent='GPS 정확도는 ±50m 이내 · 매장 거리 '+(rewardEnabled?'50m (정식 인증)':'2km (보상 없는 테스트)')+' 이내여야 합니다.';
+  shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;maxDistance=50;shopReady=true;
+  $('buttonNote').textContent='매장 반경 50m 이내 · GPS 정확도 ±50m 이내에서 인증할 수 있습니다.';
   $('shopName').textContent=data.shop_name;
   $('mode').hidden=false;
   $('mode').classList.toggle('live',rewardEnabled);
-  $('mode').textContent=rewardEnabled?'정식 인증 · 50m':'파일럿 테스트 · 2km · 보상 미반영';
+  $('mode').textContent='GPS 인증 · 매장 반경 50m';
   $('heading').textContent='방문인증을 진행할까요?';
   $('lead').textContent='NFC 태그가 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
   if(inApp){
@@ -343,7 +355,7 @@ submit.onclick=async()=>{
    $('heading').textContent='앱에서 방문인증을 진행해 주세요';
    $('lead').textContent='NFC 태그가 확인됐어요. FUNY PIN 앱을 실행하면 GPS 방문인증을 진행할 수 있습니다.';
    status('매장이 확인됐습니다. 앱 열기 버튼을 눌러 주세요.','good');
-   $('steps').innerHTML='<div class="step"><span class="dot checked">✓</span> NFC 태그 확인</div><div class="step"><span class="dot">2</span> FUNY PIN 앱에서 GPS 인증</div><div class="step"><span class="dot">3</span> 방문인증 완료</div>';
+   $('steps').innerHTML='<div class="step complete" data-step="1"><span class="dot checked">✓</span> NFC 태그 확인</div><div class="step active" data-step="2"><span class="dot">2</span> 앱에서 GPS 인증</div><div class="step" data-step="3"><span class="dot">3</span> 방문인증 완료</div>';
   }
   stage('ready');
  }catch(e){$('shopName').textContent='매장 정보를 불러오지 못했어요';fail(e?.message||messages.server_error)}

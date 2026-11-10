@@ -1,78 +1,236 @@
 <!doctype html>
-<html lang="ko"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
-<title>NFC 방문인증 | FUNY PIN</title><link rel="icon" href="/favicon.svg">
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>NFC 방문인증 | FUNY PIN</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script src="/web-auth.js?v=20261018-web-auth10"></script>
-<style>*{box-sizing:border-box}body{margin:0;background:#f8f6fa;color:#241e2b;font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:420px;min-height:100dvh;margin:auto;padding:24px 18px 48px;background:#fff}.brand{font-size:13px;font-weight:800;color:#7c4ed5}.panel{margin-top:22px;border:1px solid #ebe5f0;border-radius:18px;padding:20px 18px;box-shadow:0 4px 18px #3c235708}h1{font-size:23px;margin:10px 0}.muted{font-size:13px;line-height:1.7;color:#766e7f}.shop{margin:20px 0 15px;border-radius:13px;background:#f6f2fc;padding:16px}.shop strong{font-size:18px}.shop small{display:block;margin-top:6px;color:#7c6b8c}button{border:0;border-radius:12px;padding:15px 13px;font-size:14px;font-weight:800;width:100%;cursor:pointer}button.primary{background:#7b3dff;color:#fff}button.secondary{background:#f3eef8;color:#6342ab;margin-top:10px}button[disabled]{opacity:.55;cursor:wait}#status{white-space:pre-line;line-height:1.5;font-size:13px;color:#7350bc;min-height:24px;margin-top:12px}.note{border-top:1px solid #eee7f4;margin-top:20px;padding-top:15px;font-size:11px;line-height:1.7;color:#8a8190}</style></head>
-<body><main class="wrap"><div class="brand">FUNY PIN · NFC CHECK-IN</div>
-<section class="panel"><h1>매장 방문인증</h1><p class="muted">매장에서 NFC 태그를 터치하셨나요? 위치를 확인하고 방문인증을 진행할 수 있습니다.</p>
-<div class="shop"><strong id="shopName">매장 확인 중…</strong><small id="shopDetail">NTAG213 · NFC 방문인증</small></div>
-<button id="checkin" type="button" class="primary" disabled>GPS 확인 후 방문인증</button>
-<button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
-<p id="status" role="status" aria-live="polite">NFC 태그를 확인하고 있어요.</p>
-<p class="note">NFC 태그 URL은 복사할 수 있어 NFC 접촉만으로 방문을 인정하지 않습니다. 로그인 및 매장 반경 50m·GPS 정확도 50m 이내 조건을 확인합니다. 정식 미션 반영은 매장별 운영 승인 이후에만 적용됩니다.</p></section></main>
+<style>
+:root{color-scheme:light;--accent:#7b3dff;--ink:#25212d;--muted:#7b7484;--line:#eee9f4;--soft:#f7f4fc}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#f6f5f8;color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+.shell{width:min(100%,420px);min-height:100dvh;margin:auto;background:white;display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(24px + env(safe-area-inset-bottom,0px));}
+.header{display:flex;justify-content:space-between;align-items:center;min-height:32px;gap:12px}
+.brand{display:flex;align-items:center;gap:7px;text-decoration:none;color:#5e42b6;font-size:13px;font-weight:850;letter-spacing:-.02em}
+.brand img{width:26px;height:30px;object-fit:contain}
+.header-link{font-size:12px;font-weight:750;color:#817887;text-decoration:none;padding:8px 0}
+.content{flex:1;display:flex;flex-direction:column;padding-top:36px}
+.icon-circle{width:72px;height:72px;border-radius:25px;background:linear-gradient(145deg,#f4ecff,#ebe9ff);display:grid;place-items:center;color:var(--accent);margin:0 auto 20px}
+.icon-circle svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.icon-circle.good{color:#6745c1;background:#f1ecff}.icon-circle.warning{color:#b0782d;background:#fff3e0}
+.eyebrow{text-align:center;color:#8d68d0;font-size:11px;font-weight:850;letter-spacing:.13em}
+h1{font-size:25px;letter-spacing:-.045em;line-height:1.28;text-align:center;margin:9px 0 9px;font-weight:850}
+.lead{font-size:13px;color:var(--muted);line-height:1.65;text-align:center;margin:0;word-break:keep-all}
+.shop{border:1px solid var(--line);background:#fff;border-radius:17px;padding:16px 15px;margin-top:30px;display:flex;gap:12px;align-items:center;min-width:0}
+.shop-icon{flex:0 0 auto;width:44px;height:44px;border-radius:13px;background:#f5f0ff;color:#7954ca;display:grid;place-items:center}
+.shop-icon svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7}
+.shop-info{min-width:0;flex:1}.shop-info small{display:block;font-size:11px;color:#91869b;margin-bottom:5px;font-weight:650}.shop-name{font-size:15px;line-height:1.35;font-weight:800;letter-spacing:-.025em;word-break:keep-all}
+.mode{display:inline-flex;align-items:center;gap:6px;font-size:11px;margin-top:11px;padding:7px 11px;border-radius:99px;background:#f6f3fa;color:#756987;font-weight:700}
+.mode:before{content:"";width:6px;height:6px;background:#a68ccc;border-radius:50%}
+.mode.live{color:#6345ae;background:#f1ebfd}.mode.live:before{background:#8055d9}
+.steps{border-radius:14px;background:#faf9fc;padding:15px 16px;margin-top:16px;display:grid;gap:11px}
+.step{display:flex;align-items:center;gap:11px;font-size:12px;color:#665e71;font-weight:650}
+.dot{width:21px;height:21px;flex:0 0 21px;display:grid;place-items:center;border-radius:50%;background:#eee7f9;color:#7c54cc;font-size:11px;font-weight:850}
+.dot.checked{background:#ede7fa}
+.status{margin-top:17px;border-radius:12px;padding:12px 13px;background:#f8f5fd;color:#6d52a8;display:flex;align-items:flex-start;gap:9px;min-height:43px}
+.status svg{width:17px;height:17px;flex:0 0 17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;margin-top:1px}
+.status p{margin:0;font-size:12px;font-weight:650;line-height:1.55;white-space:pre-line;word-break:keep-all}
+.status.error{background:#fff6f3;color:#a95544}
+.status.good{background:#f3efff;color:#6746b8}
+.actions{margin-top:auto;padding-top:28px}
+button,.button-link{width:100%;min-height:52px;border-radius:13px;border:0;font:800 14px "Pretendard Variable",Pretendard,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button.primary{background:#7b3dff;color:white;box-shadow:0 5px 14px #7b3dff24}
+button.primary:active{transform:scale(.993)}
+button:disabled{opacity:.57;cursor:default;transform:none}
+.button-link.secondary,button.secondary{background:#f4f0fa;color:#684ab1;margin-top:10px}
+button:focus-visible,.button-link:focus-visible,.header-link:focus-visible{outline:2px solid #9262ee;outline-offset:3px}
+.caption{text-align:center;margin:13px auto 0;max-width:320px;color:#928a9a;font-size:11px;line-height:1.6;word-break:keep-all}
+.footnote{font-size:10px;line-height:1.65;color:#9991a0;border-top:1px solid #f1edf5;padding-top:16px;margin-top:26px;word-break:keep-all}
+.progress{height:5px;background:#eee8f7;border-radius:999px;overflow:hidden;margin:19px 0 -1px}
+.progress>div{width:35%;height:100%;border-radius:999px;background:#9365e5;animation:progress-slide 1.25s ease-in-out infinite alternate}
+@keyframes progress-slide{from{transform:translateX(-70%)}to{transform:translateX(260%)}}
+.spin{animation:spin 2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.progress>div,.spin{animation:none}}
+@media(min-width:480px){.shell{box-shadow:0 10px 35px #31204409}}
+</style>
+</head>
+<body>
+<main class="shell">
+ <header class="header">
+  <a class="brand" href="/" aria-label="FUNY PIN 홈"><img src="/favicon.svg" alt=""><span>FUNY PIN</span></a>
+  <a href="/shops.html" class="header-link">TCG MAP <span aria-hidden="true">›</span></a>
+ </header>
+ <section class="content" aria-labelledby="heading">
+  <div class="icon-circle" id="heroIcon" aria-hidden="true">
+   <svg viewBox="0 0 24 24"><path d="M5 9.5a7 7 0 0 1 7-7"/><path d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5"/><path d="M16.5 12A4.5 4.5 0 0 0 12 7.5"/><path d="M19 9.5a7 7 0 0 0-7-7"/><path d="M12 11v10"/><path d="M8.5 17.5 12 21l3.5-3.5"/></svg>
+  </div>
+  <div class="eyebrow" id="eyebrow">NFC CHECK-IN</div>
+  <h1 id="heading">매장 방문인증</h1>
+  <p class="lead" id="lead">NFC 태그를 확인한 후<br>현재 위치에서 방문을 인증해 주세요.</p>
+  <div class="shop">
+   <div class="shop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5h18l-2-7H5l-2 7Z"/><path d="M5 10.5v10h14v-10"/><path d="M9 20.5v-7h6v7"/><path d="M3 10.5c0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0"/></svg></div>
+   <div class="shop-info"><small>방문할 카드샵</small><div class="shop-name" id="shopName">매장을 확인하고 있어요</div></div>
+  </div>
+  <div><span class="mode" id="mode" hidden>인증 방식 확인 중</span></div>
+  <div class="steps" id="steps">
+   <div class="step"><span class="dot checked">✓</span> NFC 태그 확인</div>
+   <div class="step"><span class="dot">2</span> 로그인 · 위치 확인</div>
+   <div class="step"><span class="dot">3</span> 방문인증 완료</div>
+  </div>
+  <div class="progress" id="progress" hidden aria-hidden="true"><div></div></div>
+  <div class="status" id="statusBox" role="status" aria-live="polite" aria-atomic="true">
+   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg>
+   <p id="status">NFC 태그를 확인하고 있어요.</p>
+  </div>
+  <div class="actions">
+   <button id="checkin" type="button" class="primary" disabled>방문인증하기 <span aria-hidden="true">›</span></button>
+   <button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
+   <a id="myLink" href="/my.html" class="button-link secondary" hidden>MY 방문 기록 확인 <span aria-hidden="true">›</span></a>
+   <a id="retryMap" href="/shops.html" class="button-link secondary" hidden>TCG MAP으로 이동</a>
+   <p class="caption" id="buttonNote">인증 시 현재 위치를 확인하며 GPS 오차 반경과 매장 거리 모두 50m 이내여야 합니다.</p>
+  </div>
+ </section>
+ <p class="footnote" id="footnote">NTAG213은 고정 URL이므로 NFC 접촉만으로 방문이 인정되지 않습니다. 인증 시 사용자의 로그인 및 위치 정보를 서버에서 검증하며, 미션 반영 여부는 해당 매장의 운영 설정을 따릅니다.</p>
+</main>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id),submit=$('checkin'),login=$('login'),status=$('status');
-const token=(new URLSearchParams(location.search).get('t')||'').toLowerCase(),endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-pilot',key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
-const messages={invalid_tag:'등록되지 않았거나 사용 중지된 NFC 태그예요.',login_required:'퍼니핀 로그인이 필요해요.',too_far:'현재 GPS 위치가 매장 기준 50m를 초과했어요. 매장 좌표와 휴대폰 위치를 확인하고 다시 시도해 주세요.',low_accuracy:'GPS 오차가 ±50m를 초과했어요. 창가 또는 실외에서 다시 측정해 주세요.',invalid_request:'인증 정보를 확인하고 다시 시도해 주세요.',rate_limited:'요청이 많아요. 잠시 후 다시 시도해 주세요.',shop_location_missing:'등록된 매장 좌표가 없습니다. 카드샵 정보를 확인해 주세요.',server_error:'인증을 처리하지 못했어요. 다시 시도해 주세요.'};
-let shopId='',rewardEnabled=false;
-function tell(message){status.textContent=message}
+const $=id=>document.getElementById(id);
+const token=(new URLSearchParams(location.search).get('t')||'').toLowerCase();
+const endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-pilot';
+const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+const messages={
+ invalid_tag:'등록되지 않았거나 사용이 중지된 NFC 태그입니다. 매장 직원에게 확인해 주세요.',
+ login_required:'방문인증을 하려면 퍼니핀 로그인이 필요합니다.',
+ too_far:'GPS 측정 위치가 매장에서 50m 이상 떨어져 있습니다. 매장 위치에서 다시 시도해 주세요.',
+ low_accuracy:'GPS 정확도가 부족합니다. 창가 또는 실외에서 다시 측정해 주세요.',
+ invalid_request:'인증 정보를 확인하지 못했습니다. 다시 시도해 주세요.',
+ rate_limited:'인증 요청이 많습니다. 잠시 후 다시 시도해 주세요.',
+ shop_location_missing:'매장의 등록 위치를 확인할 수 없습니다. 매장 직원에게 알려주세요.',
+ server_error:'현재 인증을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'
+};
+let shopId='',rewardEnabled=false,shopReady=false,busy=false,completed=false;
+const submit=$('checkin'),login=$('login');
+function status(message,kind='info'){
+ $('status').textContent=message;
+ $('statusBox').classList.toggle('error',kind==='error');
+ $('statusBox').classList.toggle('good',kind==='good');
+}
+function stage(state){
+ const progress=state==='checking'||state==='submitting';
+ $('progress').hidden=!progress;
+ $('heroIcon').className='icon-circle'+(state==='success'||state==='duplicate'?' good':state==='error'?' warning':'');
+ $('eyebrow').textContent=state==='success'?'CHECK-IN COMPLETE':state==='duplicate'?'ALREADY CHECKED IN':state==='error'?'PLEASE TRY AGAIN':'NFC CHECK-IN';
+ $('steps').hidden=state==='success'||state==='duplicate';
+ $('checkin').disabled=busy||!shopReady||completed;
+ $('retryMap').hidden=!(state==='error'&&!shopReady);
+ $('myLink').hidden=!(state==='success'||(state==='duplicate'&&rewardEnabled));
+ $('buttonNote').hidden=state==='success'||state==='duplicate';
+}
+function fail(message){
+ $('heading').textContent='인증을 완료하지 못했어요';
+ $('lead').textContent='아래 안내를 확인한 뒤 다시 시도해 주세요.';
+ status(message,'error');stage('error');
+}
 async function api(body,access=''){
  const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{})},body:JSON.stringify(body),cache:'no-store'});
- const data=await response.json().catch(()=>({ok:false,error:'server_error'}));
- if(!response.ok||!data.ok)throw Error(messages[data.error]||messages.server_error);
- return data;
+ const result=await response.json().catch(()=>({ok:false,error:'server_error'}));
+ if(!response.ok||!result.ok)throw Error(messages[result.error]||messages.server_error);
+ return result;
 }
 async function authSession(){
- const a=window.FUNY_WEB_AUTH;await a?.init();if(!a?.client)throw Error(messages.login_required);
- let access=String(window.__FUNY_ACCESS_TOKEN||a.session?.access_token||'');
- if(!access&&window.ReactNativeWebView){await new Promise(r=>setTimeout(r,900));access=String(window.__FUNY_ACCESS_TOKEN||a.session?.access_token||'')}
+ const auth=window.FUNY_WEB_AUTH;await auth?.init();
+ if(!auth?.client)throw Error(messages.login_required);
+ let access=String(window.__FUNY_ACCESS_TOKEN||auth.session?.access_token||'');
+ if(!access&&window.ReactNativeWebView){await new Promise(r=>setTimeout(r,900));access=String(window.__FUNY_ACCESS_TOKEN||auth.session?.access_token||'')}
  if(!access)throw Error(messages.login_required);
- const {data,error}=await a.client.auth.getUser(access);
+ const {data,error}=await auth.client.auth.getUser(access);
  if(error||!data?.user)throw Error(messages.login_required);
  return access;
 }
 login.onclick=()=>window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
-submit.onclick=async()=>{
- submit.disabled=true;login.hidden=true;tell('로그인과 현재 위치를 확인 중이에요.');
- try{
-  const access=await authSession();
-  if(!navigator.geolocation)throw Error('현재 기기에서 위치 서비스를 사용할 수 없어요.');
-  const point=await new Promise((resolve,reject)=>{
-   let watch=null,finished=false,best=null,timer=null;
-   const done=(error,value)=>{if(finished)return;finished=true;clearTimeout(timer);if(watch!==null)navigator.geolocation.clearWatch(watch);error?reject(error):resolve(value)};
-   timer=setTimeout(()=>done(best?null:Error('GPS 위치 정보를 받지 못했어요. 위치 권한을 확인해 주세요.'),best),20000);
+function locate(){
+ return new Promise((resolve,reject)=>{
+  if(!navigator.geolocation){reject(Error('위치 기능을 사용할 수 없습니다. 기기의 위치 설정을 확인해 주세요.'));return}
+  let watch=null,finished=false,best=null,timer=null;
+  const done=(error,fix)=>{if(finished)return;finished=true;clearTimeout(timer);if(watch!==null)navigator.geolocation.clearWatch(watch);error?reject(error):resolve(fix)};
+  timer=setTimeout(()=>done(best?null:Error('GPS 정보를 가져오지 못했습니다. 위치 권한을 확인해 주세요.'),best),20000);
+  try{
    watch=navigator.geolocation.watchPosition(p=>{
     if(finished)return;
     const fix={lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,fix_time:p.timestamp||Date.now()};
     if(!Number.isFinite(fix.accuracy)||fix.accuracy<0)return;
     if(!best||fix.accuracy<best.accuracy)best=fix;
-    tell('GPS 재측정 중… 가장 작은 오차 반경 ±'+Math.round(best.accuracy)+'m (허용 ±50m)');
+    status('현재 GPS 오차 반경 ±'+Math.round(best.accuracy)+'m\n정확한 위치를 확인하고 있어요. (최대 20초)');
     if(best.accuracy<=50)done(null,best);
-   },e=>{if(e.code===1)done(Error('위치 권한을 허용해 주세요.'));else if(e.code!==3)done(Error('위치 정보를 확인하지 못했어요.'))},{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+   },e=>{
+    if(e.code===1)done(Error('위치 권한이 거부됐습니다. 기기 설정에서 위치 접근을 허용해 주세요.'));
+    else if(e.code!==3)done(Error('위치를 확인하지 못했습니다. 다시 시도해 주세요.'));
+   },{enableHighAccuracy:true,maximumAge:0,timeout:20000});
    if(finished&&watch!==null)navigator.geolocation.clearWatch(watch);
-  });
-  if(point.accuracy>50)throw Error('현재 GPS 오차 반경 ±'+Math.round(point.accuracy)+'m입니다. ±50m 이하에서만 인증할 수 있어요.');
-  tell('매장과 NFC 태그를 확인 중이에요.');
+  }catch(_){done(Error('GPS를 시작하지 못했습니다. 위치 권한을 확인해 주세요.'))}
+ });
+}
+submit.onclick=async()=>{
+ if(busy||!shopReady||completed)return;
+ busy=true;submit.disabled=true;login.hidden=true;
+ $('heading').textContent='방문 위치를 확인 중이에요';
+ $('lead').textContent='매장에 계신지 확인하기 위해 GPS 정확도를 측정합니다.';
+ stage('checking');status('로그인 상태를 확인하고 있어요.');
+ try{
+  const access=await authSession();
+  status('GPS 위치를 확인하고 있어요. 잠시만 기다려 주세요.');
+  const point=await locate();
+  if(point.accuracy>50)throw Error('GPS 오차 반경이 ±'+Math.round(point.accuracy)+'m입니다. 정확도가 ±50m 이내가 되도록 다시 측정해 주세요.');
+  stage('submitting');status('매장 위치와 방문 기록을 확인하고 있어요.');
   const result=await api({action:'checkin',token,...point},access);
-  const confirmed=result.reward_enabled===true;
-  const success=confirmed
-    ?(result.reward_applied?'매장 방문인증 완료! MY 방문 기록과 미션에 반영했어요.':'오늘 이미 방문인증한 매장이에요. 기존 인증 내역을 유지합니다.')
-    :(result.new?'NFC 파일럿 인증 완료! 정식 MY 미션·코인에는 반영되지 않습니다.':'오늘 이 매장의 NFC 파일럿 인증을 이미 완료했어요.');
-  tell(success);
-  if(result.new){try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shopId,is_new:true,source:confirmed?'nfc_ntag213_gps':'nfc_ntag213_pilot',reward_applied:!!result.reward_applied})}catch(_){}}
- }catch(e){tell(e.message||messages.server_error);if(e.message===messages.login_required)login.hidden=false}
- finally{submit.disabled=!shopId}
+  completed=true;
+  const isLive=result.reward_enabled===true;
+  rewardEnabled=isLive;
+  const newVisit=result.new===true;
+  const rewarded=result.reward_applied===true;
+  stage(newVisit?'success':'duplicate');
+  if(newVisit){
+   $('heading').textContent='방문인증 완료!';
+   $('lead').textContent=result.shop_name+' 방문을 확인했습니다.';
+   status(rewarded?'MY 방문 기록과 미션에 반영됐어요.':'NFC 방문인증이 완료됐어요. 현재 매장은 파일럿으로 운영 중이며 MY 미션·코인에는 반영되지 않습니다.','good');
+  }else{
+   $('heading').textContent='오늘 이미 인증했어요';
+   $('lead').textContent='같은 매장에서는 하루에 한 번만 방문이 인정됩니다.';
+   status(isLive?'기존 방문 기록이 유지되며 추가 보상은 지급되지 않습니다.':'오늘의 NFC 파일럿 인증 기록이 이미 있어요.','good');
+  }
+  submit.hidden=true;
+  login.hidden=true;
+  $('mode').textContent=isLive?'MY 방문 기록 연동':'파일럿 인증 · 보상 미반영';
+  if(newVisit){try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shopId,is_new:true,source:isLive?'nfc_ntag213_gps':'nfc_ntag213_pilot',reward_applied:rewarded})}catch(_){}}
+ }catch(e){
+  const reason=e?.message||messages.server_error;
+  fail(reason);
+  if(reason===messages.login_required){login.hidden=false;$('checkin').textContent='로그인 후 방문인증하기'}
+ }finally{busy=false;if(!completed)submit.disabled=!shopReady}
 };
 (async()=>{
- if(!/^[a-f0-9]{48}$/.test(token)){tell(messages.invalid_tag);$('shopName').textContent='유효하지 않은 NFC 태그';return}
+ if(!/^[a-f0-9]{48}$/.test(token)){$('shopName').textContent='NFC 태그를 확인할 수 없습니다.';fail(messages.invalid_tag);return}
  try{
-  const result=await api({action:'info',token});
-  shopId=result.shop_id;rewardEnabled=result.reward_enabled===true;$('shopName').textContent=result.shop_name;
-  $('shopDetail').textContent=rewardEnabled?'NTAG213 · 정식 방문인증 (MY 미션 연동)':'NTAG213 · 파일럿 인증 (MY 미션 미연동)';
-  submit.disabled=false;tell('태그 확인 완료. 방문인증 버튼을 눌러 주세요.');
- }catch(e){$('shopName').textContent='태그 확인 실패';tell(e.message||messages.server_error)}
+  const data=await api({action:'info',token});
+  shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;shopReady=true;
+  $('shopName').textContent=data.shop_name;
+  $('mode').hidden=false;
+  $('mode').classList.toggle('live',rewardEnabled);
+  $('mode').textContent=rewardEnabled?'MY 방문 기록 연동':'파일럿 인증 · 보상 미반영';
+  $('heading').textContent='방문인증을 진행할까요?';
+  $('lead').textContent='NFC 태그가 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
+  status('NFC 태그가 확인됐습니다. 아래 버튼을 눌러 주세요.','good');
+  stage('ready');
+ }catch(e){$('shopName').textContent='매장 정보를 불러오지 못했어요';fail(e?.message||messages.server_error)}
 })();
 })();
-</script></body></html>
+</script>
+</body>
+</html>

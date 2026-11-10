@@ -12,7 +12,15 @@ function stampColor(r,g,b){
  return 0;
 }
 
-export function findAnniversarySymbolCenter(source,asset,canvas){
+export function usesCenteredAnniversarySymbol(card){
+ if(!card||!/^\d{3}$/.test(card.card_number))return false;
+ const number=Number(card.card_number);
+ if(card.source_language==='en')return card.id.startsWith('30th-en-')&&card.display_name==='Pikachu'&&number>=23&&number<=52;
+ const name=card.source_language==='ko'?'피카츄':card.source_language==='ja'?'ピカチュウ':null;
+ return !!name&&card.id.startsWith('m6a-'+card.source_language+'-')&&card.display_name===name&&number>=17&&number<=46;
+}
+
+export function findAnniversarySymbolCenter(source,asset,canvas,{centerOnly=false}={}){
  const width=252,height=352,templateWidth=32,templateHeight=25;
  const readPixels=(image,w,h)=>{
   const ctx=canvas(w,h).getContext('2d',{willReadFrequently:true});
@@ -37,7 +45,9 @@ export function findAnniversarySymbolCenter(source,asset,canvas){
  const pixels=readPixels(source,width,height),colors=new Uint8Array(width*height);
  for(let i=0;i<colors.length;i++)colors[i]=stampColor(pixels[i*4],pixels[i*4+1],pixels[i*4+2]);
  const matches=[];
- for(const scale of [.82,.88,.94,1,1.06,1.12,1.85,2,2.15,2.3,2.45]){
+ const centerScales=[1.85,2,2.15,2.3,2.45];
+ const scales=centerOnly?centerScales:[.82,.88,.94,1,1.06,1.12,...centerScales];
+ for(const scale of scales){
   const w=Math.round(asset.placement.w*width*scale),h=Math.round(asset.placement.h*height*scale);
   const points=groups.map(group=>group.map(([x,y])=>Math.floor((y+.5)*h/templateHeight)*width+Math.floor((x+.5)*w/templateWidth)));
   const wide=scale>1.12,columns=[];
@@ -62,13 +72,14 @@ export function findAnniversarySymbolCenter(source,asset,canvas){
     const yellow=hit(start,0,1),dark=hit(start,3,3);
     if(yellow<minimumYellow||dark<minimumDark)continue;
     const score=yellow*.4+(left+right)*.22+dark*.16;
-    if(score>=minimumScore)matches.push({score,center:(y+h*visibleCenter)/height});
+    if(score>=minimumScore)matches.push({score,center:(y+h*visibleCenter)/height,x,y,w,h});
    }
   }
  }
  matches.sort((a,b)=>b.score-a.score);
  const best=matches[0];
  if(!best||matches.some(m=>Math.abs(m.center-best.center)>.025&&m.score>best.score-.04))return null;
+ if(centerOnly)return {x:best.x/width,y:best.y/height,w:best.w/width,h:best.h/height};
  return {y:best.center,anchor:visibleCenter};
 }
 
@@ -77,3 +88,6 @@ export function anniversarySymbolPlacement(asset,detected){
  const {h}=asset.placement;
  return {...asset.placement,y:Math.min(1-h,Math.max(0,detected.y-detected.anchor*h))};
 }
+
+// The fallback follows the large badge on the Pikachu layout below the illustration.
+export const PIKACHU_ANNIVERSARY_PLACEMENT=Object.freeze({x:.22,y:.53,w:.56,h:.31});

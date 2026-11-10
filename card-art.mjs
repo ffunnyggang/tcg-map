@@ -1,10 +1,10 @@
-import {findAnniversarySymbolCenter,anniversarySymbolPlacement} from './card-overlay-symbol.mjs?v=20261110-autoheight1';
+import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {reviewMobileAlignment} from './card-art-align.mjs?v=20261108-compare1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261108-cardfit1';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261110-center1';
 import {alignWide} from './card-overlay-wide.mjs?v=20261107-wide3';
 import {attachArtGestures} from './card-art-gestures.mjs?v=20261108-controls1';
 import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
@@ -25,7 +25,7 @@ const layerFlow=createLayerFlow({invoke:body=>A.invokeFunction('card-overlay-gen
 function resetLayers(){layerSession=null;layerFlow.reset();}
 function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,layerSession.layers,canvas);squareResult=null;drawResult();}
 async function saveLayers(){if(!layerSession?.data.generationId||!result)return;try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:layerSession.data.generationId,image:result.toDataURL('image/png'),printRect:resultWindow});}catch{console.warn('Final artwork persistence failed');}}
-function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:['텍스트·기호',l.showText?'ON':'OFF'],layerSymbol:['30주년 심볼',l.showSymbol?(l.symbolSide==='left'?'왼쪽':'오른쪽'):'OFF'],layerBorder:['테두리',l.showBorder?({'holographic-border-v1':'홀로','silver-satin-border-v1':'실버','silver-glitter-border-v1':'실버 글리터','gold-star-border-v1':'골드 글리터'}[l.borderId]):'OFF'],layerCorner:['모서리',shape==='round'?'라운드':'사각']};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
+function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:['텍스트·기호',l.showText?'ON':'OFF'],layerSymbol:['30주년 심볼',l.showSymbol?(({left:'왼쪽',right:'오른쪽',center:'중앙'}[l.symbolSide]||'오른쪽')):'OFF'],layerBorder:['테두리',l.showBorder?({'holographic-border-v1':'홀로','silver-satin-border-v1':'실버','silver-glitter-border-v1':'실버 글리터','gold-star-border-v1':'골드 글리터'}[l.borderId]):'OFF'],layerCorner:['모서리',shape==='round'?'라운드':'사각']};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
 async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent='원본 보기';$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}await saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(e.message);}finally{busy=false;update();}};
 function cycleLayer(kind){
@@ -33,17 +33,18 @@ function cycleLayer(kind){
  const l=layerSession.layers;
  if(kind==='text')l.showText=!l.showText;
  if(kind==='symbol'){
-  const next=!l.showSymbol?'right':l.symbolSide==='left'?'off':'left';
+  const centered=usesCenteredAnniversarySymbol(selected);
+  const next=l.showSymbol?(centered||l.symbolSide==='left'?'off':'left'):(centered?'center':'right');
   l.showSymbol=next!=='off';
   if(l.showSymbol){
-   const asset=layerSession.assets[next];
+   const asset=layerSession.assets[centered?'right':next];
    if(layerSession.symbolCenter===undefined){
-    try{layerSession.symbolCenter=findAnniversarySymbolCenter(layerSession.source,layerSession.assets.right,canvas);}
+    try{layerSession.symbolCenter=findAnniversarySymbolCenter(layerSession.source,layerSession.assets.right,canvas,{centerOnly:centered});}
     catch{layerSession.symbolCenter=null;}
    }
    l.symbolSide=next;
    l.symbol=asset.image;
-   l.placement=anniversarySymbolPlacement(asset,layerSession.symbolCenter);
+   l.placement=centered?(layerSession.symbolCenter||PIKACHU_ANNIVERSARY_PLACEMENT):anniversarySymbolPlacement(asset,layerSession.symbolCenter);
   }
  }
  if(kind==='border'){

@@ -10,7 +10,26 @@ export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){
 export function sourceWithAlpha(source,alpha,canvas){const out=canvas(source.width,source.height),g=out.getContext('2d'),p=source.getContext('2d').getImageData(0,0,out.width,out.height);for(let i=0;i<alpha.length;i++)p.data[i*4+3]=alpha[i];g.putImageData(p,0,0);return out;}
 export function extractLayers(source,r,canvas,threshold=32,borderMM=1.5){const w=source.width,h=source.height,p=source.getContext('2d').getImageData(0,0,w,h),a=new Uint8ClampedArray(w*h),edge=Math.ceil(w*borderMM/63),b=cutBounds(r,w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++)if((x<edge||x>=w-edge||y<edge||y>=h-edge)&&!(x>=b.x&&x<b.right&&y>=b.y&&y<b.bottom))a[y*w+x]=255;return {text:sourceWithAlpha(source,textAlpha(p.data,w,h,r,threshold,borderMM),canvas),border:sourceWithAlpha(source,a,canvas),showText:false,showBorder:false,threshold,borderMM};}
 export function windowMask(r,canvas){const c=canvas(1008,1408),g=c.getContext('2d'),b=cutBounds(r,1008,1408);g.fillStyle='#000';g.fillRect(b.x,b.y,b.right-b.x,b.bottom-b.y);return c;}
-export function composeLayers(source,background,r,layers,canvas){const out=canvas(1008,1408),g=out.getContext('2d');g.drawImage(background,0,0);if(!['ai-header','ai-text'].includes(layers.kind)&&layers.showText)g.drawImage(layers.text,0,0);if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);const b=cutBounds(r,1008,1408);g.drawImage(source,b.x,b.y,b.right-b.x,b.bottom-b.y,b.x,b.y,b.right-b.x,b.bottom-b.y);if(['ai-header','ai-text'].includes(layers.kind)){if(layers.showText)g.drawImage(layers.text,0,0);if(layers.showSymbol){const p=layers.placement;g.drawImage(layers.symbol,Math.round(p.x*1008),Math.round(p.y*1408),Math.round(p.w*1008),Math.round(p.h*1408));}}return out;}
+export function composeLayers(source,background,r,layers,canvas){
+ const out=canvas(1008,1408),g=out.getContext('2d');
+ const aiText=layers.kind==='ai-header'||layers.kind==='ai-text';
+ const centered=layers.symbolSide==='center';
+ const drawSymbol=()=>{
+  const p=layers.placement;
+  g.drawImage(layers.symbol,Math.round(p.x*1008),Math.round(p.y*1408),Math.round(p.w*1008),Math.round(p.h*1408));
+ };
+ g.drawImage(background,0,0);
+ if(!aiText&&layers.showText)g.drawImage(layers.text,0,0);
+ if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);
+ const b=cutBounds(r,1008,1408);
+ if(aiText&&centered&&layers.showSymbol)drawSymbol();
+ g.drawImage(source,b.x,b.y,b.right-b.x,b.bottom-b.y,b.x,b.y,b.right-b.x,b.bottom-b.y);
+ if(aiText){
+  if(layers.showText)g.drawImage(layers.text,0,0);
+  if(!centered&&layers.showSymbol)drawSymbol();
+ }
+ return out;
+}
 export function reviewLayers(source,r,canvas,previous=null){return new Promise(resolve=>{
  const d=document.createElement('dialog');d.style.cssText='width:min(96vw,620px);max-height:94dvh;overflow:auto;border:0;border-radius:16px;padding:18px';d.innerHTML='<h2>텍스트·테두리 레이어 확인</h2><p>텍스트·숫자·기호의 대비를 이용한 시험 추출입니다. 그림이나 패널 무늬가 섞일 수 있고 작은 글자가 빠질 수 있습니다. 원본 보기와 비교하고 지우개·복원 브러시로 보완하세요. 복원한 영역은 배경색도 함께 포함됩니다.</p><label>텍스트 추출 기준 <input data-threshold type="range" min="12" max="80" step="2" value="32"></label><label>테두리 폭 <select data-edge><option value="0.5">0.5mm</option><option value="1">1mm</option><option value="1.5" selected>1.5mm</option><option value="2">2mm</option><option value="3">3mm</option></select></label><p>기준·폭 변경 시 브러시 수정은 초기화됩니다.</p><button data-source type="button">원본 보기</button><button data-erase type="button">지우개: 켜짐</button><label>브러시 <input data-brush type="range" min="1" max="10" step=".5" value="3">mm</label><div data-stage style="background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 0/18px 18px;margin:12px 0"></div><p>상단 원본 그림 창은 추출 대상에서 제외합니다. 테두리는 선택한 폭의 외곽 띠이며 실물과 확인해 주세요.</p><label><input data-confirm type="checkbox">추출 품질과 제외할 영역을 확인했습니다.</label><div style="display:flex;gap:8px;margin-top:12px"><button data-cancel type="button">취소</button><button data-go type="button" disabled>이 레이어 사용</button></div>';
  document.body.append(d);const q=s=>d.querySelector(s),view=canvas(1008,1408),g=view.getContext('2d');view.style.cssText='display:block;width:100%;height:auto;max-height:none;touch-action:none';q('[data-stage]').append(view);

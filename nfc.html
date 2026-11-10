@@ -59,6 +59,10 @@ button:focus-visible,.button-link:focus-visible,.header-link:focus-visible{outli
 .spin{animation:spin 2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.progress>div,.spin{animation:none}}
 @media(min-width:480px){.shell{box-shadow:0 10px 35px #31204409}}
+/* The current released app already supplies a native back header. */
+html.app-shell .shell>.header{display:none!important}
+html.app-shell .shell{padding-top:16px}
+html.app-shell .content{padding-top:24px}
 </style>
 </head>
 <body>
@@ -90,6 +94,8 @@ button:focus-visible,.button-link:focus-visible,.header-link:focus-visible{outli
    <p id="status">NFC 태그를 확인하고 있어요.</p>
   </div>
   <div class="actions">
+   <button id="appOpen" type="button" class="primary" hidden disabled>FUNY PIN 앱에서 GPS 인증하기 <span aria-hidden="true">›</span></button>
+   <a id="installApp" class="button-link secondary" href="#" hidden target="_blank" rel="noopener noreferrer">FUNY PIN 앱 설치하기</a>
    <button id="checkin" type="button" class="primary" disabled>방문인증하기 <span aria-hidden="true">›</span></button>
    <button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
    <a id="myLink" href="/my.html" class="button-link secondary" hidden>MY 방문 기록 확인 <span aria-hidden="true">›</span></a>
@@ -105,6 +111,26 @@ const $=id=>document.getElementById(id);
 const token=(new URLSearchParams(location.search).get('t')||'').toLowerCase();
 const endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-pilot';
 const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
+// This is a UI routing distinction, not proof that the request came from an attested app.
+const inApp=!!window.ReactNativeWebView;
+const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+const storeUrl=ios?'https://apps.apple.com/kr/app/funy-pin/id6817652126':'https://play.google.com/store/apps/details?id=kr.funypin.app';
+const appOpen=$('appOpen'),installApp=$('installApp');
+if(inApp)document.documentElement.classList.add('app-shell');
+else{
+ appOpen.hidden=false;installApp.hidden=false;installApp.href=storeUrl;
+ $('checkin').hidden=true;
+ $('buttonNote').textContent='NFC 방문인증은 FUNY PIN 앱에서 진행합니다. 앱에서 GPS를 측정한 뒤 방문인증 버튼을 눌러 주세요.';
+}
+appOpen.onclick=()=>{
+ if(!shopReady||busy||completed)return;
+ // The tag's existing HTTPS URL never changes. Open the released app's /web route.
+ const destination='https://funypin.kr/nfc.html?t='+encodeURIComponent(token);
+ const deepLink='funypin:///web?url='+encodeURIComponent(destination)+'&title='+encodeURIComponent('NFC 방문인증')+'&backOnly=1';
+ status('FUNY PIN 앱을 여는 중이에요. 앱이 열리지 않으면 설치 상태를 확인해 주세요.');
+ window.location.href=deepLink;
+ setTimeout(()=>{if(!document.hidden)status('앱 실행 안내가 나타나지 않으면 앱 설치 또는 연결 설정을 확인해 주세요.');},1800);
+};
 const messages={
  invalid_tag:'등록되지 않았거나 사용이 중지된 NFC 태그입니다. 매장 직원에게 확인해 주세요.',
  login_required:'방문인증을 하려면 퍼니핀 로그인이 필요합니다.',
@@ -129,6 +155,7 @@ function stage(state){
  $('eyebrow').textContent=state==='success'?'CHECK-IN COMPLETE':state==='duplicate'?'ALREADY CHECKED IN':state==='error'?'PLEASE TRY AGAIN':'NFC CHECK-IN';
  $('steps').hidden=state==='success'||state==='duplicate';
  $('checkin').disabled=busy||!shopReady||completed;
+ appOpen.disabled=busy||!shopReady||completed;
  $('retryMap').hidden=!(state==='error'&&!shopReady);
  $('myLink').hidden=!(state==='success'||(state==='duplicate'&&rewardEnabled));
  $('buttonNote').hidden=state==='success'||state==='duplicate';
@@ -178,7 +205,7 @@ function locate(){
  });
 }
 submit.onclick=async()=>{
- if(busy||!shopReady||completed)return;
+ if(!inApp||busy||!shopReady||completed)return;
  busy=true;submit.disabled=true;login.hidden=true;
  $('heading').textContent='방문 위치를 확인 중이에요';
  $('lead').textContent='매장에 계신지 확인하기 위해 GPS 정확도를 측정합니다.';
@@ -226,7 +253,14 @@ submit.onclick=async()=>{
   $('mode').textContent=rewardEnabled?'MY 방문 기록 연동':'파일럿 인증 · 보상 미반영';
   $('heading').textContent='방문인증을 진행할까요?';
   $('lead').textContent='NFC 태그가 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
-  status('NFC 태그가 확인됐습니다. 아래 버튼을 눌러 주세요.','good');
+  if(inApp){
+   status('NFC 태그를 확인했습니다. 아래 방문인증 버튼을 눌러 GPS를 확인해 주세요.','good');
+  }else{
+   $('heading').textContent='앱에서 방문인증을 진행해 주세요';
+   $('lead').textContent='NFC 태그가 확인됐어요. FUNY PIN 앱을 실행하면 GPS 방문인증을 진행할 수 있습니다.';
+   status('매장이 확인됐습니다. 앱 열기 버튼을 눌러 주세요.','good');
+   $('steps').innerHTML='<div class="step"><span class="dot checked">✓</span> NFC 태그 확인</div><div class="step"><span class="dot">2</span> FUNY PIN 앱에서 GPS 인증</div><div class="step"><span class="dot">3</span> 방문인증 완료</div>';
+  }
   stage('ready');
  }catch(e){$('shopName').textContent='매장 정보를 불러오지 못했어요';fail(e?.message||messages.server_error)}
 })();

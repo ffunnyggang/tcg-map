@@ -109,7 +109,7 @@ html.app-shell .content{padding-top:24px}
    <button id="appOpen" type="button" class="primary" hidden disabled>FUNY PIN 앱에서 GPS 인증하기 <span aria-hidden="true">›</span></button>
    <a id="installApp" class="button-link secondary" href="#" hidden target="_blank" rel="noopener noreferrer">FUNY PIN 앱 설치하기</a>
    <button id="checkin" type="button" class="primary" disabled>방문인증하기 <span aria-hidden="true">›</span></button>
-   <button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
+   <button id="login" type="button" class="secondary" hidden>FUNY PIN 앱에서 로그인하기</button>
    <!-- MY 방문기록 전용 페이지는 후속 버전 범위. 완료 화면의 인증 내역으로 대체. -->
    <a id="retryMap" href="/shops.html" class="button-link secondary" hidden>TCG MAP으로 이동</a>
    <p class="caption" id="buttonNote">GPS 정확도는 ±50m 이내여야 합니다. 인증 가능 매장 거리는 매장별 모드에 따라 다릅니다.</p>
@@ -167,8 +167,8 @@ function updateLoginUI(){
   status('로그인 확인 완료 · GPS 방문인증을 진행할 수 있어요.','good');
  }else if(loginState==='logged_out'){
   $('heading').textContent='로그인 후 방문인증해 주세요';
-  $('lead').textContent='FUNY PIN 계정으로 로그인하면 매장 방문인증을 진행할 수 있어요.';
-  status('로그인이 필요합니다. 아래 로그인 버튼을 눌러 주세요.');
+  $('lead').textContent='FUNY PIN 앱에서 먼저 로그인해 주세요.';
+  status('로그인하면 MY 화면으로 이동합니다. 로그인 후 이 NFC 태그를 다시 터치하면 GPS 방문인증을 진행할 수 있어요.');
  }else{
   $('heading').textContent='로그인 상태를 확인 중이에요';
   $('lead').textContent='FUNY PIN 앱의 로그인 정보를 확인하고 있습니다.';
@@ -252,7 +252,8 @@ async function authSession(){
 }
 login.onclick=()=>{
  if(!inApp)return;
- // Reuse the released app's existing native login route; no new app build needed.
+ // Released native app cannot resume the source NFC route after login.
+ // Explain the re-tap requirement rather than falsely implying automatic return.
  window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
 };
 function locate(){

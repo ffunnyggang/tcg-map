@@ -154,8 +154,61 @@ const messages={
  server_error:'현재 인증을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'
 };
 let shopId='',rewardEnabled=false,shopReady=false,busy=false,completed=false;
-let maxDistance=50;
+let maxDistance=50,loginState='checking',authCheckSeq=0;
 const submit=$('checkin'),login=$('login');
+function updateLoginUI(){
+ if(!inApp||!shopReady||completed||busy)return;
+ login.hidden=loginState!=='logged_out';
+ submit.hidden=loginState!=='logged_in';
+ submit.disabled=loginState!=='logged_in';
+ if(loginState==='logged_in'){
+  $('heading').textContent='방문인증을 진행할까요?';
+  $('lead').textContent='로그인이 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
+  status('로그인 확인 완료 · GPS 방문인증을 진행할 수 있어요.','good');
+ }else if(loginState==='logged_out'){
+  $('heading').textContent='로그인 후 방문인증해 주세요';
+  $('lead').textContent='FUNY PIN 계정으로 로그인하면 매장 방문인증을 진행할 수 있어요.';
+  status('로그인이 필요합니다. 아래 로그인 버튼을 눌러 주세요.');
+ }else{
+  $('heading').textContent='로그인 상태를 확인 중이에요';
+  $('lead').textContent='FUNY PIN 앱의 로그인 정보를 확인하고 있습니다.';
+  status('로그인 상태를 확인하고 있어요.');
+ }
+}
+async function checkLoginState(){
+ if(!inApp||!shopReady||busy||completed)return;
+ const seq=++authCheckSeq;
+ loginState='checking';updateLoginUI();
+ try{
+  const auth=window.FUNY_WEB_AUTH;
+  await auth?.init();
+  // Native WebView may inject the session shortly after the first page load.
+  await auth?.refreshNativeSession?.();
+  let access=String(window.__FUNY_ACCESS_TOKEN||auth?.session?.access_token||'');
+  if(!access){
+   await new Promise(resolve=>setTimeout(resolve,1100));
+   await auth?.refreshNativeSession?.();
+   access=String(window.__FUNY_ACCESS_TOKEN||auth?.session?.access_token||'');
+  }
+  let valid=false;
+  if(access&&auth?.client){
+   const {data,error}=await auth.client.auth.getUser(access);
+   valid=!error&&!!data?.user;
+  }
+  if(seq!==authCheckSeq||busy||completed)return;
+  loginState=valid?'logged_in':'logged_out';
+  updateLoginUI();
+ }catch(_){
+  if(seq!==authCheckSeq||busy||completed)return;
+  loginState='logged_out';
+  updateLoginUI();
+ }
+}
+if(inApp){
+ window.addEventListener('pageshow',()=>{if(shopReady&&!busy&&!completed)void checkLoginState()});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&shopReady&&!busy&&!completed)void checkLoginState()});
+ window.addEventListener('funy:web-auth-change',()=>{if(shopReady&&!busy&&!completed&&loginState!=='checking')void checkLoginState()});
+}
 function status(message,kind='info'){
  $('status').textContent=message;
  $('statusBox').classList.toggle('error',kind==='error');
@@ -167,7 +220,7 @@ function stage(state){
  $('heroIcon').className='icon-circle'+(state==='success'||state==='duplicate'?' good':state==='error'?' warning':'');
  $('eyebrow').textContent=state==='success'?'CHECK-IN COMPLETE':state==='duplicate'?'ALREADY CHECKED IN':state==='error'?'PLEASE TRY AGAIN':'NFC CHECK-IN';
  $('steps').hidden=state==='success'||state==='duplicate';
- $('checkin').disabled=busy||!shopReady||completed;
+ $('checkin').disabled=busy||!shopReady||completed||(inApp&&loginState!=='logged_in');
  appOpen.disabled=busy||!shopReady||completed;
  $('retryMap').hidden=!(state==='error'&&!shopReady);
  $('verifiedRecord').hidden=!(state==='success'||state==='duplicate');
@@ -197,7 +250,11 @@ async function authSession(){
  if(error||!data?.user)throw Error(messages.login_required);
  return access;
 }
-login.onclick=()=>window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
+login.onclick=()=>{
+ if(!inApp)return;
+ // Reuse the released app's existing native login route; no new app build needed.
+ window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
+};
 function locate(){
  return new Promise((resolve,reject)=>{
   if(!navigator.geolocation){reject(Error('위치 기능을 사용할 수 없습니다. 기기의 위치 설정을 확인해 주세요.'));return}
@@ -221,7 +278,7 @@ function locate(){
  });
 }
 submit.onclick=async()=>{
- if(!inApp||busy||!shopReady||completed)return;
+ if(!inApp||busy||!shopReady||completed||loginState!=='logged_in')return;
  busy=true;submit.disabled=true;login.hidden=true;
  $('heading').textContent='방문 위치를 확인 중이에요';
  $('lead').textContent='매장에 계신지 확인하기 위해 GPS 정확도를 측정합니다.';
@@ -263,7 +320,7 @@ submit.onclick=async()=>{
   const reason=e?.message||messages.server_error;
   fail(reason);
   if(reason===messages.login_required){login.hidden=false;$('checkin').textContent='로그인 후 방문인증하기'}
- }finally{busy=false;if(!completed)submit.disabled=!shopReady}
+ }finally{busy=false;if(!completed){submit.disabled=!shopReady||loginState!=='logged_in';if(inApp&&loginState==='logged_out')updateLoginUI()}}
 };
 (async()=>{
  if(!/^[a-f0-9]{48}$/.test(token)){$('shopName').textContent='NFC 태그를 확인할 수 없습니다.';fail(messages.invalid_tag);return}
@@ -278,7 +335,8 @@ submit.onclick=async()=>{
   $('heading').textContent='방문인증을 진행할까요?';
   $('lead').textContent='NFC 태그가 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
   if(inApp){
-   status('NFC 태그를 확인했습니다. 아래 방문인증 버튼을 눌러 GPS를 확인해 주세요.','good');
+   loginState='checking';updateLoginUI();
+   void checkLoginState();
   }else{
    $('heading').textContent='앱에서 방문인증을 진행해 주세요';
    $('lead').textContent='NFC 태그가 확인됐어요. FUNY PIN 앱을 실행하면 GPS 방문인증을 진행할 수 있습니다.';

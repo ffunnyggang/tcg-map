@@ -65,7 +65,7 @@ Deno.serve(async req=>{
     if(lookupError)throw lookupError;
     if(!current||current.status!=="active")return send({ok:false,error:"invalid_tag"},400);
     if(enabled){
-     const {count,error:pilotError}=await admin.from("shop_visit_nfc_pilot_checkins").select("id",{head:true,count:"exact"}).eq("shop_id",current.shop_id);
+     const {count,error:pilotError}=await admin.from("shop_visit_nfc_pilot_checkins").select("id",{head:true,count:"exact"}).eq("shop_id",current.shop_id).lte("distance_m",50);
      if(pilotError)throw pilotError;
      if(!count)return send({ok:false,error:"pilot_required"},400);
     }
@@ -96,7 +96,14 @@ Deno.serve(async req=>{
    const lat=Number(data.lat),lng=Number(data.lng),accuracy=Number(data.accuracy),fixTime=Number(data.fix_time);
    if(!Number.isFinite(lat)||!Number.isFinite(lng)||!Number.isFinite(accuracy)||!Number.isFinite(fixTime)||Math.abs(Date.now()-fixTime)>30000)return send({ok:false,error:"invalid_request"},400);
    const digest=await sha(tag);
-   const {data:result,error}=await admin.rpc("nfc_visit_verify_v2",{p_user:uid,p_token_hash:digest,p_lat:lat,p_lng:lng,p_accuracy:accuracy});
+   // Only reward-disabled NFC pilot tags use the temporary 2 km test radius.
+   // Reward-enabled tags keep the existing production 50 m verification path.
+   const {data:tagRow,error:tagError}=await admin.from("shop_visit_nfc_tags")
+    .select("id,reward_enabled,status").eq("token_hash",digest).eq("status","active").maybeSingle();
+   if(tagError)throw tagError;
+   if(!tagRow)return send({ok:false,error:"invalid_tag"},404);
+   const rpcName=tagRow.reward_enabled?"nfc_visit_verify_v2":"nfc_pilot_verify_2km_test";
+   const {data:result,error}=await admin.rpc(rpcName,{p_user:uid,p_token_hash:digest,p_lat:lat,p_lng:lng,p_accuracy:accuracy});
    if(error)throw error;
    const reason=result?.ok?(result.new?"success":"already_checked_in"):String(result?.error||"invalid_request");
    const allowed=new Set(["success","already_checked_in","invalid_tag","low_accuracy","too_far","invalid_request","rate_limited","server_error"]);

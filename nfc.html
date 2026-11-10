@@ -100,10 +100,10 @@ html.app-shell .content{padding-top:24px}
    <button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
    <a id="myLink" href="/my.html" class="button-link secondary" hidden>MY 방문 기록 확인 <span aria-hidden="true">›</span></a>
    <a id="retryMap" href="/shops.html" class="button-link secondary" hidden>TCG MAP으로 이동</a>
-   <p class="caption" id="buttonNote">인증 시 현재 위치를 확인하며 GPS 오차 반경과 매장 거리 모두 50m 이내여야 합니다.</p>
+   <p class="caption" id="buttonNote">GPS 정확도는 ±50m 이내여야 합니다. 인증 가능 매장 거리는 매장별 모드에 따라 다릅니다.</p>
   </div>
  </section>
- <p class="footnote" id="footnote">NTAG213은 고정 URL이므로 NFC 접촉만으로 방문이 인정되지 않습니다. 인증 시 사용자의 로그인 및 위치 정보를 서버에서 검증하며, 미션 반영 여부는 해당 매장의 운영 설정을 따릅니다.</p>
+ <p class="footnote" id="footnote">NTAG213은 고정 URL이므로 NFC 접촉만으로 방문이 인정되지 않습니다. 인증 시 로그인을 확인하고 위치를 서버에서 검증합니다. 테스트(보상 없음)는 매장 반경 2km, 정식 방문인증은 50m 기준이며 GPS 정확도는 모두 ±50m 이내여야 합니다.</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -134,7 +134,7 @@ appOpen.onclick=()=>{
 const messages={
  invalid_tag:'등록되지 않았거나 사용이 중지된 NFC 태그입니다. 매장 직원에게 확인해 주세요.',
  login_required:'방문인증을 하려면 퍼니핀 로그인이 필요합니다.',
- too_far:'GPS 측정 위치가 매장에서 50m 이상 떨어져 있습니다. 매장 위치에서 다시 시도해 주세요.',
+ too_far:'GPS 측정 위치가 허용 거리 밖입니다. 매장 위치에서 다시 시도해 주세요.',
  low_accuracy:'GPS 정확도가 부족합니다. 창가 또는 실외에서 다시 측정해 주세요.',
  invalid_request:'인증 정보를 확인하지 못했습니다. 다시 시도해 주세요.',
  rate_limited:'인증 요청이 많습니다. 잠시 후 다시 시도해 주세요.',
@@ -142,6 +142,7 @@ const messages={
  server_error:'현재 인증을 처리할 수 없습니다. 잠시 후 다시 시도해 주세요.'
 };
 let shopId='',rewardEnabled=false,shopReady=false,busy=false,completed=false;
+let maxDistance=50;
 const submit=$('checkin'),login=$('login');
 function status(message,kind='info'){
  $('status').textContent=message;
@@ -168,7 +169,10 @@ function fail(message){
 async function api(body,access=''){
  const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{})},body:JSON.stringify(body),cache:'no-store'});
  const result=await response.json().catch(()=>({ok:false,error:'server_error'}));
- if(!response.ok||!result.ok)throw Error(messages[result.error]||messages.server_error);
+ if(!response.ok||!result.ok){
+  if(result.error==='too_far')throw Error('매장 거리 제한을 초과했어요. '+(result.distance_m!=null?'현재 거리 약 '+result.distance_m+'m · ':'')+'허용 '+(result.max_distance_m||maxDistance)+'m');
+  throw Error(messages[result.error]||messages.server_error);
+ }
  return result;
 }
 async function authSession(){
@@ -234,7 +238,7 @@ submit.onclick=async()=>{
   }
   submit.hidden=true;
   login.hidden=true;
-  $('mode').textContent=isLive?'MY 방문 기록 연동':'파일럿 인증 · 보상 미반영';
+  $('mode').textContent=isLive?'정식 인증 · 50m':'파일럿 테스트 · 2km · 보상 미반영';
   if(newVisit){try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shopId,is_new:true,source:isLive?'nfc_ntag213_gps':'nfc_ntag213_pilot',reward_applied:rewarded})}catch(_){}}
  }catch(e){
   const reason=e?.message||messages.server_error;
@@ -246,11 +250,12 @@ submit.onclick=async()=>{
  if(!/^[a-f0-9]{48}$/.test(token)){$('shopName').textContent='NFC 태그를 확인할 수 없습니다.';fail(messages.invalid_tag);return}
  try{
   const data=await api({action:'info',token});
-  shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;shopReady=true;
+  shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;maxDistance=rewardEnabled?50:2000;shopReady=true;
+  $('buttonNote').textContent='GPS 정확도는 ±50m 이내 · 매장 거리 '+(rewardEnabled?'50m (정식 인증)':'2km (보상 없는 테스트)')+' 이내여야 합니다.';
   $('shopName').textContent=data.shop_name;
   $('mode').hidden=false;
   $('mode').classList.toggle('live',rewardEnabled);
-  $('mode').textContent=rewardEnabled?'MY 방문 기록 연동':'파일럿 인증 · 보상 미반영';
+  $('mode').textContent=rewardEnabled?'정식 인증 · 50m':'파일럿 테스트 · 2km · 보상 미반영';
   $('heading').textContent='방문인증을 진행할까요?';
   $('lead').textContent='NFC 태그가 확인됐어요. 현재 위치를 확인해 방문을 인증합니다.';
   if(inApp){

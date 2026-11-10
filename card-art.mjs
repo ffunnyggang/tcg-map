@@ -1,3 +1,4 @@
+import {findAnniversarySymbolCenter,anniversarySymbolPlacement} from './card-overlay-symbol.mjs?v=20261110-autoheight1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {reviewMobileAlignment} from './card-art-align.mjs?v=20261108-compare1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -27,7 +28,37 @@ async function saveLayers(){if(!layerSession?.data.generationId||!result)return;
 function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:['텍스트·기호',l.showText?'ON':'OFF'],layerSymbol:['30주년 심볼',l.showSymbol?(l.symbolSide==='left'?'왼쪽':'오른쪽'):'OFF'],layerBorder:['테두리',l.showBorder?({'holographic-border-v1':'홀로','silver-satin-border-v1':'실버','silver-glitter-border-v1':'실버 글리터','gold-star-border-v1':'골드 글리터'}[l.borderId]):'OFF'],layerCorner:['모서리',shape==='round'?'라운드':'사각']};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
 async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent='원본 보기';$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}await saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(e.message);}finally{busy=false;update();}};
-function cycleLayer(kind){if(!layerSession||busy||exporting||reviewPosting)return;const l=layerSession.layers;if(kind==='text')l.showText=!l.showText;if(kind==='symbol'){const next=!l.showSymbol?'right':l.symbolSide==='left'?'off':'left';l.showSymbol=next!=='off';if(l.showSymbol){const a=layerSession.assets[next];l.symbolSide=next;l.symbol=a.image;l.placement=a.placement;}}if(kind==='border'){const ids=['holographic-border-v1','silver-satin-border-v1','silver-glitter-border-v1','gold-star-border-v1'];const i=l.showBorder?ids.indexOf(l.borderId)+1:0;l.showBorder=i<ids.length;if(l.showBorder){const a=layerSession.assets.borders.find(a=>a.id===ids[i]);l.borderId=a.id;l.border=a.image;}}if(kind==='corner')setShape(shape==='round'?'square':'round');else composeMobileLayers();syncLayerControls();}
+function cycleLayer(kind){
+ if(!layerSession||busy||exporting||reviewPosting)return;
+ const l=layerSession.layers;
+ if(kind==='text')l.showText=!l.showText;
+ if(kind==='symbol'){
+  const next=!l.showSymbol?'right':l.symbolSide==='left'?'off':'left';
+  l.showSymbol=next!=='off';
+  if(l.showSymbol){
+   const asset=layerSession.assets[next];
+   if(layerSession.symbolCenter===undefined){
+    try{layerSession.symbolCenter=findAnniversarySymbolCenter(layerSession.source,layerSession.assets.right,canvas);}
+    catch{layerSession.symbolCenter=null;}
+   }
+   l.symbolSide=next;
+   l.symbol=asset.image;
+   l.placement=anniversarySymbolPlacement(asset,layerSession.symbolCenter);
+  }
+ }
+ if(kind==='border'){
+  const ids=['holographic-border-v1','silver-satin-border-v1','silver-glitter-border-v1','gold-star-border-v1'];
+  const i=l.showBorder?ids.indexOf(l.borderId)+1:0;
+  l.showBorder=i<ids.length;
+  if(l.showBorder){
+   const asset=layerSession.assets.borders.find(a=>a.id===ids[i]);
+   l.borderId=asset.id;l.border=asset.image;
+  }
+ }
+ if(kind==='corner')setShape(shape==='round'?'square':'round');
+ else composeMobileLayers();
+ syncLayerControls();
+}
 $('layerText').onclick=()=>cycleLayer('text');$('layerSymbol').onclick=()=>cycleLayer('symbol');$('layerBorder').onclick=()=>cycleLayer('border');$('layerCorner').onclick=()=>cycleLayer('corner');
 function renderQuota(q,message){if(!q)return;$('quotaNotice').textContent=q.active&&q.unlimited?'관리자 계정 · 생성 횟수 제한 없음':q.active?'11.8–11.14 무료 · 오늘 '+q.used+'/3장 이용 · 매일 00시 초기화':message;$('quotaNotice').hidden=false;}
 async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-generate',{action:'status',surface:'mobile'});ready=!!s.ready;renderQuota(s.quota,s.message);}catch{} }

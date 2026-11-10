@@ -52,6 +52,12 @@ button:disabled{opacity:.57;cursor:default;transform:none}
 .button-link.secondary,button.secondary{background:#f4f0fa;color:#684ab1;margin-top:10px}
 button:focus-visible,.button-link:focus-visible,.header-link:focus-visible{outline:2px solid #9262ee;outline-offset:3px}
 .caption{text-align:center;margin:13px auto 0;max-width:320px;color:#928a9a;font-size:11px;line-height:1.6;word-break:keep-all}
+.visit-proof{margin-top:16px;padding:15px 16px;border:1px solid #e9e1f4;border-radius:14px;background:#faf8fe}
+.visit-proof-head{display:flex;align-items:center;gap:7px;color:#6740bd;font-size:13px;font-weight:800}
+.visit-proof-head:before{content:"✓";display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#e7ddfa;color:#6842b6;font-size:12px}
+.visit-proof-label{font-size:11px;color:#857b8e;margin-top:11px}
+.visit-proof-value{font-size:14px;color:#30263c;font-weight:750;margin-top:4px;letter-spacing:-.02em;line-height:1.5}
+.visit-proof-mode{font-size:11px;color:#755b9d;margin-top:9px}
 .footnote{font-size:10px;line-height:1.65;color:#9991a0;border-top:1px solid #f1edf5;padding-top:16px;margin-top:26px;word-break:keep-all}
 .progress{height:5px;background:#eee8f7;border-radius:999px;overflow:hidden;margin:19px 0 -1px}
 .progress>div{width:35%;height:100%;border-radius:999px;background:#9365e5;animation:progress-slide 1.25s ease-in-out infinite alternate}
@@ -93,12 +99,18 @@ html.app-shell .content{padding-top:24px}
    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5h.01"/></svg>
    <p id="status">NFC 태그를 확인하고 있어요.</p>
   </div>
+  <section id="verifiedRecord" class="visit-proof" aria-label="방문인증 기록" hidden>
+   <div class="visit-proof-head" id="verifiedStatus">방문인증 완료</div>
+   <div class="visit-proof-label">인증 날짜 · 한국시간</div>
+   <div class="visit-proof-value" id="verifiedAt">저장된 인증 일시를 확인하고 있어요</div>
+   <div class="visit-proof-mode" id="verifiedMode"></div>
+  </section>
   <div class="actions">
    <button id="appOpen" type="button" class="primary" hidden disabled>FUNY PIN 앱에서 GPS 인증하기 <span aria-hidden="true">›</span></button>
    <a id="installApp" class="button-link secondary" href="#" hidden target="_blank" rel="noopener noreferrer">FUNY PIN 앱 설치하기</a>
    <button id="checkin" type="button" class="primary" disabled>방문인증하기 <span aria-hidden="true">›</span></button>
    <button id="login" type="button" class="secondary" hidden>퍼니핀 로그인</button>
-   <a id="myLink" href="/my.html" class="button-link secondary" hidden>MY 방문 기록 확인 <span aria-hidden="true">›</span></a>
+   <!-- MY 방문기록 전용 페이지는 후속 버전 범위. 완료 화면의 인증 내역으로 대체. -->
    <a id="retryMap" href="/shops.html" class="button-link secondary" hidden>TCG MAP으로 이동</a>
    <p class="caption" id="buttonNote">GPS 정확도는 ±50m 이내여야 합니다. 인증 가능 매장 거리는 매장별 모드에 따라 다릅니다.</p>
   </div>
@@ -158,7 +170,7 @@ function stage(state){
  $('checkin').disabled=busy||!shopReady||completed;
  appOpen.disabled=busy||!shopReady||completed;
  $('retryMap').hidden=!(state==='error'&&!shopReady);
- $('myLink').hidden=!(state==='success'||(state==='duplicate'&&rewardEnabled));
+ $('verifiedRecord').hidden=!(state==='success'||state==='duplicate');
  $('buttonNote').hidden=state==='success'||state==='duplicate';
 }
 function fail(message){
@@ -226,6 +238,13 @@ submit.onclick=async()=>{
   rewardEnabled=isLive;
   const newVisit=result.new===true;
   const rewarded=result.reward_applied===true;
+  const savedAt=typeof result.verified_at==='string'?Date.parse(result.verified_at):NaN;
+  const savedDate=typeof result.visit_date_kst==='string'?result.visit_date_kst:'';
+  $('verifiedAt').textContent=Number.isFinite(savedAt)
+   ?new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(savedAt))
+   :(savedDate?savedDate+' (한국시간)':'저장된 인증 일시를 확인할 수 없습니다.');
+  $('verifiedStatus').textContent=newVisit?'방문인증 완료':'오늘 이미 인증 완료';
+  $('verifiedMode').textContent=isLive?'정식 방문인증 · MY 기록 대상':'파일럿 방문인증 · MY 보상 미반영';
   stage(newVisit?'success':'duplicate');
   if(newVisit){
    $('heading').textContent='방문인증 완료!';

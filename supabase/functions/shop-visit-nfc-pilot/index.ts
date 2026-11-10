@@ -109,6 +109,23 @@ Deno.serve(async req=>{
    const allowed=new Set(["success","already_checked_in","invalid_tag","low_accuracy","too_far","invalid_request","rate_limited","server_error"]);
    // Failure/success audit is best effort; no token, raw location or credential is logged.
    await admin.from("shop_visit_nfc_attempts").insert({user_id:uid,tag_id:result?.tag_id||null,shop_id:result?.shop_id||null,result:allowed.has(reason)?reason:"invalid_request",distance_m:Number.isFinite(Number(result?.distance_m))&&result?.distance_m!=null?Number(result.distance_m):null,accuracy_m:Number.isFinite(accuracy)?Math.round(accuracy):null,reward_applied:result?.reward_applied===true}).then(()=>{});
+   // Display the persisted authentication timestamp (including same-day duplicate requests).
+   // Only the authenticated user's own visit for this shop and today's KST date is read.
+   if(result?.ok&&result.shop_id){
+    try{
+     const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+     const datePart=(name:string)=>parts.find(x=>x.type===name)?.value||"";
+     const todayKst=datePart("year")+"-"+datePart("month")+"-"+datePart("day");
+     const table=tagRow.reward_enabled?"shop_visit_checkins":"shop_visit_nfc_pilot_checkins";
+     const {data:visit,error:visitError}=await admin.from(table).select("visit_date_kst,verified_at")
+      .eq("user_id",uid).eq("shop_id",result.shop_id).eq("visit_date_kst",todayKst).maybeSingle();
+     if(visitError)throw visitError;
+     if(visit){
+      result.visit_date_kst=visit.visit_date_kst;
+      result.verified_at=visit.verified_at;
+     }
+    }catch(e){console.error("nfc-visit-record-display",e instanceof Error?e.message:"lookup_failed")}
+   }
    return send(result,result?.ok?200:400);
   }
   return send({ok:false,error:"unknown_action"},400);

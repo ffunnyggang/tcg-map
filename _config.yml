@@ -1,0 +1,7 @@
+# Keep repository maintenance files out of the public Pages artifact.
+exclude:
+  - tests
+  - tools
+  - supabase
+  - migration
+  - assets/banners/tcr_event_popup_20261013.b64

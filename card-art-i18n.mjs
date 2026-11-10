@@ -1,9 +1,15 @@
 // Use the same persisted language as the FUNY PIN web and app shells.
-export const artEnglish=(()=>{
+export let artEnglish=(()=>{
  try{return globalThis.localStorage?.getItem('funy-pin-lang')==='en';}catch{return false;}
 })();
 
+export function setArtLanguage(language){
+ artEnglish=language==='en';
+ try{globalThis.localStorage?.setItem('funy-pin-lang',language);}catch{}
+}
+
 const english={
+ "화면 언어": "Display language",
  "일러스트 확장 | FUNY PIN TCG TOOL": "Extended Art | FUNY PIN TCG TOOL",
  "이전 단계": "Previous step",
  "일러스트 확장": "Extended Art",
@@ -219,20 +225,34 @@ export function artError(error,fallback){
 }
 
 export function translateArtMarkup(node){
- if(!artEnglish)return;
- if(node.nodeType===3){
-  const text=node.nodeValue.trim();
-  const translated=artText(text);
-  if(text!==translated)node.nodeValue=node.nodeValue.replace(text,translated);
-  return;
+ createArtMarkupRenderer(node)();
+}
+
+export function createArtMarkupRenderer(root){
+ const bindings=[];
+ function bind(value,read,write){
+  const key=value?.trim();
+  if(!key||!Object.hasOwn(english,key))return;
+  let last=value;
+  bindings.push(()=>{
+   if(read()!==last)return;
+   last=value.replace(key,()=>artText(key));
+   if(read()!==last)write(last);
+  });
  }
- if(node.nodeType===1){
-  if(['SCRIPT','STYLE'].includes(node.tagName))return;
-  for(const attribute of ['aria-label','placeholder','alt','title']){
-   const value=node.getAttribute(attribute);
-   if(value)node.setAttribute(attribute,artText(value));
+ function visit(node){
+  if(node.nodeType===3){
+   bind(node.nodeValue,()=>node.nodeValue,value=>node.nodeValue=value);
+   return;
   }
-  if(node.tagName==='TEMPLATE')translateArtMarkup(node.content);
+  if(node.nodeType===1){
+   if(['SCRIPT','STYLE'].includes(node.tagName)||node.getAttribute('translate')==='no')return;
+   for(const attribute of ['aria-label','placeholder','alt','title']){
+    bind(node.getAttribute(attribute),()=>node.getAttribute(attribute),value=>node.setAttribute(attribute,value));
+   }
+  }
+  for(const child of node.childNodes)visit(child);
  }
- for(const child of node.childNodes)translateArtMarkup(child);
+ visit(root);
+ return ()=>bindings.forEach(render=>render());
 }

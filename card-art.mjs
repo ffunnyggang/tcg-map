@@ -1,7 +1,7 @@
-import {artEnglish,artText,artError,translateArtMarkup} from './card-art-i18n.mjs?v=20261111-en1';
+import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261111-lang1';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
-import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-en1';
+import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-lang1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -15,9 +15,16 @@ import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilenam
 import {drawArtWatermark,makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261110-watermark1';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
-document.documentElement.lang=artEnglish?'en':'ko';
-document.title=artText(document.title);
-translateArtMarkup(document.body);
+const artTitle=document.title;
+const artLanguageButtons=document.querySelectorAll('[data-ui-language]');
+const artMessages=new Map();
+function showArtMessage(id,render){
+ const node=document.createTextNode(render());
+ $(id).replaceChildren(node);
+ artMessages.set(id,()=>{
+  if(node.parentNode===$(id))node.nodeValue=render();
+ });
+}
 let step=1,rows=[],language='all',query='',page=0,selected=null,source=null,cut=null,result=null,resultWindow=null,ready=false,busy=false,selecting=false,exporting=false,renderEpoch=0,selectionEpoch=0,toastTimer,searchTimer,shape='round',catalogEpoch=0;
 let draft=null,tuneMode='position',windowPreset=null,presetAdminClient=null,presetOnly=false,savingPreset=false;const refs=new Map();let squareResult=null,reviewPosting=false,reviewPosted=false,showExpanded=true;const reviewPublisher=createReviewPublisher(A);const outputArt=()=>layerSession?result:shape==='square'?(squareResult??=fillSquareCorners(result,canvas)):result;
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
@@ -65,7 +72,7 @@ function cycleLayer(kind){
  syncLayerControls();
 }
 $('layerText').onclick=()=>cycleLayer('text');$('layerSymbol').onclick=()=>cycleLayer('symbol');$('layerBorder').onclick=()=>cycleLayer('border');$('layerCorner').onclick=()=>cycleLayer('corner');
-function renderQuota(q,message){if(!q)return;$('quotaNotice').textContent=q.active&&q.unlimited?artText('관리자 계정 · 생성 횟수 제한 없음'):q.active?artText('11.8–11.14 무료 · 오늘 ')+q.used+artText('/3장 이용 · 매일 00시 초기화'):artText(message);$('quotaNotice').hidden=false;}
+function renderQuota(q,message){if(!q)return;showArtMessage('quotaNotice',()=>q.active&&q.unlimited?artText('관리자 계정 · 생성 횟수 제한 없음'):q.active?artText('11.8–11.14 무료 · 오늘 ')+q.used+artText('/3장 이용 · 매일 00시 초기화'):artText(message));$('quotaNotice').hidden=false;}
 async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-generate',{action:'status',surface:'mobile'});ready=!!s.ready;renderQuota(s.quota,s.message);}catch{} }
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+artText(LANGUAGES[selected.source_language]||'샘플'):'';}
@@ -94,7 +101,7 @@ function renderCards(){
  let i=0;async function worker(){while(epoch===renderEpoch&&i<jobs.length){const {row,thumb}=jobs[i++];try{const ref=await reference(row.id);if(epoch!==renderEpoch)return;const img=document.createElement('img');img.alt=row.display_name;img.loading='lazy';img.src=ref.imageUrl;img.onerror=()=>{thumb.classList.remove('pending');thumb.textContent=artText('이미지 준비 중');};thumb.replaceChildren(img);thumb.classList.remove('pending');}catch{if(epoch===renderEpoch){thumb.classList.remove('pending');const hint=document.createElement('span');hint.className='unavailable';hint.textContent=artText('이미지 연결 실패');thumb.replaceChildren(hint);}}}}
  for(let n=0;n<Math.min(4,jobs.length);n++)worker();
 }
-const presetLabels={regular:artText('일반형'),evolution:artText('진화형'),classic:artText('클래식형')};
+const presetLabels={regular:'일반형',evolution:'진화형',classic:'클래식형'};
 const presetTable=(client=A.client)=>client.from('card_art_window_presets');
 async function findPresetAdminClient(session){
  if(A.isAppShell())return null;
@@ -134,23 +141,23 @@ async function choose(row){if(busy||exporting)return;if(!row.supported){toast(ar
 async function connect(){
  const epoch=++catalogEpoch;
  presetAdminClient=null;presetOnly=false;
- $('reloadCatalog').hidden=true;$('catalogStatus').textContent=artText('카드 목록을 준비하고 있어요.');
+ $('reloadCatalog').hidden=true;showArtMessage('catalogStatus',()=>artText('카드 목록을 준비하고 있어요.'));
  try{
   const session=await A?.getSession();
   const admin=A?.client?await findPresetAdminClient(session).catch(()=>null):null;
   if(epoch!==catalogEpoch)return;
   presetAdminClient=admin;
   presetOnly=!session&&!!admin;
-  if(!session&&!presetOnly){showAccess(artText('로그인 후 카드 목록을 불러올 수 있어요.'),true);return;}
+  if(!session&&!presetOnly){showAccess('로그인 후 카드 목록을 불러올 수 있어요.',true);return;}
   if(presetOnly){
    ready=false;
-   $('quotaNotice').textContent=artText('관리자 · 일러스트 창 기본값 설정');
+   showArtMessage('quotaNotice',()=>artText('관리자 · 일러스트 창 기본값 설정'));
    $('quotaNotice').hidden=false;
   }else{
    const status=await A.invokeFunction('card-overlay-generate',{action:'status',surface:'mobile'});
    if(epoch!==catalogEpoch)return;
    ready=!!status.ready;renderQuota(status.quota,status.message);
-   if(!status.allowed){showAccess(artText('현재 계정은 이 기능을 이용할 수 없습니다.'),false);return;}
+   if(!status.allowed){showAccess('현재 계정은 이 기능을 이용할 수 없습니다.',false);return;}
    if(!ready)toast(artError({message:status.message},'이미지 생성 서비스를 준비하고 있어요. 잠시 후 다시 이용해 주세요.'));
   }
   $('loginPanel').hidden=true;$('catalogArea').hidden=false;
@@ -159,12 +166,12 @@ async function connect(){
   rows=d.references||[];renderCards();
  }catch(e){
   if(epoch!==catalogEpoch)return;
-  $('catalogStatus').textContent=e.message==='LOGIN_REQUIRED'?artText('로그인 후 이용해 주세요.'):artText('카드 목록 연결에 실패했어요.');
+  showArtMessage('catalogStatus',()=>e.message==='LOGIN_REQUIRED'?artText('로그인 후 이용해 주세요.'):artText('카드 목록 연결에 실패했어요.'));
   $('reloadCatalog').hidden=false;
-  if(e.status===401||e.message==='LOGIN_REQUIRED')showAccess(artText('로그인 세션이 만료됐어요. 다시 로그인해 주세요.'),true);
+  if(e.status===401||e.message==='LOGIN_REQUIRED')showAccess('로그인 세션이 만료됐어요. 다시 로그인해 주세요.',true);
  }finally{if(epoch===catalogEpoch)update();}
 }
-function showAccess(message,login){ready=false;if(login&&A){$('loginPanel').hidden=true;$('catalogArea').hidden=true;A.goLogin(location.href);return;}$('loginPanel').hidden=false;$('catalogArea').hidden=true;$('accessMessage').textContent=message;$('login').hidden=!login;update();}
+function showAccess(message,login){ready=false;if(login&&A){$('loginPanel').hidden=true;$('catalogArea').hidden=true;A.goLogin(location.href);return;}$('loginPanel').hidden=false;$('catalogArea').hidden=true;showArtMessage('accessMessage',()=>artText(message));$('login').hidden=!login;update();}
 $('login').onclick=()=>A?.goLogin(location.href);$('reloadCatalog').onclick=connect;
 for(const b of document.querySelectorAll('[data-language]'))b.onclick=()=>{if(busy)return;language=b.dataset.language;page=0;document.querySelectorAll('[data-language]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderCards();};
 $('searchForm').onsubmit=e=>{e.preventDefault();query=$('search').value.trim();language='all';page=0;document.querySelectorAll('[data-language]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.language==='all')));renderCards();};$('search').oninput=()=>{$('clearSearch').hidden=!$('search').value.length;if(!$('search').value.trim()){query='';page=0;renderCards();}};$('prevPage').onclick=()=>{page--;renderCards();};$('nextPage').onclick=()=>{page++;renderCards();};
@@ -182,7 +189,7 @@ async function generate(){
   if(!await matchIllustration()){toast(artText('생성 이미지는 유지됩니다. 연결 맞추기를 이어서 완료해 주세요.'));return;}
   reviewPublisher.reset();reviewPosted=false;showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');goStep(3);
 
- }catch(e){const el=$('generationError');el.hidden=false;el.textContent=(artError(e,'생성 요청을 완료하지 못했어요.'))+(e.data?.requestId?artText(' · 문의용 ID: ')+e.data.requestId:'');if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.textContent=artText('다시 로그인하기');b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent=artText('카드 다시 선택하기');b.style.cssText='display:block;margin-top:12px;min-height:44px';b.onclick=()=>{if(busy||exporting||reviewPosting)return;startAgain();connect();$('search').focus();};el.append(b);}}
+ }catch(e){const el=$('generationError');el.hidden=false;showArtMessage('generationError',()=>artError(e,'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?artText(' · 문의용 ID: ')+e.data.requestId:''));if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.dataset.artMessage='다시 로그인하기';b.textContent=artText(b.dataset.artMessage);b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;const b=document.createElement('button');b.type='button';b.className='secondary';b.dataset.artMessage='카드 다시 선택하기';b.textContent=artText(b.dataset.artMessage);b.style.cssText='display:block;margin-top:12px;min-height:44px';b.onclick=()=>{if(busy||exporting||reviewPosting)return;startAgain();connect();$('search').focus();};el.append(b);}}
  finally{await refreshQuota();busy=false;$('workingDialog').close();update();}
 }
 $('workingDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();});window.addEventListener('beforeunload',e=>{if(busy||reviewPosting){e.preventDefault();e.returnValue='';}});
@@ -194,7 +201,7 @@ $('completeHome').onclick=()=>{if(exporting||reviewPosting)return;if(window.Reac
 $('reviewLink').onclick=e=>{if(!window.ReactNativeWebView?.postMessage)return;e.preventDefault();e.stopPropagation();const postId=new URL(e.currentTarget.href).hash.split('/')[2];try{const at=Date.now();localStorage.setItem('funypin:talk:pending-tab:v1',JSON.stringify({tab:'all',postId,at}));window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)/talk?__tabRefresh='+at}));}catch{location.href=e.currentTarget.href;}};
 $('downloadAgain').onclick=downloadPDF;$('completeAgain').onclick=startAgain;
 // Adjustment is staged until Apply. Previous results are invalidated only on an actual change.
-$('openTune').onclick=()=>{if(!source||!cut)return;draft={...cut};$('presetTools').hidden=!presetAdminClient||!windowPreset;if(windowPreset)$('saveWindowPreset').textContent=artEnglish?'Save '+presetLabels[windowPreset.kind]+' default':presetLabels[windowPreset.kind]+' 기본값으로 저장';tuneMode='position';document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode==='position')));renderTune();$('tuneDialog').showModal();tuneGestures.reset();};
+$('openTune').onclick=()=>{if(!source||!cut)return;draft={...cut};$('presetTools').hidden=!presetAdminClient||!windowPreset;if(windowPreset)$('saveWindowPreset').textContent=artEnglish?'Save '+artText(presetLabels[windowPreset.kind])+' default':artText(presetLabels[windowPreset.kind])+' 기본값으로 저장';tuneMode='position';document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode==='position')));renderTune();$('tuneDialog').showModal();tuneGestures.reset();};
 function renderTune(){drawWindow($('tuneCanvas'),draft);$('tuneStatus').textContent=artText('왼쪽 ')+draft.x.toFixed(1)+artText(' · 위 ')+draft.y.toFixed(1)+artText(' · 너비 ')+draft.w.toFixed(1)+artText(' · 높이 ')+draft.h.toFixed(1)+'mm';const pad=document.querySelector('.nudge-pad'),buttons=Array.from(document.querySelectorAll('[data-direction]')),order=tuneMode==='position'?['left','right','up','down']:['right','left','up','down'];pad.dataset.editMode=tuneMode;if(order.some((dir,i)=>pad.children?.[i]?.dataset.direction!==dir))for(const dir of order)pad.append(buttons.find(b=>b.dataset.direction===dir));const labels=tuneMode==='position'?{up:artText('창 위로'),down:artText('창 아래로'),left:artText('창 왼쪽으로'),right:artText('창 오른쪽으로')}:{up:artText('높이 늘리기'),down:artText('높이 줄이기'),left:artText('너비 줄이기'),right:artText('너비 늘리기')};for(const b of document.querySelectorAll('[data-direction]')){b.setAttribute('aria-label',labels[b.dataset.direction]+' 0.1mm');b.textContent=(tuneMode==='position'?{up:'↑',down:'↓',left:'←',right:'→'}:{up:artText('높이 +'),down:artText('높이 -'),right:artText('너비 +'),left:artText('너비 -')})[b.dataset.direction];}}
 $('cancelTune').onclick=()=>$('tuneDialog').close();const tuneGestures=attachArtGestures($('tuneViewport'),$('tuneCanvas'));$('tuneDialog').addEventListener('close',()=>tuneGestures.clear());
 for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{tuneMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderTune();};
@@ -206,7 +213,7 @@ $('saveWindowPreset').onclick=async()=>{
  if(!presetAdminClient||!windowPreset||savingPreset||!validWindow(draft))return;
  const {kind,revision}=windowPreset;
  const rect={...draft};
- if(!window.confirm(artEnglish?'Set this as the default artwork cutout for all '+presetLabels[kind]+' cards?':presetLabels[kind]+' 카드 전체의 기본 일러스트 창을 이 설정으로 변경할까요?'))return;
+ if(!window.confirm(artEnglish?'Set this as the default artwork cutout for all '+artText(presetLabels[kind])+' cards?':artText(presetLabels[kind])+' 카드 전체의 기본 일러스트 창을 이 설정으로 변경할까요?'))return;
  const controls=['saveWindowPreset','cancelTune','resetTune','applyTune'].map($);
  savingPreset=true;
  controls.forEach(b=>b.disabled=true);
@@ -230,13 +237,37 @@ $('saveWindowPreset').onclick=async()=>{
   controls.forEach(b=>b.disabled=false);
  }
  $('applyTune').click();
- toast(artEnglish?presetLabels[kind]+' default saved.':presetLabels[kind]+' 기본값을 저장했어요.');
+ toast(artEnglish?artText(presetLabels[kind])+' default saved.':artText(presetLabels[kind])+' 기본값을 저장했어요.');
 };
 
 // The same entry notice and footer content; always show on page entry.
 $('modalNotice').append($('noticeContent').content.cloneNode(true));$('stepNotice').append($('noticeContent').content.cloneNode(true));
 $('acceptNotice').onclick=()=>$('noticeDialog').close();$('noticeDialog').showModal();window.addEventListener('pageshow',e=>{if(e.persisted&&!$('noticeDialog').open)$('noticeDialog').showModal();});
-$('reviewForm').onsubmit=async e=>{e.preventDefault();if(reviewPosting||reviewPosted||!result)return;const body=$('reviewBody').value.trim();if(!body)return;reviewPosting=true;$('reviewSubmit').disabled=true;$('reviewBody').disabled=true;$('reviewStatus').textContent=artText('후기를 등록하고 있어요.');update();try{const id=await reviewPublisher.publish({image:outputArt(),title:(selected.display_name+artText(' 확장 아트 사용 후기')).slice(0,80),body});reviewPosted=true;$('reviewStatus').textContent=artText('TALK 자유게시판에 후기를 등록했어요.');$('reviewLink').href='/talk.html?from=card-art#/post/'+encodeURIComponent(id);$('reviewLink').hidden=false;}catch(err){$('reviewStatus').textContent=artError(err,'후기 등록에 실패했어요.');$('reviewBody').disabled=false;}finally{reviewPosting=false;$('reviewSubmit').disabled=reviewPosted;update();}};
+$('reviewForm').onsubmit=async e=>{e.preventDefault();if(reviewPosting||reviewPosted||!result)return;const body=$('reviewBody').value.trim();if(!body)return;reviewPosting=true;$('reviewSubmit').disabled=true;$('reviewBody').disabled=true;showArtMessage('reviewStatus',()=>artText('후기를 등록하고 있어요.'));update();try{const id=await reviewPublisher.publish({image:outputArt(),title:(selected.display_name+artText(' 확장 아트 사용 후기')).slice(0,80),body});reviewPosted=true;showArtMessage('reviewStatus',()=>artText('TALK 자유게시판에 후기를 등록했어요.'));$('reviewLink').href='/talk.html?from=card-art#/post/'+encodeURIComponent(id);$('reviewLink').hidden=false;}catch(err){showArtMessage('reviewStatus',()=>artError(err,'후기 등록에 실패했어요.'));$('reviewBody').disabled=false;}finally{reviewPosting=false;$('reviewSubmit').disabled=reviewPosted;update();}};
+const renderArtMarkup=createArtMarkupRenderer(document.body);
+function renderArtLanguage(){
+ document.documentElement.lang=artEnglish?'en':'ko';
+ document.title=artText(artTitle);
+ for(const button of artLanguageButtons){
+  button.setAttribute('aria-pressed',String(button.dataset.uiLanguage===document.documentElement.lang));
+ }
+ renderArtMarkup();
+}
+for(const button of artLanguageButtons){
+ button.onclick=()=>{
+  if(button.dataset.uiLanguage===document.documentElement.lang)return;
+  setArtLanguage(button.dataset.uiLanguage);
+  renderArtLanguage();
+  artMessages.forEach(render=>render());
+  $('generationError').querySelectorAll('[data-art-message]').forEach(el=>el.textContent=artText(el.dataset.artMessage));
+  $('compareArt').textContent=showExpanded?artText('원본 보기'):artText('확장 아트 보기');
+  $('toast').textContent='';
+  if(query&&rows.length)renderCards();
+  syncLayerControls();
+  update();
+ };
+}
+renderArtLanguage();
 update();connect();
 A?.onChange?.(()=>{if(!busy)connect();});
 

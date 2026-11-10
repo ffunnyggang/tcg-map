@@ -79,14 +79,14 @@ html.app-shell .content{padding-top:24px}
  </header>
  <section class="content" aria-labelledby="heading">
   <div class="icon-circle" id="heroIcon" aria-hidden="true">
-   <svg viewBox="0 0 24 24"><path d="M5 9.5a7 7 0 0 1 7-7"/><path d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5"/><path d="M16.5 12A4.5 4.5 0 0 0 12 7.5"/><path d="M19 9.5a7 7 0 0 0-7-7"/><path d="M12 11v10"/><path d="M8.5 17.5 12 21l3.5-3.5"/></svg>
+   <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="11" height="15" rx="2.1"/><path d="M7 8h4M7 16h4"/><path d="M16.6 9.3a4 4 0 0 1 0 6.4"/><path d="M19.1 6.8a7.5 7.5 0 0 1 0 11.4"/><path d="M14.5 11.5a1 1 0 0 1 0 2"/></svg>
   </div>
   <div class="eyebrow" id="eyebrow">NFC CHECK-IN</div>
   <h1 id="heading">매장 방문인증</h1>
   <p class="lead" id="lead">NFC 태그를 확인한 후<br>현재 위치에서 방문을 인증해 주세요.</p>
   <div class="shop">
    <div class="shop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5h18l-2-7H5l-2 7Z"/><path d="M5 10.5v10h14v-10"/><path d="M9 20.5v-7h6v7"/><path d="M3 10.5c0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0 0 3 4 3 4 0"/></svg></div>
-   <div class="shop-info"><small>방문할 카드샵</small><div class="shop-name" id="shopName">매장을 확인하고 있어요</div></div>
+   <div class="shop-info"><small id="shopVisitLabel">방문할 카드샵</small><div class="shop-name" id="shopName">매장을 확인하고 있어요</div></div>
   </div>
   <div><span class="mode" id="mode" hidden>인증 방식 확인 중</span></div>
   <div class="steps" id="steps">
@@ -106,7 +106,7 @@ html.app-shell .content{padding-top:24px}
    <div class="visit-proof-mode" id="verifiedMode"></div>
   </section>
   <div class="actions">
-   <button id="appOpen" type="button" class="primary" hidden disabled>FUNY PIN 앱에서 GPS 인증하기 <span aria-hidden="true">›</span></button>
+   <button id="appOpen" type="button" class="primary" hidden disabled>앱에서 GPS 인증하기 <span aria-hidden="true">›</span></button>
    <a id="installApp" class="button-link secondary" href="#" hidden target="_blank" rel="noopener noreferrer">FUNY PIN 앱 설치하기</a>
    <button id="checkin" type="button" class="primary" disabled>방문인증하기 <span aria-hidden="true">›</span></button>
    <button id="login" type="button" class="secondary" hidden>FUNY PIN 앱에서 로그인하기</button>
@@ -292,6 +292,7 @@ submit.onclick=async()=>{
   stage('submitting');status('매장 위치와 방문 기록을 확인하고 있어요.');
   const result=await api({action:'checkin',token,...point},access);
   completed=true;
+  $('shopVisitLabel').textContent='방문한 카드샵';
   const isLive=result.reward_enabled===true;
   rewardEnabled=isLive;
   const newVisit=result.new===true;

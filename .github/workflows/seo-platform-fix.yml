@@ -95,7 +95,18 @@ jobs:
           }
           if (fs.existsSync('apple-touch-icon.png') || fs.existsSync('favicon.ico')) throw new Error('legacy raster icon file exists');
           const favicon = fs.readFileSync('favicon.svg', 'utf8');
-          if (!favicon.includes('M18 2.8A10.5 10.5') || !favicon.includes('#8062d8')) throw new Error('favicon.svg mismatch');
+          const svgRoot = parseAttrs(favicon.match(/<svg\b[^>]*>/i)?.[0] || '');
+          const brandColors = ['#B85DFF', '#7B3DFF', '#4B00C6'];
+          if (svgRoot.xmlns !== 'http://www.w3.org/2000/svg' || svgRoot.viewbox !== '0 0 512 512' ||
+              !favicon.includes('id="symbol"') || !brandColors.every((color) => favicon.includes(color))) {
+            throw new Error('favicon.svg does not match the current gradient pin logo');
+          }
+          const home = fs.readFileSync('index.html', 'utf8');
+          const homeHeader = home.match(/<header\b[^>]*>[\s\S]*?<\/header>/i)?.[0] || '';
+          const homeLogo = parseAttrs(homeHeader.match(/<img\b[^>]*>/i)?.[0] || '').src;
+          if (!homeLogo || new URL(homeLogo, SITE).href.split('?')[0] !== `${SITE}/favicon.svg`) {
+            throw new Error('HOME header must use the current favicon.svg logo');
+          }
           const robotsText = fs.readFileSync('robots.txt', 'utf8');
           if (!robotsText.includes(`Sitemap: ${SITE}/sitemap.xml`) || robotsText.includes('www.funypin.kr')) throw new Error('robots.txt mismatch');
           const sitemapText = fs.readFileSync('sitemap.xml', 'utf8');

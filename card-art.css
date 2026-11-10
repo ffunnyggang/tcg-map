@@ -57,8 +57,8 @@ body:has(dialog[open]){overflow:hidden}
 #completion .completion-links{width:100%;justify-content:center;gap:24px}
 #completion .completion-links button{flex:0 0 auto;width:auto;margin:0;text-align:center}
 
-/* Match the native HOME header language control. */
-.art-ui-language{display:flex;flex:0 0 auto;align-items:center;margin-inline-start:auto;padding:3px;border:1px solid #e8e1ef;border-radius:18px;background:#f4f1f8}
-.art-ui-language button{height:29px;min-width:36px;padding:0 9px;border:0;border-radius:15px;background:transparent;color:#8d8595;font-size:11px;font-weight:800;line-height:1;cursor:pointer}
+/* Compact language control using the native HOME header style. */
+.art-ui-language{display:flex;flex:0 0 auto;align-items:center;margin-inline-start:auto;padding:2px;border:1px solid #e8e1ef;border-radius:16px;background:#f4f1f8}
+.art-ui-language button{height:27px;min-width:33px;padding:0 8px;border:0;border-radius:14px;background:transparent;color:#8d8595;font-size:10px;font-weight:800;line-height:1;cursor:pointer}
 .art-ui-language button[aria-pressed="true"]{background:#fff;color:#6749bd}
 .art-ui-language+#closeCompletion{margin-inline-start:8px}

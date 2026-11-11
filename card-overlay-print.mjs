@@ -39,16 +39,33 @@ function drawCutoutCard(g, card, x, y, width, height, scale) {
  g.save();
  g.textAlign = 'left';
  g.textBaseline = 'middle';
- for (const {position, size, color, parts} of rows) {
+ const lines = rows.map(({position, size, color, parts}) => {
+  const fontSize = size * fontUnit;
   const runs = parts.map(([text, weight]) => {
-   const font = `${weight} ${size * fontUnit}px sans-serif`;
+   const font = `${weight} ${fontSize}px sans-serif`;
    g.font = font;
-   return {text, font, width: g.measureText(text).width};
+   const metrics = g.measureText(text);
+   return {
+    text, font, width: metrics.width,
+    ascent: metrics.actualBoundingBoxAscent ?? fontSize / 2,
+    descent: metrics.actualBoundingBoxDescent ?? fontSize / 2,
+   };
   });
   const lineWidth = runs.reduce((total, run) => total + run.width, 0);
   const fit = Math.min(1, maxWidth / lineWidth);
+  const baseline = height * position;
+  return {
+   color, runs, lineWidth, fit, baseline,
+   top: baseline - Math.max(...runs.map(run => run.ascent)) * fit,
+   bottom: baseline + Math.max(...runs.map(run => run.descent)) * fit,
+  };
+ });
+ const top = Math.min(...lines.map(line => line.top));
+ const bottom = Math.max(...lines.map(line => line.bottom));
+ const centerOffset = (height - top - bottom) / 2;
+ for (const {color, runs, lineWidth, fit, baseline} of lines) {
   g.save();
-  g.translate(x + width / 2, y + height * position);
+  g.translate(x + width / 2, y + baseline + centerOffset);
   g.scale(fit, fit);
   g.fillStyle = color;
   let left = -lineWidth / 2;

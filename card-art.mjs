@@ -12,7 +12,7 @@ import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {drawArtWatermark,makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261111-cutout1';
+import {drawArtWatermark,makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261111-cutout2';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;

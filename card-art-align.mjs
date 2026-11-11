@@ -1,4 +1,4 @@
-import {artText,translateArtMarkup} from './card-art-i18n.mjs?v=20261111-lang1';
+import {artText,translateArtMarkup} from './card-art-i18n.mjs?v=20261111-pdf1';
 import {adjustMatrix,coversCard,renderManual,IDENTITY_WIDE} from './card-overlay-manual.mjs?v=20261108-cardfit1';
 import {drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 // Preview-only blend: exported output and the alignment matrix are unaffected.

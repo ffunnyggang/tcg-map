@@ -9,6 +9,12 @@ export function setArtLanguage(language){
 }
 
 const english={
+ "PDF 직접 저장": "Save PDF directly",
+ "완료 화면으로 이동": "Go to the completion screen",
+ "이 환경에서는 파일 공유를 사용할 수 없어요. PDF 직접 저장을 시도해 주세요.": "File sharing is unavailable here. Try saving the PDF directly.",
+ "공유를 완료하지 못했어요. 다시 시도하거나 PDF 직접 저장을 눌러 주세요.": "Sharing did not complete. Try again or choose Save PDF directly.",
+ "저장 여부는 기기의 다운로드 목록에서 확인해 주세요.": "Check your device’s downloads to see if the PDF was saved.",
+
  "화면 언어": "Display language",
  "일러스트 확장 | FUNY PIN TCG TOOL": "Extended Art | FUNY PIN TCG TOOL",
  "이전 단계": "Previous step",

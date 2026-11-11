@@ -1,7 +1,7 @@
-import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261111-lang1';
+import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261111-pdf1';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
-import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-lang1';
+import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -29,15 +29,23 @@ let step=1,rows=[],language='all',query='',page=0,selected=null,source=null,cut=
 let draft=null,tuneMode='position',windowPreset=null,presetAdminClient=null,presetOnly=false,savingPreset=false;const refs=new Map();let squareResult=null,reviewPosting=false,reviewPosted=false,showExpanded=true;const reviewPublisher=createReviewPublisher(A);const outputArt=()=>layerSession?result:shape==='square'?(squareResult??=fillSquareCorners(result,canvas)):result;
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
 let layerSession=null,assetsPromise=null;
+let pdfExport=null,pendingLayerSave=Promise.resolve();
 const BORDER_IDS=['holographic-border-v1','silver-glitter-border-v1','gold-star-border-v1','silver-satin-border-v1'];
 async function sharedAsset(id){const d=await A.invokeFunction('card-overlay-generate',{action:'symbol_asset',assetId:id});return {id,image:await imageFrom(d.symbol.imageUrl),placement:d.symbol.placement};}
 function loadLayerAssets(){if(!assetsPromise)assetsPromise=Promise.all([...BORDER_IDS.map(sharedAsset),sharedAsset('anniversary-yellow-umbreon-v1'),sharedAsset('anniversary-yellow-left-v1')]).then(a=>({borders:a.slice(0,4),right:a[4],left:a[5]})).catch(e=>{assetsPromise=null;throw e;});return assetsPromise;}
 const layerFlow=createLayerFlow({invoke:body=>A.invokeFunction('card-overlay-generate',body),canvas,decodeText:decodeTextLayer,imageFrom,loadAssets:loadLayerAssets});
 function resetLayers(){layerSession=null;layerFlow.reset();}
-function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,layerSession.layers,canvas);squareResult=null;drawResult();}
-async function saveLayers(){if(!layerSession?.data.generationId||!result)return;try{await A.invokeFunction('card-overlay-generate',{action:'save_result',id:layerSession.data.generationId,image:result.toDataURL('image/png'),printRect:resultWindow});}catch{console.warn('Final artwork persistence failed');}}
+function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,layerSession.layers,canvas);squareResult=null;drawResult();update();}
+function saveLayers(){
+ if(!layerSession?.data.generationId||!result)return;
+ try{
+  const payload={action:'save_result',id:layerSession.data.generationId,image:result.toDataURL('image/png'),printRect:resultWindow};
+  pendingLayerSave=pendingLayerSave.then(()=>A.invokeFunction('card-overlay-generate',payload))
+   .catch(()=>console.warn('Final artwork persistence failed'));
+ }catch{console.warn('Final artwork persistence failed');}
+}
 function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:[artText('텍스트·기호'),l.showText?'ON':'OFF'],layerSymbol:[artText('30주년 심볼'),l.showSymbol?(({left:artText('왼쪽'),right:artText('오른쪽'),center:artText('중앙')}[l.symbolSide]||artText('오른쪽'))):'OFF'],layerBorder:[artText('테두리'),l.showBorder?({'holographic-border-v1':artText('홀로'),'silver-satin-border-v1':artText('실버'),'silver-glitter-border-v1':artText('실버 글리터'),'gold-star-border-v1':artText('골드 글리터')}[l.borderId]):'OFF'],layerCorner:[artText('모서리'),shape==='round'?artText('라운드'):artText('사각')]};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
-async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}await saveLayers();return true;}
+async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(artError(e,'일러스트 창 크기를 확인해 주세요.'));}finally{busy=false;update();}};
 function cycleLayer(kind){
  if(!layerSession||busy||exporting||reviewPosting)return;
@@ -77,13 +85,21 @@ async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-g
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+artText(LANGUAGES[selected.source_language]||'샘플'):'';}
 function update(){
+ syncPDF();
+ const preparingPDF=step===3&&pdfExport&&!pdfExport.file&&!pdfExport.error;
+ const fallback=pdfExport?.fallback;
+ $('pdfDelivery').hidden=!fallback;
+ $('pdfFallback').hidden=!fallback;
+ $('pdfContinue').hidden=!pdfExport?.requested;
+ $('pdfDeliveryStatus').textContent=artText(pdfExport?.message||'');
+ $('pdfDeliveryStatus').hidden=!pdfExport?.message;
  document.querySelector('.art-shell').classList.toggle('in-progress',step>1);document.querySelector('.art-shell').classList.toggle('is-complete',step===4);document.querySelector('.art-shell').classList.toggle('is-search',step===1);$('headerTitle').hidden=step===4;$('headerTest').hidden=true;$('back').hidden=step===4;$('closeCompletion').hidden=step!==4;$('closeCompletion').disabled=exporting||reviewPosting;
  for(let n=1;n<=3;n++)$('step'+n).hidden=step!==n;
  $('completion').hidden=step!==4;document.querySelector('.stepper').hidden=step===4;document.querySelector('.bottom-action').hidden=step===4;
  document.querySelectorAll('.stepper li').forEach((el,i)=>{el.classList.toggle('done',i+1<step);if(i+1===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
  document.querySelectorAll('.selected-name').forEach(el=>el.textContent=infoName());
- $('next').textContent=exporting?artText('PDF를 준비하고 있어요'):step===1?artText('선택한 카드로 계속'):step===2?(result?artText('완성 아트 보기'):layerFlow.hasPending()?artText('일러스트 연결 맞추기'):artText('확장 아트 만들기')):artText('출력 도안 PDF 받기');
- $('next').disabled=busy||selecting||exporting||(step===1?!source:step===2?!validWindow(cut)||!$('confirm').checked||!ready:!result);
+ $('next').textContent=(exporting||preparingPDF)?artText('PDF를 준비하고 있어요'):step===1?artText('선택한 카드로 계속'):step===2?(result?artText('완성 아트 보기'):layerFlow.hasPending()?artText('일러스트 연결 맞추기'):artText('확장 아트 만들기')):artText('출력 도안 PDF 받기');
+ $('next').disabled=busy||selecting||exporting||!!preparingPDF||(step===1?!source:step===2?!validWindow(cut)||!$('confirm').checked||!ready:!result);
  $('actionHint').textContent=selecting?artText('카드 원본을 불러오고 있어요'):'';$('actionHint').hidden=!selecting;
  $('back').disabled=busy||exporting||reviewPosting;$('downloadAgain').disabled=exporting||reviewPosting;$('completeAgain').disabled=exporting||reviewPosting;$('completeHome').disabled=exporting||reviewPosting;
  document.querySelectorAll('[data-shape],#layerOptions button,#adjustJoin,#openTune').forEach(b=>b.disabled=busy||exporting||reviewPosting);
@@ -193,8 +209,97 @@ async function generate(){
  finally{await refreshQuota();busy=false;$('workingDialog').close();update();}
 }
 $('workingDialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();});window.addEventListener('beforeunload',e=>{if(busy||reviewPosting){e.preventDefault();e.returnValue='';}});
-async function downloadPDF(){if(exporting||!result||!resultWindow)return;exporting=true;update();try{await saveLayers();const name=cardFilename(selected),sheet=makePrintSheet(withCardBleed(outputArt()),resultWindow,{shape,tolerance:0,bleed:2,windowGuideInset:0,trimMargin:.5,watermark:true,cutoutCard:selected}),jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));if(!jpg)throw Error('출력 도안을 만들지 못했어요.');const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118),file=new File([pdf],name,{type:'application/pdf'});if(A?.isAppShell?.()&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:artText('일러스트 확장 출력 도안')});}else{const url=URL.createObjectURL(pdf),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}goStep(4);}catch(e){if(e.name!=='AbortError')toast(artError(e,'PDF 저장에 실패했어요.'));}finally{exporting=false;update();}}
-function setShape(value){shape=value;document.querySelectorAll('[data-shape]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.shape===shape)));$('resultCanvas').style.borderRadius=shape==='round'?'10px':'0';document.querySelector('.card-stage.result').classList.toggle('square',shape==='square');if(layerSession?.current)composeMobileLayers();else if(result)drawResult();}
+function syncPDF(){
+ const valid=step>=3&&result&&resultWindow&&selected;
+ if(pdfExport&&(!valid||pdfExport.result!==result||pdfExport.window!==resultWindow||pdfExport.shape!==shape||pdfExport.card!==selected)){
+  const oldUrl=pdfExport.url;
+  if(oldUrl)setTimeout(()=>URL.revokeObjectURL(oldUrl),60000);
+  $('pdfFallback').removeAttribute('href');
+  pdfExport=null;
+ }
+ if(!valid||busy||pdfExport)return;
+ const entry={result,window:resultWindow,shape,card:selected,file:null,error:null};
+ pdfExport=entry;
+ preparePDF(entry);
+}
+async function preparePDF(entry){
+ try{
+  // Let the result view paint before encoding the sheet.
+  await new Promise(resolve=>setTimeout(resolve,0));
+  if(pdfExport!==entry)return;
+  const sheet=makePrintSheet(withCardBleed(outputArt()),entry.window,{shape:entry.shape,tolerance:0,bleed:2,windowGuideInset:0,trimMargin:.5,watermark:true,cutoutCard:entry.card});
+  const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
+  if(!jpg)throw Error('출력 도안을 만들지 못했어요.');
+  const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118);
+  if(pdfExport===entry)entry.file=new File([pdf],cardFilename(entry.card),{type:'application/pdf'});
+ }catch(error){
+  if(pdfExport===entry)entry.error=error;
+ }finally{
+  if(pdfExport===entry)update();
+ }
+}
+function offerPDFDownload(entry,message){
+ const link=$('pdfFallback');
+ entry.url??=URL.createObjectURL(entry.file);
+ link.href=entry.url;
+ link.download=entry.file.name;
+ entry.fallback=true;
+ entry.message=message;
+ if(step===4)goStep(3);
+ else update();
+}
+async function downloadPDF(){
+ if(exporting||!pdfExport)return;
+ const entry=pdfExport;
+ if(entry.error){
+  pdfExport=null;
+  toast(artError(entry.error,'PDF 저장에 실패했어요.'));
+  update();
+  return;
+ }
+ if(!entry.file)return;
+ const app=A?.isAppShell?.();
+ const shareData={files:[entry.file]};
+ exporting=true;
+ update();
+ try{
+  if(app){
+   if(navigator.canShare?.(shareData)){
+    await navigator.share({...shareData,title:artText('일러스트 확장 출력 도안')});
+    saveLayers();
+    goStep(4);
+   }else{
+    offerPDFDownload(entry,'이 환경에서는 파일 공유를 사용할 수 없어요. PDF 직접 저장을 시도해 주세요.');
+   }
+  }else{
+   const url=URL.createObjectURL(entry.file),link=document.createElement('a');
+   link.href=url;
+   link.download=entry.file.name;
+   document.body.append(link);
+   try{link.click();}finally{link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+   saveLayers();
+   goStep(4);
+  }
+ }catch(error){
+  if(app){
+   offerPDFDownload(entry,'공유를 완료하지 못했어요. 다시 시도하거나 PDF 직접 저장을 눌러 주세요.');
+  }else{
+   toast(artError(error,'PDF 저장에 실패했어요.'));
+  }
+ }finally{
+  exporting=false;
+  update();
+ }
+}
+$('pdfFallback').onclick=e=>{
+ if(exporting||!pdfExport?.fallback){e.preventDefault();return;}
+ pdfExport.requested=true;
+ pdfExport.message='저장 여부는 기기의 다운로드 목록에서 확인해 주세요.';
+ saveLayers();
+ update();
+};
+$('pdfContinue').onclick=()=>{if(!exporting&&pdfExport?.requested)goStep(4);};
+function setShape(value){shape=value;document.querySelectorAll('[data-shape]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.shape===shape)));$('resultCanvas').style.borderRadius=shape==='round'?'10px':'0';document.querySelector('.card-stage.result').classList.toggle('square',shape==='square');if(layerSession?.current)composeMobileLayers();else if(result){drawResult();update();}}
 for(const b of document.querySelectorAll('[data-shape]'))b.onclick=()=>{if(!exporting)setShape(b.dataset.shape);};
 $('closeCompletion').onclick=()=>{if(!exporting&&!reviewPosting)location.href='/tcg-tools.html';};
 $('completeHome').onclick=()=>{if(exporting||reviewPosting)return;if(window.ReactNativeWebView?.postMessage){window.ReactNativeWebView.postMessage(JSON.stringify({type:'OPEN_NATIVE',route:'/(tabs)'}));return;}location.href='/';};

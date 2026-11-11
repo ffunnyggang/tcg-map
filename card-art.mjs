@@ -247,6 +247,7 @@ function offerPDFDownload(entry,message){
  entry.message=message;
  if(step===4)goStep(3);
  else update();
+ $('pdfDelivery').scrollIntoView({block:'center'});
 }
 async function downloadPDF(){
  if(exporting||!pdfExport)return;

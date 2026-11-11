@@ -64,10 +64,10 @@
   }
   function loadGooglePlace(shop){if(!isJapan(shop))return;findPlace(shop).then(place=>renderPlace(shop,place)).catch(()=>{const root=document.querySelector('[data-google-place-content]');if(root&&state.current===shop.id)root.innerHTML='<div class="google-place-empty">Google 매장 정보를 불러오지 못했습니다.</div>'})}
 
-  const baseOpenDetail=openDetail;
-  openDetail=function(id){baseOpenDetail(id);const shop=SHOPS.find(s=>s.id===id);if(shop&&isJapan(shop))setTimeout(()=>loadGooglePlace(shop),40)};
+  const baseOpenDetail=renderShopDetail;
+  renderShopDetail=function(id){baseOpenDetail(id);const shop=SHOPS.find(s=>s.id===id);if(shop&&isJapan(shop))setTimeout(()=>loadGooglePlace(shop),40)};
 
   function openFromHash(){const m=location.hash.match(/^#\/shop\/((?:KR|JP)-[A-Z]{3}-\d{3})$/);if(!m)return;const shop=SHOPS.find(s=>s.id===m[1]);if(shop)openDetail(shop.id)}
-  window.addEventListener('hashchange',openFromHash);
+  if(location.pathname!=='/shops.html')window.addEventListener('hashchange',openFromHash);
   if(/^#\/shop\/JP-/.test(location.hash))openFromHash();
 })();

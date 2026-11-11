@@ -23,7 +23,12 @@
   const marketUserIcon='<svg class="market-user-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3.1-6 6.5-6s5.8 2 6.5 6"/></svg>';
   const age=s=>{if(!s)return'-';const d=new Date(s);if(Number.isNaN(d.getTime()))return'-';const m=Math.max(0,Math.floor((Date.now()-d.getTime())/60000));if(m<1)return'방금 전';if(m<60)return m+'분 전';if(m<1440)return Math.floor(m/60)+'시간 전';if(m<10080)return Math.floor(m/1440)+'일 전';return d.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})};
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const marketPageUrl=(route='')=>'/market.html'+String(route||'');
+  const marketPageUrl=(route='')=>{
+    const url=new URL('/market.html',location.origin);
+    const params=new URLSearchParams(location.search);
+    for(const key of ['app','appPlatform'])if(params.has(key))url.searchParams.set(key,params.get(key));
+    return url.pathname+url.search+String(route||'');
+  };
   function navigateMarketPage(route=''){
     const target=marketPageUrl(route);
     location.href=target;
@@ -1449,6 +1454,12 @@
     document.body.appendChild(el);$('#marketDetailBack').onclick=closeDetail;
   }
   function openDetail(id,syncRoute=true){
+    if(!rows.some(row=>row.id===id))return;
+    const currentUrl=location.href;
+    const returnUrl=location.pathname+location.search+'#/listing/'+encodeURIComponent(id);
+    window.FUNY_DETAIL_ACCESS?.open(returnUrl,()=>renderDetail(id,syncRoute),()=>location.href===currentUrl,true);
+  }
+  function renderDetail(id,syncRoute){
     const x=rows.find(r=>r.id===id);if(!x)return;
     const standaloneDetailHash='#/listing/'+encodeURIComponent(id);
     if(standaloneMarket&&syncRoute&&location.hash!==standaloneDetailHash)setStandaloneRoute(standaloneDetailHash);

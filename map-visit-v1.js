@@ -116,8 +116,20 @@
    fix=p;if(!valid(p))throw Error(text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is low. Please retry.'));
    if(distance(p,shop)>RADIUS)throw Error(text('매장 반경 50m 안에서 인증해주세요.','Check in within 50 m of the shop.'));
    const {data,error}=await auth.client.rpc('my_shop_visit_checkin_test',{p_shop_id:shop.id,p_lat:p.lat,p_lng:p.lng,p_accuracy:p.accuracy});if(error)throw error;
+   if(ticket!==epoch)return;
+   if(active&&maximum()&&country()==='KR'&&!document.hidden&&data?.error==='shop_visit_method_mismatch'&&data.shop_id===shop.id){
+    // The existing GPS RPC returns the required method without recording a visit.
+    if(data.required_method==='nfc_ntag213_gps'){
+     location.assign('/nfc.html?mode=guide');
+     return;
+    }
+    if(data.required_method==='qr_otp_gps'&&window.FUNY_MAP_VISIT_OTP?.open){
+     await window.FUNY_MAP_VISIT_OTP.open(shop.id);
+     return;
+    }
+   }
    if(!data?.ok){const messages={too_far:text('매장과 너무 멀리 떨어져 있어요.','You are too far from the shop.'),low_accuracy:text('GPS 오차가 50m 이하일 때 인증할 수 있어요.','GPS accuracy is too low.'),test_access_denied:text('현재 로그인한 계정은 방문 인증 테스트 대상이 아니에요.','Check-in is not available yet.'),login_required:text('로그인 후 인증해주세요.','Please sign in first.')};throw Error(messages[data?.error]||text('인증하지 못했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}
-   if(ticket!==epoch)return;done.add(shop.id);buttons();tell(data.new?text(shop.name+' 방문 인증 완료! 미션에 반영했어요.','Checked in at '+shop.name+'! Your mission has been updated.'):text('오늘 이미 인증한 매장이에요.','Already checked in here today.'));
+   done.add(shop.id);buttons();tell(data.new?text(shop.name+' 방문 인증 완료! 미션에 반영했어요.','Checked in at '+shop.name+'! Your mission has been updated.'):text('오늘 이미 인증한 매장이에요.','Already checked in here today.'));
    window.dispatchEvent(new CustomEvent('funy:shopvisitcompleted',{detail:{shopId:shop.id,isNew:!!data.new}}));try{window.FUNY_TRACK?.('shop_visit_checkin',{shop_id:shop.id,is_new:!!data.new,source:'map'});}catch(_){}
   }catch(e){if(ticket===epoch)tell(e.message||text('방문 인증에 실패했어요. 다시 시도해주세요.','Check-in failed. Please retry.'));}finally{checking=false;buttons();}
  }

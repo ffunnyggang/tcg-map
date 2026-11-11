@@ -16,6 +16,7 @@ import {drawArtWatermark,makePrintSheet,withCardBleed} from './card-overlay-prin
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
+const artLanguageSwitch=document.querySelector('.art-ui-language');
 const artLanguageButtons=document.querySelectorAll('[data-ui-language]');
 const artMessages=new Map();
 function showArtMessage(id,render){
@@ -85,6 +86,7 @@ async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-g
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+artText(LANGUAGES[selected.source_language]||'샘플'):'';}
 function update(){
+ artLanguageSwitch.hidden=step===4&&!A?.isAppShell?.();
  syncPDF();
  const preparingPDF=step===3&&pdfExport&&!pdfExport.file&&!pdfExport.error;
  const fallback=pdfExport?.fallback;

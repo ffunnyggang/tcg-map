@@ -10,3 +10,15 @@
 .catalogOpen{width:100%;margin-top:10px;border-color:#b6a0c8;color:#73518e;background:#faf7fd}#catalogDialog{width:min(94vw,850px)}#catalogDialog h2{margin:0}.catalogFilters{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:start}.catalogFilters input{display:block;width:100%;min-height:42px;margin:8px 0 14px;border:1px solid #e3dce8;border-radius:9px;padding:10px;font:inherit;color:#352c3e}.catalogBody{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin:12px 0 18px;min-width:0}.catalogBody>section{min-width:0}.catalogResults{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:46dvh;overflow:auto;align-content:start}.catalogResults button{text-align:left;min-width:0;padding:11px;font-size:12px}.catalogResults button[aria-pressed=true]{border-color:#806297;background:#f2eafa}.catalogResults strong{display:block;overflow-wrap:anywhere;font-size:12px;line-height:1.5}.catalogResults span{display:block;margin-top:5px;color:#8a8290;font-size:10px}.catalogPages{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:12px;color:#8a8290}.catalogPages button{padding:8px 12px}.catalogPreview{text-align:center;background:#faf8fc;border-radius:12px;padding:12px}.catalogPreview>p:first-child{font-size:12px;line-height:1.6}.catalogPreview img{display:block;max-width:100%;max-height:42dvh;width:auto;height:auto;margin:10px auto}#catalogLogin{margin-bottom:12px}@media(max-width:760px){.catalogFilters{grid-template-columns:110px 1fr;gap:8px}.catalogFilters input,.catalogFilters select{font-size:16px}#catalogDialog{padding:16px}.catalogBody{gap:10px;grid-template-columns:1fr 1fr}.catalogResults{grid-template-columns:1fr;max-height:40dvh}.catalogPreview{padding:8px}.catalogPreview img{max-height:30dvh}.catalogResults button{padding:9px}.catalogFilters input{font-size:16px}.catalogPreview .hint{font-size:11px}}
 
 .catalogFilters>*{min-width:0}.catalogFilters input{min-width:0}#catalogUse{position:sticky;bottom:0;z-index:1}@media(max-width:760px){.catalogPages{display:grid;grid-template-columns:1fr 1fr;gap:6px}.catalogPages span{grid-column:1/-1;grid-row:1;text-align:center}.catalogPages button{min-width:0;padding:7px 8px;font-size:12px}}
+
+#faceAreaControls {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 6px;
+ margin-bottom: 10px;
+}
+#faceAreaControls button[aria-pressed="true"] {
+ background: #806297;
+ border-color: #806297;
+ color: #fff;
+}

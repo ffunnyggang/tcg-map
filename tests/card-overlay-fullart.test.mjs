@@ -60,3 +60,58 @@ test('face-masked layers send the approved masked source to both AI requests and
   ['generate_text_layer','original'],['generate_fullart_wide','padded-original']
  ]);
 });
+
+test('the extra mask has independent settings and requires a fresh preview approval',()=>{
+ const elements=new Map();
+ const $=id=>{
+  if(!elements.has(id))elements.set(id,{
+   style:{display:'none'},
+   getContext:()=>({drawImage(){}}),
+   click(){this.onclick?.();},
+   setAttribute(name,value){this[name]=value;},
+   addEventListener(name,listener){this[name]=listener;}
+  });
+  return elements.get(id);
+ };
+ const previews=[];
+ const context=vm.createContext({
+  $,busy:false,card:{},revision:1,canvas(){},rect:()=>({}),prepareFullCard:source=>source,
+  FACE_LAYER_MODE:'fullart_header_layers_face',
+  faceMaskedFullCard(_source,_rect,faces){
+   previews.push(JSON.parse(JSON.stringify(faces)));
+   return {plate:{width:100,height:100},masked:{}};
+  }
+ });
+ vm.runInContext(client.slice(client.indexOf('let extractPreviewRevision='),client.indexOf("$('generate').onclick")),context);
+ $('generationMode').value='fullart_header_layers_face';
+ $('extractPreview').click();
+ assert.equal(previews.at(-1).length,1);
+ $('extractAccepted').checked=true;
+ $('faceAreaAdd').click();
+ assert.equal($('extractAccepted').checked,false);
+ assert.equal($('extractAccepted').disabled,false);
+ assert.equal($('faceAreaTwo')['aria-pressed'],'true');
+ assert.equal(previews.at(-1).length,2);
+
+ $('extractCanvas').click({
+  clientX:80,clientY:60,
+  currentTarget:{getBoundingClientRect:()=>({left:0,top:0,width:100,height:100})}
+ });
+ $('faceWidth').value='40';
+ $('faceWidth').oninput();
+ assert.deepEqual(previews.at(-1),[
+  {x:.5,y:.35,width:.28,height:.30},{x:.8,y:.6,width:.4,height:.30}
+ ]);
+ $('faceAreaOne').click();
+ assert.equal($('faceWidth').value,28);
+ $('faceAreaTwo').click();
+ assert.equal($('faceWidth').value,40);
+ $('extractAccepted').checked=true;
+ $('faceAreaAdd').click();
+ assert.equal($('faceAreaTwo').hidden,true);
+ assert.equal($('extractAccepted').checked,false);
+ assert.deepEqual(previews.at(-1),[{x:.5,y:.35,width:.28,height:.30}]);
+ $('generationMode').value='bg_extract';
+ $('faceAreaAdd').click();
+ assert.equal(vm.runInContext('faceAreas.length',context),1);
+});

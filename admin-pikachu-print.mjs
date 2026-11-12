@@ -65,7 +65,7 @@ async function api(path, { body, retry = true } = {}) {
   if (!response.ok) throw Object.assign(new Error(result?.error || '요청을 완료하지 못했어요.'), { status: response.status });
   return result;
 }
-const invoke = (action, id) => api('/functions/v1/pikachu-print-assets', { body: { action, id } });
+const invoke = (action, id, imageId) => api('/functions/v1/pikachu-print-assets', { body: { action, id, imageId } });
 function deny(message) {
   revision++;
   session = null;
@@ -126,6 +126,7 @@ function refreshControls() {
   $('printPrevious').disabled = busy || selection === 0;
   $('printNext').disabled = busy || selection >= catalog.length - 1;
   $('printCard').disabled = busy;
+  $('printImage').disabled = busy || $('printImage').options.length < 2;
   $('printCompare').disabled = busy || !session?.illustration;
   $('printAlign').disabled = busy || !session?.illustration;
   for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration;
@@ -136,7 +137,7 @@ function refreshControls() {
 function save() {
   if (!session?.illustration) return;
   saved[session.card.id] = {
-    ...session.settings, matrix: session.matrix, alignmentKey: session.alignmentKey,
+    ...session.settings, imageId: session.card.illustration.id, matrix: session.matrix, alignmentKey: session.alignmentKey,
     signature: JSON.stringify([session.alignmentKey, session.settings.language, session.card.texts[session.settings.language]?.id]),
     confirmed: session.confirmed,
   };
@@ -207,13 +208,14 @@ async function compose() {
   current.output = merged;
   draw();
 }
-async function loadCard(index) {
+async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
   if (busy || !catalog[index]) return;
   const ticket = ++revision;
   selection = index;
   session = null;
   busy = true;
   $('printCard').value = String(index);
+  $('printImage').replaceChildren(new Option('일러스트 미확보', ''));
   $('printText').replaceChildren(new Option('OFF', 'off'));
   $('printWindow').textContent = '';
   refreshControls();
@@ -221,7 +223,23 @@ async function loadCard(index) {
   $('printReload').hidden = true;
   setStatus('카드와 저장된 레이어를 불러오고 있어요.');
   try {
-    const { card } = await invoke('card', catalog[index].id);
+    let payload;
+    try { payload = await invoke('card', catalog[index].id, imageId); }
+    catch (error) {
+      if (!imageId || error.status !== 404) throw error;
+      payload = await invoke('card', catalog[index].id);
+    }
+    const { card } = payload;
+    const kinds = { standard: '기본 저장 이미지', face: '얼굴 가림 + 연결 맞추기 (BETA)', history: '기존 연결 맞추기 저장본' };
+    const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' });
+    if (card.imageOptions?.length) {
+      $('printImage').replaceChildren(...card.imageOptions.map(option => {
+        const date = new Date(option.createdAt);
+        const suffix = option.kind !== 'standard' && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
+        return new Option((kinds[option.kind] || '저장 이미지') + suffix, option.id);
+      }));
+      $('printImage').value = card.illustration?.id || '';
+    }
     const name = { id: card.id, card_number: card.number, source_language: 'ja', display_name: card.name, art_rect: card.artRect };
     const preset = presets.find(p => p.kind === windowPresetType(name));
     const cut = validWindow(preset) ? { x: preset.x, y: preset.y, w: preset.w, h: preset.h } : defaultArtWindow(name);
@@ -298,6 +316,7 @@ $('printReload').onclick = () => catalog.length ? loadCard(selection) : connect(
 $('printPrevious').onclick = () => loadCard(selection - 1);
 $('printNext').onclick = () => loadCard(selection + 1);
 $('printCard').onchange = e => loadCard(Number(e.target.value));
+$('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
 $('printAlign').onclick = () => withCardAction(async () => {
   const picked = await reviewMobileAlignment({

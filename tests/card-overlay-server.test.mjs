@@ -136,3 +136,20 @@ test('expired free period disables mobile generation',async()=>{const a=setup({O
 test('cached cards cannot bypass daily quota or free period',async()=>{for(const code of ['CARD_DAILY_LIMIT','FREE_PERIOD_ENDED']){const a=setup({OVERLAY_ENABLED:'true',OPENAI_API_KEY:'mock'},u=>u.includes('/auth/')?auth():Response.json({ok:false,code}));const r=await a.request({action:'layer_cache',sourceReferenceId:'30th-en-001'});assert.equal((await r.json()).code,code);assert.ok(!a.calls.some(u=>u.includes('/sign/')||u.includes('openai')));}});
 test('public cannot bypass card quota using an admin generation action',async()=>{const a=setup({OVERLAY_ENABLED:'true',OPENAI_API_KEY:'mock'},auth);for(const action of ['generate','generate_text_layer','generate_fullart_wide','generate_mobile'])assert.equal((await a.request({action,image:png()})).status,403);assert.ok(!a.calls.some(u=>u.includes('openai')));});
 test('unreserved mobile layer cannot reach AI',async()=>{const a=setup({OVERLAY_ENABLED:'true',OPENAI_API_KEY:'mock'},u=>u.includes('/auth/')?auth():u.includes('/rpc/')?Response.json({ok:false,code:'CARD_RESERVATION_REQUIRED'}):Response.json([{id:'30th-en-001',display_name:'sample',card_number:'001',source_language:'en'}]));const r=await a.request({action:'generate_mobile_text',sourceReferenceId:'30th-en-001',image:png(1008,1408)});assert.equal((await r.json()).code,'CARD_RESERVATION_REQUIRED');assert.ok(!a.calls.some(u=>u.includes('openai')));});
+
+test('face-masked wide output is identified in storage and is not published into the mobile cache',async()=>{
+ let row;
+ const a=setup(generatingEnv,(u,o)=>{
+  if(u.includes('/auth/'))return auth();
+  if(u.includes('openai'))return Response.json({data:[{b64_json:png(1648,2048).slice(22)}]});
+  if(u.endsWith('/rest/v1/overlay_generations'))row=JSON.parse(o.body);
+  return Response.json({});
+ });
+ const payload={image:png(1648,2048),mask:png(1648,2048),printRect:{x:5,y:10,w:53,h:30},wideLayout:'bottom-v1',wideLayers:true,wideHeader:'fulltext-v1',wideFaceMask:true};
+ assert.equal((await a.request({action:'generate_fullart_wide',...payload})).status,200);
+ assert.equal(row.prompt_version,'card-fullart-text-layers-face-v1');
+ assert.ok(!a.calls.some(u=>u.includes('/overlay_layer_assets')));
+ const rejected=await a.request({action:'generate_mobile_layers',sourceReferenceId:'m6a-ja-017',...payload});
+ assert.equal(rejected.status,400);
+ assert.equal(a.calls.filter(u=>u.includes('openai')).length,1);
+});

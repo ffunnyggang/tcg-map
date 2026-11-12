@@ -59,23 +59,25 @@ Deno.serve(async(req:Request)=>{
   const validId=(id:unknown)=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   const readOwner=async(id:string)=>{const res=await savedFetch(ownedQuery(id)+'&select=*');if(!res.ok)throw Error('HISTORY_UNAVAILABLE');return (await res.json())[0];};
   const layerVersions={text:'card-text-only-v2',illustration:'card-fullart-text-layers-v1'};
-  const memberFor=async(referenceId:string)=>{
+  const memberFor=async(referenceId:string,optional=false)=>{
    const r=await savedFetch('/rest/v1/overlay_artwork_members?reference_id=eq.'+encodeURIComponent(referenceId)+'&select=artwork_key,language');
    if(!r.ok)throw Error('LAYER_MEMBERS_UNAVAILABLE');const member=(await r.json())[0];
-   if(!member)throw Error('LAYER_MEMBER_MISSING');return member;
+   if(!member&&!optional)throw Error('LAYER_MEMBER_MISSING');return member;
   };
   const layerKey=(member:any,kind:'text'|'illustration')=>layerVersions[kind]+':'+member.artwork_key+(kind==='text'?':'+member.language:'');
 
   // Resolve one validated cached artwork across languages and users; keep text language-specific.
-  const sharedLayer=async(referenceId:string,kind:'text'|'illustration')=>{
-   const member=await memberFor(referenceId),version=layerVersions[kind],cacheKey=layerKey(member,kind);
+  const sharedLayer=async(referenceId:string,kind:'text'|'illustration',publishedOnly=false)=>{
+   const member=await memberFor(referenceId,publishedOnly);
+   if(!member)return null;
+   const version=layerVersions[kind],cacheKey=layerKey(member,kind);
    const lookup=async()=>{
     const r=await savedFetch('/rest/v1/overlay_layer_assets?cache_key=eq.'+encodeURIComponent(cacheKey)+'&select=generation_id,prompt_version');
     if(!r.ok)throw Error('LAYER_CACHE_UNAVAILABLE');
     return (await r.json())[0]||null;
    };
    let asset=await lookup();
-   if(!asset){
+   if(!asset&&!publishedOnly){
     const matches=await savedFetch('/rest/v1/overlay_artwork_members?artwork_key=eq.'+encodeURIComponent(member.artwork_key)+'&select=reference_id,language');
     if(!matches.ok)throw Error('LAYER_MEMBERS_UNAVAILABLE');
     const ids=(await matches.json()).filter((m:any)=>kind==='illustration'||m.language===member.language).map((m:any)=>m.reference_id).filter((v:unknown)=>typeof v==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(v));
@@ -99,6 +101,29 @@ Deno.serve(async(req:Request)=>{
    if(!row||!validId(row.id)||!validId(row.user_id)||row.prompt_version!==version||row.raw_path!==row.user_id+'/'+row.id+'/provider.png'||!((kind==='text'&&row.width===1008&&row.height===1408)||(kind==='illustration'&&((row.width===1648&&row.height===2048)||(row.width===1008&&row.height===1408)))))throw Error('INVALID_LAYER_PATH');
    return row;
   };
+  async function readCachedLayer(row:any){
+    const file=await savedFetch('/storage/v1/object/'+outputBucket+'/'+row.raw_path);
+    if(!file.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
+    const bytes=new Uint8Array(await file.arrayBuffer());
+    if(bytes.length<24||bytes.length>20*1024*1024||[137,80,78,71,13,10,26,10].some((b,i)=>bytes[i]!==b))throw Error('INVALID_LAYER_IMAGE');
+    const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    if(dv.getUint32(16)!==row.width||dv.getUint32(20)!==row.height)throw Error('INVALID_LAYER_IMAGE');
+    let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
+    return btoa(binary);
+  }
+  if(data.action==='admin_text_cache'){
+   if(!tester)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
+   const referenceId=data.sourceReferenceId;
+   if(typeof referenceId!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(referenceId))return reply({error:'올바른 원본 카드가 아닙니다.'},400);
+   const shared=await sharedLayer(referenceId,'text',true);
+   if(shared)return reply({image:await readCachedLayer(shared),storageSaved:true,reused:true});
+   const prior=await savedFetch('/rest/v1/overlay_generations?source_reference_id=eq.'+encodeURIComponent(referenceId)+'&user_id=eq.'+encodeURIComponent(user.id)+'&prompt_version=eq.'+layerVersions.text+'&width=eq.1008&height=eq.1408&order=created_at.desc,id.desc&limit=1&select=id,user_id,raw_path,width,height');
+   if(!prior.ok)throw Error('LAYER_RECOVERY_UNAVAILABLE');
+   const row=(await prior.json())[0];
+   if(!row)return reply({image:null});
+   if(!validId(row.id)||row.user_id!==user.id||row.raw_path!==user.id+'/'+row.id+'/provider.png'||row.width!==1008||row.height!==1408)throw Error('INVALID_LAYER_PATH');
+   return reply({image:await readCachedLayer(row),storageSaved:true,reused:true});
+  }
   if(data.action==='layer_cache'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
@@ -239,15 +264,9 @@ Deno.serve(async(req:Request)=>{
    // Race-safe preflight: no paid generation when a validated layer already exists.
    const cached=await sharedLayer(sourceId,textOnly?'text':'illustration');
    if(cached){
-    const file=await savedFetch('/storage/v1/object/'+outputBucket+'/'+cached.raw_path);
-    if(!file.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
-    const bytes=new Uint8Array(await file.arrayBuffer());
-    if(bytes.length<24||bytes.length>20*1024*1024||[137,80,78,71,13,10,26,10].some((b,i)=>bytes[i]!==b))throw Error('INVALID_LAYER_IMAGE');
-    const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
-    if(dv.getUint32(16)!==cached.width||dv.getUint32(20)!==cached.height)throw Error('INVALID_LAYER_IMAGE');
-    let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
+    const image=await readCachedLayer(cached);
     console.info('overlay layer cache hit',{kind:textOnly?'text':'illustration'});
-    return reply({image:btoa(binary),generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null});
+    return reply({image,generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null});
    }
   }
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,

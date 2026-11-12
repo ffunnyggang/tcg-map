@@ -1,6 +1,6 @@
 import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{stripTypeScriptTypes}from'node:module';import{readFileSync}from'node:fs';
 const code=stripTypeScriptTypes(readFileSync(new URL('../supabase/functions/card-overlay-generate/index.ts',import.meta.url),'utf8'));
-function setup(env={},mock){let handler,calls=[],logs=[];vm.runInNewContext(code,{Deno:{env:{get:k=>({SUPABASE_URL:'https://test.supabase.co',SUPABASE_ANON_KEY:'anon',SUPABASE_SERVICE_ROLE_KEY:'service',...env})[k]},serve:fn=>handler=fn},fetch:async(u,o)=>{calls.push(u);return mock(u,o);},Response,Request,Headers,AbortSignal,FormData,Blob,CompressionStream,crypto,Uint8Array,DataView,Date,atob,console:{error:(...args)=>logs.push(args),info:(...args)=>logs.push(args)}});return{request:async(body,origin='https://funypin.kr',authorization='Bearer user')=>handler(new Request('https://test/function',{method:'POST',headers:{Origin:origin,...(authorization===null?{}:{Authorization:authorization})},body:JSON.stringify(body)})),calls,logs};}
+function setup(env={},mock){let handler,calls=[],logs=[];vm.runInNewContext(code,{Deno:{env:{get:k=>({SUPABASE_URL:'https://test.supabase.co',SUPABASE_ANON_KEY:'anon',SUPABASE_SERVICE_ROLE_KEY:'service',...env})[k]},serve:fn=>handler=fn},fetch:async(u,o)=>{calls.push(u);return mock(u,o);},Response,Request,Headers,AbortSignal,FormData,Blob,CompressionStream,crypto,Uint8Array,DataView,Date,atob,btoa,console:{error:(...args)=>logs.push(args),info:(...args)=>logs.push(args)}});return{request:async(body,origin='https://funypin.kr',authorization='Bearer user')=>handler(new Request('https://test/function',{method:'POST',headers:{Origin:origin,...(authorization===null?{}:{Authorization:authorization})},body:JSON.stringify(body)})),calls,logs};}
 const auth=()=>Response.json({id:'user1'});
 function png(width=1024,height=1536){const b=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(b);b.writeUInt32BE(width,16);b.writeUInt32BE(height,20);return'data:image/png;base64,'+b.toString('base64');}
 test('generation defaults to disabled',async()=>{const a=setup({},auth);const r=await a.request({action:'generate'});assert.equal(r.status,403);assert.equal(a.calls.length,1);});
@@ -152,4 +152,32 @@ test('face-masked wide output is identified in storage and is not published into
  const rejected=await a.request({action:'generate_mobile_layers',sourceReferenceId:'m6a-ja-017',...payload});
  assert.equal(rejected.status,400);
  assert.equal(a.calls.filter(u=>u.includes('openai')).length,1);
+});
+
+test('admin text reuse is read-only, exact-reference scoped and skips AI',async()=>{
+ const ref='m6a-ja-037', owner='8eadb83e-2017-4ed3-ad18-c3fd3882c784';
+ const row={id:savedId,user_id:owner,raw_path:owner+'/'+savedId+'/provider.png',width:1008,height:1408};
+ const body={action:'admin_text_cache',sourceReferenceId:ref};
+ const denied=setup({},auth);
+ assert.equal((await denied.request(body)).status,403);
+ assert.equal(denied.calls.length,1);
+ const a=setup({OVERLAY_TEST_USER_IDS:owner},(url,options)=>{
+  if(url.includes('/auth/'))return Response.json({id:owner});
+  assert.notEqual(options.method,'POST');
+  if(url.includes('overlay_artwork_members'))return Response.json([{artwork_key:ref,language:'ja'}]);
+  if(url.includes('overlay_layer_assets')){
+   assert.ok(decodeURIComponent(url).includes('cache_key=eq.card-text-only-v2:'+ref+':ja'));
+   return Response.json([]);
+  }
+  if(url.includes('overlay_generations')){
+   assert.ok(url.includes('source_reference_id=eq.'+ref));
+   assert.ok(url.includes('user_id=eq.'+owner));
+   return Response.json([row]);
+  }
+  return new Response(Buffer.from(png(1008,1408).slice(22),'base64'));
+ });
+ const result=await a.request(body);
+ assert.equal(result.status,200);
+ assert.equal((await result.json()).reused,true);
+ assert.ok(!a.calls.some(url=>url.includes('openai')||url.includes('overlay-generation-limits')));
 });

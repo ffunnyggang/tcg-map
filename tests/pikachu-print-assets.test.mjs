@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 const artworkVersion = 'card-fullart-text-layers-v1';
+const faceVersion = 'card-fullart-text-layers-face-v1';
 const textVersion = 'card-text-only-v2';
 const card = 'm6a-ja-017';
 const other = 'm6a-ko-017';
@@ -32,6 +33,10 @@ const legacy = generation(2, other, artworkVersion, 1008, 1408);
 const jpText = generation(3, card, textVersion, 1008, 1408);
 const koText = generation(4, other, textVersion, 1008, 1408);
 const wrongEnglish = generation(5, english, textVersion, 500, 600);
+const ownBeta = { ...generation(6, other, faceVersion, 1008, 1408), result_kind: 'prepared' };
+const another = '37beed53-e18a-4d94-b328-bcf1650e8b21';
+const privateBeta = { ...generation(7, card, faceVersion, 1648, 2048), user_id: another };
+privateBeta.raw_path = another + '/' + privateBeta.id + '/provider.png';
 function mock(admin = true) {
   const calls = [];
   globalThis.fetch = async (input, options) => {
@@ -58,7 +63,7 @@ function mock(admin = true) {
         ? [{ cache_key: artworkVersion + ':' + card, generation_id: legacy.id }] : []);
     }
     if (url.pathname.includes('/overlay_generations')) {
-      return Response.json([wide, legacy, jpText, koText, wrongEnglish]);
+      return Response.json([wide, legacy, jpText, koText, wrongEnglish, ownBeta, privateBeta]);
     }
     if (url.pathname.includes('/object/sign/')) {
       return Response.json({ signedURL: url.pathname.replace('/storage/v1', '') + '?token=test' });
@@ -97,4 +102,17 @@ test('per-card response signs only that artwork and prefers its published legacy
   assert.equal(payload.illustration.width, 1008);
   assert.deepEqual(Object.keys(payload.texts).sort(), ['ja', 'ko']);
   assert.equal(calls.filter(p => p.includes('/object/sign')).length, 4);
+});
+
+test('own beta artwork remains selectable after the card-size prepared image is saved', async () => {
+  const calls = mock();
+  const response = await handler(req({ action: 'card', id: card, imageId: ownBeta.id }));
+  assert.equal(response.status, 200);
+  const payload = (await response.json()).card;
+  assert.equal(payload.illustration.id, ownBeta.id);
+  assert.deepEqual(payload.imageOptions.map(({ id, kind }) => [id, kind]), [
+    [legacy.id, 'standard'], [ownBeta.id, 'face'], [wide.id, 'history'],
+  ]);
+  assert.ok(calls.some(path => path.endsWith('/' + ownBeta.id + '/provider.png')));
+  assert.equal((await handler(req({ action: 'card', id: card, imageId: privateBeta.id }))).status, 404);
 });

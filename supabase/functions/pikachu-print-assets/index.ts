@@ -1,4 +1,5 @@
 const ART = 'card-fullart-text-layers-v1';
+const FACE_ART = 'card-fullart-text-layers-face-v1';
 const TEXT = 'card-text-only-v2';
 const ids = Array.from({ length: 30 }, (_, i) => 'm6a-ja-' + String(i + 17).padStart(3, '0'));
 const uuid = /^[0-9a-f-]{36}$/i;
@@ -51,12 +52,13 @@ Deno.serve(async req => {
   type Reference = { id: string; card_number: string; display_name: string; source_language: string; art_rect: unknown; image_path: string };
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
-  type Generation = { id: string; user_id: string; raw_path: string; source_reference_id: string; prompt_version: string; width: number; height: number };
+  type Generation = { id: string; user_id: string; raw_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string };
   function valid(g: Generation, kind: string) {
     if (!uuid.test(g.id) || !uuid.test(g.user_id) || g.raw_path !== g.user_id + '/' + g.id + '/provider.png') return false;
     return kind === TEXT
       ? g.prompt_version === TEXT && g.width === 1008 && g.height === 1408
-      : g.prompt_version === ART && ((g.width === 1648 && g.height === 2048) || (g.width === 1008 && g.height === 1408));
+      : g.prompt_version === kind && ((g.width === 1648 && g.height === 2048) ||
+        ((kind === ART || g.result_kind === 'prepared') && g.width === 1008 && g.height === 1408));
   }
   try {
     const authUser = await request('/auth/v1/user', { headers });
@@ -69,7 +71,7 @@ Deno.serve(async req => {
     if (admin.status >= 500) throw new Error('administrator check unavailable');
     if (!admin.ok || await admin.json() !== true) return reply({ error: '퍼니핀 관리자만 접근할 수 있습니다.' }, 403);
     const body = await req.json().catch(() => null);
-    if (body?.action !== 'catalog' && (body?.action !== 'card' || !ids.includes(body.id))) {
+    if (body?.action !== 'catalog' && (body?.action !== 'card' || !ids.includes(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     }
     const selected = body.action === 'card' ? [body.id] : ids;
@@ -88,9 +90,9 @@ Deno.serve(async req => {
         select: 'cache_key,generation_id', cache_key: inList(batch), order: 'cache_key.asc',
       }))).then(lists => lists.flat()),
       rows<Generation>('overlay_generations', {
-        select: 'id,user_id,raw_path,source_reference_id,prompt_version,width,height',
+        select: 'id,user_id,raw_path,source_reference_id,prompt_version,width,height,result_kind,created_at',
         source_reference_id: inList(members.map(m => m.reference_id)),
-        prompt_version: inList([ART, TEXT]), order: 'created_at.desc,id.desc',
+        prompt_version: inList([ART, FACE_ART, TEXT]), order: 'created_at.desc,id.desc',
       }),
     ]);
     const byId = new Map(generations.map(g => [g.id, g]));
@@ -111,7 +113,14 @@ Deno.serve(async req => {
         if (primary && matching.includes(primary)) ranked.unshift(primary);
         return ranked;
       }
-      const illustrations = candidates(ART);
+      const standard = candidates(ART);
+      const face = candidates(FACE_ART).filter(row => row.user_id === user.id);
+      const defaults = standard.slice(0, 1).map(row => ({ row, kind: 'standard' }));
+      const beta = face.map(row => ({ row, kind: 'face' }));
+      // Old builds recorded the same prompt version for all full-text variants.
+      const older = standard.slice(1).filter(row => row.user_id === user.id)
+        .map(row => ({ row, kind: 'history' }));
+      const illustrations = [...defaults, ...beta, ...older];
       const texts = Object.fromEntries([...new Set(forGroup.map(m => m.language))]
         .map(language => [language, candidates(TEXT, language)] as const).filter(([, list]) => list.length));
       return { ref, illustrations, texts };
@@ -130,12 +139,15 @@ Deno.serve(async req => {
       return null;
     }
     const plan = plans[0];
+    const choice = body.imageId == null ? plan.illustrations[0] : plan.illustrations.find(item => item.row.id === body.imageId);
+    if (body.imageId != null && !choice) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
     const [original, illustration, texts] = await Promise.all([
       sign('overlay-art-references', plan.ref.image_path),
-      usable(plan.illustrations),
+      usable(body.imageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : []),
       Promise.all(Object.entries(plan.texts).map(async ([language, list]) => [language, await usable(list)])),
     ]);
-    return reply({ card: { ...cardInfo(plan), original, illustration, texts: Object.fromEntries(texts) } });
+    const imageOptions = plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at }));
+    return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {
     console.error('pikachu print assets failed', error instanceof Error ? error.message : 'unknown');
     return reply({ error: '출력용 이미지를 불러오지 못했어요. 다시 시도해 주세요.' }, 503);

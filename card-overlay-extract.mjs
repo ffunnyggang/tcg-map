@@ -18,13 +18,13 @@ function coverFace(plate,face){
  g.fillStyle='rgb('+mid(0)+','+mid(1)+','+mid(2)+')';g.fillRect(0,0,width,height);g.restore();
  return Math.PI*rx*ry/(width*height);
 }
-export function faceMaskedFullCard(source,rect,face,canvas){
+export function faceMaskedFullCard(source,rect,faces,canvas){
  const scaleX=source.width/63,scaleY=source.height/88;
  const x=Math.round(rect.x*scaleX),y=Math.round(rect.y*scaleY);
  const width=Math.round((rect.x+rect.w)*scaleX)-x,height=Math.round((rect.y+rect.h)*scaleY)-y;
  const plate=canvas(width,height);
  plate.getContext('2d',{willReadFrequently:true}).drawImage(source,x,y,width,height,0,0,width,height);
- coverFace(plate,face);
+ for(const face of faces)coverFace(plate,face);
  const masked=canvas(source.width,source.height),g=masked.getContext('2d');
  g.drawImage(source,0,0);
  g.drawImage(plate,x,y);

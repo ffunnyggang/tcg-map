@@ -2,6 +2,14 @@ const ART = 'card-fullart-text-layers-v1';
 const FACE_ART = 'card-fullart-text-layers-face-v1';
 const TEXT = 'card-text-only-v2';
 const ids = Array.from({ length: 30 }, (_, i) => 'm6a-ja-' + String(i + 17).padStart(3, '0'));
+// Visually verified Korean editions for the same four print artworks.
+// These pairings apply to this admin workspace only.
+const printKoreanSources: Record<string, string> = {
+  'm6a-ja-036': 'm6a-ko-01M1FTK1GHT66NBH2QA18FJJ8Z',
+  'm6a-ja-038': 'm6a-ko-01M1FTK3DG7210M7MR4FS7T5TF',
+  'm6a-ja-040': 'm6a-ko-01M2FKPQ5YM3T9JW6WGD49W4FQ',
+  'm6a-ja-041': 'm6a-ko-01M1FTK4AA6Z5QJ7V44YAQ268X',
+};
 const uuid = /^[0-9a-f-]{36}$/i;
 const refId = /^[a-z0-9-]{1,80}$/i;
 const cors = {
@@ -84,24 +92,31 @@ Deno.serve(async req => {
     const members = (await rows<Member>('overlay_artwork_members', {
       select: 'reference_id,artwork_key,language', artwork_key: inList(groups), order: 'reference_id.asc',
     })).filter(m => refId.test(m.reference_id) && /^[a-z]{2}$/.test(m.language));
-    const keys = [...new Set(members.flatMap(m => [ART + ':' + m.artwork_key, TEXT + ':' + m.artwork_key + ':' + m.language]))];
+    const memberMap = new Map(members.map(m => [m.reference_id, m]));
+    for (const anchor of anchors) {
+      const referenceId = printKoreanSources[anchor.reference_id];
+      if (referenceId) memberMap.set(referenceId, {
+        reference_id: referenceId, artwork_key: anchor.artwork_key, language: 'ko',
+      });
+    }
+    const printMembers = [...memberMap.values()];
+    const keys = [...new Set(printMembers.flatMap(m => [ART + ':' + m.artwork_key, TEXT + ':' + m.artwork_key + ':' + m.language]))];
     const [published, generations] = await Promise.all([
       Promise.all(chunks(keys).map(batch => rows<Asset>('overlay_layer_assets', {
         select: 'cache_key,generation_id', cache_key: inList(batch), order: 'cache_key.asc',
       }))).then(lists => lists.flat()),
       rows<Generation>('overlay_generations', {
         select: 'id,user_id,raw_path,source_reference_id,prompt_version,width,height,result_kind,created_at',
-        source_reference_id: inList(members.map(m => m.reference_id)),
+        source_reference_id: inList(printMembers.map(m => m.reference_id)),
         prompt_version: inList([ART, FACE_ART, TEXT]), order: 'created_at.desc,id.desc',
       }),
     ]);
     const byId = new Map(generations.map(g => [g.id, g]));
     const publishedIds = new Map(published.map(a => [a.cache_key, a.generation_id]));
     const anchorGroups = new Map(anchors.map(m => [m.reference_id, m.artwork_key]));
-    const memberMap = new Map(members.map(m => [m.reference_id, m]));
     const plans = refs.map(ref => {
       const group = anchorGroups.get(ref.id);
-      const forGroup = members.filter(m => m.artwork_key === group);
+      const forGroup = printMembers.filter(m => m.artwork_key === group);
       function candidates(kind: string, language?: string) {
         const key = kind + ':' + group + (language ? ':' + language : '');
         const matching = generations.filter(g => {

@@ -37,6 +37,9 @@ const ownBeta = { ...generation(6, other, faceVersion, 1008, 1408), result_kind:
 const another = '37beed53-e18a-4d94-b328-bcf1650e8b21';
 const privateBeta = { ...generation(7, card, faceVersion, 1648, 2048), user_id: another };
 privateBeta.raw_path = another + '/' + privateBeta.id + '/provider.png';
+const korean036 = 'm6a-ko-01M1FTK1GHT66NBH2QA18FJJ8Z';
+const newArt = generation(8, korean036, artworkVersion, 1008, 1408);
+const newText = generation(9, korean036, textVersion, 1008, 1408);
 function mock(admin = true) {
   const calls = [];
   globalThis.fetch = async (input, options) => {
@@ -63,7 +66,9 @@ function mock(admin = true) {
         ? [{ cache_key: artworkVersion + ':' + card, generation_id: legacy.id }] : []);
     }
     if (url.pathname.includes('/overlay_generations')) {
-      return Response.json([wide, legacy, jpText, koText, wrongEnglish, ownBeta, privateBeta]);
+      const sources = url.searchParams.get('source_reference_id');
+      return Response.json([wide, legacy, jpText, koText, wrongEnglish, ownBeta, privateBeta, newArt, newText]
+        .filter(row => sources.includes(row.source_reference_id)));
     }
     if (url.pathname.includes('/object/sign/')) {
       return Response.json({ signedURL: url.pathname.replace('/storage/v1', '') + '?token=test' });
@@ -115,4 +120,17 @@ test('own beta artwork remains selectable after the card-size prepared image is 
   ]);
   assert.ok(calls.some(path => path.endsWith('/' + ownBeta.id + '/provider.png')));
   assert.equal((await handler(req({ action: 'card', id: card, imageId: privateBeta.id }))).status, 404);
+});
+
+test('a print-only Korean source supplies the matching Japanese card and its Korean text', async () => {
+  const calls = mock();
+  const response = await handler(req({ action: 'card', id: 'm6a-ja-036' }));
+  assert.equal(response.status, 200);
+  const payload = (await response.json()).card;
+  assert.equal(payload.illustration.id, newArt.id);
+  assert.equal(payload.texts.ko.id, newText.id);
+  assert.deepEqual(payload.languages, ['ko']);
+  assert.ok(calls.includes('/storage/v1/object/sign/overlay-art-references/036.png'));
+  const other = await handler(req({ action: 'card', id: 'm6a-ja-035', imageId: newArt.id }));
+  assert.equal(other.status, 404);
 });

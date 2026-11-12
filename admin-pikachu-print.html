@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#faf8fc">
+  <title>피카츄 30종 출력 도안 | FUNY PIN 어드민</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
+  <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261112-1">
+  <script src="./web-auth.js"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261112-1"></script>
+</head>
+<body class="pikachu-print">
+  <header class="print-header">
+    <a href="./admin.html">‹ 어드민</a>
+    <h1>피카츄 30종 출력 도안</h1>
+  </header>
+  <main class="print-main">
+    <p id="printStatus" class="print-status" role="status" aria-live="polite">관리자 권한을 확인하고 있어요.</p>
+    <button type="button" id="printReload" class="secondary" hidden>다시 불러오기</button>
+    <a id="printLogin" href="./admin.html" hidden>관리자 로그인</a>
+    <section id="printWorkspace" hidden aria-label="도안 작업">
+      <div class="print-navigation">
+        <button type="button" id="printPrevious" aria-label="이전 카드">‹</button>
+        <label for="printCard">작업 순서
+          <select id="printCard"></select>
+        </label>
+        <button type="button" id="printNext" aria-label="다음 카드">›</button>
+      </div>
+      <p id="printProgress" class="small-note"></p>
+      <div class="print-editor">
+        <section class="print-visual" aria-label="도안 미리보기">
+          <canvas id="printCanvas" width="504" height="704" aria-label="카드와 절단선 미리보기"></canvas>
+          <div class="print-actions">
+            <button type="button" id="printCompare" aria-pressed="false">원본 보기</button>
+            <button type="button" id="printAlign">일러스트 연결 맞추기</button>
+          </div>
+        </section>
+        <section class="print-options" aria-label="출력 설정">
+          <h2>출력 설정</h2>
+          <label for="printText">텍스트·기호
+            <select id="printText"></select>
+          </label>
+          <label for="printSymbol">30주년 심볼
+            <select id="printSymbol">
+              <option value="off">OFF</option>
+              <option value="center">중앙</option>
+            </select>
+          </label>
+          <label for="printBorder">테두리
+            <select id="printBorder">
+              <option value="off">OFF</option>
+              <option value="holographic-border-v1">홀로</option>
+              <option value="silver-satin-border-v1">실버</option>
+              <option value="silver-glitter-border-v1">실버 글리터</option>
+              <option value="gold-star-border-v1">골드 글리터</option>
+            </select>
+          </label>
+          <label for="printCorner">모서리
+            <select id="printCorner">
+              <option value="round">라운드</option>
+              <option value="square">사각</option>
+            </select>
+          </label>
+          <p id="printWindow" class="small-note"></p>
+          <div class="print-actions">
+            <button type="button" class="secondary" id="printConfirm">설정 확정</button>
+            <button type="button" class="primary" id="printPDF">A4 PDF 다운로드</button>
+          </div>
+          <p class="small-note">확정한 카드별 설정은 이 브라우저에 저장됩니다.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

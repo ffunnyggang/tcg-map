@@ -25,13 +25,14 @@ test('face-masked layers send the approved masked source to both AI requests and
  const mask={toDataURL:()=>'window-mask'};
  const r={x:5.6,y:9.3,w:51.8,h:31.8};
  const requests=[];
+ let referenceId=null;
  const context=vm.createContext({
   $,canvas(){},card:original,approvedFaceSource:masked,revision:1,busy:false,ready:true,
   rect:()=>r,extractPreviewRevision:1,prepareFullCard:card=>card,
-  windowMask:()=>mask,resetFullArt(){},draw(){},update(){},toast(){},sourceMetadata:()=>({}),
+  windowMask:()=>mask,resetFullArt(){},draw(){},update(){},toast(){},sourceMetadata:()=>({sourceReferenceId:referenceId}),
   padCard:(source,_canvas,maskOnly)=>({toDataURL:()=>maskOnly?'padded-mask':'padded-'+source.toDataURL()}),
   loadSharedSymbol:async()=>({image:{},placement:{}}),aiHeaderDraft:null,
-  A:{invokeFunction:async(_name,body)=>{requests.push(body);return {image:'png'}}},
+  A:{invokeFunction:async(_name,body)=>{requests.push(body);return {image:'png',reused:body.action==='admin_text_cache'}}},
   decodeTextLayer:async()=>({}),Image:class{width=1648;height=2048;async decode(){}},
   alignWide:async source=>{assert.equal(source,original);return {matrix:[],trusted:true}},
   isOriginalMode:()=>false,wideVariant:()=>null,showStorage(){},fullArtMode(){},
@@ -59,6 +60,14 @@ test('face-masked layers send the approved masked source to both AI requests and
  assert.deepEqual(requests.map(({action,image})=>[action,image]),[
   ['generate_text_layer','original'],['generate_fullart_wide','padded-original']
  ]);
+ requests.length=0;
+ referenceId='m6a-ja-037';
+ $('generationMode').value='fullart_header_layers_face';
+ await vm.runInContext('generateFullArt(rect())',context);
+ assert.deepEqual(requests.map(({action,image})=>[action,image]),[
+  ['admin_text_cache',undefined],['generate_fullart_wide','padded-masked']
+ ]);
+ assert.equal(requests[0].sourceReferenceId,referenceId);
 });
 
 test('the extra mask has independent settings and requires a fresh preview approval',()=>{

@@ -6,3 +6,7 @@ verify_jwt = false
 # Verifies each bearer token with Auth.getUser before checking shop assignment.
 [functions.graded-shop-admin]
 verify_jwt = false
+
+# Verifies the bearer session and administrator RPC before signing any print asset.
+[functions.pikachu-print-assets]
+verify_jwt = false

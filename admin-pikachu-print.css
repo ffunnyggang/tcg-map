@@ -1,0 +1,24 @@
+body.pikachu-print { margin: 0; background: #faf8fc; color: #211a27; }
+.pikachu-print [hidden] { display: none !important; }
+.print-header, .print-main { width: min(100% - 32px, 860px); margin-inline: auto; }
+.print-header { display: flex; align-items: center; gap: 16px; padding-block: 20px 8px; }
+.print-header a, #printLogin { color: #6f4d86; font-weight: 700; white-space: nowrap; }
+.print-header h1 { font-size: clamp(18px, 4vw, 25px); margin: 0; }
+.print-status { min-height: 1.5em; margin-block: 12px; }
+.print-navigation { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: end; gap: 8px; }
+.print-navigation > button { font-size: 22px; }
+.print-navigation label, .print-options label { display: grid; gap: 5px; font-weight: 700; }
+.print-navigation select, .print-options select, .print-navigation button, .print-actions button {
+  min-height: 44px; padding: 8px 10px; border: 1px solid #dcd1e4; border-radius: 10px;
+  font: inherit; color: inherit; background: white;
+}
+.print-navigation button:disabled, .print-actions button:disabled, .print-options select:disabled { opacity: .5; }
+.print-editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 16px; }
+.print-visual, .print-options { min-width: 0; padding: 16px; background: #fff; border: 1px solid #e7dfee; border-radius: 16px; }
+.print-visual canvas { display: block; width: min(100%, 290px); height: auto; margin: 0 auto 12px; }
+.print-options { display: grid; gap: 11px; }
+.print-options h2, .print-options p { margin: 0; }
+.print-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.print-actions button { flex: 1 0 auto; }
+.print-actions .primary { background: #72518b; color: #fff; }
+@media (max-width: 630px) { .print-editor { grid-template-columns: 1fr; padding-bottom: 20px; } }

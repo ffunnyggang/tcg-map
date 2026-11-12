@@ -5,7 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="referrer" content="no-referrer">
+<script>
+window.FUNY_NFC_ENTRY=(()=>{
+ const query=new URLSearchParams(location.search);
+ const fragment=new URLSearchParams(location.hash.slice(1));
+ const hasToken=query.has('t');
+ const hasSession=fragment.has('nfc_session');
+ const guide=query.get('mode')==='guide'&&!hasToken&&!hasSession;
+ const token=hasToken?(query.get('t')||'').toLowerCase():'';
+ const session=hasSession?(fragment.get('nfc_session')||''):'';
+ if(hasToken||hasSession)history.replaceState(history.state,'',location.pathname);
+ return {hasToken,hasSession,guide,token,session};
+})();
+</script>
 <title>NFC 방문인증 | FUNY PIN</title>
 <link rel="icon" href="/favicon.svg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -125,7 +138,22 @@ html.app-shell .content{padding-top:24px}
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const token=(new URLSearchParams(location.search).get('t')||'').toLowerCase();
+const entry=window.FUNY_NFC_ENTRY;
+delete window.FUNY_NFC_ENTRY;
+const sessionKey='funypin:nfc:session';
+const sessionPattern=/^[A-Za-z0-9_-]{86}$/;
+let session='';
+function saveSession(value){
+ session=value;
+ try{
+  if(value)sessionStorage.setItem(sessionKey,value);
+  else sessionStorage.removeItem(sessionKey);
+ }catch(_){}
+}
+if(entry.hasToken||entry.hasSession)saveSession('');
+else if(!entry.guide){try{session=sessionStorage.getItem(sessionKey)||''}catch(_){}}
+if(!entry.hasToken&&entry.hasSession&&sessionPattern.test(entry.session))saveSession(entry.session);
+entry.session='';
 const endpoint='https://wdttzpbmqavaqfcbaywj.supabase.co/functions/v1/shop-visit-nfc-pilot';
 const key='sb_publishable__wrSzngSE-JbGnyE7PZX9w_2QaW8bpq';
 // This is a UI routing distinction, not proof that the request came from an attested app.
@@ -141,14 +169,15 @@ else{
 }
 appOpen.onclick=()=>{
  if(!shopReady||busy||completed)return;
- // The tag's existing HTTPS URL never changes. Open the released app's /web route.
- const destination='https://funypin.kr/nfc.html?t='+encodeURIComponent(token);
+ // The native WebView receives only the expiring session in the fragment.
+ const destination=location.origin+location.pathname+'#nfc_session='+encodeURIComponent(session);
  const deepLink='funypin:///web?url='+encodeURIComponent(destination)+'&title='+encodeURIComponent('NFC 방문인증')+'&backOnly=1';
  status('FUNY PIN 앱을 여는 중이에요. 앱이 열리지 않으면 설치 상태를 확인해 주세요.');
  window.location.href=deepLink;
  setTimeout(()=>{if(!document.hidden)status('앱 실행 안내가 나타나지 않으면 앱 설치 또는 연결 설정을 확인해 주세요.');},1800);
 };
 const messages={
+ session_expired:'NFC 인증 시간이 지났어요. 매장 태그를 다시 스캔해 주세요.',
  invalid_tag:'등록되지 않았거나 사용이 중지된 NFC 태그입니다. 매장 직원에게 확인해 주세요.',
  login_required:'방문인증을 하려면 퍼니핀 로그인이 필요합니다.',
  too_far:'GPS 측정 위치가 허용 거리 밖입니다. 매장 위치에서 다시 시도해 주세요.',
@@ -244,10 +273,11 @@ function fail(message){
  status(message,'error');stage('error');
 }
 async function api(body,access=''){
- const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{})},body:JSON.stringify(body),cache:'no-store'});
+ const response=await fetch(endpoint,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',...(access?{Authorization:'Bearer '+access}:{})},body:JSON.stringify(body),cache:'no-store',referrerPolicy:'no-referrer'});
  const result=await response.json().catch(()=>({ok:false,error:'server_error'}));
  if(!response.ok||!result.ok){
   if(result.error==='too_far')throw Error('매장 거리 제한을 초과했어요. '+(result.distance_m!=null?'현재 거리 약 '+result.distance_m+'m · ':'')+'허용 '+(result.max_distance_m||maxDistance)+'m');
+  if(result.error==='session_expired'){saveSession('');shopReady=false;}
   throw Error(messages[result.error]||messages.server_error);
  }
  return result;
@@ -266,7 +296,7 @@ login.onclick=()=>{
  if(!inApp)return;
  // Released native app cannot resume the source NFC route after login.
  // Explain the re-tap requirement rather than falsely implying automatic return.
- window.FUNY_WEB_AUTH?.goLogin(location.pathname+location.search);
+ window.FUNY_WEB_AUTH?.goLogin(location.pathname);
 };
 function locate(){
  return new Promise((resolve,reject)=>{
@@ -302,7 +332,8 @@ submit.onclick=async()=>{
   const point=await locate();
   if(point.accuracy>50)throw Error('GPS 오차 반경이 ±'+Math.round(point.accuracy)+'m입니다. 정확도가 ±50m 이내가 되도록 다시 측정해 주세요.');
   stage('submitting');status('매장 위치와 방문 기록을 확인하고 있어요.');
-  const result=await api({action:'checkin',token,...point},access);
+  const result=await api({action:'checkin',session,...point},access);
+  saveSession('');
   completed=true;
   $('shopVisitLabel').textContent='방문한 카드샵';
   const isLive=result.reward_enabled===true;
@@ -337,7 +368,7 @@ submit.onclick=async()=>{
  }finally{busy=false;if(!completed){submit.disabled=!shopReady||loginState!=='logged_in';if(inApp&&loginState==='logged_out')updateLoginUI()}}
 };
 (async()=>{
- if(!token&&new URLSearchParams(location.search).get('mode')==='guide'){
+ if(entry.guide){
   $('heading').textContent='매장 NFC 태그를 스캔해 주세요';
   $('lead').textContent='휴대폰을 매장의 FUNY PIN NFC 태그에 가까이 대고 표시되는 링크를 열어 주세요.';
   $('shopVisitLabel').textContent='인증 방식';
@@ -347,9 +378,19 @@ submit.onclick=async()=>{
   $('retryMap').hidden=false;
   return;
  }
- if(!/^[a-f0-9]{48}$/.test(token)){$('shopName').textContent='NFC 태그를 확인할 수 없습니다.';fail(messages.invalid_tag);return}
+ const token=entry.token;
+ entry.token='';
+ if(entry.hasToken?!/^[a-f0-9]{48}$/.test(token):!sessionPattern.test(session)){
+  $('shopName').textContent='NFC 태그를 확인할 수 없습니다.';
+  fail(entry.hasToken?messages.invalid_tag:messages.session_expired);
+  return;
+ }
  try{
-  const data=await api({action:'info',token});
+  const data=entry.hasToken?await api({action:'session_start',token}):await api({action:'info',session});
+  if(entry.hasToken){
+   if(!sessionPattern.test(data.session))throw Error(messages.server_error);
+   saveSession(data.session);
+  }
   shopId=data.shop_id;rewardEnabled=data.reward_enabled===true;maxDistance=50;shopReady=true;
   $('buttonNote').textContent='매장 반경 50m 이내 · GPS 정확도 ±50m 이내에서 인증할 수 있습니다.';
   $('shopName').textContent=data.shop_name;

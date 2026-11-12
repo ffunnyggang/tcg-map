@@ -1,3 +1,4 @@
+import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {cardOutline} from './card-overlay-shape.mjs?v=20261108-cardfit1';
 import {composeLayers} from './card-overlay-layers.mjs?v=20261108-cardfit1';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
@@ -40,13 +41,53 @@ function draw(){if(fullArtResult)refreshFullArtPreview();cv.style.borderRadius=c
 function resetReview(){$('seamDetails').hidden=true;rawArt=null;alignmentReview=false;$('acceptAlignment').checked=false;$('alignmentReview').hidden=true;$('rawPreview').checked=false;}
 function setPhoto(p){fixedArtRect=null;sourceReferenceId=null;$('sourceCardLabel').value='';$('sourceCardLabel').readOnly=false;savedEpoch++;historyOnly=false;$('storageStatus').textContent='';resetFullArt();clearReference();resetReview();$('qualityStatus').textContent='';sampleMode=false;$('scanOption').hidden=true;$('windowStatus').textContent='';photo=p;card=null;art=null;artBleed=0;corners=[];revision++;cv.width=p.width;cv.height=p.height;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('settings').disabled=true;$('cornerName').textContent=names[0];$('cornerTools').hidden=false;$('previewTitle').textContent='카드 외곽 확인';$('zoom').value='1';applyZoom();}
 function analyze(c){const ratio=Math.min(1,320/c.width,440/c.height),tiny=canvas(Math.round(c.width*ratio),Math.round(c.height*ratio));tiny.getContext('2d').drawImage(c,0,0,tiny.width,tiny.height);return tiny.getContext('2d',{willReadFrequently:true}).getImageData(0,0,tiny.width,tiny.height);}
-function autoWindow(){if(!card)return;clearReference();resetReview();const result=detectArtWindow(analyze(card),$('layout').value);if(!fixedArtRect)fixedArtRect={...result.rect};for(const [k,v]of Object.entries(result.rect))$(k).value=v;art=null;revision++;$('confirmed').checked=false;$('windowStatus').textContent=result.confident?'일러스트 테두리 후보로 창을 지정했어요. 자동 추정값이므로 네 방향 경계를 확인해 주세요.':'그림 경계가 불명확해 레이아웃 기본 창을 적용했어요. 미세 조절로 꼭 확인해 주세요.';if(!result.confident)$('fineTune').open=true;draw();}
+const overlayWindowPresets={
+ regular:{x:5.6,y:9.3,w:51.8,h:31.8},
+ evolution:{x:5.7,y:10.6,w:51.7,h:30.4},
+ classic:{x:7.6,y:12.8,w:47.3,h:32.1}
+};
+function selectedWindowPreset(){return overlayWindowPresets[$('layout').value]||overlayWindowPresets.regular;}
+function visionWindowLayout(){return $('layout').value==='classic'?'classic':'modern';}
+function writeWindow(rect){for(const [key,value] of Object.entries(rect))$(key).value=value;}
+async function loadOverlayWindowPresets(){
+ try{
+  await A?.init();
+  const {data,error}=await A.client.from('card_art_window_presets').select('kind,x,y,w,h');
+  if(error)return;
+  for(const {kind,x,y,w,h} of data){
+   const rect={x:Number(x),y:Number(y),w:Number(w),h:Number(h)};
+   if(Object.hasOwn(overlayWindowPresets,kind)&&validRect(rect))overlayWindowPresets[kind]=rect;
+  }
+  if(!card)writeWindow(selectedWindowPreset());
+ }catch{}
+}
+function applyWindow(rect,message){
+ if(!card||busy||savedLoading)return;
+ clearReference();resetReview();resetFullArt();fixedArtRect={...rect};
+ writeWindow(rect);art=null;revision++;$('confirmed').checked=false;
+ $('windowStatus').textContent=message;draw();update();
+}
+function applyWindowPreset(){
+ applyWindow(selectedWindowPreset(),'카드 유형의 기본 일러스트 창을 적용했어요. 필요하면 미세 조절해 주세요.');
+}
+function autoWindow(){
+ if(!card||busy||savedLoading)return;
+ const result=detectArtWindow(analyze(card),visionWindowLayout());
+ if(!result.confident){applyWindowPreset();$('fineTune').open=true;return;}
+ applyWindow(result.rect,'그림 경계를 기준으로 창을 다시 찾았어요. 네 방향 경계를 확인해 주세요.');
+}
+function catalogWindowKind(row){
+ const id=row.legacyReferenceId||row.id;
+ const number=Number(String(row.card_number).split('/')[0]);
+ if(id.startsWith('me55cc-')||(!isDogamAdminCard({id})&&number>=136&&number<=150))return 'classic';
+ return windowPresetType({...row,id})||'regular';
+}
 $('photo').onchange=async e=>{if(busy)return;try{const p=await load(e.target.files[0]);setPhoto(p);const found=detectCard(analyze(p));if(found){corners=found.points;$('correct').onclick();toast('카드 외곽을 찾아 보정했어요. 일러스트 창을 확인해 주세요.');}else{$('scanOption').hidden=!isCardScan(p);draw();update();toast(isCardScan(p)?'카드 비율로 잘린 이미지예요. 이미지 전체가 카드라면 ‘이미지 전체를 카드로 사용’을 눌러 주세요.':'카드 외곽을 자동으로 찾지 못했어요. 네 모서리를 차례대로 눌러 주세요.');}}catch(e){toast(e.message);}e.target.value='';};
 cv.addEventListener('pointerdown',e=>{if(!photo||card||corners.length===4||busy)return;const b=cv.getBoundingClientRect();corners.push({x:Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y:Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))});$('cornerName').textContent=names[corners.length]||'선택 완료';draw();update();});
 $('useFullCard').onclick=()=>{if(busy||!photo||!isCardScan(photo))return;corners=[{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}];$('correct').onclick();};
 $('resetCorners').onclick=()=>{corners=[];$('cornerName').textContent=names[0];draw();update();};
-$('correct').onclick=()=>{try{const h=homography(corners),input=photo.getContext('2d').getImageData(0,0,photo.width,photo.height),out=canvas(W,H),g=out.getContext('2d'),pixels=g.createImageData(W,H);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const p=project(h,x/(W-1),y/(H-1)),sx=Math.max(0,Math.min(photo.width-1,p.x*(photo.width-1))),sy=Math.max(0,Math.min(photo.height-1,p.y*(photo.height-1))),x0=Math.floor(sx),y0=Math.floor(sy),dx=sx-x0,dy=sy-y0,idx=(y*W+x)*4;for(let ch=0;ch<3;ch++){const get=(xx,yy)=>input.data[(Math.min(photo.height-1,yy)*photo.width+Math.min(photo.width-1,xx))*4+ch];pixels.data[idx+ch]=get(x0,y0)*(1-dx)*(1-dy)+get(x0+1,y0)*dx*(1-dy)+get(x0,y0+1)*(1-dx)*dy+get(x0+1,y0+1)*dx*dy;}pixels.data[idx+3]=255;}g.putImageData(pixels,0,0);fixedArtRect=null;card=out;cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;$('previewTitle').textContent='일러스트 창 확인';autoWindow();}catch(e){toast(e.message);}};
-for(const k of ['x','y','w','h'])$(k).oninput=()=>{clearReference();revision++;art=null;resetReview();$('qualityStatus').textContent='';$('windowStatus').textContent='수동으로 지정한 일러스트 창입니다. 그림 테두리 안쪽에 맞는지 확인해 주세요.';$('confirmed').checked=false;draw();};$('confirmed').onchange=update;$('pokemonConfirmed').onchange=update;$('layout').onchange=autoWindow;$('detectWindow').onclick=autoWindow;$('assembled').onchange=draw;$('tolerance').oninput=()=>{draw();update();};
+$('correct').onclick=()=>{try{const h=homography(corners),input=photo.getContext('2d').getImageData(0,0,photo.width,photo.height),out=canvas(W,H),g=out.getContext('2d'),pixels=g.createImageData(W,H);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const p=project(h,x/(W-1),y/(H-1)),sx=Math.max(0,Math.min(photo.width-1,p.x*(photo.width-1))),sy=Math.max(0,Math.min(photo.height-1,p.y*(photo.height-1))),x0=Math.floor(sx),y0=Math.floor(sy),dx=sx-x0,dy=sy-y0,idx=(y*W+x)*4;for(let ch=0;ch<3;ch++){const get=(xx,yy)=>input.data[(Math.min(photo.height-1,yy)*photo.width+Math.min(photo.width-1,xx))*4+ch];pixels.data[idx+ch]=get(x0,y0)*(1-dx)*(1-dy)+get(x0+1,y0)*dx*(1-dy)+get(x0,y0+1)*(1-dx)*dy+get(x0+1,y0+1)*dx*dy;}pixels.data[idx+3]=255;}g.putImageData(pixels,0,0);fixedArtRect=null;card=out;cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;$('previewTitle').textContent='일러스트 창 확인';applyWindowPreset();}catch(e){toast(e.message);}};
+for(const k of ['x','y','w','h'])$(k).oninput=()=>{clearReference();revision++;art=null;resetReview();$('qualityStatus').textContent='';$('windowStatus').textContent='수동으로 지정한 일러스트 창입니다. 그림 테두리 안쪽에 맞는지 확인해 주세요.';$('confirmed').checked=false;draw();};$('confirmed').onchange=update;$('pokemonConfirmed').onchange=update;$('layout').onchange=applyWindowPreset;$('detectWindow').onclick=autoWindow;$('assembled').onchange=draw;$('tolerance').oninput=()=>{draw();update();};
 $('art').onchange=async e=>{if(busy)return;try{rect();const img=await load(e.target.files[0]),bleed=Number($('importExtent').value);if(Math.abs(img.width/img.height-(63+2*bleed)/(88+2*bleed))>.025)throw Error('선택한 이미지 범위의 비율과 맞지 않아요. 카드 크기/여백 포함 설정을 확인해 주세요.');resetReview();sampleMode=false;artBleed=bleed;art=img;$('previewTitle').textContent='오버레이 미리보기';draw();}catch(e){toast(e.message);}e.target.value='';};
 async function connection(){try{if(!A)throw Error('로그인 기능을 불러오지 못했어요. 새로고침해 주세요.');const session=await A.getSession();if(!session){$('aiStatus').textContent='AI 생성은 로그인이 필요합니다. ';const b=document.createElement('button');b.textContent='로그인';b.onclick=()=>A.goLogin(location.href);$('aiStatus').append(b);ready=false;}else{const d=await A.invokeFunction('card-overlay-generate',{action:'status'});ready=d.ready;$('aiStatus').textContent=d.message;}}catch{$('aiStatus').textContent='AI 서버 연결을 확인하지 못했어요. 확장 아트 불러오기는 사용할 수 있습니다.';ready=false;}update();}
 function sampleEdgePalette(source,r){const g=source.getContext('2d',{willReadFrequently:true}),points=[[.5,.04],[.96,.5],[.5,.96],[.04,.5]];return points.map(([px,py])=>{const x=Math.round((r.x+r.w*px)*S),y=Math.round((r.y+r.h*py)*S),size=Math.max(2,Math.round(Math.min(r.w,r.h)*S*.025)),sx=Math.max(0,x-size),sy=Math.max(0,y-size),p=g.getImageData(sx,sy,Math.min(size*2,source.width-sx),Math.min(size*2,source.height-sy)).data;let red=0,green=0,blue=0,n=0;for(let i=0;i<p.length;i+=4){red+=p[i];green+=p[i+1];blue+=p[i+2];n++;}return '#'+[red,green,blue].map(c=>Math.round(c/n).toString(16).padStart(2,'0')).join('');});}
@@ -62,7 +103,8 @@ function exportName(kind,ext){const label=$('sourceCardLabel').value.normalize('
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('png').onclick=()=>{try{const name=exportName('overlay-cut-guide','png');sheet().toBlob(b=>b?download(b,name):toast('이미지를 만들지 못했어요.'),'image/png');}catch(e){toast(e.message);}};
 $('pdf').onclick=async()=>{try{const name=exportName('overlay-a4','pdf'),c=sheet(),b=await new Promise(res=>c.toBlob(res,'image/jpeg',.98));if(!b)throw Error('출력 파일을 만들지 못했어요.');download(makePDF(new Uint8Array(await b.arrayBuffer()),c.width,c.height,83,118),name);toast('100% · 실제 크기로 출력하고 10mm 기준선을 확인해 주세요.');}catch(e){toast(e.message);}};
-$('sample').onclick=()=>{if(busy)return;fixedArtRect=null;sourceReferenceId=null;$('sourceCardLabel').value='';$('sourceCardLabel').readOnly=false;savedEpoch++;historyOnly=false;$('storageStatus').textContent='';resetFullArt();clearReference();resetReview();$('qualityStatus').textContent='출력 확인용 샘플 · AI 생성과 구도 검사는 사용하지 않습니다.';for(const [k,v]of Object.entries({x:5,y:13,w:53,h:33}))$(k).value=v;const c=canvas(W,H),g=c.getContext('2d'),gradient=g.createLinearGradient(0,0,0,H);gradient.addColorStop(0,'#c6d9eb');gradient.addColorStop(.5,'#e4e9d4');gradient.addColorStop(1,'#779f83');g.fillStyle=gradient;g.fillRect(0,0,W,H);g.fillStyle='#faf1c9';g.beginPath();g.arc(W*.75,H*.18,56,0,Math.PI*2);g.fill();for(const [top,color]of[[.36,'#a6beac'],[.55,'#8daa91'],[.76,'#72937a']]){g.fillStyle=color;g.beginPath();g.moveTo(0,H);g.lineTo(0,H*top);g.bezierCurveTo(W*.25,H*(top-.12),W*.5,H*(top+.12),W,H*top);g.lineTo(W,H);g.closePath();g.fill();}sampleMode=true;artBleed=2;art=canvas(804,1104);art.getContext('2d').drawImage(c,0,0,804,1104);card=canvas(W,H);const cg=card.getContext('2d');cg.fillStyle='#eee8dc';cg.fillRect(0,0,W,H);cg.save();cg.beginPath();cg.rect(5*S,13*S,53*S,33*S);cg.clip();drawArt(cg,art,0,0,S,2,true);cg.restore();cg.fillStyle='#756a7a';cg.font='bold 28px sans-serif';cg.fillText('PRINT TEST SAMPLE',5*S,9*S);cg.font='22px sans-serif';cg.fillText('AI NOT USED',5*S,56*S);photo=card;corners=[];revision++;cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('windowStatus').textContent='출력 확인용 샘플입니다. 실제 포켓몬 카드와 다릅니다.';$('previewTitle').textContent='출력 샘플 · AI 미사용';draw();fullArtMode();toast('출력용 샘플입니다. PNG·PDF를 내려받아 크기와 절단선을 확인해 주세요.');};
+$('sample').onclick=()=>{if(busy)return;fixedArtRect=null;sourceReferenceId=null;$('sourceCardLabel').value='';$('sourceCardLabel').readOnly=false;savedEpoch++;historyOnly=false;$('storageStatus').textContent='';resetFullArt();clearReference();resetReview();$('qualityStatus').textContent='출력 확인용 샘플 · AI 생성과 구도 검사는 사용하지 않습니다.';const sampleWindow=selectedWindowPreset();writeWindow(sampleWindow);fixedArtRect={...sampleWindow};const c=canvas(W,H),g=c.getContext('2d'),gradient=g.createLinearGradient(0,0,0,H);gradient.addColorStop(0,'#c6d9eb');gradient.addColorStop(.5,'#e4e9d4');gradient.addColorStop(1,'#779f83');g.fillStyle=gradient;g.fillRect(0,0,W,H);g.fillStyle='#faf1c9';g.beginPath();g.arc(W*.75,H*.18,56,0,Math.PI*2);g.fill();for(const [top,color]of[[.36,'#a6beac'],[.55,'#8daa91'],[.76,'#72937a']]){g.fillStyle=color;g.beginPath();g.moveTo(0,H);g.lineTo(0,H*top);g.bezierCurveTo(W*.25,H*(top-.12),W*.5,H*(top+.12),W,H*top);g.lineTo(W,H);g.closePath();g.fill();}sampleMode=true;artBleed=2;art=canvas(804,1104);art.getContext('2d').drawImage(c,0,0,804,1104);card=canvas(W,H);const cg=card.getContext('2d');cg.fillStyle='#eee8dc';cg.fillRect(0,0,W,H);cg.save();cg.beginPath();cg.rect(sampleWindow.x*S,sampleWindow.y*S,sampleWindow.w*S,sampleWindow.h*S);cg.clip();drawArt(cg,art,0,0,S,2,true);cg.restore();cg.fillStyle='#756a7a';cg.font='bold 28px sans-serif';cg.fillText('PRINT TEST SAMPLE',5*S,9*S);cg.font='22px sans-serif';cg.fillText('AI NOT USED',5*S,56*S);photo=card;corners=[];revision++;cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('windowStatus').textContent='출력 확인용 샘플입니다. 실제 포켓몬 카드와 다릅니다.';$('previewTitle').textContent='출력 샘플 · AI 미사용';draw();fullArtMode();toast('출력용 샘플입니다. PNG·PDF를 내려받아 크기와 절단선을 확인해 주세요.');};
+loadOverlayWindowPresets();
 connection();
 function applyZoom(){const z=Number($('zoom').value),stage=$('previewStage');stage.classList.toggle('zoomed',z>1);stage.style.setProperty('--zoom-width',(Math.min(stage.clientWidth-40,420)*z)+'px');}
 $('zoom').onchange=applyZoom;$('shape').onchange=()=>{refreshCardShape();draw();};window.addEventListener('resize',applyZoom);
@@ -132,7 +174,7 @@ async function generateFullArt(r){
  if($('generationMode').value==='fullart_layer_atlas')return generateLayerAtlas(r);
  const source=prepareFullCard(card,canvas),rev=revision,mode=$('generationMode').value,illustration=mode==='illustration';
  const wide=isWideMode(mode),fixed=mode==='fullart_fixed'||wide;if(!isManualMode(mode))wideManualState=null;
- const aiLayers=mode==='fullart_header_layers',layered=mode==='fullart_layers',preserveRect=(layered||aiLayers)?{...r}:fixed?(fixedArtRect?{...fixedArtRect}:detectArtWindow(analyze(card),$('layout').value).rect):null;
+ const aiLayers=mode==='fullart_header_layers',layered=mode==='fullart_layers',preserveRect=(layered||aiLayers)?{...r}:fixed?(fixedArtRect?{...fixedArtRect}:selectedWindowPreset()):null;
  let layers=layered?await reviewLayers(source,preserveRect,canvas):null;if(layered&&!layers){toast('생성을 취소했어요. 횟수는 사용하지 않았습니다.');return;}
  const mask=(layered||aiLayers)?windowMask(preserveRect,canvas):fixed?await reviewFixedMask(source,preserveRect,canvas):null;if(fixed&&!mask){toast('생성을 취소했어요. 횟수는 사용하지 않았습니다.');return;}
  if(wide)resetFullArt();
@@ -291,9 +333,8 @@ function useCatalogImage(){
  if(busy||savedLoading||!catalogSelected||!catalogPortrait(catalogSelected.row,catalogSelected.image))return;
  const {row,image}=catalogSelected,p=canvas(image.naturalWidth,image.naturalHeight);p.getContext('2d').drawImage(image,0,0);setPhoto(p);
  card=canvas(W,H);card.getContext('2d').drawImage(p,0,0,W,H);cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;
- const n=Number(row.card_number);$('layout').value=row.id.startsWith('me55cc-')||(!isDogamAdminCard(row)&&n>=136&&n<=150)?'classic':'modern';
- if(row.art_rect&&validRect(row.art_rect)){fixedArtRect={...row.art_rect};for(const k of ['x','y','w','h'])$(k).value=row.art_rect[k];$('windowStatus').textContent='DB에 저장된 일러스트 창 좌표를 적용했어요. 실물 카드와 경계를 확인하고 필요한 경우 미세 조절해 주세요.';}
- else autoWindow();
+ $('layout').value=catalogWindowKind(row);
+ applyWindowPreset();
  sourceReferenceId=row.legacyReferenceId||row.id;$('sourceCardLabel').value=row.display_name+' · '+row.card_number+' · '+catalogLabel(row);$('sourceCardLabel').readOnly=true;$('previewTitle').textContent='DB 카드 · '+row.display_name;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('qualityStatus').textContent='DB 원본 카드 이미지를 불러왔어요. AI는 실행하지 않았습니다.';draw();fullArtMode();$('catalogDialog').close();toast(row.card_number+' · '+row.display_name+' 원본을 불러왔어요. 일러스트 창을 확인해 주세요.');
 }
 $('openCatalog').onclick=openCatalog;$('catalogClose').onclick=()=>$('catalogDialog').close();$('catalogUse').onclick=useCatalogImage;

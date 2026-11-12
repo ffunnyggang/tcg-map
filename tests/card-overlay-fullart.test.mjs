@@ -14,3 +14,49 @@ test('both full-card modes export with the existing cut-guide settings',()=>{for
 test('changing full-card mode cannot export a result from the other mode',()=>{const a=clientFlow('illustration','fullart');vm.runInContext('update()',a.context);assert.equal(a.$('png').disabled,true);assert.equal(a.$('fullArtPng').disabled,true);assert.throws(()=>vm.runInContext('sheet()',a.context));assert.equal(a.printed(),undefined);});
 test('illustration exports require result review',()=>{const a=clientFlow('illustration','illustration',false);vm.runInContext('update()',a.context);assert.equal(a.$('png').disabled,true);assert.equal(a.$('pdf').disabled,true);assert.throws(()=>vm.runInContext('sheet()',a.context));});
 test('history restores illustration mode and matches the full-card result',()=>{const start=client.indexOf('async function loadSavedGeneration(');const restore=client.slice(start);assert.match(restore,/if\(isFullCardMode\(row.mode\)\)\{fullArtResultMode=row.mode;fullArtResult=restored/);assert.match(restore,/\$\('generationMode'\).value=row.mode/);assert.match(client,/illustration:'일러스트만 확장'/);});
+
+test('face-masked layers send the approved masked source to both AI requests and keep local restoration original',async()=>{
+ const elements=new Map();
+ const $=id=>{
+  if(!elements.has(id))elements.set(id,{value:'',checked:false,textContent:'',hidden:false});
+  return elements.get(id);
+ };
+ const original={toDataURL:()=>'original'},masked={toDataURL:()=>'masked'};
+ const mask={toDataURL:()=>'window-mask'};
+ const r={x:5.6,y:9.3,w:51.8,h:31.8};
+ const requests=[];
+ const context=vm.createContext({
+  $,canvas(){},card:original,approvedFaceSource:masked,revision:1,busy:false,ready:true,
+  rect:()=>r,extractPreviewRevision:1,prepareFullCard:card=>card,
+  windowMask:()=>mask,resetFullArt(){},draw(){},update(){},toast(){},sourceMetadata:()=>({}),
+  padCard:(source,_canvas,maskOnly)=>({toDataURL:()=>maskOnly?'padded-mask':'padded-'+source.toDataURL()}),
+  loadSharedSymbol:async()=>({image:{},placement:{}}),aiHeaderDraft:null,
+  A:{invokeFunction:async(_name,body)=>{requests.push(body);return {image:'png'}}},
+  decodeTextLayer:async()=>({}),Image:class{width=1648;height=2048;async decode(){}},
+  alignWide:async source=>{assert.equal(source,original);return {matrix:[],trusted:true}},
+  isOriginalMode:()=>false,wideVariant:()=>null,showStorage(){},fullArtMode(){},
+  editWideResult:async()=>{},wideManualState:null,fullArtSource:null
+ });
+ vm.runInContext(client.slice(client.indexOf('const FACE_LAYER_MODE'),client.indexOf('const ORIGINAL_REFERENCES')),context);
+ vm.runInContext(client.slice(client.indexOf('function isWideMode'),client.indexOf('import {padCard')),context);
+ vm.runInContext(client.slice(client.indexOf("$('generate').onclick"),client.indexOf('function sheet(){')),context);
+ vm.runInContext(client.slice(client.indexOf('async function generateFullArt'),client.indexOf('async function generateLayerAtlas')),context);
+ vm.runInContext('const isFullCardMode=()=>true;',context);
+ $('generationMode').value='fullart_header_layers_face';
+ $('confirmed').checked=$('pokemonConfirmed').checked=true;
+ await vm.runInContext("$('generate').onclick()",context);
+ assert.equal(requests.length,0);
+ $('extractAccepted').checked=true;
+ await vm.runInContext("$('generate').onclick()",context);
+ assert.deepEqual(requests.map(({action,image})=>[action,image]),[
+  ['generate_text_layer','masked'],['generate_fullart_wide','padded-masked']
+ ]);
+ assert.equal(vm.runInContext('wideManualState.source',context),original);
+ assert.equal(vm.runInContext('wideManualState.layers.kind',context),'ai-text');
+ requests.length=0;
+ $('generationMode').value='fullart_header_layers';
+ await vm.runInContext('generateFullArt(rect())',context);
+ assert.deepEqual(requests.map(({action,image})=>[action,image]),[
+  ['generate_text_layer','original'],['generate_fullart_wide','padded-original']
+ ]);
+});

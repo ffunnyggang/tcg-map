@@ -15,7 +15,7 @@ import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
 import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261109-longpress2';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
-import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait} from './card-overlay-catalog.mjs?v=20261105-catalog-picker1';
+import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait,isDogamAdminCard} from './card-overlay-catalog.mjs?v=20261112-dogam1';
 import {prepareFullCard,inspectFullArt} from './card-fullart-test.mjs?v=20261104-fullart1';
 import {artDescriptor,rankArtwork} from './card-overlay-match.mjs?v=20261027-reference1';
 import {blendBackground} from './card-overlay-blend.mjs?v=20261023-independent1';
@@ -198,7 +198,11 @@ $('manualAdjust').onclick=async()=>{if(busy||savedLoading||!wideManualState)retu
 $('fullArtPng').onclick=()=>{if(busy||!matchingFullArt()||!$('fullArtAccepted').checked)return;const name=exportName(fullArtResultMode==='illustration'?'illustration-63x88':'fullart-63x88','png');cardOutline(fullArtResult,$('shape').value,canvas).toBlob(b=>b?download(b,name):toast('이미지를 만들지 못했어요.'),'image/png');};
 fullArtMode();
 
-function sourceMetadata(){return {sourceReferenceId,sourceCardLabel:$('sourceCardLabel').value.trim()};}
+function sourceMetadata(){
+ const sourceCardLabel=$('sourceCardLabel').value.trim();
+ // The public generation catalog only accepts its own reference IDs.
+ return isDogamAdminCard({id:sourceReferenceId})?{sourceCardLabel}:{sourceReferenceId,sourceCardLabel};
+}
 function showStorage(d){$('storageStatus').textContent=d.storageSaved?'생성 이미지를 내 계정에 비공개로 저장했어요.':d.storageMessage||'생성은 완료됐지만 서버 저장을 확인하지 못했어요. 현재 결과를 다운로드해 주세요.';}
 async function storePreparedResult(d,image,printRect){
  showStorage(d);if(!d.storageSaved||!d.generationId)return;
@@ -242,17 +246,44 @@ async function openCatalog(){
  if(busy||savedLoading)return;const epoch=++catalogEpoch;catalogRows=[];catalogCurrentPage=0;catalogFetching=true;resetCatalogSelection();$('catalogResults').replaceChildren();$('catalogLanguage').value='all';$('catalogSearch').value='';$('catalogLanguage').disabled=true;$('catalogSearch').disabled=true;$('catalogPrev').disabled=true;$('catalogNext').disabled=true;$('catalogPageLabel').textContent='';$('catalogLogin').hidden=true;$('catalogStatus').textContent='비공개 카드 목록을 불러오고 있어요…';$('catalogDialog').showModal();
  try{
   if(!A||!await A.getSession()){if(epoch!==catalogEpoch)return;$('catalogStatus').textContent='카드 DB는 로그인한 테스트 계정만 이용할 수 있어요.';$('catalogLogin').hidden=!A;return;}
-  const d=await A.invokeFunction('card-overlay-generate',{action:'references'});if(epoch!==catalogEpoch||!$('catalogDialog').open)return;
-  catalogRows=Array.isArray(d.references)?d.references:[];$('catalogLanguage').disabled=false;$('catalogSearch').disabled=false;catalogFetching=false;renderCatalog();
+  const [legacy,admin]=await Promise.allSettled([
+   A.invokeFunction('card-overlay-generate',{action:'references'}),
+   A.isAppShell?.()||!A.client?Promise.resolve({data:[]}):A.client.from('overlay_admin_card_references')
+    .select('id,display_name,card_number,set_code,set_name,rarity,variant,illustrator,image_path')
+    .order('id')
+  ]);
+  if(epoch!==catalogEpoch||!$('catalogDialog').open)return;
+  const existing=legacy.status==='fulfilled'?legacy.value.references||[]:[];
+  const imported=admin.status==='fulfilled'&&!admin.value.error?admin.value.data||[]:[];
+  if(legacy.status==='rejected'&&!imported.length)throw legacy.reason;
+  const existingById=new Map(existing.map(row=>[row.id,row]));
+  const replaced=new Set();
+  const adminCards=imported.map(row=>{
+   const matching=existingById.get(row.id.replace(/^dogam-ko-/,'m6a-ko-'));
+   if(!matching)return row;
+   replaced.add(matching.id);
+   return {...row,art_rect:matching.art_rect,legacyReferenceId:matching.id};
+  });
+  catalogRows=[...existing.filter(row=>!replaced.has(row.id)),...adminCards];
+  $('catalogLanguage').disabled=false;$('catalogSearch').disabled=false;catalogFetching=false;renderCatalog();
  }catch(e){if(epoch!==catalogEpoch)return;$('catalogStatus').textContent=e.message||'카드 목록을 불러오지 못했어요. 닫은 뒤 다시 열어 주세요.';$('catalogLogin').hidden=e.status!==401;}
  finally{if(epoch===catalogEpoch)catalogFetching=false;}
 }
 async function selectCatalogImage(row){
- resetCatalogSelection();renderCatalog();const epoch=catalogEpoch,selection=++catalogSelectionEpoch;$('catalogSelected').textContent=row.card_number+' · '+row.display_name+' · '+catalogLabel(row);$('catalogImageStatus').textContent='원본 이미지를 불러오고 있어요…';
+ resetCatalogSelection();renderCatalog();const epoch=catalogEpoch,selection=++catalogSelectionEpoch;$('catalogSelected').textContent=[row.card_number,row.display_name,catalogLabel(row),row.rarity,row.variant,row.illustrator].filter(Boolean).join(' · ');$('catalogImageStatus').textContent='원본 이미지를 불러오고 있어요…';
  try{
-  const d=await A.invokeFunction('card-overlay-generate',{action:'reference',id:row.id});if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch)return;
-  const image=new Image();image.crossOrigin='anonymous';image.src=d.reference.imageUrl;await image.decode();if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch||!$('catalogDialog').open)return;
-  catalogSelected={row:{...row,...d.reference},image};$('catalogImage').src=image.src;$('catalogImage').alt=row.display_name+' '+catalogLabel(row);$('catalogImage').hidden=false;
+  let reference;
+  if(isDogamAdminCard(row)){
+   const {data,error}=await A.client.storage.from('overlay-admin-card-references').createSignedUrl(row.image_path,300);
+   if(error||!data?.signedUrl)throw Error('관리자 카드 이미지를 열 수 없습니다.');
+   reference={imageUrl:data.signedUrl};
+  }else{
+   const data=await A.invokeFunction('card-overlay-generate',{action:'reference',id:row.id});
+   reference=data.reference;
+  }
+  if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch)return;
+  const image=new Image();image.crossOrigin='anonymous';image.src=reference.imageUrl;await image.decode();if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch||!$('catalogDialog').open)return;
+  catalogSelected={row:{...row,...reference},image};$('catalogImage').src=image.src;$('catalogImage').alt=row.display_name+' '+catalogLabel(row);$('catalogImage').hidden=false;
   const usable=catalogPortrait(row,image);$('catalogUse').disabled=!usable;$('catalogImageStatus').textContent=usable?'원본 '+image.naturalWidth+'×'+image.naturalHeight+'px · 불러온 뒤 일러스트 창을 확인해 주세요.':'가로형 또는 두 카드 합본은 세로 카드 한 장으로 불러올 수 없습니다. 다른 이미지를 선택해 주세요.';renderCatalog();
  }catch(e){if(epoch!==catalogEpoch||selection!==catalogSelectionEpoch)return;$('catalogImageStatus').textContent=e.message||'원본 이미지를 불러오지 못했어요. 카드를 다시 선택해 주세요.';}
 }
@@ -260,10 +291,10 @@ function useCatalogImage(){
  if(busy||savedLoading||!catalogSelected||!catalogPortrait(catalogSelected.row,catalogSelected.image))return;
  const {row,image}=catalogSelected,p=canvas(image.naturalWidth,image.naturalHeight);p.getContext('2d').drawImage(image,0,0);setPhoto(p);
  card=canvas(W,H);card.getContext('2d').drawImage(p,0,0,W,H);cv.width=W;cv.height=H;$('cornerTools').hidden=true;$('settings').disabled=false;
- const n=Number(row.card_number);$('layout').value=row.id.startsWith('me55cc-')||(n>=136&&n<=150)?'classic':'modern';
+ const n=Number(row.card_number);$('layout').value=row.id.startsWith('me55cc-')||(!isDogamAdminCard(row)&&n>=136&&n<=150)?'classic':'modern';
  if(row.art_rect&&validRect(row.art_rect)){fixedArtRect={...row.art_rect};for(const k of ['x','y','w','h'])$(k).value=row.art_rect[k];$('windowStatus').textContent='DB에 저장된 일러스트 창 좌표를 적용했어요. 실물 카드와 경계를 확인하고 필요한 경우 미세 조절해 주세요.';}
  else autoWindow();
- sourceReferenceId=row.id;$('sourceCardLabel').value=row.display_name+' · '+row.card_number+' · '+catalogLabel(row);$('sourceCardLabel').readOnly=true;$('previewTitle').textContent='DB 카드 · '+row.display_name;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('qualityStatus').textContent='DB 원본 카드 이미지를 불러왔어요. AI는 실행하지 않았습니다.';draw();fullArtMode();$('catalogDialog').close();toast(row.card_number+' · '+row.display_name+' 원본을 불러왔어요. 일러스트 창을 확인해 주세요.');
+ sourceReferenceId=row.legacyReferenceId||row.id;$('sourceCardLabel').value=row.display_name+' · '+row.card_number+' · '+catalogLabel(row);$('sourceCardLabel').readOnly=true;$('previewTitle').textContent='DB 카드 · '+row.display_name;$('confirmed').checked=false;$('pokemonConfirmed').checked=false;$('qualityStatus').textContent='DB 원본 카드 이미지를 불러왔어요. AI는 실행하지 않았습니다.';draw();fullArtMode();$('catalogDialog').close();toast(row.card_number+' · '+row.display_name+' 원본을 불러왔어요. 일러스트 창을 확인해 주세요.');
 }
 $('openCatalog').onclick=openCatalog;$('catalogClose').onclick=()=>$('catalogDialog').close();$('catalogUse').onclick=useCatalogImage;
 $('catalogDialog').addEventListener('close',()=>{catalogEpoch++;catalogFetching=false;resetCatalogSelection();});

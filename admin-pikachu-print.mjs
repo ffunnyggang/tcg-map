@@ -144,6 +144,10 @@ function save() {
   try { localStorage.setItem(storageKey, JSON.stringify(saved)); } catch { setStatus('이 브라우저에서 설정을 저장할 수 없어요.'); }
   progress();
 }
+function shouldDrawWatermark(card) {
+  const defaultImage = card.imageOptions?.find(option => option.kind === 'standard');
+  return card.id !== 'm6a-ja-037' || !defaultImage || card.illustration?.id !== defaultImage.id;
+}
 function draw() {
   const view = $('printCanvas');
   const g = view.getContext('2d');
@@ -153,7 +157,7 @@ function draw() {
   drawCardOverlay(g, source, output || source, cut, view.width, view.height, !!output && !original, settings.shape);
   if (output && !original) {
     drawCutGuide(g, cut, view.width, view.height, .3);
-    drawArtWatermark(g, 0, 0, view.width, view.height);
+    if (shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height);
   }
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
   $('printCompare').setAttribute('aria-pressed', String(original));
@@ -353,7 +357,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   const card = { ...name, source_language: language, display_name: { ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name };
   setStatus('A4 출력 도안을 준비하고 있어요.');
   const sheet = makePrintSheet(withCardBleed(output), cut, {
-    shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: true, cutoutCard: card,
+    shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: shouldDrawWatermark(session.card), cutoutCard: card,
   });
   const jpeg = await new Promise(resolve => sheet.toBlob(resolve, 'image/jpeg', .98));
   if (!jpeg) throw new Error('출력 도안을 만들지 못했어요.');

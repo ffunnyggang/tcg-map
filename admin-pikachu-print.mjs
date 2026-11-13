@@ -114,12 +114,12 @@ function paddedArtwork(img) {
 function progress() {
   const done = catalog.filter(card => card.hasIllustration && saved[card.id]?.confirmed).length;
   const missing = catalog.filter(card => !card.hasIllustration).length;
-  $('printProgress').textContent = `설정 확정 ${done}/30 · 일러스트 미확보 ${missing}장`;
+  $('printProgress').textContent = `설정 확정 ${done}/${catalog.length} · 일러스트 미확보 ${missing}장`;
   Array.from($('printCard').options).forEach((option, index) => {
     const card = catalog[index];
     const seq = String(index + 1).padStart(2, '0');
     const state = !card.hasIllustration ? ' · 일러스트 미확보' : saved[card.id]?.confirmed ? ' · 설정 확정' : '';
-    option.textContent = `${seq} · 피카츄 ${card.number}${state}`;
+    option.textContent = `${seq} · ${card.name} ${card.number}${state}`;
   });
 }
 function refreshControls() {
@@ -244,7 +244,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       }));
       $('printImage').value = card.illustration?.id || '';
     }
-    const name = { id: card.id, card_number: card.number, source_language: 'ja', display_name: card.name, art_rect: card.artRect };
+    const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
     const preset = presets.find(p => p.kind === windowPresetType(name));
     const cut = validWindow(preset) ? { x: preset.x, y: preset.y, w: preset.w, h: preset.h } : defaultArtWindow(name);
     const [original, raw] = await Promise.all([image(card.original), card.illustration ? image(card.illustration.url) : null]);
@@ -353,8 +353,8 @@ $('printConfirm').onclick = () => withCardAction(async () => {
 });
 $('printPDF').onclick = () => withCardAction(async () => {
   const { output, cut, name, settings } = session;
-  const language = settings.language === 'off' ? 'ja' : settings.language;
-  const card = { ...name, source_language: language, display_name: { ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name };
+  const language = settings.language === 'off' ? name.source_language : settings.language;
+  const card = { ...name, source_language: language, display_name: /^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id) ? ({ ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name) : name.display_name };
   setStatus('A4 출력 도안을 준비하고 있어요.');
   const sheet = makePrintSheet(withCardBleed(output), cut, {
     shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: shouldDrawWatermark(session.card), cutoutCard: card,

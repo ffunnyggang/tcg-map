@@ -146,7 +146,7 @@ function save() {
 }
 function shouldDrawWatermark(card) {
   const defaultImage = card.imageOptions?.find(option => option.kind === 'standard');
-  return card.id !== 'm6a-ja-037' || !defaultImage || card.illustration?.id !== defaultImage.id;
+  return !['m6a-ja-021', 'm6a-ja-037'].includes(card.id) || !defaultImage || card.illustration?.id !== defaultImage.id;
 }
 function draw() {
   const view = $('printCanvas');

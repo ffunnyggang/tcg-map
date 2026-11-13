@@ -96,6 +96,26 @@ Deno.serve(async req => {
       select: 'cache_key,generation_id', prompt_version: inList([ART, TEXT]), order: 'cache_key.asc',
     });
     const sharedIds = [...new Set(inventory.map(asset => asset.cache_key.split(':')[1]).filter(id => refId.test(id || '')))].sort();
+    const privateId = /^dogam-ko-[0-9A-HJKMNP-TV-Z]{26}$/;
+    const privateCards = body.action === 'catalog' || privateId.test(body.id)
+      ? await rows<Reference & { set_code: string }>('overlay_admin_card_references', {
+          select: 'id,card_number,display_name,source_language,image_path,set_code',
+          display_name: 'in.(이브이,"이브이 ex","이브이 GX","이브이 V","이브이&잠만보 GX","찬란한 이브이",메타몽)',
+          ...(body.action === 'card' ? { id: 'eq.' + body.id } : {}),
+          order: 'display_name.asc,set_code.asc,card_number.asc,id.asc',
+        })
+      : [];
+    const privateInfo = (ref: typeof privateCards[number]) => ({
+      id: ref.id, number: ref.card_number, name: ref.display_name + ' (' + ref.set_code + ')',
+      sourceLanguage: ref.source_language, artRect: null, hasIllustration: false, languages: [],
+    });
+    if (body.action === 'card' && privateId.test(body.id)) {
+      const ref = privateCards[0];
+      if (!ref) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
+      if (body.imageId != null) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
+      const original = await sign('overlay-admin-card-references', ref.image_path);
+      return reply({ card: { ...privateInfo(ref), original, illustration: null, imageOptions: [], texts: {} } });
+    }
     const selectable = [...new Set([...ids, ...sharedIds])];
     if (body.action === 'card' && !selectable.includes(body.id)) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     const selected = body.action === 'card' ? [body.id] : selectable;
@@ -163,7 +183,7 @@ Deno.serve(async req => {
       id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, sourceLanguage: p.ref.source_language, artRect: p.ref.art_rect,
       hasIllustration: p.illustrations.length > 0, languages: Object.keys(p.texts).sort(),
     });
-    if (body.action === 'catalog') return reply({ adminId: user.id, cards: plans.map(cardInfo) });
+    if (body.action === 'catalog') return reply({ adminId: user.id, cards: [...plans.map(cardInfo), ...privateCards.map(privateInfo)] });
     async function usable(generations: Generation[], overrideId?: string) {
       for (const row of generations) {
         const path = row.id === overrideId ? preparedPrintPath(row) : row.raw_path;

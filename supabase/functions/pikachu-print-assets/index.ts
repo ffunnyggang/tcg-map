@@ -116,7 +116,10 @@ Deno.serve(async req => {
       const original = await sign('overlay-admin-card-references', ref.image_path);
       return reply({ card: { ...privateInfo(ref), original, illustration: null, imageOptions: [], texts: {} } });
     }
-    const selectable = [...new Set([...ids, ...sharedIds])];
+    // Keep all collected 30th-series Ditto editions selectable before artwork is generated.
+    const dittoReferences = ['m6a-ja-093', 'm6a-ko-01M2FH6D0Y1QM3ECGDT937VSJE',
+      '30th-en-115', 'm6a-ko-01M2FSF4ZD32P00YGBCVWCP1GK'];
+    const selectable = [...new Set([...ids, ...sharedIds, ...dittoReferences])];
     if (body.action === 'card' && !selectable.includes(body.id)) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     const selected = body.action === 'card' ? [body.id] : selectable;
     const [referenceRows, anchors] = await Promise.all([

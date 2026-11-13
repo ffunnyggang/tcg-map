@@ -10,6 +10,11 @@ const printKoreanSources: Record<string, string> = {
   'm6a-ja-040': 'm6a-ko-01M2FKPQ5YM3T9JW6WGD49W4FQ',
   'm6a-ja-041': 'm6a-ko-01M1FTK4AA6Z5QJ7V44YAQ268X',
 };
+const printImageOverrides = new Map([
+]);
+// Browsers that saved the former 037 default should reload the current shared asset.
+const former021Defaults = new Set(['5a844365-f291-4960-88ba-61df7de3dda0', '62cc0999-af15-4949-8b6d-0fea08f088d2']);
+const former037Defaults = new Set(['e316d975-d8ae-415c-ab7c-480d8091571b', 'df5c3e8b-ec06-4da0-8cbc-57f00d957d93']);
 const uuid = /^[0-9a-f-]{36}$/i;
 const refId = /^[a-z0-9-]{1,80}$/i;
 const cors = {
@@ -60,7 +65,12 @@ Deno.serve(async req => {
   type Reference = { id: string; card_number: string; display_name: string; source_language: string; art_rect: unknown; image_path: string };
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
-  type Generation = { id: string; user_id: string; raw_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string };
+  type Generation = { id: string; user_id: string; raw_path: string; image_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string };
+  function preparedPrintPath(row: Generation) {
+    const path = row.user_id + '/' + row.id + '/prepared.png';
+    return row.result_kind === 'prepared' && row.width === 1008 && row.height === 1408 && row.image_path === path
+      ? path : null;
+  }
   function valid(g: Generation, kind: string) {
     if (!uuid.test(g.id) || !uuid.test(g.user_id) || g.raw_path !== g.user_id + '/' + g.id + '/provider.png') return false;
     return kind === TEXT
@@ -79,86 +89,100 @@ Deno.serve(async req => {
     if (admin.status >= 500) throw new Error('administrator check unavailable');
     if (!admin.ok || await admin.json() !== true) return reply({ error: '퍼니핀 관리자만 접근할 수 있습니다.' }, 403);
     const body = await req.json().catch(() => null);
-    if (body?.action !== 'catalog' && (body?.action !== 'card' || !ids.includes(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId))))) {
+    if (body?.action !== 'catalog' && (body?.action !== 'card' || typeof body.id !== 'string' || !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     }
-    const selected = body.action === 'card' ? [body.id] : ids;
-    const [refs, anchors] = await Promise.all([
+    const inventory = await rows<Asset>('overlay_layer_assets', {
+      select: 'cache_key,generation_id', prompt_version: inList([ART, TEXT]), order: 'cache_key.asc',
+    });
+    const sharedIds = [...new Set(inventory.map(asset => asset.cache_key.split(':')[1]).filter(id => refId.test(id || '')))].sort();
+    const selectable = [...new Set([...ids, ...sharedIds])];
+    if (body.action === 'card' && !selectable.includes(body.id)) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
+    const selected = body.action === 'card' ? [body.id] : selectable;
+    const [referenceRows, anchors] = await Promise.all([
       rows<Reference>('overlay_art_references', { select: 'id,card_number,display_name,source_language,art_rect,image_path', id: inList(selected), order: 'id.asc' }),
       rows<Member>('overlay_artwork_members', { select: 'reference_id,artwork_key,language', reference_id: inList(selected), order: 'reference_id.asc' }),
     ]);
+    const references = new Map(referenceRows.map(ref => [ref.id, ref]));
+    const refs = selected.flatMap(id => references.get(id) ? [references.get(id)!] : []);
     if (refs.length !== selected.length || anchors.length !== selected.length) throw new Error('incomplete series');
     const groups = [...new Set(anchors.map(m => m.artwork_key))];
     const members = (await rows<Member>('overlay_artwork_members', {
       select: 'reference_id,artwork_key,language', artwork_key: inList(groups), order: 'reference_id.asc',
     })).filter(m => refId.test(m.reference_id) && /^[a-z]{2}$/.test(m.language));
     const memberMap = new Map(members.map(m => [m.reference_id, m]));
-    for (const anchor of anchors) {
-      const referenceId = printKoreanSources[anchor.reference_id];
-      if (referenceId) memberMap.set(referenceId, {
-        reference_id: referenceId, artwork_key: anchor.artwork_key, language: 'ko',
-      });
-    }
     const printMembers = [...memberMap.values()];
-    const keys = [...new Set(printMembers.flatMap(m => [ART + ':' + m.artwork_key, TEXT + ':' + m.artwork_key + ':' + m.language]))];
-    const [published, generations] = await Promise.all([
-      Promise.all(chunks(keys).map(batch => rows<Asset>('overlay_layer_assets', {
-        select: 'cache_key,generation_id', cache_key: inList(batch), order: 'cache_key.asc',
-      }))).then(lists => lists.flat()),
+    const referenceIds = [...new Set([...printMembers.map(m => m.reference_id), ...selected.flatMap(id => printKoreanSources[id] ? [printKoreanSources[id]] : [])])];
+    const generations = (await Promise.all(chunks(referenceIds).map(batch =>
       rows<Generation>('overlay_generations', {
-        select: 'id,user_id,raw_path,source_reference_id,prompt_version,width,height,result_kind,created_at',
-        source_reference_id: inList(printMembers.map(m => m.reference_id)),
-        prompt_version: inList([ART, FACE_ART, TEXT]), order: 'created_at.desc,id.desc',
-      }),
-    ]);
+        select: 'id,user_id,raw_path,image_path,source_reference_id,prompt_version,width,height,result_kind,created_at',
+        source_reference_id: inList(batch), prompt_version: inList([ART, FACE_ART, TEXT]), order: 'created_at.desc,id.desc',
+      })
+    ))).flat().sort((a,b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id));
+    const published = inventory;
     const byId = new Map(generations.map(g => [g.id, g]));
     const publishedIds = new Map(published.map(a => [a.cache_key, a.generation_id]));
     const anchorGroups = new Map(anchors.map(m => [m.reference_id, m.artwork_key]));
     const plans = refs.map(ref => {
       const group = anchorGroups.get(ref.id);
+      const alias = printKoreanSources[ref.id];
       const forGroup = printMembers.filter(m => m.artwork_key === group);
+      const languages = new Set(forGroup.map(m => m.language));
+      if (alias) languages.add('ko');
       function candidates(kind: string, language?: string) {
         const key = kind + ':' + group + (language ? ':' + language : '');
         const matching = generations.filter(g => {
           const m = memberMap.get(g.source_reference_id);
-          return m?.artwork_key === group && (!language || m?.language === language) && valid(g, kind);
+          return ((m?.artwork_key === group && (!language || m.language === language)) ||
+            (g.source_reference_id === alias && (!language || language === 'ko'))) && valid(g, kind);
         });
-        const primary = byId.get(publishedIds.get(key) || '');
+        const aliasKey = alias && (!language || language === 'ko') ? kind + ':' + alias + (language ? ':ko' : '') : '';
+        const primary = byId.get(publishedIds.get(key) || publishedIds.get(aliasKey) || '');
         const ranked = matching.filter(g => g.id !== primary?.id);
         if (primary && matching.includes(primary)) ranked.unshift(primary);
         return ranked;
       }
       const standard = candidates(ART);
+      const overrideId = printImageOverrides.get(ref.id);
+      const overrideIndex = standard.findIndex(row => row.id === overrideId && preparedPrintPath(row) !== null);
+      if (overrideIndex > 0) standard.unshift(...standard.splice(overrideIndex, 1));
       const face = candidates(FACE_ART).filter(row => row.user_id === user.id);
       const defaults = standard.slice(0, 1).map(row => ({ row, kind: 'standard' }));
       const beta = face.map(row => ({ row, kind: 'face' }));
       // Old builds recorded the same prompt version for all full-text variants.
-      const older = standard.slice(1).filter(row => row.user_id === user.id)
+      const older = standard.slice(1).filter(row => row.user_id === user.id &&
+        (ref.id !== 'm6a-ja-037' || !former037Defaults.has(row.id)) &&
+        (ref.id !== 'm6a-ja-021' || !former021Defaults.has(row.id)))
         .map(row => ({ row, kind: 'history' }));
       const illustrations = [...defaults, ...beta, ...older];
-      const texts = Object.fromEntries([...new Set(forGroup.map(m => m.language))]
+      const texts = Object.fromEntries([...languages]
         .map(language => [language, candidates(TEXT, language)] as const).filter(([, list]) => list.length));
       return { ref, illustrations, texts };
     });
     const cardInfo = (p: typeof plans[number]) => ({
-      id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, artRect: p.ref.art_rect,
+      id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, sourceLanguage: p.ref.source_language, artRect: p.ref.art_rect,
       hasIllustration: p.illustrations.length > 0, languages: Object.keys(p.texts).sort(),
     });
     if (body.action === 'catalog') return reply({ adminId: user.id, cards: plans.map(cardInfo) });
-    async function usable(generations: Generation[]) {
+    async function usable(generations: Generation[], overrideId?: string) {
       for (const row of generations) {
-        try { return { id: row.id, width: row.width, height: row.height, url: await sign('overlay-generated-images', row.raw_path) }; }
+        const path = row.id === overrideId ? preparedPrintPath(row) : row.raw_path;
+        if (!path) continue;
+        try { return { id: row.id, width: row.width, height: row.height, url: await sign('overlay-generated-images', path) }; }
         catch { /* Try another verified record of the same artwork and layer. */ }
       }
       if (generations.length) throw new Error('saved layer unavailable');
       return null;
     }
     const plan = plans[0];
-    const choice = body.imageId == null ? plan.illustrations[0] : plan.illustrations.find(item => item.row.id === body.imageId);
-    if (body.imageId != null && !choice) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
+    const requestedImageId = ((plan.ref.id === 'm6a-ja-037' && former037Defaults.has(body.imageId)) ||
+      (plan.ref.id === 'm6a-ja-021' && former021Defaults.has(body.imageId)))
+      ? undefined : body.imageId;
+    const choice = requestedImageId == null ? plan.illustrations[0] : plan.illustrations.find(item => item.row.id === requestedImageId);
+    if (requestedImageId != null && !choice) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
     const [original, illustration, texts] = await Promise.all([
       sign('overlay-art-references', plan.ref.image_path),
-      usable(body.imageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : []),
+      usable(requestedImageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : [], printImageOverrides.get(plan.ref.id)),
       Promise.all(Object.entries(plan.texts).map(async ([language, list]) => [language, await usable(list)])),
     ]);
     const imageOptions = plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at }));

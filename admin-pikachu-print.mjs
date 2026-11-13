@@ -154,6 +154,7 @@ function draw() {
   g.clearRect(0, 0, view.width, view.height);
   if (!session) return;
   const { source, output, cut, original, settings } = session;
+  if (!cut) { g.drawImage(source, 0, 0, view.width, view.height); return; }
   drawCardOverlay(g, source, output || source, cut, view.width, view.height, !!output && !original, settings.shape);
   if (output && !original) {
     drawCutGuide(g, cut, view.width, view.height, .3);
@@ -246,7 +247,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     }
     const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
     const preset = presets.find(p => p.kind === windowPresetType(name));
-    const cut = validWindow(preset) ? { x: preset.x, y: preset.y, w: preset.w, h: preset.h } : defaultArtWindow(name);
+    const cut = card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null : validWindow(preset) ? { x: preset.x, y: preset.y, w: preset.w, h: preset.h } : defaultArtWindow(name);
     const [original, raw] = await Promise.all([image(card.original), card.illustration ? image(card.illustration.url) : null]);
     if (ticket !== revision) return;
     if (Math.abs(original.width / original.height - 63 / 88) > .025) throw new Error('원본 카드 비율을 확인해 주세요.');
@@ -265,7 +266,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       shape: corners.includes(previous.shape) ? previous.shape : 'round',
     };
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
-    $('printWindow').textContent = `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm`;
+    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm` : '원본 카드 이미지';
     session = {
       card, name, source, illustration, cut, settings, alignmentKey, textLayers: new Map(),
       original: false, initial: [...IDENTITY_WIDE], matrix: [...IDENTITY_WIDE],

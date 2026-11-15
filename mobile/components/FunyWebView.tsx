@@ -218,6 +218,7 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const [sheetUrl,setSheetUrl]=useState<string|null>(null);
   const [accessToken,setAccessToken]=useState<string|null>(null);
   const previousAccessToken=useRef<string|null|undefined>(undefined);
+  const previousLanguage=useRef(language);
   const [authReady,setAuthReady]=useState(false);
   const [sheetOpen,setSheetOpen]=useState(false);
   const [currentTarget,setCurrentTarget]=useState(url);
@@ -353,7 +354,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
     if(previousAccessToken.current===undefined){previousAccessToken.current=accessToken;return;}
     if(previousAccessToken.current!==accessToken){previousAccessToken.current=accessToken;setWebViewKey(k=>k+1);}
   },[accessToken,authReady]);
-  useEffect(()=>{if(authReady)setWebViewKey(k=>k+1);},[language,authReady]);
+  // Initial auth resolution must not remount a WebView that has just loaded HOME.
+  useEffect(()=>{if(!authReady)return;if(previousLanguage.current===language)return;previousLanguage.current=language;setWebViewKey(k=>k+1);},[language,authReady]);
   useEffect(()=>{
     if(!authReady)return;
     let isCoinFlip=false;
@@ -522,6 +524,8 @@ export default function FunyWebView({url,title='FUNY PIN',onWebRouteChange,onWeb
   const authInjection=accessToken?`\n(function(){try{window.__FUNY_ACCESS_TOKEN=${JSON.stringify(accessToken)};}catch(e){}})(); true;`:'';
   const appContext={surface,platform:Platform.OS,appVersion:Constants.expoConfig?.version||Constants.nativeAppVersion||'',buildVersion:Constants.nativeBuildVersion||'',loggedIn:!!accessToken,language};
   const contextInjection=`\n(function(){try{window.__FUNY_APP_CONTEXT=${JSON.stringify(appContext)};localStorage.setItem('funy-pin-lang',${JSON.stringify(language)});}catch(e){}})(); true;`;
+  // Wait for session bootstrap before the first WebView mount (instead of loading twice).
+  if(!authReady)return <View style={styles.container} accessibilityLabel={title}><View style={{flex:1,alignItems:'center',justifyContent:'center'}}><Text style={{color:C.text,fontSize:12}}>HOME을 준비하고 있어요...</Text></View></View>;
   if(error)return <View style={styles.error}><Text style={styles.errorTitle}>페이지를 불러오지 못했어요</Text><Text style={styles.errorText}>네트워크 연결을 확인한 뒤 다시 시도해주세요.</Text></View>;
 
   return <View style={styles.container} accessibilityLabel={title}>

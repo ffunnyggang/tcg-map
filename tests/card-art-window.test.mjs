@@ -1,5 +1,17 @@
 import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{readFileSync}from'node:fs';import{pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide}from'../card-art-geometry.mjs';import{drawArtWatermark,makePrintSheet}from'../card-overlay-print.mjs';
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
+test('print mode retains artwork exactly 2mm inside the window and omits the baked-in guide', (t) => {
+ const {g,calls}=recorder();
+ globalThis.document={createElement:()=>({getContext:()=>g})};
+ t.after(()=>delete globalThis.document);
+ makePrintSheet({width:1072,height:1472},{x:5.9,y:9.7,w:51.2,h:31.2},
+  {production:true,cutoutCard:{display_name:'피카츄',card_number:'017'}});
+ const fill = calls.filter(call=>call[0]==='fillRect')[1].slice(1).map(px=>px/12);
+ fill.forEach((value,index)=>assert.ok(Math.abs(value-[17.9,21.7,47.2,27.2][index])<.00001));
+ assert.equal(calls.some(call=>call[0]==='strokeRect'),false);
+ assert.equal(calls.some(call=>call[1]==='CUT OUT INSIDE'),true);
+ assert.equal(calls.some(call=>String(call[1]).includes('CELEBRATION')),false);
+});
 function recorder(){const calls=[];const g=new Proxy({},{get:(_,k)=>typeof k==='string'?(...v)=>calls.push([k,...v]):undefined,set:()=>true});return {g,calls};}
 test('source review and generated preview draw the exact same physical cut-window',()=>{for(const [width,height]of[[756,1056],[1008,1408]]){const {g,calls}=recorder(),p=pixelWindow(r,width,height);drawCutGuide(g,r,width,height);assert.deepEqual(calls.filter(c=>c[0]==='strokeRect').map(c=>c.slice(1)),[[p.x,p.y,p.w,p.h],[p.x,p.y,p.w,p.h]]);const src={},result={};drawCardOverlay(g,src,result,r,width,height,true);assert.ok(calls.some(c=>c[0]==='rect'&&c[1]===p.x&&c[2]===p.y&&c[3]===p.w&&c[4]===p.h));assert.ok(calls.some(c=>c[0]==='clip'&&c[1]==='evenodd'));}});
 test('original pixels are restored inside the confirmed window, without moving the full source',()=>{const {g,calls}=recorder(),source={width:1008,height:1408},output={width:1008,height:1408,getContext:()=>g};restoreSourceWindow(output,source,r);const p=pixelWindow(r,1008,1408);assert.deepEqual(calls.find(c=>c[0]==='rect'),['rect',p.x,p.y,p.w,p.h]);assert.deepEqual(calls.find(c=>c[0]==='drawImage'),['drawImage',source,0,0,1008,1408,0,0,1008,1408]);});

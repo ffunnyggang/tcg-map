@@ -4,20 +4,20 @@ import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
 import { composeLayers } from './card-overlay-layers.mjs?v=20261110-center1';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
-import { findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT } from './card-overlay-symbol.mjs?v=20261110-center1';
+import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
-import { drawCardOverlay, drawCutGuide } from './card-art-geometry.mjs?v=20261107-flow3';
+import { drawCardOverlay, drawCutGuide, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { drawArtWatermark, makePrintSheet, withCardBleed } from './card-overlay-print.mjs?v=20261111-cutout2';
-import { makePDF } from './card-overlay-core.mjs?v=20261023-ux3';
+import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withCardBleed } from './card-overlay-print.mjs?v=20261116-print-modes1';
+import { makePDF } from './card-overlay-core.mjs?v=20261116-print-modes1';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
 const assetPromises = new Map();
 const labels = { ko: '한국어', ja: '일본어', en: '영어' };
 const corners = ['round', 'square'];
-const symbols = ['off', 'center'];
-const controls = { language: 'printText', symbol: 'printSymbol', border: 'printBorder', shape: 'printCorner' };
+const symbolLabels = { off: 'OFF', center: '중앙', right: '오른쪽', left: '왼쪽' };
+const controls = { language: 'printText', symbol: 'printSymbol', border: 'printBorder', shape: 'printCorner', mode: 'printMode' };
 const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', authMode = 'web', adminRefresh = null;
@@ -157,7 +157,8 @@ function draw() {
   if (!cut) { g.drawImage(source, 0, 0, view.width, view.height); return; }
   drawCardOverlay(g, source, output || source, cut, view.width, view.height, !!output && !original, settings.shape);
   if (output && !original) {
-    drawCutGuide(g, cut, view.width, view.height, .3);
+    if (settings.mode === 'production') drawProductionWindow(g, pixelWindow(cut, view.width, view.height), view.width / 63);
+    else drawCutGuide(g, cut, view.width, view.height, .3);
     if (shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height);
   }
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
@@ -192,18 +193,23 @@ async function compose() {
   const current = session;
   if (!current?.illustration) return;
   const { settings: { language, border, symbol, shape }, source, cut, illustration, matrix } = current;
+  const centered = symbol === 'center';
+  const rightAssetId = 'anniversary-yellow-umbreon-v1';
   const [text, frame, stamp] = await Promise.all([
     language !== 'off' ? textLayer(current, language) : null,
     border !== 'off' ? asset(border) : null,
-    symbol !== 'off' ? asset('anniversary-yellow-umbreon-v1') : null,
+    symbol !== 'off' ? asset(symbol === 'left' ? 'anniversary-yellow-left-v1' : rightAssetId) : null,
   ]);
   let placement = null;
   if (stamp) {
     if (current.symbolCenter === undefined) {
-      try { current.symbolCenter = findAnniversarySymbolCenter(source, stamp, canvas, { centerOnly: true }); }
+      try {
+        const referenceStamp = symbol === 'left' ? await asset(rightAssetId) : stamp;
+        current.symbolCenter = findAnniversarySymbolCenter(source, referenceStamp, canvas, { centerOnly: centered });
+      }
       catch { current.symbolCenter = null; }
     }
-    placement = current.symbolCenter || PIKACHU_ANNIVERSARY_PLACEMENT;
+    placement = centered ? current.symbolCenter || PIKACHU_ANNIVERSARY_PLACEMENT : anniversarySymbolPlacement(stamp, current.symbolCenter);
   }
   if (current !== session) return;
   const merged = composeLayers(source, renderManual(illustration, matrix, canvas), cut, {
@@ -255,22 +261,27 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     const illustration = raw ? paddedArtwork(raw) : null;
     const alignmentKey = JSON.stringify([card.illustration?.id, cut]);
     const previous = saved[card.id] || {};
+    const centeredSymbol = usesCenteredAnniversarySymbol(name);
+    const symbols = centeredSymbol ? ['off', 'center'] : ['off', 'right', 'left'];
+    $('printSymbol').replaceChildren(...symbols.map(value => new Option(symbolLabels[value], value)));
+    const savedSymbol = previous.symbol === 'center' && !centeredSymbol ? 'right' : previous.symbol;
     const signature = JSON.stringify([alignmentKey, previous.language, card.texts[previous.language]?.id]);
     const languages = card.languages;
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     const settings = {
       language: previous.language === 'off' || languages.includes(previous.language)
         ? previous.language : languages.find(code => code === 'ja') || languages[0] || 'off',
-      symbol: symbols.includes(previous.symbol) ? previous.symbol : 'off',
+      symbol: symbols.includes(savedSymbol) ? savedSymbol : 'off',
       border: borders.includes(previous.border) ? previous.border : 'off',
       shape: corners.includes(previous.shape) ? previous.shape : 'round',
+      mode: previous.mode === 'production' ? 'production' : 'event',
     };
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm` : '원본 카드 이미지';
     session = {
       card, name, source, illustration, cut, settings, alignmentKey, textLayers: new Map(),
       original: false, initial: [...IDENTITY_WIDE], matrix: [...IDENTITY_WIDE],
-      confirmed: previous.confirmed === true && previous.signature === signature && previous.language === settings.language,
+      confirmed: previous.confirmed === true && previous.signature === signature && previous.language === settings.language && previous.symbol === settings.symbol,
     };
     if (!illustration) {
       draw();
@@ -341,7 +352,10 @@ for (const [key, id] of Object.entries(controls)) {
   $(id).onchange = e => withCardAction(async () => {
     const previous = session.settings[key];
     session.settings[key] = e.target.value;
-    try { await compose(); } catch (error) { session.settings[key] = e.target.value = previous; throw error; }
+    try {
+      if (key === 'mode') draw();
+      else await compose();
+    } catch (error) { session.settings[key] = e.target.value = previous; throw error; }
     session.confirmed = false;
     save();
     setStatus('출력 설정을 적용했어요.');
@@ -356,15 +370,18 @@ $('printPDF').onclick = () => withCardAction(async () => {
   const { output, cut, name, settings } = session;
   const language = settings.language === 'off' ? name.source_language : settings.language;
   const card = { ...name, source_language: language, display_name: /^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id) ? ({ ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name) : name.display_name };
+  const production = settings.mode === 'production';
   setStatus('A4 출력 도안을 준비하고 있어요.');
   const sheet = makePrintSheet(withCardBleed(output), cut, {
-    shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: shouldDrawWatermark(session.card), cutoutCard: card,
+    shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: shouldDrawWatermark(session.card), cutoutCard: card, production,
   });
   const jpeg = await new Promise(resolve => sheet.toBlob(resolve, 'image/jpeg', .98));
   if (!jpeg) throw new Error('출력 도안을 만들지 못했어요.');
-  const pdf = makePDF(new Uint8Array(await jpeg.arrayBuffer()), sheet.width, sheet.height, 83, 118);
+  const pdf = makePDF(new Uint8Array(await jpeg.arrayBuffer()), sheet.width, sheet.height, 83, 118,
+    production ? { cutContour: printWindowRect(cut) } : undefined);
   const url = URL.createObjectURL(pdf);
-  const link = Object.assign(document.createElement('a'), { href: url, download: String(selection + 1).padStart(2, '0') + ' - ' + cardFilename(card) });
+  const fileName = cardFilename(card).replace(/\.pdf$/, production ? '-PRINT.pdf' : '.pdf');
+  const link = Object.assign(document.createElement('a'), { href: url, download: String(selection + 1).padStart(2, '0') + ' - ' + fileName });
   document.body.append(link);
   link.click();
   link.remove();

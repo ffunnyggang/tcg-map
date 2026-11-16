@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
   <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261112-1">
   <script src="./web-auth.js"></script>
-  <script type="module" src="./admin-pikachu-print.mjs?v=20261113-reference"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261116-print-modes1"></script>
 </head>
 <body class="pikachu-print">
   <header class="print-header">
@@ -49,7 +49,6 @@
           <label for="printSymbol">30주년 심볼
             <select id="printSymbol">
               <option value="off">OFF</option>
-              <option value="center">중앙</option>
             </select>
           </label>
           <label for="printBorder">테두리
@@ -65,6 +64,12 @@
             <select id="printCorner">
               <option value="round">라운드</option>
               <option value="square">사각</option>
+            </select>
+          </label>
+          <label for="printMode">출력 도안 설정
+            <select id="printMode">
+              <option value="event">이벤트용</option>
+              <option value="production">인쇄용</option>
             </select>
           </label>
           <p id="printWindow" class="small-note"></p>

@@ -12,7 +12,7 @@ import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {drawArtWatermark,makePrintSheet,withCardBleed} from './card-overlay-print.mjs?v=20261111-cutout2';
+import {drawArtWatermark,makePrintSheet,withProductionCardBleed} from './card-overlay-print.mjs?v=20261116-outer-bleed';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -229,7 +229,9 @@ async function preparePDF(entry){
   // Let the result view paint before encoding the sheet.
   await new Promise(resolve=>setTimeout(resolve,0));
   if(pdfExport!==entry)return;
-  const sheet=makePrintSheet(withCardBleed(outputArt()),entry.window,{shape:entry.shape,tolerance:0,bleed:2,windowGuideInset:0,trimMargin:.5,watermark:true,cutoutCard:entry.card});
+  const wide=layerSession?.current&&!layerSession.layers.showBorder?layerSession:null;
+  const printArt=withProductionCardBleed(outputArt(),canvas,{artwork:wide?.image,matrix:wide?.current});
+  const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:2,windowGuideInset:0,trimMargin:.5,watermark:true,cutoutCard:entry.card});
   const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
   if(!jpg)throw Error('출력 도안을 만들지 못했어요.');
   const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118);

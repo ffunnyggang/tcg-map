@@ -15,6 +15,31 @@ test('production bleed reflects texture and reuses aligned wide art without chan
  ]);
 });
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
+test('public PDF uses the shared texture bleed while keeping the selected window and 64 × 89 trim', async () => {
+ const client=readFileSync(new URL('../card-art.mjs',import.meta.url),'utf8');
+ const prepare=client.slice(client.indexOf('async function preparePDF('),client.indexOf('function offerPDFDownload('));
+ const matrix=[1,0,0,1,-320,-80],image={},output={};
+ const entry={window:r,shape:'round',card:{}};
+ let bleedArgs,printArgs;
+ const context=vm.createContext({
+  pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
+  outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
+  makePrintSheet:(...args)=>(printArgs=args,{toBlob:done=>done(new Blob(['jpeg']))}),
+  makePDF:()=>new Blob(['pdf']),cardFilename:()=> 'output.pdf',update:()=>{},
+ });
+ await vm.runInContext(prepare+'\npreparePDF(pdfExport)',context);
+ assert.equal(entry.error,undefined);
+ assert.equal(entry.file.name,'output.pdf');
+ assert.equal(bleedArgs[0],output);
+ assert.equal(bleedArgs[2].artwork,image);
+ assert.equal(bleedArgs[2].matrix,matrix);
+ assert.equal(printArgs[1],r);
+ assert.equal(printArgs[2].trimMargin,.5);
+ assert.equal(printArgs[2].bleed,2);
+ context.layerSession.layers.showBorder=true;
+ await vm.runInContext('preparePDF(pdfExport)',context);
+ assert.equal(bleedArgs[2].artwork,undefined);
+});
 test('print mode retains artwork exactly 2mm inside the window and omits the baked-in guide', (t) => {
  const {g,calls}=recorder();
  globalThis.document={createElement:()=>({getContext:()=>g})};

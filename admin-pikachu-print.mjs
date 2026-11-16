@@ -8,7 +8,7 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, drawCutGuide, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withCardBleed, PRINT } from './card-overlay-print.mjs?v=20261116-print-modes1';
+import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withCardBleed, withProductionCardBleed, PRINT } from './card-overlay-print.mjs?v=20261116-outer-bleed';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261116-pikachu-a2';
 
@@ -248,6 +248,7 @@ async function prepareCard(card, previous) {
   };
   const prepared = {
     card, name, source, illustration, cut, settings, symbols, alignmentKey, textLayers: new Map(),
+    hasWideArtwork: raw?.width === WIDE.width && raw?.height === WIDE.height,
     original: false, initial: [...IDENTITY_WIDE], matrix: [...IDENTITY_WIDE],
     confirmed: previous.confirmed === true && previous.signature === signature && previous.language === settings.language && previous.symbol === settings.symbol,
   };
@@ -384,7 +385,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   const card = { ...name, source_language: language, display_name: /^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id) ? ({ ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name) : name.display_name };
   const production = settings.mode === 'production';
   setStatus('A4 출력 도안을 준비하고 있어요.');
-  const sheet = makePrintSheet(withCardBleed(output), cut, {
+  const sheet = makePrintSheet(production ? productionArtwork(session) : withCardBleed(output), cut, {
     shape: settings.shape, tolerance: 0, bleed: 2, windowGuideInset: 0, trimMargin: .5, watermark: shouldDrawWatermark(session.card), cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
@@ -450,12 +451,16 @@ $('printPikachuSheet').onclick = async () => {
     refreshControls();
   }
 };
+function productionArtwork({output, illustration, matrix, settings, hasWideArtwork}) {
+  const artwork = hasWideArtwork && settings.border === 'off' ? illustration : null;
+  return withProductionCardBleed(output, canvas, {artwork, matrix});
+}
 function productionTile(current) {
-  const {output, cut, card} = current;
+  const {cut, card} = current;
   const scale = PRINT.scale, bleed = PRINT.bleed;
   const tile = canvas((PRINT.width+2*bleed)*scale, (PRINT.height+2*bleed)*scale);
   const g = tile.getContext('2d');
-  g.drawImage(withCardBleed(output),0,0,tile.width,tile.height);
+  g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
   drawProductionWindow(g, {x:(bleed+cut.x)*scale,y:(bleed+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
   if (shouldDrawWatermark(card)) drawArtWatermark(g,bleed*scale,bleed*scale,PRINT.width*scale,PRINT.height*scale);
   return tile;

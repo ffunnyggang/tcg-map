@@ -29,6 +29,28 @@ export function withCardBleed(image,createCanvas=document.createElement.bind(doc
  for(const [sx,sy,dx,dy]of[[0,0,0,0],[image.width-1,0,b+w,0],[0,image.height-1,0,b+h],[image.width-1,image.height-1,b+w,b+h]])g.drawImage(image,sx,sy,1,1,dx,dy,b,b);
  return c;
 }
+
+export function withProductionCardBleed(image, canvas, {artwork, matrix} = {}) {
+ const pixelsPerMM=16;
+ const b=PRINT.bleed*pixelsPerMM, w=PRINT.width*pixelsPerMM, h=PRINT.height*pixelsPerMM;
+ const surface=canvas(w+2*b,h+2*b), g=surface.getContext('2d');
+ // Mirror a strip of real texture in all directions, including the corners.
+ // This also backs any uncovered part of an aligned wide source.
+ for (const dx of [-1,0,1]) for (const dy of [-1,0,1]) {
+  if (!dx && !dy) continue;
+  g.setTransform(dx?-1:1,0,0,dy?-1:1,dx?2*(b+(dx>0?w:0)):0,dy?2*(b+(dy>0?h:0)):0);
+  g.drawImage(image,b,b,w,h);
+ }
+ if (artwork && matrix) {
+  const [a,skewY,skewX,d,e,f]=matrix;
+  g.setTransform(a,skewY,skewX,d,e+b,f+b);
+  g.drawImage(artwork,0,0);
+ }
+ // Keep the composed image at the original card size and coordinates.
+ g.resetTransform();
+ g.drawImage(image,b,b,w,h);
+ return surface;
+}
 export function artPlacement(rect,bleed=2,width=1024,height=1536){return{x:(rect.x+bleed)/(63+2*bleed)*width,y:(rect.y+bleed)/(88+2*bleed)*height,w:rect.w/(63+2*bleed)*width,h:rect.h/(88+2*bleed)*height};}
 export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,bleed/(63+2*bleed)*art.width,bleed/(88+2*bleed)*art.height,63/(63+2*bleed)*art.width,88/(88+2*bleed)*art.height,x,y,63*s,88*s);else g.drawImage(art,x-bleed*s,y-bleed*s,(63+bleed*2)*s,(88+bleed*2)*s);}
 // Position on the original card footprint so preview and PDF share the same baseline.

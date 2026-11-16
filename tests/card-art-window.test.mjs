@@ -1,4 +1,19 @@
 import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{readFileSync}from'node:fs';import{pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide}from'../card-art-geometry.mjs';import{drawArtWatermark,makePrintSheet}from'../card-overlay-print.mjs';
+import{withProductionCardBleed}from'../card-overlay-print.mjs';
+
+test('production bleed reflects texture and reuses aligned wide art without changing the card scale', () => {
+ const {g,calls}=recorder(), image={}, artwork={};
+ const canvas=(width,height)=>({width,height,getContext:()=>g});
+ const result=withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-80]});
+ assert.deepEqual([result.width,result.height],[1072,1472]);
+ const reflections=calls.filter(call=>call[0]==='setTransform').slice(0,8);
+ assert.equal(reflections.length,8);
+ assert.ok(reflections.some(call=>call[1]===-1&&call[4]===-1&&call[5]===64&&call[6]===2880));
+ assert.deepEqual(calls.slice(-4),[
+  ['setTransform',1,0,0,1,-288,-48],['drawImage',artwork,0,0],
+  ['resetTransform'],['drawImage',image,32,32,1008,1408],
+ ]);
+});
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
 test('print mode retains artwork exactly 2mm inside the window and omits the baked-in guide', (t) => {
  const {g,calls}=recorder();

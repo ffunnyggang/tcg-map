@@ -1,5 +1,29 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {validRect,homography,project,makePDF} from '../card-overlay-core.mjs';
 import {printWindowRect} from '../card-overlay-print.mjs';
+import {makePikachuSheetPDF, PIKACHU_SHEET_IDS} from '../admin-pikachu-sheet.mjs';
+
+test('Pikachu imposition places 30 life-size tiles on one A2 page and keeps both cut layers editable', async () => {
+ const item = {jpeg:Uint8Array.of(255,216,255,217),cut:{x:5.9,y:9.7,w:51.2,h:31.2},shape:'square'};
+ assert.deepEqual([PIKACHU_SHEET_IDS[0],PIKACHU_SHEET_IDS.at(-1)],['m6a-ja-017','m6a-ja-046']);
+ assert.throws(() => makePikachuSheetPDF([item]), /30종/);
+ const pdf = await makePikachuSheetPDF(PIKACHU_SHEET_IDS.map(() => item)).text();
+ assert.match(pdf,/\/Count 1/);
+ assert.match(pdf,/\/MediaBox \[0 0 1190\.551181 1683\.779528\]/);
+ assert.match(pdf,/\/OFF \[5 0 R 6 0 R\]/);
+ const rows = [...pdf.matchAll(/q (\S+) 0 0 (\S+) (\S+) (\S+) cm \/Card\d+ Do Q/g)];
+ assert.equal(rows.length,30);
+ assert.equal(new Set(rows.map(row=>row[3])).size,5);
+ assert.equal(new Set(rows.map(row=>row[4])).size,6);
+ const mm = value => Number(value)*25.4/72;
+ for (const [,w,h] of rows) {
+  assert.ok(Math.abs(mm(w)-67)<.00001);
+  assert.ok(Math.abs(mm(h)-92)<.00001);
+ }
+ for (const layer of ['WindowCut','OuterCut']) {
+  const body = pdf.split(`/OC /${layer} BDC\n`)[1].split('EMC')[0];
+  assert.equal([...body.matchAll(/ re S/g)].length,30);
+ }
+});
 
 test('print PDF stores the inner cut at its real A4 coordinates on a separate spot-color layer', async () => {
  const cut = printWindowRect({x:5.9,y:9.7,w:51.2,h:31.2});

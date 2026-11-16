@@ -1,10 +1,10 @@
 import { createPDFWriter, CUT_CONTOUR_SPOT } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { PRINT } from './card-overlay-print.mjs?v=20261116-print-modes1';
+import { PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261117-print-bleed2';
 
 export const PIKACHU_SHEET_IDS = Object.freeze(Array.from({length:30}, (_, index) =>
  `m6a-ja-${String(index+17).padStart(3,'0')}`));
 const PAGE = {width:420,height:594};
-const TILE = {width:PRINT.width+2*PRINT.bleed,height:PRINT.height+2*PRINT.bleed};
+const TILE = {width:PRINT.width+2*ADMIN_PRINT_BLEED,height:PRINT.height+2*ADMIN_PRINT_BLEED};
 const COLUMNS = 5;
 const ROWS = 6;
 const GAP = {x:6,y:4};
@@ -18,8 +18,8 @@ function tilePosition(index) {
 }
 
 function outerPath({x,y}, shape) {
- const offset = PRINT.bleed-.5;
- const l=pt(x+offset), b=pt(y+offset), w=pt(PRINT.width+1), h=pt(PRINT.height+1);
+ const offset = ADMIN_PRINT_BLEED-ADMIN_PRINT_TRIM_MARGIN;
+ const l=pt(x+offset), b=pt(y+offset), w=pt(PRINT.width+2*ADMIN_PRINT_TRIM_MARGIN), h=pt(PRINT.height+2*ADMIN_PRINT_TRIM_MARGIN);
  if (shape !== 'round') return `${l} ${b} ${w} ${h} re S`;
  const r=l+w, t=b+h, radius=pt(PRINT.cornerRadius), c=radius*(1-.5522847498);
  return [
@@ -42,7 +42,7 @@ export function makePikachuSheetPDF(tiles) {
  for (const [index,{cut,shape}] of tiles.entries()) {
   const {x,y} = tilePosition(index);
   artwork.push(`q ${pt(TILE.width)} 0 0 ${pt(TILE.height)} ${pt(x)} ${pt(y)} cm /Card${index+1} Do Q`);
-  windows.push(`${pt(x+PRINT.bleed+cut.x)} ${pt(y+PRINT.bleed+PRINT.height-cut.y-cut.h)} ${pt(cut.w)} ${pt(cut.h)} re S`);
+  windows.push(`${pt(x+ADMIN_PRINT_BLEED+cut.x)} ${pt(y+ADMIN_PRINT_BLEED+PRINT.height-cut.y-cut.h)} ${pt(cut.w)} ${pt(cut.h)} re S`);
   borders.push(outerPath({x,y}, shape));
  }
  const layer = (name, paths) => `/OC /${name} BDC\nq /CutContour CS 1 SCN 0.25 w\n${paths.join('\n')}\nQ\nEMC`;

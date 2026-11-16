@@ -1,5 +1,7 @@
 export const PRINT={scale:12,bleed:2,width:63,height:88,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
 const CARD_ORIGIN = 10;
+export const ADMIN_PRINT_TRIM_MARGIN = .5;
+export const ADMIN_PRINT_BLEED = 2 + ADMIN_PRINT_TRIM_MARGIN;
 const PRODUCTION_INNER_BLEED = 2;
 
 // Physical position on the print sheet, measured from its top-left in mm.
@@ -30,9 +32,9 @@ export function withCardBleed(image,createCanvas=document.createElement.bind(doc
  return c;
 }
 
-export function withProductionCardBleed(image, canvas, {artwork, matrix} = {}) {
+export function withProductionCardBleed(image, canvas, {artwork, matrix, bleed = PRINT.bleed} = {}) {
  const pixelsPerMM=16;
- const b=PRINT.bleed*pixelsPerMM, w=PRINT.width*pixelsPerMM, h=PRINT.height*pixelsPerMM;
+ const b=bleed*pixelsPerMM, w=PRINT.width*pixelsPerMM, h=PRINT.height*pixelsPerMM;
  const surface=canvas(w+2*b,h+2*b), g=surface.getContext('2d');
  // Mirror a strip of real texture in all directions, including the corners.
  // This also backs any uncovered part of an aligned wide source.

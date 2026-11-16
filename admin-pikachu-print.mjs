@@ -227,7 +227,8 @@ async function compose() {
 async function prepareCard(card, previous) {
   const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
   const preset = presets.find(p => p.kind === windowPresetType(name));
-  const cut = card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null : validWindow(preset) ? { x: preset.x, y: preset.y, w: preset.w, h: preset.h } : defaultArtWindow(name);
+  const selectedWindow = card.illustration?.cutRect || preset;
+  const cut = card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null : validWindow(selectedWindow) ? { x: selectedWindow.x, y: selectedWindow.y, w: selectedWindow.w, h: selectedWindow.h } : defaultArtWindow(name);
   const [original, raw] = await Promise.all([image(card.original), card.illustration ? image(card.illustration.url) : null]);
   if (Math.abs(original.width / original.height - 63 / 88) > .025) throw new Error('원본 카드 비율을 확인해 주세요.');
   const source = prepareMobileLayerSource(original, canvas);
@@ -292,11 +293,17 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     const kinds = { standard: '기본 저장 이미지', face: '얼굴 가림 + 연결 맞추기 (BETA)', history: '기존 연결 맞추기 저장본' };
     const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' });
     if (card.imageOptions?.length) {
+      const needsSelection = !card.illustration;
       $('printImage').replaceChildren(...card.imageOptions.map(option => {
         const date = new Date(option.createdAt);
-        const suffix = option.kind !== 'standard' && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
-        return new Option((kinds[option.kind] || '저장 이미지') + suffix, option.id);
+        const suffix = !['standard','import'].includes(option.kind) && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
+        return new Option((option.kind === 'import' ? option.label : kinds[option.kind] || '저장 이미지') + suffix, option.id);
       }));
+      if (needsSelection) {
+        const placeholder = new Option('출력용 일러스트를 선택해 주세요', '');
+        placeholder.disabled = true;
+        $('printImage').prepend(placeholder);
+      }
       $('printImage').value = card.illustration?.id || '';
     }
     const previous = saved[card.id] || {};
@@ -311,7 +318,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     session = prepared;
     if (!illustration) {
       draw();
-      setStatus('저장된 확장 일러스트가 없어요. 확보 후 이 카드의 도안을 만들 수 있습니다.');
+      setStatus(card.imageOptions?.length ? '출력용 일러스트를 선택해 주세요.' : '저장된 확장 일러스트가 없어요. 확보 후 이 카드의 도안을 만들 수 있습니다.');
       return;
     }
     let textError = '';

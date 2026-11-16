@@ -65,6 +65,7 @@ Deno.serve(async req => {
   type Reference = { id: string; card_number: string; display_name: string; source_language: string; art_rect: unknown; image_path: string };
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
+  type PrintImport = { id: string; reference_id: string; label: string; created_at: string };
   type Generation = { id: string; user_id: string; raw_path: string; image_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string };
   function preparedPrintPath(row: Generation) {
     const path = row.user_id + '/' + row.id + '/prepared.png';
@@ -92,9 +93,15 @@ Deno.serve(async req => {
     if (body?.action !== 'catalog' && (body?.action !== 'card' || typeof body.id !== 'string' || !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     }
-    const inventory = await rows<Asset>('overlay_layer_assets', {
-      select: 'cache_key,generation_id', prompt_version: inList([ART, TEXT]), order: 'cache_key.asc',
-    });
+    const [inventory, printImports] = await Promise.all([
+      rows<Asset>('overlay_layer_assets', {
+        select: 'cache_key,generation_id', prompt_version: inList([ART, TEXT]), order: 'cache_key.asc',
+      }),
+      rows<PrintImport>('overlay_admin_print_imports', {
+        select: 'id,reference_id,label,created_at', active: 'eq.true', order: 'created_at.desc,id.asc',
+        ...(body.action === 'card' ? { reference_id: 'eq.' + body.id } : {}),
+      }),
+    ]);
     const sharedIds = [...new Set(inventory.map(asset => asset.cache_key.split(':')[1]).filter(id => refId.test(id || '')))].sort();
     const privateId = /^dogam-ko-[0-9A-HJKMNP-TV-Z]{26}$/;
     const privateCards = body.action === 'catalog' || privateId.test(body.id)
@@ -119,7 +126,7 @@ Deno.serve(async req => {
     // Keep all collected 30th-series Ditto editions selectable before artwork is generated.
     const dittoReferences = ['m6a-ja-093', 'm6a-ko-01M2FH6D0Y1QM3ECGDT937VSJE',
       '30th-en-115', 'm6a-ko-01M2FSF4ZD32P00YGBCVWCP1GK'];
-    const selectable = [...new Set([...ids, ...sharedIds, ...dittoReferences])];
+    const selectable = [...new Set([...ids, ...sharedIds, ...dittoReferences, ...printImports.map(row => row.reference_id)])];
     if (body.action === 'card' && !selectable.includes(body.id)) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     const selected = body.action === 'card' ? [body.id] : selectable;
     const [referenceRows, anchors] = await Promise.all([
@@ -180,11 +187,12 @@ Deno.serve(async req => {
       const illustrations = [...defaults, ...beta, ...older];
       const texts = Object.fromEntries([...languages]
         .map(language => [language, candidates(TEXT, language)] as const).filter(([, list]) => list.length));
-      return { ref, illustrations, texts };
+      const imports = printImports.filter(row => row.reference_id === ref.id);
+      return { ref, illustrations, texts, imports };
     });
     const cardInfo = (p: typeof plans[number]) => ({
       id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, sourceLanguage: p.ref.source_language, artRect: p.ref.art_rect,
-      hasIllustration: p.illustrations.length > 0, languages: Object.keys(p.texts).sort(),
+      hasIllustration: p.illustrations.length > 0 || p.imports.length > 0, languages: Object.keys(p.texts).sort(),
     });
     if (body.action === 'catalog') return reply({ adminId: user.id, cards: [...plans.map(cardInfo), ...privateCards.map(privateInfo)] });
     async function usable(generations: Generation[], overrideId?: string) {
@@ -202,13 +210,24 @@ Deno.serve(async req => {
       (plan.ref.id === 'm6a-ja-021' && former021Defaults.has(body.imageId)))
       ? undefined : body.imageId;
     const choice = requestedImageId == null ? plan.illustrations[0] : plan.illustrations.find(item => item.row.id === requestedImageId);
-    if (requestedImageId != null && !choice) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
+    const imported = plan.imports.find(item => item.id === requestedImageId);
+    if (requestedImageId != null && !choice && !imported) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
+    async function importedArtwork(id: string) {
+      const [row] = await rows<{ image_base64: string; cut_rect: unknown }>('overlay_admin_print_imports', {
+        select: 'image_base64,cut_rect', id: 'eq.' + id, reference_id: 'eq.' + plan.ref.id, active: 'eq.true',
+      });
+      if (!row?.image_base64) throw new Error('imported artwork unavailable');
+      return { id, width: 1008, height: 1408, cutRect: row.cut_rect, url: 'data:image/jpeg;base64,' + row.image_base64 };
+    }
     const [original, illustration, texts] = await Promise.all([
       sign('overlay-art-references', plan.ref.image_path),
-      usable(requestedImageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : [], printImageOverrides.get(plan.ref.id)),
+      imported ? importedArtwork(imported.id) : usable(requestedImageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : [], printImageOverrides.get(plan.ref.id)),
       Promise.all(Object.entries(plan.texts).map(async ([language, list]) => [language, await usable(list)])),
     ]);
-    const imageOptions = plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at }));
+    const imageOptions = [
+      ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
+      ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
+    ];
     return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {
     console.error('pikachu print assets failed', error instanceof Error ? error.message : 'unknown');

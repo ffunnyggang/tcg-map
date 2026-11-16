@@ -7,6 +7,9 @@ const textVersion = 'card-text-only-v2';
 const card = 'm6a-ja-017';
 const other = 'm6a-ko-017';
 const english = '30th-en-023';
+const importedReference = '30th-en-032';
+const imported = { id:'a8fd7c23-005f-4b79-b5b1-a335fe5ddf54',reference_id:importedReference,label:'PDF 추출 · 복원',created_at:'2026-11-16T00:00:00Z' };
+const cutRect = {x:5.9,y:9.7,w:51.2,h:31.2};
 const user = 'd6800641-c49d-4038-8505-01631e9b930c';
 const originalFetch = globalThis.fetch;
 let handler;
@@ -20,12 +23,15 @@ const req = (body, auth = true) => new Request('https://project.test/functions/v
 });
 const generation = (n, id, version, width, height) => {
   const guid = String(n).padStart(8, '0') + '-28e6-4d32-8119-2423c6c8c453';
-  return { id: guid, user_id: user, source_reference_id: id, prompt_version: version, width, height, raw_path: user + '/' + guid + '/provider.png' };
+  return { id: guid, user_id: user, source_reference_id: id, prompt_version: version, width, height, raw_path: user + '/' + guid + '/provider.png', created_at: '2026-11-16T00:00:00Z' };
 };
 const refs = Array.from({ length: 30 }, (_, i) => {
   const num = String(i + 17).padStart(3, '0');
   return { id: 'm6a-ja-' + num, card_number: num, display_name: 'ピカチュウ', image_path: num + '.png' };
 });
+for (const id of ['m6a-ja-093','m6a-ko-01M2FH6D0Y1QM3ECGDT937VSJE','30th-en-115','m6a-ko-01M2FSF4ZD32P00YGBCVWCP1GK',importedReference]) {
+  refs.push({id,card_number:id.slice(-3),display_name:'Example',image_path:id+'.png'});
+}
 const members = refs.map(({ id }) => ({ reference_id: id, artwork_key: id, language: 'ja' }))
   .concat({ reference_id: other, artwork_key: card, language: 'ko' }, { reference_id: english, artwork_key: card, language: 'en' });
 const wide = generation(1, card, artworkVersion, 1648, 2048);
@@ -54,6 +60,14 @@ function mock(admin = true) {
       return Response.json(admin);
     }
     assert.equal(options.headers.Authorization, 'Bearer service');
+    if (url.pathname.endsWith('/overlay_admin_card_references')) return Response.json([]);
+    if (url.pathname.endsWith('/overlay_admin_print_imports')) {
+      const column = url.searchParams.get('select');
+      const ref = url.searchParams.get('reference_id');
+      if (ref && ref !== 'eq.'+importedReference) return Response.json([]);
+      return Response.json(column.includes('image_base64')
+        ? [{image_base64:'/9j/test',cut_rect:cutRect}] : [imported]);
+    }
     if (url.pathname.includes('/overlay_art_references')) {
       return Response.json(refs.filter(r => url.searchParams.get('id').includes(r.id)));
     }
@@ -62,8 +76,7 @@ function mock(admin = true) {
       return Response.json(param ? members.filter(m => param.includes(m.reference_id)) : members.filter(m => url.searchParams.get('artwork_key').includes(m.artwork_key)));
     }
     if (url.pathname.includes('/overlay_layer_assets')) {
-      return Response.json(url.searchParams.get('cache_key').includes(artworkVersion + ':' + card)
-        ? [{ cache_key: artworkVersion + ':' + card, generation_id: legacy.id }] : []);
+      return Response.json([{ cache_key: artworkVersion + ':' + card, generation_id: legacy.id }]);
     }
     if (url.pathname.includes('/overlay_generations')) {
       const sources = url.searchParams.get('source_reference_id');
@@ -84,18 +97,33 @@ test('only a verified admin can read the series or receive signed URLs', async (
   assert.equal((await handler(req({ action: 'card', id: card }))).status, 403);
   assert.deepEqual(calls, ['/auth/v1/user', '/rest/v1/rpc/is_funypin_admin']);
 });
-test('catalog orders exactly 30 cards and includes only acquired valid language layers', async () => {
+test('catalog starts with the 30 cards and includes only acquired valid language layers', async () => {
   const calls = mock();
   const response = await handler(req({ action: 'catalog' }));
   assert.equal(response.status, 200);
   const { cards } = await response.json();
-  assert.equal(cards.length, 30);
+  assert.equal(cards.length, 35);
   assert.equal(cards[0].number, '017');
   assert.equal(cards[29].number, '046');
   assert.deepEqual(cards[0].languages, ['ja', 'ko']);
   assert.equal(cards[0].hasIllustration, true);
   assert.equal(cards[1].hasIllustration, false);
   assert.ok(!calls.some(p => p.includes('/object/sign')));
+});
+test('an imported illustration is only returned for the exact card and an explicit selection', async () => {
+  mock();
+  const unselected = await handler(req({action:'card',id:importedReference}));
+  assert.equal(unselected.status,200);
+  const {card:defaultCard} = await unselected.json();
+  assert.equal(defaultCard.illustration,null);
+  assert.equal(defaultCard.imageOptions[0].id,imported.id);
+  assert.deepEqual(defaultCard.languages,[]);
+  const selected = await handler(req({action:'card',id:importedReference,imageId:imported.id}));
+  assert.equal(selected.status,200);
+  const {card:selectedCard} = await selected.json();
+  assert.deepEqual(selectedCard.illustration.cutRect,cutRect);
+  assert.equal(selectedCard.illustration.url,'data:image/jpeg;base64,/9j/test');
+  assert.equal((await handler(req({action:'card',id:card,imageId:imported.id}))).status,404);
 });
 test('per-card response signs only that artwork and prefers its published legacy image', async () => {
   const calls = mock();

@@ -192,7 +192,8 @@ Deno.serve(async req => {
     });
     const cardInfo = (p: typeof plans[number]) => ({
       id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, sourceLanguage: p.ref.source_language, artRect: p.ref.art_rect,
-      hasIllustration: p.illustrations.length > 0 || p.imports.length > 0, languages: Object.keys(p.texts).sort(),
+      hasIllustration: p.illustrations.length > 0 || p.imports.length > 0,
+      hasPrintImport: p.imports.length > 0, languages: Object.keys(p.texts).sort(),
     });
     if (body.action === 'catalog') return reply({ adminId: user.id, cards: [...plans.map(cardInfo), ...privateCards.map(privateInfo)] });
     async function usable(generations: Generation[], overrideId?: string) {

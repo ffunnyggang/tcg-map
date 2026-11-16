@@ -108,6 +108,7 @@ test('catalog starts with the 30 cards and includes only acquired valid language
   assert.deepEqual(cards[0].languages, ['ja', 'ko']);
   assert.equal(cards[0].hasIllustration, true);
   assert.equal(cards[1].hasIllustration, false);
+  assert.deepEqual(cards.filter(card => card.hasPrintImport).map(card => card.id), [importedReference]);
   assert.ok(!calls.some(p => p.includes('/object/sign')));
 });
 test('an imported illustration is only returned for the exact card and an explicit selection', async () => {

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
   <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261112-1">
   <script src="./web-auth.js"></script>
-  <script type="module" src="./admin-pikachu-print.mjs?v=20261116-print-import"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261116-print-import-list"></script>
 </head>
 <body class="pikachu-print">
   <header class="print-header">
@@ -29,6 +29,7 @@
         </label>
         <button type="button" id="printNext" aria-label="다음 카드">›</button>
       </div>
+      <button type="button" id="printPdfImports" class="secondary" hidden>PDF 복원본 보기</button>
       <p id="printProgress" class="small-note"></p>
       <div class="print-editor">
         <section class="print-visual" aria-label="도안 미리보기">

@@ -116,17 +116,19 @@ function progress() {
   const done = catalog.filter(card => card.hasIllustration && saved[card.id]?.confirmed).length;
   const missing = catalog.filter(card => !card.hasIllustration).length;
   $('printProgress').textContent = `설정 확정 ${done}/${catalog.length} · 일러스트 미확보 ${missing}장`;
-  Array.from($('printCard').options).forEach((option, index) => {
+  Array.from($('printCard').options).forEach(option => {
+    const index = Number(option.value);
     const card = catalog[index];
     const seq = String(index + 1).padStart(2, '0');
     const state = !card.hasIllustration ? ' · 일러스트 미확보' : saved[card.id]?.confirmed ? ' · 설정 확정' : '';
-    option.textContent = `${seq} · ${card.name} ${card.number}${state}`;
+    option.textContent = card.hasPrintImport ? `영문 ${card.number} · ${card.name}${state}` : `${seq} · ${card.name} ${card.number}${state}`;
   });
 }
 function refreshControls() {
   $('printPrevious').disabled = busy || selection === 0;
   $('printNext').disabled = busy || selection >= catalog.length - 1;
   $('printCard').disabled = busy;
+  $('printPdfImports').disabled = busy;
   $('printImage').disabled = busy || $('printImage').options.length < 2;
   $('printCompare').disabled = busy || !session?.illustration;
   $('printAlign').disabled = busy || !session?.illustration;
@@ -352,6 +354,7 @@ $('printReload').onclick = () => catalog.length ? loadCard(selection) : connect(
 $('printPrevious').onclick = () => loadCard(selection - 1);
 $('printNext').onclick = () => loadCard(selection + 1);
 $('printCard').onchange = e => loadCard(Number(e.target.value));
+$('printPdfImports').onclick = () => loadCard(catalog.findIndex(card => card.hasPrintImport));
 $('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
 $('printAlign').onclick = () => withCardAction(async () => {
@@ -484,12 +487,23 @@ async function connect() {
       const stored = JSON.parse(localStorage.getItem(storageKey));
       saved = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
     } catch { saved = {}; }
-    catalog = cards;
+    const pdfCards = cards.filter(card => card.hasPrintImport).sort((a, b) => a.number.localeCompare(b.number));
+    catalog = [...cards.filter(card => !card.hasPrintImport), ...pdfCards];
     presets = await api('/rest/v1/card_art_window_presets?select=kind,x,y,w,h').catch(() => []);
-    $('printCard').replaceChildren(...catalog.map((_, index) => new Option('', index)));
+    const options = catalog.map((_, index) => new Option('', index));
+    if (pdfCards.length) {
+      const pdfGroup = document.createElement('optgroup');
+      pdfGroup.label = 'PDF 복원본 · 영문';
+      pdfGroup.append(...options.splice(-pdfCards.length));
+      options.push(pdfGroup);
+    }
+    $('printCard').replaceChildren(...options);
+    $('printPdfImports').hidden = !pdfCards.length;
+    $('printPdfImports').textContent = `PDF 복원본 ${pdfCards.length}종 보기`;
     progress();
     $('printWorkspace').hidden = false;
-    await loadCard(0);
+    const openPdfImports = new URLSearchParams(location.search).get('art') === 'pdf' && pdfCards.length;
+    await loadCard(openPdfImports ? catalog.length - pdfCards.length : 0);
   } catch (error) {
     $('printLogin').hidden = false;
     errorMessage(error);

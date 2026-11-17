@@ -20,7 +20,7 @@ body[data-theme]:not([data-theme="purple"]) .rules-warning{background:var(--pane
 
 /* Repeated uploaded image, kept behind the event UI. */
 body[data-theme="image"]{--bg:#100d19;--glow:#38274f;--panel:#241b32;--panel2:#302540;--border:#70558d;--accent:#dbbcff;--accent2:#9a6bdd;--text:#fff;--muted:#d0c1e0;--button:#21102d;--slot:#54346c;--shadow:#c9a0ff55}
-body[data-theme="image"]::before{background-image:var(--draw-pattern,none);background-repeat:repeat;background-size:300px 220px;opacity:.12;z-index:0}
+body[data-theme="image"]::before{background-image:var(--draw-pattern,none);background-repeat:repeat;background-size:var(--draw-pattern-width,300px) var(--draw-pattern-height,220px);opacity:.12;z-index:0}
 .rules,.finale{isolation:isolate}
 
 .image-layout-row{display:flex;align-items:center;gap:16px;margin-top:12px}
@@ -29,3 +29,5 @@ body[data-theme="image"]::before{background-image:var(--draw-pattern,none);backg
 .image-layout-options label{display:flex;align-items:center;gap:8px;margin:0;white-space:nowrap;font-size:13px}
 .setup .image-layout-options input[type="radio"]{width:18px;height:18px;min-height:0;padding:0;margin:0;accent-color:#b48ae8}
 body[data-theme="image"][data-image-mode="full"]::before{background-image:var(--draw-full,none);background-repeat:no-repeat;background-position:center top;background-size:100% auto;opacity:.35}
+
+.setup .duplicate-id-option{display:flex;align-items:center;gap:8px}.setup .duplicate-id-option input{width:auto;margin:0;accent-color:#a581e6}#patternScale{padding:0;accent-color:#a581e6}#patternScaleValue{margin-inline-start:8px}

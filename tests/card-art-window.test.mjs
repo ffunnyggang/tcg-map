@@ -21,7 +21,7 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  const matrix=[1,0,0,1,-320,-80],image={},output={};
  const entry={window:r,shape:'round',card:{}};
  let bleedArgs,printArgs;
- const context=vm.createContext({
+ const context=vm.createContext({ADMIN_PRINT_BLEED:2.5,ADMIN_PRINT_TRIM_MARGIN:.5,
   pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
   outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
   makePrintSheet:(...args)=>(printArgs=args,{toBlob:done=>done(new Blob(['jpeg']))}),
@@ -35,7 +35,7 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  assert.equal(bleedArgs[2].matrix,matrix);
  assert.equal(printArgs[1],r);
  assert.equal(printArgs[2].trimMargin,.5);
- assert.equal(printArgs[2].bleed,2);
+ assert.equal(printArgs[2].bleed,2.5);
  context.layerSession.layers.showBorder=true;
  await vm.runInContext('preparePDF(pdfExport)',context);
  assert.equal(bleedArgs[2].artwork,undefined);

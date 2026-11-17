@@ -26,7 +26,7 @@ import {extractBackgroundPlate,faceMaskedFullCard} from './card-overlay-extract.
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
-import {drawArt,artPlacement,makePrintSheet,withProductionCardBleed} from './card-overlay-print.mjs?v=20261116-outer-bleed';
+import {drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261117-unified-bleed';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
 let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;
@@ -155,19 +155,23 @@ $('extractPreview').onclick=()=>{
 };
 $('generate').onclick=async()=>{if(busy)return;try{const r=rect();if(!ready||!$('confirmed').checked||!$('pokemonConfirmed').checked)return;const mode=$('generationMode').value;if(usesFaceMask(mode)&&(!$('extractAccepted').checked||extractPreviewRevision!==revision||(mode===FACE_LAYER_MODE&&!approvedFaceSource))){toast('얼굴 가림 미리보기를 확인하고 확인란을 선택해 주세요.');return;}busy=true;update();$('settings').disabled=true;$('photo').disabled=true;$('openCamera').disabled=true;$('sample').disabled=true;$('qualityStatus').textContent='배경 생성 후 원본 위치·크기를 검사합니다.';toast('배경을 확장하고 있어요. 이 화면을 유지해 주세요.');if(isFullCardMode()){await generateFullArt(r);return;}const extractMode=mode==='bg_extract';const c=canvas(1072,1472),m=canvas(1072,1472),g=c.getContext('2d'),mg=m.getContext('2d'),{x,y,w,h}=artPlacement(r,2,c.width,c.height);g.fillStyle='white';g.fillRect(0,0,c.width,c.height);g.drawImage(referenceCard||card,r.x*S,r.y*S,r.w*S,r.h*S,x,y,w,h);mg.fillStyle='black';mg.fillRect(x,y,w,h);const rev=revision;const independent=$('generationMode').value==='independent',paletteMode=$('generationMode').value==='palette',backgroundOnly=independent||paletteMode||extractMode;const extracted=extractMode?extractBackgroundPlate(referenceCard||card,r,{x,y,w,h},faceAreas[0]):null;const payload=extractMode?{action:'generate_background_extract',image:extracted.canvas.toDataURL('image/png'),mask:extracted.mask.toDataURL('image/png'),anchor:{x,y,w,h},printRect:r,extractMeta:{backgroundRatio:extracted.backgroundRatio,confidence:extracted.confidence}}:paletteMode?{action:'generate_palette_background',theme:$('backgroundTheme').value,palette:sampleEdgePalette(referenceCard||card,r),printRect:r}:independent?{action:'generate_background',theme:$('backgroundTheme').value,printRect:r}:{action:'generate',image:c.toDataURL('image/png'),mask:m.toDataURL('image/png'),anchor:{x,y,w,h},printRect:r};const d=await A.invokeFunction('card-overlay-generate',{...payload,...sourceMetadata()});if(rev!==revision)return;const img=new Image();img.src='data:image/png;base64,'+d.image;await img.decode();resetReview();let result=img,quality=checkGeneratedAnchor(c,img,{x,y,w,h}),corrected=false;if(!backgroundOnly&&!quality.accepted){const aligned=alignGenerated(c,img,{x,y,w,h});if(aligned){const checked=checkGeneratedAnchor(c,aligned.image,{x,y,w,h});if(checked.accepted){result=aligned.image;quality=checked;corrected=true;}}}if(backgroundOnly){result=blendBackground(c,img,{x,y,w,h},32);quality={accepted:true,correlation:0,mae:0};}rawArt=img;alignmentReview=backgroundOnly||corrected||!quality.accepted;$('alignmentReview').hidden=!alignmentReview;$('rawPreview').checked=!quality.accepted;$('qualityStatus').textContent=extractMode?'얼굴 가림 BETA 완료 · 얼굴 이외의 일러스트를 전송하고 원본 그림을 기기에서 합성했습니다. 경계를 확인해 주세요.':paletteMode?'배경 전용 BETA 생성 완료 · 원본 이미지는 전송하지 않고 경계 색상 4개만 사용했습니다. 원본 그림은 기기에서 합성했습니다. 형태 연결과 경계를 확인해 주세요.':independent?'독립 배경 생성 완료 · 원본은 전송하지 않았어요. 경계 2mm를 기기 안에서 보정했어요. 형태 연결은 네 방향 확대에서 확인한 뒤 사용해 주세요.':corrected?'작은 위치·크기 오차를 보정했어요. AI 원본과 보정된 겹친 모습·절단선 확대를 비교한 뒤 사용을 확인해 주세요.':alignmentReview?'AI 생성은 완료됐지만 자동 비교에서 원본과 차이를 감지했어요. AI 원본과 겹친 모습을 비교한 뒤, 사용할 수 있는 결과라면 아래 확인란을 선택해 주세요.':'원본 구도 검사 통과 · 수평선·색감·그림 경계는 미리보기로 확인해 주세요.';if(d.requestId&&!backgroundOnly)A.invokeFunction('card-overlay-generate',{action:'report_quality',requestId:d.requestId,correlation:quality.correlation,mae:quality.mae,accepted:quality.accepted}).catch(()=>{});sampleMode=false;artBleed=2;art=preserveSource(result,r);await storePreparedResult(d,art);$('previewTitle').textContent='오버레이 미리보기';toast(alignmentReview?'이미지가 생성됐어요. 위치 차이 안내와 실제 결과를 확인해 주세요.':'확장 아트가 완성됐어요. 경계가 자연스러운지 확인해 주세요.');}catch(e){const code=e.data?.code,prefix=code==='moderation_blocked'?'안전 검사 차단 · ':e.status===429?'사용 한도 또는 요청 제한 · ':e.status>=500?'서버 요청 오류 · ':'생성 요청 실패 · ';const requestId=/^req_[a-zA-Z0-9]{1,100}$/.test(e.data?.requestId||'')?' · 문의용 요청 ID: '+e.data.requestId:'';$('qualityStatus').textContent=prefix+(e.message||'요청을 완료하지 못했어요.')+requestId+(art?' 이전 결과는 그대로 유지됩니다.':'');toast(e.message||'생성에 실패했어요.');}finally{busy=false;$('settings').disabled=!card;$('photo').disabled=false;$('openCamera').disabled=false;$('sample').disabled=false;draw();update();}};
 function sheet(){
- const settings={shape:$('shape').value,tolerance:Number($('tolerance').value)};
+ const settings={shape:$('shape').value,tolerance:Number($('tolerance').value),
+  bleed:ADMIN_PRINT_BLEED,trimMargin:ADMIN_PRINT_TRIM_MARGIN};
  if(isFullCardMode()){
   if(!matchingFullArt()||!$('fullArtAccepted').checked)throw Error('풀아트 결과를 원본과 비교한 뒤 사용 확인란을 선택해 주세요.');
   const manual=wideManualState;
   const wide=manual?.current
    ? (manual.layers?.showBorder ? undefined : {artwork:manual.image,matrix:manual.current})
    : autoAlignedBleed || undefined;
-  const printArt=withProductionCardBleed(fullArtResult,canvas,wide);
-  return makePrintSheet(printArt,rect(),{...settings,bleed:2,sample:fullArtIsSample});
+  const printArt=withProductionCardBleed(fullArtResult,canvas,{...wide,bleed:ADMIN_PRINT_BLEED});
+  return makePrintSheet(printArt,rect(),{...settings,sample:fullArtIsSample});
  }
  if(alignmentReview&&!$('acceptAlignment').checked)throw Error('생성 결과의 경계를 확인한 뒤 사용 확인란을 선택해 주세요.');
  if(!art)throw Error('확장 아트를 먼저 준비해 주세요.');
- return makePrintSheet(art,rect(),{...settings,bleed:artBleed,sample:sampleMode});
+ const cardArt=canvas(W,H);
+ drawArt(cardArt.getContext('2d'),art,0,0,S,artBleed,true);
+ const printArt=withProductionCardBleed(cardArt,canvas,{bleed:ADMIN_PRINT_BLEED});
+ return makePrintSheet(printArt,rect(),{...settings,sample:sampleMode});
 }
 function exportName(kind,ext){const label=$('sourceCardLabel').value.normalize('NFKC').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g,'').replace(/[<>:"/\\|?*·]+/g,'-').replace(/\s+/g,'_').replace(/[-_]{2,}/g,'-').replace(/^[.\s_-]+|[.\s_-]+$/g,'').slice(0,100).replace(/[.\s_-]+$/g,'');return 'funypin-'+(label?label+'-':'')+kind+'.'+ext;}
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}

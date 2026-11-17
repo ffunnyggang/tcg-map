@@ -1,8 +1,21 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-11-17T03:54:34.645174+00:00",
+  "updatedAt": "2026-11-17T13:26:58.276527+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "안녕하세요 잘부탁드립니다",
+      "author": "윤상호",
+      "publishedAt": "2026-11-17T07:12:19.238669Z",
+      "excerpt": "안녕하세요 잘부탁드립니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/안녕하세요-잘부탁드립니다-AROOqBVP",
+      "views": 20,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.2
+    },
     {
       "category": "카드거래",
       "title": "실험실 뮤츠 psa10 입니다",
@@ -11,10 +24,10 @@
       "excerpt": "실험실 뮤츠 팝니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/실험실-뮤츠-psa10-입니다-PnnNGayP",
-      "views": 40,
+      "views": 42,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.4
+      "popularityScore": 0.42
     },
     {
       "category": "카드거래",
@@ -24,10 +37,10 @@
       "excerpt": "팝니다 문의 편하게연락주세요 상태 다좋습니다.",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/팝니다-dgxD5Yoj",
-      "views": 6,
+      "views": 7,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.06
+      "popularityScore": 6.07
     },
     {
       "category": "자유 게시판",
@@ -37,10 +50,10 @@
       "excerpt": "모임 멤버들끼리 트레이딩 데이 계획 아직없나요?! 서카페다녀왔는데 재밌네요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/트레이딩데이-jKaM6vkP",
-      "views": 33,
+      "views": 34,
       "likes": 1,
       "comments": 4,
-      "popularityScore": 11.33
+      "popularityScore": 11.34
     },
     {
       "category": "자유 게시판",
@@ -89,10 +102,10 @@
       "excerpt": "제 최애 포켓몬 지라치 입니다!! 초판 1세대 모으기 성공 후, 제 최애 포켓몬 지라치 카드 모으기로 마음 먹어서 이제 지라치 위주로 계속 모으려고요ㅋㅋ 많은 분들이 리자몽이나 피카츄 레쿠쟈 같은 네임드 위주로 모으시길래 저는 최애를 모아보기로 정했습니닿ㅎㅎ 돈을 좀 쓰더라도 지라치 카",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/179466833893699aaabc266fd1446d30919dd076b93f9811c06523a37cd004d75dcd909f837710.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/지라치-컬렉션-공개-PxqaOMkd",
-      "views": 18,
+      "views": 19,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.18
+      "popularityScore": 0.19
     },
     {
       "category": "자유 게시판",
@@ -154,10 +167,10 @@
       "excerpt": "저는 카드를 모으는 사람이 아니라 시세나 거래.그레이딩을 하면 좋을지 말지 이런걸 전혀 몰라요ㅠㅠ 워낙 유행이니 너무 해보고 싶어 큰맘먹고 구매해봤어요 모으는사람은 아니라 가급적 처분할 가능성이 크며 사진속 카드중에 시세라던지 그레이딩하는게 좋을지 말지에 대한 의견들 듣고싶습니다. 모으",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/2b1cc8a2-30f1-4348-8c00-cffc0c8b69d0.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-일본판-시세가-궁금합니다-dyJrKpKj",
-      "views": 86,
+      "views": 87,
       "likes": 1,
       "comments": 7,
-      "popularityScore": 17.86
+      "popularityScore": 17.87
     },
     {
       "category": "자유 게시판",
@@ -290,19 +303,6 @@
       "popularityScore": 7.3
     },
     {
-      "category": "자유 게시판",
-      "title": "포켓몬카드 일괄 판매합니다 psa 케이스 5개 드려요 탑로더 300개랑",
-      "author": "하위",
-      "publishedAt": "2026-11-07T06:35:55.011077Z",
-      "excerpt": "포켓몬카드 일괄 판매합니다 psa 케이스 5개 드려요 탑로더 300개랑 일판 서비스 카드도 드립니자 가격 180",
-      "image": "https://img.kr.gcp-karroter.net/community/community/20261107/0b674dc8-5360-4ffd-a564-429b6d6f098d.png?service=community",
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-일괄-판매합니다-psa-케이스-5개-드려요-탑로더-300개랑-일판-서비스-카드도-d7Lx7x9j",
-      "views": 35,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.35
-    },
-    {
       "category": "카드거래",
       "title": "일괄판매합니다!!!",
       "author": "알레스카뚱",
@@ -336,10 +336,10 @@
       "excerpt": "‪문구점 사장님과 친하게 지낸 덕분에 한박스‬ ‪7만원에 구매했는데 복각에서 리자몽이!!‬ ‪팬텀까지 나왔네요ㅎㅎ‬ ‪리자몽 진짜 너무 갖고 싶었는데‬ ‪이렇게 나오다니ㅜㅜ 행복합니다~‬ ‪초판 리자몽 카드랑 비교해봤는데 ‬ ‪똑같아서 신기했어요ㅋㅋ‬",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/17938643789395e42c0e4799e79d24e0a219a16d71b27a8b84a9c8edb9820bf0f610717c677f90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-리자몽-떴어요-jvxz1xXP",
-      "views": 122,
+      "views": 125,
       "likes": 2,
       "comments": 4,
-      "popularityScore": 15.22
+      "popularityScore": 15.25
     },
     {
       "category": "카드거래",
@@ -362,10 +362,10 @@
       "excerpt": "9등급은 얼마쯤 할까요? 슬랩을 부수고 psa에 재감정 맞기는게 맞을까요?..",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/5e680001-e10c-4db3-bdc2-2ce145d771dd.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/얼마쯤-할까요-dDOB2vpP",
-      "views": 39,
+      "views": 41,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.39
+      "popularityScore": 3.41
     },
     {
       "category": "정보 공유",
@@ -505,10 +505,10 @@
       "excerpt": "이번 포켓몬카드 30주년 박스에서 운 좋게 카드볼트에서 단 한 박스 만에 뮤 RGB를 뽑으며 졸업하게 되었습니다! 😆 카드를 뽑은 것도 기분 좋은 일이었는데, 카드볼트 사장님의 추천으로 BRG 그레이딩까지 보내보게 되었습니다. 그리고 기다림 끝에 나온 결과는 바로...! 🎉 BRG GE",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202610/7b9f56f7-07bf-40d2-9ca2-03b58d59f9e6.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🍀-카드볼트에서-한-박스-만에-졸업한-뮤-RGB-💚-dz9pZG7P",
-      "views": 99,
+      "views": 100,
       "likes": 5,
       "comments": 2,
-      "popularityScore": 19.99
+      "popularityScore": 20.0
     },
     {
       "category": "정보 공유",
@@ -713,10 +713,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 182,
+      "views": 183,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.82
+      "popularityScore": 9.83
     },
     {
       "category": "카드깡/카드샵 후기",

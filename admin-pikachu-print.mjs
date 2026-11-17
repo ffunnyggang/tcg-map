@@ -6,7 +6,7 @@ import { composeLayers } from './card-overlay-layers.mjs?v=20261110-center1';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
-import { drawCardOverlay, drawCutGuide, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
+import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
 import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261117-print-bleed2';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
@@ -72,6 +72,7 @@ function deny(message) {
   session = null;
   catalog = [];
   assetPromises.clear();
+  $('printWindowGuide').style.display = 'none';
   $('printCanvas').getContext('2d').clearRect(0, 0, 504, 704);
   $('printWorkspace').hidden = true;
   $('printLogin').hidden = false;
@@ -154,6 +155,8 @@ function shouldDrawWatermark(card) {
 }
 function draw() {
   const view = $('printCanvas');
+  const guide = $('printWindowGuide');
+  guide.style.display = 'none';
   const g = view.getContext('2d');
   g.clearRect(0, 0, view.width, view.height);
   if (!session) return;
@@ -162,7 +165,16 @@ function draw() {
   drawCardOverlay(g, source, output || source, cut, view.width, view.height, !!output && !original, settings.shape);
   if (output && !original) {
     if (settings.mode === 'production') drawProductionWindow(g, pixelWindow(cut, view.width, view.height), view.width / 63);
-    else drawCutGuide(g, cut, view.width, view.height, .3);
+    else {
+      const { x, y, w, h } = pixelWindow(cut, view.width, view.height);
+      for (const line of guide.querySelectorAll('rect')) {
+        line.setAttribute('x', x);
+        line.setAttribute('y', y);
+        line.setAttribute('width', w);
+        line.setAttribute('height', h);
+      }
+      guide.style.display = '';
+    }
     if (shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height);
   }
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';

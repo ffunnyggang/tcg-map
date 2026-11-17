@@ -8,9 +8,9 @@
   <title>공용캐시 출력 도안 | FUNY PIN 어드민</title>
   <link rel="icon" href="/favicon.svg">
   <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
-  <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261112-1">
+  <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261117-preview-guide">
   <script src="./web-auth.js"></script>
-  <script type="module" src="./admin-pikachu-print.mjs?v=20261117-print-bleed2"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261117-preview-guide"></script>
 </head>
 <body class="pikachu-print">
   <header class="print-header">
@@ -33,7 +33,13 @@
       <p id="printProgress" class="small-note"></p>
       <div class="print-editor">
         <section class="print-visual" aria-label="도안 미리보기">
-          <canvas id="printCanvas" width="504" height="704" aria-label="카드와 절단선 미리보기"></canvas>
+          <div class="print-preview-image">
+            <canvas id="printCanvas" width="504" height="704" aria-label="카드와 절단선 미리보기"></canvas>
+            <svg id="printWindowGuide" viewBox="0 0 504 704" aria-hidden="true" style="display: none">
+              <rect fill="none" stroke="#fff" stroke-width="2"/>
+              <rect fill="none" stroke="#49215f" stroke-width="1.2" stroke-dasharray="10.67 6"/>
+            </svg>
+          </div>
           <div class="print-actions">
             <button type="button" id="printCompare" aria-pressed="false">원본 보기</button>
             <button type="button" id="printAlign">일러스트 연결 맞추기</button>

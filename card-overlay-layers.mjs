@@ -1,4 +1,4 @@
-import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-trim-border1';
+import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-print-foil2';
 // Experimental local contrast extraction. This is not OCR or guaranteed semantic segmentation.
 export function cutBounds(r,w,h){return {x:Math.floor(r.x*w/63),y:Math.floor(r.y*h/88),right:Math.ceil((r.x+r.w)*w/63),bottom:Math.ceil((r.y+r.h)*h/88)};}
 export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){
@@ -22,11 +22,12 @@ export function composeLayers(source,background,r,layers,canvas){
  if(!aiText&&layers.showText)g.drawImage(layers.text,0,0);
  if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);
  const b=cutBounds(r,1008,1408);
- if(aiText&&centered&&layers.showSymbol)drawSymbol();
+ if(aiText&&centered&&layers.showSymbol&&!layers.printing)drawSymbol();
  g.drawImage(source,b.x,b.y,b.right-b.x,b.bottom-b.y,b.x,b.y,b.right-b.x,b.bottom-b.y);
  if(aiText){
+  if(layers.printing&&layers.showSymbol)drawSymbol();
   if(layers.showText)g.drawImage(layers.text,0,0);
-  if(!centered&&layers.showSymbol)drawSymbol();
+  if(!layers.printing&&!centered&&layers.showSymbol)drawSymbol();
  }
  return out;
 }

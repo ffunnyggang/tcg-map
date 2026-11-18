@@ -1,5 +1,5 @@
 import { createPDFWriter, CUT_CONTOUR_SPOT } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-trim-border1';
+import { PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print-foil2';
 
 export const PIKACHU_SHEET_IDS = Object.freeze(Array.from({length:30}, (_, index) =>
  `m6a-ja-${String(index+17).padStart(3,'0')}`));

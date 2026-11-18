@@ -1,7 +1,7 @@
-import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-trim-border1';
+import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-print-foil2';
 export const PRINT={scale:12,bleed:2,width:63,height:88,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
 const CARD_ORIGIN = 10;
-export const ADMIN_PRINT_TRIM_MARGIN = .5;
+export const ADMIN_PRINT_TRIM_MARGIN = 0;
 export const ADMIN_PRINT_BLEED = 2 + ADMIN_PRINT_TRIM_MARGIN;
 const PRODUCTION_INNER_BLEED = 2;
 
@@ -33,7 +33,20 @@ export function withCardBleed(image,createCanvas=document.createElement.bind(doc
  return c;
 }
 
-export function withProductionCardBleed(image, canvas, {artwork, matrix, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
+const foilIds = ['holographic-border-v1', 'silver-satin-border-v1', 'silver-glitter-border-v1', 'gold-star-border-v1'];
+let atlasPromise;
+export async function printFoil(id) {
+ const index = foilIds.indexOf(id);
+ if (index < 0) return null;
+ if (!atlasPromise) {
+  const atlas = new Image();
+  atlas.src = new URL('./assets/print-foil-atlas-v1.svg', import.meta.url).href;
+  atlasPromise = atlas.decode().then(() => atlas).catch(error => { atlasPromise = null; throw error; });
+ }
+ return {atlas: await atlasPromise, index};
+}
+
+export function withProductionCardBleed(image, canvas, {artwork, matrix, foil=null, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
  const ppm=16,b=bleed*ppm,w=PRINT.width*ppm,h=PRINT.height*ppm;
  if(!artwork||!Array.isArray(matrix)||matrix.length!==6||!matrix.every(Number.isFinite))throw Error('재단선 밖 2mm까지 확장된 일러스트가 필요해요. 일러스트를 다시 생성하거나 위치를 조정해 주세요.');
  const [a,c,d,f,e,k]=matrix,det=a*f-c*d;
@@ -45,11 +58,21 @@ export function withProductionCardBleed(image, canvas, {artwork, matrix, border=
  const surface=canvas(w+2*b,h+2*b),g=surface.getContext('2d');
  g.setTransform(a,c,d,f,e+b,k+b);g.drawImage(artwork,0,0);g.resetTransform();
  // Preserve the window, text and symbols at their original coordinates.
- g.drawImage(image,b,b,w,h);
- if(border){
+ if(foil){
+  const half=foil.atlas.naturalWidth/2, edge=40;
+  g.save();
+  g.beginPath();
+  g.rect(0,0,surface.width,surface.height);
+  g.roundRect(b+edge,b+edge,w-2*edge,h-2*edge,shape==='round'?8:0);
+  g.clip('evenodd');
+  g.drawImage(foil.atlas,(foil.index%2)*half,Math.floor(foil.index/2)*half,half,half,0,0,surface.width,surface.height);
+  g.restore();
+ }
+ if(border && !foil){
   const trim=ADMIN_PRINT_TRIM_MARGIN*ppm;
   g.drawImage(fittedBorder(border,shape,canvas,w+2*trim,h+2*trim),b-trim,b-trim);
  }
+ g.drawImage(image,b,b,w,h);
  return surface;
 }
 

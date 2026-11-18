@@ -109,16 +109,34 @@ function update(){
 
 function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=(pdfExport?.preview||outputArt()).toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
 function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,.3);}
-function drawResult(){if(!source||!result||!resultWindow)return;const c=$('resultCanvas'),g=c.getContext('2d');const preview=showExpanded && pdfExport?.result===result && pdfExport.shape===shape && pdfExport.preview;
+let displayedPreviewSource=null;
+function drawResult(){
+ if(!source||!result||!resultWindow)return;
+ const c=$('resultCanvas'),g=c.getContext('2d');
+ const current=pdfExport?.result===result && pdfExport.shape===shape ? pdfExport : null;
+ const preview=showExpanded && current?.preview;
+ if(showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
  const nativeWidth=Math.round(c.height*63/88);
- c.width=preview?Math.round(c.height*64/88):nativeWidth;
+ const trimWidth=Math.round(c.height*64/88);
+ if(c.width!==trimWidth)c.width=trimWidth;
+ const inset=(trimWidth-nativeWidth)/2;
+ g.clearRect(0,0,c.width,c.height);
  if(preview){
   g.drawImage(preview,0,0,c.width,c.height);
-  g.save();g.translate((c.width-nativeWidth)/2,0);
+  g.save();g.translate(inset,0);
   drawCutGuide(g,resultWindow,nativeWidth,c.height,.3);g.restore();
+  displayedPreviewSource=source;
   return;
  }
- drawCardOverlay(g,source,outputArt(),resultWindow,c.width,c.height,showExpanded,shape);if(showExpanded){drawCutGuide(g,resultWindow,c.width,c.height,.3);drawArtWatermark(g,0,0,c.width,c.height);}}
+ displayedPreviewSource=null;
+ g.save();g.translate(inset,0);
+ drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,c.height,showExpanded,shape);
+ if(showExpanded){
+  drawCutGuide(g,resultWindow,nativeWidth,c.height,.3);
+  drawArtWatermark(g,0,0,nativeWidth,c.height);
+ }
+ g.restore();
+}
 async function reference(id){if(!refs.has(id)){const pending=readArtCatalog({action:'reference',id}).then(d=>d.reference).catch(e=>{refs.delete(id);throw e;});refs.set(id,pending);}return refs.get(id);}
 async function imageFrom(url){const im=new Image();im.crossOrigin='anonymous';im.src=url;await im.decode();return im;}
 function renderCards(){
@@ -252,7 +270,7 @@ async function preparePDF(entry){
   const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118);
   if(pdfExport===entry)entry.file=new File([pdf],cardFilename(entry.card),{type:'application/pdf'});
  }catch(error){
-  if(pdfExport===entry)entry.error=error;
+  if(pdfExport===entry){entry.error=error;drawResult();}
  }finally{
   if(pdfExport===entry)update();
  }

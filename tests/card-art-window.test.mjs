@@ -109,7 +109,7 @@ test('result preview draws the watermark with text enabled or disabled, and skip
  const {g,calls}=recorder();
  const canvas={width:756,height:1056,getContext:()=>g};
  const state=vm.createContext({
-  pdfExport:null,source:{},result:{},resultWindow:r,$:()=>canvas,shape:'round',showExpanded:true,
+  displayedPreviewSource:null,pdfExport:null,source:{},result:{},resultWindow:r,$:()=>canvas,shape:'round',showExpanded:true,
   outputArt:()=>state.result,drawCardOverlay,drawCutGuide,drawArtWatermark
  });
  for(const showText of [true,false]){
@@ -118,6 +118,17 @@ test('result preview draws the watermark with text enabled or disabled, and skip
   vm.runInContext(drawResult+';drawResult()',state);
   assert.ok(calls.some(c=>c[0]==='fillText'&&c[1]==='funypin.kr'));
  }
+ state.pdfExport={result:state.result,shape:'round',preview:{}};
+ vm.runInContext('drawResult()',state);
+ state.result={showText:false};
+ calls.length=0;
+ vm.runInContext('drawResult()',state);
+ assert.equal(canvas.width,768);
+ assert.equal(calls.length,0);
+ state.pdfExport={result:state.result,shape:'round',preview:{}};
+ vm.runInContext('drawResult()',state);
+ assert.equal(canvas.width,768);
+ assert.ok(calls.some(c=>c[0]==='drawImage' && c[1]===state.pdfExport.preview));
  state.showExpanded=false;
  calls.length=0;
  vm.runInContext('drawResult()',state);

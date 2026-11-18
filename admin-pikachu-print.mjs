@@ -2,15 +2,15 @@ import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261110-center1';
+import { composeLayers } from './card-overlay-layers.mjs?v=20261118-print-foil2';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-trim-border1';
+import { printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print-foil2';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-trim-border1';
+import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-print-foil2';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
@@ -226,8 +226,9 @@ async function renderCard(current, printing=false) {
     }
     placement = centered ? current.symbolCenter || PIKACHU_ANNIVERSARY_PLACEMENT : anniversarySymbolPlacement(stamp, current.symbolCenter);
   }
-  if(printing)current.printBorder=frame?.image||null;
-  return composeLayers(source, renderManual(illustration, matrix, canvas), cut, {
+  if(printing)current.printFoil=frame ? await printFoil(border) : null;
+  return composeLayers(source, printing ? canvas(1008,1408) : renderManual(illustration, matrix, canvas), cut, {
+    printing,
     kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing,
     symbol: stamp?.image, showSymbol: !!stamp, symbolSide: symbol, placement, shape,
   }, canvas);
@@ -476,9 +477,9 @@ $('printPikachuSheet').onclick = async () => {
     refreshControls();
   }
 };
-function productionArtwork({output, printOutput, printBorder, illustration, matrix, settings, hasWideArtwork}) {
+function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork}) {
   const artwork = hasWideArtwork ? illustration : null;
-  return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, border:printBorder,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
+  return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, foil:printFoil,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
 }
 function productionTile(current) {
   const {cut, card} = current;

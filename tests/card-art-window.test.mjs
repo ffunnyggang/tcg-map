@@ -11,13 +11,13 @@ test('production bleed uses actual wide artwork and never reflects edges', () =>
  assert.throws(()=>withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-20]}),/블리드 끝/);
 });
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
-test('public PDF uses the shared texture bleed while keeping the selected window and 64 × 89 trim', async () => {
+test('public PDF uses the shared texture bleed while keeping the selected window and 63 × 88 trim', async () => {
  const client=readFileSync(new URL('../card-art.mjs',import.meta.url),'utf8');
  const prepare=client.slice(client.indexOf('async function preparePDF('),client.indexOf('function offerPDFDownload('));
  const matrix=[1,0,0,1,-320,-80],image={},output={};
  const entry={window:r,shape:'round',card:{}};
  let bleedArgs,printArgs;
- const context=vm.createContext({ADMIN_PRINT_BLEED:2.5,ADMIN_PRINT_TRIM_MARGIN:.5,
+ const context=vm.createContext({ADMIN_PRINT_BLEED:2,ADMIN_PRINT_TRIM_MARGIN:0,printFoil:async()=>null,
   pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
   composeLayers:()=>output,renderManual:()=>output,outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
   makePrintSheet:(...args)=>(printArgs=args,{toBlob:done=>done(new Blob(['jpeg']))}),
@@ -30,8 +30,8 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  assert.equal(bleedArgs[2].artwork,image);
  assert.equal(bleedArgs[2].matrix,matrix);
  assert.equal(printArgs[1],r);
- assert.equal(printArgs[2].trimMargin,.5);
- assert.equal(printArgs[2].bleed,2.5);
+ assert.equal(printArgs[2].trimMargin,0);
+ assert.equal(printArgs[2].bleed,2);
  context.layerSession.layers.showBorder=true;
  await vm.runInContext('preparePDF(pdfExport)',context);
  assert.equal(bleedArgs[2].artwork,image);

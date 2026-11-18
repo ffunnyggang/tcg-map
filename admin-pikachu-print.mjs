@@ -330,7 +330,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     $('printSymbol').replaceChildren(...prepared.symbols.map(value => new Option(symbolLabels[value], value)));
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
-    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm` : '원본 카드 이미지';
+    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 63 × 88 mm` : '원본 카드 이미지';
     session = prepared;
     if (!illustration) {
       draw();

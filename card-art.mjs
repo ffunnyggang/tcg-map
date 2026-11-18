@@ -12,7 +12,7 @@ import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261118-print64w';
+import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261118-print-preview';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -107,9 +107,18 @@ function update(){
  document.querySelectorAll('[data-shape],#layerOptions button,#adjustJoin,#openTune').forEach(b=>b.disabled=busy||exporting||reviewPosting);
 }
 
-function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=outputArt().toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
+function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=(pdfExport?.preview||outputArt()).toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
 function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,.3);}
-function drawResult(){if(!source||!result||!resultWindow)return;const c=$('resultCanvas'),g=c.getContext('2d');drawCardOverlay(g,source,outputArt(),resultWindow,c.width,c.height,showExpanded,shape);if(showExpanded){drawCutGuide(g,resultWindow,c.width,c.height,.3);drawArtWatermark(g,0,0,c.width,c.height);}}
+function drawResult(){if(!source||!result||!resultWindow)return;const c=$('resultCanvas'),g=c.getContext('2d');const preview=showExpanded && pdfExport?.result===result && pdfExport.shape===shape && pdfExport.preview;
+ const nativeWidth=Math.round(c.height*63/88);
+ c.width=preview?Math.round(c.height*64/88):nativeWidth;
+ if(preview){
+  g.drawImage(preview,0,0,c.width,c.height);
+  g.save();g.translate((c.width-nativeWidth)/2,0);
+  drawCutGuide(g,resultWindow,nativeWidth,c.height,.3);g.restore();
+  return;
+ }
+ drawCardOverlay(g,source,outputArt(),resultWindow,c.width,c.height,showExpanded,shape);if(showExpanded){drawCutGuide(g,resultWindow,c.width,c.height,.3);drawArtWatermark(g,0,0,c.width,c.height);}}
 async function reference(id){if(!refs.has(id)){const pending=readArtCatalog({action:'reference',id}).then(d=>d.reference).catch(e=>{refs.delete(id);throw e;});refs.set(id,pending);}return refs.get(id);}
 async function imageFrom(url){const im=new Image();im.crossOrigin='anonymous';im.src=url;await im.decode();return im;}
 function renderCards(){
@@ -233,6 +242,10 @@ async function preparePDF(entry){
   const layers=wide?.layers;
   const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true},canvas):outputArt();
   const printArt=withProductionCardBleed(clean,canvas,{artwork:wide?.image,matrix:wide?.current,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
+  if(pdfExport!==entry)return;
+  entry.preview=trimmedPrintPreview(printArt,canvas,true);
+  drawResult();
+  if(step===4)$('reviewImage').src=entry.preview.toDataURL('image/jpeg',.9);
   const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:true,cutoutCard:entry.card});
   const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
   if(!jpg)throw Error('출력 도안을 만들지 못했어요.');

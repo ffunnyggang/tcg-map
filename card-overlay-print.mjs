@@ -214,3 +214,12 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
  g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,5*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,103*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
 }
 
+
+export function trimmedPrintPreview(art,canvas,watermark=false){
+ const ppm=16, bleed=ADMIN_PRINT_BLEED*ppm;
+ const preview=canvas(PRINT.width*ppm,PRINT.height*ppm);
+ const g=preview.getContext('2d');
+ g.drawImage(art,bleed,bleed,preview.width,preview.height,0,0,preview.width,preview.height);
+ if(watermark) drawArtWatermark(g,PRINT_SIDE_MARGIN*ppm,0,63*ppm,preview.height);
+ return preview;
+}

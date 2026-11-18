@@ -18,7 +18,7 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  const entry={window:r,shape:'round',card:{}};
  let bleedArgs,printArgs;
  const context=vm.createContext({ADMIN_PRINT_BLEED:2,ADMIN_PRINT_TRIM_MARGIN:0,printFoil:async()=>null,
-  pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
+  trimmedPrintPreview:()=>({}),drawResult:()=>{},step:3,pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
   composeLayers:()=>output,renderManual:()=>output,outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
   makePrintSheet:(...args)=>(printArgs=args,{toBlob:done=>done(new Blob(['jpeg']))}),
   makePDF:()=>new Blob(['pdf']),cardFilename:()=> 'output.pdf',update:()=>{},
@@ -105,11 +105,11 @@ test('public PDF watermark is inside both trim shapes and absent from the admin 
 
 test('result preview draws the watermark with text enabled or disabled, and skips original comparison',()=>{
  const source=readFileSync(new URL('../card-art.mjs',import.meta.url),'utf8');
- const drawResult=source.match(/^function drawResult\(\).*$/m)[0];
+ const drawResult=source.slice(source.indexOf('function drawResult()'),source.indexOf('async function reference('));
  const {g,calls}=recorder();
  const canvas={width:756,height:1056,getContext:()=>g};
  const state=vm.createContext({
-  source:{},result:{},resultWindow:r,$:()=>canvas,shape:'round',showExpanded:true,
+  pdfExport:null,source:{},result:{},resultWindow:r,$:()=>canvas,shape:'round',showExpanded:true,
   outputArt:()=>state.result,drawCardOverlay,drawCutGuide,drawArtWatermark
  });
  for(const showText of [true,false]){
@@ -122,4 +122,14 @@ test('result preview draws the watermark with text enabled or disabled, and skip
  calls.length=0;
  vm.runInContext('drawResult()',state);
  assert.equal(calls.some(c=>c[1]==='funypin.kr'),false);
+});
+
+test('preview crops exactly the PDF trim and keeps watermark on native card coordinates',async()=>{
+ const {trimmedPrintPreview}=await import('../card-overlay-print.mjs');
+ const {g,calls}=recorder(),art={width:1088,height:1472};
+ const preview=trimmedPrintPreview(art,(width,height)=>({width,height,getContext:()=>g}),true);
+ assert.deepEqual([preview.width,preview.height],[1024,1408]);
+ assert.deepEqual(calls.find(c=>c[0]==='drawImage'),['drawImage',art,32,32,1024,1408,0,0,1024,1408]);
+ const mark=calls.find(c=>c[0]==='fillText'&&c[1]==='funypin.kr');
+ assert.deepEqual(mark.slice(2),[8+(63-3.5)*16,(88-1.25)*16]);
 });

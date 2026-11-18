@@ -16,7 +16,7 @@ test('Pikachu imposition places 30 life-size tiles on one A2 page and keeps both
  assert.equal(new Set(rows.map(row=>row[4])).size,6);
  const mm = value => Number(value)*25.4/72;
  for (const [,w,h] of rows) {
-  assert.ok(Math.abs(mm(w)-67)<.00001);
+  assert.ok(Math.abs(mm(w)-68)<.00001);
   assert.ok(Math.abs(mm(h)-92)<.00001);
  }
  for (const layer of ['WindowCut','OuterCut']) {

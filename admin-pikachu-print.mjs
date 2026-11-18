@@ -2,15 +2,15 @@ import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261118-print-foil2';
+import { composeLayers } from './card-overlay-layers.mjs?v=20261118-print64w';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print-foil2';
+import { printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print64w';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-print-foil2';
+import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-print64w';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
@@ -330,7 +330,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     $('printSymbol').replaceChildren(...prepared.symbols.map(value => new Option(symbolLabels[value], value)));
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
-    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 63 × 88 mm` : '원본 카드 이미지';
+    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 88 mm` : '원본 카드 이미지';
     session = prepared;
     if (!illustration) {
       draw();
@@ -487,8 +487,8 @@ function productionTile(current) {
   const tile = canvas((PRINT.width+2*bleed)*scale, (PRINT.height+2*bleed)*scale);
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
-  drawProductionWindow(g, {x:(bleed+cut.x)*scale,y:(bleed+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
-  if (shouldDrawWatermark(card)) drawArtWatermark(g,bleed*scale,bleed*scale,PRINT.width*scale,PRINT.height*scale);
+  drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
+  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,bleed*scale,63*scale,PRINT.height*scale);
   return tile;
 }
 async function connect() {

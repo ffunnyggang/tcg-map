@@ -1,5 +1,5 @@
 import { createPDFWriter, CUT_CONTOUR_SPOT } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print-foil2';
+import { PRINT, PRINT_SIDE_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print64w';
 
 export const PIKACHU_SHEET_IDS = Object.freeze(Array.from({length:30}, (_, index) =>
  `m6a-ja-${String(index+17).padStart(3,'0')}`));
@@ -42,7 +42,7 @@ export function makePikachuSheetPDF(tiles) {
  for (const [index,{cut,shape}] of tiles.entries()) {
   const {x,y} = tilePosition(index);
   artwork.push(`q ${pt(TILE.width)} 0 0 ${pt(TILE.height)} ${pt(x)} ${pt(y)} cm /Card${index+1} Do Q`);
-  windows.push(`${pt(x+ADMIN_PRINT_BLEED+cut.x)} ${pt(y+ADMIN_PRINT_BLEED+PRINT.height-cut.y-cut.h)} ${pt(cut.w)} ${pt(cut.h)} re S`);
+  windows.push(`${pt(x+ADMIN_PRINT_BLEED+PRINT_SIDE_MARGIN+cut.x)} ${pt(y+ADMIN_PRINT_BLEED+PRINT.height-cut.y-cut.h)} ${pt(cut.w)} ${pt(cut.h)} re S`);
   borders.push(outerPath({x,y}, shape));
  }
  const layer = (name, paths) => `/OC /${name} BDC\nq /CutContour CS 1 SCN 0.25 w\n${paths.join('\n')}\nQ\nEMC`;

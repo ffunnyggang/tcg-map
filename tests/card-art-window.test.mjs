@@ -5,13 +5,13 @@ test('production bleed uses actual wide artwork and never reflects edges', () =>
  const {g,calls}=recorder(), image={}, artwork={width:1648,height:2048};
  const canvas=(width,height)=>({width,height,getContext:()=>g});
  const result=withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-80],bleed:2.5});
- assert.deepEqual([result.width,result.height],[1088,1488]);
- assert.deepEqual(calls,[['setTransform',1,0,0,1,-280,-40],['drawImage',artwork,0,0],['resetTransform'],['drawImage',image,40,40,1008,1408]]);
+ assert.deepEqual([result.width,result.height],[1104,1488]);
+ assert.deepEqual(calls,[['setTransform',1,0,0,1,-272,-40],['drawImage',artwork,0,0],['resetTransform'],['drawImage',image,48,40,1008,1408]]);
  assert.throws(()=>withProductionCardBleed(image,canvas),/확장된 일러스트/);
  assert.throws(()=>withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-20]}),/블리드 끝/);
 });
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
-test('public PDF uses the shared texture bleed while keeping the selected window and 63 × 88 trim', async () => {
+test('public PDF uses the shared texture bleed while keeping the selected window and 64 × 88 trim', async () => {
  const client=readFileSync(new URL('../card-art.mjs',import.meta.url),'utf8');
  const prepare=client.slice(client.indexOf('async function preparePDF('),client.indexOf('function offerPDFDownload('));
  const matrix=[1,0,0,1,-320,-80],image={},output={};
@@ -40,7 +40,7 @@ test('print mode retains artwork exactly 2mm inside the window and omits the bak
  const {g,calls}=recorder();
  globalThis.document={createElement:()=>({getContext:()=>g})};
  t.after(()=>delete globalThis.document);
- makePrintSheet({width:1072,height:1472},{x:5.9,y:9.7,w:51.2,h:31.2},
+ makePrintSheet({width:1088,height:1472},{x:5.9,y:9.7,w:51.2,h:31.2},
   {production:true,cutoutCard:{display_name:'피카츄',card_number:'017'}});
  const fill = calls.filter(call=>call[0]==='fillRect')[1].slice(1).map(px=>px/12);
  fill.forEach((value,index)=>assert.ok(Math.abs(value-[17.9,21.7,47.2,27.2][index])<.00001));
@@ -51,11 +51,11 @@ test('print mode retains artwork exactly 2mm inside the window and omits the bak
 function recorder(){const calls=[];const g=new Proxy({},{get:(_,k)=>typeof k==='string'?(...v)=>calls.push([k,...v]):undefined,set:()=>true});return {g,calls};}
 test('source review and generated preview draw the exact same physical cut-window',()=>{for(const [width,height]of[[756,1056],[1008,1408]]){const {g,calls}=recorder(),p=pixelWindow(r,width,height);drawCutGuide(g,r,width,height);assert.deepEqual(calls.filter(c=>c[0]==='strokeRect').map(c=>c.slice(1)),[[p.x,p.y,p.w,p.h],[p.x,p.y,p.w,p.h]]);const src={},result={};drawCardOverlay(g,src,result,r,width,height,true);assert.ok(calls.some(c=>c[0]==='rect'&&c[1]===p.x&&c[2]===p.y&&c[3]===p.w&&c[4]===p.h));assert.ok(calls.some(c=>c[0]==='clip'&&c[1]==='evenodd'));}});
 test('original pixels are restored inside the confirmed window, without moving the full source',()=>{const {g,calls}=recorder(),source={width:1008,height:1408},output={width:1008,height:1408,getContext:()=>g};restoreSourceWindow(output,source,r);const p=pixelWindow(r,1008,1408);assert.deepEqual(calls.find(c=>c[0]==='rect'),['rect',p.x,p.y,p.w,p.h]);assert.deepEqual(calls.find(c=>c[0]==='drawImage'),['drawImage',source,0,0,1008,1408,0,0,1008,1408]);});
-test('mobile print cut line uses the confirmed coordinates; admin default remains unchanged',()=>{const {g,calls}=recorder();globalThis.document={createElement:()=>({getContext:()=>g})};makePrintSheet({width:1072,height:1472},r,{shape:'round',windowGuideInset:0});const guide=calls.find(c=>c[0]==='strokeRect');assert.equal(guide[0],'strokeRect');[(10+r.x)*12,(10+r.y)*12,r.w*12,r.h*12].forEach((v,i)=>assert.ok(Math.abs(guide[i+1]-v)<1e-9));calls.length=0;makePrintSheet({width:1072,height:1472},r,{shape:'round'});assert.ok(Math.abs(calls.find(c=>c[0]==='strokeRect')[1]-((10+r.x)*12+.07*12))<1e-9);delete globalThis.document;});
+test('mobile print cut line uses the confirmed coordinates; admin default remains unchanged',()=>{const {g,calls}=recorder();globalThis.document={createElement:()=>({getContext:()=>g})};makePrintSheet({width:1088,height:1472},r,{shape:'round',windowGuideInset:0});const guide=calls.find(c=>c[0]==='strokeRect');assert.equal(guide[0],'strokeRect');[(10+r.x)*12,(10+r.y)*12,r.w*12,r.h*12].forEach((v,i)=>assert.ok(Math.abs(guide[i+1]-v)<1e-9));calls.length=0;makePrintSheet({width:1088,height:1472},r,{shape:'round'});assert.ok(Math.abs(calls.find(c=>c[0]==='strokeRect')[1]-((10+r.x)*12+.07*12))<1e-9);delete globalThis.document;});
 
 test('public PDF trim adds half a millimetre per edge without scaling art or moving the window', (t) => {
  const {g,calls}=recorder();
- const art={width:1072,height:1472};
+ const art={width:1088,height:1472};
  const canvas={getContext:()=>g};
  globalThis.document={createElement:()=>canvas};
  t.after(()=>delete globalThis.document);
@@ -74,12 +74,12 @@ test('public PDF trim adds half a millimetre per edge without scaling art or mov
   assert.equal(canvas.height,118*12);
   const cropEnds=output.filter(c=>c[0]==='lineTo').slice(0,8);
   assert.deepEqual(cropEnds.map(c=>c.slice(1).map(n=>n/12)),[
-   [5.5,9.5],[9.5,5.5],[77.5,9.5],[73.5,5.5],
-   [5.5,98.5],[9.5,102.5],[77.5,98.5],[73.5,102.5]
+   [5,9.5],[9,5.5],[78,9.5],[74,5.5],
+   [5,98.5],[9,102.5],[78,98.5],[74,102.5]
   ]);
   const roundGuide=output.find(c=>c[0]==='roundRect');
-  assert.deepEqual(roundGuide,shape==='round'?['roundRect',114,114,768,1068,36]:undefined);
-  assert.ok(output.some(c=>c[0]==='fillText'&&c[1]===`64 x 89 mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED 1.5 mm`));
+  assert.deepEqual(roundGuide,shape==='round'?['roundRect',108,114,780,1068,36]:undefined);
+  assert.ok(output.some(c=>c[0]==='fillText'&&c[1]===`65 x 89 mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED 1.5 mm`));
  }
 });
 
@@ -87,7 +87,7 @@ test('public PDF watermark is inside both trim shapes and absent from the admin 
  const {g,calls}=recorder();
  globalThis.document={createElement:()=>({getContext:()=>g})};
  t.after(()=>delete globalThis.document);
- const art={width:1072,height:1472};
+ const art={width:1088,height:1472};
  makePrintSheet(art,r);
  assert.equal(calls.some(c=>c[1]==='funypin.kr'),false);
  for(const shape of ['round','square']){

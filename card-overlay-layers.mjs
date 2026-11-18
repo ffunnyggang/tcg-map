@@ -10,6 +10,32 @@ export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){
 export function sourceWithAlpha(source,alpha,canvas){const out=canvas(source.width,source.height),g=out.getContext('2d'),p=source.getContext('2d').getImageData(0,0,out.width,out.height);for(let i=0;i<alpha.length;i++)p.data[i*4+3]=alpha[i];g.putImageData(p,0,0);return out;}
 export function extractLayers(source,r,canvas,threshold=32,borderMM=1.5){const w=source.width,h=source.height,p=source.getContext('2d').getImageData(0,0,w,h),a=new Uint8ClampedArray(w*h),edge=Math.ceil(w*borderMM/63),b=cutBounds(r,w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++)if((x<edge||x>=w-edge||y<edge||y>=h-edge)&&!(x>=b.x&&x<b.right&&y>=b.y&&y<b.bottom))a[y*w+x]=255;return {text:sourceWithAlpha(source,textAlpha(p.data,w,h,r,threshold,borderMM),canvas),border:sourceWithAlpha(source,a,canvas),showText:false,showBorder:false,threshold,borderMM};}
 export function windowMask(r,canvas){const c=canvas(1008,1408),g=c.getContext('2d'),b=cutBounds(r,1008,1408);g.fillStyle='#000';g.fillRect(b.x,b.y,b.right-b.x,b.bottom-b.y);return c;}
+// The 017 footer sits in the clear space below the card number and illustrator.
+const isolatedFooter = new WeakMap();
+function drawCardText(g,text){
+ const x=282,y=1368,w=444,h=30;
+ if(!isolatedFooter.has(text)){
+  const ctx=text.getContext?.('2d');
+  let isolated=false;
+  if(ctx && text.width===1008 && text.height===1408){
+   const data=ctx.getImageData(x-1,y-1,w+2,h+2).data;
+   const alpha=(col,row)=>data[4*(row*(w+2)+col)+3];
+   isolated=true;
+   for(let col=0;col<w+2 && isolated;col++) isolated=!alpha(col,0)&&!alpha(col,h+1);
+   for(let row=0;row<h+2 && isolated;row++) isolated=!alpha(0,row)&&!alpha(w+1,row);
+  }
+  isolatedFooter.set(text,isolated);
+ }
+ if(!isolatedFooter.get(text)){g.drawImage(text,0,0);return;}
+ g.save();
+ g.beginPath();
+ g.rect(0,0,1008,1408);
+ g.rect(x,y,w,h);
+ g.clip('evenodd');
+ g.drawImage(text,0,0);
+ g.restore();
+ g.drawImage(text,x,y,w,h,x,y+0.05*16,w,h);
+}
 export function composeLayers(source,background,r,layers,canvas){
  const out=canvas(1008,1408),g=out.getContext('2d');
  const aiText=layers.kind==='ai-header'||layers.kind==='ai-text';
@@ -19,14 +45,14 @@ export function composeLayers(source,background,r,layers,canvas){
   g.drawImage(layers.symbol,Math.round(p.x*1008),Math.round(p.y*1408),Math.round(p.w*1008),Math.round(p.h*1408));
  };
  g.drawImage(background,0,0);
- if(!aiText&&layers.showText)g.drawImage(layers.text,0,0);
+ if(!aiText&&layers.showText)drawCardText(g,layers.text);
  if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);
  const b=cutBounds(r,1008,1408);
  if(aiText&&centered&&layers.showSymbol&&!layers.printing)drawSymbol();
  g.drawImage(source,b.x,b.y,b.right-b.x,b.bottom-b.y,b.x,b.y,b.right-b.x,b.bottom-b.y);
  if(aiText){
   if(layers.printing&&layers.showSymbol)drawSymbol();
-  if(layers.showText)g.drawImage(layers.text,0,0);
+  if(layers.showText)drawCardText(g,layers.text);
   if(!layers.printing&&!centered&&layers.showSymbol)drawSymbol();
  }
  return out;

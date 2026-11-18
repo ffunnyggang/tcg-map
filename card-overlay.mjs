@@ -1,10 +1,10 @@
 import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {cardOutline} from './card-overlay-shape.mjs?v=20261118-print64w';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261118-print64w';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261118-footer017';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-cardfit1';
 let aiHeaderDraft=null;
-import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261118-print64w';
+import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261118-footer017';
 const FACE_LAYER_MODE='fullart_header_layers_face';
 function usesFaceMask(mode){return mode==='bg_extract'||mode===FACE_LAYER_MODE;}
 function isManualMode(mode){return mode===FACE_LAYER_MODE||mode==='fullart_layer_atlas'||mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}

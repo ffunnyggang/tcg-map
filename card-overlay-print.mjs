@@ -1,3 +1,4 @@
+import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-trim-border1';
 export const PRINT={scale:12,bleed:2,width:63,height:88,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
 const CARD_ORIGIN = 10;
 export const ADMIN_PRINT_TRIM_MARGIN = .5;
@@ -32,27 +33,26 @@ export function withCardBleed(image,createCanvas=document.createElement.bind(doc
  return c;
 }
 
-export function withProductionCardBleed(image, canvas, {artwork, matrix, bleed = PRINT.bleed} = {}) {
- const pixelsPerMM=16;
- const b=bleed*pixelsPerMM, w=PRINT.width*pixelsPerMM, h=PRINT.height*pixelsPerMM;
- const surface=canvas(w+2*b,h+2*b), g=surface.getContext('2d');
- // Mirror a strip of real texture in all directions, including the corners.
- // This also backs any uncovered part of an aligned wide source.
- for (const dx of [-1,0,1]) for (const dy of [-1,0,1]) {
-  if (!dx && !dy) continue;
-  g.setTransform(dx?-1:1,0,0,dy?-1:1,dx?2*(b+(dx>0?w:0)):0,dy?2*(b+(dy>0?h:0)):0);
-  g.drawImage(image,b,b,w,h);
+export function withProductionCardBleed(image, canvas, {artwork, matrix, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
+ const ppm=16,b=bleed*ppm,w=PRINT.width*ppm,h=PRINT.height*ppm;
+ if(!artwork||!Array.isArray(matrix)||matrix.length!==6||!matrix.every(Number.isFinite))throw Error('재단선 밖 2mm까지 확장된 일러스트가 필요해요. 일러스트를 다시 생성하거나 위치를 조정해 주세요.');
+ const [a,c,d,f,e,k]=matrix,det=a*f-c*d;
+ if(!Number.isFinite(det)||Math.abs(det)<1e-10)throw Error('일러스트 정렬값을 확인해 주세요.');
+ for(const [x,y] of [[-b,-b],[w+b,-b],[-b,h+b],[w+b,h+b]]){
+  const sx=(f*(x-e)-d*(y-k))/det,sy=(-c*(x-e)+a*(y-k))/det;
+  if(sx<-.01||sy<-.01||sx>artwork.width+.01||sy>artwork.height+.01)throw Error('일러스트가 블리드 끝까지 닿지 않아요. 재단선 밖 2mm까지 포함하도록 일러스트를 확장하거나 위치를 조정해 주세요.');
  }
- if (artwork && matrix) {
-  const [a,skewY,skewX,d,e,f]=matrix;
-  g.setTransform(a,skewY,skewX,d,e+b,f+b);
-  g.drawImage(artwork,0,0);
- }
- // Keep the composed image at the original card size and coordinates.
- g.resetTransform();
+ const surface=canvas(w+2*b,h+2*b),g=surface.getContext('2d');
+ g.setTransform(a,c,d,f,e+b,k+b);g.drawImage(artwork,0,0);g.resetTransform();
+ // Preserve the window, text and symbols at their original coordinates.
  g.drawImage(image,b,b,w,h);
+ if(border){
+  const trim=ADMIN_PRINT_TRIM_MARGIN*ppm;
+  g.drawImage(fittedBorder(border,shape,canvas,w+2*trim,h+2*trim),b-trim,b-trim);
+ }
  return surface;
 }
+
 export function artPlacement(rect,bleed=2,width=1024,height=1536){return{x:(rect.x+bleed)/(63+2*bleed)*width,y:(rect.y+bleed)/(88+2*bleed)*height,w:rect.w/(63+2*bleed)*width,h:rect.h/(88+2*bleed)*height};}
 export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,bleed/(63+2*bleed)*art.width,bleed/(88+2*bleed)*art.height,63/(63+2*bleed)*art.width,88/(88+2*bleed)*art.height,x,y,63*s,88*s);else g.drawImage(art,x-bleed*s,y-bleed*s,(63+bleed*2)*s,(88+bleed*2)*s);}
 // Position on the original card footprint so preview and PDF share the same baseline.

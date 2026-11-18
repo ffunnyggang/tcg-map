@@ -1,5 +1,5 @@
 import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
-import {cardOutline} from './card-overlay-shape.mjs?v=20261108-cardfit1';
+import {cardOutline} from './card-overlay-shape.mjs?v=20261118-trim-border1';
 import {composeLayers} from './card-overlay-layers.mjs?v=20261108-cardfit1';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-cardfit1';
@@ -26,7 +26,7 @@ import {extractBackgroundPlate,faceMaskedFullCard} from './card-overlay-extract.
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
-import {drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261117-unified-bleed';
+import {drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261118-trim-border1';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
 let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;
@@ -161,16 +161,16 @@ function sheet(){
   if(!matchingFullArt()||!$('fullArtAccepted').checked)throw Error('풀아트 결과를 원본과 비교한 뒤 사용 확인란을 선택해 주세요.');
   const manual=wideManualState;
   const wide=manual?.current
-   ? (manual.layers?.showBorder ? undefined : {artwork:manual.image,matrix:manual.current})
+   ? {artwork:manual.image,matrix:manual.current}
    : autoAlignedBleed || undefined;
-  const printArt=withProductionCardBleed(fullArtResult,canvas,{...wide,bleed:ADMIN_PRINT_BLEED});
+  const printArt=withProductionCardBleed(manual?.layers?composeLayers(manual.source,renderManual(manual.image,manual.current,canvas),rect(),{...manual.layers,showBorder:false},canvas):fullArtResult,canvas,{...wide,border:manual?.layers?.showBorder?manual.layers.border:null,shape:settings.shape,bleed:ADMIN_PRINT_BLEED});
   return makePrintSheet(printArt,rect(),{...settings,sample:fullArtIsSample});
  }
  if(alignmentReview&&!$('acceptAlignment').checked)throw Error('생성 결과의 경계를 확인한 뒤 사용 확인란을 선택해 주세요.');
  if(!art)throw Error('확장 아트를 먼저 준비해 주세요.');
  const cardArt=canvas(W,H);
  drawArt(cardArt.getContext('2d'),art,0,0,S,artBleed,true);
- const printArt=withProductionCardBleed(cardArt,canvas,{bleed:ADMIN_PRINT_BLEED});
+ const printArt=withProductionCardBleed(cardArt,canvas,{artwork:art,matrix:[(63+2*artBleed)*16/art.width,0,0,(88+2*artBleed)*16/art.height,-artBleed*16,-artBleed*16],bleed:ADMIN_PRINT_BLEED});
  return makePrintSheet(printArt,rect(),{...settings,sample:sampleMode});
 }
 function exportName(kind,ext){const label=$('sourceCardLabel').value.normalize('NFKC').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g,'').replace(/[<>:"/\\|?*·]+/g,'-').replace(/\s+/g,'_').replace(/[-_]{2,}/g,'-').replace(/^[.\s_-]+|[.\s_-]+$/g,'').slice(0,100).replace(/[.\s_-]+$/g,'');return 'funypin-'+(label?label+'-':'')+kind+'.'+ext;}

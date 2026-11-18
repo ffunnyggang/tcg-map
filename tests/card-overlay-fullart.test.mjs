@@ -6,12 +6,12 @@ import vm from 'node:vm';
 const client=readFileSync(new URL('../card-overlay.mjs',import.meta.url),'utf8');
 function clientFlow(mode='illustration',resultMode='illustration',reviewed=true){
  const elements=new Map();const $=id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false,textContent:'',hidden:false});return elements.get(id);};$('generationMode').value=mode;$('fullArtAccepted').checked=reviewed;$('shape').value='round';$('tolerance').value='0.2';
- const result={id:'result'};let printed;const context=vm.createContext({ADMIN_PRINT_BLEED:2.5,ADMIN_PRINT_TRIM_MARGIN:.5,$,isOriginalMode:()=>false,isWideMode:()=>false,isManualMode:()=>false,fullArtResult:result,fullArtResultMode:resultMode,fullArtIsSample:false,busy:false,savedLoading:false,historyOnly:false,card:{},ready:true,corners:[],alignmentReview:false,art:null,rect:()=>({x:5,y:13,w:53,h:33}),canvas:()=>{},wideManualState:null,autoAlignedBleed:null,withProductionCardBleed:(source,_canvas,wide)=>({source,wide}),makePrintSheet:(...args)=>(printed=args,{printed:true})});
+ const result={id:'result'};let printed;const context=vm.createContext({ADMIN_PRINT_BLEED:2.5,ADMIN_PRINT_TRIM_MARGIN:.5,$,isOriginalMode:()=>false,isWideMode:()=>false,isManualMode:()=>false,fullArtResult:result,fullArtResultMode:resultMode,fullArtIsSample:false,busy:false,savedLoading:false,historyOnly:false,card:{},ready:true,corners:[],alignmentReview:false,art:null,rect:()=>({x:5,y:13,w:53,h:33}),canvas:()=>{},composeLayers:()=>result,renderManual:()=>result,wideManualState:null,autoAlignedBleed:null,withProductionCardBleed:(source,_canvas,wide)=>({source,wide}),makePrintSheet:(...args)=>(printed=args,{printed:true})});
  const section=(start,end)=>client.slice(client.indexOf(start),client.indexOf(end));vm.runInContext(section('function isFullCardMode(','function draw(){'),context);vm.runInContext(section('function sheet(){',"$('png').onclick"),context);return{context,$,result,printed:()=>printed};
 }
 test('illustration option preserves old options and explains removal for review',()=>{const html=readFileSync(new URL('../card-overlay.html',import.meta.url),'utf8');for(const mode of['independent','original','fullart','illustration'])assert.ok(html.includes('value="'+mode+'"'));assert.ok(html.includes('id="fullArtReviewText"'));assert.match(client,/캐릭터의 위치·배경 연결과 글자·테두리 제거 상태를 확인했습니다/);});
 test('both full-card modes export with the existing cut-guide settings',()=>{for(const mode of['illustration','fullart']){const a=clientFlow(mode,mode);vm.runInContext('update();sheet();',a.context);assert.equal(a.$('png').disabled,false);const args=a.printed();assert.equal(args[0].source,a.result);assert.equal(args[2].shape,'round');assert.equal(args[2].tolerance,.2);assert.equal(args[2].bleed,2.5);assert.equal(args[2].trimMargin,.5);}});
-test('admin print uses available wide art and falls back to reflected bleed for a selected frame',()=>{
+test('legacy print keeps wide artwork when a frame is selected',()=>{
  const a=clientFlow();
  const artwork={},matrix=[1,0,0,1,-320,-80];
  a.context.autoAlignedBleed={artwork,matrix};
@@ -22,7 +22,7 @@ test('admin print uses available wide art and falls back to reflected bleed for 
  assert.equal(a.printed()[0].wide.matrix,matrix);
  a.context.wideManualState.layers.showBorder=true;
  vm.runInContext('sheet()',a.context);
- assert.equal(a.printed()[0].wide.artwork,undefined);
+ assert.equal(a.printed()[0].wide.artwork,artwork);
 });
 test('changing full-card mode cannot export a result from the other mode',()=>{const a=clientFlow('illustration','fullart');vm.runInContext('update()',a.context);assert.equal(a.$('png').disabled,true);assert.equal(a.$('fullArtPng').disabled,true);assert.throws(()=>vm.runInContext('sheet()',a.context));assert.equal(a.printed(),undefined);});
 test('illustration exports require result review',()=>{const a=clientFlow('illustration','illustration',false);vm.runInContext('update()',a.context);assert.equal(a.$('png').disabled,true);assert.equal(a.$('pdf').disabled,true);assert.throws(()=>vm.runInContext('sheet()',a.context));});

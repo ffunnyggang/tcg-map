@@ -1,4 +1,4 @@
-import {fittedBorder} from './card-overlay-shape.mjs?v=20261108-cardfit1';
+import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-trim-border1';
 // Experimental local contrast extraction. This is not OCR or guaranteed semantic segmentation.
 export function cutBounds(r,w,h){return {x:Math.floor(r.x*w/63),y:Math.floor(r.y*h/88),right:Math.ceil((r.x+r.w)*w/63),bottom:Math.ceil((r.y+r.h)*h/88)};}
 export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){

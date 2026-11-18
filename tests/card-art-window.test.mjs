@@ -1,18 +1,14 @@
 import{test}from'node:test';import assert from'node:assert/strict';import vm from'node:vm';import{readFileSync}from'node:fs';import{pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide}from'../card-art-geometry.mjs';import{drawArtWatermark,makePrintSheet}from'../card-overlay-print.mjs';
 import{withProductionCardBleed}from'../card-overlay-print.mjs';
 
-test('production bleed reflects texture and reuses aligned wide art without changing the card scale', () => {
- const {g,calls}=recorder(), image={}, artwork={};
+test('production bleed uses actual wide artwork and never reflects edges', () => {
+ const {g,calls}=recorder(), image={}, artwork={width:1648,height:2048};
  const canvas=(width,height)=>({width,height,getContext:()=>g});
- const result=withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-80]});
- assert.deepEqual([result.width,result.height],[1072,1472]);
- const reflections=calls.filter(call=>call[0]==='setTransform').slice(0,8);
- assert.equal(reflections.length,8);
- assert.ok(reflections.some(call=>call[1]===-1&&call[4]===-1&&call[5]===64&&call[6]===2880));
- assert.deepEqual(calls.slice(-4),[
-  ['setTransform',1,0,0,1,-288,-48],['drawImage',artwork,0,0],
-  ['resetTransform'],['drawImage',image,32,32,1008,1408],
- ]);
+ const result=withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-80],bleed:2.5});
+ assert.deepEqual([result.width,result.height],[1088,1488]);
+ assert.deepEqual(calls,[['setTransform',1,0,0,1,-280,-40],['drawImage',artwork,0,0],['resetTransform'],['drawImage',image,40,40,1008,1408]]);
+ assert.throws(()=>withProductionCardBleed(image,canvas),/확장된 일러스트/);
+ assert.throws(()=>withProductionCardBleed(image,canvas,{artwork,matrix:[1,0,0,1,-320,-20]}),/블리드 끝/);
 });
 const r={x:5.3,y:9.5,w:52.3,h:31.9};
 test('public PDF uses the shared texture bleed while keeping the selected window and 64 × 89 trim', async () => {
@@ -23,7 +19,7 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  let bleedArgs,printArgs;
  const context=vm.createContext({ADMIN_PRINT_BLEED:2.5,ADMIN_PRINT_TRIM_MARGIN:.5,
   pdfExport:entry,layerSession:{image,current:matrix,layers:{showBorder:false}},setTimeout,File,canvas:()=>{},
-  outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
+  composeLayers:()=>output,renderManual:()=>output,outputArt:()=>output,withProductionCardBleed:(...args)=>(bleedArgs=args,output),
   makePrintSheet:(...args)=>(printArgs=args,{toBlob:done=>done(new Blob(['jpeg']))}),
   makePDF:()=>new Blob(['pdf']),cardFilename:()=> 'output.pdf',update:()=>{},
  });
@@ -38,7 +34,7 @@ test('public PDF uses the shared texture bleed while keeping the selected window
  assert.equal(printArgs[2].bleed,2.5);
  context.layerSession.layers.showBorder=true;
  await vm.runInContext('preparePDF(pdfExport)',context);
- assert.equal(bleedArgs[2].artwork,undefined);
+ assert.equal(bleedArgs[2].artwork,image);
 });
 test('print mode retains artwork exactly 2mm inside the window and omits the baked-in guide', (t) => {
  const {g,calls}=recorder();

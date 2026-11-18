@@ -12,7 +12,7 @@ import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261117-unified-bleed';
+import {drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261118-trim-border1';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -229,8 +229,10 @@ async function preparePDF(entry){
   // Let the result view paint before encoding the sheet.
   await new Promise(resolve=>setTimeout(resolve,0));
   if(pdfExport!==entry)return;
-  const wide=layerSession?.current&&!layerSession.layers.showBorder?layerSession:null;
-  const printArt=withProductionCardBleed(outputArt(),canvas,{artwork:wide?.image,matrix:wide?.current,bleed:ADMIN_PRINT_BLEED});
+  const wide=layerSession?.current?layerSession:null;
+  const layers=wide?.layers;
+  const clean=wide?composeLayers(wide.source,renderManual(wide.image,wide.current,canvas),entry.window,{...layers,showBorder:false},canvas):outputArt();
+  const printArt=withProductionCardBleed(clean,canvas,{artwork:wide?.image,matrix:wide?.current,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
   const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:true,cutoutCard:entry.card});
   const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
   if(!jpg)throw Error('출력 도안을 만들지 못했어요.');

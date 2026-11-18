@@ -1,5 +1,5 @@
 import {checkGeneratedAnchor} from './card-overlay-quality.mjs?v=20261023-align1';
-import {artPlacement} from './card-overlay-print.mjs?v=20261023-ux3';
+import {artPlacement} from './card-overlay-print.mjs?v=20261118-trim-border1';
 export const FULL_ART_SIZE={width:1008,height:1408};
 export function prepareFullCard(card,createCanvas){
  const c=createCanvas(FULL_ART_SIZE.width,FULL_ART_SIZE.height);

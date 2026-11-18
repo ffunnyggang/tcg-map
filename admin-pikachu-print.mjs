@@ -8,9 +8,9 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261117-print-bleed2';
+import { drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-trim-border1';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261117-print-bleed2';
+import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-trim-border1';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
@@ -205,7 +205,7 @@ function textLayer(current, language) {
   }
   return current.textLayers.get(language);
 }
-async function renderCard(current) {
+async function renderCard(current, printing=false) {
   if (!current?.illustration) return;
   const { settings: { language, border, symbol, shape }, source, cut, illustration, matrix } = current;
   const centered = symbol === 'center';
@@ -226,8 +226,9 @@ async function renderCard(current) {
     }
     placement = centered ? current.symbolCenter || PIKACHU_ANNIVERSARY_PLACEMENT : anniversarySymbolPlacement(stamp, current.symbolCenter);
   }
+  if(printing)current.printBorder=frame?.image||null;
   return composeLayers(source, renderManual(illustration, matrix, canvas), cut, {
-    kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame,
+    kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing,
     symbol: stamp?.image, showSymbol: !!stamp, symbolSide: symbol, placement, shape,
   }, canvas);
 }
@@ -407,6 +408,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   const card = { ...name, source_language: language, display_name: /^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id) ? ({ ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name) : name.display_name };
   const production = settings.mode === 'production';
   setStatus('A4 출력 도안을 준비하고 있어요.');
+  session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
     shape: settings.shape, tolerance: 0, bleed: ADMIN_PRINT_BLEED, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), cutoutCard: card, production,
   });
@@ -459,6 +461,7 @@ $('printPikachuSheet').onclick = async () => {
         }
         current.output = await renderCard(current);
       }
+      current.printOutput = await renderCard(current,true);
       const tile = productionTile(current);
       tiles.push({jpeg:await encodePrintImage(tile), cut:current.cut, shape:current.settings.shape});
       tile.width = tile.height = 0;
@@ -473,9 +476,9 @@ $('printPikachuSheet').onclick = async () => {
     refreshControls();
   }
 };
-function productionArtwork({output, illustration, matrix, settings, hasWideArtwork}) {
-  const artwork = hasWideArtwork && settings.border === 'off' ? illustration : null;
-  return withProductionCardBleed(output, canvas, {artwork, matrix, bleed: ADMIN_PRINT_BLEED});
+function productionArtwork({output, printOutput, printBorder, illustration, matrix, settings, hasWideArtwork}) {
+  const artwork = hasWideArtwork ? illustration : null;
+  return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, border:printBorder,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
 }
 function productionTile(current) {
   const {cut, card} = current;

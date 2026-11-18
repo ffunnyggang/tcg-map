@@ -5,18 +5,18 @@ export function cardOutline(image,shape,canvas){
  g.drawImage(image,0,0,1008,1408);return out;
 }
 const borders=new WeakMap();
-export function fittedBorder(image,shape,canvas){
- let cached=borders.get(image);if(!cached){cached={};borders.set(image,cached);}if(cached[shape])return cached[shape];
+export function fittedBorder(image,shape,canvas,width=1008,height=1408){
+ let cached=borders.get(image);if(!cached){cached={};borders.set(image,cached);}const key=shape+':'+width+':'+height;if(cached[key])return cached[key];
  const source=canvas(1008,1408),s=source.getContext('2d');s.drawImage(image,0,0,1008,1408);
- const out=canvas(1008,1408),g=out.getContext('2d'),radius=shape==='round'?48:0,edge=40;
+ const out=canvas(width,height),g=out.getContext('2d'),radius=shape==='round'?48:0,edge=40;
  // Define the perimeter geometrically, independent of transparent padding in the asset.
- g.beginPath();g.roundRect(0,0,1008,1408,radius);g.roundRect(edge,edge,1008-2*edge,1408-2*edge,Math.max(0,radius-edge));g.clip('evenodd');
- const grad=g.createLinearGradient(0,0,1008,1408);
+ g.beginPath();g.roundRect(0,0,width,height,radius);g.roundRect(edge,edge,width-2*edge,height-2*edge,Math.max(0,radius-edge));g.clip('evenodd');
+ const grad=g.createLinearGradient(0,0,width,height);
  for(const [stop,x,y]of[[0,100,20],[.33,900,20],[.66,988,900],[1,100,1388]]){const p=s.getImageData(x,y,1,1).data;grad.addColorStop(stop,`rgb(${p[0]},${p[1]},${p[2]})`);}
- g.fillStyle=grad;g.fillRect(0,0,1008,1408);g.drawImage(source,0,0);
+ g.fillStyle=grad;g.fillRect(0,0,width,height);g.drawImage(source,0,0,width,height);
  if(shape!=='round'){
   // Replace rounded corner artwork with straight edge texture; no rounded line remains.
-  for(const x of[0,960]){g.drawImage(source,x===0?48:912,8,48,24,x,0,48,48);g.drawImage(source,x===0?48:912,1376,48,24,x,1360,48,48);}
+  for(const x of[0,width-48]){g.drawImage(source,x===0?48:912,8,48,24,x,0,48,48);g.drawImage(source,x===0?48:912,1376,48,24,x,height-48,48,48);}
  }
- cached[shape]=out;return out;
+ cached[key]=out;return out;
 }

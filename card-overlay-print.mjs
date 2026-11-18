@@ -124,7 +124,7 @@ export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,
 export function drawArtWatermark(g,x,y,width,height){
  const scale=width/63;
  const right=x+width-3.5*scale;
- const baseline=y+height-1.3*height/PRINT.height;
+ const baseline=y+height-1.25*height/PRINT.height;
  g.save();
  g.font=`600 ${1.15*scale}px sans-serif`;
  g.textAlign='right';

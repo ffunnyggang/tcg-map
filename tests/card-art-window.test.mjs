@@ -98,7 +98,7 @@ test('public PDF watermark is inside both trim shapes and absent from the admin 
   assert.deepEqual(mark.map(c=>c[0]),['strokeText','fillText']);
   for(const [, , x,y] of mark){
    assert.equal(x,69.5*12);
-   assert.ok(Math.abs(y-96.7*12)<1e-9);
+   assert.ok(Math.abs(y-96.75*12)<1e-9);
   }
  }
 });

@@ -8,9 +8,9 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261119-watermark-choice';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261119-print64x89';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
-import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-print64w';
+import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261119-print64x89';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
@@ -163,17 +163,19 @@ function draw() {
   const { source, output, cut, original, settings } = session;
   if (!cut) { g.drawImage(source, 0, 0, view.width, view.height); return; }
   const preview=!original && session.preview;
-  const nativeWidth=Math.round(view.height*63/88);
-  view.width=preview?Math.round(view.height*64/88):nativeWidth;
+  const nativeHeight=preview?view.height*88/PRINT.height:view.height;
+  const nativeWidth=nativeHeight*63/88;
+  view.width=preview?Math.round(view.height*PRINT.width/PRINT.height):nativeWidth;
   const offset=(view.width-nativeWidth)/2;
-  guide.setAttribute('viewBox',`${-offset} 0 ${view.width} ${view.height}`);
+  const topOffset=(view.height-nativeHeight)/2;
+  guide.setAttribute('viewBox',`${-offset} ${-topOffset} ${view.width} ${view.height}`);
   if(preview)g.drawImage(preview,0,0,view.width,view.height);
   else drawCardOverlay(g,source,output||source,cut,nativeWidth,view.height,!!output&&!original,settings.shape);
-  g.save();g.translate(offset,0);
+  g.save();g.translate(offset,topOffset);
   if (output && !original) {
-    if (settings.mode === 'production') drawProductionWindow(g, pixelWindow(cut, nativeWidth, view.height), nativeWidth / 63);
+    if (settings.mode === 'production') drawProductionWindow(g, pixelWindow(cut, nativeWidth, nativeHeight), nativeWidth / 63);
     else {
-      const { x, y, w, h } = pixelWindow(cut, nativeWidth, view.height);
+      const { x, y, w, h } = pixelWindow(cut, nativeWidth, nativeHeight);
       for (const line of guide.querySelectorAll('rect')) {
         line.setAttribute('x', x);
         line.setAttribute('y', y);
@@ -247,7 +249,7 @@ async function compose() {
   const revisionToken=current.previewToken=Symbol();
   const output = await renderCard(current);
   let preview=null;
-  if(current.hasWideArtwork && output){
+  if(current.hasWideArtwork && current.card.illustration?.hasGeneratedOverscan === true && output){
    const printOutput=await renderCard(current,true);
    try{preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark);}
    catch(error){if(!/블리드 끝/.test(error.message))throw error;}
@@ -349,7 +351,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     $('printSymbol').replaceChildren(...prepared.symbols.map(value => new Option(symbolLabels[value], value)));
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
-    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 88 mm` : '원본 카드 이미지';
+    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 2 mm` : '원본 카드 이미지';
     session = prepared;
     if (!illustration) {
       draw();
@@ -496,7 +498,8 @@ $('printPikachuSheet').onclick = async () => {
     refreshControls();
   }
 };
-function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork}) {
+function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card}) {
+  if (card?.illustration?.hasGeneratedOverscan !== true) throw new Error('AI로 생성된 사방 블리드 원본이 확인되지 않아 PDF 출력을 중단했어요. 원본을 유지한 68 × 93 mm 확장 일러스트가 필요합니다.');
   const artwork = hasWideArtwork ? illustration : null;
   return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, foil:printFoil,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
 }
@@ -506,8 +509,8 @@ function productionTile(current) {
   const tile = canvas((PRINT.width+2*bleed)*scale, (PRINT.height+2*bleed)*scale);
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
-  drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
-  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,bleed*scale,63*scale,PRINT.height*scale,current.settings.watermark);
+  drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+PRINT_TOP_MARGIN+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
+  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark);
   return tile;
 }
 async function connect() {
@@ -545,4 +548,5 @@ async function connect() {
   }
 }
 connect();
+
 

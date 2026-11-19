@@ -1,4 +1,4 @@
-import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-quota-notice';
+import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-print64x89';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
@@ -12,7 +12,7 @@ import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261118-print-preview';
+import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261119-print64x89';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -124,24 +124,26 @@ function drawResult(){
  const current=pdfExport?.result===result && pdfExport.shape===shape ? pdfExport : null;
  const preview=showExpanded && current?.preview;
  if(showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
- const nativeWidth=Math.round(c.height*63/88);
- const trimWidth=Math.round(c.height*64/88);
+ const nativeHeight=Math.round(c.height*88/89);
+ const nativeWidth=Math.round(c.height*63/89);
+ const trimWidth=Math.round(c.height*64/89);
+ const top=(c.height-nativeHeight)/2;
  if(c.width!==trimWidth)c.width=trimWidth;
  const inset=(trimWidth-nativeWidth)/2;
  g.clearRect(0,0,c.width,c.height);
  if(preview){
   g.drawImage(preview,0,0,c.width,c.height);
-  g.save();g.translate(inset,0);
-  drawCutGuide(g,resultWindow,nativeWidth,c.height,.3);g.restore();
+  g.save();g.translate(inset,top);
+  drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);g.restore();
   displayedPreviewSource=source;
   return;
  }
  displayedPreviewSource=null;
- g.save();g.translate(inset,0);
- drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,c.height,showExpanded,shape);
+ g.save();g.translate(inset,top);
+ drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,nativeHeight,showExpanded,shape);
  if(showExpanded){
-  drawCutGuide(g,resultWindow,nativeWidth,c.height,.3);
-  drawArtWatermark(g,0,0,nativeWidth,c.height);
+  drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);
+  drawArtWatermark(g,0,0,nativeWidth,nativeHeight);
  }
  g.restore();
 }
@@ -272,7 +274,9 @@ async function preparePDF(entry){
   const wide=layerSession?.current?layerSession:null;
   const layers=wide?.layers;
   const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true},canvas):outputArt();
-  const printArt=withProductionCardBleed(clean,canvas,{artwork:wide?.image,matrix:wide?.current,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
+  const fallbackArtwork=wide?renderManual(wide.image,wide.current,canvas):clean;
+  const aiOverscan=wide?.data?.hasGeneratedOverscan===true;
+  const printArt=withProductionCardBleed(clean,canvas,{artwork:aiOverscan?wide.image:undefined,matrix:aiOverscan?wide.current:undefined,fallbackArtwork,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
   if(pdfExport!==entry)return;
   entry.preview=trimmedPrintPreview(printArt,canvas,true);
   drawResult();
@@ -454,3 +458,4 @@ window.addEventListener('pagehide',()=>{
  try{window.ReactNativeWebView?.postMessage(JSON.stringify({type:'FUNY_WEB_OVERLAY_STATE',source:'card-art',open:false,navMode:'none'}));}catch{}
 });
 syncArtOverlay(true);
+

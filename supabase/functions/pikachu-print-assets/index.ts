@@ -66,7 +66,7 @@ Deno.serve(async req => {
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
   type PrintImport = { id: string; reference_id: string; label: string; created_at: string };
-  type Generation = { id: string; user_id: string; raw_path: string; image_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string };
+  type Generation = { id: string; user_id: string; raw_path: string; image_path: string; source_reference_id: string; prompt_version: string; width: number; height: number; result_kind: string; created_at: string; model: string; request_id: string | null };
   function preparedPrintPath(row: Generation) {
     const path = row.user_id + '/' + row.id + '/prepared.png';
     return row.result_kind === 'prepared' && row.width === 1008 && row.height === 1408 && row.image_path === path
@@ -145,7 +145,7 @@ Deno.serve(async req => {
     const referenceIds = [...new Set([...printMembers.map(m => m.reference_id), ...selected.flatMap(id => printKoreanSources[id] ? [printKoreanSources[id]] : [])])];
     const generations = (await Promise.all(chunks(referenceIds).map(batch =>
       rows<Generation>('overlay_generations', {
-        select: 'id,user_id,raw_path,image_path,source_reference_id,prompt_version,width,height,result_kind,created_at',
+        select: 'id,user_id,raw_path,image_path,source_reference_id,prompt_version,width,height,result_kind,created_at,model,request_id',
         source_reference_id: inList(batch), prompt_version: inList([ART, FACE_ART, TEXT]), order: 'created_at.desc,id.desc',
       })
     ))).flat().sort((a,b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id));
@@ -200,7 +200,7 @@ Deno.serve(async req => {
       for (const row of generations) {
         const path = row.id === overrideId ? preparedPrintPath(row) : row.raw_path;
         if (!path) continue;
-        try { return { id: row.id, width: row.width, height: row.height, url: await sign('overlay-generated-images', path) }; }
+        try { return { id: row.id, width: row.width, height: row.height, hasGeneratedOverscan: path===row.raw_path && [ART, FACE_ART].includes(row.prompt_version) && /^gpt-image(?:-|$)/.test(row.model||'') && !!row.request_id, url: await sign('overlay-generated-images', path) }; }
         catch { /* Try another verified record of the same artwork and layer. */ }
       }
       if (generations.length) throw new Error('saved layer unavailable');

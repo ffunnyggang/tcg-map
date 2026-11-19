@@ -70,7 +70,7 @@ const english={
  "모서리": "Corners",
  "라운드": "Rounded",
  "사각": "Square",
- "완성 64 × 89mm · 바깥 재단 여백 1.5mm는 잘라 주세요.": "Finished size: 64 × 89 mm. Trim the 1.5 mm outer bleed.",
+ "완성 64 × 89mm · 바깥 재단 여백 2mm는 잘라 주세요.": "Finished size: 64 × 89 mm. Trim the 2 mm outer bleed.",
  "A4 · 실제 크기 100%로 인쇄하세요.": "Print on A4 at actual size (100%).",
  "‘페이지에 맞추기’를 해제하고 10mm 기준선을 확인해 주세요.": "Turn off “Fit to page” and check the 10 mm scale bar.",
  "확장 아트가 완성됐어요!": "Your extended art is ready!",
@@ -263,3 +263,4 @@ export function createArtMarkupRenderer(root){
  visit(root);
  return ()=>bindings.forEach(render=>render());
 }
+

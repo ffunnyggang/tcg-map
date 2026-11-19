@@ -70,7 +70,7 @@ const english={
  "모서리": "Corners",
  "라운드": "Rounded",
  "사각": "Square",
- "완성 64 × 89mm · 바깥 재단 여백 1.5mm는 잘라 주세요.": "Finished size: 64 × 89 mm. Trim the 1.5 mm outer bleed.",
+ "완성 64 × 89mm · 바깥 재단 여백 2mm는 잘라 주세요.": "Finished size: 64 × 89 mm. Trim the 2 mm outer bleed.",
  "A4 · 실제 크기 100%로 인쇄하세요.": "Print on A4 at actual size (100%).",
  "‘페이지에 맞추기’를 해제하고 10mm 기준선을 확인해 주세요.": "Turn off “Fit to page” and check the 10 mm scale bar.",
  "확장 아트가 완성됐어요!": "Your extended art is ready!",
@@ -116,6 +116,7 @@ const english={
  "‘페이지에 맞추기’는 해제": "turn off “Fit to page.”",
  "해 주세요. 10mm 기준선으로 크기를 확인하면 더 정확해요.": "Use the 10 mm scale bar to verify the print size.",
  "✂️ 원본 카드는 자르지 마세요": "✂️ Cut only the printed template",
+ "새 출력 규격에는 AI로 확장된 재단 여백이 필요해요. 이 이미지로는 아직 PDF를 만들 수 없어요.": "This print size requires AI-extended artwork through the bleed. A PDF is not yet available for this image.",
  "완성 크기는": "The finished size is",
  "예요. 출력한 도안의 바깥선과 안쪽 일러스트 창을 잘라, 원본 카드가 들어 있는 보호 슬리브 앞에 겹쳐 즐겨주세요. 칼이나 가위를 사용할 때는 손을 다치지 않도록 주의해 주세요.": ". Trim the outer edge and inner artwork window of the printout, then place it over the front of the sleeved original card. Use care when handling scissors or a craft knife.",
  "💜 개인 감상·전시용으로 즐겨주세요 · 권리 안내": "💜 Personal display only · Rights notice",
@@ -263,3 +264,4 @@ export function createArtMarkupRenderer(root){
  visit(root);
  return ()=>bindings.forEach(render=>render());
 }
+

@@ -8,7 +8,7 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261118-print-preview';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261119-watermark-choice';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261118-print64w';
 
@@ -18,7 +18,7 @@ const assetPromises = new Map();
 const labels = { ko: '한국어', ja: '일본어', en: '영어' };
 const corners = ['round', 'square'];
 const symbolLabels = { off: 'OFF', center: '중앙', right: '오른쪽', left: '왼쪽' };
-const controls = { language: 'printText', symbol: 'printSymbol', border: 'printBorder', shape: 'printCorner', mode: 'printMode' };
+const controls = { language: 'printText', symbol: 'printSymbol', border: 'printBorder', shape: 'printCorner', mode: 'printMode', watermark: 'printWatermark' };
 const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', authMode = 'web', adminRefresh = null;
@@ -182,7 +182,7 @@ function draw() {
       }
       guide.style.display = '';
     }
-    if (!preview && shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height);
+    if (!preview && shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark);
   }
   g.restore();
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
@@ -249,7 +249,7 @@ async function compose() {
   let preview=null;
   if(current.hasWideArtwork && output){
    const printOutput=await renderCard(current,true);
-   try{preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card));}
+   try{preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark);}
    catch(error){if(!/블리드 끝/.test(error.message))throw error;}
   }
   if(current.previewToken!==revisionToken)return;
@@ -280,6 +280,7 @@ async function prepareCard(card, previous) {
     border: borders.includes(previous.border) ? previous.border : 'off',
     shape: corners.includes(previous.shape) ? previous.shape : 'round',
     mode: previous.mode === 'production' ? 'production' : 'event',
+    watermark: previous.watermark === 'funyframe' ? 'funyframe' : 'funypin.kr',
   };
   const prepared = {
     card, name, source, illustration, cut, settings, symbols, alignmentKey, textLayers: new Map(),
@@ -429,7 +430,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   setStatus('A4 출력 도안을 준비하고 있어요.');
   session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
-    shape: settings.shape, tolerance: 0, bleed: ADMIN_PRINT_BLEED, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), cutoutCard: card, production,
+    shape: settings.shape, tolerance: 0, bleed: ADMIN_PRINT_BLEED, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), watermarkText: settings.watermark, cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
     production ? { cutContour: printWindowRect(cut) } : undefined);
@@ -506,7 +507,7 @@ function productionTile(current) {
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
   drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
-  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,bleed*scale,63*scale,PRINT.height*scale);
+  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,bleed*scale,63*scale,PRINT.height*scale,current.settings.watermark);
   return tile;
 }
 async function connect() {
@@ -544,3 +545,4 @@ async function connect() {
   }
 }
 connect();
+

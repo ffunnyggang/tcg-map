@@ -166,17 +166,16 @@ function sheet(foil=null,preview=false){
   const wide=manual?.current&&manual.d?.hasGeneratedOverscan===true
    ? {artwork:manual.image,matrix:manual.current}
    : autoAlignedBleed || (fullArtIsSample && art ? {artwork:art,matrix:printArtworkMatrix(art,artBleed)} : undefined);
-  if(!wide)throw Error('새 출력 규격에는 AI로 확장된 재단 여백이 필요해요. 여백을 포함한 새 일러스트를 준비해 주세요.');
-  const printArt=withProductionCardBleed(manual?.layers?composeLayers(manual.source,canvas(1008,1408),rect(),{...manual.layers,printing:true,showBorder:false},canvas):fullArtResult,canvas,{...wide,foil,border:manual?.layers?.showBorder?manual.layers.border:null,shape:settings.shape,bleed:ADMIN_PRINT_BLEED});
+  const fallbackArtwork=manual?.current?renderManual(manual.image,manual.current,canvas):fullArtResult;
+  const printArt=withProductionCardBleed(manual?.layers?composeLayers(manual.source,canvas(1008,1408),rect(),{...manual.layers,printing:true,showBorder:false},canvas):fullArtResult,canvas,{...wide,fallbackArtwork,foil,border:manual?.layers?.showBorder?manual.layers.border:null,shape:settings.shape,bleed:ADMIN_PRINT_BLEED});
   if(preview)return trimmedPrintPreview(printArt,canvas,true);
   return makePrintSheet(printArt,rect(),{...settings,watermark:true,sample:fullArtIsSample});
  }
  if(alignmentReview&&!$('acceptAlignment').checked)throw Error('생성 결과의 경계를 확인한 뒤 사용 확인란을 선택해 주세요.');
  if(!art)throw Error('확장 아트를 먼저 준비해 주세요.');
- if(artBleed!==2.5)throw Error('새 규격으로 출력하려면 AI 확장 여백이 포함된 68×93mm 이미지를 준비해 주세요.');
  const cardArt=canvas(W,H);
  drawArt(cardArt.getContext('2d'),art,0,0,S,artBleed,true);
- const printArt=withProductionCardBleed(cardArt,canvas,{artwork:art,matrix:printArtworkMatrix(art,artBleed),bleed:ADMIN_PRINT_BLEED});
+ const printArt=withProductionCardBleed(cardArt,canvas,{artwork:art,matrix:printArtworkMatrix(art,artBleed),fallbackArtwork:cardArt,bleed:ADMIN_PRINT_BLEED});
  return makePrintSheet(printArt,rect(),{...settings,sample:sampleMode});
 }
 function exportName(kind,ext){const label=$('sourceCardLabel').value.normalize('NFKC').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g,'').replace(/[<>:"/\\|?*·]+/g,'-').replace(/\s+/g,'_').replace(/[-_]{2,}/g,'-').replace(/^[.\s_-]+|[.\s_-]+$/g,'').slice(0,100).replace(/[.\s_-]+$/g,'');return 'funypin-'+(label?label+'-':'')+kind+'.'+ext;}

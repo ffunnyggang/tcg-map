@@ -1,4 +1,4 @@
-import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261115-free-extension';
+import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-quota-notice';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
@@ -81,7 +81,15 @@ function cycleLayer(kind){
  syncLayerControls();
 }
 $('layerText').onclick=()=>cycleLayer('text');$('layerSymbol').onclick=()=>cycleLayer('symbol');$('layerBorder').onclick=()=>cycleLayer('border');$('layerCorner').onclick=()=>cycleLayer('corner');
-function renderQuota(q,message){if(!q)return;showArtMessage('quotaNotice',()=>q.active&&q.unlimited?artText('관리자 계정 · 생성 횟수 제한 없음'):q.active?artText('11.8–11.14 무료 · 오늘 ')+q.used+artText('/3장 이용 · 매일 00시 초기화'):artText(message));$('quotaNotice').hidden=false;}
+const freeAccessEndsAt=Date.parse('2026-11-22T00:00:00+09:00');
+let freeAccessActive;
+function renderFreeAccessNotice(){
+ const active=freeAccessActive??(Date.now()<freeAccessEndsAt);
+ document.querySelectorAll('[data-free-access-notice]').forEach(el=>{
+  el.hidden=(el.dataset.freeAccessNotice==='active')!==active;
+ });
+}
+function renderQuota(q,message){if(!q)return;freeAccessActive=q.active;renderFreeAccessNotice();showArtMessage('quotaNotice',()=>q.active&&q.unlimited?artText('관리자 계정 · 생성 횟수 제한 없음'):q.active?artText('11.21까지 무료 · 오늘 ')+q.used+artText('/3장 이용 · 매일 00시 초기화'):artText(message));$('quotaNotice').hidden=false;}
 async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-generate',{action:'status',surface:'mobile'});ready=!!s.ready;renderQuota(s.quota,s.message);}catch{} }
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+artText(LANGUAGES[selected.source_language]||'샘플'):'';}
@@ -193,7 +201,12 @@ async function connect(){
   if(epoch!==catalogEpoch)return;
   presetAdminClient=admin;
   presetOnly=!session&&!!admin;
-  if(!session&&!presetOnly){showAccess('로그인 후 카드 목록을 불러올 수 있어요.',true);return;}
+  if(!session||presetOnly){
+    freeAccessActive=undefined;
+    renderFreeAccessNotice();
+    $('quotaNotice').hidden=true;
+   }
+   if(!session&&!presetOnly){showAccess('로그인 후 카드 목록을 불러올 수 있어요.',true);return;}
   if(presetOnly){
    ready=false;
    showArtMessage('quotaNotice',()=>artText('관리자 · 일러스트 창 기본값 설정'));
@@ -385,6 +398,14 @@ $('saveWindowPreset').onclick=async()=>{
 
 // The same entry notice and footer content; always show on page entry.
 $('modalNotice').append($('noticeContent').content.cloneNode(true));$('stepNotice').append($('noticeContent').content.cloneNode(true));
+renderFreeAccessNotice();
+const timeUntilFreeAccessEnds=freeAccessEndsAt-Date.now();
+if(timeUntilFreeAccessEnds>0&&timeUntilFreeAccessEnds<=2147483647){
+ setTimeout(async()=>{
+  if(freeAccessActive!==undefined&&!busy){await refreshQuota();update();}
+  renderFreeAccessNotice();
+ },timeUntilFreeAccessEnds);
+}
 $('acceptNotice').onclick=()=>$('noticeDialog').close();$('noticeDialog').showModal();window.addEventListener('pageshow',e=>{if(e.persisted&&!$('noticeDialog').open)$('noticeDialog').showModal();});
 $('reviewForm').onsubmit=async e=>{e.preventDefault();if(reviewPosting||reviewPosted||!result)return;const body=$('reviewBody').value.trim();if(!body)return;reviewPosting=true;$('reviewSubmit').disabled=true;$('reviewBody').disabled=true;showArtMessage('reviewStatus',()=>artText('후기를 등록하고 있어요.'));update();try{const id=await reviewPublisher.publish({image:outputArt(),title:(selected.display_name+artText(' 확장 아트 사용 후기')).slice(0,80),body});reviewPosted=true;showArtMessage('reviewStatus',()=>artText('TALK 자유게시판에 후기를 등록했어요.'));$('reviewLink').href='/talk.html?from=card-art#/post/'+encodeURIComponent(id);$('reviewLink').hidden=false;}catch(err){showArtMessage('reviewStatus',()=>artError(err,'후기 등록에 실패했어요.'));$('reviewBody').disabled=false;}finally{reviewPosting=false;$('reviewSubmit').disabled=reviewPosted;update();}};
 const renderArtMarkup=createArtMarkupRenderer(document.body);

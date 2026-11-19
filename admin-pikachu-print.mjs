@@ -8,13 +8,21 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261119-print64x89';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN } from './card-overlay-print.mjs?v=20261119-restored5mm';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261119-print64x89';
+
+import { makeRestoredOverscan } from './admin-pikachu-restored-overscan.mjs?v=20261119-restored5mm';
 
 const $ = id => document.getElementById(id);
 const auth = window.FUNY_WEB_AUTH;
 const assetPromises = new Map();
+const RESTORED_PRINT_BLEED = 5;
+function isRestoredPrintImage(card) {
+  return card?.sourceLanguage === 'en' && card.hasPrintImport === true &&
+    card.imageOptions?.some(option => option.id === card.illustration?.id && option.kind === 'import') === true;
+}
+const printBleed = card => isRestoredPrintImage(card) ? RESTORED_PRINT_BLEED : ADMIN_PRINT_BLEED;
 const labels = { ko: '한국어', ja: '일본어', en: '영어' };
 const corners = ['round', 'square'];
 const symbolLabels = { off: 'OFF', center: '중앙', right: '오른쪽', left: '왼쪽' };
@@ -251,7 +259,7 @@ async function compose() {
   let preview=null;
   if(output){
    const printOutput=await renderCard(current,true);
-   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark);
+   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark,printBleed(current.card));
   }
   if(current.previewToken!==revisionToken)return;
   current.preview=preview;
@@ -350,7 +358,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     $('printSymbol').replaceChildren(...prepared.symbols.map(value => new Option(symbolLabels[value], value)));
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
-    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 2 mm` : '원본 카드 이미지';
+    $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
     session = prepared;
     if (!illustration) {
       draw();
@@ -431,7 +439,8 @@ $('printPDF').onclick = () => withCardAction(async () => {
   setStatus('A4 출력 도안을 준비하고 있어요.');
   session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
-    shape: settings.shape, tolerance: 0, bleed: ADMIN_PRINT_BLEED, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), watermarkText: settings.watermark, cutoutCard: card, production,
+    shape: settings.shape, tolerance: 0, bleed: printBleed(session.card),
+    showRoundTrimGuide: !isRestoredPrintImage(session.card), windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), watermarkText: settings.watermark, cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
     production ? { cutContour: printWindowRect(cut) } : undefined);
@@ -498,6 +507,18 @@ $('printPikachuSheet').onclick = async () => {
   }
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card}) {
+  if (isRestoredPrintImage(card)) {
+    const bleed = RESTORED_PRINT_BLEED;
+    // Legacy artwork is registered at 16 px/mm; the existing trim adds 0.5 mm
+    // around its 63 × 88 mm footprint. The extended plate includes both margins.
+    const inset = (bleed + PRINT_SIDE_MARGIN) * 16;
+    const top = (bleed + PRINT_TOP_MARGIN) * 16;
+    const native = renderManual(illustration, matrix, canvas);
+    const artwork = makeRestoredOverscan(native, canvas, inset, top);
+    return withProductionCardBleed(printOutput||output, canvas, {
+      artwork, matrix:[1,0,0,1,-inset,-top], foil:printFoil, shape:settings.shape, bleed,
+    });
+  }
   const artwork = hasWideArtwork && card?.illustration?.hasGeneratedOverscan === true ? illustration : null;
   const fallbackArtwork = artwork ? null : renderManual(illustration, matrix, canvas);
   return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, fallbackArtwork, foil:printFoil,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});

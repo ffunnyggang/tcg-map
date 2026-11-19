@@ -249,10 +249,9 @@ async function compose() {
   const revisionToken=current.previewToken=Symbol();
   const output = await renderCard(current);
   let preview=null;
-  if(current.hasWideArtwork && current.card.illustration?.hasGeneratedOverscan === true && output){
+  if(output){
    const printOutput=await renderCard(current,true);
-   try{preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark);}
-   catch(error){if(!/블리드 끝/.test(error.message))throw error;}
+   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark);
   }
   if(current.previewToken!==revisionToken)return;
   current.preview=preview;
@@ -499,9 +498,9 @@ $('printPikachuSheet').onclick = async () => {
   }
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card}) {
-  if (card?.illustration?.hasGeneratedOverscan !== true) throw new Error('AI로 생성된 사방 블리드 원본이 확인되지 않아 PDF 출력을 중단했어요. 원본을 유지한 68 × 93 mm 확장 일러스트가 필요합니다.');
-  const artwork = hasWideArtwork ? illustration : null;
-  return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, foil:printFoil,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
+  const artwork = hasWideArtwork && card?.illustration?.hasGeneratedOverscan === true ? illustration : null;
+  const fallbackArtwork = artwork ? null : renderManual(illustration, matrix, canvas);
+  return withProductionCardBleed(printOutput||output, canvas, {artwork, matrix, fallbackArtwork, foil:printFoil,shape:settings.shape, bleed: ADMIN_PRINT_BLEED});
 }
 function productionTile(current) {
   const {cut, card} = current;

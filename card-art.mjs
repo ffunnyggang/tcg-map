@@ -272,10 +272,11 @@ async function preparePDF(entry){
   await new Promise(resolve=>setTimeout(resolve,0));
   if(pdfExport!==entry)return;
   const wide=layerSession?.current?layerSession:null;
-  if(wide?.data?.hasGeneratedOverscan!==true)throw Error(artText('새 출력 규격에는 AI로 확장된 재단 여백이 필요해요. 이 이미지로는 아직 PDF를 만들 수 없어요.'));
   const layers=wide?.layers;
   const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true},canvas):outputArt();
-  const printArt=withProductionCardBleed(clean,canvas,{artwork:wide?.image,matrix:wide?.current,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
+  const fallbackArtwork=wide?renderManual(wide.image,wide.current,canvas):clean;
+  const aiOverscan=wide?.data?.hasGeneratedOverscan===true;
+  const printArt=withProductionCardBleed(clean,canvas,{artwork:aiOverscan?wide.image:undefined,matrix:aiOverscan?wide.current:undefined,fallbackArtwork,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
   if(pdfExport!==entry)return;
   entry.preview=trimmedPrintPreview(printArt,canvas,true);
   drawResult();

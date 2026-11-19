@@ -286,7 +286,7 @@ Deno.serve(async(req:Request)=>{
    if(res.ok)return true;const error=await res.json().catch(()=>({}));if(res.status!==409&&error.error!=='Duplicate'&&error.code!=='Duplicate'&&error.message!=='The resource already exists')throw Error('QUOTA_UNAVAILABLE');
   }return false;}
   // Allowlisted QA accounts have no per-account daily attempt limit.
-  const launchBudget=Date.now()>=Date.parse('2026-11-08T00:00:00+09:00')&&Date.now()<Date.parse('2026-11-15T00:00:00+09:00')?500:100;
+  const launchBudget=Date.now()>=Date.parse('2026-11-08T00:00:00+09:00')&&Date.now()<Date.parse('2026-11-22T00:00:00+09:00')?500:100;
   if(!await reserve('global',launchBudget))return reply({error:'오늘 준비된 이미지 생성 수량이 모두 소진됐어요. 내일 다시 이용해 주세요.'},429);
   const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
   const model=env('OVERLAY_IMAGE_MODEL')||'gpt-image-2.5-sunburst';

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
   <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261117-preview-guide">
   <script src="./web-auth.js"></script>
-  <script type="module" src="./admin-pikachu-print.mjs?v=20261118-print-preview"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261119-watermark-choice"></script>
 </head>
 <body class="pikachu-print">
   <header class="print-header">
@@ -73,6 +73,12 @@
               <option value="square">사각</option>
             </select>
           </label>
+          <label for="printWatermark">워터마크
+            <select id="printWatermark">
+              <option value="funypin.kr">funypin.kr</option>
+              <option value="funyframe">funyframe</option>
+            </select>
+          </label>
           <label for="printMode">출력 도안 설정
             <select id="printMode">
               <option value="event">이벤트용</option>
@@ -92,3 +98,4 @@
   </main>
 </body>
 </html>
+

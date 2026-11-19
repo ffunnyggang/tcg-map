@@ -1,6 +1,7 @@
 import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-print64w';
-export const PRINT={scale:12,bleed:2,width:64,height:88,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
+export const PRINT={scale:12,bleed:2,width:64,height:89,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
 export const PRINT_SIDE_MARGIN = (PRINT.width - 63) / 2;
+export const PRINT_TOP_MARGIN = (PRINT.height - 88) / 2;
 const CARD_ORIGIN = 10;
 export const ADMIN_PRINT_TRIM_MARGIN = 0;
 export const ADMIN_PRINT_BLEED = 2 + ADMIN_PRINT_TRIM_MARGIN;
@@ -47,53 +48,18 @@ export async function printFoil(id) {
  return {atlas: await atlasPromise, index};
 }
 
-// Synthesize only uncovered side pixels from the closest matching local texture.
-function fillNewSidePixels(g, surface, margin) {
- for (const right of [false,true]) {
-  const span=48, start=right?surface.width-span:0;
-  const strip=g.getImageData(start,0,span,surface.height), pixels=strip.data;
-  const at=(x,y)=>4*(y*span+(right?span-1-x:x));
-  for(let y=0;y<strip.height;y++){
-   let edge=0;
-   while(edge<margin && pixels[at(edge,y)+3]<255) edge++;
-   if(!edge) continue;
-   let bestShift=edge, bestScore=Infinity;
-   for(let shift=edge;shift<=28;shift++){
-    let score=0;
-    for(let row=Math.max(0,y-2);row<=Math.min(strip.height-1,y+2);row++)
-     for(let n=0;n<5;n++){
-      const a=at(edge+n,row), b=at(edge+n+shift,row);
-      for(let channel=0;channel<3;channel++) score+=Math.abs(pixels[a+channel]-pixels[b+channel]);
-     }
-    if(score<bestScore){bestScore=score;bestShift=shift;}
-   }
-   for(let x=0;x<edge;x++){
-    const dest=at(x,y), src=at(x+bestShift,y), alpha=pixels[dest+3]/255;
-    for(let k=0;k<3;k++) pixels[dest+k]=Math.round(pixels[dest+k]*alpha+pixels[src+k]*(1-alpha));
-    pixels[dest+3]=255;
-   }
-  }
-  g.putImageData(strip,start,0);
- }
-}
-
 export function withProductionCardBleed(image, canvas, {artwork, matrix, foil=null, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
  const ppm=16,b=bleed*ppm,w=PRINT.width*ppm,h=PRINT.height*ppm;
  if(!artwork||!Array.isArray(matrix)||matrix.length!==6||!matrix.every(Number.isFinite))throw Error('재단선 밖 2mm까지 확장된 일러스트가 필요해요. 일러스트를 다시 생성하거나 위치를 조정해 주세요.');
  const [a,c,d,f,e,k]=matrix,det=a*f-c*d;
  if(!Number.isFinite(det)||Math.abs(det)<1e-10)throw Error('일러스트 정렬값을 확인해 주세요.');
- for(const [x,y] of [[-b,-b],[63*ppm+b,-b],[-b,h+b],[63*ppm+b,h+b]]){
+ const mx=PRINT_SIDE_MARGIN*ppm,my=PRINT_TOP_MARGIN*ppm;
+ for(const [x,y] of [[-b-mx,-b-my],[63*ppm+b+mx,-b-my],[-b-mx,88*ppm+b+my],[63*ppm+b+mx,88*ppm+b+my]]){
   const sx=(f*(x-e)-d*(y-k))/det,sy=(-c*(x-e)+a*(y-k))/det;
   if(sx<-.01||sy<-.01||sx>artwork.width+.01||sy>artwork.height+.01)throw Error('일러스트가 블리드 끝까지 닿지 않아요. 재단선 밖 2mm까지 포함하도록 일러스트를 확장하거나 위치를 조정해 주세요.');
  }
  const surface=canvas(w+2*b,h+2*b),g=surface.getContext('2d');
- g.setTransform(a,c,d,f,e+b+PRINT_SIDE_MARGIN*ppm,k+b);g.drawImage(artwork,0,0);g.resetTransform();
- const margin=PRINT_SIDE_MARGIN*ppm;
- const sideCovered=[-b-margin,w+b-margin].every(x=>[-b,h+b].every(y=>{
-  const sx=(f*(x-e)-d*(y-k))/det, sy=(-c*(x-e)+a*(y-k))/det;
-  return sx>=0 && sy>=0 && sx<=artwork.width && sy<=artwork.height;
- }));
- if(!sideCovered) fillNewSidePixels(g,surface,margin);
+ g.setTransform(a,c,d,f,e+b+mx,k+b+my);g.drawImage(artwork,0,0);g.resetTransform();
  // Preserve the window, text and symbols at their original coordinates.
  if(foil){
   const half=foil.atlas.naturalWidth/2, edge=40;
@@ -114,7 +80,7 @@ export function withProductionCardBleed(image, canvas, {artwork, matrix, foil=nu
   const trim=ADMIN_PRINT_TRIM_MARGIN*ppm;
   g.drawImage(fittedBorder(border,shape,canvas,w+2*trim,h+2*trim),b-trim,b-trim);
  }
- g.drawImage(image,b+PRINT_SIDE_MARGIN*ppm,b,63*ppm,h);
+ g.drawImage(image,b+mx,b+my,63*ppm,88*ppm);
  return surface;
 }
 
@@ -124,7 +90,7 @@ export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,
 export function drawArtWatermark(g,x,y,width,height,text='funypin.kr'){
  const scale=width/63;
  const right=x+width-3.5*scale;
- const baseline=y+height-1.25*height/PRINT.height;
+ const baseline=y+height-1.25*height/88;
  g.save();
  g.font=`600 ${1.15*scale}px sans-serif`;
  g.textAlign='right';
@@ -192,10 +158,10 @@ function drawCutoutCard(g, card, x, y, width, height, scale) {
 export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',cutoutCard=null,production=false}={}){
  const S=PRINT.scale,c=document.createElement('canvas');c.width=83*S;c.height=118*S;const g=c.getContext('2d'),x=CARD_ORIGIN*S,y=CARD_ORIGIN*S,t=Number(tolerance);if(!Number.isFinite(t)||t<0||t>.5)throw Error('창 여유는 0~0.5mm로 지정해 주세요.');if(r.x-t<0||r.y-t<0||r.x+r.w+t>63||r.y+r.h+t>88)throw Error('창 여유가 카드 외곽을 넘어요.');
  if(!Number.isFinite(trimMargin)||trimMargin<0||trimMargin>bleed)throw Error('재단선 확장 값이 올바르지 않습니다.');
- const left=x-(trimMargin+PRINT_SIDE_MARGIN)*S,top=y-trimMargin*S;
+ const left=x-(trimMargin+PRINT_SIDE_MARGIN)*S,top=y-(trimMargin+PRINT_TOP_MARGIN)*S;
  const trimWidth=PRINT.width+2*trimMargin,trimHeight=PRINT.height+2*trimMargin;
  const right=left+trimWidth*S,bottom=top+trimHeight*S;
- g.fillStyle='white';g.fillRect(0,0,c.width,c.height);g.drawImage(art,x-(bleed+PRINT_SIDE_MARGIN)*S,y-bleed*S,(PRINT.width+2*bleed)*S,(PRINT.height+2*bleed)*S);
+ g.fillStyle='white';g.fillRect(0,0,c.width,c.height);g.drawImage(art,x-(bleed+PRINT_SIDE_MARGIN)*S,y-(bleed+PRINT_TOP_MARGIN)*S,(PRINT.width+2*bleed)*S,(PRINT.height+2*bleed)*S);
  // Preserve event geometry and its printed dotted guide.
  const wx=x+(r.x-t)*S,wy=y+(r.y-t)*S,ww=(r.w+2*t)*S,wh=(r.h+2*t)*S,ib=PRINT.innerBleed*S;
  g.fillStyle='#777';g.textAlign='center';g.font=`${1.7*S}px sans-serif`;
@@ -210,7 +176,7 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
  }
  if(shape==='round'){const guideOffset=trimMargin?0:.06*S;g.strokeStyle='#777';g.lineWidth=.1*S;g.setLineDash([.65*S,.5*S]);g.beginPath();g.roundRect(left-guideOffset,top-guideOffset,trimWidth*S+2*guideOffset,trimHeight*S+2*guideOffset,PRINT.cornerRadius*S);g.stroke();g.setLineDash([]);}
  g.strokeStyle='#555';g.lineWidth=.12*S;for(const [px,py]of[[left,top],[right,top],[left,bottom],[right,bottom]]){const dx=px===left?-1:1,dy=py===top?-1:1;g.beginPath();g.moveTo(px+dx*2.4*S,py);g.lineTo(px+dx*4*S,py);g.moveTo(px,py+dy*2.4*S);g.lineTo(px,py+dy*4*S);g.stroke();}
- if(watermark)drawArtWatermark(g,x,y,63*S,PRINT.height*S,watermarkText);
+ if(watermark)drawArtWatermark(g,x,y,63*S,88*S,watermarkText);
  g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,5*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,103*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
 }
 
@@ -220,7 +186,8 @@ export function trimmedPrintPreview(art,canvas,watermark=false,watermarkText='fu
  const preview=canvas(PRINT.width*ppm,PRINT.height*ppm);
  const g=preview.getContext('2d');
  g.drawImage(art,bleed,bleed,preview.width,preview.height,0,0,preview.width,preview.height);
- if(watermark) drawArtWatermark(g,PRINT_SIDE_MARGIN*ppm,0,63*ppm,preview.height,watermarkText);
+ if(watermark) drawArtWatermark(g,PRINT_SIDE_MARGIN*ppm,PRINT_TOP_MARGIN*ppm,63*ppm,88*ppm,watermarkText);
  return preview;
 }
+
 

@@ -183,7 +183,7 @@ function drawCutoutCard(g, card, x, y, width, height, scale) {
  g.restore();
 }
 
-export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',cutoutCard=null,production=false}={}){
+export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',cutoutCard=null,production=false,showRoundTrimGuide=true}={}){
  const S=PRINT.scale,c=document.createElement('canvas');c.width=83*S;c.height=118*S;const g=c.getContext('2d'),x=CARD_ORIGIN*S,y=CARD_ORIGIN*S,t=Number(tolerance);if(!Number.isFinite(t)||t<0||t>.5)throw Error('창 여유는 0~0.5mm로 지정해 주세요.');if(r.x-t<0||r.y-t<0||r.x+r.w+t>63||r.y+r.h+t>88)throw Error('창 여유가 카드 외곽을 넘어요.');
  if(!Number.isFinite(trimMargin)||trimMargin<0||trimMargin>bleed)throw Error('재단선 확장 값이 올바르지 않습니다.');
  const left=x-(trimMargin+PRINT_SIDE_MARGIN)*S,top=y-(trimMargin+PRINT_TOP_MARGIN)*S;
@@ -202,15 +202,20 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
   if(cutoutCard)drawCutoutCard(g,cutoutCard,wx+ib,wy+ib,ww-2*ib,wh-2*ib,S);
   else g.fillText('CUT OUT INSIDE',wx+ww/2,wy+wh/2);
  }
- if(shape==='round'){const guideOffset=trimMargin?0:.06*S;g.strokeStyle='#777';g.lineWidth=.1*S;g.setLineDash([.65*S,.5*S]);g.beginPath();g.roundRect(left-guideOffset,top-guideOffset,trimWidth*S+2*guideOffset,trimHeight*S+2*guideOffset,PRINT.cornerRadius*S);g.stroke();g.setLineDash([]);}
- g.strokeStyle='#555';g.lineWidth=.12*S;for(const [px,py]of[[left,top],[right,top],[left,bottom],[right,bottom]]){const dx=px===left?-1:1,dy=py===top?-1:1;g.beginPath();g.moveTo(px+dx*2.4*S,py);g.lineTo(px+dx*4*S,py);g.moveTo(px,py+dy*2.4*S);g.lineTo(px,py+dy*4*S);g.stroke();}
+ if(shape==='round'&&showRoundTrimGuide){const guideOffset=trimMargin?0:.06*S;g.strokeStyle='#777';g.lineWidth=.1*S;g.setLineDash([.65*S,.5*S]);g.beginPath();g.roundRect(left-guideOffset,top-guideOffset,trimWidth*S+2*guideOffset,trimHeight*S+2*guideOffset,PRINT.cornerRadius*S);g.stroke();g.setLineDash([]);}
+ // With an enlarged bleed, move the marks and captions off the art while keeping
+ // the trim origin and page dimensions unchanged.
+ const largeBleed=!showRoundTrimGuide&&bleed-trimMargin>2;
+ const markNear=largeBleed?bleed-trimMargin+.35:2.4,markFar=largeBleed?bleed-trimMargin+1.9:4;
+ const headerY=largeBleed?3:5, specY=largeBleed?106:103;
+ g.strokeStyle='#555';g.lineWidth=.12*S;for(const [px,py]of[[left,top],[right,top],[left,bottom],[right,bottom]]){const dx=px===left?-1:1,dy=py===top?-1:1;g.beginPath();g.moveTo(px+dx*markNear*S,py);g.lineTo(px+dx*markFar*S,py);g.moveTo(px,py+dy*markNear*S);g.lineTo(px,py+dy*markFar*S);g.stroke();}
  if(watermark)drawArtWatermark(g,x,y,63*S,88*S,watermarkText);
- g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,5*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,103*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
+ g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,headerY*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,specY*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
 }
 
 
-export function trimmedPrintPreview(art,canvas,watermark=false,watermarkText='funypin.kr'){
- const ppm=16, bleed=ADMIN_PRINT_BLEED*ppm;
+export function trimmedPrintPreview(art,canvas,watermark=false,watermarkText='funypin.kr',bleedMm=ADMIN_PRINT_BLEED){
+ const ppm=16, bleed=bleedMm*ppm;
  const preview=canvas(PRINT.width*ppm,PRINT.height*ppm);
  const g=preview.getContext('2d');
  g.drawImage(art,bleed,bleed,preview.width,preview.height,0,0,preview.width,preview.height);

@@ -95,12 +95,14 @@ Deno.serve(async(req:Request)=>{
    }
    if(!asset)return null;
    if(asset.prompt_version!==version||!validId(asset.generation_id))throw Error('INVALID_LAYER_ASSET');
-   const g=await savedFetch('/rest/v1/overlay_generations?id=eq.'+asset.generation_id+'&select=id,user_id,raw_path,prompt_version,width,height');
+   const g=await savedFetch('/rest/v1/overlay_generations?id=eq.'+asset.generation_id+'&select=id,user_id,raw_path,prompt_version,width,height,model,request_id');
    if(!g.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
    const row=(await g.json())[0];
    if(!row||!validId(row.id)||!validId(row.user_id)||row.prompt_version!==version||row.raw_path!==row.user_id+'/'+row.id+'/provider.png'||!((kind==='text'&&row.width===1008&&row.height===1408)||(kind==='illustration'&&((row.width===1648&&row.height===2048)||(row.width===1008&&row.height===1408)))))throw Error('INVALID_LAYER_PATH');
    return row;
   };
+  // Dimensions are checked on the decoded PNG in the browser; older prepared rows keep the prepared dimensions.
+  const providerOverscan=(row:{model?:string;request_id?:string})=>/^gpt-image(?:-|$)/.test(row.model||'')&&!!row.request_id;
   async function readCachedLayer(row:any){
     const file=await savedFetch('/storage/v1/object/'+outputBucket+'/'+row.raw_path);
     if(!file.ok)throw Error('LAYER_IMAGE_UNAVAILABLE');
@@ -136,7 +138,7 @@ Deno.serve(async(req:Request)=>{
     const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.raw_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
     if(!sign.ok)throw Error('LAYER_SIGN_FAILED');
     const signed=await sign.json();
-    layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null};
+    layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null,...(kind==='illustration'?{hasGeneratedOverscan:providerOverscan(row)}:{})};
    }
    return reply({layers,quota});
   }
@@ -266,7 +268,7 @@ Deno.serve(async(req:Request)=>{
    if(cached){
     const image=await readCachedLayer(cached);
     console.info('overlay layer cache hit',{kind:textOnly?'text':'illustration'});
-    return reply({image,generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null});
+    return reply({image,generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null,hasGeneratedOverscan:!textOnly&&providerOverscan(cached)});
    }
   }
   // Durable atomic quota slots, shared by all edge isolates. Markers are private,
@@ -374,7 +376,7 @@ Deno.serve(async(req:Request)=>{
     if(!cached.ok)throw Error('LAYER_CACHE_SAVE_FAILED');layerCacheSaved=true;
    }
   }catch{console.error('overlay output persistence failed');}
-  return reply({image:output,requestId:response.headers.get('x-request-id'),generationId,storageSaved,layerCacheSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
+  return reply({image:output,hasGeneratedOverscan:wide,requestId:response.headers.get('x-request-id'),generationId,storageSaved,layerCacheSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });
 

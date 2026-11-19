@@ -48,18 +48,46 @@ export async function printFoil(id) {
  return {atlas: await atlasPromise, index};
 }
 
-export function withProductionCardBleed(image, canvas, {artwork, matrix, foil=null, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
+// Keep every covered pixel untouched. Only out-of-source pixels inherit the
+// closest source edge pixel; this is not reflected or synthesized AI overscan.
+function fillUncoveredArtworkPixels(pixels,width,height,source,sw,sh,matrix) {
+ const [a,c,d,f,e,k]=matrix,det=a*f-c*d;
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+  const sx=(f*(x+.5-e)-d*(y+.5-k))/det,sy=(-c*(x+.5-e)+a*(y+.5-k))/det;
+  if(sx>=0&&sy>=0&&sx<sw&&sy<sh)continue;
+  const ix=Math.max(0,Math.min(sw-1,Math.floor(sx))),iy=Math.max(0,Math.min(sh-1,Math.floor(sy)));
+  const src=4*(iy*sw+ix),dest=4*(y*width+x);
+  for(let ch=0;ch<4;ch++)pixels[dest+ch]=source[src+ch];
+ }
+}
+export function withProductionCardBleed(image, canvas, {artwork, matrix, fallbackArtwork=image, foil=null, border=null, shape='square', bleed = ADMIN_PRINT_BLEED} = {}) {
  const ppm=16,b=bleed*ppm,w=PRINT.width*ppm,h=PRINT.height*ppm;
- if(!artwork||!Array.isArray(matrix)||matrix.length!==6||!matrix.every(Number.isFinite))throw Error('재단선 밖 2mm까지 확장된 일러스트가 필요해요. 일러스트를 다시 생성하거나 위치를 조정해 주세요.');
+ const mx=PRINT_SIDE_MARGIN*ppm,my=PRINT_TOP_MARGIN*ppm;
+ // Callers pass only provenance-verified overscan. Otherwise use native rendered
+ // artwork, never the artificial padding of an imported wide image.
+ if(!artwork){
+  artwork=fallbackArtwork;
+  if(!artwork||artwork.width!==1008||artwork.height!==1408)throw Error('원본 63 × 88 mm 일러스트가 필요해요.');
+  matrix=[1,0,0,1,0,0];
+ }
+ if(!Array.isArray(matrix)||matrix.length!==6||!matrix.every(Number.isFinite))throw Error('일러스트 정렬값을 확인해 주세요.');
  const [a,c,d,f,e,k]=matrix,det=a*f-c*d;
  if(!Number.isFinite(det)||Math.abs(det)<1e-10)throw Error('일러스트 정렬값을 확인해 주세요.');
- const mx=PRINT_SIDE_MARGIN*ppm,my=PRINT_TOP_MARGIN*ppm;
- for(const [x,y] of [[-b-mx,-b-my],[63*ppm+b+mx,-b-my],[-b-mx,88*ppm+b+my],[63*ppm+b+mx,88*ppm+b+my]]){
-  const sx=(f*(x-e)-d*(y-k))/det,sy=(-c*(x-e)+a*(y-k))/det;
-  if(sx<-.01||sy<-.01||sx>artwork.width+.01||sy>artwork.height+.01)throw Error('일러스트가 블리드 끝까지 닿지 않아요. 재단선 밖 2mm까지 포함하도록 일러스트를 확장하거나 위치를 조정해 주세요.');
- }
  const surface=canvas(w+2*b,h+2*b),g=surface.getContext('2d');
- g.setTransform(a,c,d,f,e+b+mx,k+b+my);g.drawImage(artwork,0,0);g.resetTransform();
+ const positioned=[a,c,d,f,e+b+mx,k+b+my];
+ g.setTransform(...positioned);g.drawImage(artwork,0,0);g.resetTransform();
+ const covered=[[-b-mx,-b-my],[63*ppm+b+mx,-b-my],[-b-mx,88*ppm+b+my],[63*ppm+b+mx,88*ppm+b+my]].every(([x,y])=>{
+  const sx=(f*(x-e)-d*(y-k))/det,sy=(-c*(x-e)+a*(y-k))/det;
+  return sx>=0&&sy>=0&&sx<=artwork.width&&sy<=artwork.height;
+ });
+ if(!covered){
+  const sourceCanvas=canvas(artwork.width,artwork.height),sg=sourceCanvas.getContext('2d');
+  sg.drawImage(artwork,0,0);
+  const source=sg.getImageData(0,0,artwork.width,artwork.height);
+  const target=g.getImageData(0,0,surface.width,surface.height);
+  fillUncoveredArtworkPixels(target.data,surface.width,surface.height,source.data,artwork.width,artwork.height,positioned);
+  g.putImageData(target,0,0);
+ }
  // Preserve the window, text and symbols at their original coordinates.
  if(foil){
   const half=foil.atlas.naturalWidth/2, edge=40;

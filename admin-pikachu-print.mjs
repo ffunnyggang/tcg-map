@@ -33,6 +33,7 @@ const controls = { language: 'printText', symbol: 'printSymbol', border: 'printB
 const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', authMode = 'web', adminRefresh = null;
+let funyframeDownloadUrl = null;
 
 function setStatus(message) { $('printStatus').textContent = message; }
 function canvas(width, height) {
@@ -79,6 +80,7 @@ async function api(path, { body, retry = true } = {}) {
 }
 const invoke = (action, id, imageId) => api('/functions/v1/pikachu-print-assets', { body: { action, id, imageId } });
 function deny(message) {
+  clearFunyframeDownload();
   revision++;
   session = null;
   catalog = [];
@@ -153,11 +155,20 @@ function refreshControls() {
 }
 function save() {
   if (!session?.illustration) return;
-  saved[session.card.id] = {
+  const id = session.card.id;
+  const previous = saved[id];
+  const next = {
     ...session.settings, imageId: session.card.illustration.id, matrix: session.matrix, alignmentKey: session.alignmentKey,
     signature: JSON.stringify([session.alignmentKey, session.settings.language, session.card.texts[session.settings.language]?.id]),
     confirmed: session.confirmed,
   };
+  saved[id] = next;
+  if (funyframeDownloadUrl && PIKACHU_SHEET_IDS.includes(id) &&
+      (previous?.imageId !== next.imageId || previous?.alignmentKey !== next.alignmentKey ||
+       previous?.confirmed !== next.confirmed || JSON.stringify(previous?.matrix) !== JSON.stringify(next.matrix))) {
+    clearFunyframeDownload();
+    $('printFunyframeStatus').textContent = '확정 상태나 연결 위치가 바뀌었어요. 새 PDF를 준비해 주세요.';
+  }
   try { localStorage.setItem(storageKey, JSON.stringify(saved)); } catch { setStatus('이 브라우저에서 설정을 저장할 수 없어요.'); }
   progress();
 }
@@ -380,8 +391,16 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       textError = error.message;
       await compose();
     }
-    save();
-    setStatus(textError || (languages.length ? '연결 위치와 출력 설정을 확인해 주세요.' : '확보된 텍스트 레이어가 없어 텍스트를 OFF로 표시합니다.'));
+    // Opening a card must not replace an approved placement with an
+    // automatically realigned or text-fallback preview.
+    if (previous.confirmed === true && !session.confirmed) {
+      setStatus(textError
+        ? `${textError} 기존 확정값은 유지했어요.`
+        : '미리보기 설정이나 연결 위치가 기존 확정값과 달라요. 확인 후 다시 확정하기 전까지 기존 설정을 유지합니다.');
+    } else {
+      save();
+      setStatus(textError || (languages.length ? '연결 위치와 출력 설정을 확인해 주세요.' : '확보된 텍스트 레이어가 없어 텍스트를 OFF로 표시합니다.'));
+    }
   } catch (error) {
     if (ticket === revision) { session = null; draw(); errorMessage(error); }
   } finally {
@@ -466,17 +485,34 @@ function downloadPrintPDF(pdf, fileName) {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
+function clearFunyframeDownload() {
+  const link = $('printFunyframeDownload');
+  link.hidden = true;
+  link.removeAttribute('href');
+  if (funyframeDownloadUrl) URL.revokeObjectURL(funyframeDownloadUrl);
+  funyframeDownloadUrl = null;
+}
+function makeFunyframeDownloadReady(pdf) {
+  // Report a ready file instead of attempting an automatic click after the
+  // preceding asynchronous render has outlived browser user activation.
+  const link = $('printFunyframeDownload');
+  funyframeDownloadUrl = URL.createObjectURL(pdf);
+  link.href = funyframeDownloadUrl;
+  link.hidden = false;
+}
 async function downloadPikachuSheet(funyframe = false) {
   if (busy || !catalog.length) return;
+  if (funyframe) clearFunyframeDownload();
+  const setBatchStatus = funyframe ? message => { $('printFunyframeStatus').textContent = message; } : setStatus;
   const missing = PIKACHU_SHEET_IDS.flatMap((id, index) => catalog.some(card => card.id === id && card.hasIllustration) ? [] : [index+1]);
   if (missing.length) {
-    setStatus(`확장 일러스트를 확인해 주세요. 작업 순서 ${missing.join(', ')}번의 이미지가 미확보 상태입니다.`);
+    setBatchStatus(`확장 일러스트를 확인해 주세요. 작업 순서 ${missing.join(', ')}번의 이미지가 미확보 상태입니다.`);
     return;
   }
   if (funyframe) {
     const unconfirmed = PIKACHU_SHEET_IDS.flatMap((id, index) => saved[id]?.confirmed === true && saved[id].imageId ? [] : [index+1]);
     if (unconfirmed.length) {
-      setStatus(`퍼니프레임 출력을 위해 작업 순서 ${unconfirmed.join(', ')}번의 일러스트 연결 위치를 확인하고 설정을 확정해 주세요.`);
+      setBatchStatus(`퍼니프레임 출력을 위해 작업 순서 ${unconfirmed.join(', ')}번의 일러스트 연결 위치를 확인하고 설정을 확정해 주세요.`);
       return;
     }
   }
@@ -488,7 +524,7 @@ async function downloadPikachuSheet(funyframe = false) {
     const tiles = [];
     for (const id of PIKACHU_SHEET_IDS) {
       order++;
-      setStatus(`${funyframe ? '퍼니프레임 ' : ''}피카츄 인쇄용 도안을 준비하고 있어요. ${order}/30`);
+      setBatchStatus(`${funyframe ? '퍼니프레임 ' : ''}피카츄 인쇄용 도안을 준비하고 있어요. ${order}/30`);
       const previous = saved[id] || {};
       let current = !funyframe && session?.card.id === id && session.output ? session : null;
       if (!current) {
@@ -506,17 +542,26 @@ async function downloadPikachuSheet(funyframe = false) {
       }
       current.printOutput = await renderCard(current,true);
       const tile = productionTile(current, {funyframe});
-      tiles.push({jpeg:await encodePrintImage(tile), cut:current.cut, shape:current.settings.shape});
-      tile.width = tile.height = 0;
+      try {
+        tiles.push({jpeg:await encodePrintImage(tile), cut:current.cut, shape:current.settings.shape});
+      } finally {
+        tile.width = tile.height = 0;
+        if (funyframe) {
+          current.printOutput.width = current.printOutput.height = 0;
+          current.source.width = current.source.height = 0;
+        }
+      }
     }
-    const pdf = funyframe ? makePikachuSheetPDF(tiles, {funyframe: true}) : makePikachuSheetPDF(tiles);
-    downloadPrintPDF(pdf, funyframe ? 'FUNYFRAME - PIKACHU 01-30 - A2 PRINT.pdf' : 'FUNY PIN - PIKACHU 01-30 - A2 PRINT.pdf');
-    setStatus(funyframe
-      ? '퍼니프레임 피카츄 30종 인쇄용 PDF 다운로드를 시작했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.'
-      : '피카츄 30종 인쇄용 PDF를 저장했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.');
+    if (funyframe) {
+      makeFunyframeDownloadReady(makePikachuSheetPDF(tiles, {funyframe: true}));
+      setBatchStatus('30종 PDF가 준비됐어요. 아래 ‘준비된 퍼니프레임 A2 PDF 받기’를 눌러 저장해 주세요.');
+    } else {
+      downloadPrintPDF(makePikachuSheetPDF(tiles), 'FUNY PIN - PIKACHU 01-30 - A2 PRINT.pdf');
+      setStatus('피카츄 30종 인쇄용 PDF를 저장했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.');
+    }
   } catch (error) {
     if (error.status === 401 || error.status === 403) errorMessage(error);
-    else setStatus(`작업 순서 ${order}번에서 출력이 중단됐어요. ${error.message || '잠시 후 다시 시도해 주세요.'}`);
+    else setBatchStatus(`작업 순서 ${order}번에서 출력이 중단됐어요. ${error.message || '잠시 후 다시 시도해 주세요.'}`);
   } finally {
     busy = false;
     refreshControls();
@@ -524,6 +569,9 @@ async function downloadPikachuSheet(funyframe = false) {
 }
 $('printPikachuSheet').onclick = () => downloadPikachuSheet();
 $('printFunyframeSheet').onclick = () => downloadPikachuSheet(true);
+$('printFunyframeDownload').onclick = () => {
+  $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
+};
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card}) {
   if (isRestoredPrintImage(card)) {
     const bleed = RESTORED_PRINT_BLEED;

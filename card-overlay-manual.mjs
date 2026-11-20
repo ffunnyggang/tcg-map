@@ -1,4 +1,4 @@
-import {composeLayers,reviewLayers} from './card-overlay-layers.mjs?v=20261108-cardfit1';
+import {composeLayers,reviewLayers} from './card-overlay-layers.mjs?v=20261120-footer-common';
 import {restoreFixed,fixedBounds} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 export const IDENTITY_WIDE=[1,0,0,1,-320,-80];
 export function adjustMatrix(base,{scale=1,x=0,y=0},cx=504,cy=704){return [base[0]*scale,base[1]*scale,base[2]*scale,base[3]*scale,(base[4]-cx)*scale+cx+x,(base[5]-cy)*scale+cy+y];}
@@ -8,8 +8,8 @@ export function renderManual(image,m,canvas){const out=canvas(1008,1408),g=out.g
 // Preserve separately painted text and the outer border, but don't paste the old art rectangle over the join.
 export function manualMask(mask,artRect,cutRect,canvas){const out=canvas(1008,1408),g=out.getContext('2d');g.drawImage(mask,0,0);const b=fixedBounds(artRect,1008,1408);g.clearRect(b.x,b.y,b.w,b.h);const c=fixedBounds(cutRect,1008,1408);g.fillStyle='#000';g.fillRect(c.x,c.y,c.w,c.h);return out;}
 export function composeManual(source,image,m,mask,artRect,cutRect,canvas){return restoreFixed(source,renderManual(image,m,canvas),manualMask(mask,artRect,cutRect,canvas),canvas);}
-export function reviewWideAlignment({source,image,mask,artRect,cutRect,initial=IDENTITY_WIDE,current=null,trusted=false,layers=null,shape='square',canvas}){
- if(layers)layers={...layers,shape};
+export function reviewWideAlignment({source,image,mask,artRect,cutRect,initial=IDENTITY_WIDE,current=null,trusted=false,layers=null,shape='square',footerCenterY=null,canvas}){
+ if(layers)layers={...layers,shape,...(Number.isFinite(footerCenterY)?{footerCenterY}:{})};
  return new Promise(resolve=>{
  const dialog=document.createElement('dialog');dialog.className='manual-art-dialog';dialog.setAttribute('aria-labelledby','manualTitle');
  dialog.innerHTML=`<style>
@@ -26,7 +26,7 @@ export function reviewWideAlignment({source,image,mask,artRect,cutRect,initial=I
  q('[data-status]').textContent=complete?'カード 전체가 채워졌습니다. 네 방향 연결을 확인해 주세요.':'카드 영역에 빈 공간이 있습니다. 생성 이미지를 키우거나 위치를 조절해 주세요.';q('[data-status]').className=complete?'':'manual-warning';q('[data-apply]').disabled=!complete||!q('[data-confirm]').checked;
  }
  function refresh(changed=true){if(changed){q('[data-confirm]').checked=false;q('[data-apply]').disabled=true;}if(!raf)raf=requestAnimationFrame(draw);}
- if(layers){q('[data-layer-text]').onchange=e=>{layers={...layers,showText:e.target.checked};refresh();};if(layers.kind==='ai-text')q('[data-layer-border]').onchange=e=>{layers={...layers,showBorder:e.target.checked};refresh();};if(['ai-header','ai-text'].includes(layers.kind)){q('[data-layer-symbol]').onchange=e=>{layers={...layers,showSymbol:e.target.checked};refresh();};}else{q('[data-layer-border]').onchange=e=>{layers={...layers,showBorder:e.target.checked};refresh();};q('[data-layer-edit]').onclick=async()=>{const edited=await reviewLayers(source,cutRect,canvas,layers);if(edited){layers={...edited,showText:q('[data-layer-text]').checked,showBorder:q('[data-layer-border]').checked};refresh();}};}}
+ if(layers){q('[data-layer-text]').onchange=e=>{layers={...layers,showText:e.target.checked};refresh();};if(layers.kind==='ai-text')q('[data-layer-border]').onchange=e=>{layers={...layers,showBorder:e.target.checked};refresh();};if(['ai-header','ai-text'].includes(layers.kind)){q('[data-layer-symbol]').onchange=e=>{layers={...layers,showSymbol:e.target.checked};refresh();};}else{q('[data-layer-border]').onchange=e=>{layers={...layers,showBorder:e.target.checked};refresh();};q('[data-layer-edit]').onclick=async()=>{const edited=await reviewLayers(source,cutRect,canvas,layers);if(edited){layers={...edited,showText:q('[data-layer-text]').checked,showBorder:q('[data-layer-border]').checked,...(Number.isFinite(footerCenterY)?{footerCenterY}:{})};refresh();}};}}
  function zoom(f,point={x:504,y:704}){const t=mode==='view'?camera:state,min=mode==='view'?1:.25,max=mode==='view'?5:4,next=Math.max(min,Math.min(max,t.scale*f)),factor=next/t.scale;t.x=point.x-504-factor*(point.x-504-t.x);t.y=point.y-704-factor*(point.y-704-t.y);t.scale=next;refresh(mode==='art');}
  function point(e){const b=view.getBoundingClientRect();return{x:(e.clientX-b.left)*1008/b.width,y:(e.clientY-b.top)*1408/b.height};}
  function cardPoint(p){return {x:504+(p.x-504-camera.x)/camera.scale,y:704+(p.y-704-camera.y)/camera.scale};}

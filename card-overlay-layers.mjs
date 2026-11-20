@@ -67,8 +67,30 @@ export function copyrightBounds(text){
  isolatedFooter.set(text,bounds);
  return bounds;
 }
-function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false){
- const b=copyrightBounds(text);
+// The admin print renderer may supply a measured crop for a known text layer
+// when surrounding extraction noise prevents generic isolation.
+function hintedCopyrightBounds(text,hint){
+ if(!hint || text.width!==1008 || text.height!==1408)return null;
+ const {x,y,w,h}=hint;
+ if(![x,y,w,h].every(Number.isInteger)||x<0||y<1352||w<140||h<4||x+w>1008||y+h>1408)return null;
+ const ctx=text.getContext?.('2d');
+ if(!ctx)return null;
+ const data=ctx.getImageData(x,y,w,h).data;
+ let left=w,right=-1,top=h,bottom=-1,ink=0;
+ for(let row=0;row<h;row++){
+  let n=0;
+  for(let col=0;col<w;col++)if(data[4*(row*w+col)+3]>=32)n++;
+  if(n<5)continue; // A few stray alpha pixels must not set the line height.
+  top=Math.min(top,row);bottom=row;ink+=n;
+  for(let col=0;col<w;col++)if(data[4*(row*w+col)+3]>=32){left=Math.min(left,col);right=Math.max(right,col);}
+ }
+ const glyphW=right-left+1,glyphH=bottom-top+1;
+ // Reject other layouts and opaque or clipped content rather than move them.
+ if(left<1||right>=w-1||top<1||bottom>=h-1||glyphW<.8*w||glyphH<5||glyphH>h-2||ink>.68*glyphW*glyphH)return null;
+ return {x:x+left-1,y:y+top-1,w:glyphW+2,h:glyphH+2,inkCenter:glyphH/2+1};
+}
+function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false,footerBoundsHint=null){
+ const b=hintedCopyrightBounds(text,footerBoundsHint) || copyrightBounds(text);
  if(!b){g.drawImage(text,0,0);return;}
  const {x,y,w,h,inkCenter}=b;
  g.save();
@@ -101,7 +123,7 @@ export function composeLayers(source,background,r,layers,canvas){
  drawLocalFooter?.();
  if(aiText){
   if(layers.printing&&layers.showSymbol)drawSymbol();
-  if(layers.showText)drawCardText(g,layers.text,footerCenterY);
+  if(layers.showText)drawCardText(g,layers.text,footerCenterY,false,layers.footerBoundsHint);
   if(!layers.printing&&!centered&&layers.showSymbol)drawSymbol();
  }
  return out;

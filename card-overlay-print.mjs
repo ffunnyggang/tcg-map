@@ -1,7 +1,9 @@
-import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-print64w';
+import {fittedBorder,BORDER_EDGE_PX} from './card-overlay-shape.mjs?v=20261120-border-footer';
 export const PRINT={scale:12,bleed:2,width:64,height:89,sheetWidth:83,sheetHeight:118,cornerRadius:3,innerBleed:.5};
 export const PRINT_SIDE_MARGIN = (PRINT.width - 63) / 2;
 export const PRINT_TOP_MARGIN = (PRINT.height - 88) / 2;
+// Native card raster coordinate: center of the visible band inside the trim.
+export const PRINT_FOOTER_CENTER_Y = 1408 + PRINT_TOP_MARGIN*16 - BORDER_EDGE_PX/2;
 const CARD_ORIGIN = 10;
 export const ADMIN_PRINT_TRIM_MARGIN = 0;
 export const ADMIN_PRINT_BLEED = 2 + ADMIN_PRINT_TRIM_MARGIN;
@@ -90,7 +92,7 @@ export function withProductionCardBleed(image, canvas, {artwork, matrix, fallbac
  }
  // Preserve the window, text and symbols at their original coordinates.
  if(foil){
-  const half=foil.atlas.naturalWidth/2, edge=40;
+  const half=foil.atlas.naturalWidth/2, edge=BORDER_EDGE_PX;
   g.save();
   g.beginPath();
   g.rect(0,0,surface.width,surface.height);
@@ -115,14 +117,18 @@ export function withProductionCardBleed(image, canvas, {artwork, matrix, fallbac
 export function artPlacement(rect,bleed=2,width=1024,height=1536){return{x:(rect.x+bleed)/(63+2*bleed)*width,y:(rect.y+bleed)/(88+2*bleed)*height,w:rect.w/(63+2*bleed)*width,h:rect.h/(88+2*bleed)*height};}
 export function drawArt(g,art,x,y,s,bleed=2,crop=false){if(crop)g.drawImage(art,bleed/(63+2*bleed)*art.width,bleed/(88+2*bleed)*art.height,63/(63+2*bleed)*art.width,88/(88+2*bleed)*art.height,x,y,63*s,88*s);else g.drawImage(art,x-bleed*s,y-bleed*s,(63+bleed*2)*s,(88+bleed*2)*s);}
 // Position on the original card footprint so preview and PDF share the same baseline.
-export function drawArtWatermark(g,x,y,width,height,text='funypin.kr'){
+export function drawArtWatermark(g,x,y,width,height,text='funypin.kr',footerCenterY=null){
  const scale=width/63;
  const right=x+width-3.5*scale;
- const baseline=y+height-1.25*height/88;
+ let baseline=y+height-1.25*height/88;
  g.save();
  g.font=`600 ${1.15*scale}px sans-serif`;
  g.textAlign='right';
  g.textBaseline='alphabetic';
+ if(Number.isFinite(footerCenterY)){
+  const metrics=g.measureText(text);
+  if(Number.isFinite(metrics.actualBoundingBoxAscent)&&Number.isFinite(metrics.actualBoundingBoxDescent))baseline=y+footerCenterY*height/1408+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2;
+ }
  g.lineJoin='round';
  g.lineWidth=.12*scale;
  g.strokeStyle='#fff';
@@ -183,7 +189,7 @@ function drawCutoutCard(g, card, x, y, width, height, scale) {
  g.restore();
 }
 
-export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',cutoutCard=null,production=false,showRoundTrimGuide=true}={}){
+export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',footerCenterY=null,cutoutCard=null,production=false,showRoundTrimGuide=true}={}){
  const S=PRINT.scale,c=document.createElement('canvas');c.width=83*S;c.height=118*S;const g=c.getContext('2d'),x=CARD_ORIGIN*S,y=CARD_ORIGIN*S,t=Number(tolerance);if(!Number.isFinite(t)||t<0||t>.5)throw Error('창 여유는 0~0.5mm로 지정해 주세요.');if(r.x-t<0||r.y-t<0||r.x+r.w+t>63||r.y+r.h+t>88)throw Error('창 여유가 카드 외곽을 넘어요.');
  if(!Number.isFinite(trimMargin)||trimMargin<0||trimMargin>bleed)throw Error('재단선 확장 값이 올바르지 않습니다.');
  const left=x-(trimMargin+PRINT_SIDE_MARGIN)*S,top=y-(trimMargin+PRINT_TOP_MARGIN)*S;
@@ -209,17 +215,17 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
  const markNear=largeBleed?bleed-trimMargin+.35:2.4,markFar=largeBleed?bleed-trimMargin+1.9:4;
  const headerY=largeBleed?3:5, specY=largeBleed?106:103;
  g.strokeStyle='#555';g.lineWidth=.12*S;for(const [px,py]of[[left,top],[right,top],[left,bottom],[right,bottom]]){const dx=px===left?-1:1,dy=py===top?-1:1;g.beginPath();g.moveTo(px+dx*markNear*S,py);g.lineTo(px+dx*markFar*S,py);g.moveTo(px,py+dy*markNear*S);g.lineTo(px,py+dy*markFar*S);g.stroke();}
- if(watermark)drawArtWatermark(g,x,y,63*S,88*S,watermarkText);
+ if(watermark)drawArtWatermark(g,x,y,63*S,88*S,watermarkText,footerCenterY);
  g.fillStyle='#666';g.font=`${1.7*S}px sans-serif`;g.fillText(sample?'FUNY PIN · PRINT TEST SAMPLE':'FUNY PIN · AI EXTENDED ART',c.width/2,headerY*S);g.fillText(`${trimWidth} x ${trimHeight} mm · ${shape==='round'?'ROUND R3':'SQUARE'} · BLEED ${bleed-trimMargin} mm`,c.width/2,specY*S);g.beginPath();g.moveTo(36.5*S,108*S);g.lineTo(46.5*S,108*S);g.moveTo(36.5*S,107*S);g.lineTo(36.5*S,109*S);g.moveTo(46.5*S,107*S);g.lineTo(46.5*S,109*S);g.stroke();g.fillText('10 mm · PRINT AT 100%',c.width/2,113*S);return c;
 }
 
 
-export function trimmedPrintPreview(art,canvas,watermark=false,watermarkText='funypin.kr',bleedMm=ADMIN_PRINT_BLEED){
+export function trimmedPrintPreview(art,canvas,watermark=false,watermarkText='funypin.kr',bleedMm=ADMIN_PRINT_BLEED,footerCenterY=null){
  const ppm=16, bleed=bleedMm*ppm;
  const preview=canvas(PRINT.width*ppm,PRINT.height*ppm);
  const g=preview.getContext('2d');
  g.drawImage(art,bleed,bleed,preview.width,preview.height,0,0,preview.width,preview.height);
- if(watermark) drawArtWatermark(g,PRINT_SIDE_MARGIN*ppm,PRINT_TOP_MARGIN*ppm,63*ppm,88*ppm,watermarkText);
+ if(watermark) drawArtWatermark(g,PRINT_SIDE_MARGIN*ppm,PRINT_TOP_MARGIN*ppm,63*ppm,88*ppm,watermarkText,footerCenterY);
  return preview;
 }
 

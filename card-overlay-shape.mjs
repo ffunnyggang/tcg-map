@@ -4,11 +4,12 @@ export function cardOutline(image,shape,canvas){
  if(shape==='round'){g.beginPath();g.roundRect(0,0,1008,1408,48);g.clip();}
  g.drawImage(image,0,0,1008,1408);return out;
 }
+export const BORDER_EDGE_PX=40;
 const borders=new WeakMap();
 export function fittedBorder(image,shape,canvas,width=1008,height=1408){
  let cached=borders.get(image);if(!cached){cached={};borders.set(image,cached);}const key=shape+':'+width+':'+height;if(cached[key])return cached[key];
  const source=canvas(1008,1408),s=source.getContext('2d');s.drawImage(image,0,0,1008,1408);
- const out=canvas(width,height),g=out.getContext('2d'),radius=shape==='round'?48:0,edge=40;
+ const out=canvas(width,height),g=out.getContext('2d'),radius=shape==='round'?48:0,edge=BORDER_EDGE_PX;
  // Define the perimeter geometrically, independent of transparent padding in the asset.
  g.beginPath();g.roundRect(0,0,width,height,radius);g.roundRect(edge,edge,width-2*edge,height-2*edge,Math.max(0,radius-edge));g.clip('evenodd');
  const grad=g.createLinearGradient(0,0,width,height);

@@ -1,4 +1,4 @@
-import {fittedBorder} from './card-overlay-shape.mjs?v=20261118-print-foil2';
+import {fittedBorder,BORDER_EDGE_PX} from './card-overlay-shape.mjs?v=20261120-border-footer';
 // Experimental local contrast extraction. This is not OCR or guaranteed semantic segmentation.
 export function cutBounds(r,w,h){return {x:Math.floor(r.x*w/63),y:Math.floor(r.y*h/88),right:Math.ceil((r.x+r.w)*w/63),bottom:Math.ceil((r.y+r.h)*h/88)};}
 export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){
@@ -12,21 +12,29 @@ export function extractLayers(source,r,canvas,threshold=32,borderMM=1.5){const w
 export function windowMask(r,canvas){const c=canvas(1008,1408),g=c.getContext('2d'),b=cutBounds(r,1008,1408);g.fillStyle='#000';g.fillRect(b.x,b.y,b.right-b.x,b.bottom-b.y);return c;}
 // The 017 footer sits in the clear space below the card number and illustrator.
 const isolatedFooter = new WeakMap();
-function drawCardText(g,text){
+function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false){
  const x=282,y=1368,w=444,h=30;
  if(!isolatedFooter.has(text)){
   const ctx=text.getContext?.('2d');
-  let isolated=false;
+  let footer=null;
   if(ctx && text.width===1008 && text.height===1408){
    const data=ctx.getImageData(x-1,y-1,w+2,h+2).data;
    const alpha=(col,row)=>data[4*(row*(w+2)+col)+3];
-   isolated=true;
+   let isolated=true;
    for(let col=0;col<w+2 && isolated;col++) isolated=!alpha(col,0)&&!alpha(col,h+1);
    for(let row=0;row<h+2 && isolated;row++) isolated=!alpha(0,row)&&!alpha(w+1,row);
+   if(isolated){
+    let first=h,last=-1;
+    for(let row=0;row<h;row++)for(let col=0;col<w;col++)if(alpha(col+1,row+1)){
+     first=Math.min(first,row);last=Math.max(last,row);
+    }
+    footer={first,last};
+   }
   }
-  isolatedFooter.set(text,isolated);
+  isolatedFooter.set(text,footer);
  }
- if(!isolatedFooter.get(text)){g.drawImage(text,0,0);return;}
+ const footer=isolatedFooter.get(text);
+ if(!footer || footer.last<0){g.drawImage(text,0,0);return;}
  g.save();
  g.beginPath();
  g.rect(0,0,1008,1408);
@@ -34,25 +42,32 @@ function drawCardText(g,text){
  g.clip('evenodd');
  g.drawImage(text,0,0);
  g.restore();
- g.drawImage(text,x,y,w,h,x,y+0.05*16,w,h);
+ if(!Number.isFinite(footerCenterY)){g.drawImage(text,x,y,w,h,x,y+0.05*16,w,h);return;}
+ const rowCount=footer.last-footer.first+1;
+ const top=footerCenterY-rowCount/2;
+ const drawFooter=()=>g.drawImage(text,x,y+footer.first,w,rowCount,x,top,w,rowCount);
+ if(deferCenteredFooter)return drawFooter;
+ drawFooter();
 }
 export function composeLayers(source,background,r,layers,canvas){
  const out=canvas(1008,1408),g=out.getContext('2d');
  const aiText=layers.kind==='ai-header'||layers.kind==='ai-text';
  const centered=layers.symbolSide==='center';
+ const footerCenterY=layers.footerCenterY ?? (layers.showBorder ? 1408-(layers.kind==='ai-text'?BORDER_EDGE_PX:Math.ceil(16*(layers.borderMM||1.5)))/2 : null);
  const drawSymbol=()=>{
   const p=layers.placement;
   g.drawImage(layers.symbol,Math.round(p.x*1008),Math.round(p.y*1408),Math.round(p.w*1008),Math.round(p.h*1408));
  };
  g.drawImage(background,0,0);
- if(!aiText&&layers.showText)drawCardText(g,layers.text);
+ const drawLocalFooter=!aiText&&layers.showText?drawCardText(g,layers.text,footerCenterY,layers.showBorder):null;
  if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);
  const b=cutBounds(r,1008,1408);
  if(aiText&&centered&&layers.showSymbol&&!layers.printing)drawSymbol();
  g.drawImage(source,b.x,b.y,b.right-b.x,b.bottom-b.y,b.x,b.y,b.right-b.x,b.bottom-b.y);
+ drawLocalFooter?.();
  if(aiText){
   if(layers.printing&&layers.showSymbol)drawSymbol();
-  if(layers.showText)drawCardText(g,layers.text);
+  if(layers.showText)drawCardText(g,layers.text,footerCenterY);
   if(!layers.printing&&!centered&&layers.showSymbol)drawSymbol();
  }
  return out;

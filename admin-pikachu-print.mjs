@@ -2,13 +2,13 @@ import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261120-border-footer';
+import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-stable';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-border-footer';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-stable';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261119-print64x89';
 
@@ -157,7 +157,6 @@ function save() {
   try { localStorage.setItem(storageKey, JSON.stringify(saved)); } catch { setStatus('이 브라우저에서 설정을 저장할 수 없어요.'); }
   progress();
 }
-const footerCenterY = settings => settings.border === 'off' ? null : PRINT_FOOTER_CENTER_Y;
 function shouldDrawWatermark(card) {
   const defaultImage = card.imageOptions?.find(option => option.kind === 'standard');
   return !['m6a-ja-021', 'm6a-ja-037'].includes(card.id) || !defaultImage || card.illustration?.id !== defaultImage.id;
@@ -193,7 +192,7 @@ function draw() {
       }
       guide.style.display = '';
     }
-    if (!preview && shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark, footerCenterY(settings));
+    if (!preview && shouldDrawWatermark(session.card)) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark, PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
   }
   g.restore();
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
@@ -248,7 +247,7 @@ async function renderCard(current, printing=false) {
   if(printing)current.printFoil=frame ? await printFoil(border) : null;
   return composeLayers(source, printing ? canvas(1008,1408) : renderManual(illustration, matrix, canvas), cut, {
     printing,
-    kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: frame ? footerCenterY(current.settings) : null,
+    kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: printing ? PRINT_FOOTER_CENTER_Y : PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,
     symbol: stamp?.image, showSymbol: !!stamp, symbolSide: symbol, placement, shape,
   }, canvas);
 }
@@ -260,7 +259,7 @@ async function compose() {
   let preview=null;
   if(output){
    const printOutput=await renderCard(current,true);
-   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark,printBleed(current.card),footerCenterY(current.settings));
+   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,shouldDrawWatermark(current.card),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
   }
   if(current.previewToken!==revisionToken)return;
   current.preview=preview;
@@ -441,7 +440,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
     shape: settings.shape, tolerance: 0, bleed: printBleed(session.card),
-    showRoundTrimGuide: !isRestoredPrintImage(session.card), windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), watermarkText: settings.watermark, footerCenterY: footerCenterY(settings), cutoutCard: card, production,
+    showRoundTrimGuide: !isRestoredPrintImage(session.card), windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: shouldDrawWatermark(session.card), watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
     production ? { cutContour: printWindowRect(cut) } : undefined);
@@ -531,7 +530,7 @@ function productionTile(current) {
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
   drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+PRINT_TOP_MARGIN+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
-  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark,footerCenterY(current.settings));
+  if (shouldDrawWatermark(card)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark,PRINT_FOOTER_CENTER_Y);
   return tile;
 }
 async function connect() {

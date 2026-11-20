@@ -5,14 +5,14 @@ import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261120-border-footer';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-stable';
 import {alignWide} from './card-overlay-wide.mjs?v=20261107-wide3';
 import {attachArtGestures} from './card-art-gestures.mjs?v=20261108-controls1';
 import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-border-footer';
+import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-stable';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -36,7 +36,7 @@ async function sharedAsset(id){const d=await A.invokeFunction('card-overlay-gene
 function loadLayerAssets(){if(!assetsPromise)assetsPromise=Promise.all([...BORDER_IDS.map(sharedAsset),sharedAsset('anniversary-yellow-umbreon-v1'),sharedAsset('anniversary-yellow-left-v1')]).then(a=>({borders:a.slice(0,4),right:a[4],left:a[5]})).catch(e=>{assetsPromise=null;throw e;});return assetsPromise;}
 const layerFlow=createLayerFlow({invoke:body=>A.invokeFunction('card-overlay-generate',body),canvas,decodeText:decodeTextLayer,imageFrom,loadAssets:loadLayerAssets});
 function resetLayers(){layerSession=null;layerFlow.reset();}
-function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,layerSession.layers,canvas);squareResult=null;drawResult();update();}
+function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,{...layerSession.layers,footerCenterY:PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16},canvas);squareResult=null;drawResult();update();}
 function saveLayers(){
  if(!layerSession?.data.generationId||!result)return;
  try{
@@ -143,7 +143,7 @@ function drawResult(){
  drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,nativeHeight,showExpanded,shape);
  if(showExpanded){
   drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);
-  drawArtWatermark(g,0,0,nativeWidth,nativeHeight,undefined,layerSession?.layers?.showBorder?PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16:null);
+  drawArtWatermark(g,0,0,nativeWidth,nativeHeight,undefined,PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
  }
  g.restore();
 }
@@ -273,7 +273,7 @@ async function preparePDF(entry){
   if(pdfExport!==entry)return;
   const wide=layerSession?.current?layerSession:null;
   const layers=wide?.layers;
-  const footerCenterY=layers?.showBorder?PRINT_FOOTER_CENTER_Y:null;
+  const footerCenterY=PRINT_FOOTER_CENTER_Y;
   const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true,footerCenterY},canvas):outputArt();
   const fallbackArtwork=wide?renderManual(wide.image,wide.current,canvas):clean;
   const aiOverscan=wide?.data?.hasGeneratedOverscan===true;

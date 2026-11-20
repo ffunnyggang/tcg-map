@@ -10,31 +10,67 @@ export function textAlpha(pixels,w,h,rect,threshold=32,borderMM=1.5){
 export function sourceWithAlpha(source,alpha,canvas){const out=canvas(source.width,source.height),g=out.getContext('2d'),p=source.getContext('2d').getImageData(0,0,out.width,out.height);for(let i=0;i<alpha.length;i++)p.data[i*4+3]=alpha[i];g.putImageData(p,0,0);return out;}
 export function extractLayers(source,r,canvas,threshold=32,borderMM=1.5){const w=source.width,h=source.height,p=source.getContext('2d').getImageData(0,0,w,h),a=new Uint8ClampedArray(w*h),edge=Math.ceil(w*borderMM/63),b=cutBounds(r,w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++)if((x<edge||x>=w-edge||y<edge||y>=h-edge)&&!(x>=b.x&&x<b.right&&y>=b.y&&y<b.bottom))a[y*w+x]=255;return {text:sourceWithAlpha(source,textAlpha(p.data,w,h,r,threshold,borderMM),canvas),border:sourceWithAlpha(source,a,canvas),showText:false,showBorder:false,threshold,borderMM};}
 export function windowMask(r,canvas){const c=canvas(1008,1408),g=c.getContext('2d'),b=cutBounds(r,1008,1408);g.fillStyle='#000';g.fillRect(b.x,b.y,b.right-b.x,b.bottom-b.y);return c;}
-// The 017 footer sits in the clear space below the card number and illustrator.
+// Locate the bottom legal line in a transparent text layer without assuming one
+// card's exact crop. Short, left/right-aligned collector and artist labels are
+// not eligible. Keep everything in place when the line cannot be isolated.
 const isolatedFooter = new WeakMap();
-function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false){
- const x=282,y=1368,w=444,h=30;
- if(!isolatedFooter.has(text)){
-  const ctx=text.getContext?.('2d');
-  let footer=null;
-  if(ctx && text.width===1008 && text.height===1408){
-   const data=ctx.getImageData(x-1,y-1,w+2,h+2).data;
-   const alpha=(col,row)=>data[4*(row*(w+2)+col)+3];
-   let isolated=true;
-   for(let col=0;col<w+2 && isolated;col++) isolated=!alpha(col,0)&&!alpha(col,h+1);
-   for(let row=0;row<h+2 && isolated;row++) isolated=!alpha(0,row)&&!alpha(w+1,row);
-   if(isolated){
-    let first=h,last=-1;
-    for(let row=0;row<h;row++)for(let col=0;col<w;col++)if(alpha(col+1,row+1)){
-     first=Math.min(first,row);last=Math.max(last,row);
-    }
-    footer={first,last};
-   }
-  }
-  isolatedFooter.set(text,footer);
+function runs(values,maxGap){
+ const spans=[];
+ for(let i=0;i<values.length;i++){
+  if(!values[i]) continue;
+  const last=spans.at(-1);
+  if(last&&i-last.end-1<=maxGap)last.end=i;
+  else spans.push({start:i,end:i});
  }
- const footer=isolatedFooter.get(text);
- if(!footer || footer.last<0){g.drawImage(text,0,0);return;}
+ return spans;
+}
+export function copyrightBounds(text){
+ if(isolatedFooter.has(text))return isolatedFooter.get(text);
+ let bounds=null;
+ const ctx=text.getContext?.('2d'),width=text.width;
+ if(ctx&&width===1008&&text.height===1408){
+  const startY=1336, height=text.height-startY;
+  const data=ctx.getImageData(0,startY,width,height).data;
+  // Ignore faint extraction noise when identifying the line, but retain the
+  // antialiasing in the moved crop. Inspect a central strip for row boundaries
+  // so offset labels cannot bridge two rows on opposite sides of the card.
+  const alpha=(x,y)=>data[(y*width+x)*4+3];
+  const centralRows=Array.from({length:height},(_,y)=>{
+   let n=0;
+   for(let x=width*.35|0;x<width*.65;x++)if(alpha(x,y)>=32)n++;
+   return n>=3;
+  });
+  for(const band of runs(centralRows,2).reverse()){
+   const lineHeight=band.end-band.start+1;
+   if(startY+band.start<1352||lineHeight<4||lineHeight>28)continue;
+   const cols=Array.from({length:width},(_,x)=>{
+    for(let y=band.start;y<=band.end;y++)if(alpha(x,y)>=32)return true;
+    return false;
+   });
+   const eligible=runs(cols,22).filter(({start,end})=>end-start+1>=140&&end-start+1<=635&&Math.abs((start+end)/2-width/2)<75&&start>70&&end<width-71);
+   if(eligible.length!==1)continue;
+   const span=eligible[0];
+   // Extend by one pixel to capture translucent fringe, not a neighboring line.
+   const x=Math.max(0,span.start-1), right=Math.min(width-1,span.end+1);
+   const top=Math.max(0,band.start-1), bottom=Math.min(height-1,band.end+1);
+   let joined=false, ink=0, first=height, last=-1;
+   for(let y=top;y<=bottom;y++)for(let x0=x;x0<=right;x0++)if(alpha(x0,y)>=32){
+     ink++;first=Math.min(first,y);last=Math.max(last,y);
+   }
+   for(let x0=x;x0<=right&&!joined;x0++)
+    joined=(top>0&&alpha(x0,top-1)>=32)||(bottom<height-1&&alpha(x0,bottom+1)>=32);
+   if(joined||last<first||ink/(lineHeight*(span.end-span.start+1))>.72)continue;
+   bounds={x,y:startY+top,w:right-x+1,h:bottom-top+1,inkCenter:(first+last+1)/2-top};
+   break;
+  }
+ }
+ isolatedFooter.set(text,bounds);
+ return bounds;
+}
+function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false){
+ const b=copyrightBounds(text);
+ if(!b){g.drawImage(text,0,0);return;}
+ const {x,y,w,h,inkCenter}=b;
  g.save();
  g.beginPath();
  g.rect(0,0,1008,1408);
@@ -42,11 +78,9 @@ function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false){
  g.clip('evenodd');
  g.drawImage(text,0,0);
  g.restore();
- if(!Number.isFinite(footerCenterY)){g.drawImage(text,x,y,w,h,x,y+0.05*16,w,h);return;}
- const rowCount=footer.last-footer.first+1;
- const top=footerCenterY-rowCount/2;
- const drawFooter=()=>g.drawImage(text,x,y+footer.first,w,rowCount,x,top,w,rowCount);
- if(deferCenteredFooter)return drawFooter;
+ const top=Number.isFinite(footerCenterY)?Math.max(0,Math.min(1408-h,footerCenterY-inkCenter)):y+0.05*16;
+ const drawFooter=()=>g.drawImage(text,x,y,w,h,x,top,w,h);
+ if(deferCenteredFooter&&Number.isFinite(footerCenterY))return drawFooter;
  drawFooter();
 }
 export function composeLayers(source,background,r,layers,canvas){
@@ -86,3 +120,4 @@ export function reviewLayers(source,r,canvas,previous=null){return new Promise(r
  view.onpointerdown=e=>{view.setPointerCapture(e.pointerId);last=point(e);paint(last);};view.onpointermove=e=>{if(last)paint(point(e));};view.onpointerup=view.onpointercancel=()=>last=null;q('[data-confirm]').onchange=()=>q('[data-go]').disabled=!q('[data-confirm]').checked;
  let done=false;function finish(v){if(done)return;done=true;d.close();d.remove();resolve(v);}q('[data-cancel]').onclick=()=>finish(null);d.oncancel=e=>{e.preventDefault();finish(null);};q('[data-go]').onclick=()=>{if(q('[data-confirm]').checked)finish(layers);};draw();d.showModal();
 });}
+

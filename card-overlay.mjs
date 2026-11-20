@@ -1,10 +1,10 @@
 import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {cardOutline} from './card-overlay-shape.mjs?v=20261118-print64w';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261120-border-footer';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-stable';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-cardfit1';
 let aiHeaderDraft=null;
-import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-border-footer';
+import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-footer-stable';
 const FACE_LAYER_MODE='fullart_header_layers_face';
 function usesFaceMask(mode){return mode==='bg_extract'||mode===FACE_LAYER_MODE;}
 function isManualMode(mode){return mode===FACE_LAYER_MODE||mode==='fullart_layer_atlas'||mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}
@@ -26,7 +26,7 @@ import {extractBackgroundPlate,faceMaskedFullCard} from './card-overlay-extract.
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
-import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y} from './card-overlay-print.mjs?v=20261120-border-footer';
+import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-stable';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
 let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;
@@ -167,7 +167,7 @@ function sheet(foil=null,preview=false){
    ? {artwork:manual.image,matrix:manual.current}
    : autoAlignedBleed || (fullArtIsSample && art ? {artwork:art,matrix:printArtworkMatrix(art,artBleed)} : undefined);
   const fallbackArtwork=manual?.current?renderManual(manual.image,manual.current,canvas):fullArtResult;
-  const footerCenterY=manual?.layers?.showBorder?PRINT_FOOTER_CENTER_Y:null;
+  const footerCenterY=PRINT_FOOTER_CENTER_Y;
   const printArt=withProductionCardBleed(manual?.layers?composeLayers(manual.source,canvas(1008,1408),rect(),{...manual.layers,printing:true,showBorder:false,footerCenterY},canvas):fullArtResult,canvas,{...wide,fallbackArtwork,foil,border:manual?.layers?.showBorder?manual.layers.border:null,shape:settings.shape,bleed:ADMIN_PRINT_BLEED});
   if(preview)return trimmedPrintPreview(printArt,canvas,true,undefined,ADMIN_PRINT_BLEED,footerCenterY);
   return makePrintSheet(printArt,rect(),{...settings,watermark:true,footerCenterY,sample:fullArtIsSample});
@@ -323,7 +323,7 @@ function refreshCardShape(){
  if(session?.current&&session.layers&&fullArtResult){
   session.layers={...session.layers,shape:$('shape').value};
   const cut=session.cutRect,t=session.tolerance||0,visible={x:cut.x-t,y:cut.y-t,w:cut.w+2*t,h:cut.h+2*t};
-  fullArtResult=composeLayers(session.source,renderManual(session.image,session.current,canvas),visible,session.layers,canvas);
+  fullArtResult=composeLayers(session.source,renderManual(session.image,session.current,canvas),visible,{...session.layers,footerCenterY:PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16},canvas);
   $('fullArtAccepted').checked=false;
   $('fullArtStatus').textContent='선택한 모서리를 미리보기와 출력 도안에 적용했습니다. 결과를 확인한 뒤 사용 확인란을 선택해 주세요. 저장된 합성본 갱신은 연결 맞추기를 다시 확정해 주세요.';
  }

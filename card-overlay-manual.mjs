@@ -1,4 +1,4 @@
-import {composeLayers,reviewLayers} from './card-overlay-layers.mjs?v=20261120-footer-common';
+import {composeLayers,reviewLayers} from './card-overlay-layers.mjs?v=20261120-footer-exact1';
 import {restoreFixed,fixedBounds} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 export const IDENTITY_WIDE=[1,0,0,1,-320,-80];
 export function adjustMatrix(base,{scale=1,x=0,y=0},cx=504,cy=704){return [base[0]*scale,base[1]*scale,base[2]*scale,base[3]*scale,(base[4]-cx)*scale+cx+x,(base[5]-cy)*scale+cy+y];}

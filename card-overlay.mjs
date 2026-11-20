@@ -1,10 +1,10 @@
 import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {cardOutline} from './card-overlay-shape.mjs?v=20261118-print64w';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-common';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-exact1';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-cardfit1';
 let aiHeaderDraft=null;
-import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-footer-common';
+import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-footer-exact1';
 const FACE_LAYER_MODE='fullart_header_layers_face';
 function usesFaceMask(mode){return mode==='bg_extract'||mode===FACE_LAYER_MODE;}
 function isManualMode(mode){return mode===FACE_LAYER_MODE||mode==='fullart_layer_atlas'||mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}
@@ -15,7 +15,7 @@ const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingfa
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
 function isWideMode(mode){return mode===FACE_LAYER_MODE||mode==="fullart_layer_atlas"||mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
 import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
-import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261120-footer-common';
+import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261120-footer-exact1';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait,isDogamAdminCard} from './card-overlay-catalog.mjs?v=20261112-dogam1';
@@ -26,7 +26,7 @@ import {extractBackgroundPlate,faceMaskedFullCard} from './card-overlay-extract.
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
-import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-common';
+import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-exact1';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
 let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;

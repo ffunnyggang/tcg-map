@@ -2,13 +2,13 @@ import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-common';
+import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-exact1';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-common';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-exact1';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261119-print64x89';
 

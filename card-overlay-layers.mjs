@@ -89,10 +89,84 @@ function hintedCopyrightBounds(text,hint){
  if(left<1||right>=w-1||top<1||bottom>=h-1||glyphW<.8*w||glyphH<5||glyphH>h-2||ink>.68*glyphW*glyphH)return null;
  return {x:x+left-1,y:y+top-1,w:glyphW+2,h:glyphH+2,inkCenter:glyphH/2+1};
 }
-function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false,footerBoundsHint=null){
- const b=hintedCopyrightBounds(text,footerBoundsHint) || copyrightBounds(text);
+// Some cached extractions leave isolated pixels or a faint matte touching the
+// footer. Find the horizontal ink band by per-row support before measuring it.
+// The central region, variable word gaps, and sparse strokes are intentional:
+// copyrights vary between print languages; artist and collector labels are not moved.
+function noisyCopyrightBounds(text,hint){
+ if(text.width!==1008||text.height!==1408)return null;
+ const ctx=text.getContext?.('2d',{willReadFrequently:true});
+ if(!ctx)return null;
+ const x0=hint?Math.max(105,hint.x-36):180;
+ const x1=hint?Math.min(903,hint.x+hint.w+36):828;
+ const y0=hint?Math.max(1350,hint.y-12):1354;
+ const y1=hint?Math.min(1407,hint.y+hint.h+12):1407;
+ const w=x1-x0,h=y1-y0;
+ const pixels=ctx.getImageData(x0,y0,w,h).data;
+ const counts=(test)=>{
+  const rows=Array.from({length:h},(_,y)=>{
+   let ink=0,blocks=0;
+   for(let x=0;x<w;x+=12){
+    let n=0;
+    for(let dx=0;dx<12&&x+dx<w;dx++)if(test((y*w+x+dx)*4))n++;
+    ink+=n;if(n>=2)blocks++;
+   }
+   return ink>=16&&blocks>=9;
+  });
+  for(const band of runs(rows,2).reverse()){
+   const height=band.end-band.start+1;
+   if(height<5||height>24||band.start===0||band.end===h-1)continue;
+   const cols=Array.from({length:w},(_,x)=>{
+    for(let y=band.start;y<=band.end;y++)if(test((y*w+x)*4))return true;
+    return false;
+   });
+   const spans=runs(cols,32).filter(({start,end})=>end-start+1>=175&&end-start+1<=590&&
+    Math.abs(x0+(start+end)/2-504)<=115&&start>=2&&end<w-2);
+   if(spans.length!==1)continue;
+   const {start,end}=spans[0],width=end-start+1;
+   let ink=0,occupied=0;
+   for(let x=start;x<=end;x++){
+    if(cols[x])occupied++;
+    for(let y=band.start;y<=band.end;y++)if(test((y*w+x)*4))ink++;
+   }
+   if(occupied<.43*width||ink<.09*width*height||ink>.67*width*height)continue;
+   // Keep two rows of real antialiasing without taking the adjacent text row.
+   const top=Math.max(0,band.start-2),bottom=Math.min(h-1,band.end+2);
+   const cropW=width+4,cropH=bottom-top+1,inkMask=new Uint8Array(cropW*cropH);
+   for(let y=band.start;y<=band.end;y++)for(let x=start;x<=end;x++)if(test((y*w+x)*4)){
+    // Move the stroke and its narrow fringe, not an entire strip of residual
+    // extraction matte. The rest of the layer keeps its original pixels.
+    for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)
+     if(Math.abs(dx)+Math.abs(dy)<=3&&y+dy>=top&&y+dy<=bottom)
+      inkMask[(y+dy-top)*cropW+x+dx-start+2]=1;
+   }
+   return {x:x0+start-2,y:y0+top,w:cropW,h:cropH,inkCenter:(band.start+band.end+1)/2-top,inkMask};
+  }
+  return null;
+ };
+ const strong=i=>pixels[i+3]>=128;
+ const darkInk=i=>{
+  const r=pixels[i],g=pixels[i+1],b=pixels[i+2];
+  return pixels[i+3]>=120&&Math.max(r,g,b)<=110&&Math.max(r,g,b)-Math.min(r,g,b)<=32;
+ };
+ // Prefer dark letter strokes if a low-opacity matte or paint noise blocks
+ // alpha row separation. Retain the full surrounding stroke in the crop.
+ return counts(strong)||counts(darkInk);
+}
+const noisyFooterCache=new WeakMap();
+function resolvedCopyrightBounds(text,hint){
+ const cached=noisyFooterCache.get(text);
+ if(cached&&cached.hint===hint)return cached.bounds;
+ const bounds=hintedCopyrightBounds(text,hint)||copyrightBounds(text)||noisyCopyrightBounds(text,hint)|| (hint?noisyCopyrightBounds(text,null):null);
+ noisyFooterCache.set(text,{hint,bounds});
+ return bounds;
+}
+function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false,footerBoundsHint=null,canvas){
+ const b=resolvedCopyrightBounds(text,footerBoundsHint);
  if(!b){g.drawImage(text,0,0);return;}
- const {x,y,w,h,inkCenter}=b;
+ const {x,y,w,h,inkCenter,inkMask}=b;
+ const top=Number.isFinite(footerCenterY)?Math.max(0,Math.min(1408-h,footerCenterY-inkCenter)):y+0.05*16;
+ let drawFooter;
  g.save();
  g.beginPath();
  g.rect(0,0,1008,1408);
@@ -100,8 +174,20 @@ function drawCardText(g,text,footerCenterY=null,deferCenteredFooter=false,footer
  g.clip('evenodd');
  g.drawImage(text,0,0);
  g.restore();
- const top=Number.isFinite(footerCenterY)?Math.max(0,Math.min(1408-h,footerCenterY-inkCenter)):y+0.05*16;
- const drawFooter=()=>g.drawImage(text,x,y,w,h,x,top,w,h);
+ if(inkMask&&canvas){
+  const original=canvas(w,h),footer=canvas(w,h),left=original.getContext('2d'),right=footer.getContext('2d');
+  const rest=text.getContext('2d').getImageData(x,y,w,h),moved=right.createImageData(w,h);
+  for(let i=0;i<inkMask.length;i++)if(inkMask[i]){
+   const at=i*4;
+   moved.data.set(rest.data.subarray(at,at+4),at);
+   rest.data[at+3]=0;
+  }
+  left.putImageData(rest,0,0);right.putImageData(moved,0,0);
+  g.drawImage(original,x,y);
+  drawFooter=()=>g.drawImage(footer,x,top);
+ }else{
+  drawFooter=()=>g.drawImage(text,x,y,w,h,x,top,w,h);
+ }
  if(deferCenteredFooter&&Number.isFinite(footerCenterY))return drawFooter;
  drawFooter();
 }
@@ -115,7 +201,7 @@ export function composeLayers(source,background,r,layers,canvas){
   g.drawImage(layers.symbol,Math.round(p.x*1008),Math.round(p.y*1408),Math.round(p.w*1008),Math.round(p.h*1408));
  };
  g.drawImage(background,0,0);
- const drawLocalFooter=!aiText&&layers.showText?drawCardText(g,layers.text,footerCenterY,layers.showBorder):null;
+ const drawLocalFooter=!aiText&&layers.showText?drawCardText(g,layers.text,footerCenterY,layers.showBorder,null,canvas):null;
  if(layers.showBorder)g.drawImage(layers.kind==='ai-text'?fittedBorder(layers.border,layers.shape||'square',canvas):layers.border,0,0);
  const b=cutBounds(r,1008,1408);
  if(aiText&&centered&&layers.showSymbol&&!layers.printing)drawSymbol();
@@ -123,7 +209,7 @@ export function composeLayers(source,background,r,layers,canvas){
  drawLocalFooter?.();
  if(aiText){
   if(layers.printing&&layers.showSymbol)drawSymbol();
-  if(layers.showText)drawCardText(g,layers.text,footerCenterY,false,layers.footerBoundsHint);
+  if(layers.showText)drawCardText(g,layers.text,footerCenterY,false,layers.footerBoundsHint,canvas);
   if(!layers.printing&&!centered&&layers.showSymbol)drawSymbol();
  }
  return out;

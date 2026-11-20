@@ -1,4 +1,4 @@
-import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
+import { reviewMobileAlignment } from './card-art-align.mjs?v=20261120-archive-align1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -12,7 +12,7 @@ import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow,
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261120-funyframe-sheet';
 
-import { ARCHIVE_BLEED_MM, ARCHIVE_NATIVE_MATRIX, isArchivePlateId, decodeArchivePlate, composeArchiveProduction } from './admin-pikachu-archive-plate.mjs?v=20261120-archive-plate1';
+import { ARCHIVE_BLEED_MM, ARCHIVE_NATIVE_MATRIX, isArchivePlateId, decodeArchivePlate, composeArchiveProduction, renderArchiveAlignment, coversArchiveTrim } from './admin-pikachu-archive-plate.mjs?v=20261120-archive-align1';
 
 import { makeRestoredOverscan } from './admin-pikachu-restored-overscan.mjs?v=20261119-restored5mm';
 
@@ -150,8 +150,7 @@ function refreshControls() {
   $('printPdfImports').disabled = busy;
   $('printImage').disabled = busy || $('printImage').options.length < 2;
   $('printCompare').disabled = busy || !session?.illustration;
-  $('printAlign').disabled = busy || !session?.illustration || !!session.archivePlate;
-  $('printAlign').title = session?.archivePlate ? '보관된 2mm 출력판은 재단 위치가 고정돼 있어요.' : '';
+  $('printAlign').disabled = busy || !session?.illustration;
   for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration;
   $('printConfirm').disabled = busy || !session?.output || session.confirmed;
   $('printConfirm').textContent = session?.confirmed ? '설정 확정됨' : '설정 확정';
@@ -276,7 +275,8 @@ async function renderCard(current, printing=false) {
   // The archive has its own complete card and any intentional white knockout.
   // A blank source prevents the legacy original-card window from replacing it.
   const layerSource = current.archivePlate ? canvas(1008,1408) : source;
-  const background = printing ? canvas(1008,1408) : current.archivePlate?.native || renderManual(illustration, matrix, canvas);
+  const background = printing ? canvas(1008,1408)
+    : current.archivePlate ? renderArchiveAlignment(current.archivePlate, matrix, canvas) : renderManual(illustration, matrix, canvas);
   return composeLayers(layerSource, background, cut, {
     printing,
     kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: printing ? PRINT_FOOTER_CENTER_Y : PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,
@@ -299,6 +299,9 @@ async function compose() {
   if (current !== session || !output) return;
   current.output = output;
   draw();
+}
+function validArchiveMatrix(matrix, illustration) {
+  return coversArchiveTrim(matrix, illustration.width, illustration.height);
 }
 async function prepareCard(card, previous, {requireSavedAlignment = false, archivePlate = null} = {}) {
   const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
@@ -336,8 +339,10 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (!illustration) return prepared;
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
-    prepared.initial = prepared.matrix = [...ARCHIVE_NATIVE_MATRIX];
-    if (previous.alignmentKey !== alignmentKey) prepared.confirmed = false;
+    prepared.initial = [...ARCHIVE_NATIVE_MATRIX];
+    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration);
+    prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
+    if (!canRestore) prepared.confirmed = false;
     return prepared;
   }
   if (previous.alignmentKey === alignmentKey && Array.isArray(previous.matrix) && previous.matrix.length === 6 &&
@@ -415,7 +420,7 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
     if (archivePlate) $('printWindow').textContent += archivePlate.windowKnockout
-      ? ' · 창 영역은 보관본 그대로 유지 · 위치 고정' : ' · 보관 출력판 · 위치 고정';
+      ? ' · 창 칼선과 흰 창 위치는 고정' : ' · 보관 출력판 · 창 칼선 위치 고정';
     session = prepared;
     if (!illustration) {
       draw();
@@ -465,12 +470,17 @@ $('printPdfImports').onclick = () => loadCard(catalog.findIndex(card => card.has
 $('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
 $('printAlign').onclick = () => withCardAction(async () => {
-  if (session.archivePlate) return;
+  const {archivePlate, illustration} = session;
   const picked = await reviewMobileAlignment({
-    source: session.source, image: session.illustration, cutRect: session.cut, initial: session.initial,
+    source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
+    ...(archivePlate ? {
+      renderArtwork: matrix => renderArchiveAlignment(archivePlate, matrix, canvas),
+      canApply: matrix => validArchiveMatrix(matrix, illustration),
+    } : {}),
   });
   if (!picked) return;
+  if (archivePlate && !validArchiveMatrix(picked.matrix, illustration)) throw new Error('일러스트 연결 위치를 확인해 주세요.');
   const previous = session.matrix;
   session.matrix = picked.matrix;
   session.original = false;
@@ -616,7 +626,7 @@ $('printFunyframeDownload').onclick = () => {
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate}) {
-  if (archivePlate) return composeArchiveProduction(archivePlate, printOutput || output, canvas, {foil:printFoil, shape:settings.shape});
+  if (archivePlate) return composeArchiveProduction(archivePlate, printOutput || output, canvas, {matrix, foil:printFoil, shape:settings.shape});
   if (isRestoredPrintImage(card)) {
     const bleed = RESTORED_PRINT_BLEED;
     // Legacy artwork is registered at 16 px/mm; the existing trim adds 0.5 mm

@@ -31,13 +31,16 @@ function outerPath({x,y}, shape) {
  ].join('\n');
 }
 
-export function makePikachuSheetPDF(tiles) {
+// FUNYFRAME export callers supply clean JPEGs with no raster cut marks.
+export function makePikachuSheetPDF(tiles, {funyframe=false} = {}) {
  if (tiles.length !== PIKACHU_SHEET_IDS.length) throw Error('피카츄 도안 30종이 필요합니다.');
  const {obj,stream,finish} = createPDFWriter('1.5');
- obj(1, '<< /Type /Catalog /Pages 2 0 R /OCProperties << /OCGs [5 0 R 6 0 R] /D << /Name (Artwork) /Order [5 0 R 6 0 R] /OFF [5 0 R 6 0 R] >> >> >>');
+ const artLayer=8+tiles.length;
+ const groups=funyframe?`${artLayer} 0 R 5 0 R 6 0 R`:'5 0 R 6 0 R';
+ obj(1, `<< /Type /Catalog /Pages 2 0 R /OCProperties << /OCGs [${groups}] /D << /Name (Artwork) /Order [${groups}] /OFF [5 0 R 6 0 R] >> >> >>`);
  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
  const images = tiles.map((_, i) => `/Card${i+1} ${i+8} 0 R`).join(' ');
- obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pt(PAGE.width)} ${pt(PAGE.height)}] /Resources << /XObject << ${images} >> /Properties << /WindowCut 5 0 R /OuterCut 6 0 R >> /ColorSpace << /CutContour 7 0 R >> >> /Contents 4 0 R >>`);
+ obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pt(PAGE.width)} ${pt(PAGE.height)}] /Resources << /XObject << ${images} >> /Properties << /WindowCut 5 0 R /OuterCut 6 0 R${funyframe?` /CardArtwork ${artLayer} 0 R`:''} >> /ColorSpace << /CutContour 7 0 R >> >> /Contents 4 0 R >>`);
  const artwork = [], windows = [], borders = [];
  for (const [index,{cut,shape}] of tiles.entries()) {
   const {x,y} = tilePosition(index);
@@ -46,9 +49,11 @@ export function makePikachuSheetPDF(tiles) {
   borders.push(outerPath({x,y}, shape));
  }
  const layer = (name, paths) => `/OC /${name} BDC\nq /CutContour CS 1 SCN 0.25 w\n${paths.join('\n')}\nQ\nEMC`;
- stream(4,'',[...artwork,layer('WindowCut',windows),layer('OuterCut',borders),''].join('\n'));
- obj(5, '<< /Type /OCG /Name (CutContour) >>');
- obj(6, '<< /Type /OCG /Name (OuterCut) >>');
+ const imageOps=funyframe?['/OC /CardArtwork BDC',...artwork,'EMC']:artwork;
+ stream(4,'',[...imageOps,layer('WindowCut',windows),layer('OuterCut',borders),''].join('\n'));
+ obj(5, funyframe?'<< /Type /OCG /Name (Artwork Window Cut) >>':'<< /Type /OCG /Name (CutContour) >>');
+ obj(6, funyframe?'<< /Type /OCG /Name (Outer Trim Cut) >>':'<< /Type /OCG /Name (OuterCut) >>');
+ if(funyframe)obj(artLayer,'<< /Type /OCG /Name (FUNYFRAME Artwork) >>');
  obj(7, CUT_CONTOUR_SPOT);
  for (const [i,{jpeg}] of tiles.entries()) {
   stream(i+8, `/Type /XObject /Subtype /Image /Width ${TILE.width*PRINT.scale} /Height ${TILE.height*PRINT.scale} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode`, jpeg);

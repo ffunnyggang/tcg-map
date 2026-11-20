@@ -5,14 +5,14 @@ import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
 import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261118-footer017';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261120-border-footer';
 import {alignWide} from './card-overlay-wide.mjs?v=20261107-wide3';
 import {attachArtGestures} from './card-art-gestures.mjs?v=20261108-controls1';
 import {createReviewPublisher} from './card-art-review.mjs?v=20261107-polish1';
 import {fillSquareCorners} from './card-art-square.mjs?v=20261107-refine1';
 import {pixelWindow,restoreSourceWindow,drawCardOverlay,drawCutGuide} from './card-art-geometry.mjs?v=20261107-flow3';
 import {LANGUAGES,validWindow,insetWindow,nudgeWindow,searchArtCards,cardFilename} from './card-art-core.mjs?v=20261108-search1';
-import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN} from './card-overlay-print.mjs?v=20261119-print64x89';
+import {trimmedPrintPreview,printFoil,drawArtWatermark,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-border-footer';
 import {makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 const $=id=>document.getElementById(id),A=window.FUNY_WEB_AUTH;
 const artTitle=document.title;
@@ -143,7 +143,7 @@ function drawResult(){
  drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,nativeHeight,showExpanded,shape);
  if(showExpanded){
   drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);
-  drawArtWatermark(g,0,0,nativeWidth,nativeHeight);
+  drawArtWatermark(g,0,0,nativeWidth,nativeHeight,undefined,layerSession?.layers?.showBorder?PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16:null);
  }
  g.restore();
 }
@@ -273,15 +273,16 @@ async function preparePDF(entry){
   if(pdfExport!==entry)return;
   const wide=layerSession?.current?layerSession:null;
   const layers=wide?.layers;
-  const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true},canvas):outputArt();
+  const footerCenterY=layers?.showBorder?PRINT_FOOTER_CENTER_Y:null;
+  const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true,footerCenterY},canvas):outputArt();
   const fallbackArtwork=wide?renderManual(wide.image,wide.current,canvas):clean;
   const aiOverscan=wide?.data?.hasGeneratedOverscan===true;
   const printArt=withProductionCardBleed(clean,canvas,{artwork:aiOverscan?wide.image:undefined,matrix:aiOverscan?wide.current:undefined,fallbackArtwork,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
   if(pdfExport!==entry)return;
-  entry.preview=trimmedPrintPreview(printArt,canvas,true);
+  entry.preview=trimmedPrintPreview(printArt,canvas,true,undefined,ADMIN_PRINT_BLEED,footerCenterY);
   drawResult();
   if(step===4)$('reviewImage').src=entry.preview.toDataURL('image/jpeg',.9);
-  const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:true,cutoutCard:entry.card});
+  const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:true,footerCenterY,cutoutCard:entry.card});
   const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
   if(!jpg)throw Error('출력 도안을 만들지 못했어요.');
   const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118);

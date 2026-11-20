@@ -189,7 +189,7 @@ function drawCutoutCard(g, card, x, y, width, height, scale) {
  g.restore();
 }
 
-export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',footerCenterY=null,cutoutCard=null,production=false,showRoundTrimGuide=true}={}){
+export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=false,windowGuideInset=.07,trimMargin=0,watermark=false,watermarkText='funypin.kr',footerCenterY=null,cutoutCard=null,production=false,showRoundTrimGuide=true,preservePreparedWindow=false}={}){
  const S=PRINT.scale,c=document.createElement('canvas');c.width=83*S;c.height=118*S;const g=c.getContext('2d'),x=CARD_ORIGIN*S,y=CARD_ORIGIN*S,t=Number(tolerance);if(!Number.isFinite(t)||t<0||t>.5)throw Error('창 여유는 0~0.5mm로 지정해 주세요.');if(r.x-t<0||r.y-t<0||r.x+r.w+t>63||r.y+r.h+t>88)throw Error('창 여유가 카드 외곽을 넘어요.');
  if(!Number.isFinite(trimMargin)||trimMargin<0||trimMargin>bleed)throw Error('재단선 확장 값이 올바르지 않습니다.');
  const left=x-(trimMargin+PRINT_SIDE_MARGIN)*S,top=y-(trimMargin+PRINT_TOP_MARGIN)*S;
@@ -200,13 +200,20 @@ export function makePrintSheet(art,r,{shape='square',tolerance=0,bleed=2,sample=
  const wx=x+(r.x-t)*S,wy=y+(r.y-t)*S,ww=(r.w+2*t)*S,wh=(r.h+2*t)*S,ib=PRINT.innerBleed*S;
  g.fillStyle='#777';g.textAlign='center';g.font=`${1.7*S}px sans-serif`;
  if(production){
-  const cut=printWindowRect(r,t);
-  drawProductionWindow(g,{x:cut.x*S,y:cut.y*S,w:cut.w*S,h:cut.h*S},S);
+  // An archived plate already contains the complete artwork or its native
+  // knockout. Keep this raster intact; the caller writes the vector cut layer.
+  if(!preservePreparedWindow){
+   const cut=printWindowRect(r,t);
+   drawProductionWindow(g,{x:cut.x*S,y:cut.y*S,w:cut.w*S,h:cut.h*S},S);
+  }
  }else{
-  g.fillStyle='white';g.fillRect(wx+ib,wy+ib,ww-2*ib,wh-2*ib);g.strokeStyle='#666';g.lineWidth=.1*S;g.setLineDash([.6*S,.5*S]);const gi=Number(windowGuideInset);if(!Number.isFinite(gi)||gi<0||gi>.1)throw Error('절단선 위치 값이 올바르지 않습니다.');g.strokeRect(wx+gi*S,wy+gi*S,ww-2*gi*S,wh-2*gi*S);g.setLineDash([]);
-  g.fillStyle='#777';
-  if(cutoutCard)drawCutoutCard(g,cutoutCard,wx+ib,wy+ib,ww-2*ib,wh-2*ib,S);
-  else g.fillText('CUT OUT INSIDE',wx+ww/2,wy+wh/2);
+  if(!preservePreparedWindow){g.fillStyle='white';g.fillRect(wx+ib,wy+ib,ww-2*ib,wh-2*ib);}
+  g.strokeStyle='#666';g.lineWidth=.1*S;g.setLineDash([.6*S,.5*S]);const gi=Number(windowGuideInset);if(!Number.isFinite(gi)||gi<0||gi>.1)throw Error('절단선 위치 값이 올바르지 않습니다.');g.strokeRect(wx+gi*S,wy+gi*S,ww-2*gi*S,wh-2*gi*S);g.setLineDash([]);
+  if(!preservePreparedWindow){
+   g.fillStyle='#777';
+   if(cutoutCard)drawCutoutCard(g,cutoutCard,wx+ib,wy+ib,ww-2*ib,wh-2*ib,S);
+   else g.fillText('CUT OUT INSIDE',wx+ww/2,wy+wh/2);
+  }
  }
  if(shape==='round'&&showRoundTrimGuide){const guideOffset=trimMargin?0:.06*S;g.strokeStyle='#777';g.lineWidth=.1*S;g.setLineDash([.65*S,.5*S]);g.beginPath();g.roundRect(left-guideOffset,top-guideOffset,trimWidth*S+2*guideOffset,trimHeight*S+2*guideOffset,PRINT.cornerRadius*S);g.stroke();g.setLineDash([]);}
  // With an enlarged bleed, move the marks and captions off the art while keeping

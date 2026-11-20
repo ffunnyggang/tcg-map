@@ -8,9 +8,11 @@ import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVE
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-exact1';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-archive-plate1';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261120-funyframe-sheet';
+
+import { ARCHIVE_BLEED_MM, ARCHIVE_NATIVE_MATRIX, isArchivePlateId, decodeArchivePlate, composeArchiveProduction } from './admin-pikachu-archive-plate.mjs?v=20261120-archive-plate1';
 
 import { makeRestoredOverscan } from './admin-pikachu-restored-overscan.mjs?v=20261119-restored5mm';
 
@@ -25,14 +27,15 @@ function isRestoredPrintImage(card) {
   return card?.sourceLanguage === 'en' && card.hasPrintImport === true &&
     card.imageOptions?.some(option => option.id === card.illustration?.id && option.kind === 'import') === true;
 }
-const printBleed = card => isRestoredPrintImage(card) ? RESTORED_PRINT_BLEED : ADMIN_PRINT_BLEED;
+const printBleed = card => isArchivePlateId(card?.illustration?.id, card?.id) ? ARCHIVE_BLEED_MM
+  : isRestoredPrintImage(card) ? RESTORED_PRINT_BLEED : ADMIN_PRINT_BLEED;
 const labels = { ko: '한국어', ja: '일본어', en: '영어' };
 const corners = ['round', 'square'];
 const symbolLabels = { off: 'OFF', center: '중앙', right: '오른쪽', left: '왼쪽' };
 const controls = { language: 'printText', symbol: 'printSymbol', border: 'printBorder', shape: 'printCorner', mode: 'printMode', watermark: 'printWatermark' };
 const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
-let storageKey = '', authMode = 'web', adminRefresh = null;
+let storageKey = '', archiveKey = '', archiveSaved = {}, authMode = 'web', adminRefresh = null;
 let funyframeDownloadUrl = null;
 
 function setStatus(message) { $('printStatus').textContent = message; }
@@ -78,7 +81,9 @@ async function api(path, { body, retry = true } = {}) {
   if (!response.ok) throw Object.assign(new Error(result?.error || '요청을 완료하지 못했어요.'), { status: response.status });
   return result;
 }
-const invoke = (action, id, imageId) => api('/functions/v1/pikachu-print-assets', { body: { action, id, imageId } });
+const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
+  body: { action, id, imageId, print_plate_id },
+});
 function deny(message) {
   clearFunyframeDownload();
   revision++;
@@ -145,7 +150,8 @@ function refreshControls() {
   $('printPdfImports').disabled = busy;
   $('printImage').disabled = busy || $('printImage').options.length < 2;
   $('printCompare').disabled = busy || !session?.illustration;
-  $('printAlign').disabled = busy || !session?.illustration;
+  $('printAlign').disabled = busy || !session?.illustration || !!session.archivePlate;
+  $('printAlign').title = session?.archivePlate ? '보관된 2mm 출력판은 재단 위치가 고정돼 있어요.' : '';
   for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration;
   $('printConfirm').disabled = busy || !session?.output || session.confirmed;
   $('printConfirm').textContent = session?.confirmed ? '설정 확정됨' : '설정 확정';
@@ -162,6 +168,14 @@ function save() {
     signature: JSON.stringify([session.alignmentKey, session.settings.language, session.card.texts[session.settings.language]?.id]),
     confirmed: session.confirmed,
   };
+  if (session.archivePlate) {
+    // Archive previews/confirmations must never overwrite an existing default,
+    // 5mm import, alignment, or A2 setting for the same reference.
+    archiveSaved[id] = next;
+    try { localStorage.setItem(archiveKey, JSON.stringify(archiveSaved)); }
+    catch { setStatus('이 브라우저에서 2mm 설정을 저장할 수 없어요.'); }
+    return;
+  }
   saved[id] = next;
   if (funyframeDownloadUrl && PIKACHU_SHEET_IDS.includes(id) &&
       (previous?.imageId !== next.imageId || previous?.alignmentKey !== next.alignmentKey ||
@@ -192,7 +206,7 @@ function draw() {
   else drawCardOverlay(g,source,output||source,cut,nativeWidth,view.height,!!output&&!original,settings.shape);
   g.save();g.translate(offset,topOffset);
   if (output && !original) {
-    if (settings.mode === 'production') drawProductionWindow(g, pixelWindow(cut, nativeWidth, nativeHeight), nativeWidth / 63);
+    if (settings.mode === 'production' && !session.archivePlate) drawProductionWindow(g, pixelWindow(cut, nativeWidth, nativeHeight), nativeWidth / 63);
     else {
       const { x, y, w, h } = pixelWindow(cut, nativeWidth, nativeHeight);
       for (const line of guide.querySelectorAll('rect')) {
@@ -259,7 +273,11 @@ async function renderCard(current, printing=false) {
     placement = centered ? current.symbolCenter || PIKACHU_ANNIVERSARY_PLACEMENT : anniversarySymbolPlacement(stamp, current.symbolCenter);
   }
   if(printing)current.printFoil=frame ? await printFoil(border) : null;
-  return composeLayers(source, printing ? canvas(1008,1408) : renderManual(illustration, matrix, canvas), cut, {
+  // The archive has its own complete card and any intentional white knockout.
+  // A blank source prevents the legacy original-card window from replacing it.
+  const layerSource = current.archivePlate ? canvas(1008,1408) : source;
+  const background = printing ? canvas(1008,1408) : current.archivePlate?.native || renderManual(illustration, matrix, canvas);
+  return composeLayers(layerSource, background, cut, {
     printing,
     kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: printing ? PRINT_FOOTER_CENTER_Y : PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,
     footerBoundsHint: current.card.id === 'm6a-ja-017' && language === 'ko' ? PIKACHU_017_KO_FOOTER : null,
@@ -282,15 +300,18 @@ async function compose() {
   current.output = output;
   draw();
 }
-async function prepareCard(card, previous, {requireSavedAlignment = false} = {}) {
+async function prepareCard(card, previous, {requireSavedAlignment = false, archivePlate = null} = {}) {
   const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
   const preset = presets.find(p => p.kind === windowPresetType(name));
   const selectedWindow = card.illustration?.cutRect || preset;
   const cut = card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null : validWindow(selectedWindow) ? { x: selectedWindow.x, y: selectedWindow.y, w: selectedWindow.w, h: selectedWindow.h } : defaultArtWindow(name);
-  const [original, raw] = await Promise.all([image(card.original), card.illustration ? image(card.illustration.url) : null]);
+  const [original, raw] = await Promise.all([
+    image(card.original),
+    archivePlate?.artwork || (card.illustration ? image(card.illustration.url) : null),
+  ]);
   if (Math.abs(original.width / original.height - 63 / 88) > .025) throw new Error('원본 카드 비율을 확인해 주세요.');
   const source = prepareMobileLayerSource(original, canvas);
-  const illustration = raw ? paddedArtwork(raw) : null;
+  const illustration = archivePlate ? raw : raw ? paddedArtwork(raw) : null;
   const alignmentKey = JSON.stringify([card.illustration?.id, cut]);
   const centeredSymbol = usesCenteredAnniversarySymbol(name);
   const symbols = centeredSymbol ? ['off', 'center'] : ['off', 'right', 'left'];
@@ -307,12 +328,18 @@ async function prepareCard(card, previous, {requireSavedAlignment = false} = {})
     watermark: previous.watermark === 'funyframe' ? 'funyframe' : 'funypin.kr',
   };
   const prepared = {
-    card, name, source, illustration, cut, settings, symbols, alignmentKey, textLayers: new Map(),
+    card, name, source, illustration, cut, settings, symbols, alignmentKey, archivePlate, textLayers: new Map(),
     hasWideArtwork: raw?.width === WIDE.width && raw?.height === WIDE.height,
     original: false, initial: [...IDENTITY_WIDE], matrix: [...IDENTITY_WIDE],
     confirmed: previous.confirmed === true && previous.signature === signature && previous.language === settings.language && previous.symbol === settings.symbol,
   };
   if (!illustration) return prepared;
+  if (archivePlate) {
+    if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
+    prepared.initial = prepared.matrix = [...ARCHIVE_NATIVE_MATRIX];
+    if (previous.alignmentKey !== alignmentKey) prepared.confirmed = false;
+    return prepared;
+  }
   if (previous.alignmentKey === alignmentKey && Array.isArray(previous.matrix) && previous.matrix.length === 6 &&
       previous.matrix.every(Number.isFinite) && coversCard(previous.matrix, illustration.width, illustration.height)) {
     prepared.matrix = previous.matrix;
@@ -343,21 +370,33 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
   $('printReload').hidden = true;
   setStatus('카드와 저장된 레이어를 불러오고 있어요.');
   try {
+    const referenceId = catalog[index].id;
+    const wantsArchive = isArchivePlateId(imageId, referenceId);
     let payload;
-    try { payload = await invoke('card', catalog[index].id, imageId); }
+    try { payload = await invoke('card', referenceId, wantsArchive ? undefined : imageId); }
     catch (error) {
-      if (!imageId || error.status !== 404) throw error;
-      payload = await invoke('card', catalog[index].id);
+      if (wantsArchive || !imageId || error.status !== 404) throw error;
+      payload = await invoke('card', referenceId);
     }
     const { card } = payload;
+    let archivePlate = null;
+    if (wantsArchive) {
+      const option = card.imageOptions?.find(option => option.id === imageId && option.kind === 'plate2mm');
+      if (!option) throw new Error('이 카드의 보관된 2mm 출력판을 찾을 수 없어요.');
+      const plate = await invoke('card', referenceId, undefined, imageId);
+      archivePlate = await decodeArchivePlate(plate, referenceId, imageId, image, canvas);
+      card.illustration = {...option, cutRect:archivePlate.cutRect};
+    }
     const kinds = { standard: '기본 저장 이미지', face: '얼굴 가림 + 연결 맞추기 (BETA)', history: '기존 연결 맞추기 저장본' };
     const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' });
     if (card.imageOptions?.length) {
       const needsSelection = !card.illustration;
       $('printImage').replaceChildren(...card.imageOptions.map(option => {
         const date = new Date(option.createdAt);
-        const suffix = !['standard','import'].includes(option.kind) && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
-        return new Option((option.kind === 'import' ? option.label : kinds[option.kind] || '저장 이미지') + suffix, option.id);
+        const suffix = !['standard','import','plate2mm'].includes(option.kind) && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
+        const label = option.kind === 'plate2mm' ? option.label || '보관 출력판 · 2mm 블리드'
+          : option.kind === 'import' ? option.label : kinds[option.kind] || '저장 이미지';
+        return new Option(label + suffix, option.id);
       }));
       if (needsSelection) {
         const placeholder = new Option('출력용 일러스트를 선택해 주세요', '');
@@ -366,8 +405,8 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       }
       $('printImage').value = card.illustration?.id || '';
     }
-    const previous = saved[card.id] || {};
-    const prepared = await prepareCard(card, previous);
+    const previous = archivePlate ? archiveSaved[card.id] || {...saved[card.id], confirmed:false} : saved[card.id] || {};
+    const prepared = await prepareCard(card, previous, {archivePlate});
     if (ticket !== revision) return;
     const { cut, settings, illustration } = prepared;
     const languages = card.languages;
@@ -375,6 +414,8 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
+    if (archivePlate) $('printWindow').textContent += archivePlate.windowKnockout
+      ? ' · 창 영역은 보관본 그대로 유지 · 위치 고정' : ' · 보관 출력판 · 위치 고정';
     session = prepared;
     if (!illustration) {
       draw();
@@ -424,6 +465,7 @@ $('printPdfImports').onclick = () => loadCard(catalog.findIndex(card => card.has
 $('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
 $('printAlign').onclick = () => withCardAction(async () => {
+  if (session.archivePlate) return;
   const picked = await reviewMobileAlignment({
     source: session.source, image: session.illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
@@ -464,11 +506,12 @@ $('printPDF').onclick = () => withCardAction(async () => {
   session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
     shape: settings.shape, tolerance: 0, bleed: printBleed(session.card),
-    showRoundTrimGuide: !isRestoredPrintImage(session.card), windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: true, watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
+    showRoundTrimGuide: !session.archivePlate && !isRestoredPrintImage(session.card), preservePreparedWindow: !!session.archivePlate, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: true, watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
     production ? { cutContour: printWindowRect(cut) } : undefined);
-  const fileName = cardFilename(card).replace(/\.pdf$/, production ? '-PRINT.pdf' : '.pdf');
+  const suffix = session.archivePlate ? (production ? '-2MM-PRINT.pdf' : '-2MM.pdf') : (production ? '-PRINT.pdf' : '.pdf');
+  const fileName = cardFilename(card).replace(/\.pdf$/, suffix);
   downloadPrintPDF(pdf, String(selection + 1).padStart(2, '0') + ' - ' + fileName);
   setStatus('A4 PDF 다운로드를 시작했어요. 인쇄 배율은 실제 크기(100%)로 설정해 주세요.');
 });
@@ -572,7 +615,8 @@ $('printFunyframeSheet').onclick = () => downloadPikachuSheet(true);
 $('printFunyframeDownload').onclick = () => {
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
-function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card}) {
+function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate}) {
+  if (archivePlate) return composeArchiveProduction(archivePlate, printOutput || output, canvas, {foil:printFoil, shape:settings.shape});
   if (isRestoredPrintImage(card)) {
     const bleed = RESTORED_PRINT_BLEED;
     // Legacy artwork is registered at 16 px/mm; the existing trim adds 0.5 mm
@@ -607,10 +651,15 @@ async function connect() {
     authMode = sessionValue('funypin_admin_token') ? 'admin' : 'web';
     const { adminId, cards } = await invoke('catalog');
     storageKey = 'funypin:pikachu-print:v1:' + adminId;
-    try {
-      const stored = JSON.parse(localStorage.getItem(storageKey));
-      saved = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
-    } catch { saved = {}; }
+    archiveKey = 'funypin:pikachu-print:archive-2mm:v1:' + adminId;
+    const readSaved = key => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(key));
+        return stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
+      } catch { return {}; }
+    };
+    saved = readSaved(storageKey);
+    archiveSaved = readSaved(archiveKey);
     const pdfCards = cards.filter(card => card.hasPrintImport).sort((a, b) => a.number.localeCompare(b.number));
     catalog = [...cards.filter(card => !card.hasPrintImport), ...pdfCards];
     presets = await api('/rest/v1/card_art_window_presets?select=kind,x,y,w,h').catch(() => []);

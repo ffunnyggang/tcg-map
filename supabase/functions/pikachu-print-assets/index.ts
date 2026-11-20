@@ -17,11 +17,46 @@ const former021Defaults = new Set(['5a844365-f291-4960-88ba-61df7de3dda0', '62cc
 const former037Defaults = new Set(['e316d975-d8ae-415c-ab7c-480d8091571b', 'df5c3e8b-ec06-4da0-8cbc-57f00d957d93']);
 const uuid = /^[0-9a-f-]{36}$/i;
 const refId = /^[a-z0-9-]{1,80}$/i;
+const plateReference = /^30th-en-0(2[3-9]|[34][0-9]|5[0-4])$/;
+const printPlateId = (referenceId: string) => 'print-plate-2mm:' + referenceId;
+type PlateMetadata = {
+  reference_id: string; width_px: number; height_px: number;
+  trim_width_mm: number; trim_height_mm: number; bleed_mm: number;
+  window_rect_mm: {x: number; y: number; w: number; h: number} | null;
+  artwork_window_knockout: boolean;
+};
+type PlateImage = PlateMetadata & {
+  source_crop_xywh_px: number[];
+  native_offset_xy_px: number[];
+  source_jpeg_base64: string;
+  bleed_ring_webp_base64: string;
+};
+function plateOption(row: PlateMetadata, referenceId: string) {
+  const window = row.window_rect_mm;
+  if (row.reference_id !== referenceId || row.width_px !== 1088 || row.height_px !== 1488 ||
+      row.trim_width_mm !== 64 || row.trim_height_mm !== 89 || row.bleed_mm !== 2 ||
+      typeof row.artwork_window_knockout !== 'boolean' ||
+      !window || typeof window !== 'object' || Array.isArray(window) ||
+      ![window.x,window.y,window.w,window.h].every(Number.isFinite) ||
+      window.x < .5 || window.y < .5 || window.w <= 0 || window.h <= 0 ||
+      window.x + window.w > 63.5 || window.y + window.h > 88.5) {
+    throw new Error('invalid print plate geometry');
+  }
+  // Archive coordinates are trim-relative; print tools use the 63×88 mm
+  // native image origin, inset 0.5 mm from the trim on each edge.
+  const cutRect = { x: window.x-.5, y: window.y-.5, w: window.w, h: window.h };
+  return {
+    id: printPlateId(referenceId), kind: 'plate2mm', label: '2mm 블리드 · EN ' + referenceId.slice(-3),
+    width: row.width_px, height: row.height_px, trimWidthMm: row.trim_width_mm,
+    trimHeightMm: row.trim_height_mm, bleedMm: row.bleed_mm,
+    windowKnockout: row.artwork_window_knockout, cutRect,
+  };
+}
 const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Cache-Control': 'no-store',
+  'Cache-Control': 'private, no-store',
 };
 const reply = (body: unknown, status = 200) => Response.json(body, { status, headers: cors });
 const inList = (values: string[]) => 'in.(' + values.map(value => JSON.stringify(value)).join(',') + ')';
@@ -62,6 +97,19 @@ Deno.serve(async req => {
     if (typeof signedURL !== 'string' || !signedURL.startsWith('/object/sign/')) throw new Error('invalid asset url');
     return url + '/storage/v1' + signedURL;
   }
+  async function readPlate<T>(mode: 'metadata' | 'image', referenceId: string): Promise<T | null> {
+    const response = await request('/rest/v1/rpc/admin_pikachu_print_plate_' + mode, {
+      method: 'POST', headers: { ...serverHeaders, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_reference_id: referenceId }),
+    });
+    if (!response.ok) throw new Error('print plate lookup failed');
+    const result = await response.json() as T[];
+    if (!Array.isArray(result) || result.length > 1 ||
+        (result.length === 1 && (!result[0] || typeof result[0] !== 'object' || Array.isArray(result[0])))) {
+      throw new Error('invalid print plate lookup');
+    }
+    return result[0] ?? null;
+  }
   type Reference = { id: string; card_number: string; display_name: string; source_language: string; art_rect: unknown; image_path: string };
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
@@ -90,10 +138,33 @@ Deno.serve(async req => {
     if (admin.status >= 500) throw new Error('administrator check unavailable');
     if (!admin.ok || await admin.json() !== true) return reply({ error: '퍼니핀 관리자만 접근할 수 있습니다.' }, 403);
     const body = await req.json().catch(() => null);
-    if (body?.action !== 'catalog' && (body?.action !== 'card' || typeof body.id !== 'string' || !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId))))) {
+    if (!body || typeof body !== 'object' || Array.isArray(body) ||
+        (body.action !== 'catalog' && (body.action !== 'card' || typeof body.id !== 'string' ||
+         !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId)))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     }
-    const [inventory, printImports] = await Promise.all([
+    if (body.print_plate_id != null) {
+      if (body.action !== 'card' || body.imageId != null || !plateReference.test(body.id) || body.print_plate_id !== printPlateId(body.id)) {
+        return reply({ error: '이 카드에서 사용할 수 없는 2mm 출력 도안입니다.' }, 400);
+      }
+      const row = await readPlate<PlateImage>('image', body.id);
+      if (!row) return reply({ error: '저장된 2mm 출력 도안이 없어요.' }, 404);
+      const option = plateOption(row, body.id);
+      const crop = row.source_crop_xywh_px;
+      const offset = row.native_offset_xy_px;
+      if (!Array.isArray(crop) || crop.length !== 4 || crop[2] !== 1008 || crop[3] !== 1408 ||
+          !((crop[0] === 0 && crop[1] === 0) || (crop[0] === 320 && crop[1] === 80)) ||
+          !Array.isArray(offset) || offset.length !== 2 || offset[0] !== 40 || offset[1] !== 40 ||
+          !row.source_jpeg_base64?.startsWith('/9j/') || !row.bleed_ring_webp_base64?.startsWith('UklGR')) {
+        throw new Error('invalid print plate assets');
+      }
+      return reply({ plate: {
+        ...option, referenceId: row.reference_id, cropXYWH: crop, nativeOffsetXY: offset,
+        nativeJpeg: 'data:image/jpeg;base64,' + row.source_jpeg_base64,
+        bleedRingWebp: 'data:image/webp;base64,' + row.bleed_ring_webp_base64,
+      } });
+    }
+    const [inventory, printImports, plate] = await Promise.all([
       rows<Asset>('overlay_layer_assets', {
         select: 'cache_key,generation_id', prompt_version: inList([ART, TEXT]), order: 'cache_key.asc',
       }),
@@ -101,6 +172,11 @@ Deno.serve(async req => {
         select: 'id,reference_id,label,created_at', active: 'eq.true', order: 'created_at.desc,id.asc',
         ...(body.action === 'card' ? { reference_id: 'eq.' + body.id } : {}),
       }),
+      body.action === 'card' && plateReference.test(body.id)
+        ? readPlate<PlateMetadata>('metadata', body.id).then(row => row ? plateOption(row, body.id) : null)
+          // A plate lookup must not block the pre-existing 5 mm workflow.
+          .catch(() => { console.warn('print plate metadata unavailable'); return null; })
+        : null,
     ]);
     const sharedIds = [...new Set(inventory.map(asset => asset.cache_key.split(':')[1]).filter(id => refId.test(id || '')))].sort();
     const privateId = /^dogam-ko-[0-9A-HJKMNP-TV-Z]{26}$/;
@@ -126,7 +202,7 @@ Deno.serve(async req => {
     // Keep all collected 30th-series Ditto editions selectable before artwork is generated.
     const dittoReferences = ['m6a-ja-093', 'm6a-ko-01M2FH6D0Y1QM3ECGDT937VSJE',
       '30th-en-115', 'm6a-ko-01M2FSF4ZD32P00YGBCVWCP1GK'];
-    const selectable = [...new Set([...ids, ...sharedIds, ...dittoReferences, ...printImports.map(row => row.reference_id)])];
+    const selectable = [...new Set([...ids, ...sharedIds, ...dittoReferences, ...printImports.map(row => row.reference_id), ...(plate ? [body.id] : [])])];
     if (body.action === 'card' && !selectable.includes(body.id)) return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     const selected = body.action === 'card' ? [body.id] : selectable;
     const [referenceRows, anchors] = await Promise.all([
@@ -192,7 +268,7 @@ Deno.serve(async req => {
     });
     const cardInfo = (p: typeof plans[number]) => ({
       id: p.ref.id, number: p.ref.card_number, name: p.ref.display_name, sourceLanguage: p.ref.source_language, artRect: p.ref.art_rect,
-      hasIllustration: p.illustrations.length > 0 || p.imports.length > 0,
+      hasIllustration: p.illustrations.length > 0 || p.imports.length > 0 || !!plate,
       hasPrintImport: p.imports.length > 0, languages: Object.keys(p.texts).sort(),
     });
     if (body.action === 'catalog') return reply({ adminId: user.id, cards: [...plans.map(cardInfo), ...privateCards.map(privateInfo)] });
@@ -228,6 +304,7 @@ Deno.serve(async req => {
     const imageOptions = [
       ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
       ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
+      ...(plate ? [plate] : []),
     ];
     return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {

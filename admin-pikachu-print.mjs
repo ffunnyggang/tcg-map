@@ -2,13 +2,13 @@ import { reviewMobileAlignment } from './card-art-align.mjs?v=20261111-pdf1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-stable';
+import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-common';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
 import { drawCardOverlay, pixelWindow } from './card-art-geometry.mjs?v=20261107-flow3';
 import { cardFilename, LANGUAGES, validWindow } from './card-art-core.mjs?v=20261108-search1';
-import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-stable';
+import { trimmedPrintPreview, printFoil, drawArtWatermark, drawProductionWindow, makePrintSheet, printWindowRect, withProductionCardBleed, PRINT, PRINT_SIDE_MARGIN, PRINT_TOP_MARGIN, ADMIN_PRINT_BLEED, ADMIN_PRINT_TRIM_MARGIN, PRINT_FOOTER_CENTER_Y } from './card-overlay-print.mjs?v=20261120-footer-common';
 import { makePDF } from './card-overlay-core.mjs?v=20261116-pikachu-a2';
 import { makePikachuSheetPDF, PIKACHU_SHEET_IDS } from './admin-pikachu-sheet.mjs?v=20261119-print64x89';
 
@@ -223,6 +223,9 @@ function textLayer(current, language) {
   }
   return current.textLayers.get(language);
 }
+// 017/103 Korean text: copyright-only crop measured in the supplied print proof,
+// converted from the 12 px/mm plate into the original 16 px/mm text coordinates.
+const PIKACHU_017_KO_FOOTER = Object.freeze({x:302,y:1372,w:386,h:22});
 async function renderCard(current, printing=false) {
   if (!current?.illustration) return;
   const { settings: { language, border, symbol, shape }, source, cut, illustration, matrix } = current;
@@ -248,6 +251,7 @@ async function renderCard(current, printing=false) {
   return composeLayers(source, printing ? canvas(1008,1408) : renderManual(illustration, matrix, canvas), cut, {
     printing,
     kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: printing ? PRINT_FOOTER_CENTER_Y : PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,
+    footerBoundsHint: current.card.id === 'm6a-ja-017' && language === 'ko' ? PIKACHU_017_KO_FOOTER : null,
     symbol: stamp?.image, showSymbol: !!stamp, symbolSide: symbol, placement, shape,
   }, canvas);
 }

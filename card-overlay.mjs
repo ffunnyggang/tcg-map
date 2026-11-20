@@ -1,10 +1,10 @@
 import {windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
 import {cardOutline} from './card-overlay-shape.mjs?v=20261118-print64w';
-import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-stable';
+import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-common';
 import {splitLayerAtlas} from './card-overlay-atlas.mjs?v=20261108-atlas1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-cardfit1';
 let aiHeaderDraft=null;
-import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-footer-stable';
+import {reviewLayers,windowMask} from './card-overlay-layers.mjs?v=20261120-footer-common';
 const FACE_LAYER_MODE='fullart_header_layers_face';
 function usesFaceMask(mode){return mode==='bg_extract'||mode===FACE_LAYER_MODE;}
 function isManualMode(mode){return mode===FACE_LAYER_MODE||mode==='fullart_layer_atlas'||mode==='fullart_wide'||mode==='fullart_layers'||mode==='fullart_header_layers';}
@@ -15,7 +15,7 @@ const WIDE_REFERENCES={"tcg":{"label":"TCG LoRA 참고","url":"https://huggingfa
 function wideVariant(mode){return mode.startsWith("fullart_wide_")?mode.slice("fullart_wide_".length):null;}
 function isWideMode(mode){return mode===FACE_LAYER_MODE||mode==="fullart_layer_atlas"||mode==="fullart_header_layers"||mode==="fullart_layers"||mode==="fullart_wide"||Object.hasOwn(WIDE_REFERENCES,wideVariant(mode));}
 import {padCard,alignWide} from './card-overlay-wide.mjs?v=20261107-manual1';
-import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261109-longpress2';
+import {reviewWideAlignment,IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261120-footer-common';
 import {reviewFixedMask,restoreFixed} from './card-overlay-fixed.mjs?v=20261107-fixed1';
 import {compositeSharedSymbol} from './card-overlay-symbol.mjs?v=20261106-symbol-auto1';
 import {catalogLanguage,catalogLabel,catalogPage,catalogPortrait,isDogamAdminCard} from './card-overlay-catalog.mjs?v=20261112-dogam1';
@@ -26,7 +26,7 @@ import {extractBackgroundPlate,faceMaskedFullCard} from './card-overlay-extract.
 import {CARD,validRect,homography,project,makePDF} from './card-overlay-core.mjs?v=20261023-ux3';
 import {detectCard,cameraGuide,captureQuality,autoCaptureReady,detectArtWindow,isCardScan} from './card-overlay-vision.mjs?v=20261023-window3';
 import {checkGeneratedAnchor,alignGenerated} from './card-overlay-quality.mjs?v=20261023-align1';
-import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-stable';
+import {trimmedPrintPreview,printFoil,drawArt,artPlacement,makePrintSheet,withProductionCardBleed,ADMIN_PRINT_BLEED,ADMIN_PRINT_TRIM_MARGIN,PRINT_FOOTER_CENTER_Y,PRINT_TOP_MARGIN} from './card-overlay-print.mjs?v=20261120-footer-common';
 const $=id=>document.getElementById(id),cv=$('canvas'),ctx=cv.getContext('2d'),W=756,H=1056,S=12,A=window.FUNY_WEB_AUTH;
 let sourceReferenceId=null,fixedArtRect=null,wideManualState=null;
 let photo=null,card=null,art=null,corners=[],ready=false,busy=false,timer,revision=0,sampleMode=false,artBleed=0,alignmentReview=false,rawArt=null;
@@ -332,9 +332,10 @@ function refreshCardShape(){
 async function editWideResult(){
  const session=wideManualState;if(!session)return;
  const cut=rect(),t=Number($('tolerance').value)||0,visible={x:cut.x-t,y:cut.y-t,w:cut.w+2*t,h:cut.h+2*t};if(t<0||t>.5||!validRect(visible))throw Error('창 여유가 카드 범위를 넘습니다. 출력 설정을 확인해 주세요.');
- const picked=await reviewWideAlignment({...session,cutRect:visible,shape:$('shape').value,canvas});if(!picked||session!==wideManualState){if(!fullArtResult)toast('생성 이미지는 유지됩니다. 일러스트 연결 맞추기 버튼으로 이어서 조절하세요.');return;}
+ const picked=await reviewWideAlignment({...session,cutRect:visible,shape:$('shape').value,footerCenterY:PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,canvas});if(!picked||session!==wideManualState){if(!fullArtResult)toast('생성 이미지는 유지됩니다. 일러스트 연결 맞추기 버튼으로 이어서 조절하세요.');return;}
  session.current=picked.matrix;session.cutRect=cut;session.tolerance=t;fullArtResult=picked.image;fullArtSource=session.source;fullArtResultMode=session.mode||'fullart_wide';if(picked.layers)session.layers=picked.layers;fullArtIsSample=false;sampleMode=false;autoAlignedBleed=null;
- $('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtAccepted').checked=true;$('fullArtImage').src=fullArtResult.toDataURL('image/png');
+ $('fullArtOriginal').checked=false;$('fullArtOriginal').disabled=false;$('fullArtAccepted').checked=true;
+ await refreshFullArtPreview();
  $('fullArtStatus').textContent=(session.mode==='fullart_layer_atlas'?'1회 생성 결과를 분리해 상단 텍스트·기호와 노란 심볼의 ON/OFF를 적용했습니다. AI 원본 묶음과 최종 합성본을 저장하며 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?.kind==='ai-text'?'전체 텍스트·기호, 가장자리 테두리, 노란 심볼의 ON/OFF를 적용했습니다. 텍스트와 배경 원본 및 최종 합성본을 저장하며 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?.kind==='ai-header'?'상단 텍스트·기호와 노란 심볼의 ON/OFF를 적용했습니다. 상단과 배경은 각각 저장을 요청하며 최종 합성본을 출력합니다. 편집 상태는 현재 화면에서만 유지됩니다. ':session.layers?'레이어 선택을 적용했습니다. 원본·배경·텍스트·테두리 편집 상태는 현재 화면에서만 유지되고, DB에는 합성된 결과가 저장됩니다. ':'')+'수동 위치·크기를 적용했습니다. 절단 창 안의 원본과 보존한 글자·테두리를 합성한 결과이며 PNG·PDF에도 동일하게 적용됩니다. 창 위치를 변경하면 다시 맞추기를 확정해 주세요.';
  await storePreparedResult(session.d,fullArtResult,cut);$('qualityStatus').textContent='수동 보정 완료 · AI 추가 호출 없음';fullArtMode();update();
 }

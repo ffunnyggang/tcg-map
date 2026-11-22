@@ -21,7 +21,22 @@ const plateReference = /^30th-en-0(2[3-9]|[34][0-9]|5[0-4])$/;
 const printPlateId = (referenceId: string) => 'print-plate-2mm:' + referenceId;
 const isJAAlternative = (id: unknown) => id === 'm6a-ja-032' || id === 'm6a-ja-033';
 const jaAlternativeId = (id: string) => 'ja-wide-print:' + id;
+const jaSubmitted = new Map<string, {slot: string; watermark: string}>([
+  ['m6a-ja-017',{slot:'01',watermark:'funyframe'}],
+  ['m6a-ja-019',{slot:'03',watermark:'funypin.kr'}],
+  ['m6a-ja-021',{slot:'05',watermark:'funyframe'}],
+  ['m6a-ja-022',{slot:'06',watermark:'funypin.kr'}],
+  ['m6a-ja-025',{slot:'09',watermark:'funypin.kr'}],
+]);
 const jaAlternativeOption = (id: string) => {
+  const submitted = jaSubmitted.get(id);
+  if (submitted) return {
+    id:jaAlternativeId(id), referenceId:id, kind:'jaWide', sourceKind:'submitted-trim',
+    label:'첨부 일러스트 · '+submitted.slot,
+    width:506,height:704,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
+    embeddedWatermark:true,embeddedWatermarkText:submitted.watermark,windowKnockout:false,
+    cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
+  };
   const is16 = id === 'm6a-ja-032';
   return {
     id:jaAlternativeId(id), referenceId:id, kind:'jaWide',
@@ -123,7 +138,8 @@ Deno.serve(async req => {
     return result[0] ?? null;
   }
   async function readJAAlternative(id: string, wantImage: boolean) {
-    const response=await request('/rest/v1/rpc/admin_pikachu_ja_wide_v1',{
+    const rpc=jaSubmitted.has(id) ? 'admin_pikachu_ja_submitted_v1' : 'admin_pikachu_ja_wide_v1';
+    const response=await request('/rest/v1/rpc/'+rpc,{
       method:'POST', headers:{...serverHeaders,'Content-Type':'application/json'},
       body:JSON.stringify({p_reference_id:id,p_image:wantImage}),
     });
@@ -166,8 +182,9 @@ Deno.serve(async req => {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
     }
     if (typeof body.print_plate_id === 'string' && body.print_plate_id.startsWith('ja-wide-print:')) {
+      const supported=isJAAlternative(body.id) || (body.ja_submitted_v1===true && jaSubmitted.has(body.id));
       if (body.ja_alternative_v1 !== true || body.action !== 'card' || body.imageId != null ||
-          !isJAAlternative(body.id) || body.print_plate_id !== jaAlternativeId(body.id)) {
+          !supported || body.print_plate_id !== jaAlternativeId(body.id)) {
         return reply({ error:'이 카드의 확장 일러스트를 확인해 주세요.' },400);
       }
       const row=await readJAAlternative(body.id,true);
@@ -357,7 +374,8 @@ Deno.serve(async req => {
       Promise.all(Object.entries(plan.texts).map(async ([language, list]) => [language, await usable(list)])),
     ]);
     let jaOption=null;
-    if(body.ja_alternative_v1===true && isJAAlternative(plan.ref.id)) {
+    if(body.ja_alternative_v1===true && (isJAAlternative(plan.ref.id) ||
+      (body.ja_submitted_v1===true && jaSubmitted.has(plan.ref.id)))) {
       // Compatible stale clients and unrelated options remain available even
       // when the optional private metadata look-up is unavailable.
       try { if(await readJAAlternative(plan.ref.id,false))jaOption=jaAlternativeOption(plan.ref.id); }

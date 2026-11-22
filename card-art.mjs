@@ -1,4 +1,4 @@
-import {createArtCoinUI} from './card-art-coins.mjs?v=20261122-coin3';
+import {createArtCoinUI} from './card-art-coins.mjs?v=20261122-coin4';
 import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-print64x89';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
@@ -100,7 +100,7 @@ async function refreshQuota(){try{const s=await A.invokeFunction('card-overlay-g
 function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').textContent='',6000);}
 function infoName(){return selected?selected.display_name+' · '+selected.card_number+' · '+artText(LANGUAGES[selected.source_language]||'샘플'):'';}
 function update(){
- $('artCoinSummary').hidden=step!==1||coinUI.isAdmin()||presetOnly;
+ $('artCoinSummary').hidden=step!==1||presetOnly;
 
  artLanguageSwitch.hidden=step===4&&!A?.isAppShell?.();
  syncPDF();

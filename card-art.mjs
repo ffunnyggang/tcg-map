@@ -62,7 +62,7 @@ async function matchIllustration(){if(!layerSession)return false;const picked=aw
   ...(layerSession.printPlacement?{
     canApply:m=>coversCommonPrintArtwork(layerSession,m),
     ...(layerSession.printPlacement.submitted?{showPreparedArtwork:true}:{}),
-  }:{})});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}saveLayers();return true;}
+  }:{})});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{if(layerSession.printPlacement)drawResult();else{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}}saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(artError(e,'일러스트 창 크기를 확인해 주세요.'));}finally{busy=false;update();}};
 function cycleLayer(kind){
  if(!layerSession||busy||exporting||reviewPosting)return;
@@ -135,13 +135,23 @@ function update(){
 
 function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=(pdfExport?.preview||outputArt()).toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
 function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,.3);}
-let displayedPreviewSource=null;
+let displayedPreviewSource=null, heldPromotedPreview=false;
 function drawResult(){
  if(!source||!result||!resultWindow)return;
  const c=$('resultCanvas'),g=c.getContext('2d');
- const current=pdfExport?.result===result && pdfExport.shape===shape ? pdfExport : null;
+ const promoted=!!layerSession?.printPlacement;
+ const current=pdfExport?.result===result && pdfExport.shape===shape &&
+  (!promoted||pdfExport.window===resultWindow) ? pdfExport : null;
  const preview=showExpanded && current?.preview;
- if(showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
+ if(promoted&&showExpanded&&!preview){
+  // The 63×88 fallback is not a valid frame for promoted artwork; avoid
+  // flashing its transparent inset or alternate footer/foil coordinates.
+  heldPromotedPreview=true;
+  c.style.visibility='hidden';
+  $('resultLoading').hidden=!!current?.error;
+  return;
+ }
+ if(!heldPromotedPreview && showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
  const nativeHeight=Math.round(c.height*88/89);
  const nativeWidth=Math.round(c.height*63/89);
  const trimWidth=Math.round(c.height*64/89);
@@ -154,19 +164,18 @@ function drawResult(){
   g.save();g.translate(inset,top);
   drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);g.restore();
   displayedPreviewSource=source;
+  if(promoted||heldPromotedPreview){heldPromotedPreview=false;c.style.visibility='';$('resultLoading').hidden=true;}
   return;
  }
  displayedPreviewSource=null;
  g.save();g.translate(inset,top);
- if(showExpanded&&layerSession?.printPlacement?.submitted){
-  g.save();g.beginPath();g.roundRect(0,0,nativeWidth,nativeHeight,shape==='round'?3*nativeWidth/63:0);
-  g.clip();g.drawImage(outputArt(),0,0,nativeWidth,nativeHeight);g.restore();
- }else drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,nativeHeight,showExpanded,shape);
+ drawCardOverlay(g,source,outputArt(),resultWindow,nativeWidth,nativeHeight,showExpanded,shape);
  if(showExpanded){
   drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);
   drawArtWatermark(g,0,0,nativeWidth,nativeHeight,undefined,PREVIEW_FOOTER_CENTER_Y);
  }
  g.restore();
+ if(promoted||heldPromotedPreview){heldPromotedPreview=false;c.style.visibility='';$('resultLoading').hidden=true;}
 }
 async function reference(id){if(!refs.has(id)){const pending=readArtCatalog({action:'reference',id}).then(d=>d.reference).catch(e=>{refs.delete(id);throw e;});refs.set(id,pending);}return refs.get(id);}
 async function imageFrom(url){const im=new Image();im.crossOrigin='anonymous';im.src=url;await im.decode();return im;}

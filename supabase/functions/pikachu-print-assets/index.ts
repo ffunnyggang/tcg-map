@@ -27,6 +27,7 @@ const jaSubmitted = new Map<string, {slot: string; watermark: string}>([
   ['m6a-ja-021',{slot:'05',watermark:'funyframe'}],
   ['m6a-ja-022',{slot:'06',watermark:'funypin.kr'}],
   ['m6a-ja-025',{slot:'09',watermark:'funypin.kr'}],
+  ['m6a-ja-028',{slot:'12',watermark:'funyframe'}],
 ]);
 const jaAlternativeOption = (id: string) => {
   const submitted = jaSubmitted.get(id);

@@ -1,12 +1,12 @@
 const W=1536,H=2136, matrix=Object.freeze([1,0,0,1,-264,-364]);
 const submittedMarks=Object.freeze({
   'm6a-ja-017':'funyframe', 'm6a-ja-019':'funypin.kr', 'm6a-ja-021':'funyframe',
-  'm6a-ja-022':'funypin.kr', 'm6a-ja-025':'funypin.kr',
+  'm6a-ja-022':'funypin.kr', 'm6a-ja-025':'funypin.kr', 'm6a-ja-028':'funyframe',
 });
 const SOURCE_W=506,SOURCE_H=704;
 const scale=Math.max(1024/SOURCE_W,1424/SOURCE_H)*(1+1e-9);
 const submittedMatrix=Object.freeze([scale,0,0,scale,(1008-SOURCE_W*scale)/2,(1408-SOURCE_H*scale)/2]);
-// All five supplied watermarks fit this pixel rectangle. Keep it within
+// All supplied watermarks fit this pixel rectangle. Keep it within
 // the trim during zoom / translation; the 2mm bleed may extend edge pixels.
 const FOOTER_XYXY=[425,686,476,700];
 // Nearest source edge continuation, used only where the attachment did

@@ -19,6 +19,18 @@ const uuid = /^[0-9a-f-]{36}$/i;
 const refId = /^[a-z0-9-]{1,80}$/i;
 const plateReference = /^30th-en-0(2[3-9]|[34][0-9]|5[0-4])$/;
 const printPlateId = (referenceId: string) => 'print-plate-2mm:' + referenceId;
+const isJAAlternative = (id: unknown) => id === 'm6a-ja-032' || id === 'm6a-ja-033';
+const jaAlternativeId = (id: string) => 'ja-wide-print:' + id;
+const jaAlternativeOption = (id: string) => {
+  const is16 = id === 'm6a-ja-032';
+  return {
+    id:jaAlternativeId(id), referenceId:id, kind:'jaWide',
+    label:is16 ? '16번 · JA 확장 일러스트 · 흰 창 · 2mm' : '17번 · JA 확장 일러스트 · 2mm',
+    width:1536,height:2136,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
+    embeddedWatermark:is16,windowKnockout:is16,
+    cutRect:{x:94/16,y:155/16,w:820/16,h:500/16},
+  };
+};
 type PlateMetadata = {
   reference_id: string; width_px: number; height_px: number;
   trim_width_mm: number; trim_height_mm: number; bleed_mm: number;
@@ -110,6 +122,16 @@ Deno.serve(async req => {
     }
     return result[0] ?? null;
   }
+  async function readJAAlternative(id: string, wantImage: boolean) {
+    const response=await request('/rest/v1/rpc/admin_pikachu_ja_wide_v1',{
+      method:'POST', headers:{...serverHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_reference_id:id,p_image:wantImage}),
+    });
+    if(!response.ok)throw new Error('JA print lookup failed');
+    const rows=await response.json();
+    if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==id))throw new Error('invalid JA print lookup');
+    return rows[0]??null;
+  }
   type Reference = { id: string; card_number: string; display_name: string; source_language: string; art_rect: unknown; image_path: string };
   type Member = { reference_id: string; artwork_key: string; language: string };
   type Asset = { cache_key: string; generation_id: string };
@@ -142,6 +164,16 @@ Deno.serve(async req => {
         (body.action !== 'catalog' && (body.action !== 'card' || typeof body.id !== 'string' ||
          !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId)))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
+    }
+    if (typeof body.print_plate_id === 'string' && body.print_plate_id.startsWith('ja-wide-print:')) {
+      if (body.ja_alternative_v1 !== true || body.action !== 'card' || body.imageId != null ||
+          !isJAAlternative(body.id) || body.print_plate_id !== jaAlternativeId(body.id)) {
+        return reply({ error:'이 카드의 확장 일러스트를 확인해 주세요.' },400);
+      }
+      const row=await readJAAlternative(body.id,true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR'))throw new Error('invalid JA artwork');
+      return reply({plate:{...jaAlternativeOption(body.id),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
     if (body.print_plate_id != null) {
       if (body.action !== 'card' || body.imageId != null || !plateReference.test(body.id) || body.print_plate_id !== printPlateId(body.id)) {
@@ -324,10 +356,18 @@ Deno.serve(async req => {
       imported ? importedArtwork(imported.id) : usable(requestedImageId == null ? plan.illustrations.map(item => item.row) : choice ? [choice.row] : [], printImageOverrides.get(plan.ref.id)),
       Promise.all(Object.entries(plan.texts).map(async ([language, list]) => [language, await usable(list)])),
     ]);
+    let jaOption=null;
+    if(body.ja_alternative_v1===true && isJAAlternative(plan.ref.id)) {
+      // Compatible stale clients and unrelated options remain available even
+      // when the optional private metadata look-up is unavailable.
+      try { if(await readJAAlternative(plan.ref.id,false))jaOption=jaAlternativeOption(plan.ref.id); }
+      catch { console.warn('JA print option metadata unavailable'); }
+    }
     const imageOptions = [
       ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
       ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
       ...(plate ? [plate] : []),
+      ...(jaOption ? [jaOption] : []),
     ];
     return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {

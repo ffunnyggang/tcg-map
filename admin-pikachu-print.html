@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./card-art.css?v=20261111-lang2">
   <link rel="stylesheet" href="./admin-pikachu-print.css?v=20261117-preview-guide">
   <script src="./web-auth.js"></script>
-  <script type="module" src="./admin-pikachu-print.mjs?v=20261122-ja1213-upload"></script>
+  <script type="module" src="./admin-pikachu-print.mjs?v=20261122-watermark-off1"></script>
 </head>
 <body class="pikachu-print">
   <header class="print-header">
@@ -74,10 +74,12 @@
             </select>
           </label>
           <label for="printWatermark">워터마크
-            <select id="printWatermark">
+            <select id="printWatermark" aria-describedby="printBakedWatermarkNote">
               <option value="funypin.kr">funypin.kr</option>
               <option value="funyframe">funyframe</option>
+              <option value="off">OFF</option>
             </select>
+            <small id="printBakedWatermarkNote" class="small-note" hidden>이미지에 포함된 워터마크는 이 설정으로 끌 수 없어요.</small>
           </label>
           <label for="printMode">출력 도안 설정
             <select id="printMode">

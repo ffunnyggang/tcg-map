@@ -639,22 +639,40 @@ $('printConfirm').onclick = () => withCardAction(async () => {
   setStatus('이 카드의 출력 설정을 확정했어요.');
 });
 $('printPDF').onclick = () => withCardAction(async () => {
-  const { cut, name, settings } = session;
-  const language = settings.language === 'off' ? name.source_language : settings.language;
-  const card = { ...name, source_language: language, display_name: /^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id) ? ({ ja: 'ピカチュウ', ko: '피카츄', en: 'Pikachu' }[language] || name.display_name) : name.display_name };
-  const production = settings.mode === 'production';
-  setStatus('A4 출력 도안을 준비하고 있어요.');
-  session.printOutput = await renderCard(session,true);
-  const sheet = makePrintSheet(productionArtwork(session), cut, {
-    shape: settings.shape, tolerance: 0, bleed: printBleed(session.card),
-    showRoundTrimGuide: !session.archivePlate && !isRestoredPrintImage(session.card), preservePreparedWindow: !!session.archivePlate || session.filledWideWindow, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: showWatermark(session), watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
+  const viewed=session;
+  const useConfirmed=PIKACHU_SHEET_IDS.includes(viewed.card.id);
+  const slot=useConfirmed?PIKACHU_SHEET_IDS.indexOf(viewed.card.id):-1;
+  const record=useConfirmed?readBrowserPrintPlan()[slot]:undefined;
+  const stamp=useConfirmed?browserPrintPlanStamp([record],true):null;
+  const savedRecord=record!==undefined;
+  if(savedRecord&&!validConfirmedPrintRecord(record))throw new Error('확정된 출력 설정을 읽을 수 없어요. 해당 카드를 다시 확정해 주세요.');
+  const keys=Object.keys(controls);
+  const viewedMatches=savedRecord&&viewed.confirmed&&viewed.card.illustration.id===record.imageId&&
+    viewed.alignmentKey===record.alignmentKey&&record.matrix.every((value,i)=>value===viewed.matrix[i])&&
+    keys.every(key=>viewed.settings[key]===record[key]);
+  const current=savedRecord&&!viewedMatches?await prepareConfirmedPrintCard(viewed.card.id,record):viewed;
+  const {cut,name,settings}=current;
+  const language=settings.language==='off'?name.source_language:settings.language;
+  const card={...name,source_language:language,display_name:/^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(name.id)?({ja:'ピカチュウ',ko:'피카츄',en:'Pikachu'}[language]||name.display_name):name.display_name};
+  const production=settings.mode==='production';
+  setStatus(savedRecord?'확정된 설정으로 A4 출력 도안을 준비하고 있어요.':'A4 출력 도안을 준비하고 있어요.');
+  // Printing here must not mutate the editor's settings, matrix or draft.
+  const printing={...current};
+  printing.printOutput=await renderCard(printing,true);
+  const sheet=makePrintSheet(productionArtwork(printing),cut,{
+    shape:settings.shape,tolerance:0,bleed:printBleed(current.card),
+    showRoundTrimGuide:!current.archivePlate&&!isRestoredPrintImage(current.card),preservePreparedWindow:!!current.archivePlate||current.filledWideWindow,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:showWatermark(current),watermarkText:settings.watermark,footerCenterY:PRINT_FOOTER_CENTER_Y,cutoutCard:card,production,
   });
-  const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
-    production ? { cutContour: printWindowRect(cut) } : undefined);
-  const suffix = session.archivePlate ? (production ? '-2MM-PRINT.pdf' : '-2MM.pdf') : (production ? '-PRINT.pdf' : '.pdf');
-  const fileName = cardFilename(card).replace(/\.pdf$/, suffix);
-  downloadPrintPDF(pdf, String(selection + 1).padStart(2, '0') + ' - ' + fileName);
-  setStatus('A4 PDF 다운로드를 시작했어요. 인쇄 배율은 실제 크기(100%)로 설정해 주세요.');
+  const pdf=makePDF(await encodePrintImage(sheet),sheet.width,sheet.height,83,118,
+    production?{cutContour:printWindowRect(cut)}:undefined);
+  const suffix=current.archivePlate?(production?'-2MM-PRINT.pdf':'-2MM.pdf'):(production?'-PRINT.pdf':'.pdf');
+  const fileName=cardFilename(card).replace(/\.pdf$/,suffix);
+  if(useConfirmed&&stamp!==browserPrintPlanStamp([readBrowserPrintPlan()[slot]],true))
+    throw new Error('PDF를 만드는 동안 확정한 출력 설정이 바뀌었어요. 다시 다운로드해 주세요.');
+  downloadPrintPDF(pdf,String(selection+1).padStart(2,'0')+' - '+fileName);
+  const applied=savedRecord&&!viewedMatches?'화면의 미확정 변경은 제외하고 마지막 확정값으로 저장했어요. '
+    :useConfirmed&&!savedRecord?'확정값이 없어 현재 미리보기 설정으로 저장했어요. ':'';
+  setStatus(applied+'A4 PDF 다운로드를 시작했어요. 인쇄 배율은 실제 크기(100%)로 설정해 주세요.');
 });
 async function encodePrintImage(surface) {
   const jpeg = await new Promise(resolve => surface.toBlob(resolve, 'image/jpeg', .98));
@@ -776,7 +794,7 @@ async function prepareSettingsExport(preflight=false) {
 }
 $('printExportSettings').onclick = () => prepareSettingsExport(false);
 $('printPreflightExport').onclick = () => prepareSettingsExport(true);
-function readFunyframePlan() {
+function readBrowserPrintPlan() {
   function read(key){
     const raw=localStorage.getItem(key);
     const records=raw===null?{}:JSON.parse(raw);
@@ -784,13 +802,14 @@ function readFunyframePlan() {
     return records;
   }
   const current=read(pageConfirmedKey), legacy=read(storageKey);
-  return PIKACHU_SHEET_IDS.map(id=>Object.hasOwn(current,id)?current[id]:legacy[id]);
+  return PIKACHU_SHEET_IDS.map(id=>Object.hasOwn(current,id)?current[id]:legacy[id]?.confirmed===true?legacy[id]:undefined);
 }
-const funyframePlanStamp=plan=>JSON.stringify(plan.map(r=>[r?.confirmed===true,r?.imageId,r?.alignmentKey,r?.matrix]));
+const browserPrintPlanStamp=(plan,withControls=false)=>JSON.stringify(plan.map(r=>[r?.confirmed===true,r?.imageId,r?.alignmentKey,r?.matrix,
+  ...(withControls?[r?.signature,...Object.keys(controls).map(key=>r?.[key])]:[])]));
 function invalidateChangedFunyframeDownload(){
   if(!funyframeDownloadUrl)return false;
   let unchanged=false;
-  try{unchanged=funyframeDownloadStamp===funyframePlanStamp(readFunyframePlan());}catch{}
+  try{unchanged=funyframeDownloadStamp===browserPrintPlanStamp(readBrowserPrintPlan());}catch{}
   if(unchanged)return false;
   clearFunyframeDownload();
   $('printFunyframeStatus').textContent='확정한 일러스트나 연결 위치가 바뀌었어요. 새 PDF를 준비해 주세요.';
@@ -799,11 +818,11 @@ function invalidateChangedFunyframeDownload(){
 window.addEventListener?.('storage', event=>{
   if(event.key===pageConfirmedKey||event.key===storageKey||event.key===null)invalidateChangedFunyframeDownload();
 });
-function validFunyframeRecord(record){
+function validConfirmedPrintRecord(record){
   return record?.confirmed===true && typeof record.imageId==='string' && !!record.imageId &&
     typeof record.alignmentKey==='string'&&Array.isArray(record.matrix)&&record.matrix.length===6&&record.matrix.every(Number.isFinite);
 }
-async function prepareFunyframeCard(id, previous){
+async function prepareConfirmedPrintCard(id, previous, funyframe=false){
   const imageId=previous.imageId, ja=isJAPrintAlternative(imageId,id), archived=isArchivePlateId(imageId,id);
   const {card}=await invoke('card',id,ja||archived?undefined:imageId);
   if(card.id!==id)throw new Error('확정한 카드와 출력 일러스트가 일치하지 않아요.');
@@ -813,7 +832,7 @@ async function prepareFunyframeCard(id, previous){
     if(!option)throw new Error('확정한 출력 일러스트를 찾을 수 없어요. 해당 카드를 확인해 주세요.');
     const detail=await invoke('card',id,undefined,imageId);
     archivePlate=await (ja?decodeJAPrintAlternative:decodeArchivePlate)(detail,id,imageId,image,canvas);
-    if(archivePlate.embeddedWatermark&&archivePlate.embeddedWatermarkText!==FUNYFRAME_SHEET_SETTINGS.watermark)
+    if(funyframe&&archivePlate.embeddedWatermark&&archivePlate.embeddedWatermarkText!==FUNYFRAME_SHEET_SETTINGS.watermark)
       throw new Error('확정한 이미지에 다른 워터마크가 포함돼 있어 funyframe 인쇄용 PDF에는 사용할 수 없어요.');
     card.illustration={...option,cutRect:archivePlate.cutRect};
   }
@@ -821,27 +840,27 @@ async function prepareFunyframeCard(id, previous){
   const current=await prepareCard(card,previous,{requireSavedAlignment:true,archivePlate});
   if(current.alignmentKey!==previous.alignmentKey||!previous.matrix.every((value,i)=>value===current.matrix[i]))
     throw new Error('확정한 일러스트 연결 위치를 그대로 적용할 수 없어요.');
-  current.settings={...FUNYFRAME_SHEET_SETTINGS};
+  if(funyframe)current.settings={...FUNYFRAME_SHEET_SETTINGS};
+  else if(!current.confirmed||Object.keys(controls).some(key=>previous[key]!==undefined&&current.settings[key]!==previous[key]))
+    throw new Error('확정한 출력 설정이 현재 옵션과 달라요. 해당 카드에서 확인하고 다시 확정해 주세요.');
   return current;
 }
 async function downloadPikachuSheet(funyframe = false) {
   if (busy || !catalog.length) return;
   if (funyframe) clearFunyframeDownload();
   const setBatchStatus = funyframe ? message => { $('printFunyframeStatus').textContent = message; } : setStatus;
-  const missing = PIKACHU_SHEET_IDS.flatMap((id, index) => catalog.some(card => card.id === id && (funyframe||card.hasIllustration)) ? [] : [index+1]);
-  if (missing.length) {
+  const missing=PIKACHU_SHEET_IDS.flatMap((id,index)=>catalog.some(card=>card.id===id)?[]:[index+1]);
+  if(missing.length){
     setBatchStatus(`확장 일러스트를 확인해 주세요. 작업 순서 ${missing.join(', ')}번의 이미지가 미확보 상태입니다.`);
     return;
   }
-  let plan, stamp;
-  if (funyframe) {
-    try { plan=readFunyframePlan(); stamp=funyframePlanStamp(plan); }
-    catch { setBatchStatus('저장된 확정 설정을 읽을 수 없어요. 페이지를 다시 열어 주세요.'); return; }
-    const unconfirmed = plan.flatMap((record, index) => validFunyframeRecord(record) ? [] : [index+1]);
-    if (unconfirmed.length) {
-      setBatchStatus(`퍼니프레임 출력을 위해 작업 순서 ${unconfirmed.join(', ')}번의 일러스트 연결 위치를 확인하고 설정을 확정해 주세요.`);
-      return;
-    }
+  let plan,stamp;
+  try{plan=readBrowserPrintPlan();stamp=browserPrintPlanStamp(plan,!funyframe);}
+  catch{setBatchStatus('저장된 확정 설정을 읽을 수 없어요. 페이지를 다시 열어 주세요.');return;}
+  const unconfirmed=plan.flatMap((record,index)=>validConfirmedPrintRecord(record)?[]:[index+1]);
+  if(unconfirmed.length){
+    setBatchStatus(`${funyframe?'퍼니프레임 ':'A2 '}출력을 위해 작업 순서 ${unconfirmed.join(', ')}번의 일러스트 연결 위치를 확인하고 설정을 확정해 주세요.`);
+    return;
   }
   busy = true;
   refreshControls();
@@ -852,22 +871,7 @@ async function downloadPikachuSheet(funyframe = false) {
     for (const id of PIKACHU_SHEET_IDS) {
       order++;
       setBatchStatus(`${funyframe ? '퍼니프레임 ' : ''}피카츄 인쇄용 도안을 준비하고 있어요. ${order}/30`);
-      let current;
-      if(funyframe) current=await prepareFunyframeCard(id,plan[order-1]);
-      else {
-        // The ordinary batch still ignores page alternatives and drafts.
-        const previous=saved[id]||{};
-        const {card}=await invoke('card',id,previous.imageId);
-        if (!card.illustration || (previous.imageId && card.illustration.id !== previous.imageId)) {
-          throw new Error('저장된 출력 이미지를 다시 선택해 주세요.');
-        }
-        current=await prepareCard(card,previous);
-        if ((previous.language && previous.language !== current.settings.language) ||
-            (previous.confirmed && !current.confirmed)) {
-          throw new Error('변경된 연결 위치나 저장된 출력 설정을 카드에서 다시 확인해 주세요.');
-        }
-        current.output=await renderCard(current);
-      }
+      const current=await prepareConfirmedPrintCard(id,plan[order-1],funyframe);
 
       if (current.wideAlignmentNeedsReview) throw new Error('확장 일러스트의 재단 영역을 카드에서 확인해 주세요.');
       current.printOutput = await renderCard(current,true);
@@ -882,11 +886,11 @@ async function downloadPikachuSheet(funyframe = false) {
         }
       }
     }
+    if(stamp!==browserPrintPlanStamp(readBrowserPrintPlan(),!funyframe)){
+      setBatchStatus('PDF를 만드는 동안 확정한 일러스트나 연결 위치가 바뀌었어요. 다시 준비해 주세요.');
+      return;
+    }
     if (funyframe) {
-      if(stamp!==funyframePlanStamp(readFunyframePlan())){
-        setBatchStatus('PDF를 만드는 동안 확정한 일러스트나 연결 위치가 바뀌었어요. 다시 준비해 주세요.');
-        return;
-      }
       makeFunyframeDownloadReady(makePikachuSheetPDF(tiles, {funyframe: true}),stamp);
       setBatchStatus('30종 PDF가 준비됐어요. 아래 ‘준비된 퍼니프레임 A2 PDF 받기’를 눌러 저장해 주세요.');
     } else {
@@ -943,7 +947,7 @@ function productionTile(current, {funyframe = false} = {}) {
   const tile = canvas((PRINT.width+2*bleed)*scale, (PRINT.height+2*bleed)*scale);
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
-  if (!funyframe && !current.filledWideWindow) drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+PRINT_TOP_MARGIN+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
+  if (!funyframe && !current.archivePlate && !current.filledWideWindow) drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+PRINT_TOP_MARGIN+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
   if (showWatermark(current)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark,PRINT_FOOTER_CENTER_Y);
   return tile;
 }

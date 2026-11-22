@@ -177,17 +177,30 @@ function save({ confirmOnPage = false } = {}) {
     signature: JSON.stringify([session.alignmentKey, session.settings.language, session.card.texts[session.settings.language]?.id]),
     confirmed: session.confirmed,
   };
-  if (session.archivePlate) {
-    // Private alternatives are independent from the 30-card A2 source/settings.
-    const records = session.archivePlate.jaAlternative ? jaAlternativeSaved : archiveSaved;
-    localStorage.setItem(session.archivePlate.jaAlternative ? jaAlternativeKey : archiveKey, JSON.stringify({...records,[id]:next}));
+  if (!confirmOnPage) {
+    // Drafts are available on their own option without replacing approved
+    // output or a batch default.
+    const records = !session.archivePlate ? ordinaryDrafts : session.archivePlate.jaAlternative ? jaAlternativeSaved : archiveSaved;
+    const key = !session.archivePlate ? ordinaryDraftKey : session.archivePlate.jaAlternative ? jaAlternativeKey : archiveKey;
+    localStorage.setItem(key, JSON.stringify({...records,[id]:next}));
     records[id] = next;
-  } else if (!confirmOnPage) {
-    localStorage.setItem(ordinaryDraftKey, JSON.stringify({...ordinaryDrafts,[id]:next}));
-    ordinaryDrafts[id] = next;
+    return;
+  }
+  const nextPage = JSON.stringify({...pageConfirmed,[id]:next});
+  if (session.archivePlate) {
+    // For private alternatives a single browser write commits both the
+    // selected image and its settings. A2 does not read this record.
+    localStorage.setItem(pageConfirmedKey, nextPage);
   } else {
     const previous = saved[id];
-    localStorage.setItem(storageKey, JSON.stringify({...saved,[id]:next}));
+    const previousPage = localStorage.getItem(pageConfirmedKey);
+    localStorage.setItem(pageConfirmedKey, nextPage);
+    try { localStorage.setItem(storageKey, JSON.stringify({...saved,[id]:next})); }
+    catch (error) {
+      if (previousPage === null) localStorage.removeItem(pageConfirmedKey);
+      else localStorage.setItem(pageConfirmedKey, previousPage);
+      throw error;
+    }
     saved[id] = next;
     if (funyframeDownloadUrl && PIKACHU_SHEET_IDS.includes(id) &&
         (previous?.imageId !== next.imageId || previous?.alignmentKey !== next.alignmentKey ||
@@ -196,10 +209,7 @@ function save({ confirmOnPage = false } = {}) {
       $('printFunyframeStatus').textContent = '확정 상태나 연결 위치가 바뀌었어요. 새 PDF를 준비해 주세요.';
     }
   }
-  if (confirmOnPage) {
-    localStorage.setItem(pageConfirmedKey, JSON.stringify({...pageConfirmed,[id]:next}));
-    pageConfirmed[id] = next;
-  }
+  pageConfirmed[id] = next;
   progress();
 }
 function draw() {

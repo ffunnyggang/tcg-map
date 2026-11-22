@@ -148,13 +148,17 @@ Deno.serve(async(req:Request)=>{
      return {...attributes,image:'data:image/webp;base64,'+row.image_webp_base64};
     }
     const path=row.storage_path, parts=typeof path==='string'?path.split('/'):[];
-    if(!['wide','native-card-padded-to-wide'].includes(dims.layout)||parts.length!==3||
+    if(dims.layout!=='wide'||dims.width!==1648||dims.height!==2048||
+       typeof row.object_etag!=='string'||!row.object_etag||parts.length!==3||
        !validId(parts[0])||parts[1]!==printPlacement.illustrationId||!validId(parts[1])||
        parts[2]!=='provider.png'||row.image_webp_base64!=null)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
     // Actual PNG headers can differ from old prepared-generation metadata.
     // Inspect only the fixed preapproved private object and never accept an arbitrary URL.
     const probe=await savedFetch('/storage/v1/object/'+outputBucket+'/'+path,{headers:{Range:'bytes=0-23'}});
-    if(!probe.ok||!probe.body)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    if(!probe.ok||!probe.body||probe.headers.get('etag')!==row.object_etag){
+     await probe.body?.cancel().catch(()=>{});
+     throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    }
     const rd=probe.body.getReader(), header=new Uint8Array(24);
     try {
      for(let pos=0;pos<header.length;){
@@ -180,9 +184,14 @@ Deno.serve(async(req:Request)=>{
    if(!ready)return reply({error:'이미지 생성 서비스를 준비하고 있어요.'},503);
    const quota=await cardAccess('claim',data.sourceReferenceId);if(!quota.ok)return quotaError(quota);
    const access=await billing('check','cache');if(!access.ok)return billingError(access);
+   let promoted;
+   if(data.print_common_cache_v1===true){
+    try { promoted=await approvedPrintIllustration(data.sourceReferenceId); }
+    catch { return reply({error:'저장된 인쇄 일러스트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',code:'PRINT_COMMON_CACHE_UNAVAILABLE'},503); }
+   }
    const layers:any={};
    for(const kind of ['text','illustration'] as const){
-    if(kind==='illustration'&&!quota.admin)continue;
+    if(kind==='illustration'&&(promoted||!quota.admin))continue;
     const row=await sharedLayer(data.sourceReferenceId,kind);
     if(!row)continue;
     const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.raw_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
@@ -190,17 +199,10 @@ Deno.serve(async(req:Request)=>{
     const signed=await sign.json();
     layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null,...(kind==='illustration'?{hasGeneratedOverscan:providerOverscan(row)}:{})};
    }
-   if(data.print_common_cache_v1===true){
-    let promoted;
-    try { promoted=await approvedPrintIllustration(data.sourceReferenceId); }
-    catch {
-     if(!layers.illustration)return reply({error:'저장된 인쇄 일러스트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',code:'PRINT_COMMON_CACHE_UNAVAILABLE'},503);
-    }
-    if(promoted) {
-     const proof=await billing('ready');if(!proof.ok)return billingError(proof);
-     // New clients settle only after the cached image has decoded and composed.
-     return reply({layers:{...layers,printIllustration:promoted},quota});
-    }
+   if(promoted) {
+    const proof=await billing('ready');if(!proof.ok)return billingError(proof);
+    // New clients settle only after the cached image has decoded and composed.
+    return reply({layers:{...layers,printIllustration:promoted},quota});
    }
    if(layers.illustration){const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
    return reply({layers,quota});

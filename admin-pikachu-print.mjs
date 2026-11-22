@@ -283,6 +283,7 @@ async function renderCard(current, printing=false) {
   const background = printing ? canvas(1008,1408)
     : current.archivePlate?.embeddedWatermark ? renderJA16PinnedAlignment(current.archivePlate, matrix, canvas)
     : current.archivePlate ? renderArchiveAlignment(current.archivePlate, matrix, canvas) : renderManual(illustration, current.wideImport ? wideImportMatrix(matrix) : matrix, canvas);
+  if (!background) throw new Error('일러스트 연결 위치가 올바르지 않아요. 다시 불러와 주세요.');
   return composeLayers(layerSource, background, cut, {
     printing,
     kind: 'ai-text', text, showText: !!text, border: frame?.image, showBorder: !!frame && !printing, footerCenterY: printing ? PRINT_FOOTER_CENTER_Y : PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16,
@@ -350,7 +351,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (!illustration) return prepared;
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
-    prepared.initial = [...ARCHIVE_NATIVE_MATRIX];
+    prepared.initial = [...(archivePlate.nativeMatrix || ARCHIVE_NATIVE_MATRIX)];
     const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.embeddedWatermark || canAdjustJA16(previous.matrix));
     prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
     if (!canRestore) prepared.confirmed = false;

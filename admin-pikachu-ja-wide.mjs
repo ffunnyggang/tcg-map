@@ -1,7 +1,7 @@
 const W=1536,H=2136, matrix=Object.freeze([1,0,0,1,-264,-364]);
 const submittedMarks=Object.freeze({
   'm6a-ja-017':'funyframe', 'm6a-ja-019':'funypin.kr', 'm6a-ja-021':'funyframe',
-  'm6a-ja-022':'funypin.kr', 'm6a-ja-025':'funypin.kr', 'm6a-ja-028':'funyframe',
+  'm6a-ja-022':'funypin.kr', 'm6a-ja-025':'funypin.kr', 'm6a-ja-028':'funyframe', 'm6a-ja-029':null,
 });
 const SOURCE_W=506,SOURCE_H=704;
 const scale=Math.max(1024/SOURCE_W,1424/SOURCE_H)*(1+1e-9);
@@ -44,14 +44,16 @@ export function canAdjustSubmittedJA(m){
 }
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   const plate=body?.plate, is16=ref==='m6a-ja-032', isSubmitted=Object.hasOwn(submittedMarks,ref);
+  const cleanSubmitted=(ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;
+  const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
   const cutRect=oldCut;
   const [width,height]=isSubmitted?[SOURCE_W,SOURCE_H]:[W,H];
   const origin=isSubmitted?submittedMatrix:matrix;
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
-      plate.embeddedWatermark!==(is16||isSubmitted) || plate.windowKnockout!==is16 ||
-      (isSubmitted && (plate.sourceKind!=='submitted-trim'||plate.embeddedWatermarkText!==submittedMarks[ref]||!validCut(cutRect))) ||
+      (ref==='m6a-ja-029' && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
+      (isSubmitted && (plate.sourceKind!=='submitted-trim'||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
       !Object.keys(cutRect).every(key=>plate.cutRect?.[key]===cutRect[key]) ||
       typeof plate.wideWebp!=='string' || !plate.wideWebp.startsWith('data:image/webp;base64,')) throw new Error('확장 일러스트 인쇄 파일 규격을 확인해 주세요.');
   const artwork=await decode(plate.wideWebp);
@@ -61,6 +63,6 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.drawImage(artwork,0,0);
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
-    ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas):null,embeddedWatermark:is16||isSubmitted,
-    embeddedWatermarkText:isSubmitted?submittedMarks[ref]:is16?'funyframe':null};
+    ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas):null,embeddedWatermark:baked,
+    embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

@@ -1,5 +1,5 @@
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja-submitted12';
+import {isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja1213-upload';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261120-archive-align1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -85,7 +85,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true },
+  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -434,7 +434,9 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       $('printImage').value = card.illustration?.id || '';
     }
     const previous = archivePlate ? (wantsJA ? jaAlternativeSaved : archiveSaved)[card.id] || {
-      ...saved[card.id], ...(archivePlate.submittedTrim ? {language:'off',symbol:'off',border:'off'} : {}), confirmed:false,
+      ...saved[card.id], ...(archivePlate.submittedTrim ? {language:'off',symbol:'off',border:'off',
+        ...(!archivePlate.embeddedWatermark ? {watermark:'funyframe'} : {}),
+      } : {}), confirmed:false,
     } : saved[card.id] || {};
     const prepared = await prepareCard(card, previous, {archivePlate});
     if (ticket !== revision) return;
@@ -444,7 +446,9 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
-    if (archivePlate?.submittedTrim) $('printWindow').textContent += ' · 첨부 워터마크 유지 · 확대하면 위치 조절 가능';
+    if (archivePlate?.submittedTrim) $('printWindow').textContent += archivePlate.embeddedWatermark
+      ? ' · 첨부 워터마크 유지 · 확대하면 위치 조절 가능'
+      : ' · 워터마크 선택 가능 · 확대하면 위치 조절 가능';
     else if (archivePlate?.jaAlternative) $('printWindow').textContent += archivePlate.ja16Pinned ? ' · 흰 창·워터마크 고정 · 일러스트 ±2 mm 범위 조절' : ' · JA 확장 일러스트';
     else if (archivePlate) $('printWindow').textContent += archivePlate.windowKnockout
       ? ' · 창 칼선과 흰 창 위치는 고정' : ' · 보관 출력판 · 창 칼선 위치 고정';

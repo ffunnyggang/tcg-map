@@ -63,7 +63,7 @@ export function readPngHeader(bytes){
 export async function verifyPrivatePrintPng(url,expectedOrigin,width,height,fetcher=fetch){
   const signed=new URL(url);
   if(signed.origin!==expectedOrigin||!signed.pathname.startsWith('/storage/v1/object/sign/overlay-generated-images/'))return {status:'unavailable'};
-  const response=await fetcher(signed.href,{headers:{Range:'bytes=0-23'},credentials:'omit',redirect:'error'});
+  const response=await fetcher(signed.href,{headers:{Range:'bytes=0-23'},credentials:'omit',redirect:'error',signal:globalThis.AbortSignal?.timeout?.(12000)});
   if(!response.ok||!response.body||![200,206].includes(response.status))return {status:'unavailable'};
   const contentRange=response.headers.get('Content-Range');
   if(response.status===206&&contentRange&&!/^bytes 0-23\/(?:[1-9]\d*|\*)$/i.test(contentRange)){

@@ -39,21 +39,21 @@ Deno.serve(async(req:Request)=>{
   // app_metadata is admin-controlled; never authorize from user_metadata.
   const tester=user.app_metadata?.card_overlay_test===true||env('OVERLAY_TEST_USER_IDS').split(',').map(s=>s.trim()).filter(Boolean).includes(user.id);
   const key=env('OPENAI_API_KEY'),enabled=env('OVERLAY_ENABLED')==='true';
-  const publicAction=['status','mobile_catalog','reference','symbol_asset','layer_cache','generate_mobile_text','generate_mobile_layers','save_result'].includes(data.action);
+  const publicAction=['billing_status','billing_start','billing_complete','billing_cancel','status','mobile_catalog','reference','symbol_asset','layer_cache','generate_mobile_text','generate_mobile_layers','save_result'].includes(data.action);
   const allowed=tester||publicAction;
   const ready=allowed&&enabled&&!!key;
 
   const savedHeaders={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   const outputBucket='overlay-generated-images';
   const savedFetch=(path:string,options:RequestInit={})=>fetch(url+path,{...options,headers:{...savedHeaders,...options.headers},signal:AbortSignal.timeout(15000)});
-  const cardAccess=async(mode:string,referenceId:string|null=null)=>{
-   const res=await savedFetch('/rest/v1/rpc/overlay_card_access',{method:'POST',body:JSON.stringify({p_user:user.id,p_reference:referenceId,p_mode:mode})});
-   if(!res.ok)throw Error('CARD_QUOTA_UNAVAILABLE');return await res.json();
-  };
+  const billing=async(mode:string,kind:string|null=null)=>{const res=await savedFetch('/rest/v1/rpc/overlay_coin_access',{method:'POST',body:JSON.stringify({p_user:user.id,p_mode:mode,p_job:data.billingId||null,p_reference:data.sourceReferenceId||null,p_kind:kind})});if(!res.ok)throw Error('BILLING_UNAVAILABLE');return await res.json();};
+  const billingError=(q:any)=>reply({error:({INSUFFICIENT_COINS:'퍼니코인이 부족해요. 미션에 참여해 코인을 받아 주세요.',BILLING_REQUIRED:'코인 사용을 확인한 뒤 다시 생성해 주세요.',GENERATION_IN_PROGRESS:'이미 생성 중인 작업이 있어요. 잠시 후 다시 이용해 주세요.',BILLING_EXPIRED:'이용 시간이 만료됐어요. 다시 시도해 주세요.'} as Record<string,string>)[q.code]||'코인 사용 상태를 확인하지 못했어요.',code:q.code,billing:q},409);
+  if(['billing_status','billing_start','billing_complete','billing_cancel'].includes(data.action)){const q=await billing(data.action.replace('billing_','').replace('start','start').replace('complete','complete').replace('cancel','cancel'));return q.ok?reply({billing:q}):billingError(q);}
+  const cardAccess=async(_mode:string,_referenceId:string|null=null)=>{const q=await billing('status');return {...q,used:0,limit:null,references:[]};};
   const quotaError=(q:any)=>reply({error:({FREE_PERIOD_ENDED:'무료 이용 기간이 종료됐어요. 퍼니코인 이용은 준비 중입니다.',CARD_DAILY_LIMIT:'오늘은 카드 3장을 모두 이용했어요. 내일 다시 이용해 주세요.',CARD_RESERVATION_REQUIRED:'카드를 다시 선택한 뒤 확장 아트 만들기를 눌러 주세요.',CARD_RETRY_LIMIT:'이 카드의 오늘 재시도 한도에 도달했어요. 다른 카드를 선택해 주세요.'} as Record<string,string>)[q.code]||'카드 이용 정보를 확인하지 못했어요.',code:q.code,quota:q},q.code==='FREE_PERIOD_ENDED'?403:429);
   if(data.action==='status'){
    if(data.surface!=='mobile')return reply({ready:tester&&ready,allowed:tester,message:!tester?'현재 계정은 테스트 화면을 이용할 수 없습니다.':!key?'AI API 키 연결 준비 중입니다.':!enabled?'AI 생성 활성화 준비 중입니다.':'AI 연결 완료 · 운영 테스트 화면'});
-   const quota=await cardAccess('status');return reply({ready:ready&&quota.active,allowed:true,quota,message:!quota.active?'무료 이용 기간이 종료됐어요. 퍼니코인 이용은 준비 중입니다.':!ready?'이미지 생성 서비스를 준비하고 있어요. 잠시 후 다시 이용해 주세요.':'계정당 하루 카드 3장까지 무료로 이용할 수 있어요.'});
+   const quota=await cardAccess('status');return reply({ready:ready&&quota.active,allowed:true,quota,message:!quota.active?'무료 이용 기간이 종료됐어요. 퍼니코인 이용은 준비 중입니다.':!ready?'이미지 생성 서비스를 준비하고 있어요. 잠시 후 다시 이용해 주세요.':'확장아트 생성 1회에 10코인이 사용됩니다.'});
   }
   const ownedQuery=(id:string)=>'/rest/v1/overlay_generations?id=eq.'+id+'&user_id=eq.'+encodeURIComponent(user.id);
   const validId=(id:unknown)=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
@@ -131,8 +131,10 @@ Deno.serve(async(req:Request)=>{
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
    if(!ready)return reply({error:'이미지 생성 서비스를 준비하고 있어요.'},503);
    const quota=await cardAccess('claim',data.sourceReferenceId);if(!quota.ok)return quotaError(quota);
+   const access=await billing('check','cache');if(!access.ok)return billingError(access);
    const layers:any={};
    for(const kind of ['text','illustration'] as const){
+    if(kind==='illustration'&&!quota.admin)continue;
     const row=await sharedLayer(data.sourceReferenceId,kind);
     if(!row)continue;
     const sign=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+row.raw_path,{method:'POST',body:JSON.stringify({expiresIn:600})});
@@ -140,6 +142,7 @@ Deno.serve(async(req:Request)=>{
     const signed=await sign.json();
     layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null,...(kind==='illustration'?{hasGeneratedOverscan:providerOverscan(row)}:{})};
    }
+   if(layers.illustration){const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
    return reply({layers,quota});
   }
   if(data.action==='symbol_asset'){
@@ -210,6 +213,8 @@ Deno.serve(async(req:Request)=>{
   const originalPrompt=data.originalPrompt;
   if(originalPrompt!==undefined&&(data.action!=='generate_fullart'||typeof originalPrompt!=='string'||!Object.hasOwn(ORIGINAL_REFERENCE_PROMPTS,originalPrompt)))return reply({error:'올바른 공개 원문 옵션을 선택해 주세요.'},400);
   delete data.originalPrompt;
+  const billingAction=data.action;
+  const access=await billing('check',billingAction==='generate_mobile_text'?'text':'art');if(!access.ok)return billingError(access);
   const mobileLayerAction=data.action==='generate_mobile_text'||data.action==='generate_mobile_layers';
   if(mobileLayerAction){
    if(!allowed)return reply({error:'현재 테스트 계정만 사용할 수 있습니다.'},403);
@@ -268,6 +273,7 @@ Deno.serve(async(req:Request)=>{
    if(cached){
     const image=await readCachedLayer(cached);
     console.info('overlay layer cache hit',{kind:textOnly?'text':'illustration'});
+    if(!textOnly){const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
     return reply({image,generationId:null,storageSaved:true,layerCacheSaved:true,reused:true,requestId:null,hasGeneratedOverscan:!textOnly&&providerOverscan(cached)});
    }
   }
@@ -376,6 +382,7 @@ Deno.serve(async(req:Request)=>{
     if(!cached.ok)throw Error('LAYER_CACHE_SAVE_FAILED');layerCacheSaved=true;
    }
   }catch{console.error('overlay output persistence failed');}
+  if(!textOnly){if(!storageSaved)return reply({error:'생성 결과 저장에 실패했어요. 코인은 차감되지 않았어요.'},503);const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
   return reply({image:output,hasGeneratedOverscan:wide,requestId:response.headers.get('x-request-id'),generationId,storageSaved,layerCacheSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
  }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });

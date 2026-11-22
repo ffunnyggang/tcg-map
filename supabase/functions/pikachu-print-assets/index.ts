@@ -29,6 +29,15 @@ const jaSubmitted = new Map<string, {slot: string; watermark: string}>([
   ['m6a-ja-025',{slot:'09',watermark:'funypin.kr'}],
   ['m6a-ja-028',{slot:'12',watermark:'funyframe'}],
 ]);
+const jaExtraReference='m6a-ja-022';
+const jaExtraId=jaAlternativeId(jaExtraReference)+':v2';
+const jaExtraOption=()=>({
+  id:jaExtraId,referenceId:jaExtraReference,kind:'jaWide',sourceKind:'submitted-trim',
+  label:'첨부 일러스트 · 06 (추가)',width:800,height:1112,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
+  embeddedWatermark:false,windowKnockout:false,cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
+});
+const allowJAExtra=(body: {ja_alternative_v1?: unknown;ja_submitted_v1?: unknown;ja_submitted_extra_v1?: unknown}) =>
+  body.ja_alternative_v1===true && body.ja_submitted_v1===true && body.ja_submitted_extra_v1===true;
 const jaCleanSubmitted = new Map<string,string>([['m6a-ja-028','12'],['m6a-ja-029','13']]);
 const jaAlternativeOption = (id: string, clean = false) => {
   const cleanSlot = clean ? jaCleanSubmitted.get(id) : undefined;
@@ -146,6 +155,16 @@ Deno.serve(async req => {
     }
     return result[0] ?? null;
   }
+  async function readJAExtra(wantImage: boolean) {
+    const response=await request('/rest/v1/rpc/admin_pikachu_ja_submitted_extra_v1',{
+      method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_reference_id:jaExtraReference,p_image:wantImage}),
+    });
+    if(!response.ok)throw new Error('extra JA print lookup failed');
+    const rows=await response.json();
+    if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==jaExtraReference))throw new Error('invalid extra JA print lookup');
+    return rows[0]??null;
+  }
   async function readJAAlternative(id: string, wantImage: boolean, clean = false) {
     const rpc=clean ? 'admin_pikachu_ja_submitted_clean_v1'
       : jaSubmitted.has(id) ? 'admin_pikachu_ja_submitted_v1' : 'admin_pikachu_ja_wide_v1';
@@ -200,6 +219,15 @@ Deno.serve(async req => {
         (body.action !== 'catalog' && (body.action !== 'card' || typeof body.id !== 'string' ||
          !refId.test(body.id) || (body.imageId != null && (typeof body.imageId !== 'string' || !uuid.test(body.imageId)))))) {
       return reply({ error: '카드 번호를 확인해 주세요.' }, 400);
+    }
+    if(body.print_plate_id===jaExtraId) {
+      if(!allowJAExtra(body)||body.action!=='card'||body.imageId!=null||body.id!==jaExtraReference) {
+        return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
+      }
+      const row=await readJAExtra(true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR'))throw new Error('invalid extra JA artwork');
+      return reply({plate:{...jaExtraOption(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
     if (typeof body.print_plate_id === 'string' && body.print_plate_id.startsWith('ja-wide-print:')) {
       const cleanOptIn=body.ja_submitted_clean_v1===true && body.ja_submitted_v1===true;
@@ -407,11 +435,17 @@ Deno.serve(async req => {
       }
       catch { console.warn('JA print option metadata unavailable'); }
     }
+    let extraJAOption=null;
+    if(allowJAExtra(body)&&plan.ref.id===jaExtraReference) {
+      try { if(await readJAExtra(false))extraJAOption=jaExtraOption(); }
+      catch { console.warn('extra JA print option metadata unavailable'); }
+    }
     const imageOptions = [
       ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
       ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
       ...(plate ? [plate] : []),
       ...(jaOption ? [jaOption] : []),
+      ...(extraJAOption ? [extraJAOption] : []),
     ];
     return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {

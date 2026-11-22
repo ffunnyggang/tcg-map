@@ -3,21 +3,23 @@ const submittedMarks=Object.freeze({
   'm6a-ja-017':'funyframe', 'm6a-ja-019':'funypin.kr', 'm6a-ja-021':'funyframe',
   'm6a-ja-022':'funypin.kr', 'm6a-ja-025':'funypin.kr', 'm6a-ja-028':'funyframe', 'm6a-ja-029':null,
 });
-const SOURCE_W=506,SOURCE_H=704;
-const scale=Math.max(1024/SOURCE_W,1424/SOURCE_H)*(1+1e-9);
-const submittedMatrix=Object.freeze([scale,0,0,scale,(1008-SOURCE_W*scale)/2,(1408-SOURCE_H*scale)/2]);
+export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
+const submittedSpec=(width,height,pad)=>{
+  const scale=Math.max(1024/width,1424/height)*(1+1e-9);
+  return Object.freeze({width,height,pad,scale,origin:Object.freeze([scale,0,0,scale,(1008-width*scale)/2,(1408-height*scale)/2])});
+};
+const standardSpec=submittedSpec(506,704,18);
+const extraSpec=submittedSpec(800,1112,27);
 // All supplied watermarks fit this pixel rectangle. Keep it within
 // the trim during zoom / translation; the 2mm bleed may extend edge pixels.
 const FOOTER_XYXY=[425,686,476,700];
 // Nearest source edge continuation, used only where the attachment did
 // not provide physical bleed. Padding before the scaled draw avoids the
 // partially transparent antialias strip at fractional source boundaries.
-const EDGE_PAD=18;
-export function submittedBleedMatrix([a,b,c,d,x,y]){
-  return [a,b,c,d,x-EDGE_PAD*(a+c),y-EDGE_PAD*(b+d)];
+export function submittedBleedMatrix([a,b,c,d,x,y], spec=standardSpec){
+  return [a,b,c,d,x-spec.pad*(a+c),y-spec.pad*(b+d)];
 }
-function edgePad(source,canvas){
-  const w=SOURCE_W,h=SOURCE_H,p=EDGE_PAD;
+function edgePad(source,canvas,{width:w,height:h,pad:p}){
   const out=canvas(w+2*p,h+2*p),g=out.getContext('2d');
   g.imageSmoothingEnabled=false;
   g.drawImage(source,p,p);
@@ -32,27 +34,31 @@ function validCut(r){
   return r&&[r.x,r.y,r.w,r.h].every(Number.isFinite)&&r.x>=0&&r.y>=0&&r.w>4&&r.h>4&&r.x+r.w<=63&&r.y+r.h<=88;
 }
 export function isJAPrintAlternative(id, ref) {
+  if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
   return (ref==='m6a-ja-032'||ref==='m6a-ja-033'||Object.hasOwn(submittedMarks,ref)) && id==='ja-wide-print:'+ref;
 }
-export function canAdjustSubmittedJA(m){
+export function canAdjustSubmittedJA(m,spec=standardSpec,hasBakedFooter=true){
   if(!Array.isArray(m)||m.length!==6||!m.every(Number.isFinite))return false;
   const [a,b,c,d,x,y]=m;
+  const {width,height,scale}=spec;
   if(a<scale*(1-1e-8)||a>scale*1.25||b||c||d!==a)return false;
   const [l,t,r,bot]=FOOTER_XYXY;
-  return x<=-8&&y<=-8&&x+SOURCE_W*a>=1016&&y+SOURCE_H*a>=1416&&
-    x+l*a>=-8&&y+t*a>=-8&&x+r*a<=1016&&y+bot*a<=1416;
+  return x<=-8&&y<=-8&&x+width*a>=1016&&y+height*a>=1416&&
+    (!hasBakedFooter || (x+l*a>=-8&&y+t*a>=-8&&x+r*a<=1016&&y+bot*a<=1416));
 }
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   const plate=body?.plate, is16=ref==='m6a-ja-032', isSubmitted=Object.hasOwn(submittedMarks,ref);
-  const cleanSubmitted=(ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;
+  const extra=id===JA06_EXTRA_ID;
+  const spec=extra?extraSpec:standardSpec;
+  const cleanSubmitted=(extra||ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;
   const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
   const cutRect=oldCut;
-  const [width,height]=isSubmitted?[SOURCE_W,SOURCE_H]:[W,H];
-  const origin=isSubmitted?submittedMatrix:matrix;
+  const [width,height]=isSubmitted?[spec.width,spec.height]:[W,H];
+  const origin=isSubmitted?spec.origin:matrix;
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
-      (ref==='m6a-ja-029' && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
+      ((extra || ref==='m6a-ja-029') && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
       (isSubmitted && (plate.sourceKind!=='submitted-trim'||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
       !Object.keys(cutRect).every(key=>plate.cutRect?.[key]===cutRect[key]) ||
       typeof plate.wideWebp!=='string' || !plate.wideWebp.startsWith('data:image/webp;base64,')) throw new Error('확장 일러스트 인쇄 파일 규격을 확인해 주세요.');
@@ -63,6 +69,7 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.drawImage(artwork,0,0);
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
-    ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas):null,embeddedWatermark:baked,
+    ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas,spec):null,embeddedWatermark:baked,
+    submittedSpec:isSubmitted?spec:null,
     embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

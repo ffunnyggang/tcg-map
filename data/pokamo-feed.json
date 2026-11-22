@@ -1,8 +1,34 @@
 {
   "source": "Pokamo public cafe",
-  "updatedAt": "2026-11-22T11:33:49.670549+00:00",
+  "updatedAt": "2026-11-22T19:40:29.933589+00:00",
   "count": 60,
   "items": [
+    {
+      "category": "자유 게시판",
+      "title": "일판 메가가디안 mur 싸게 팝니다",
+      "author": "나뭇가지",
+      "publishedAt": "2026-11-22T17:47:21.062711Z",
+      "excerpt": "채팅주시면 확인하겠습니다 상태 S~A 하자 전혀 없습니다",
+      "image": null,
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/일판-메가가디안-mur-싸게-팝니다-jKa6XwMP",
+      "views": 11,
+      "likes": 0,
+      "comments": 0,
+      "popularityScore": 0.11
+    },
+    {
+      "category": "자유 게시판",
+      "title": "이번에 서카페 가신분 저도 갔지만 다른 분들 후기를 알고싶어서 후기를 알",
+      "author": "나이스",
+      "publishedAt": "2026-11-22T12:28:03.755563Z",
+      "excerpt": "이번에 서카페 가신분 저도 갔지만 다른 분들 후기를 알고싶어서 후기를 알려주세여",
+      "image": "https://img.kr.gcp-karroter.net/community/community/20261122/b507b3fd-33e3-419b-bcec-f376bc7e62a9.png?service=community",
+      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이번에-서카페-가신분-저도-갔지만-다른-분들-후기를-dgxZqXXj",
+      "views": 2,
+      "likes": 1,
+      "comments": 0,
+      "popularityScore": 3.02
+    },
     {
       "category": "자유 게시판",
       "title": "포켓몬 카드 사고팔거나 교환해 보셨나요? (스벅 기프티콘 10명 추첨)",
@@ -11,10 +37,10 @@
       "excerpt": "개인 프로젝트를 준비하면서 실물 굿즈 수집,거래에 관한 설문을 진행하고 있어요. 굿즈를 모으거나 온라인에서 구매·판매·교환해 보신 분들의 경험을 들려주시면 큰 도움이 됩니다! 🕖 설문은 10분 이내로 소요돼요. ☕️ 참여해 주신 분 중 추첨으로 10분께 스타벅스 기프티콘을 드릴 예정이에요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-사고팔거나-교환해-보셨나요-스벅-기프티콘-10명-추첨-dE3KO9eA",
-      "views": 1,
+      "views": 20,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.01
+      "popularityScore": 0.2
     },
     {
       "category": "자유 게시판",
@@ -37,10 +63,10 @@
       "excerpt": "삼시주년결가굼금했다",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/c4b1ddf8-51b0-4661-ad37-6be151ac70d1.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거박글사람-P1XQZnkA",
-      "views": 28,
+      "views": 40,
       "likes": 2,
       "comments": 2,
-      "popularityScore": 10.28
+      "popularityScore": 10.4
     },
     {
       "category": "카드 자랑",
@@ -50,10 +76,10 @@
       "excerpt": "저이거처음봐요!",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/1bbf05ad-22de-4493-aa57-5e1c516424eb.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저-이카드었어서요-PVpWkrQj",
-      "views": 52,
+      "views": 57,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.52
+      "popularityScore": 9.57
     },
     {
       "category": "자유 게시판",
@@ -63,10 +89,10 @@
       "excerpt": "저이거 뽀바써요",
       "image": "https://img.kr.gcp-karroter.net/community/community/20261121/10bc982e-9b08-47a3-8ba2-f835bb74b428.jpeg?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/저이거-뽀바써요-PN28Qa0P",
-      "views": 50,
+      "views": 53,
       "likes": 3,
       "comments": 0,
-      "popularityScore": 9.5
+      "popularityScore": 9.53
     },
     {
       "category": "자유 게시판",
@@ -89,10 +115,10 @@
       "excerpt": "마니마니 문의주세요",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/어센디드-북미번들-등-여러가지-싸게-Pk9Mm7xj",
-      "views": 20,
+      "views": 21,
       "likes": 0,
       "comments": 0,
-      "popularityScore": 0.2
+      "popularityScore": 0.21
     },
     {
       "category": "자유 게시판",
@@ -102,10 +128,10 @@
       "excerpt": "30대직장인입니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30대직장인입니다-ARO6DooP",
-      "views": 25,
+      "views": 26,
       "likes": 3,
       "comments": 2,
-      "popularityScore": 13.25
+      "popularityScore": 13.26
     },
     {
       "category": "카드거래",
@@ -115,10 +141,10 @@
       "excerpt": "다해서 15에 급처 합니다. 빨리 사가주세요 ㅜㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/4b324b4c-b954-4db8-aecf-265db9b82e78.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-급처-AL1qy40P",
-      "views": 40,
+      "views": 44,
       "likes": 1,
       "comments": 1,
-      "popularityScore": 5.4
+      "popularityScore": 5.44
     },
     {
       "category": "자유 게시판",
@@ -126,12 +152,12 @@
       "author": "강서배트맨",
       "publishedAt": "2026-11-18T13:12:18.323385Z",
       "excerpt": "안녕하세요 일판 뮤fur이 두개인데 하나가 밀림이 조금더 있어보여서 사진으로찍었어요 근데 엄청 밀린건아니라서 이거 에러카드로 보는게 맞나요? 궁금합니다ㅜ",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/460a468e-6216-40fa-a000-984e400dcf34.webp?service=community",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/460a468e-6216-40fa-a000-984e400dcf34.webp",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/이거-뮤fur-에러카드-맞을까요-A3o2Q51A",
-      "views": 70,
+      "views": 71,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 8.7
+      "popularityScore": 8.71
     },
     {
       "category": "자유 게시판",
@@ -141,10 +167,10 @@
       "excerpt": "이거 다해서 20에 급처 합니다.",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/16f00a23-bbae-49e1-b182-c60899ab9f20.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬-카드-급처-dpY9qJJj",
-      "views": 77,
+      "views": 80,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.77
+      "popularityScore": 3.8
     },
     {
       "category": "자유 게시판",
@@ -167,10 +193,10 @@
       "excerpt": "잼민이들 미안..형이 다 먹었다ㅜ",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/1794980092483b95ed681df62dd663e6cc7fc2d48ed5003e427b41adca66546645b8aaa7dee940.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-6팩-사서-나온-결과물-ㄹㅈㄷㅋㅋ-PN2Y9D2P",
-      "views": 127,
+      "views": 133,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 13.27
+      "popularityScore": 13.33
     },
     {
       "category": "카드거래",
@@ -178,12 +204,12 @@
       "author": "굿애프터눈",
       "publishedAt": "2026-11-17T22:53:03.884641Z",
       "excerpt": "배송중입니다 1300만원 흥정가능! 연락주세요!",
-      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/f1094f06-18d1-4bc6-b00e-06d9a2b28f55.webp?service=community",
+      "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/f1094f06-18d1-4bc6-b00e-06d9a2b28f55.webp",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/마리오-피카츄-짭버전-팝니다-PovveRZA",
-      "views": 66,
+      "views": 68,
       "likes": 2,
       "comments": 0,
-      "popularityScore": 6.66
+      "popularityScore": 6.68
     },
     {
       "category": "자유 게시판",
@@ -206,10 +232,10 @@
       "excerpt": "실험실 뮤츠 팝니다",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/실험실-뮤츠-psa10-입니다-PnnNGayP",
-      "views": 53,
+      "views": 54,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.5300000000000002
+      "popularityScore": 3.54
     },
     {
       "category": "카드거래",
@@ -238,32 +264,6 @@
       "popularityScore": 11.41
     },
     {
-      "category": "자유 게시판",
-      "title": "30주년 기념카드",
-      "author": "뾰똘이",
-      "publishedAt": "2026-11-15T08:50:58.829436Z",
-      "excerpt": "30주년 기념카드",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-기념카드-A0nY382d",
-      "views": 4,
-      "likes": 1,
-      "comments": 1,
-      "popularityScore": 5.04
-    },
-    {
-      "category": "자유 게시판",
-      "title": "포켓몬카드 구매하려고 가입합니다",
-      "author": "으컁컁컁",
-      "publishedAt": "2026-11-15T01:11:35.804328Z",
-      "excerpt": "포켓몬카드 구매하려고 가입합니다",
-      "image": null,
-      "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/포켓몬카드-구매하려고-가입합니다-A3oWkByA",
-      "views": 27,
-      "likes": 1,
-      "comments": 0,
-      "popularityScore": 3.27
-    },
-    {
       "category": "카드거래",
       "title": "삼새 psa10 팝니다",
       "author": "굿애프터눈",
@@ -271,10 +271,10 @@
       "excerpt": "문의환영합니다!",
       "image": null,
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/삼새-psa10-팝니다-Pk95zGDj",
-      "views": 11,
+      "views": 12,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.11
+      "popularityScore": 3.12
     },
     {
       "category": "카드 자랑",
@@ -284,10 +284,10 @@
       "excerpt": "제 최애 포켓몬 지라치 입니다!! 초판 1세대 모으기 성공 후, 제 최애 포켓몬 지라치 카드 모으기로 마음 먹어서 이제 지라치 위주로 계속 모으려고요ㅋㅋ 많은 분들이 리자몽이나 피카츄 레쿠쟈 같은 네임드 위주로 모으시길래 저는 최애를 모아보기로 정했습니닿ㅎㅎ 돈을 좀 쓰더라도 지라치 카",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/179466833893699aaabc266fd1446d30919dd076b93f9811c06523a37cd004d75dcd909f837710.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/지라치-컬렉션-공개-PxqaOMkd",
-      "views": 32,
+      "views": 33,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 12.32
+      "popularityScore": 12.33
     },
     {
       "category": "정보 공유",
@@ -414,10 +414,10 @@
       "excerpt": "‪문구점 사장님과 친하게 지낸 덕분에 한박스‬ ‪7만원에 구매했는데 복각에서 리자몽이!!‬ ‪팬텀까지 나왔네요ㅎㅎ‬ ‪리자몽 진짜 너무 갖고 싶었는데‬ ‪이렇게 나오다니ㅜㅜ 행복합니다~‬ ‪초판 리자몽 카드랑 비교해봤는데 ‬ ‪똑같아서 신기했어요ㅋㅋ‬",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/17938643789395e42c0e4799e79d24e0a219a16d71b27a8b84a9c8edb9820bf0f610717c677f90.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/30주년-한박스-리자몽-떴어요-jvxz1xXP",
-      "views": 149,
+      "views": 150,
       "likes": 2,
       "comments": 4,
-      "popularityScore": 15.49
+      "popularityScore": 15.5
     },
     {
       "category": "카드거래",
@@ -440,10 +440,10 @@
       "excerpt": "9등급은 얼마쯤 할까요? 슬랩을 부수고 psa에 재감정 맞기는게 맞을까요?..",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202611/5e680001-e10c-4db3-bdc2-2ce145d771dd.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/얼마쯤-할까요-dDOB2vpP",
-      "views": 43,
+      "views": 45,
       "likes": 1,
       "comments": 0,
-      "popularityScore": 3.43
+      "popularityScore": 3.45
     },
     {
       "category": "정보 공유",
@@ -622,10 +622,10 @@
       "excerpt": "15000원 오리파 했는데 나름 괜찮네요",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202609/056ed7a3-a4ed-4a3f-916e-6de5ea85b7db.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/홍대-TCG-서울-무인-카드샵-dY04977P",
-      "views": 145,
+      "views": 146,
       "likes": 2,
       "comments": 3,
-      "popularityScore": 13.45
+      "popularityScore": 13.46
     },
     {
       "category": "카드깡/카드샵 후기",
@@ -713,10 +713,10 @@
       "excerpt": "🔥 성수에 새로 오픈한 레드라벨 카드샵! 포켓몬 빈티지 등급카드부터 원피스·드래곤볼 카드까지 다양하게 취급하고 있습니다👀 📍서울 성동구 연무장길 56 2층 🎰 오리파 4만원대~50만원대 📦 다양한 박스제품 🃏 카드깡 가능한 테이블 공간까지! 사장님 컬렉션과 매장에서 나온 힛카드 전시도",
       "image": "https://img.kr.gcp-karroter.net/community_cafe/etc/202608/17882167791665b5d52286114f4ecf109384fa696e050a4a0a661fa10c75020450d866bde49c60.webp?service=community",
       "url": "https://cafe.daangn.com/pokamo-pokesm-1/posts/🔥빠빨간맛-카드샵-성수-레드라벨-다녀왔어요-dY6baG6j",
-      "views": 186,
+      "views": 187,
       "likes": 2,
       "comments": 1,
-      "popularityScore": 9.86
+      "popularityScore": 9.870000000000001
     },
     {
       "category": "카드깡/카드샵 후기",

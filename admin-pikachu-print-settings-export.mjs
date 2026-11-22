@@ -20,8 +20,13 @@ export async function buildPrintSettingsExport({references, pageConfirmed, saved
   const verify=async()=>{
     for(let i=next++;i<rows.length;i=next++){
       const row=rows[i];
-      const exact = pageConfirmed[row.referenceId]?.confirmed === true ? pageConfirmed[row.referenceId] : null;
-      const old = !exact && saved[row.referenceId]?.confirmed === true ? saved[row.referenceId] : null;
+      const hasExact = Object.hasOwn(pageConfirmed,row.referenceId);
+      const exact = hasExact ? pageConfirmed[row.referenceId] : null;
+      if (hasExact && exact?.confirmed !== true) {
+        Object.assign(row,{provenance:'page-confirmed',status:'invalid'});
+        continue;
+      }
+      const old = !hasExact && saved[row.referenceId]?.confirmed === true ? saved[row.referenceId] : null;
       if (!exact && !old) continue;
       const provenance=exact?'page-confirmed':'legacy-confirmed';
       row.provenance=provenance;

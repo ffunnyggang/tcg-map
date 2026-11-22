@@ -46,7 +46,8 @@ Deno.serve(async(req:Request)=>{
   const savedHeaders={apikey:service,Authorization:'Bearer '+service,'Content-Type':'application/json'};
   const outputBucket='overlay-generated-images';
   const savedFetch=(path:string,options:RequestInit={})=>fetch(url+path,{...options,headers:{...savedHeaders,...options.headers},signal:AbortSignal.timeout(15000)});
-  const billing=async(mode:string,kind:string|null=null)=>{const res=await savedFetch('/rest/v1/rpc/overlay_coin_access',{method:'POST',body:JSON.stringify({p_user:user.id,p_mode:mode,p_job:data.billingId||null,p_reference:data.sourceReferenceId||null,p_kind:kind})});if(!res.ok)throw Error('BILLING_UNAVAILABLE');return await res.json();};
+  const billingJobId=data.billingId||null,billingReferenceId=data.sourceReferenceId||null;
+  const billing=async(mode:string,kind:string|null=null)=>{const res=await savedFetch('/rest/v1/rpc/overlay_coin_access',{method:'POST',body:JSON.stringify({p_user:user.id,p_mode:mode,p_job:billingJobId,p_reference:billingReferenceId,p_kind:kind})});if(!res.ok)throw Error('BILLING_UNAVAILABLE');return await res.json();};
   const billingError=(q:any)=>reply({error:({INSUFFICIENT_COINS:'퍼니코인이 부족해요. 미션에 참여해 코인을 받아 주세요.',BILLING_REQUIRED:'코인 사용을 확인한 뒤 다시 생성해 주세요.',GENERATION_IN_PROGRESS:'이미 생성 중인 작업이 있어요. 잠시 후 다시 이용해 주세요.',BILLING_EXPIRED:'이용 시간이 만료됐어요. 다시 시도해 주세요.'} as Record<string,string>)[q.code]||'코인 사용 상태를 확인하지 못했어요.',code:q.code,billing:q},409);
   if(['billing_status','billing_start','billing_complete','billing_cancel'].includes(data.action)){const q=await billing(data.action.replace('billing_','').replace('start','start').replace('complete','complete').replace('cancel','cancel'));return q.ok?reply({billing:q}):billingError(q);}
   const cardAccess=async(_mode:string,_referenceId:string|null=null)=>{const q=await billing('status');return {...q,used:0,limit:null,references:[]};};
@@ -231,7 +232,7 @@ Deno.serve(async(req:Request)=>{
   }
   // Source labels are descriptive metadata, never trusted as cache identity or proof of image ownership.
   const sourceReferenceId=data.sourceReferenceId,sourceCardLabel=data.sourceCardLabel;
-  delete data.sourceReferenceId;delete data.sourceCardLabel;
+  delete data.sourceReferenceId;delete data.sourceCardLabel;delete data.billingId;
   if(sourceCardLabel!=null&&(typeof sourceCardLabel!=='string'||sourceCardLabel.length>160))return reply({error:'카드 정보는 160자 이내로 입력해 주세요.'},400);
   let sourceLabel=typeof sourceCardLabel==='string'?sourceCardLabel.trim():null,sourceId=null;
   if(sourceReferenceId!=null){

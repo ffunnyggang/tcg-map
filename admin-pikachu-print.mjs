@@ -1,3 +1,4 @@
+import {buildPrintSettingsExport} from './admin-pikachu-print-settings-export.mjs?v=20261122-settings-export1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
 import {JA06_EXTRA_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja06-extra1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
@@ -39,7 +40,7 @@ const controls = { language: 'printText', symbol: 'printSymbol', border: 'printB
 const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', jaAlternativeSaved = {}, authMode = 'web', adminRefresh = null;
-let funyframeDownloadUrl = null;
+let funyframeDownloadUrl = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
 const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID ? imageId : ref;
@@ -101,6 +102,7 @@ const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikac
 });
 function deny(message) {
   clearFunyframeDownload();
+  clearSettingsExport();
   revision++;
   session = null;
   catalog = [];
@@ -174,6 +176,7 @@ function refreshControls() {
   $('printConfirm').textContent = pageApproved ? '설정 확정됨' : '설정 확정';
   $('printPDF').disabled = busy || !session?.output || session.wideAlignmentNeedsReview;
   $('printPikachuSheet').disabled = busy || !catalog.length;
+  $('printExportSettings').disabled = busy || !catalog.length;
   $('printFunyframeSheet').disabled = busy || !catalog.length;
 }
 function save({ confirmOnPage = false } = {}) {
@@ -228,6 +231,7 @@ function save({ confirmOnPage = false } = {}) {
     }
   }
   pageConfirmed[id] = next;
+  clearSettingsExport();
   session.needsPageSelection=false;
   progress();
 }
@@ -361,11 +365,15 @@ async function compose() {
 function validArchiveMatrix(matrix, illustration) {
   return coversArchiveTrim(matrix, illustration.width, illustration.height);
 }
+function resolveSavedPrintCut(card, name={id:card.id,card_number:card.number,source_language:card.sourceLanguage||'ja',display_name:card.name,art_rect:card.artRect}) {
+  const preset=presets.find(p=>p.kind===windowPresetType(name));
+  const selected=card.illustration?.cutRect || preset;
+  return card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null
+    : validWindow(selected) ? {x:selected.x,y:selected.y,w:selected.w,h:selected.h} : defaultArtWindow(name);
+}
 async function prepareCard(card, previous, {requireSavedAlignment = false, archivePlate = null} = {}) {
   const name = { id: card.id, card_number: card.number, source_language: card.sourceLanguage || 'ja', display_name: card.name, art_rect: card.artRect };
-  const preset = presets.find(p => p.kind === windowPresetType(name));
-  const selectedWindow = card.illustration?.cutRect || preset;
-  const cut = card.id.startsWith('dogam-ko-') && !card.hasIllustration ? null : validWindow(selectedWindow) ? { x: selectedWindow.x, y: selectedWindow.y, w: selectedWindow.w, h: selectedWindow.h } : defaultArtWindow(name);
+  const cut = resolveSavedPrintCut(card, name);
   const [original, raw] = await Promise.all([
     image(card.original),
     archivePlate?.artwork || (card.illustration ? image(card.illustration.url) : null),
@@ -501,7 +509,7 @@ async function loadCard(index, imageId) {
     } : ((ordinaryDrafts[card.id]?.imageId === card.illustration?.id && ordinaryDrafts[card.id]) || saved[card.id] || {});
     const prepared = await prepareCard(card, previous, {archivePlate});
     if ((missingConfirmedArtwork || (!pageRecord && (archivePlate || confirmation))) && confirmation?.imageId !== card.illustration?.id) prepared.confirmed = false;
-    prepared.needsPageSelection=!!otherRecord && !!pageRecord && !activeRecord;
+    prepared.needsPageSelection=!!prepared.confirmed && !activeRecord;
     if (ticket !== revision) return;
     const { cut, settings, illustration } = prepared;
     const languages = card.languages;
@@ -677,6 +685,72 @@ function makeFunyframeDownloadReady(pdf) {
   link.href = funyframeDownloadUrl;
   link.hidden = false;
 }
+function clearSettingsExport() {
+  const link=$('printSettingsExportDownload');
+  link.hidden=true;
+  link.removeAttribute('href');
+  if(settingsExportUrl) URL.revokeObjectURL(settingsExportUrl);
+  settingsExportUrl=null;
+  $('printSettingsExportStatus').textContent='';
+}
+async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, alternative) {
+  if (!catalog.some(card=>card.id===referenceId)) return {status:'unavailable'};
+  let result;
+  try { result=await invoke('card',referenceId,alternative?undefined:illustrationId); }
+  catch(error) { if(error.status===404) return {status:'unavailable'}; throw error; }
+  const card=result?.card;
+  const option=card?.imageOptions?.find(item=>item.id===illustrationId);
+  if (card?.id!==referenceId || !option ||
+      (alternative ? option.kind!=='jaWide'||option.referenceId!==referenceId : card.illustration?.id!==illustrationId)) return {status:'unavailable'};
+  const cut=alternative?option.cutRect:resolveSavedPrintCut(card);
+  if(!cut||Object.keys(cutMm).some(key=>cut[key]!==cutMm[key]))return {status:'invalid'};
+  if(alternative){
+    const {width,height,embeddedWatermark,windowKnockout}=option;
+    const submitted=option.sourceKind==='submitted-trim';
+    const extra=illustrationId===JA06_EXTRA_ID;
+    const dimensions=extra?[800,1112]:submitted?[506,704]:[1536,2136];
+    if(width!==dimensions[0]||height!==dimensions[1]||typeof embeddedWatermark!=='boolean'||typeof windowKnockout!=='boolean'||
+      (extra && (!submitted||embeddedWatermark||windowKnockout)))return {status:'invalid'};
+    const spec=extra?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
+    if(!coversArchiveTrim(matrix,width,height) ||
+       (submitted && !canAdjustSubmittedJA(matrix,spec,!extra)) ||
+       (referenceId==='m6a-ja-032' && !canAdjustJA16(matrix)))return {status:'invalid'};
+    return {nativeSource:{layout:submitted?'submitted-trim':'ja-wide',width,height,embeddedWatermark,windowKnockout}};
+  }
+  if(!['standard','face','history'].includes(option.kind))return {status:'unavailable'};
+  const {width,height,hasGeneratedOverscan}=card.illustration;
+  const padded=width===WIDE.cardWidth&&height===WIDE.cardHeight;
+  if ((!padded&&(width!==WIDE.width||height!==WIDE.height))||!coversCard(matrix,WIDE.width,WIDE.height))return {status:'invalid'};
+  return {nativeSource:{layout:padded?'native-card-padded-to-wide':'wide',width,height,
+    matrixWidth:WIDE.width,matrixHeight:WIDE.height,padX:padded?WIDE.padX:0,padY:padded?WIDE.padY:0,
+    hasGeneratedOverscan:hasGeneratedOverscan===true}};
+}
+$('printExportSettings').onclick = async () => {
+  if(busy||!catalog.length) return;
+  clearSettingsExport();
+  busy=true;
+  refreshControls();
+  const status=$('printSettingsExportStatus');
+  status.textContent='저장된 일러스트와 연결 위치를 확인하고 있어요.';
+  try{
+    const report=await buildPrintSettingsExport({references:PIKACHU_SHEET_IDS,pageConfirmed,saved,
+      isAlternative:isJAPrintAlternative,resolve:resolveExportArtwork});
+    const file=new Blob([JSON.stringify(report,null,2)+'\n'],{type:'application/json'});
+    const link=$('printSettingsExportDownload');
+    settingsExportUrl=URL.createObjectURL(file);
+    link.href=settingsExportUrl;
+    link.hidden=false;
+    const unverified=report.rows.filter(row=>!['verified','legacy-candidate'].includes(row.status)).map(row=>row.slot);
+    const legacySlots=report.rows.filter(row=>row.status==='legacy-candidate').map(row=>row.slot);
+    const {exact,legacy}=report.summary;
+    status.textContent=`현재 확정 ${exact}개 · 이전 확정 기록 ${legacy}개.`+
+      (unverified.length?` 확인 필요: ${unverified.join(', ')}번. 이 번호는 일러스트나 연결 위치를 추정하지 않았어요.`:'')+
+      (legacy?` ${legacySlots.join(', ')}번은 이전 확정 기록만 있어 현재 화면에서 다시 확정해 주세요.`:'');
+  }catch(error){
+    if(error.status===401||error.status===403)errorMessage(error);
+    else status.textContent='저장된 일러스트를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.';
+  }finally{busy=false;refreshControls();}
+};
 async function downloadPikachuSheet(funyframe = false) {
   if (busy || !catalog.length) return;
   if (funyframe) clearFunyframeDownload();

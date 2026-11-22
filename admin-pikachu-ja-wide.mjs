@@ -4,7 +4,7 @@ export function isJAPrintAlternative(id, ref) {
 }
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   const plate=body?.plate, is16=ref==='m6a-ja-032';
-  const cutRect={x:94/16,y:155/16,w:820/16,h:500/16};
+  const cutRect={x:5.9,y:9.7,w:51.2,h:31.2};
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==W || plate.height!==H ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
       plate.embeddedWatermark!==is16 || plate.windowKnockout!==is16 ||

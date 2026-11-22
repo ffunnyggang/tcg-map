@@ -1,4 +1,4 @@
-import {isJAPrintAlternative,decodeJAPrintAlternative} from './admin-pikachu-ja-wide.mjs?v=20261122-ja16ja17';
+import {isJAPrintAlternative,decodeJAPrintAlternative} from './admin-pikachu-ja-wide.mjs?v=20261122-ja16ja17b';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261120-archive-align1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';

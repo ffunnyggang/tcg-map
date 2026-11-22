@@ -28,7 +28,7 @@ const jaAlternativeOption = (id: string) => {
     label:is16 ? '16번 · JA 확장 일러스트 · 흰 창 · 2mm' : '17번 · JA 확장 일러스트 · 2mm',
     width:1536,height:2136,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
     embeddedWatermark:is16,windowKnockout:is16,
-    cutRect:{x:94/16,y:155/16,w:820/16,h:500/16},
+    cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
   };
 };
 type PlateMetadata = {

@@ -811,6 +811,23 @@
       "name_short_ko": "니케 Vol.2 퍼스트 에디션 박스 (일어판)",
       "name_short_en": "Nikke Vol.2 1st Edition Box (Japanese Ver.)",
       "contents_description": "1BOX / 10팩"
+    },
+    {
+      "id": "op_op18",
+      "name": "원피스 TCG OP-18 부스터팩 신의 지배 1 박스 (24팩/일어판)",
+      "name_en": "One Piece TCG OP-18 Booster Pack The Dominance Of God 1 Box (Pack of 24/Japanese Ver.)",
+      "language": "JP",
+      "type": "BOOSTER_BOX",
+      "release_date": "2026-11-21",
+      "image_path": "assets/products/op_op18.webp",
+      "tcg_type": "one_piece",
+      "name_short_ko": "OP-18 신의 지배 박스 (일어판)",
+      "name_short_en": "OP-18 The Dominance Of God Box (Japanese Ver.)",
+      "kream_url": "https://kream.co.kr/products/1186150",
+      "product_code": "BOX-OP-JP-OP18",
+      "contents_description": "1BOX / 24팩",
+      "retail_price_amount": 5760,
+      "retail_price_currency": "JPY"
     }
   ]
 }

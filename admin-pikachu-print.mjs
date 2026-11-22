@@ -1,5 +1,5 @@
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja1213-upload';
+import {JA06_EXTRA_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja06-extra1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -41,6 +41,12 @@ let catalog = [], presets = [], selection = 0, session = null, busy = false, rev
 let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', jaAlternativeSaved = {}, authMode = 'web', adminRefresh = null;
 let funyframeDownloadUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
+const JA06_REF='m6a-ja-022';
+const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID ? imageId : ref;
+// Keep old watermark/placement validation identical; only the new clean
+// source has a different raster size and no baked-footer constraint.
+const submittedFits=(matrix,plate)=>plate.submittedSpec?.width===800
+  ? canAdjustSubmittedJA(matrix,plate.submittedSpec,false) : canAdjustSubmittedJA(matrix);
 const VIEW_PX_MM = 8;
 const SOURCE_WIDTH_MM = 63, SOURCE_HEIGHT_MM = 88;
 const confirmedPageRecord = id => pageConfirmed[id]?.confirmed === true ? pageConfirmed[id] : null;
@@ -91,7 +97,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true },
+  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -163,8 +169,9 @@ function refreshControls() {
   const bakedWatermark = !!session?.archivePlate?.embeddedWatermark;
   $('printBakedWatermarkNote').hidden = !bakedWatermark;
   for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration || (id === controls.watermark && bakedWatermark);
-  $('printConfirm').disabled = busy || !session?.output || session.confirmed || session.wideAlignmentNeedsReview;
-  $('printConfirm').textContent = session?.confirmed ? '설정 확정됨' : '설정 확정';
+  const pageApproved=session?.confirmed && !session.needsPageSelection;
+  $('printConfirm').disabled = busy || !session?.output || pageApproved || session.wideAlignmentNeedsReview;
+  $('printConfirm').textContent = pageApproved ? '설정 확정됨' : '설정 확정';
   $('printPDF').disabled = busy || !session?.output || session.wideAlignmentNeedsReview;
   $('printPikachuSheet').disabled = busy || !catalog.length;
   $('printFunyframeSheet').disabled = busy || !catalog.length;
@@ -182,9 +189,20 @@ function save({ confirmOnPage = false } = {}) {
     // output or a batch default.
     const records = !session.archivePlate ? ordinaryDrafts : session.archivePlate.jaAlternative ? jaAlternativeSaved : archiveSaved;
     const key = !session.archivePlate ? ordinaryDraftKey : session.archivePlate.jaAlternative ? jaAlternativeKey : archiveKey;
-    localStorage.setItem(key, JSON.stringify({...records,[id]:next}));
-    records[id] = next;
+    const draftId=session.archivePlate?.jaAlternative ? jaDraftId(id,next.imageId) : id;
+    localStorage.setItem(key, JSON.stringify({...records,[draftId]:next}));
+    records[draftId] = next;
     return;
+  }
+  const previousActive = confirmedPageRecord(id);
+  // Preserve the exact previous confirmed option when card 06 gets a new
+  // active option. Store both in the same atomic browser write.
+  if (id===JA06_REF && previousActive) {
+    const {otherOptions, ...prior}=previousActive;
+    const records={...otherOptions};
+    delete records[next.imageId];
+    if (prior.imageId!==next.imageId) records[prior.imageId]=prior;
+    next.otherOptions=records;
   }
   const nextPage = JSON.stringify({...pageConfirmed,[id]:next});
   if (session.archivePlate) {
@@ -210,6 +228,7 @@ function save({ confirmOnPage = false } = {}) {
     }
   }
   pageConfirmed[id] = next;
+  session.needsPageSelection=false;
   progress();
 }
 function draw() {
@@ -384,7 +403,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
     prepared.initial = [...(archivePlate.nativeMatrix || ARCHIVE_NATIVE_MATRIX)];
-    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || canAdjustSubmittedJA(previous.matrix));
+    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate));
     prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
     if (!canRestore) prepared.confirmed = false;
     return prepared;
@@ -417,7 +436,9 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
 async function loadCard(index, imageId) {
   const id = catalog[index]?.id;
   const confirmation = confirmedPageRecord(id);
-  const pageRecord = imageId === undefined || confirmation?.imageId === imageId ? confirmation : null;
+  const activeRecord = imageId === undefined || confirmation?.imageId === imageId ? confirmation : null;
+  const otherRecord=id===JA06_REF ? confirmation?.otherOptions?.[imageId] : null;
+  const pageRecord=activeRecord || (otherRecord?.confirmed === true && otherRecord.imageId===imageId ? otherRecord : null);
   imageId ??= pageRecord?.imageId ?? saved[id]?.imageId;
   if (busy || !catalog[index]) return;
   const ticket = ++revision;
@@ -473,13 +494,14 @@ async function loadCard(index, imageId) {
       }
       $('printImage').value = card.illustration?.id || '';
     }
-    const previous = pageRecord?.imageId === card.illustration?.id && pageRecord ? pageRecord : archivePlate ? (wantsJA ? jaAlternativeSaved : archiveSaved)[card.id] || {
+    const previous = pageRecord?.imageId === card.illustration?.id && pageRecord ? pageRecord : archivePlate ? (wantsJA ? jaAlternativeSaved[jaDraftId(card.id,imageId)] : archiveSaved[card.id]) || {
       ...saved[card.id], ...(archivePlate.submittedTrim ? {language:'off',symbol:'off',border:'off',
         ...(!archivePlate.embeddedWatermark ? {watermark:'funyframe'} : {}),
       } : {}), confirmed:false,
     } : ((ordinaryDrafts[card.id]?.imageId === card.illustration?.id && ordinaryDrafts[card.id]) || saved[card.id] || {});
     const prepared = await prepareCard(card, previous, {archivePlate});
     if ((missingConfirmedArtwork || (!pageRecord && (archivePlate || confirmation))) && confirmation?.imageId !== card.illustration?.id) prepared.confirmed = false;
+    prepared.needsPageSelection=!!otherRecord && !!pageRecord && !activeRecord;
     if (ticket !== revision) return;
     const { cut, settings, illustration } = prepared;
     const languages = card.languages;
@@ -566,7 +588,7 @@ $('printAlign').onclick = () => withCardAction(async () => {
       canApply: canAdjustJA16,
     } : archivePlate ? {
       renderArtwork: matrix => archivePlate.jaAlternative ? reviewPreparedArtwork(matrix) : renderArchiveAlignment(archivePlate, matrix, canvas),
-      canApply: matrix => archivePlate.submittedTrim ? canAdjustSubmittedJA(matrix) : validArchiveMatrix(matrix, illustration),
+      canApply: matrix => archivePlate.submittedTrim ? submittedFits(matrix,archivePlate) : validArchiveMatrix(matrix, illustration),
     } : wideImport ? {
       renderArtwork: matrix => renderManual(illustration, wideImportMatrix(matrix), canvas),
       canApply: matrix => coversArchiveTrim(wideImportMatrix(matrix), illustration.width, illustration.height),
@@ -574,7 +596,7 @@ $('printAlign').onclick = () => withCardAction(async () => {
   });
   if (!picked) return;
   if (archivePlate?.ja16Pinned && !canAdjustJA16(picked.matrix)) throw new Error('흰 창과 워터마크는 고정돼요. ±2 mm 범위 안에서 조절해 주세요.');
-  if (archivePlate?.submittedTrim && !canAdjustSubmittedJA(picked.matrix)) throw new Error('일러스트와 워터마크가 재단 영역을 벗어나지 않도록 조절해 주세요.');
+  if (archivePlate?.submittedTrim && !submittedFits(picked.matrix,archivePlate)) throw new Error('일러스트와 워터마크가 재단 영역을 벗어나지 않도록 조절해 주세요.');
   if (wideImport && !coversArchiveTrim(wideImportMatrix(picked.matrix), illustration.width, illustration.height)) throw new Error('재단 영역을 덮도록 일러스트 연결 위치를 확인해 주세요.');
   if (archivePlate && !validArchiveMatrix(picked.matrix, illustration)) throw new Error('일러스트 연결 위치를 확인해 주세요.');
   const previous = session.matrix;
@@ -730,7 +752,7 @@ $('printFunyframeDownload').onclick = () => {
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport}) {
   if (archivePlate?.submittedTrim) return withProductionCardBleed(printOutput || output, canvas, {
-    artwork:archivePlate.bleedArtwork, matrix:submittedBleedMatrix(matrix), bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,
+    artwork:archivePlate.bleedArtwork, matrix:submittedBleedMatrix(matrix, archivePlate.submittedSpec || undefined), bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,
   });
   if (archivePlate?.ja16Pinned) return withProductionCardBleed(printOutput || output, canvas, {
     artwork:renderJA16PinnedPlate(archivePlate,matrix,canvas), matrix:ARCHIVE_NATIVE_MATRIX, bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,

@@ -290,6 +290,29 @@ Deno.serve(async req => {
     const imported = plan.imports.find(item => item.id === requestedImageId);
     if (requestedImageId != null && !choice && !imported) return reply({ error: '이 카드에서 사용할 수 없는 일러스트입니다.' }, 404);
     async function importedArtwork(id: string) {
+      // Only the already-authorized selection is eligible; the old UUID/label and
+      // cut geometry remain authoritative. Cached clients keep receiving old JPEG.
+      if (body.wide_import_v1 === true && plan.ref.id === '30th-en-039') {
+        const response = await request('/rest/v1/rpc/admin_pikachu_wide_import_v1', {
+          method:'POST', headers:{...serverHeaders,'Content-Type':'application/json'},
+          body:JSON.stringify({p_import_id:id,p_reference_id:plan.ref.id}),
+        });
+        if (!response.ok) throw new Error('wide import lookup failed');
+        const wide = await response.json();
+        if (!Array.isArray(wide) || wide.length > 1) throw new Error('invalid wide import lookup');
+        if (wide.length) {
+          const asset = wide[0];
+          if (!asset || typeof asset !== 'object' || Array.isArray(asset) ||
+              typeof asset.image_webp_base64 !== 'string' || !asset.image_webp_base64.startsWith('UklGR') ||
+              typeof asset.filled_window !== 'boolean') throw new Error('invalid wide import payload');
+          const [legacy] = await rows<{cut_rect:unknown}>('overlay_admin_print_imports', {
+            select:'cut_rect', id:'eq.'+id, reference_id:'eq.'+plan.ref.id, active:'eq.true',
+          });
+          if (!legacy?.cut_rect) throw new Error('legacy import cut geometry missing');
+          return {id,width:1536,height:2136,cutRect:legacy.cut_rect,url:'data:image/webp;base64,'+asset.image_webp_base64,
+            wideImport:true,filledWindow:asset.filled_window};
+        }
+      }
       const [row] = await rows<{ image_base64: string; cut_rect: unknown }>('overlay_admin_print_imports', {
         select: 'image_base64,cut_rect', id: 'eq.' + id, reference_id: 'eq.' + plan.ref.id, active: 'eq.true',
       });

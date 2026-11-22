@@ -25,7 +25,7 @@ export function createArtCoinUI({invoke,onStart,onNavigate,onError,text=s=>s}){
  $('coinUseClose').onclick=()=>{if(!loading)dialog.close();};
  dialog.addEventListener('click',e=>{if(!loading&&e.target===dialog){const b=dialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)dialog.close();}});
  dialog.addEventListener('cancel',e=>{if(loading)e.preventDefault();});
- $('artCoinSummary').onclick=()=>onNavigate('/my-funy-coin.html');
+ $('artCoinSummary').onclick=()=>onNavigate('/my-funy-coin.html?from=card-art');
  $('coinUseConfirm').onclick=async()=>{
   if(loading||!quote||!selected)return;
   if((quote.available??quote.balance)<quote.cost){dialog.close();onNavigate('/my.html');return;}

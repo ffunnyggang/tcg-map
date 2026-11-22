@@ -1,4 +1,4 @@
-import {createArtCoinUI} from './card-art-coins.mjs?v=20261122-coin1';
+import {createArtCoinUI} from './card-art-coins.mjs?v=20261122-coin2';
 import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-print64x89';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';

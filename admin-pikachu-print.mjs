@@ -667,6 +667,8 @@ $('printPDF').onclick = () => withCardAction(async () => {
     production?{cutContour:printWindowRect(cut)}:undefined);
   const suffix=current.archivePlate?(production?'-2MM-PRINT.pdf':'-2MM.pdf'):(production?'-PRINT.pdf':'.pdf');
   const fileName=cardFilename(card).replace(/\.pdf$/,suffix);
+  if(useConfirmed&&stamp!==browserPrintPlanStamp([readBrowserPrintPlan()[slot]],true))
+    throw new Error('PDF를 만드는 동안 확정한 출력 설정이 바뀌었어요. 다시 다운로드해 주세요.');
   downloadPrintPDF(pdf,String(selection+1).padStart(2,'0')+' - '+fileName);
   const applied=savedRecord&&!viewedMatches?'화면의 미확정 변경은 제외하고 마지막 확정값으로 저장했어요. '
     :useConfirmed&&!savedRecord?'확정값이 없어 현재 미리보기 설정으로 저장했어요. ':'';

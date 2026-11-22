@@ -1,7 +1,7 @@
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
 import {isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja1213-upload';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
-import { reviewMobileAlignment } from './card-art-align.mjs?v=20261120-archive-align1';
+import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -40,6 +40,10 @@ const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', jaAlternativeSaved = {}, authMode = 'web', adminRefresh = null;
 let funyframeDownloadUrl = null;
+let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
+const VIEW_PX_MM = 8;
+const SOURCE_WIDTH_MM = 63, SOURCE_HEIGHT_MM = 88;
+const confirmedPageRecord = id => pageConfirmed[id]?.confirmed === true ? pageConfirmed[id] : null;
 const watermarkChoices=new Set(['funypin.kr','funyframe','off']);
 const showWatermark=current=>!current.archivePlate?.embeddedWatermark&&current.settings.watermark!=='off';
 
@@ -137,14 +141,14 @@ function paddedArtwork(img) {
   return out;
 }
 function progress() {
-  const done = catalog.filter(card => card.hasIllustration && saved[card.id]?.confirmed).length;
+  const done = catalog.filter(card => card.hasIllustration && (confirmedPageRecord(card.id) || saved[card.id]?.confirmed)).length;
   const missing = catalog.filter(card => !card.hasIllustration).length;
   $('printProgress').textContent = `설정 확정 ${done}/${catalog.length} · 일러스트 미확보 ${missing}장`;
   Array.from($('printCard').options).forEach(option => {
     const index = Number(option.value);
     const card = catalog[index];
     const seq = String(index + 1).padStart(2, '0');
-    const state = !card.hasIllustration ? ' · 일러스트 미확보' : saved[card.id]?.confirmed ? ' · 설정 확정' : '';
+    const state = !card.hasIllustration ? ' · 일러스트 미확보' : (confirmedPageRecord(card.id) || saved[card.id]?.confirmed) ? ' · 설정 확정' : '';
     option.textContent = card.hasPrintImport ? `영문 ${card.number} · ${card.name}${state}` : `${seq} · ${card.name} ${card.number}${state}`;
   });
 }
@@ -165,55 +169,77 @@ function refreshControls() {
   $('printPikachuSheet').disabled = busy || !catalog.length;
   $('printFunyframeSheet').disabled = busy || !catalog.length;
 }
-function save() {
-  if (session?.wideAlignmentNeedsReview) return;
-  if (!session?.illustration) return;
+function save({ confirmOnPage = false } = {}) {
+  if (session?.wideAlignmentNeedsReview || !session?.illustration) return;
   const id = session.card.id;
-  const previous = saved[id];
   const next = {
     ...session.settings, imageId: session.card.illustration.id, matrix: session.matrix, alignmentKey: session.alignmentKey,
     signature: JSON.stringify([session.alignmentKey, session.settings.language, session.card.texts[session.settings.language]?.id]),
     confirmed: session.confirmed,
   };
-  if (session.archivePlate) {
-    // Archive previews/confirmations must never overwrite an existing default,
-    // 5mm import, alignment, or A2 setting for the same reference.
-    const records = session.archivePlate.jaAlternative ? jaAlternativeSaved : archiveSaved;
+  if (!confirmOnPage) {
+    // Drafts are available on their own option without replacing approved
+    // output or a batch default.
+    const records = !session.archivePlate ? ordinaryDrafts : session.archivePlate.jaAlternative ? jaAlternativeSaved : archiveSaved;
+    const key = !session.archivePlate ? ordinaryDraftKey : session.archivePlate.jaAlternative ? jaAlternativeKey : archiveKey;
+    localStorage.setItem(key, JSON.stringify({...records,[id]:next}));
     records[id] = next;
-    try { localStorage.setItem(session.archivePlate.jaAlternative ? jaAlternativeKey : archiveKey, JSON.stringify(records)); }
-    catch { setStatus('이 브라우저에서 2mm 설정을 저장할 수 없어요.'); }
     return;
   }
-  saved[id] = next;
-  if (funyframeDownloadUrl && PIKACHU_SHEET_IDS.includes(id) &&
-      (previous?.imageId !== next.imageId || previous?.alignmentKey !== next.alignmentKey ||
-       previous?.confirmed !== next.confirmed || JSON.stringify(previous?.matrix) !== JSON.stringify(next.matrix))) {
-    clearFunyframeDownload();
-    $('printFunyframeStatus').textContent = '확정 상태나 연결 위치가 바뀌었어요. 새 PDF를 준비해 주세요.';
+  const nextPage = JSON.stringify({...pageConfirmed,[id]:next});
+  if (session.archivePlate) {
+    // For private alternatives a single browser write commits both the
+    // selected image and its settings. A2 does not read this record.
+    localStorage.setItem(pageConfirmedKey, nextPage);
+  } else {
+    const previous = saved[id];
+    const previousPage = localStorage.getItem(pageConfirmedKey);
+    localStorage.setItem(pageConfirmedKey, nextPage);
+    try { localStorage.setItem(storageKey, JSON.stringify({...saved,[id]:next})); }
+    catch (error) {
+      if (previousPage === null) localStorage.removeItem(pageConfirmedKey);
+      else localStorage.setItem(pageConfirmedKey, previousPage);
+      throw error;
+    }
+    saved[id] = next;
+    if (funyframeDownloadUrl && PIKACHU_SHEET_IDS.includes(id) &&
+        (previous?.imageId !== next.imageId || previous?.alignmentKey !== next.alignmentKey ||
+         previous?.confirmed !== next.confirmed || JSON.stringify(previous?.matrix) !== JSON.stringify(next.matrix))) {
+      clearFunyframeDownload();
+      $('printFunyframeStatus').textContent = '확정 상태나 연결 위치가 바뀌었어요. 새 PDF를 준비해 주세요.';
+    }
   }
-  try { localStorage.setItem(storageKey, JSON.stringify(saved)); } catch { setStatus('이 브라우저에서 설정을 저장할 수 없어요.'); }
+  pageConfirmed[id] = next;
   progress();
 }
 function draw() {
   const view = $('printCanvas');
   const guide = $('printWindowGuide');
   guide.style.display = 'none';
+  const preview = session && !session.original && session.preview;
+  // Both bitmaps use 8 physical pixels/mm and the same CSS pixels/mm. The
+  // original is not enlarged to fill the 64×89 preview frame.
+  view.width = (preview ? PRINT.width : SOURCE_WIDTH_MM) * VIEW_PX_MM;
+  view.height = (preview ? PRINT.height : SOURCE_HEIGHT_MM) * VIEW_PX_MM;
+  view.style.width = `${(preview ? 1 : SOURCE_WIDTH_MM / PRINT.width) * 100}%`;
+  view.style.marginInline = 'auto';
   const g = view.getContext('2d');
-  g.clearRect(0, 0, view.width, view.height);
   if (!session) return;
-  const { source, output, cut, original, settings } = session;
-  if (!cut) { g.drawImage(source, 0, 0, view.width, view.height); return; }
-  const preview=!original && session.preview;
-  const nativeHeight=preview?view.height*88/PRINT.height:view.height;
-  const nativeWidth=nativeHeight*63/88;
-  view.width=preview?Math.round(view.height*PRINT.width/PRINT.height):nativeWidth;
-  const offset=(view.width-nativeWidth)/2;
-  const topOffset=(view.height-nativeHeight)/2;
+  const {source,output,cut,original,settings} = session;
+  const nativeWidth=SOURCE_WIDTH_MM*VIEW_PX_MM, nativeHeight=SOURCE_HEIGHT_MM*VIEW_PX_MM;
+  const offset=(view.width-nativeWidth)/2, topOffset=(view.height-nativeHeight)/2;
   guide.setAttribute('viewBox',`${-offset} ${-topOffset} ${view.width} ${view.height}`);
-  if(preview)g.drawImage(preview,0,0,view.width,view.height);
-  else drawCardOverlay(g,source,output||source,cut,nativeWidth,view.height,!!output&&!original,settings.shape);
+  g.save();
+  if (settings.shape==='round') {
+    g.beginPath();
+    g.roundRect(0,0,view.width,view.height,PRINT.cornerRadius*VIEW_PX_MM);
+    g.clip();
+  }
+  if(preview) g.drawImage(preview,0,0,view.width,view.height);
+  else if(!cut || original) g.drawImage(source,0,0,nativeWidth,nativeHeight);
+  else drawCardOverlay(g,source,output||source,cut,nativeWidth,nativeHeight,!!output,settings.shape);
   g.save();g.translate(offset,topOffset);
-  if (output && !original) {
+  if (output && cut && !original) {
     if (settings.mode === 'production' && !session.archivePlate && !session.filledWideWindow) drawProductionWindow(g, pixelWindow(cut, nativeWidth, nativeHeight), nativeWidth / 63);
     else {
       const { x, y, w, h } = pixelWindow(cut, nativeWidth, nativeHeight);
@@ -225,8 +251,9 @@ function draw() {
       }
       guide.style.display = '';
     }
-    if (!preview && showWatermark(session)) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark, PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
+    if (!preview && showWatermark(session)) drawArtWatermark(g, 0, 0, nativeWidth, nativeHeight, settings.watermark, PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
   }
+  g.restore();
   g.restore();
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
   $('printCompare').setAttribute('aria-pressed', String(original));
@@ -303,6 +330,7 @@ async function compose() {
   let preview=null;
   if(output){
    const printOutput=await renderCard(current,true);
+   current.printOutput=printOutput;
    preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,showWatermark(current),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
   }
   if(current.previewToken!==revisionToken)return;
@@ -386,7 +414,11 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   }
   return prepared;
 }
-async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
+async function loadCard(index, imageId) {
+  const id = catalog[index]?.id;
+  const confirmation = confirmedPageRecord(id);
+  const pageRecord = imageId === undefined || confirmation?.imageId === imageId ? confirmation : null;
+  imageId ??= pageRecord?.imageId ?? saved[id]?.imageId;
   if (busy || !catalog[index]) return;
   const ticket = ++revision;
   selection = index;
@@ -411,13 +443,17 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       payload = await invoke('card', referenceId);
     }
     const { card } = payload;
-    let archivePlate = null;
+    let archivePlate = null, missingConfirmedArtwork = false;
     if (wantsArchive) {
       const option = card.imageOptions?.find(option => option.id === imageId && option.kind === (wantsJA ? 'jaWide' : 'plate2mm'));
-      if (!option) throw new Error('이 카드의 보관된 2mm 출력판을 찾을 수 없어요.');
-      const plate = await invoke('card', referenceId, undefined, imageId);
-      archivePlate = await (wantsJA ? decodeJAPrintAlternative : decodeArchivePlate)(plate, referenceId, imageId, image, canvas);
-      card.illustration = {...option, cutRect:archivePlate.cutRect};
+      if (!option) {
+        if (!pageRecord || !card.illustration) throw new Error('이 카드의 보관된 2mm 출력판을 찾을 수 없어요.');
+        missingConfirmedArtwork = true;
+      } else {
+        const plate = await invoke('card', referenceId, undefined, imageId);
+        archivePlate = await (wantsJA ? decodeJAPrintAlternative : decodeArchivePlate)(plate, referenceId, imageId, image, canvas);
+        card.illustration = {...option, cutRect:archivePlate.cutRect};
+      }
     }
     const kinds = { standard: '기본 저장 이미지', face: '얼굴 가림 + 연결 맞추기 (BETA)', history: '기존 연결 맞추기 저장본' };
     const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' });
@@ -437,12 +473,13 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
       }
       $('printImage').value = card.illustration?.id || '';
     }
-    const previous = archivePlate ? (wantsJA ? jaAlternativeSaved : archiveSaved)[card.id] || {
+    const previous = pageRecord?.imageId === card.illustration?.id && pageRecord ? pageRecord : archivePlate ? (wantsJA ? jaAlternativeSaved : archiveSaved)[card.id] || {
       ...saved[card.id], ...(archivePlate.submittedTrim ? {language:'off',symbol:'off',border:'off',
         ...(!archivePlate.embeddedWatermark ? {watermark:'funyframe'} : {}),
       } : {}), confirmed:false,
-    } : saved[card.id] || {};
+    } : ((ordinaryDrafts[card.id]?.imageId === card.illustration?.id && ordinaryDrafts[card.id]) || saved[card.id] || {});
     const prepared = await prepareCard(card, previous, {archivePlate});
+    if ((missingConfirmedArtwork || (!pageRecord && (archivePlate || confirmation))) && confirmation?.imageId !== card.illustration?.id) prepared.confirmed = false;
     if (ticket !== revision) return;
     const { cut, settings, illustration } = prepared;
     const languages = card.languages;
@@ -476,12 +513,14 @@ async function loadCard(index, imageId = saved[catalog[index]?.id]?.imageId) {
     // automatically realigned or text-fallback preview.
     if (session.wideAlignmentNeedsReview) {
       setStatus('확장 일러스트가 기존 위치의 재단 영역을 모두 덮지 못해요. 기존 저장 위치는 그대로 두었으니 연결 위치를 확인해 주세요.');
+    } else if (missingConfirmedArtwork) {
+      setStatus('확정한 출력용 일러스트를 지금 선택할 수 없어 기본 일러스트를 표시합니다. 기존 확정은 유지했어요.');
     } else if (previous.confirmed === true && !session.confirmed) {
       setStatus(textError
         ? `${textError} 기존 확정값은 유지했어요.`
         : '미리보기 설정이나 연결 위치가 기존 확정값과 달라요. 확인 후 다시 확정하기 전까지 기존 설정을 유지합니다.');
     } else {
-      save();
+      // Opening a card or switching the dropdown is not confirmation.
       setStatus(textError || (languages.length ? '연결 위치와 출력 설정을 확인해 주세요.' : '확보된 텍스트 레이어가 없어 텍스트를 OFF로 표시합니다.'));
     }
   } catch (error) {
@@ -506,17 +545,27 @@ $('printCard').onchange = e => loadCard(Number(e.target.value));
 $('printPdfImports').onclick = () => loadCard(catalog.findIndex(card => card.hasPrintImport));
 $('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
+function reviewPreparedArtwork(matrix) {
+  const current = {...session, matrix};
+  // The alignment dialog works in original-card coordinates; use the exact
+  // corresponding area of the finished raster, not a second composition.
+  const preview = trimmedPrintPreview(productionArtwork(current),canvas,showWatermark(current),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
+  const native = canvas(1008,1408);
+  native.getContext('2d').drawImage(preview,PRINT_SIDE_MARGIN*16,PRINT_TOP_MARGIN*16,1008,1408,0,0,1008,1408);
+  return native;
+}
 $('printAlign').onclick = () => withCardAction(async () => {
   const {archivePlate, illustration, wideImport} = session;
 
   const picked = await reviewMobileAlignment({
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
+    ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
     ...(archivePlate?.ja16Pinned ? {
-      renderArtwork: matrix => renderJA16PinnedAlignment(archivePlate, matrix, canvas) || renderJA16PinnedAlignment(archivePlate, session.matrix, canvas),
+      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA16(matrix) ? matrix : session.matrix),
       canApply: canAdjustJA16,
     } : archivePlate ? {
-      renderArtwork: matrix => renderArchiveAlignment(archivePlate, matrix, canvas),
+      renderArtwork: matrix => archivePlate.jaAlternative ? reviewPreparedArtwork(matrix) : renderArchiveAlignment(archivePlate, matrix, canvas),
       canApply: matrix => archivePlate.submittedTrim ? canAdjustSubmittedJA(matrix) : validArchiveMatrix(matrix, illustration),
     } : wideImport ? {
       renderArtwork: matrix => renderManual(illustration, wideImportMatrix(matrix), canvas),
@@ -556,7 +605,8 @@ for (const [key, id] of Object.entries(controls)) {
 }
 $('printConfirm').onclick = () => withCardAction(async () => {
   session.confirmed = true;
-  save();
+  try { save({confirmOnPage:true}); }
+  catch { session.confirmed=false; throw new Error('이 브라우저에서 설정을 저장하지 못했어요. 다시 시도해 주세요.'); }
   setStatus('이 카드의 출력 설정을 확정했어요.');
 });
 $('printPDF').onclick = () => withCardAction(async () => {
@@ -631,20 +681,20 @@ async function downloadPikachuSheet(funyframe = false) {
       order++;
       setBatchStatus(`${funyframe ? '퍼니프레임 ' : ''}피카츄 인쇄용 도안을 준비하고 있어요. ${order}/30`);
       const previous = saved[id] || {};
-      let current = !funyframe && session?.card.id === id && session.output && !session.archivePlate?.jaAlternative ? session : null;
-      if (!current) {
-        const {card} = await invoke('card', id, previous.imageId);
-        if (!card.illustration || (previous.imageId && card.illustration.id !== previous.imageId)) {
-          throw new Error('저장된 출력 이미지를 다시 선택해 주세요.');
-        }
-        current = await prepareCard(card, previous, {requireSavedAlignment: funyframe});
-        if (funyframe) current.settings = {...FUNYFRAME_SHEET_SETTINGS};
-        else if ((previous.language && previous.language !== current.settings.language) ||
-            (previous.confirmed && !current.confirmed)) {
-          throw new Error('변경된 연결 위치나 저장된 출력 설정을 카드에서 다시 확인해 주세요.');
-        }
-        if (!funyframe) current.output = await renderCard(current);
+      // Batch output remains based on its ordinary records, not the editor's
+      // active alternative or an unconfirmed draft.
+      const {card} = await invoke('card', id, previous.imageId);
+      if (!card.illustration || (previous.imageId && card.illustration.id !== previous.imageId)) {
+        throw new Error('저장된 출력 이미지를 다시 선택해 주세요.');
       }
+      const current = await prepareCard(card, previous, {requireSavedAlignment: funyframe});
+      if (funyframe) current.settings = {...FUNYFRAME_SHEET_SETTINGS};
+      else if ((previous.language && previous.language !== current.settings.language) ||
+          (previous.confirmed && !current.confirmed)) {
+        throw new Error('변경된 연결 위치나 저장된 출력 설정을 카드에서 다시 확인해 주세요.');
+      }
+      if (!funyframe) current.output = await renderCard(current);
+
       if (current.wideAlignmentNeedsReview) throw new Error('확장 일러스트의 재단 영역을 카드에서 확인해 주세요.');
       current.printOutput = await renderCard(current,true);
       const tile = productionTile(current, {funyframe});
@@ -732,6 +782,10 @@ async function connect() {
     };
     saved = readSaved(storageKey);
     archiveSaved = readSaved(archiveKey);
+    pageConfirmedKey = 'funypin:pikachu-print:page-confirmed:v1:' + adminId;
+    pageConfirmed = readSaved(pageConfirmedKey);
+    ordinaryDraftKey = 'funypin:pikachu-print:ordinary-draft:v1:' + adminId;
+    ordinaryDrafts = readSaved(ordinaryDraftKey);
     jaAlternativeKey = 'funypin:pikachu-print:ja-alternative:v1:' + adminId;
     jaAlternativeSaved = readSaved(jaAlternativeKey);
     const pdfCards = cards.filter(card => card.hasPrintImport).sort((a, b) => a.number.localeCompare(b.number));

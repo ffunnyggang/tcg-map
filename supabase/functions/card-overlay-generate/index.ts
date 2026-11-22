@@ -110,7 +110,9 @@ Deno.serve(async(req:Request)=>{
     const bytes=new Uint8Array(await file.arrayBuffer());
     if(bytes.length<24||bytes.length>20*1024*1024||[137,80,78,71,13,10,26,10].some((b,i)=>bytes[i]!==b))throw Error('INVALID_LAYER_IMAGE');
     const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
-    if(dv.getUint32(16)!==row.width||dv.getUint32(20)!==row.height)throw Error('INVALID_LAYER_IMAGE');
+    const rawWidth=dv.getUint32(16),rawHeight=dv.getUint32(20);
+    const originalWideLayer=row.prompt_version===layerVersions.illustration&&rawWidth===1648&&rawHeight===2048;
+    if(!originalWideLayer&&(rawWidth!==row.width||rawHeight!==row.height))throw Error('INVALID_LAYER_IMAGE');
     let binary='';for(let i=0;i<bytes.length;i+=32768)binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
     return btoa(binary);
   }
@@ -385,7 +387,7 @@ Deno.serve(async(req:Request)=>{
   }catch{console.error('overlay output persistence failed');}
   if(!textOnly){if(!storageSaved)return reply({error:'생성 결과 저장에 실패했어요. 코인은 차감되지 않았어요.'},503);const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
   return reply({image:output,hasGeneratedOverscan:wide,requestId:response.headers.get('x-request-id'),generationId,storageSaved,layerCacheSaved,storageMessage:storageSaved?'AI 원본을 계정에 비공개로 저장했어요.':'생성은 완료됐지만 서버 저장에 실패했어요. 현재 결과를 다운로드해 주세요.'});
- }catch(error){console.error('overlay failure',error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
+ }catch(error){console.error('overlay failure',error instanceof Error&&/^[A-Z_]+$/.test(error.message)?error.message:error instanceof Error?error.name:'unknown');return reply({error:'요청을 완료하지 못했어요. 자동으로 다시 생성하지 않으며, 생성 시도가 한도에 포함될 수 있습니다.'},503);}
 });
 
 

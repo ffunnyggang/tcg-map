@@ -1,9 +1,10 @@
+import {coversCommonPrintArtwork,commonPrintBleed} from './card-art-print-common-cache.mjs?v=20261122-print-cache1';
 import {createArtCoinUI} from './card-art-coins.mjs?v=20261122-coin4';
 import {artEnglish,artText,artError,setArtLanguage,createArtMarkupRenderer} from './card-art-i18n.mjs?v=20261119-print64x89';
 import {findAnniversarySymbolCenter,anniversarySymbolPlacement,usesCenteredAnniversarySymbol,PIKACHU_ANNIVERSARY_PLACEMENT} from './card-overlay-symbol.mjs?v=20261110-center1';
 import {defaultArtWindow,windowPresetType} from './card-art-window-presets.mjs?v=20261108-presets1';
-import {reviewMobileAlignment} from './card-art-align.mjs?v=20261111-pdf1';
-import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261108-layercache1';
+import {reviewMobileAlignment} from './card-art-align.mjs?v=20261122-print-fidelity1';
+import {createLayerFlow,prepareMobileLayerSource} from './card-art-layer-flow.mjs?v=20261122-print-cache1';
 import {decodeTextLayer} from './card-overlay-header.mjs?v=20261108-fulltext1';
 import {IDENTITY_WIDE,renderManual} from './card-overlay-manual.mjs?v=20261108-cardfit1';
 import {composeLayers} from './card-overlay-layers.mjs?v=20261120-footer-exact1';
@@ -30,7 +31,7 @@ function showArtMessage(id,render){
 let step=1,rows=[],language='all',query='',page=0,selected=null,source=null,cut=null,result=null,resultWindow=null,ready=false,busy=false,selecting=false,exporting=false,renderEpoch=0,selectionEpoch=0,toastTimer,searchTimer,shape='round',catalogEpoch=0;
 let draft=null,tuneMode='position',windowPreset=null,presetAdminClient=null,presetOnly=false,savingPreset=false;const refs=new Map();let squareResult=null,reviewPosting=false,reviewPosted=false,showExpanded=true;const reviewPublisher=createReviewPublisher(A);const outputArt=()=>layerSession?result:shape==='square'?(squareResult??=fillSquareCorners(result,canvas)):result;
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
-let layerSession=null,assetsPromise=null;
+let layerSession=null,assetsPromise=null,defaultGenerationCut=null;
 let pdfExport=null,pendingLayerSave=Promise.resolve();
 const BORDER_IDS=['holographic-border-v1','silver-glitter-border-v1','gold-star-border-v1','silver-satin-border-v1'];
 async function sharedAsset(id){const d=await A.invokeFunction('card-overlay-generate',{action:'symbol_asset',assetId:id});return {id,image:await imageFrom(d.symbol.imageUrl),placement:d.symbol.placement};}
@@ -39,10 +40,15 @@ let billingId=null,billingSettled=false;
 const invokeArt=body=>A.invokeFunction('card-overlay-generate',{...body,...(billingId?{billingId}: {})});
 const coinUI=createArtCoinUI({invoke:body=>A.invokeFunction('card-overlay-generate',body),text:artText,onStart:async id=>{billingId=id;billingSettled=!id;await generate();},onNavigate:navigateFromArt,onError:showCoinError});
 const layerFlow=createLayerFlow({invoke:invokeArt,canvas,decodeText:decodeTextLayer,imageFrom,loadAssets:loadLayerAssets});
-function resetLayers(){layerSession=null;layerFlow.reset();billingId=null;billingSettled=false;}
+function resetLayers(){layerSession=null;defaultGenerationCut=null;layerFlow.reset();billingId=null;billingSettled=false;}
 // Both layers use native-card coordinates; printed artwork has an extra top inset.
 const PREVIEW_FOOTER_CENTER_Y=PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16;
-function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=composeLayers(layerSession.source,renderManual(layerSession.image,layerSession.current,canvas),resultWindow,{...layerSession.layers,footerCenterY:PREVIEW_FOOTER_CENTER_Y},canvas);squareResult=null;drawResult();update();}
+const compositionSource=wide=>wide.printPlacement?.submitted ? canvas(1008,1408) : wide.source;
+function renderMobileLayers(current, window){
+ return composeLayers(compositionSource(current),renderManual(current.image,current.current,canvas),window,
+  {...current.layers,shape,footerCenterY:PREVIEW_FOOTER_CENTER_Y},canvas);
+}
+function composeMobileLayers(){if(!layerSession?.current)return;layerSession.layers={...layerSession.layers,shape};result=renderMobileLayers(layerSession,resultWindow);squareResult=null;drawResult();update();}
 function saveLayers(){
  if(!layerSession?.data.generationId||!result)return;
  try{
@@ -52,7 +58,11 @@ function saveLayers(){
  }catch{console.warn('Final artwork persistence failed');}
 }
 function syncLayerControls(){if(!layerSession)return;const l=layerSession.layers;const labels={layerText:[artText('텍스트·기호'),l.showText?'ON':'OFF'],layerSymbol:[artText('30주년 심볼'),l.showSymbol?(({left:artText('왼쪽'),right:artText('오른쪽'),center:artText('중앙')}[l.symbolSide]||artText('오른쪽'))):'OFF'],layerBorder:[artText('테두리'),l.showBorder?({'holographic-border-v1':artText('홀로'),'silver-satin-border-v1':artText('실버'),'silver-glitter-border-v1':artText('실버 글리터'),'gold-star-border-v1':artText('골드 글리터')}[l.borderId]):'OFF'],layerCorner:[artText('모서리'),shape==='round'?artText('라운드'):artText('사각')]};for(const [id,[label,value]]of Object.entries(labels)){$(id).querySelector('[data-value]').textContent=value;$(id).setAttribute('aria-label',label+': '+value);$(id).classList.toggle('active',value!=='OFF');}}
-async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}saveLayers();return true;}
+async function matchIllustration(){if(!layerSession)return false;const picked=await reviewMobileAlignment({...layerSession,cutRect:layerSession.artRect,layers:null,shape,canvas,
+  ...(layerSession.printPlacement?{
+    canApply:m=>coversCommonPrintArtwork(layerSession,m),
+    ...(layerSession.printPlacement.submitted?{showPreparedArtwork:true}:{}),
+  }:{})});if(!picked)return false;layerSession.current=picked.matrix;resultWindow=Object.freeze({...layerSession.artRect});showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');$('resultLoading').hidden=false;$('resultCanvas').style.visibility='hidden';goStep(3);try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));composeMobileLayers();syncLayerControls();}finally{if(layerSession.printPlacement)drawResult();else{$('resultLoading').hidden=true;$('resultCanvas').style.visibility='';}}saveLayers();return true;}
 $('adjustJoin').onclick=async()=>{if(busy||exporting)return;busy=true;update();try{await matchIllustration();}catch(e){toast(artError(e,'일러스트 창 크기를 확인해 주세요.'));}finally{busy=false;update();}};
 function cycleLayer(kind){
  if(!layerSession||busy||exporting||reviewPosting)return;
@@ -125,13 +135,23 @@ function update(){
 
 function goStep(n){step=n;update();if(n===2)drawWindow($('windowCanvas'),cut);if(n===3)drawResult();if(n===4){$('reviewImage').src=(pdfExport?.preview||outputArt()).toDataURL('image/jpeg',.9);}window.scrollTo({top:0,behavior:'instant'});}
 function drawWindow(c,r){if(!source||!r)return;const g=c.getContext('2d'),p=pixelWindow(r,c.width,c.height);g.clearRect(0,0,c.width,c.height);g.drawImage(source,0,0,c.width,c.height);g.fillStyle='#25143655';g.beginPath();g.rect(0,0,c.width,c.height);g.rect(p.x,p.y,p.w,p.h);g.fill('evenodd');drawCutGuide(g,r,c.width,c.height,.3);}
-let displayedPreviewSource=null;
+let displayedPreviewSource=null, heldPromotedPreview=false;
 function drawResult(){
  if(!source||!result||!resultWindow)return;
  const c=$('resultCanvas'),g=c.getContext('2d');
- const current=pdfExport?.result===result && pdfExport.shape===shape ? pdfExport : null;
+ const promoted=!!layerSession?.printPlacement;
+ const current=pdfExport?.result===result && pdfExport.shape===shape &&
+  (!promoted||pdfExport.window===resultWindow) ? pdfExport : null;
  const preview=showExpanded && current?.preview;
- if(showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
+ if(promoted&&showExpanded&&!preview){
+  // The 63×88 fallback is not a valid frame for promoted artwork; avoid
+  // flashing its transparent inset or alternate footer/foil coordinates.
+  heldPromotedPreview=true;
+  c.style.visibility='hidden';
+  $('resultLoading').hidden=!!current?.error;
+  return;
+ }
+ if(!heldPromotedPreview && showExpanded && !preview && !current?.error && displayedPreviewSource===source)return;
  const nativeHeight=Math.round(c.height*88/89);
  const nativeWidth=Math.round(c.height*63/89);
  const trimWidth=Math.round(c.height*64/89);
@@ -144,6 +164,7 @@ function drawResult(){
   g.save();g.translate(inset,top);
   drawCutGuide(g,resultWindow,nativeWidth,nativeHeight,.3);g.restore();
   displayedPreviewSource=source;
+  if(promoted||heldPromotedPreview){heldPromotedPreview=false;c.style.visibility='';$('resultLoading').hidden=true;}
   return;
  }
  displayedPreviewSource=null;
@@ -154,6 +175,7 @@ function drawResult(){
   drawArtWatermark(g,0,0,nativeWidth,nativeHeight,undefined,PREVIEW_FOOTER_CENTER_Y);
  }
  g.restore();
+ if(promoted||heldPromotedPreview){heldPromotedPreview=false;c.style.visibility='';$('resultLoading').hidden=true;}
 }
 async function reference(id){if(!refs.has(id)){const pending=readArtCatalog({action:'reference',id}).then(d=>d.reference).catch(e=>{refs.delete(id);throw e;});refs.set(id,pending);}return refs.get(id);}
 async function imageFrom(url){const im=new Image();im.crossOrigin='anonymous';im.src=url;await im.decode();return im;}
@@ -200,7 +222,7 @@ function currentWindowDefault(){
  const {x,y,w,h}=windowPreset;
  return {x,y,w,h};
 }
-async function choose(row){if(busy||exporting)return;if(!row.supported){toast(artText('이 카드는 일반 일러스트 창이 없는 타입으로 현재 확장을 지원하지 않아요.'));return;}const epoch=++selectionEpoch;selecting=true;update();try{const ref=await reference(row.id),card={...row,...ref};const [im,preset]=await Promise.all([imageFrom(ref.imageUrl),loadWindowPreset(card)]);if(epoch!==selectionEpoch)return;if(Math.abs(im.width/im.height-63/88)>.025)throw Error('정면 카드 비율이 맞지 않아 사용할 수 없어요.');const nextSource=prepareMobileLayerSource(im,canvas);const nextCut=preset?{x:preset.x,y:preset.y,w:preset.w,h:preset.h}:defaultArtWindow(card);resetLayers();selected=card;windowPreset=preset;source=nextSource;cut=nextCut;result=null;resultWindow=null;squareResult=null;reviewPublisher.reset();reviewPosted=false;$('reviewBody').value='';$('reviewBody').disabled=false;$('reviewSubmit').disabled=false;$('reviewStatus').textContent='';$('reviewLink').hidden=true;$('confirm').checked=false;$('generationError').hidden=true;renderCards();toast(row.display_name+artText(' 카드를 선택했어요.'));}catch(e){toast(artError(e,'카드를 불러오지 못했어요. 다시 선택해 주세요.'));}finally{if(epoch===selectionEpoch){selecting=false;update();}}}
+async function choose(row){if(busy||exporting)return;if(!row.supported){toast(artText('이 카드는 일반 일러스트 창이 없는 타입으로 현재 확장을 지원하지 않아요.'));return;}const epoch=++selectionEpoch;selecting=true;update();try{const ref=await reference(row.id),card={...row,...ref};const [im,preset]=await Promise.all([imageFrom(ref.imageUrl),loadWindowPreset(card)]);if(epoch!==selectionEpoch)return;if(Math.abs(im.width/im.height-63/88)>.025)throw Error('정면 카드 비율이 맞지 않아 사용할 수 없어요.');const nextSource=prepareMobileLayerSource(im,canvas);const nextCut=preset?{x:preset.x,y:preset.y,w:preset.w,h:preset.h}:defaultArtWindow(card);resetLayers();selected=card;windowPreset=preset;source=nextSource;cut=nextCut;defaultGenerationCut={...nextCut};result=null;resultWindow=null;squareResult=null;reviewPublisher.reset();reviewPosted=false;$('reviewBody').value='';$('reviewBody').disabled=false;$('reviewSubmit').disabled=false;$('reviewStatus').textContent='';$('reviewLink').hidden=true;$('confirm').checked=false;$('generationError').hidden=true;renderCards();toast(row.display_name+artText(' 카드를 선택했어요.'));}catch(e){toast(artError(e,'카드를 불러오지 못했어요. 다시 선택해 주세요.'));}finally{if(epoch===selectionEpoch){selecting=false;update();}}}
 async function connect(){
  const epoch=++catalogEpoch;
  presetAdminClient=null;presetOnly=false;
@@ -260,12 +282,37 @@ async function generate(){
  busy=true;update();$('generationError').hidden=true;$('workingTitle').textContent=artText('카드 밖으로 풍경을 넓히고 있어요');$('workingDialog').showModal();const minimumMotion=new Promise(resolve=>setTimeout(resolve,8000));const sourceSnapshot=source,selectionSnapshot=selected,windowSnapshot={...cut};
  try{
   if(!ready)throw Error('현재 계정은 AI 생성 준비가 되지 않았어요.');
-  layerSession=layerSession||await layerFlow.generate(sourceSnapshot,selectionSnapshot.id,windowSnapshot,()=>{},{...selectionSnapshot.art_rect});
-  if(billingId&&!billingSettled){await A.invokeFunction('card-overlay-generate',{action:'billing_complete',billingId});billingSettled=true;}
-  if(!layerSession.initial){layerSession.layers.showSymbol=false;$('workingTitle').textContent=artText('원본과 연결 위치를 비교하고 있어요');try{const aligned=await alignWide(sourceSnapshot,layerSession.image,windowSnapshot,canvas,{allowManual:true});layerSession.initial=aligned.matrix;layerSession.trusted=aligned.trusted;}catch{layerSession.initial=[...IDENTITY_WIDE];layerSession.trusted=false;}}
+  layerSession=layerSession||await layerFlow.generate(sourceSnapshot,selectionSnapshot.id,windowSnapshot,()=>{},{...selectionSnapshot.art_rect},!defaultGenerationCut||Object.keys(defaultGenerationCut).every(k=>windowSnapshot[k]===defaultGenerationCut[k]));
+  if(!layerSession.printPlacement&&billingId&&!billingSettled){await A.invokeFunction('card-overlay-generate',{action:'billing_complete',billingId});billingSettled=true;}
+  if(layerSession.printPlacement&&!layerSession.initial){
+   layerSession.layers.showSymbol=false;
+   layerSession.initial=[...layerSession.printPlacement.matrix];
+   layerSession.current=[...layerSession.initial];
+   // Preserve the already-approved crop and allow later manual adjustment.
+   cut={...layerSession.artRect};
+  }
+  if(!layerSession.printPlacement&&!layerSession.initial){layerSession.layers.showSymbol=false;$('workingTitle').textContent=artText('원본과 연결 위치를 비교하고 있어요');try{const aligned=await alignWide(sourceSnapshot,layerSession.image,windowSnapshot,canvas,{allowManual:true});layerSession.initial=aligned.matrix;layerSession.trusted=aligned.trusted;}catch{layerSession.initial=[...IDENTITY_WIDE];layerSession.trusted=false;}}
   await minimumMotion;
   $('workingDialog').close();
-  if(!await matchIllustration()){toast(artText('생성 이미지는 유지됩니다. 연결 맞추기를 이어서 완료해 주세요.'));return;}
+  if(layerSession.printPlacement){
+   const approvedWindow=Object.freeze({...layerSession.artRect});
+   let approvedResult;
+   try { approvedResult=renderMobileLayers(layerSession,approvedWindow); }
+   catch(error) {
+    // Leave no displayed result, and let the existing error path cancel
+    // the unsettled checkout for an unrenderable promoted asset.
+    layerSession=null;
+    layerFlow.reset();
+    cut=windowSnapshot;
+    throw error;
+   }
+   if(billingId&&!billingSettled){await A.invokeFunction('card-overlay-generate',{action:'billing_complete',billingId});billingSettled=true;}
+   // Do not reveal the paid result until completion succeeds.
+   resultWindow=approvedWindow;
+   result=approvedResult;
+   squareResult=null;
+   syncLayerControls();
+  }else if(!await matchIllustration()){toast(artText('생성 이미지는 유지됩니다. 연결 맞추기를 이어서 완료해 주세요.'));return;}
   reviewPublisher.reset();reviewPosted=false;showExpanded=true;$('compareArt').textContent=artText('원본 보기');$('compareArt').setAttribute('aria-pressed','false');goStep(3);
 
  }catch(e){if(billingId&&!layerSession){try{await A.invokeFunction('card-overlay-generate',{action:'billing_cancel',billingId});}catch{}billingId=null;billingSettled=false;}const el=$('generationError');el.hidden=false;showArtMessage('generationError',()=>artError(e,'생성 요청을 완료하지 못했어요.')+(e.data?.requestId?artText(' · 문의용 ID: ')+e.data.requestId:''));if(e.status===401||e.message==='LOGIN_REQUIRED'){const b=document.createElement('button');b.dataset.artMessage='다시 로그인하기';b.textContent=artText(b.dataset.artMessage);b.onclick=()=>A.goLogin(location.href);el.append(b);}if(e.data?.code==='moderation_blocked'){ready=false;const b=document.createElement('button');b.type='button';b.className='secondary';b.dataset.artMessage='카드 다시 선택하기';b.textContent=artText(b.dataset.artMessage);b.style.cssText='display:block;margin-top:12px;min-height:44px';b.onclick=()=>{if(busy||exporting||reviewPosting)return;startAgain();connect();$('search').focus();};el.append(b);}}
@@ -293,15 +340,16 @@ async function preparePDF(entry){
   const wide=layerSession?.current?layerSession:null;
   const layers=wide?.layers;
   const footerCenterY=PRINT_FOOTER_CENTER_Y;
-  const clean=wide?composeLayers(wide.source,canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true,footerCenterY},canvas):outputArt();
+  const clean=wide?composeLayers(compositionSource(wide),canvas(1008,1408),entry.window,{...layers,showBorder:false,printing:true,footerCenterY},canvas):outputArt();
   const fallbackArtwork=wide?renderManual(wide.image,wide.current,canvas):clean;
   const aiOverscan=wide?.data?.hasGeneratedOverscan===true;
-  const printArt=withProductionCardBleed(clean,canvas,{artwork:aiOverscan?wide.image:undefined,matrix:aiOverscan?wide.current:undefined,fallbackArtwork,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
+  const promotedBleed=wide?commonPrintBleed(wide):null;
+  const printArt=withProductionCardBleed(clean,canvas,{artwork:promotedBleed?.artwork||(aiOverscan?wide.image:undefined),matrix:promotedBleed?.matrix||(aiOverscan?wide.current:undefined),fallbackArtwork,foil:layers?.showBorder?await printFoil(layers.borderId):null,border:layers?.showBorder?layers.border:null,shape:entry.shape,bleed:ADMIN_PRINT_BLEED});
   if(pdfExport!==entry)return;
   entry.preview=trimmedPrintPreview(printArt,canvas,true,undefined,ADMIN_PRINT_BLEED,footerCenterY);
   drawResult();
   if(step===4)$('reviewImage').src=entry.preview.toDataURL('image/jpeg',.9);
-  const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,watermark:true,footerCenterY,cutoutCard:entry.card});
+  const sheet=makePrintSheet(printArt,entry.window,{shape:entry.shape,tolerance:0,bleed:ADMIN_PRINT_BLEED,windowGuideInset:0,trimMargin:ADMIN_PRINT_TRIM_MARGIN,preservePreparedWindow:wide?.printPlacement?.submitted===true,watermark:true,footerCenterY,cutoutCard:entry.card});
   const jpg=await new Promise(resolve=>sheet.toBlob(resolve,'image/jpeg',.98));
   if(!jpg)throw Error('출력 도안을 만들지 못했어요.');
   const pdf=makePDF(new Uint8Array(await jpg.arrayBuffer()),sheet.width,sheet.height,83,118);

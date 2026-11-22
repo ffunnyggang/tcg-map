@@ -36,6 +36,7 @@ export async function buildPrintSettingsExport({references, pageConfirmed, saved
       if (!alternative && !UUID.test(values.illustrationId)) { row.status='unavailable'; continue; }
       const check=await resolve(row.referenceId, values, alternative);
       if (!check.nativeSource) { row.status=check.status; continue; }
+      if(check.rawVerification)row.rawVerification=check.rawVerification;
       if(exact)Object.assign(row,values,{status:'verified',nativeSource:check.nativeSource});
       else Object.assign(row,{status:'legacy-candidate',candidate:{...values,nativeSource:check.nativeSource}});
     }
@@ -49,4 +50,40 @@ export async function buildPrintSettingsExport({references, pageConfirmed, saved
       nativeWidthMm:63,nativeHeightMm:88,trimWidthMm:64,trimHeightMm:89,trimOffsetFromNativeMm:-0.5,bleedMm:2},
     summary:{exact,legacy,unverified:rows.length-exact-legacy,allExact:exact===rows.length}, rows,
   };
+}
+
+const PNG_SIGNATURE=[137,80,78,71,13,10,26,10];
+export function readPngHeader(bytes){
+  if(bytes.length<24||!PNG_SIGNATURE.every((value,index)=>bytes[index]===value))return null;
+  const v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+  if(v.getUint32(8)!==13||v.getUint32(12)!==0x49484452)return null;
+  const width=v.getUint32(16),height=v.getUint32(20);
+  return width&&height?{width,height}:null;
+}
+export async function verifyPrivatePrintPng(url,expectedOrigin,width,height,fetcher=fetch){
+  const signed=new URL(url);
+  if(signed.origin!==expectedOrigin||!signed.pathname.startsWith('/storage/v1/object/sign/overlay-generated-images/'))return {status:'unavailable'};
+  const response=await fetcher(signed.href,{headers:{Range:'bytes=0-23'},credentials:'omit',redirect:'error'});
+  if(!response.ok||!response.body||![200,206].includes(response.status))return {status:'unavailable'};
+  const contentRange=response.headers.get('Content-Range');
+  if(response.status===206&&contentRange&&!/^bytes 0-23\/(?:[1-9]\d*|\*)$/i.test(contentRange)){
+    await response.body.cancel().catch(()=>{});
+    return {status:'unavailable'};
+  }
+  const reader=response.body.getReader();
+  const header=new Uint8Array(24);
+  let index=0;
+  try{
+    while(index<header.length){
+      const {done,value}=await reader.read();
+      if(done)break;
+      const part=value.subarray(0,header.length-index);
+      header.set(part,index);index+=part.length;
+    }
+  }finally{await reader.cancel().catch(()=>{});}
+  const read=readPngHeader(header.subarray(0,index));
+  if(!read)return {status:'not-png'};
+  const etag=response.headers.get('ETag');
+  return {status:read.width===width&&read.height===height?'matches':'dimension-mismatch',mediaType:'image/png',...read,
+    ...(etag&&/^W\/"[0-9a-f-]{8,128}"$|^"[0-9a-f-]{8,128}"$/i.test(etag)?{etag}:{})};
 }

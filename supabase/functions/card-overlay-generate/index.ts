@@ -129,6 +129,51 @@ Deno.serve(async(req:Request)=>{
    if(!validId(row.id)||row.user_id!==user.id||row.raw_path!==user.id+'/'+row.id+'/provider.png'||row.width!==1008||row.height!==1408)throw Error('INVALID_LAYER_PATH');
    return reply({image:await readCachedLayer(row),storageSaved:true,reused:true});
   }
+  async function approvedPrintIllustration(referenceId:string) {
+   if(!/^m6a-ja-0(?:1[7-9]|[23][0-9]|4[0-6])$/.test(referenceId))return null;
+   try {
+    const r=await savedFetch('/rest/v1/rpc/overlay_print_common_asset_v1',{
+     method:'POST',body:JSON.stringify({p_reference_id:referenceId}),
+    });
+    if(!r.ok)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const rows=await r.json();
+    if(Array.isArray(rows)&&rows.length===0)return null;
+    if(!Array.isArray(rows)||rows.length!==1)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const row=rows[0], printPlacement=row?.placement, dims=printPlacement?.nativeSource;
+    if(printPlacement?.referenceId!==referenceId||!dims||!Array.isArray(printPlacement.matrix)||
+       printPlacement.matrix.length!==6||!printPlacement.matrix.every(Number.isFinite))throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const attributes={reused:true,storageSaved:true,generationId:null,hasGeneratedOverscan:dims.hasGeneratedOverscan===true,printPlacement};
+    if(dims.layout==='submitted-trim'&&!row.storage_path&&typeof row.image_webp_base64==='string'&&
+       row.image_webp_base64.startsWith('UklGR')&&row.image_webp_base64.length<=2000000) {
+     return {...attributes,image:'data:image/webp;base64,'+row.image_webp_base64};
+    }
+    const path=row.storage_path, parts=typeof path==='string'?path.split('/'):[];
+    if(!['wide','native-card-padded-to-wide'].includes(dims.layout)||parts.length!==3||
+       !validId(parts[0])||parts[1]!==printPlacement.illustrationId||!validId(parts[1])||
+       parts[2]!=='provider.png'||row.image_webp_base64!=null)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    // Actual PNG headers can differ from old prepared-generation metadata.
+    // Inspect only the fixed preapproved private object and never accept an arbitrary URL.
+    const probe=await savedFetch('/storage/v1/object/'+outputBucket+'/'+path,{headers:{Range:'bytes=0-23'}});
+    if(!probe.ok||!probe.body)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const rd=probe.body.getReader(), header=new Uint8Array(24);
+    try {
+     for(let pos=0;pos<header.length;){
+      const {done,value}=await rd.read();
+      if(done||!value?.length)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+      const count=Math.min(value.length,header.length-pos);
+      header.set(value.subarray(0,count),pos);pos+=count;
+     }
+    } finally { await rd.cancel().catch(()=>{}); }
+    if(![137,80,78,71,13,10,26,10].every((v,i)=>header[i]===v))throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const view=new DataView(header.buffer),w=view.getUint32(16),h=view.getUint32(20);
+    if(w!==dims.width||h!==dims.height)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const rsp=await savedFetch('/storage/v1/object/sign/'+outputBucket+'/'+path,{method:'POST',body:JSON.stringify({expiresIn:600})});
+    if(!rsp.ok)throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    const signed=(await rsp.json()).signedURL;
+    if(typeof signed!=='string'||!signed.startsWith('/object/sign/'+outputBucket+'/'+path+'?'))throw Error('PRINT_COMMON_CACHE_UNAVAILABLE');
+    return {...attributes,imageUrl:url+'/storage/v1'+signed};
+   } catch { throw Error('PRINT_COMMON_CACHE_UNAVAILABLE'); }
+  }
   if(data.action==='layer_cache'){
    if(!allowed)return reply({error:'테스트 계정만 사용할 수 있습니다.'},403);
    if(!MOBILE_CARD_IDS.has(data.sourceReferenceId))return reply({error:'이 카드는 확장을 지원하지 않습니다.'},400);
@@ -144,6 +189,18 @@ Deno.serve(async(req:Request)=>{
     if(!sign.ok)throw Error('LAYER_SIGN_FAILED');
     const signed=await sign.json();
     layers[kind]={imageUrl:url+'/storage/v1'+signed.signedURL,reused:true,storageSaved:true,generationId:null,...(kind==='illustration'?{hasGeneratedOverscan:providerOverscan(row)}:{})};
+   }
+   if(data.print_common_cache_v1===true){
+    let promoted;
+    try { promoted=await approvedPrintIllustration(data.sourceReferenceId); }
+    catch {
+     if(!layers.illustration)return reply({error:'저장된 인쇄 일러스트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',code:'PRINT_COMMON_CACHE_UNAVAILABLE'},503);
+    }
+    if(promoted) {
+     const proof=await billing('ready');if(!proof.ok)return billingError(proof);
+     // New clients settle only after the cached image has decoded and composed.
+     return reply({layers:{...layers,printIllustration:promoted},quota});
+    }
    }
    if(layers.illustration){const proof=await billing('ready');if(!proof.ok)return billingError(proof);const charged=await billing('complete');if(!charged.ok)return billingError(charged);}
    return reply({layers,quota});

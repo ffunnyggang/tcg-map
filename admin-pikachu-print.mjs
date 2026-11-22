@@ -40,6 +40,8 @@ const borders = Array.from($('printBorder').options, option => option.value);
 let catalog = [], presets = [], selection = 0, session = null, busy = false, revision = 0, saved = {};
 let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', jaAlternativeSaved = {}, authMode = 'web', adminRefresh = null;
 let funyframeDownloadUrl = null;
+const watermarkChoices=new Set(['funypin.kr','funyframe','off']);
+const showWatermark=current=>!current.archivePlate?.embeddedWatermark&&current.settings.watermark!=='off';
 
 function setStatus(message) { $('printStatus').textContent = message; }
 function canvas(width, height) {
@@ -154,7 +156,9 @@ function refreshControls() {
   $('printImage').disabled = busy || $('printImage').options.length < 2;
   $('printCompare').disabled = busy || !session?.illustration;
   $('printAlign').disabled = busy || !session?.illustration;
-  for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration || (id === controls.watermark && !!session.archivePlate?.embeddedWatermark);
+  const bakedWatermark = !!session?.archivePlate?.embeddedWatermark;
+  $('printBakedWatermarkNote').hidden = !bakedWatermark;
+  for (const id of Object.values(controls)) $(id).disabled = busy || !session?.illustration || (id === controls.watermark && bakedWatermark);
   $('printConfirm').disabled = busy || !session?.output || session.confirmed || session.wideAlignmentNeedsReview;
   $('printConfirm').textContent = session?.confirmed ? '설정 확정됨' : '설정 확정';
   $('printPDF').disabled = busy || !session?.output || session.wideAlignmentNeedsReview;
@@ -221,7 +225,7 @@ function draw() {
       }
       guide.style.display = '';
     }
-    if (!preview && !session.archivePlate?.embeddedWatermark) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark, PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
+    if (!preview && showWatermark(session)) drawArtWatermark(g, 0, 0, view.width, view.height, settings.watermark, PRINT_FOOTER_CENTER_Y-PRINT_TOP_MARGIN*16);
   }
   g.restore();
   $('printCompare').textContent = original ? '도안 보기' : '원본 보기';
@@ -299,7 +303,7 @@ async function compose() {
   let preview=null;
   if(output){
    const printOutput=await renderCard(current,true);
-   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,!current.archivePlate?.embeddedWatermark,current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
+   preview=trimmedPrintPreview(productionArtwork({...current,printOutput}),canvas,showWatermark(current),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
   }
   if(current.previewToken!==revisionToken)return;
   current.preview=preview;
@@ -340,7 +344,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
     border: borders.includes(previous.border) ? previous.border : 'off',
     shape: corners.includes(previous.shape) ? previous.shape : 'round',
     mode: previous.mode === 'production' ? 'production' : 'event',
-    watermark: archivePlate?.embeddedWatermarkText || (previous.watermark === 'funyframe' ? 'funyframe' : 'funypin.kr'),
+    watermark: archivePlate?.embeddedWatermarkText || (watermarkChoices.has(previous.watermark) ? previous.watermark : 'funypin.kr'),
   };
   const prepared = {
     card, name, source, illustration, cut, settings, symbols, alignmentKey, archivePlate, wideImport, filledWideWindow, textLayers: new Map(),
@@ -535,6 +539,10 @@ $('printAlign').onclick = () => withCardAction(async () => {
 });
 for (const [key, id] of Object.entries(controls)) {
   $(id).onchange = e => withCardAction(async () => {
+    if (key === 'watermark' && (session.archivePlate?.embeddedWatermark || !watermarkChoices.has(e.target.value))) {
+      e.target.value = session.settings.watermark;
+      return;
+    }
     const previous = session.settings[key];
     session.settings[key] = e.target.value;
     try {
@@ -560,7 +568,7 @@ $('printPDF').onclick = () => withCardAction(async () => {
   session.printOutput = await renderCard(session,true);
   const sheet = makePrintSheet(productionArtwork(session), cut, {
     shape: settings.shape, tolerance: 0, bleed: printBleed(session.card),
-    showRoundTrimGuide: !session.archivePlate && !isRestoredPrintImage(session.card), preservePreparedWindow: !!session.archivePlate || session.filledWideWindow, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: !session.archivePlate?.embeddedWatermark, watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
+    showRoundTrimGuide: !session.archivePlate && !isRestoredPrintImage(session.card), preservePreparedWindow: !!session.archivePlate || session.filledWideWindow, windowGuideInset: 0, trimMargin: ADMIN_PRINT_TRIM_MARGIN, watermark: showWatermark(session), watermarkText: settings.watermark, footerCenterY: PRINT_FOOTER_CENTER_Y, cutoutCard: card, production,
   });
   const pdf = makePDF(await encodePrintImage(sheet), sheet.width, sheet.height, 83, 118,
     production ? { cutContour: printWindowRect(cut) } : undefined);
@@ -704,7 +712,7 @@ function productionTile(current, {funyframe = false} = {}) {
   const g = tile.getContext('2d');
   g.drawImage(productionArtwork(current),0,0,tile.width,tile.height);
   if (!funyframe && !current.filledWideWindow) drawProductionWindow(g, {x:(bleed+PRINT_SIDE_MARGIN+cut.x)*scale,y:(bleed+PRINT_TOP_MARGIN+cut.y)*scale,w:cut.w*scale,h:cut.h*scale}, scale);
-  drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark,PRINT_FOOTER_CENTER_Y);
+  if (showWatermark(current)) drawArtWatermark(g,(bleed+PRINT_SIDE_MARGIN)*scale,(bleed+PRINT_TOP_MARGIN)*scale,63*scale,88*scale,current.settings.watermark,PRINT_FOOTER_CENTER_Y);
   return tile;
 }
 async function connect() {

@@ -2,7 +2,7 @@
 export function createArtCoinUI({invoke,onStart,onNavigate,onError,text=s=>s}){
  const $=id=>document.getElementById(id);let quote=null,selected=null,loading=false;
  const dialog=$('coinUseDialog');
- function sync(q){quote=q;if(!q)return;$('artCoinSummary').hidden=!!q.admin;document.querySelectorAll('[data-coin-guide]').forEach(e=>e.hidden=!!q.admin);$('artCoinBalance').textContent=Number(q.available??q.balance??0).toLocaleString()+'코인 보유';}
+ function sync(q){quote=q;if(!q)return;if(q.admin)$('artCoinSummary').hidden=true;document.querySelectorAll('[data-coin-guide]').forEach(e=>e.hidden=!!q.admin);$('artCoinBalance').textContent=Number(q.available??q.balance??0).toLocaleString()+'코인 보유';}
  async function refresh(){const r=await invoke({action:'billing_status'});sync(r.billing);return quote;}
  function render(){
   const cost=quote.cost,available=quote.available??quote.balance,low=available<cost;

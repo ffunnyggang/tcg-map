@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja27-tropical1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA21_TROPICAL_ID,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja17-en039-window1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -44,8 +44,8 @@ let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', 
 let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
-const multipleAlternatives=ref=>ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
-const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const multipleAlternatives=ref=>ref==='m6a-ja-033'||ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
+const jaDraftId=(ref,imageId)=>imageId===JA17_EN039_ID||imageId===JA21_TROPICAL_ID||imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
 const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
 const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
   ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
@@ -102,8 +102,8 @@ async function api(path, { body, retry = true } = {}) {
   if (!response.ok) throw Object.assign(new Error(result?.error || '요청을 완료하지 못했어요.'), { status: response.status });
   return result;
 }
-const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true },
+const invoke = (action, id, imageId, print_plate_id, print_saved_option_id) => api('/functions/v1/pikachu-print-assets', {
+  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -413,7 +413,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
     prepared.initial = [...(archivePlate.nativeMatrix || ARCHIVE_NATIVE_MATRIX)];
-    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja21Window || canAdjustJA21(previous.matrix)) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate));
+    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja21Window || canAdjustJA21(previous.matrix)) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate)) && (!archivePlate.wideOriginalWindow || canAdjustJA17EN039(previous.matrix));
     prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
     if (!canRestore) {
       if(requireSavedAlignment) throw new Error('확정한 일러스트 창이나 연결 위치가 변경됐어요. 해당 카드에서 다시 확정해 주세요.');
@@ -471,7 +471,7 @@ async function loadCard(index, imageId) {
     const wantsJA = isAdminJAAlternative(imageId, referenceId);
     const wantsArchive = wantsJA || isArchivePlateId(imageId, referenceId);
     let payload;
-    try { payload = await invoke('card', referenceId, wantsArchive ? undefined : imageId); }
+    try { payload = await invoke('card', referenceId, wantsArchive ? undefined : imageId, undefined, pageRecord?.imageId===JA27_TROPICAL_ID?JA27_TROPICAL_ID:undefined); }
     catch (error) {
       if (wantsArchive || !imageId || error.status !== 404) throw error;
       payload = await invoke('card', referenceId);
@@ -493,12 +493,14 @@ async function loadCard(index, imageId) {
     const dateFormat = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' });
     if (card.imageOptions?.length) {
       const needsSelection = !card.illustration;
-      $('printImage').replaceChildren(...card.imageOptions.map(option => {
+      $('printImage').replaceChildren(...card.imageOptions.filter(option=>!option.legacyHidden||option.id===card.illustration?.id).map(option => {
         const date = new Date(option.createdAt);
         const suffix = !['standard','import','plate2mm','jaWide'].includes(option.kind) && Number.isFinite(+date) ? ' · ' + dateFormat.format(date) : '';
         const label = option.kind === 'jaWide' ? option.label : option.kind === 'plate2mm' ? option.label || '보관 출력판 · 2mm 블리드'
           : option.kind === 'import' ? option.label : kinds[option.kind] || '저장 이미지';
-        return new Option(label + suffix, option.id);
+        const item=new Option(label + suffix, option.id);
+        if(option.legacyHidden)item.disabled=true;
+        return item;
       }));
       if (needsSelection) {
         const placeholder = new Option('출력용 일러스트를 선택해 주세요', '');
@@ -508,7 +510,7 @@ async function loadCard(index, imageId) {
       $('printImage').value = card.illustration?.id || '';
     }
     const previous = pageRecord?.imageId === card.illustration?.id && pageRecord ? pageRecord : archivePlate ? (wantsJA ? jaAlternativeSaved[jaDraftId(card.id,imageId)] : archiveSaved[card.id]) || {
-      ...saved[card.id], ...((archivePlate.submittedTrim||archivePlate.ja21Window) ? {language:'off',symbol:'off',border:'off',
+      ...saved[card.id], ...((archivePlate.submittedTrim||archivePlate.ja21Window||archivePlate.wideOriginalWindow) ? {language:'off',symbol:'off',border:'off',
         ...(!archivePlate.embeddedWatermark ? {watermark:'funyframe'} : {}),
       } : {}), confirmed:false,
     } : ((ordinaryDrafts[card.id]?.imageId === card.illustration?.id && ordinaryDrafts[card.id]) || saved[card.id] || {});
@@ -602,6 +604,9 @@ $('printAlign').onclick = () => withCardAction(async () => {
     ...(archivePlate?.submittedSpec?.aperture ? {
       renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
       canApply: matrix => submittedFits(matrix,archivePlate),
+    } : archivePlate?.wideOriginalWindow ? {
+      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA17EN039(matrix) ? matrix : session.matrix),
+      canApply: canAdjustJA17EN039,
     } : archivePlate?.ja21Window ? {
       renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA21(matrix) ? matrix : session.matrix),
       canApply: canAdjustJA21,
@@ -617,6 +622,7 @@ $('printAlign').onclick = () => withCardAction(async () => {
     } : {}),
   });
   if (!picked) return;
+  if (archivePlate?.wideOriginalWindow && !canAdjustJA17EN039(picked.matrix)) throw new Error('재단과 블리드 영역을 덮도록 바깥 일러스트 위치를 조절해 주세요.');
   if (archivePlate?.ja21Window && !canAdjustJA21(picked.matrix)) throw new Error('흰 창과 칼선은 고정돼요. ±1 mm 범위 안에서 조절해 주세요.');
   if (archivePlate?.ja16Pinned && !canAdjustJA16(picked.matrix)) throw new Error('흰 창과 워터마크는 고정돼요. ±2 mm 범위 안에서 조절해 주세요.');
   if (archivePlate?.submittedTrim && !submittedFits(picked.matrix,archivePlate)) throw new Error('일러스트와 워터마크가 재단 영역을 벗어나지 않도록 조절해 주세요.');
@@ -731,7 +737,7 @@ function clearSettingsExport() {
 async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, alternative, preflight=false) {
   if (!catalog.some(card=>card.id===referenceId)) return {status:'unavailable'};
   let result;
-  try { result=await invoke('card',referenceId,alternative?undefined:illustrationId); }
+  try { result=await invoke('card',referenceId,alternative?undefined:illustrationId,undefined,illustrationId===JA27_TROPICAL_ID?illustrationId:undefined); }
   catch(error) { if(error.status===404) return {status:'unavailable'}; throw error; }
   const card=result?.card;
   const option=card?.imageOptions?.find(item=>item.id===illustrationId);
@@ -747,7 +753,13 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height,true):null;
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
-    const tropical=illustrationId===JA27_TROPICAL_ID,originalWindow=tropical||illustrationId===JA27_ORIGINAL_ID;
+    if(illustrationId===JA17_EN039_ID){
+      if(!canAdjustJA17EN039(matrix)||width!==1536||height!==2136||embeddedWatermark!==false||windowKnockout!==false||
+         option.sourceKind!=='en039-original-window')return {status:'invalid'};
+      const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
+      return {nativeSource:{layout:'ja-wide-original-window',width,height,embeddedWatermark,windowKnockout,originalWindow:true},rawVerification};
+    }
+    const tropical=illustrationId===JA27_TROPICAL_ID||illustrationId===JA21_TROPICAL_ID,originalWindow=tropical||illustrationId===JA27_ORIGINAL_ID;
     const submitted=option.sourceKind==='submitted-trim'||(originalWindow&&option.sourceKind===(tropical?'submitted-original-window-tropical':'submitted-original-window'));
     const extra=illustrationId===JA06_EXTRA_ID;
     const dimensions=tropical?[535,800]:originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
@@ -772,7 +784,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
 async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
-  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+  if(![JA17_EN039_ID,JA21_TROPICAL_ID,JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
     if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||
@@ -848,7 +860,7 @@ function validConfirmedPrintRecord(record){
 }
 async function prepareConfirmedPrintCard(id, previous, funyframe=false){
   const imageId=previous.imageId, ja=isAdminJAAlternative(imageId,id), archived=isArchivePlateId(imageId,id);
-  const {card}=await invoke('card',id,ja||archived?undefined:imageId);
+  const {card}=await invoke('card',id,ja||archived?undefined:imageId,undefined,imageId===JA27_TROPICAL_ID?imageId:undefined);
   if(card.id!==id)throw new Error('확정한 카드와 출력 일러스트가 일치하지 않아요.');
   let archivePlate=null;
   if(ja||archived){
@@ -939,11 +951,13 @@ $('printFunyframeDownload').onclick = event => {
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport, source, cut}) {
-  if (archivePlate?.submittedTrim) {
-    const full=withProductionCardBleed(printOutput || output,canvas,{
-      artwork:archivePlate.bleedArtwork,matrix:submittedBleedMatrix(matrix,archivePlate.submittedSpec||undefined),
-      bleed:ARCHIVE_BLEED_MM,foil:printFoil,shape:settings.shape,
-    });
+  if (archivePlate?.submittedTrim || archivePlate?.wideOriginalWindow) {
+    const full=archivePlate.wideOriginalWindow ?
+      composeArchiveProduction(archivePlate,printOutput||output,canvas,{matrix,foil:printFoil,shape:settings.shape}) :
+      withProductionCardBleed(printOutput || output,canvas,{
+        artwork:archivePlate.bleedArtwork,matrix:submittedBleedMatrix(matrix,archivePlate.submittedSpec||undefined),
+        bleed:ARCHIVE_BLEED_MM,foil:printFoil,shape:settings.shape,
+      });
     if(archivePlate.originalWindow){
       // The card-native window remains stationary even with optional layers.
       const {x,y,right,bottom}=cutBounds(cut,1008,1408);

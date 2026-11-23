@@ -8,6 +8,7 @@ export const JA27_ORIGINAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-wind
 export const JA27_TROPICAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-window-v2';
 export const JA21_TROPICAL_ID='ja-wide-print:m6a-ja-037:original-window-tropical-v1';
 export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
+export const JA14_ORIGINAL_ID='ja-wide-print:m6a-ja-030:original-window-v1';
 export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
 const submittedSpec=(width,height,pad)=>{
@@ -16,6 +17,7 @@ const submittedSpec=(width,height,pad)=>{
 };
 const standardSpec=submittedSpec(506,704,18);
 const extraSpec=submittedSpec(800,1112,27);
+export const ja14OriginalSpec=submittedSpec(512,712,18);
 const ja27Spec=submittedSpec(800,1113,27);
 const tropicalBase=submittedSpec(535,800,18);
 const tropicalOrigin=[...tropicalBase.origin];
@@ -48,6 +50,7 @@ function validCut(r){
 }
 export function isJAPrintAlternative(id, ref) {
   if (id===JA27_ORIGINAL_ID||id===JA27_TROPICAL_ID) return ref===JA27_ORIGINAL_REF;
+  if (id===JA14_ORIGINAL_ID) return ref==='m6a-ja-030';
   if (id===JA21_TROPICAL_ID) return ref==='m6a-ja-037';
   if (id===JA17_EN039_ID) return ref==='m6a-ja-033';
   if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
@@ -78,7 +81,8 @@ export function canAdjustJA17EN039(m){
 }
 // Project proposed pan/zoom into the range that preserves paper coverage and
 // keeps the authored tropical opening under the fixed original-card window.
-function limitsAt(scale,tropical){
+function limitsAt(scale,tropical,spec){
+  if(spec)return [1016-spec.width*scale,-8,1416-spec.height*scale,-8];
   if(!tropical)return [1048-W*scale,-40,1448-H*scale,-40];
   const {x,y,w,h}=JA27_TROPICAL_APERTURE,pad=2,gap=1e-5;
   return [Math.max(1016-535*scale,5.9*16-(x-pad)*scale+gap),
@@ -96,28 +100,32 @@ const tropicalMax=(()=>{
   }
   return low;
 })();
-export function constrainPinnedWindow(matrix,tropical){
-  const min=tropical?ja27TropicalSpec.scale:Math.max(1088/W,1488/H);
-  const max=tropical?tropicalMax:1.5;
-  const a=clamp(matrix[0],min,max),[left,right,top,bottom]=limitsAt(a,tropical);
+export function constrainPinnedWindow(matrix,tropical,spec=null){
+  const min=spec?.scale??(tropical?ja27TropicalSpec.scale:Math.max(1088/W,1488/H));
+  const max=spec?min*1.25:tropical?tropicalMax:1.5;
+  const a=clamp(matrix[0],min,max),[left,right,top,bottom]=limitsAt(a,tropical,spec);
   return {matrix:[a,0,0,a,clamp(matrix[4],left,right),clamp(matrix[5],top,bottom)],
-    min:a<=min+1e-8,max:a>=max-1e-8,percent:Math.round(a/(tropical?min:1)*100)};
+    min:a<=min+1e-8,max:a>=max-1e-8,percent:Math.round(a/(tropical||spec?min:1)*100)};
 }
 const movedTropicalInitial=(()=>{
   const [a,,,,x]=ja27TropicalSpec.origin,k=PINNED_ZOOM_STEP;
   return Object.freeze(constrainPinnedWindow([a*k,0,0,a*k,504+(x-504)*k,404.8-(JA27_TROPICAL_APERTURE.y+JA27_TROPICAL_APERTURE.h/2)*a*k],true).matrix);
 })();
+const ja14OriginalInitial=(()=>{
+  const [a,,,,x,y]=ja14OriginalSpec.origin,k=PINNED_ZOOM_STEP;
+  return Object.freeze(constrainPinnedWindow([a*k,0,0,a*k,504+(x-504)*k,704+(y-704)*k],false,ja14OriginalSpec).matrix);
+})();
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
-  const plate=body?.plate, tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||id===JA27_ORIGINAL_ID;
+  const plate=body?.plate, ja14Original=id===JA14_ORIGINAL_ID,tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||ja14Original||id===JA27_ORIGINAL_ID;
   const is16=ref==='m6a-ja-032', isSubmitted=originalWindow||Object.hasOwn(submittedMarks,ref);
   const extra=id===JA06_EXTRA_ID;
-  const spec=tropical?ja27TropicalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
+  const spec=tropical?ja27TropicalSpec:ja14Original?ja14OriginalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
   const cleanSubmitted=(originalWindow||extra||ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;
   const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
   const cutRect=oldCut;
   const [width,height]=isSubmitted?[spec.width,spec.height]:[W,H];
-  const origin=id===JA21_TROPICAL_ID?movedTropicalInitial:isSubmitted?spec.origin:matrix;
+  const origin=id===JA21_TROPICAL_ID?movedTropicalInitial:ja14Original?ja14OriginalInitial:isSubmitted?spec.origin:matrix;
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
       ((originalWindow || extra || ref==='m6a-ja-029') && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
@@ -134,6 +142,6 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
     ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas,spec):null,embeddedWatermark:baked,
-    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,
+    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,ja14Original,
     embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

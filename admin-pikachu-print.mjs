@@ -1,13 +1,13 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja06-extra1';
+import {JA06_EXTRA_ID,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja27-original1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
-import { composeLayers } from './card-overlay-layers.mjs?v=20261120-footer-exact1';
+import { composeLayers, cutBounds } from './card-overlay-layers.mjs?v=20261120-footer-exact1';
 import { alignWide, WIDE } from './card-overlay-wide.mjs?v=20261107-wide3';
 import { anniversarySymbolPlacement, findAnniversarySymbolCenter, PIKACHU_ANNIVERSARY_PLACEMENT, usesCenteredAnniversarySymbol } from './card-overlay-symbol.mjs?v=20261110-center1';
 import { defaultArtWindow, windowPresetType } from './card-art-window-presets.mjs?v=20261108-presets1';
@@ -44,8 +44,8 @@ let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', 
 let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
-const multipleAlternatives=ref=>ref===JA06_REF||ref===JA21_WINDOW_REF;
-const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const multipleAlternatives=ref=>ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
+const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
 const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
 const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
   ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true },
+  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -204,7 +204,7 @@ function save({ confirmOnPage = false } = {}) {
     return;
   }
   const previousActive = confirmedPageRecord(id);
-  // Preserve the exact previous confirmed option when card 06 or 21 gets a new
+  // Preserve the exact previous confirmed option when a multi-alternative card gets a new
   // active option. Store both in the same atomic browser write.
   if (multipleAlternatives(id) && previousActive) {
     const {otherOptions, ...prior}=previousActive;
@@ -334,7 +334,7 @@ async function renderCard(current, printing=false) {
   if(printing)current.printFoil=frame ? await printFoil(border) : null;
   // The archive has its own complete card and any intentional white knockout.
   // A blank source prevents the legacy original-card window from replacing it.
-  const layerSource = (current.archivePlate || current.filledWideWindow) ? canvas(1008,1408) : source;
+  const layerSource = ((current.archivePlate&&!current.archivePlate.originalWindow) || current.filledWideWindow) ? canvas(1008,1408) : source;
   const background = printing ? canvas(1008,1408)
     : current.archivePlate?.ja21Window ? renderJA21WindowAlignment(current.archivePlate,matrix,canvas)
     : current.archivePlate?.ja16Pinned ? renderJA16PinnedAlignment(current.archivePlate, matrix, canvas)
@@ -522,7 +522,8 @@ async function loadCard(index, imageId) {
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
-    if (archivePlate?.ja21Window) $('printWindow').textContent += ' · 흰 창·칼선 고정 · 일러스트 ±1 mm 범위 조절';
+    if (archivePlate?.originalWindow) $('printWindow').textContent += ' · 창 안 원본 카드 고정 · 확대하면 바깥 일러스트 위치 조절 가능';
+    else if (archivePlate?.ja21Window) $('printWindow').textContent += ' · 흰 창·칼선 고정 · 일러스트 ±1 mm 범위 조절';
     else if (archivePlate?.submittedTrim) $('printWindow').textContent += archivePlate.embeddedWatermark
       ? ' · 첨부 워터마크 유지 · 확대하면 위치 조절 가능'
       : ' · 워터마크 선택 가능 · 확대하면 위치 조절 가능';
@@ -742,17 +743,18 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height,true):null;
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
-    const submitted=option.sourceKind==='submitted-trim';
+    const originalWindow=illustrationId===JA27_ORIGINAL_ID;
+    const submitted=option.sourceKind==='submitted-trim'||(originalWindow&&option.sourceKind==='submitted-original-window');
     const extra=illustrationId===JA06_EXTRA_ID;
-    const dimensions=extra?[800,1112]:submitted?[506,704]:[1536,2136];
+    const dimensions=originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
     if(width!==dimensions[0]||height!==dimensions[1]||typeof embeddedWatermark!=='boolean'||typeof windowKnockout!=='boolean'||
-      (extra && (!submitted||embeddedWatermark||windowKnockout)))return {status:'invalid'};
-    const spec=extra?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
+      ((extra||originalWindow) && (!submitted||embeddedWatermark||windowKnockout)))return {status:'invalid'};
+    const spec=extra||originalWindow?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
     if(!coversArchiveTrim(matrix,width,height) ||
-       (submitted && !canAdjustSubmittedJA(matrix,spec,!extra)) ||
+       (submitted && !canAdjustSubmittedJA(matrix,spec,!extra&&!originalWindow)) ||
        (referenceId==='m6a-ja-032' && !canAdjustJA16(matrix)))return {status:'invalid'};
     const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
-    return {nativeSource:{layout:submitted?'submitted-trim':'ja-wide',width,height,embeddedWatermark,windowKnockout},rawVerification};
+    return {nativeSource:{layout:originalWindow?'submitted-original-window':submitted?'submitted-trim':'ja-wide',width,height,embeddedWatermark,windowKnockout,...(originalWindow?{originalWindow:true}:{})},rawVerification};
   }
   if(!['standard','face','history'].includes(option.kind))return {status:'unavailable'};
   const {width,height,hasGeneratedOverscan}=card.illustration;
@@ -765,7 +767,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
 async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
-  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
     if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||
@@ -931,10 +933,20 @@ $('printFunyframeDownload').onclick = event => {
   }
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
-function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport}) {
-  if (archivePlate?.submittedTrim) return withProductionCardBleed(printOutput || output, canvas, {
-    artwork:archivePlate.bleedArtwork, matrix:submittedBleedMatrix(matrix, archivePlate.submittedSpec || undefined), bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,
-  });
+function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport, source, cut}) {
+  if (archivePlate?.submittedTrim) {
+    const full=withProductionCardBleed(printOutput || output,canvas,{
+      artwork:archivePlate.bleedArtwork,matrix:submittedBleedMatrix(matrix,archivePlate.submittedSpec||undefined),
+      bleed:ARCHIVE_BLEED_MM,foil:printFoil,shape:settings.shape,
+    });
+    if(archivePlate.originalWindow){
+      // The card-native window remains stationary even with optional layers.
+      const {x,y,right,bottom}=cutBounds(cut,1008,1408);
+      const dx=(ARCHIVE_BLEED_MM+PRINT_SIDE_MARGIN)*16,dy=(ARCHIVE_BLEED_MM+PRINT_TOP_MARGIN)*16;
+      full.getContext('2d').drawImage(source,x,y,right-x,bottom-y,x+dx,y+dy,right-x,bottom-y);
+    }
+    return full;
+  }
   if (archivePlate?.ja21Window) {
     const artwork=renderJA21WindowPlate(archivePlate,matrix,canvas);
     const full=withProductionCardBleed(printOutput||output,canvas,{

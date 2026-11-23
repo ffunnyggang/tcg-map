@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja17-ja21-zoom1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja14-window1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -44,14 +44,14 @@ let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', 
 let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
-const multipleAlternatives=ref=>ref==='m6a-ja-033'||ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
-const jaDraftId=(ref,imageId)=>imageId===JA17_EN039_ID||imageId===JA21_TROPICAL_ID||imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const multipleAlternatives=ref=>ref==='m6a-ja-030'||ref==='m6a-ja-033'||ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
+const jaDraftId=(ref,imageId)=>imageId===JA14_ORIGINAL_ID||imageId===JA17_EN039_ID||imageId===JA21_TROPICAL_ID||imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
 const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
 const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
   ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
 // Keep old watermark/placement validation identical; only the new clean
 // source has a different raster size and no baked-footer constraint.
-const submittedFits=(matrix,plate)=>(plate.submittedSpec?.width===800||plate.submittedSpec?.aperture)
+const submittedFits=(matrix,plate)=>(plate.submittedSpec?.width===800||plate.submittedSpec?.aperture||plate.ja14Original)
   ? canAdjustSubmittedJA(matrix,plate.submittedSpec,false) : canAdjustSubmittedJA(matrix);
 const VIEW_PX_MM = 8;
 const SOURCE_WIDTH_MM = 63, SOURCE_HEIGHT_MM = 88;
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id, print_saved_option_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true },
+  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -598,13 +598,13 @@ $('printAlign').onclick = () => withCardAction(async () => {
   const {archivePlate, illustration, wideImport} = session;
 
   const movedTropical=session.card.illustration?.id===JA21_TROPICAL_ID;
-  const pinnedZoom=archivePlate?.wideOriginalWindow || movedTropical;
+  const pinnedZoom=archivePlate?.wideOriginalWindow || movedTropical || archivePlate?.ja14Original;
   const picked = await reviewMobileAlignment({
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
-    ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
-    ...(archivePlate?.submittedSpec?.aperture ? {
+    ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical,archivePlate.ja14Original?ja14OriginalSpec:null),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
+    ...(archivePlate?.submittedSpec?.aperture || archivePlate?.ja14Original ? {
       renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
       canApply: matrix => submittedFits(matrix,archivePlate),
     } : archivePlate?.wideOriginalWindow ? {
@@ -762,14 +762,14 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
       return {nativeSource:{layout:'ja-wide-original-window',width,height,embeddedWatermark,windowKnockout,originalWindow:true},rawVerification};
     }
-    const tropical=illustrationId===JA27_TROPICAL_ID||illustrationId===JA21_TROPICAL_ID,originalWindow=tropical||illustrationId===JA27_ORIGINAL_ID;
+    const ja14Original=illustrationId===JA14_ORIGINAL_ID,tropical=illustrationId===JA27_TROPICAL_ID||illustrationId===JA21_TROPICAL_ID,originalWindow=tropical||ja14Original||illustrationId===JA27_ORIGINAL_ID;
     const submitted=option.sourceKind==='submitted-trim'||(originalWindow&&option.sourceKind===(tropical?'submitted-original-window-tropical':'submitted-original-window'));
     const extra=illustrationId===JA06_EXTRA_ID;
-    const dimensions=tropical?[535,800]:originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
+    const dimensions=tropical?[535,800]:ja14Original?[512,712]:originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
     if(width!==dimensions[0]||height!==dimensions[1]||typeof embeddedWatermark!=='boolean'||typeof windowKnockout!=='boolean'||
       ((extra||originalWindow) && (!submitted||embeddedWatermark||windowKnockout))||
       (tropical&&Object.keys(JA27_TROPICAL_APERTURE).some(key=>option.aperturePx?.[key]!==JA27_TROPICAL_APERTURE[key])))return {status:'invalid'};
-    const spec=tropical?ja27TropicalSpec:extra||originalWindow?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
+    const spec=tropical?ja27TropicalSpec:ja14Original?ja14OriginalSpec:extra||originalWindow?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
     if(!coversArchiveTrim(matrix,width,height) ||
        (submitted && !canAdjustSubmittedJA(matrix,spec,!extra&&!originalWindow)) ||
        (referenceId==='m6a-ja-032' && !canAdjustJA16(matrix)))return {status:'invalid'};
@@ -787,7 +787,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
 async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
-  if(![JA17_EN039_ID,JA21_TROPICAL_ID,JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+  if(![JA14_ORIGINAL_ID,JA17_EN039_ID,JA21_TROPICAL_ID,JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
     if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||

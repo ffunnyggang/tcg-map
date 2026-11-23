@@ -1,9 +1,9 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA21_TROPICAL_ID,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja17-en039-window1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja17-ja21-zoom1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
-import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
+import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -597,10 +597,13 @@ function reviewPreparedArtwork(matrix) {
 $('printAlign').onclick = () => withCardAction(async () => {
   const {archivePlate, illustration, wideImport} = session;
 
+  const movedTropical=session.card.illustration?.id===JA21_TROPICAL_ID;
+  const pinnedZoom=archivePlate?.wideOriginalWindow || movedTropical;
   const picked = await reviewMobileAlignment({
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
+    ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
     ...(archivePlate?.submittedSpec?.aperture ? {
       renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
       canApply: matrix => submittedFits(matrix,archivePlate),

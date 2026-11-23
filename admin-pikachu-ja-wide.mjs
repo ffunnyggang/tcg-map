@@ -5,6 +5,8 @@ const submittedMarks=Object.freeze({
 });
 export const JA27_ORIGINAL_REF='m6a-ja-043';
 export const JA27_ORIGINAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-window-v1';
+export const JA27_TROPICAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-window-v2';
+export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
 const submittedSpec=(width,height,pad)=>{
   const scale=Math.max(1024/width,1424/height)*(1+1e-9);
@@ -13,6 +15,12 @@ const submittedSpec=(width,height,pad)=>{
 const standardSpec=submittedSpec(506,704,18);
 const extraSpec=submittedSpec(800,1112,27);
 const ja27Spec=submittedSpec(800,1113,27);
+const tropicalBase=submittedSpec(535,800,18);
+const tropicalOrigin=[...tropicalBase.origin];
+// A minute vertical bias leaves usable room on either side of the authored
+// white area without stretching the illustration.
+tropicalOrigin[5]=Math.max(tropicalOrigin[5],9.7*16+8-(JA27_TROPICAL_APERTURE.y-2)*tropicalBase.scale);
+export const ja27TropicalSpec=Object.freeze({...tropicalBase,origin:Object.freeze(tropicalOrigin),aperture:JA27_TROPICAL_APERTURE});
 // All supplied watermarks fit this pixel rectangle. Keep it within
 // the trim during zoom / translation; the 2mm bleed may extend edge pixels.
 const FOOTER_XYXY=[425,686,476,700];
@@ -37,7 +45,7 @@ function validCut(r){
   return r&&[r.x,r.y,r.w,r.h].every(Number.isFinite)&&r.x>=0&&r.y>=0&&r.w>4&&r.h>4&&r.x+r.w<=63&&r.y+r.h<=88;
 }
 export function isJAPrintAlternative(id, ref) {
-  if (id===JA27_ORIGINAL_ID) return ref===JA27_ORIGINAL_REF;
+  if (id===JA27_ORIGINAL_ID||id===JA27_TROPICAL_ID) return ref===JA27_ORIGINAL_REF;
   if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
   return (ref==='m6a-ja-032'||ref==='m6a-ja-033'||Object.hasOwn(submittedMarks,ref)) && id==='ja-wide-print:'+ref;
 }
@@ -46,15 +54,22 @@ export function canAdjustSubmittedJA(m,spec=standardSpec,hasBakedFooter=true){
   const [a,b,c,d,x,y]=m;
   const {width,height,scale}=spec;
   if(a<scale*(1-1e-8)||a>scale*1.25||b||c||d!==a)return false;
+  if(spec.aperture){
+    // Keep the complete authored white opening, including resampling gutter,
+    // beneath the immovable original-card illustration window.
+    const {x:left,y:top,w,h}=spec.aperture, gutter=2;
+    if(x+(left-gutter)*a<5.9*16||x+(left+w+gutter)*a>(5.9+51.2)*16||
+       y+(top-gutter)*a<9.7*16||y+(top+h+gutter)*a>(9.7+31.2)*16)return false;
+  }
   const [l,t,r,bot]=FOOTER_XYXY;
   return x<=-8&&y<=-8&&x+width*a>=1016&&y+height*a>=1416&&
     (!hasBakedFooter || (x+l*a>=-8&&y+t*a>=-8&&x+r*a<=1016&&y+bot*a<=1416));
 }
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
-  const plate=body?.plate, originalWindow=id===JA27_ORIGINAL_ID;
+  const plate=body?.plate, tropical=id===JA27_TROPICAL_ID,originalWindow=tropical||id===JA27_ORIGINAL_ID;
   const is16=ref==='m6a-ja-032', isSubmitted=originalWindow||Object.hasOwn(submittedMarks,ref);
   const extra=id===JA06_EXTRA_ID;
-  const spec=originalWindow?ja27Spec:extra?extraSpec:standardSpec;
+  const spec=tropical?ja27TropicalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
   const cleanSubmitted=(originalWindow||extra||ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;
   const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
@@ -64,7 +79,8 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
       ((originalWindow || extra || ref==='m6a-ja-029') && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
-      (isSubmitted && (plate.sourceKind!==(originalWindow?'submitted-original-window':'submitted-trim')||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
+      (isSubmitted && (plate.sourceKind!==(tropical?'submitted-original-window-tropical':originalWindow?'submitted-original-window':'submitted-trim')||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
+      (tropical&&Object.keys(JA27_TROPICAL_APERTURE).some(key=>plate.aperturePx?.[key]!==JA27_TROPICAL_APERTURE[key])) ||
       !Object.keys(cutRect).every(key=>plate.cutRect?.[key]===cutRect[key]) ||
       typeof plate.wideWebp!=='string' || !plate.wideWebp.startsWith('data:image/webp;base64,')) throw new Error('확장 일러스트 인쇄 파일 규격을 확인해 주세요.');
   const artwork=await decode(plate.wideWebp);

@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja27-original1';
+import {JA06_EXTRA_ID,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261123-ja27-tropical1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261122-print-fidelity1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -45,13 +45,13 @@ let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUr
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
 const multipleAlternatives=ref=>ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
-const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
 const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
 const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
   ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
 // Keep old watermark/placement validation identical; only the new clean
 // source has a different raster size and no baked-footer constraint.
-const submittedFits=(matrix,plate)=>plate.submittedSpec?.width===800
+const submittedFits=(matrix,plate)=>(plate.submittedSpec?.width===800||plate.submittedSpec?.aperture)
   ? canAdjustSubmittedJA(matrix,plate.submittedSpec,false) : canAdjustSubmittedJA(matrix);
 const VIEW_PX_MM = 8;
 const SOURCE_WIDTH_MM = 63, SOURCE_HEIGHT_MM = 88;
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true },
+  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -522,7 +522,8 @@ async function loadCard(index, imageId) {
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
-    if (archivePlate?.originalWindow) $('printWindow').textContent += ' · 창 안 원본 카드 고정 · 확대하면 바깥 일러스트 위치 조절 가능';
+    if (archivePlate?.submittedSpec?.aperture) $('printWindow').textContent += ' · 창 안 원본 카드 고정 · 흰 여백이 나오지 않는 범위에서 조절';
+    else if (archivePlate?.originalWindow) $('printWindow').textContent += ' · 창 안 원본 카드 고정 · 확대하면 바깥 일러스트 위치 조절 가능';
     else if (archivePlate?.ja21Window) $('printWindow').textContent += ' · 흰 창·칼선 고정 · 일러스트 ±1 mm 범위 조절';
     else if (archivePlate?.submittedTrim) $('printWindow').textContent += archivePlate.embeddedWatermark
       ? ' · 첨부 워터마크 유지 · 확대하면 위치 조절 가능'
@@ -598,7 +599,10 @@ $('printAlign').onclick = () => withCardAction(async () => {
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
-    ...(archivePlate?.ja21Window ? {
+    ...(archivePlate?.submittedSpec?.aperture ? {
+      renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
+      canApply: matrix => submittedFits(matrix,archivePlate),
+    } : archivePlate?.ja21Window ? {
       renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA21(matrix) ? matrix : session.matrix),
       canApply: canAdjustJA21,
     } : archivePlate?.ja16Pinned ? {
@@ -743,18 +747,19 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height,true):null;
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
-    const originalWindow=illustrationId===JA27_ORIGINAL_ID;
-    const submitted=option.sourceKind==='submitted-trim'||(originalWindow&&option.sourceKind==='submitted-original-window');
+    const tropical=illustrationId===JA27_TROPICAL_ID,originalWindow=tropical||illustrationId===JA27_ORIGINAL_ID;
+    const submitted=option.sourceKind==='submitted-trim'||(originalWindow&&option.sourceKind===(tropical?'submitted-original-window-tropical':'submitted-original-window'));
     const extra=illustrationId===JA06_EXTRA_ID;
-    const dimensions=originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
+    const dimensions=tropical?[535,800]:originalWindow?[800,1113]:extra?[800,1112]:submitted?[506,704]:[1536,2136];
     if(width!==dimensions[0]||height!==dimensions[1]||typeof embeddedWatermark!=='boolean'||typeof windowKnockout!=='boolean'||
-      ((extra||originalWindow) && (!submitted||embeddedWatermark||windowKnockout)))return {status:'invalid'};
-    const spec=extra||originalWindow?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
+      ((extra||originalWindow) && (!submitted||embeddedWatermark||windowKnockout))||
+      (tropical&&Object.keys(JA27_TROPICAL_APERTURE).some(key=>option.aperturePx?.[key]!==JA27_TROPICAL_APERTURE[key])))return {status:'invalid'};
+    const spec=tropical?ja27TropicalSpec:extra||originalWindow?{width,height,scale:Math.max(1024/width,1424/height)*(1+1e-9)}:undefined;
     if(!coversArchiveTrim(matrix,width,height) ||
        (submitted && !canAdjustSubmittedJA(matrix,spec,!extra&&!originalWindow)) ||
        (referenceId==='m6a-ja-032' && !canAdjustJA16(matrix)))return {status:'invalid'};
     const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
-    return {nativeSource:{layout:originalWindow?'submitted-original-window':submitted?'submitted-trim':'ja-wide',width,height,embeddedWatermark,windowKnockout,...(originalWindow?{originalWindow:true}:{})},rawVerification};
+    return {nativeSource:{layout:tropical?'submitted-original-window-tropical':originalWindow?'submitted-original-window':submitted?'submitted-trim':'ja-wide',width,height,embeddedWatermark,windowKnockout,...(originalWindow?{originalWindow:true}:{})},rawVerification};
   }
   if(!['standard','face','history'].includes(option.kind))return {status:'unavailable'};
   const {width,height,hasGeneratedOverscan}=card.illustration;
@@ -767,7 +772,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
 async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
-  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
     if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||

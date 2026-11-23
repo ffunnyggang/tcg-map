@@ -1,3 +1,4 @@
+import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
 import {JA06_EXTRA_ID,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261122-ja06-extra1';
@@ -43,7 +44,11 @@ let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', 
 let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
-const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID ? imageId : ref;
+const multipleAlternatives=ref=>ref===JA06_REF||ref===JA21_WINDOW_REF;
+const jaDraftId=(ref,imageId)=>imageId===JA06_EXTRA_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
+const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
+  ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
 // Keep old watermark/placement validation identical; only the new clean
 // source has a different raster size and no baked-footer constraint.
 const submittedFits=(matrix,plate)=>plate.submittedSpec?.width===800
@@ -98,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true },
+  body: { action, id, imageId, print_plate_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -199,9 +204,9 @@ function save({ confirmOnPage = false } = {}) {
     return;
   }
   const previousActive = confirmedPageRecord(id);
-  // Preserve the exact previous confirmed option when card 06 gets a new
+  // Preserve the exact previous confirmed option when card 06 or 21 gets a new
   // active option. Store both in the same atomic browser write.
-  if (id===JA06_REF && previousActive) {
+  if (multipleAlternatives(id) && previousActive) {
     const {otherOptions, ...prior}=previousActive;
     const records={...otherOptions};
     delete records[next.imageId];
@@ -331,6 +336,7 @@ async function renderCard(current, printing=false) {
   // A blank source prevents the legacy original-card window from replacing it.
   const layerSource = (current.archivePlate || current.filledWideWindow) ? canvas(1008,1408) : source;
   const background = printing ? canvas(1008,1408)
+    : current.archivePlate?.ja21Window ? renderJA21WindowAlignment(current.archivePlate,matrix,canvas)
     : current.archivePlate?.ja16Pinned ? renderJA16PinnedAlignment(current.archivePlate, matrix, canvas)
     : current.archivePlate ? renderArchiveAlignment(current.archivePlate, matrix, canvas) : renderManual(illustration, current.wideImport ? wideImportMatrix(matrix) : matrix, canvas);
   if (!background) throw new Error('일러스트 연결 위치가 올바르지 않아요. 다시 불러와 주세요.');
@@ -407,7 +413,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
     prepared.initial = [...(archivePlate.nativeMatrix || ARCHIVE_NATIVE_MATRIX)];
-    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate));
+    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja21Window || canAdjustJA21(previous.matrix)) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate));
     prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
     if (!canRestore) {
       if(requireSavedAlignment) throw new Error('확정한 일러스트 창이나 연결 위치가 변경됐어요. 해당 카드에서 다시 확정해 주세요.');
@@ -444,7 +450,7 @@ async function loadCard(index, imageId) {
   const id = catalog[index]?.id;
   const confirmation = confirmedPageRecord(id);
   const activeRecord = imageId === undefined || confirmation?.imageId === imageId ? confirmation : null;
-  const otherRecord=id===JA06_REF ? confirmation?.otherOptions?.[imageId] : null;
+  const otherRecord=multipleAlternatives(id) ? confirmation?.otherOptions?.[imageId] : null;
   const pageRecord=activeRecord || (otherRecord?.confirmed === true && otherRecord.imageId===imageId ? otherRecord : null);
   imageId ??= pageRecord?.imageId ?? saved[id]?.imageId;
   if (busy || !catalog[index]) return;
@@ -462,7 +468,7 @@ async function loadCard(index, imageId) {
   setStatus('카드와 저장된 레이어를 불러오고 있어요.');
   try {
     const referenceId = catalog[index].id;
-    const wantsJA = isJAPrintAlternative(imageId, referenceId);
+    const wantsJA = isAdminJAAlternative(imageId, referenceId);
     const wantsArchive = wantsJA || isArchivePlateId(imageId, referenceId);
     let payload;
     try { payload = await invoke('card', referenceId, wantsArchive ? undefined : imageId); }
@@ -479,7 +485,7 @@ async function loadCard(index, imageId) {
         missingConfirmedArtwork = true;
       } else {
         const plate = await invoke('card', referenceId, undefined, imageId);
-        archivePlate = await (wantsJA ? decodeJAPrintAlternative : decodeArchivePlate)(plate, referenceId, imageId, image, canvas);
+        archivePlate = await (wantsJA ? decodeAdminJAAlternative : decodeArchivePlate)(plate, referenceId, imageId, image, canvas);
         card.illustration = {...option, cutRect:archivePlate.cutRect};
       }
     }
@@ -502,7 +508,7 @@ async function loadCard(index, imageId) {
       $('printImage').value = card.illustration?.id || '';
     }
     const previous = pageRecord?.imageId === card.illustration?.id && pageRecord ? pageRecord : archivePlate ? (wantsJA ? jaAlternativeSaved[jaDraftId(card.id,imageId)] : archiveSaved[card.id]) || {
-      ...saved[card.id], ...(archivePlate.submittedTrim ? {language:'off',symbol:'off',border:'off',
+      ...saved[card.id], ...((archivePlate.submittedTrim||archivePlate.ja21Window) ? {language:'off',symbol:'off',border:'off',
         ...(!archivePlate.embeddedWatermark ? {watermark:'funyframe'} : {}),
       } : {}), confirmed:false,
     } : ((ordinaryDrafts[card.id]?.imageId === card.illustration?.id && ordinaryDrafts[card.id]) || saved[card.id] || {});
@@ -516,7 +522,8 @@ async function loadCard(index, imageId) {
     for (const language of languages) $('printText').add(new Option(labels[language] || LANGUAGES[language] || language.toUpperCase(), language));
     for (const [key, id] of Object.entries(controls)) $(id).value = settings[key];
     $('printWindow').textContent = cut ? `일러스트 창 ${cut.w.toFixed(1)} × ${cut.h.toFixed(1)} mm · 완성 64 × 89 mm · 사방 블리드 ${printBleed(card)} mm` : '원본 카드 이미지';
-    if (archivePlate?.submittedTrim) $('printWindow').textContent += archivePlate.embeddedWatermark
+    if (archivePlate?.ja21Window) $('printWindow').textContent += ' · 흰 창·칼선 고정 · 일러스트 ±1 mm 범위 조절';
+    else if (archivePlate?.submittedTrim) $('printWindow').textContent += archivePlate.embeddedWatermark
       ? ' · 첨부 워터마크 유지 · 확대하면 위치 조절 가능'
       : ' · 워터마크 선택 가능 · 확대하면 위치 조절 가능';
     else if (archivePlate?.jaAlternative) $('printWindow').textContent += archivePlate.ja16Pinned ? ' · 흰 창·워터마크 고정 · 일러스트 ±2 mm 범위 조절' : ' · JA 확장 일러스트';
@@ -590,7 +597,10 @@ $('printAlign').onclick = () => withCardAction(async () => {
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
-    ...(archivePlate?.ja16Pinned ? {
+    ...(archivePlate?.ja21Window ? {
+      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA21(matrix) ? matrix : session.matrix),
+      canApply: canAdjustJA21,
+    } : archivePlate?.ja16Pinned ? {
       renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA16(matrix) ? matrix : session.matrix),
       canApply: canAdjustJA16,
     } : archivePlate ? {
@@ -602,6 +612,7 @@ $('printAlign').onclick = () => withCardAction(async () => {
     } : {}),
   });
   if (!picked) return;
+  if (archivePlate?.ja21Window && !canAdjustJA21(picked.matrix)) throw new Error('흰 창과 칼선은 고정돼요. ±1 mm 범위 안에서 조절해 주세요.');
   if (archivePlate?.ja16Pinned && !canAdjustJA16(picked.matrix)) throw new Error('흰 창과 워터마크는 고정돼요. ±2 mm 범위 안에서 조절해 주세요.');
   if (archivePlate?.submittedTrim && !submittedFits(picked.matrix,archivePlate)) throw new Error('일러스트와 워터마크가 재단 영역을 벗어나지 않도록 조절해 주세요.');
   if (wideImport && !coversArchiveTrim(wideImportMatrix(picked.matrix), illustration.width, illustration.height)) throw new Error('재단 영역을 덮도록 일러스트 연결 위치를 확인해 주세요.');
@@ -725,6 +736,12 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
   if(!cut||Object.keys(cutMm).some(key=>cut[key]!==cutMm[key]))return {status:'invalid'};
   if(alternative){
     const {width,height,embeddedWatermark,windowKnockout}=option;
+    if(isJA21Window(illustrationId,referenceId)){
+      if(!canAdjustJA21(matrix)||width!==850||height!==1163||embeddedWatermark!==false||windowKnockout!==true||
+         option.sourceKind!=='submitted-window-plate')return {status:'invalid'};
+      const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height,true):null;
+      return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
+    }
     const submitted=option.sourceKind==='submitted-trim';
     const extra=illustrationId===JA06_EXTRA_ID;
     const dimensions=extra?[800,1112]:submitted?[506,704]:[1536,2136];
@@ -747,11 +764,11 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     matrixWidth:WIDE.width,matrixHeight:WIDE.height,padX:padded?WIDE.padX:0,padY:padded?WIDE.padY:0,
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
-async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height){
-  if(![JA06_EXTRA_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
+  if(![JA06_EXTRA_ID,JA21_WINDOW_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
-    if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==false||
+    if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||
        typeof plate.wideWebp!=='string'||!/^data:image\/webp;base64,UklGR/.test(plate.wideWebp)||plate.wideWebp.length>6000000)return {status:'unavailable'};
     const raw=await image(plate.wideWebp);
     const bytes=Uint8Array.from(atob(plate.wideWebp.slice(23)),char=>char.charCodeAt(0));
@@ -772,7 +789,7 @@ async function prepareSettingsExport(preflight=false) {
   status.textContent='저장된 일러스트와 연결 위치를 확인하고 있어요.';
   try{
     const report=await buildPrintSettingsExport({references:PIKACHU_SHEET_IDS,pageConfirmed,saved,
-      isAlternative:isJAPrintAlternative,resolve:(id,values,alternative)=>resolveExportArtwork(id,values,alternative,preflight)});
+      isAlternative:isAdminJAAlternative,resolve:(id,values,alternative)=>resolveExportArtwork(id,values,alternative,preflight)});
     const sourceErrors=preflight?report.rows.filter(row=>row.rawVerification?.status!=='matches').map(row=>row.slot):[];
     if(preflight)report.sourcePreflight={allMatched:!sourceErrors.length,checked:report.rows.length-sourceErrors.length,needsReview:sourceErrors};
     const file=new Blob([JSON.stringify(report,null,2)+'\n'],{type:'application/json'});
@@ -823,7 +840,7 @@ function validConfirmedPrintRecord(record){
     typeof record.alignmentKey==='string'&&Array.isArray(record.matrix)&&record.matrix.length===6&&record.matrix.every(Number.isFinite);
 }
 async function prepareConfirmedPrintCard(id, previous, funyframe=false){
-  const imageId=previous.imageId, ja=isJAPrintAlternative(imageId,id), archived=isArchivePlateId(imageId,id);
+  const imageId=previous.imageId, ja=isAdminJAAlternative(imageId,id), archived=isArchivePlateId(imageId,id);
   const {card}=await invoke('card',id,ja||archived?undefined:imageId);
   if(card.id!==id)throw new Error('확정한 카드와 출력 일러스트가 일치하지 않아요.');
   let archivePlate=null;
@@ -831,7 +848,7 @@ async function prepareConfirmedPrintCard(id, previous, funyframe=false){
     const option=card.imageOptions?.find(o=>o.id===imageId&&o.kind===(ja?'jaWide':'plate2mm'));
     if(!option)throw new Error('확정한 출력 일러스트를 찾을 수 없어요. 해당 카드를 확인해 주세요.');
     const detail=await invoke('card',id,undefined,imageId);
-    archivePlate=await (ja?decodeJAPrintAlternative:decodeArchivePlate)(detail,id,imageId,image,canvas);
+    archivePlate=await (ja?decodeAdminJAAlternative:decodeArchivePlate)(detail,id,imageId,image,canvas);
     if(funyframe&&archivePlate.embeddedWatermark&&archivePlate.embeddedWatermarkText!==FUNYFRAME_SHEET_SETTINGS.watermark)
       throw new Error('확정한 이미지에 다른 워터마크가 포함돼 있어 funyframe 인쇄용 PDF에는 사용할 수 없어요.');
     card.illustration={...option,cutRect:archivePlate.cutRect};
@@ -918,6 +935,17 @@ function productionArtwork({output, printOutput, printFoil, illustration, matrix
   if (archivePlate?.submittedTrim) return withProductionCardBleed(printOutput || output, canvas, {
     artwork:archivePlate.bleedArtwork, matrix:submittedBleedMatrix(matrix, archivePlate.submittedSpec || undefined), bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,
   });
+  if (archivePlate?.ja21Window) {
+    const artwork=renderJA21WindowPlate(archivePlate,matrix,canvas);
+    const full=withProductionCardBleed(printOutput||output,canvas,{
+      artwork,matrix:ARCHIVE_NATIVE_MATRIX,bleed:ARCHIVE_BLEED_MM,foil:printFoil,shape:settings.shape,
+    });
+    // Text or symbols must not cover the physical white aperture.
+    const {x,y,w,h}=archivePlate.cutRect, left=40+x*16, top=40+y*16;
+    const x0=Math.ceil(left),y0=Math.ceil(top),x1=Math.floor(left+w*16),y1=Math.floor(top+h*16);
+    full.getContext('2d').drawImage(artwork,x0,y0,x1-x0,y1-y0,x0,y0,x1-x0,y1-y0);
+    return full;
+  }
   if (archivePlate?.ja16Pinned) return withProductionCardBleed(printOutput || output, canvas, {
     artwork:renderJA16PinnedPlate(archivePlate,matrix,canvas), matrix:ARCHIVE_NATIVE_MATRIX, bleed:ARCHIVE_BLEED_MM, foil:printFoil, shape:settings.shape,
   });

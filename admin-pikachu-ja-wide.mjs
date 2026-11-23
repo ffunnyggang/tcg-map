@@ -6,7 +6,9 @@ const submittedMarks=Object.freeze({
 export const JA27_ORIGINAL_REF='m6a-ja-043';
 export const JA27_ORIGINAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-window-v1';
 export const JA27_TROPICAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-window-v2';
+export const JA21_TROPICAL_ID='ja-wide-print:m6a-ja-037:original-window-tropical-v1';
 export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
+export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
 const submittedSpec=(width,height,pad)=>{
   const scale=Math.max(1024/width,1424/height)*(1+1e-9);
@@ -46,6 +48,8 @@ function validCut(r){
 }
 export function isJAPrintAlternative(id, ref) {
   if (id===JA27_ORIGINAL_ID||id===JA27_TROPICAL_ID) return ref===JA27_ORIGINAL_REF;
+  if (id===JA21_TROPICAL_ID) return ref==='m6a-ja-037';
+  if (id===JA17_EN039_ID) return ref==='m6a-ja-033';
   if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
   return (ref==='m6a-ja-032'||ref==='m6a-ja-033'||Object.hasOwn(submittedMarks,ref)) && id==='ja-wide-print:'+ref;
 }
@@ -65,8 +69,15 @@ export function canAdjustSubmittedJA(m,spec=standardSpec,hasBakedFooter=true){
   return x<=-8&&y<=-8&&x+width*a>=1016&&y+height*a>=1416&&
     (!hasBakedFooter || (x+l*a>=-8&&y+t*a>=-8&&x+r*a<=1016&&y+bot*a<=1416));
 }
+// Only coverage-preserving uniform zoom and pan. Check the complete 2 mm
+// bleed, not just the trim, against the exact 1536 × 2136 source.
+export function canAdjustJA17EN039(m){
+  if(!Array.isArray(m)||m.length!==6||!m.every(Number.isFinite))return false;
+  const [a,b,c,d,x,y]=m;
+  return a>=1&&a<=1.5&&!b&&!c&&d===a&&x<=-40&&y<=-40&&x+W*a>=1048&&y+H*a>=1448;
+}
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
-  const plate=body?.plate, tropical=id===JA27_TROPICAL_ID,originalWindow=tropical||id===JA27_ORIGINAL_ID;
+  const plate=body?.plate, tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||id===JA27_ORIGINAL_ID;
   const is16=ref==='m6a-ja-032', isSubmitted=originalWindow||Object.hasOwn(submittedMarks,ref);
   const extra=id===JA06_EXTRA_ID;
   const spec=tropical?ja27TropicalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
@@ -80,6 +91,7 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
       ((originalWindow || extra || ref==='m6a-ja-029') && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
       (isSubmitted && (plate.sourceKind!==(tropical?'submitted-original-window-tropical':originalWindow?'submitted-original-window':'submitted-trim')||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
+      (wideOriginalWindow&&plate.sourceKind!=='en039-original-window') ||
       (tropical&&Object.keys(JA27_TROPICAL_APERTURE).some(key=>plate.aperturePx?.[key]!==JA27_TROPICAL_APERTURE[key])) ||
       !Object.keys(cutRect).every(key=>plate.cutRect?.[key]===cutRect[key]) ||
       typeof plate.wideWebp!=='string' || !plate.wideWebp.startsWith('data:image/webp;base64,')) throw new Error('확장 일러스트 인쇄 파일 규격을 확인해 주세요.');
@@ -91,6 +103,6 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
     ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas,spec):null,embeddedWatermark:baked,
-    submittedSpec:isSubmitted?spec:null,originalWindow,
+    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,
     embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

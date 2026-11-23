@@ -65,6 +65,23 @@ const jaOriginalWindowTropicalOption=()=>({
 });
 const allowJAOriginalWindowTropical=(body:{ja_alternative_v1?:unknown;ja_submitted_original_window_tropical_v1?:unknown})=>
   body.ja_alternative_v1===true && body.ja_submitted_original_window_tropical_v1===true;
+const jaEN039OriginalWindowReference='m6a-ja-033';
+const jaEN039OriginalWindowId=jaAlternativeId(jaEN039OriginalWindowReference)+':en039-original-window-v1';
+const jaEN039OriginalWindowOption=()=>({
+  id:jaEN039OriginalWindowId, referenceId:jaEN039OriginalWindowReference, kind:'jaWide', sourceKind:'en039-original-window',
+  label:'PDF 추출 · 복원 · EN 039 (17 원본 창)', width:1536, height:2136, trimWidthMm:64, trimHeightMm:89, bleedMm:2,
+  embeddedWatermark:false, windowKnockout:false, cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
+});
+const allowJAEN039OriginalWindow=(body:{ja_alternative_v1?:unknown;ja_en039_original_window_v1?:unknown})=>
+  body.ja_alternative_v1===true && body.ja_en039_original_window_v1===true;
+const jaTropicalMoveReference='m6a-ja-037';
+const jaTropicalMoveId=jaAlternativeId(jaTropicalMoveReference)+':original-window-tropical-v1';
+const jaTropicalMoveOption=()=>({
+  ...jaOriginalWindowTropicalOption(), id:jaTropicalMoveId, referenceId:jaTropicalMoveReference,
+  label:'첨부 일러스트 · 21 (열대 원본 창)',
+});
+const allowJATropicalMove=(body:{ja_alternative_v1?:unknown;ja_submitted_original_window_tropical_v1?:unknown;ja_submitted_original_window_tropical_move_v1?:unknown})=>
+  allowJAOriginalWindowTropical(body) && body.ja_submitted_original_window_tropical_move_v1===true;
 const jaCleanSubmitted = new Map<string,string>([['m6a-ja-028','12'],['m6a-ja-029','13']]);
 const jaAlternativeOption = (id: string, clean = false) => {
   const cleanSlot = clean ? jaCleanSubmitted.get(id) : undefined;
@@ -202,6 +219,26 @@ Deno.serve(async req => {
     if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==jaOriginalWindowTropicalReference))throw new Error('invalid original window JA print lookup');
     return rows[0]??null;
   }
+  async function readJATropicalMove(wantImage:boolean) {
+    const r=await request('/rest/v1/rpc/admin_pikachu_ja_tropical_window_move_v1',{
+      method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_reference_id:jaTropicalMoveReference,p_image:wantImage}),
+    });
+    if(!r.ok)throw new Error('tropical moved print lookup failed');
+    const result=await r.json();
+    if(!Array.isArray(result)||result.length>1||result.some(row=>!row||row.reference_id!==jaTropicalMoveReference))throw new Error('invalid tropical moved print lookup');
+    return result[0]??null;
+  }
+  async function readJAEN039OriginalWindow(wantImage:boolean) {
+    const r=await request('/rest/v1/rpc/admin_pikachu_ja_en039_original_window_v1',{
+      method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_reference_id:jaEN039OriginalWindowReference,p_image:wantImage}),
+    });
+    if(!r.ok)throw new Error('original window JA print lookup failed');
+    const rows=await r.json();
+    if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==jaEN039OriginalWindowReference))throw new Error('invalid original window JA print lookup');
+    return rows[0]??null;
+  }
   async function readJAWindow(wantImage:boolean) {
     const r=await request('/rest/v1/rpc/admin_pikachu_ja_submitted_window_v1',{
       method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
@@ -294,6 +331,24 @@ Deno.serve(async req => {
       if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
       if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length>2000000)throw new Error('invalid original window JA artwork');
       return reply({plate:{...jaOriginalWindowTropicalOption(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
+    }
+    if(body.print_plate_id===jaTropicalMoveId) {
+      if(!allowJATropicalMove(body)||body.action!=='card'||body.imageId!=null||body.id!==jaTropicalMoveReference) {
+        return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
+      }
+      const row=await readJATropicalMove(true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==520384)throw new Error('invalid tropical moved print artwork');
+      return reply({plate:{...jaTropicalMoveOption(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
+    }
+    if(body.print_plate_id===jaEN039OriginalWindowId) {
+      if(!allowJAEN039OriginalWindow(body)||body.action!=='card'||body.imageId!=null||body.id!==jaEN039OriginalWindowReference) {
+        return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
+      }
+      const row=await readJAEN039OriginalWindow(true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==5350228)throw new Error('invalid original window JA artwork');
+      return reply({plate:{...jaEN039OriginalWindowOption(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
     if(body.print_plate_id===jaWindowId) {
       if(!allowJAWindow(body)||body.action!=='card'||body.imageId!=null||body.id!==jaWindowReference) {
@@ -535,8 +590,26 @@ Deno.serve(async req => {
       catch { console.warn('original window JA print option metadata unavailable'); }
     }
     let jaOriginalWindowTropical=null;
-    if(allowJAOriginalWindowTropical(body)&&plan.ref.id===jaOriginalWindowTropicalReference) {
-      try { if(await readJAOriginalWindowTropical(false))jaOriginalWindowTropical=jaOriginalWindowTropicalOption(); }
+    let jaTropicalMove=null;
+    const knowsTropicalMove=allowJATropicalMove(body);
+    let movedTropicalAvailable=false;
+    if(knowsTropicalMove && (plan.ref.id===jaTropicalMoveReference || plan.ref.id===jaOriginalWindowTropicalReference)) {
+      try { movedTropicalAvailable=!!(await readJATropicalMove(false)); }
+      catch { console.warn('tropical moved option metadata unavailable'); }
+    }
+    if(movedTropicalAvailable && plan.ref.id===jaTropicalMoveReference)jaTropicalMove=jaTropicalMoveOption();
+    if(allowJAOriginalWindowTropical(body)&&plan.ref.id===jaOriginalWindowTropicalReference &&
+       (!movedTropicalAvailable || body.print_saved_option_id===jaOriginalWindowTropicalId)) {
+      try {
+        if(await readJAOriginalWindowTropical(false))jaOriginalWindowTropical={
+          ...jaOriginalWindowTropicalOption(), ...(movedTropicalAvailable?{legacyHidden:true}:{}),
+        };
+      }
+      catch { console.warn('original window JA print option metadata unavailable'); }
+    }
+    let jaEN039OriginalWindow=null;
+    if(allowJAEN039OriginalWindow(body)&&plan.ref.id===jaEN039OriginalWindowReference) {
+      try { if(await readJAEN039OriginalWindow(false))jaEN039OriginalWindow=jaEN039OriginalWindowOption(); }
       catch { console.warn('original window JA print option metadata unavailable'); }
     }
     const imageOptions = [
@@ -546,6 +619,8 @@ Deno.serve(async req => {
       ...(jaOption ? [jaOption] : []),
       ...(extraJAOption ? [extraJAOption] : []),
       ...(jaWindow ? [jaWindow] : []),
+      ...(jaEN039OriginalWindow ? [jaEN039OriginalWindow] : []),
+      ...(jaTropicalMove ? [jaTropicalMove] : []),
       ...(jaOriginalWindowTropical ? [jaOriginalWindowTropical] : []),
       ...(jaOriginalWindow ? [jaOriginalWindow] : []),
     ];

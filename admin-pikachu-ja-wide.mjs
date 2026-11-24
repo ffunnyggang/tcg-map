@@ -9,6 +9,7 @@ export const JA27_TROPICAL_ID='ja-wide-print:'+JA27_ORIGINAL_REF+':original-wind
 export const JA21_TROPICAL_ID='ja-wide-print:m6a-ja-037:original-window-tropical-v1';
 export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
 export const JA14_ORIGINAL_ID='ja-wide-print:m6a-ja-030:original-window-v1';
+export const JA14_NEW_ID='ja-wide-print:m6a-ja-030:attached-window-v2';
 export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
 const submittedSpec=(width,height,pad)=>{
@@ -50,7 +51,7 @@ function validCut(r){
 }
 export function isJAPrintAlternative(id, ref) {
   if (id===JA27_ORIGINAL_ID||id===JA27_TROPICAL_ID) return ref===JA27_ORIGINAL_REF;
-  if (id===JA14_ORIGINAL_ID) return ref==='m6a-ja-030';
+  if (id===JA14_ORIGINAL_ID||id===JA14_NEW_ID) return ref==='m6a-ja-030';
   if (id===JA21_TROPICAL_ID) return ref==='m6a-ja-037';
   if (id===JA17_EN039_ID) return ref==='m6a-ja-033';
   if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
@@ -74,6 +75,16 @@ export function canAdjustSubmittedJA(m,spec=standardSpec,hasBakedFooter=true){
 }
 // Only coverage-preserving uniform zoom and pan. Check the complete 2 mm
 // bleed, not just the trim, against the exact 1536 × 2136 source.
+export const ja14FullBleedSpec=Object.freeze({width:1497,height:2048,fullBleed:true,scale:Math.max(1088/1497,1488/2048)*(1+1e-9)});
+export function fitsFullBleed(m,width,height,minimum=Math.max(1088/width,1488/height),maximum=1.5){
+  if(!Array.isArray(m)||m.length!==6||!m.every(Number.isFinite))return false;
+  const [a,b,c,d,x,y]=m;
+  return a>=minimum&&a<=maximum&&!b&&!c&&d===a&&x<=-40&&y<=-40&&x+width*a>=1048&&y+height*a>=1448;
+}
+export function canAdjustJA14New(m){
+  const {width,height,scale}=ja14FullBleedSpec;
+  return fitsFullBleed(m,width,height,scale,scale*1.25);
+}
 export function canAdjustJA17EN039(m){
   if(!Array.isArray(m)||m.length!==6||!m.every(Number.isFinite))return false;
   const [a,b,c,d,x,y]=m;
@@ -82,6 +93,7 @@ export function canAdjustJA17EN039(m){
 // Project proposed pan/zoom into the range that preserves paper coverage and
 // keeps the authored tropical opening under the fixed original-card window.
 function limitsAt(scale,tropical,spec){
+  if(spec?.fullBleed)return [1048-spec.width*scale,-40,1448-spec.height*scale,-40];
   if(spec)return [1016-spec.width*scale,-8,1416-spec.height*scale,-8];
   if(!tropical)return [1048-W*scale,-40,1448-H*scale,-40];
   const {x,y,w,h}=JA27_TROPICAL_APERTURE,pad=2,gap=1e-5;
@@ -115,8 +127,12 @@ const ja14OriginalInitial=(()=>{
   const [a,,,,x,y]=ja14OriginalSpec.origin,k=PINNED_ZOOM_STEP;
   return Object.freeze(constrainPinnedWindow([a*k,0,0,a*k,504+(x-504)*k,704+(y-704)*k],false,ja14OriginalSpec).matrix);
 })();
+const ja14FullBleedInitial=(()=>{
+  const {width,height,scale}=ja14FullBleedSpec;
+  return Object.freeze([scale,0,0,scale,(1008-width*scale)/2,(1408-height*scale)/2]);
+})();
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
-  const plate=body?.plate, ja14Original=id===JA14_ORIGINAL_ID,tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||ja14Original||id===JA27_ORIGINAL_ID;
+  const plate=body?.plate, ja14New=id===JA14_NEW_ID,ja14Original=id===JA14_ORIGINAL_ID,tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||ja14Original||id===JA27_ORIGINAL_ID;
   const is16=ref==='m6a-ja-032', isSubmitted=originalWindow||Object.hasOwn(submittedMarks,ref);
   const extra=id===JA06_EXTRA_ID;
   const spec=tropical?ja27TropicalSpec:ja14Original?ja14OriginalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
@@ -124,12 +140,13 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
   const cutRect=oldCut;
-  const [width,height]=isSubmitted?[spec.width,spec.height]:[W,H];
-  const origin=id===JA21_TROPICAL_ID?movedTropicalInitial:ja14Original?ja14OriginalInitial:isSubmitted?spec.origin:matrix;
+  const [width,height]=ja14New?[ja14FullBleedSpec.width,ja14FullBleedSpec.height]:isSubmitted?[spec.width,spec.height]:[W,H];
+  const origin=ja14New?ja14FullBleedInitial:id===JA21_TROPICAL_ID?movedTropicalInitial:ja14Original?ja14OriginalInitial:isSubmitted?spec.origin:matrix;
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||
       plate.trimWidthMm!==64 || plate.trimHeightMm!==89 || plate.bleedMm!==2 ||
       ((originalWindow || extra || ref==='m6a-ja-029') && !cleanSubmitted) || plate.embeddedWatermark!==baked || plate.windowKnockout!==is16 ||
       (isSubmitted && (plate.sourceKind!==(tropical?'submitted-original-window-tropical':originalWindow?'submitted-original-window':'submitted-trim')||(!cleanSubmitted&&plate.embeddedWatermarkText!==submittedMarks[ref])||!validCut(cutRect))) ||
+      (ja14New&&plate.sourceKind!=='submitted-full-bleed') ||
       (wideOriginalWindow&&plate.sourceKind!=='en039-original-window') ||
       (tropical&&Object.keys(JA27_TROPICAL_APERTURE).some(key=>plate.aperturePx?.[key]!==JA27_TROPICAL_APERTURE[key])) ||
       !Object.keys(cutRect).every(key=>plate.cutRect?.[key]===cutRect[key]) ||
@@ -142,6 +159,6 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
     ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas,spec):null,embeddedWatermark:baked,
-    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,ja14Original,
+    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,ja14Original,ja14New,
     embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

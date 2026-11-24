@@ -91,6 +91,15 @@ const jaOriginalWindow14Option=()=>({
 });
 const allowJAOriginalWindow14=(body:{ja_alternative_v1?:unknown;ja_submitted_original_window_14_v1?:unknown})=>
   body.ja_alternative_v1===true && body.ja_submitted_original_window_14_v1===true;
+const jaAttachedWindow14Reference='m6a-ja-030';
+const jaAttachedWindow14Id=jaAlternativeId(jaAttachedWindow14Reference)+':attached-window-v2';
+const jaAttachedWindow14Option=()=>({
+  id:jaAttachedWindow14Id, referenceId:jaAttachedWindow14Reference, kind:'jaWide', sourceKind:'submitted-full-bleed',
+  label:'첨부 일러스트 · 14 (새 도안)', width:1497, height:2048, trimWidthMm:64, trimHeightMm:89, bleedMm:2,
+  embeddedWatermark:false, windowKnockout:false, cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
+});
+const allowJAAttachedWindow14=(body:{ja_alternative_v1?:unknown;ja_submitted_window_14_v2?:unknown})=>
+  body.ja_alternative_v1===true && body.ja_submitted_window_14_v2===true;
 const jaCleanSubmitted = new Map<string,string>([['m6a-ja-028','12'],['m6a-ja-029','13']]);
 const jaAlternativeOption = (id: string, clean = false) => {
   const cleanSlot = clean ? jaCleanSubmitted.get(id) : undefined;
@@ -258,6 +267,16 @@ Deno.serve(async req => {
     if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==jaOriginalWindow14Reference))throw new Error('invalid original window JA print lookup');
     return rows[0]??null;
   }
+  async function readJAAttachedWindow14(wantImage:boolean) {
+    const r=await request('/rest/v1/rpc/admin_pikachu_ja_submitted_window_14_v2',{
+      method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
+      body:JSON.stringify({p_reference_id:jaAttachedWindow14Reference,p_image:wantImage}),
+    });
+    if(!r.ok)throw new Error('original window JA print lookup failed');
+    const rows=await r.json();
+    if(!Array.isArray(rows)||rows.length>1||rows.some(row=>!row||row.reference_id!==jaAttachedWindow14Reference))throw new Error('invalid original window JA print lookup');
+    return rows[0]??null;
+  }
   async function readJAWindow(wantImage:boolean) {
     const r=await request('/rest/v1/rpc/admin_pikachu_ja_submitted_window_v1',{
       method:'POST',headers:{...serverHeaders,'Content-Type':'application/json'},
@@ -377,6 +396,15 @@ Deno.serve(async req => {
       if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
       if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==659052)throw new Error('invalid original window JA artwork');
       return reply({plate:{...jaOriginalWindow14Option(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
+    }
+    if(body.print_plate_id===jaAttachedWindow14Id) {
+      if(!allowJAAttachedWindow14(body)||body.action!=='card'||body.imageId!=null||body.id!==jaAttachedWindow14Reference) {
+        return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
+      }
+      const row=await readJAAttachedWindow14(true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==3116808)throw new Error('invalid original window JA artwork');
+      return reply({plate:{...jaAttachedWindow14Option(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
     if(body.print_plate_id===jaWindowId) {
       if(!allowJAWindow(body)||body.action!=='card'||body.imageId!=null||body.id!==jaWindowReference) {
@@ -645,6 +673,11 @@ Deno.serve(async req => {
       try { if(await readJAOriginalWindow14(false))jaOriginalWindow14=jaOriginalWindow14Option(); }
       catch { console.warn('original window JA print option metadata unavailable'); }
     }
+    let jaAttachedWindow14=null;
+    if(allowJAAttachedWindow14(body)&&plan.ref.id===jaAttachedWindow14Reference) {
+      try { if(await readJAAttachedWindow14(false))jaAttachedWindow14=jaAttachedWindow14Option(); }
+      catch { console.warn('original window JA print option metadata unavailable'); }
+    }
     const imageOptions = [
       ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
       ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
@@ -655,6 +688,7 @@ Deno.serve(async req => {
       ...(jaEN039OriginalWindow ? [jaEN039OriginalWindow] : []),
       ...(jaTropicalMove ? [jaTropicalMove] : []),
       ...(jaOriginalWindow14 ? [jaOriginalWindow14] : []),
+      ...(jaAttachedWindow14 ? [jaAttachedWindow14] : []),
       ...(jaOriginalWindowTropical ? [jaOriginalWindowTropical] : []),
       ...(jaOriginalWindow ? [jaOriginalWindow] : []),
     ];

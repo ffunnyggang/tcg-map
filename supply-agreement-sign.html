@@ -87,11 +87,17 @@ login.onclick=async()=>{
   login.disabled=true;
   try{
     await auth.init();
-    await auth.signInSocial('google',location.href);
+    const target=new URL(location.pathname,location.origin);
+    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id||''))throw Error('INVALID');
+    target.searchParams.set('id',id);
+    sessionStorage.setItem('funy-supply-oauth-return',JSON.stringify({url:target.href,at:Date.now()}));
+    status.textContent='FUNYFRAME · Google 인증 중…';
+    await auth.signInSocial('google',target.href);
   }catch{
+    try{sessionStorage.removeItem('funy-supply-oauth-return')}catch(_){}
     status.textContent='Google 계정 선택 화면을 열지 못했습니다. 잠시 후 다시 시도해 주세요.';
     login.disabled=false;
   }
 };
-try{if(!/^[0-9a-f-]{36}$/i.test(id||''))throw Error('INVALID');await auth.init();if(!auth.session){status.textContent='계약에 지정된 이메일로 인증하거나 Google 계정으로 로그인해 주세요.';login.hidden=false;el("emailOption").hidden=false;return}display(await request())}catch(e){status.textContent=e.message.includes('ACCESS_DENIED')?'이 계정에는 열람 권한이 없습니다. 지정된 Google 계정으로 전환해 주세요.':'계약을 열 수 없습니다. 링크와 연결 상태를 확인해 주세요.';login.hidden=false;el('emailOption').hidden=false}
+try{if(!/^[0-9a-f-]{36}$/i.test(id||''))throw Error('INVALID');await auth.init();const callback=new URL(location.href);if(callback.searchParams.has('error')||callback.searchParams.has('error_code')||callback.hash.includes('error=')){for(const k of ['error','error_code','error_description'])callback.searchParams.delete(k);callback.hash='';history.replaceState(history.state,'',callback.pathname+callback.search);status.textContent='Google 인증이 완료되지 않았습니다. 다시 로그인하거나 이메일로 인증해 주세요.';login.hidden=false;el('emailOption').hidden=false;return}if(!auth.session){status.textContent='계약에 지정된 이메일로 인증하거나 Google 계정으로 로그인해 주세요.';login.hidden=false;el("emailOption").hidden=false;return}display(await request())}catch(e){status.textContent=e.message.includes('ACCESS_DENIED')?'이 계정에는 열람 권한이 없습니다. 지정된 Google 계정으로 전환해 주세요.':'계약을 열 수 없습니다. 링크와 연결 상태를 확인해 주세요.';login.hidden=false;el('emailOption').hidden=false}
 })();</script></html>

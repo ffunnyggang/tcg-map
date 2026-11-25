@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,ja14FullBleedSpec,canAdjustJA14New,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja092123-1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,ja14FullBleedSpec,canAdjustJA14New,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja092123-window1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -765,7 +765,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       if(!canAdjustJA14New(matrix)||width!==1497||height!==2048||embeddedWatermark!==false||windowKnockout!==false||
          option.sourceKind!=='submitted-full-bleed')return {status:'invalid'};
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
-      return {nativeSource:{layout:'ja-submitted-full-bleed',width,height,embeddedWatermark,windowKnockout},rawVerification};
+      return {nativeSource:{layout:'ja-submitted-full-bleed',width,height,embeddedWatermark,windowKnockout,...(isAdditionalJAFullBleedRef(referenceId)?{originalWindow:true}:{})},rawVerification};
     }
     if(illustrationId===JA17_EN039_ID){
       if(!canAdjustJA17EN039(matrix)||width!==1536||height!==2136||embeddedWatermark!==false||windowKnockout!==false||
@@ -965,8 +965,8 @@ $('printFunyframeDownload').onclick = event => {
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
 function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport, source, cut}) {
-  if (archivePlate?.submittedTrim || archivePlate?.wideOriginalWindow) {
-    const full=archivePlate.wideOriginalWindow ?
+  if (archivePlate?.submittedTrim || archivePlate?.wideOriginalWindow || (archivePlate?.ja14New && archivePlate.originalWindow)) {
+    const full=(archivePlate.wideOriginalWindow || archivePlate.ja14New) ?
       composeArchiveProduction(archivePlate,printOutput||output,canvas,{matrix,foil:printFoil,shape:settings.shape}) :
       withProductionCardBleed(printOutput || output,canvas,{
         artwork:archivePlate.bleedArtwork,matrix:submittedBleedMatrix(matrix,archivePlate.submittedSpec||undefined),

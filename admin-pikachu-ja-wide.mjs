@@ -164,6 +164,6 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   g.resetTransform();
   return {artwork,native,nativeMatrix:origin,cutRect,windowKnockout:false,jaAlternative:true,
     ja16Pinned:is16,submittedTrim:isSubmitted,bleedArtwork:isSubmitted?edgePad(artwork,canvas,spec):null,embeddedWatermark:baked,
-    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow,wideOriginalWindow,ja14Original,ja14New,
+    submittedSpec:isSubmitted?spec:null,originalWindow:originalWindow||wideOriginalWindow||(ja14New&&isAdditionalJAFullBleedRef(ref)),wideOriginalWindow,ja14Original,ja14New,
     embeddedWatermarkText:!baked?null:isSubmitted?submittedMarks[ref]:'funyframe'};
 }

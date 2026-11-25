@@ -100,15 +100,17 @@ const jaAttachedWindow14Option=()=>({
 });
 const allowJAAttachedWindow14=(body:{ja_alternative_v1?:unknown;ja_submitted_window_14_v2?:unknown})=>
   body.ja_alternative_v1===true && body.ja_submitted_window_14_v2===true;
-const jaNov25Refs = new Map<string,{slot:string;base64Length:number}>([
+type JANov25Spec={slot:string;base64Length:number;width?:number;height?:number};
+const jaNov25Refs = new Map<string,JANov25Spec>([
+  ['m6a-ja-017',{slot:'01',base64Length:1863360,width:912,height:1170}],
   ['m6a-ja-025',{slot:'09',base64Length:3556284}],
   ['m6a-ja-037',{slot:'21',base64Length:3478976}],
   ['m6a-ja-039',{slot:'23',base64Length:3304852}],
 ]);
 const jaNov25Id=(ref:string)=>jaAlternativeId(ref)+':attached-full-bleed-v1';
-const jaNov25Option=(ref:string,slot:string)=>({
+const jaNov25Option=(ref:string,spec:JANov25Spec)=>({
   id:jaNov25Id(ref),referenceId:ref,kind:'jaWide',sourceKind:'submitted-full-bleed',
-  label:'첨부 일러스트 · '+slot+' (새 도안)',width:1497,height:2048,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
+  label:'첨부 일러스트 · '+spec.slot+' (새 도안)',width:spec.width??1497,height:spec.height??2048,trimWidthMm:64,trimHeightMm:89,bleedMm:2,
   embeddedWatermark:false,windowKnockout:false,cutRect:{x:5.9,y:9.7,w:51.2,h:31.2},
 });
 const allowJANov25=(body:{ja_alternative_v1?:unknown;ja_submitted_full_bleed_nov25_v1?:unknown})=>
@@ -437,7 +439,7 @@ Deno.serve(async req => {
       const row=await readJANov25(body.id,true);
       if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
       if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==spec.base64Length)throw new Error('invalid submitted full bleed artwork');
-      return reply({plate:{...jaNov25Option(body.id,spec.slot),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
+      return reply({plate:{...jaNov25Option(body.id,spec),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
     if(body.print_plate_id===jaWindowId) {
       if(!allowJAWindow(body)||body.action!=='card'||body.imageId!=null||body.id!==jaWindowReference) {
@@ -714,7 +716,7 @@ Deno.serve(async req => {
     const nov25Spec=allowJANov25(body)?jaNov25Refs.get(plan.ref.id):undefined;
     let nov25Option=null;
     if(nov25Spec) {
-      try { if(await readJANov25(plan.ref.id,false))nov25Option=jaNov25Option(plan.ref.id,nov25Spec.slot); }
+      try { if(await readJANov25(plan.ref.id,false))nov25Option=jaNov25Option(plan.ref.id,nov25Spec); }
       catch { console.warn('submitted full bleed print option unavailable'); }
     }
     const imageOptions = [

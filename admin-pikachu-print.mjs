@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,ja14FullBleedSpec,canAdjustJA14New,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja092123-window1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,jaFullBleedSpec,canAdjustJAFullBleed,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja01-window1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -413,7 +413,7 @@ async function prepareCard(card, previous, {requireSavedAlignment = false, archi
   if (archivePlate) {
     if (!validWindow(archivePlate.cutRect)) throw new Error('보관된 2mm 출력판의 창 위치를 확인해 주세요.');
     prepared.initial = [...(archivePlate.nativeMatrix || ARCHIVE_NATIVE_MATRIX)];
-    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja21Window || canAdjustJA21(previous.matrix)) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate)) && (!archivePlate.wideOriginalWindow || canAdjustJA17EN039(previous.matrix)) && (!archivePlate.ja14New || canAdjustJA14New(previous.matrix));
+    const canRestore = previous.alignmentKey === alignmentKey && validArchiveMatrix(previous.matrix, illustration) && (!archivePlate.ja21Window || canAdjustJA21(previous.matrix)) && (!archivePlate.ja16Pinned || canAdjustJA16(previous.matrix)) && (!archivePlate.submittedTrim || submittedFits(previous.matrix,archivePlate)) && (!archivePlate.wideOriginalWindow || canAdjustJA17EN039(previous.matrix)) && (!archivePlate.ja14New || canAdjustJAFullBleed(previous.matrix,archivePlate.fullBleed));
     prepared.matrix = canRestore ? [...previous.matrix] : [...prepared.initial];
     if (!canRestore) {
       if(requireSavedAlignment) throw new Error('확정한 일러스트 창이나 연결 위치가 변경됐어요. 해당 카드에서 다시 확정해 주세요.');
@@ -604,13 +604,13 @@ $('printAlign').onclick = () => withCardAction(async () => {
     source: session.source, image: illustration, cutRect: session.cut, initial: session.initial,
     current: session.matrix, canvas,
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
-    ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical,archivePlate.ja14Original?ja14OriginalSpec:archivePlate.ja14New?ja14FullBleedSpec:null),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
+    ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical,archivePlate.ja14Original?ja14OriginalSpec:archivePlate.fullBleed),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
     ...(archivePlate?.submittedSpec?.aperture || archivePlate?.ja14Original ? {
       renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
       canApply: matrix => submittedFits(matrix,archivePlate),
     } : archivePlate?.ja14New ? {
-      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA14New(matrix) ? matrix : session.matrix),
-      canApply: canAdjustJA14New,
+      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJAFullBleed(matrix,archivePlate.fullBleed) ? matrix : session.matrix),
+      canApply: matrix => canAdjustJAFullBleed(matrix,archivePlate.fullBleed),
     } : archivePlate?.wideOriginalWindow ? {
       renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA17EN039(matrix) ? matrix : session.matrix),
       canApply: canAdjustJA17EN039,
@@ -629,7 +629,7 @@ $('printAlign').onclick = () => withCardAction(async () => {
     } : {}),
   });
   if (!picked) return;
-  if (archivePlate?.ja14New && !canAdjustJA14New(picked.matrix)) throw new Error('재단과 블리드 영역을 덮도록 일러스트 크기를 조절해 주세요.');
+  if (archivePlate?.ja14New && !canAdjustJAFullBleed(picked.matrix,archivePlate.fullBleed)) throw new Error('재단과 블리드 영역을 덮도록 일러스트 크기를 조절해 주세요.');
   if (archivePlate?.wideOriginalWindow && !canAdjustJA17EN039(picked.matrix)) throw new Error('재단과 블리드 영역을 덮도록 바깥 일러스트 위치를 조절해 주세요.');
   if (archivePlate?.ja21Window && !canAdjustJA21(picked.matrix)) throw new Error('흰 창과 칼선은 고정돼요. ±1 mm 범위 안에서 조절해 주세요.');
   if (archivePlate?.ja16Pinned && !canAdjustJA16(picked.matrix)) throw new Error('흰 창과 워터마크는 고정돼요. ±2 mm 범위 안에서 조절해 주세요.');
@@ -762,7 +762,8 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
     if(isJAFullBleed(illustrationId,referenceId)){
-      if(!canAdjustJA14New(matrix)||width!==1497||height!==2048||embeddedWatermark!==false||windowKnockout!==false||
+      const spec=jaFullBleedSpec(referenceId);
+      if(!canAdjustJAFullBleed(matrix,spec)||width!==spec.width||height!==spec.height||embeddedWatermark!==false||windowKnockout!==false||
          option.sourceKind!=='submitted-full-bleed')return {status:'invalid'};
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
       return {nativeSource:{layout:'ja-submitted-full-bleed',width,height,embeddedWatermark,windowKnockout,...(isAdditionalJAFullBleedRef(referenceId)?{originalWindow:true}:{})},rawVerification};

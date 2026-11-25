@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,JA14_NEW_ID,ja14FullBleedSpec,canAdjustJA14New,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261124-ja14-new1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,ja14FullBleedSpec,canAdjustJA14New,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja092123-1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -44,8 +44,8 @@ let storageKey = '', archiveKey = '', archiveSaved = {}, jaAlternativeKey = '', 
 let funyframeDownloadUrl = null, funyframeDownloadStamp = null, settingsExportUrl = null;
 let pageConfirmedKey = '', pageConfirmed = {}, ordinaryDraftKey = '', ordinaryDrafts = {};
 const JA06_REF='m6a-ja-022';
-const multipleAlternatives=ref=>ref==='m6a-ja-030'||ref==='m6a-ja-033'||ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
-const jaDraftId=(ref,imageId)=>imageId===JA14_NEW_ID||imageId===JA14_ORIGINAL_ID||imageId===JA17_EN039_ID||imageId===JA21_TROPICAL_ID||imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
+const multipleAlternatives=ref=>isAdditionalJAFullBleedRef(ref)||ref==='m6a-ja-030'||ref==='m6a-ja-033'||ref===JA06_REF||ref===JA21_WINDOW_REF||ref===JA27_ORIGINAL_REF;
+const jaDraftId=(ref,imageId)=>isJAFullBleed(imageId,ref)||imageId===JA14_ORIGINAL_ID||imageId===JA17_EN039_ID||imageId===JA21_TROPICAL_ID||imageId===JA06_EXTRA_ID||imageId===JA27_ORIGINAL_ID||imageId===JA27_TROPICAL_ID||isJA21Window(imageId,ref) ? imageId : ref;
 const isAdminJAAlternative=(id,ref)=>isJAPrintAlternative(id,ref)||isJA21Window(id,ref);
 const decodeAdminJAAlternative=(body,ref,id,decode,canvas)=>isJA21Window(id,ref)
   ? decodeJA21Window(body,ref,id,decode,canvas):decodeJAPrintAlternative(body,ref,id,decode,canvas);
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id, print_saved_option_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true },
+  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true, ja_submitted_full_bleed_nov25_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -761,7 +761,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height,true):null;
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
-    if(illustrationId===JA14_NEW_ID){
+    if(isJAFullBleed(illustrationId,referenceId)){
       if(!canAdjustJA14New(matrix)||width!==1497||height!==2048||embeddedWatermark!==false||windowKnockout!==false||
          option.sourceKind!=='submitted-full-bleed')return {status:'invalid'};
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
@@ -798,7 +798,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
     hasGeneratedOverscan:hasGeneratedOverscan===true},rawVerification};
 }
 async function verifySubmittedExportArtwork(referenceId,illustrationId,width,height,windowKnockout=false){
-  if(![JA14_NEW_ID,JA14_ORIGINAL_ID,JA17_EN039_ID,JA21_TROPICAL_ID,JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
+  if(!isJAFullBleed(illustrationId,referenceId)&&![JA14_ORIGINAL_ID,JA17_EN039_ID,JA21_TROPICAL_ID,JA06_EXTRA_ID,JA21_WINDOW_ID,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,'ja-wide-print:m6a-ja-028','ja-wide-print:m6a-ja-029'].includes(illustrationId))return {status:'not-in-scope'};
   try{
     const {plate}=await invoke('card',referenceId,undefined,illustrationId);
     if(plate?.id!==illustrationId||plate.referenceId!==referenceId||plate.embeddedWatermark!==false||plate.windowKnockout!==windowKnockout||

@@ -10,6 +10,10 @@ export const JA21_TROPICAL_ID='ja-wide-print:m6a-ja-037:original-window-tropical
 export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
 export const JA14_ORIGINAL_ID='ja-wide-print:m6a-ja-030:original-window-v1';
 export const JA14_NEW_ID='ja-wide-print:m6a-ja-030:attached-window-v2';
+const additionalFullBleedRefs=new Set(['m6a-ja-025','m6a-ja-037','m6a-ja-039']);
+export const isAdditionalJAFullBleedRef=ref=>additionalFullBleedRefs.has(ref);
+export const isJAFullBleed=(id,ref)=>ref==='m6a-ja-030'&&id===JA14_NEW_ID ||
+  additionalFullBleedRefs.has(ref)&&id==='ja-wide-print:'+ref+':attached-full-bleed-v1';
 export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
 const submittedSpec=(width,height,pad)=>{
@@ -51,7 +55,8 @@ function validCut(r){
 }
 export function isJAPrintAlternative(id, ref) {
   if (id===JA27_ORIGINAL_ID||id===JA27_TROPICAL_ID) return ref===JA27_ORIGINAL_REF;
-  if (id===JA14_ORIGINAL_ID||id===JA14_NEW_ID) return ref==='m6a-ja-030';
+  if (isJAFullBleed(id,ref)) return true;
+  if (id===JA14_ORIGINAL_ID) return ref==='m6a-ja-030';
   if (id===JA21_TROPICAL_ID) return ref==='m6a-ja-037';
   if (id===JA17_EN039_ID) return ref==='m6a-ja-033';
   if (id===JA06_EXTRA_ID) return ref==='m6a-ja-022';
@@ -132,8 +137,8 @@ const ja14FullBleedInitial=(()=>{
   return Object.freeze([scale,0,0,scale,(1008-width*scale)/2,(1408-height*scale)/2]);
 })();
 export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
-  const plate=body?.plate, ja14New=id===JA14_NEW_ID,ja14Original=id===JA14_ORIGINAL_ID,tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||ja14Original||id===JA27_ORIGINAL_ID;
-  const is16=ref==='m6a-ja-032', isSubmitted=originalWindow||Object.hasOwn(submittedMarks,ref);
+  const plate=body?.plate, ja14New=isJAFullBleed(id,ref),ja14Original=id===JA14_ORIGINAL_ID,tropical=id===JA27_TROPICAL_ID||id===JA21_TROPICAL_ID,wideOriginalWindow=id===JA17_EN039_ID,originalWindow=tropical||ja14Original||id===JA27_ORIGINAL_ID;
+  const is16=ref==='m6a-ja-032', isSubmitted=!ja14New&&(originalWindow||Object.hasOwn(submittedMarks,ref));
   const extra=id===JA06_EXTRA_ID;
   const spec=tropical?ja27TropicalSpec:ja14Original?ja14OriginalSpec:originalWindow?ja27Spec:extra?extraSpec:standardSpec;
   const cleanSubmitted=(originalWindow||extra||ref==='m6a-ja-028'||ref==='m6a-ja-029') && plate?.embeddedWatermark===false && plate?.embeddedWatermarkText==null;

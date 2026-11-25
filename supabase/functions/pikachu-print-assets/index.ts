@@ -104,6 +104,7 @@ type JANov25Spec={slot:string;base64Length:number;width?:number;height?:number};
 const jaNov25Refs = new Map<string,JANov25Spec>([
   ['m6a-ja-017',{slot:'01',base64Length:1863360,width:912,height:1170}],
   ['m6a-ja-025',{slot:'09',base64Length:3556284}],
+  ['m6a-ja-034',{slot:'18',base64Length:2723800,width:912,height:1184}],
   ['m6a-ja-037',{slot:'21',base64Length:3478976}],
   ['m6a-ja-039',{slot:'23',base64Length:3304852}],
 ]);

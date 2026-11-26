@@ -14,7 +14,8 @@ const additionalFullBleedRefs=new Set(['m6a-ja-017','m6a-ja-025','m6a-ja-034','m
 const attachedNov26Specs=Object.freeze({'m6a-ja-018':[912,1168],'m6a-ja-019':[912,1168],'m6a-ja-037':[976,1088],'m6a-ja-020':[874,1216],'m6a-ja-023':[512,712],'m6a-ja-028':[874,1216]});
 const isNov26FullBleed=(id,ref)=>Object.hasOwn(attachedNov26Specs,ref)&&id==='ja-wide-print:'+ref+':attached-full-bleed-v2';
 export const isAdditionalJAFullBleedRef=ref=>additionalFullBleedRefs.has(ref)||Object.hasOwn(attachedNov26Specs,ref);
-export const isJAFullBleed=(id,ref)=>isNov26FullBleed(id,ref)||ref==='m6a-ja-030'&&id===JA14_NEW_ID ||
+const isJA21Latest=(id,ref)=>ref==='m6a-ja-037'&&id==='ja-wide-print:m6a-ja-037:attached-full-bleed-v3';
+export const isJAFullBleed=(id,ref)=>isJA21Latest(id,ref)||isNov26FullBleed(id,ref)||ref==='m6a-ja-030'&&id===JA14_NEW_ID ||
   additionalFullBleedRefs.has(ref)&&id==='ja-wide-print:'+ref+':attached-full-bleed-v1';
 export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';

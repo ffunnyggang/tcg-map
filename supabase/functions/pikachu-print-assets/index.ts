@@ -120,13 +120,18 @@ const jaNov26Refs=new Map<string,JANov25Spec>([
   ['m6a-ja-018',{slot:'02',base64Length:2095140,width:912,height:1168}],
   ['m6a-ja-019',{slot:'03',base64Length:2072512,width:912,height:1168}],
   ['m6a-ja-037',{slot:'21',base64Length:2210768,width:976,height:1088}],
+  ['m6a-ja-020',{slot:'04',base64Length:1619296,width:874,height:1216}],
+  ['m6a-ja-023',{slot:'07',base64Length:816584,width:512,height:712}],
+  ['m6a-ja-028',{slot:'12',base64Length:612968,width:874,height:1216}],
 ]);
+const nov26CleanRefs=new Set(['m6a-ja-020','m6a-ja-023','m6a-ja-028']);
 const jaNov26Id=(ref:string)=>jaAlternativeId(ref)+':attached-full-bleed-v2';
 const jaNov26Option=(ref:string,spec:JANov25Spec)=>({
   ...jaNov25Option(ref,spec),id:jaNov26Id(ref),label:'첨부 일러스트 · '+spec.slot+' (11/26 도안)',
 });
-const allowJANov26=(body:{ja_alternative_v1?:unknown;ja_submitted_full_bleed_nov26_v1?:unknown})=>
-  body.ja_alternative_v1===true&&body.ja_submitted_full_bleed_nov26_v1===true;
+const allowJANov26=(body:{ja_alternative_v1?:unknown;ja_submitted_full_bleed_nov26_v1?:unknown;ja_submitted_full_bleed_nov26_clean_v1?:unknown},ref:string)=>
+  body.ja_alternative_v1===true&&body.ja_submitted_full_bleed_nov26_v1===true&&
+  (!nov26CleanRefs.has(ref)||body.ja_submitted_full_bleed_nov26_clean_v1===true);
 const jaCleanSubmitted = new Map<string,string>([['m6a-ja-028','12'],['m6a-ja-029','13']]);
 const jaAlternativeOption = (id: string, clean = false) => {
   const cleanSlot = clean ? jaCleanSubmitted.get(id) : undefined;
@@ -445,7 +450,7 @@ Deno.serve(async req => {
     }
     if(typeof body.print_plate_id==='string'&&body.print_plate_id.endsWith(':attached-full-bleed-v2')) {
       const spec=jaNov26Refs.get(body.id);
-      if(!spec||!allowJANov26(body)||body.action!=='card'||body.imageId!=null||body.print_plate_id!==jaNov26Id(body.id)) {
+      if(!spec||!allowJANov26(body,body.id)||body.action!=='card'||body.imageId!=null||body.print_plate_id!==jaNov26Id(body.id)) {
         return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
       }
       const row=await readJANov25(body.id+'-nov26',true);
@@ -741,7 +746,7 @@ Deno.serve(async req => {
       try { if(await readJANov25(plan.ref.id,false))nov25Option=jaNov25Option(plan.ref.id,nov25Spec); }
       catch { console.warn('submitted full bleed print option unavailable'); }
     }
-    const nov26Spec=allowJANov26(body)?jaNov26Refs.get(plan.ref.id):undefined;
+    const nov26Spec=allowJANov26(body,plan.ref.id)?jaNov26Refs.get(plan.ref.id):undefined;
     let nov26Option=null;
     if(nov26Spec) {
       try { if(await readJANov25(plan.ref.id+'-nov26',false))nov26Option=jaNov26Option(plan.ref.id,nov26Spec); }

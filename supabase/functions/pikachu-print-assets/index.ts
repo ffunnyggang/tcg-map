@@ -132,6 +132,14 @@ const jaNov26Option=(ref:string,spec:JANov25Spec)=>({
 const allowJANov26=(body:{ja_alternative_v1?:unknown;ja_submitted_full_bleed_nov26_v1?:unknown;ja_submitted_full_bleed_nov26_clean_v1?:unknown},ref:string)=>
   body.ja_alternative_v1===true&&body.ja_submitted_full_bleed_nov26_v1===true&&
   (!nov26CleanRefs.has(ref)||body.ja_submitted_full_bleed_nov26_clean_v1===true);
+const ja21LatestRef='m6a-ja-037', ja21LatestAssetRef=ja21LatestRef+'-nov26b';
+const ja21LatestId=jaAlternativeId(ja21LatestRef)+':attached-full-bleed-v3';
+const ja21LatestSpec={slot:'21',width:1497,height:2048,base64Length:3421560};
+const ja21LatestOption=()=>({
+  ...jaNov25Option(ja21LatestRef,ja21LatestSpec),id:ja21LatestId,label:'첨부 일러스트 · 21 (11/26 추가 도안)',
+});
+const allowJA21Latest=(body:{ja_alternative_v1?:unknown;ja_submitted_full_bleed_nov26_21_v1?:unknown})=>
+  body.ja_alternative_v1===true&&body.ja_submitted_full_bleed_nov26_21_v1===true;
 const jaCleanSubmitted = new Map<string,string>([['m6a-ja-028','12'],['m6a-ja-029','13']]);
 const jaAlternativeOption = (id: string, clean = false) => {
   const cleanSlot = clean ? jaCleanSubmitted.get(id) : undefined;
@@ -448,6 +456,15 @@ Deno.serve(async req => {
       if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==3116808)throw new Error('invalid original window JA artwork');
       return reply({plate:{...jaAttachedWindow14Option(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
     }
+    if(body.print_plate_id===ja21LatestId) {
+      if(!allowJA21Latest(body)||body.action!=='card'||body.imageId!=null||body.id!==ja21LatestRef) {
+        return reply({error:'이 카드의 확장 일러스트를 확인해 주세요.'},400);
+      }
+      const row=await readJANov25(ja21LatestAssetRef,true);
+      if(!row)return reply({error:'이 카드에 저장된 확장 일러스트가 없어요.'},404);
+      if(typeof row.image_webp_base64!=='string'||!row.image_webp_base64.startsWith('UklGR')||row.image_webp_base64.length!==ja21LatestSpec.base64Length)throw new Error('invalid submitted full bleed artwork');
+      return reply({plate:{...ja21LatestOption(),wideWebp:'data:image/webp;base64,'+row.image_webp_base64}});
+    }
     if(typeof body.print_plate_id==='string'&&body.print_plate_id.endsWith(':attached-full-bleed-v2')) {
       const spec=jaNov26Refs.get(body.id);
       if(!spec||!allowJANov26(body,body.id)||body.action!=='card'||body.imageId!=null||body.print_plate_id!==jaNov26Id(body.id)) {
@@ -752,6 +769,11 @@ Deno.serve(async req => {
       try { if(await readJANov25(plan.ref.id+'-nov26',false))nov26Option=jaNov26Option(plan.ref.id,nov26Spec); }
       catch { console.warn('new submitted full bleed print option unavailable'); }
     }
+    let ja21Latest=null;
+    if(allowJA21Latest(body)&&plan.ref.id===ja21LatestRef) {
+      try { if(await readJANov25(ja21LatestAssetRef,false))ja21Latest=ja21LatestOption(); }
+      catch { console.warn('latest #21 full bleed print option unavailable'); }
+    }
     const imageOptions = [
       ...plan.illustrations.map(({ row, kind }) => ({ id: row.id, kind, createdAt: row.created_at })),
       ...plan.imports.map(({ id, label, created_at }) => ({ id, label, kind: 'import', createdAt: created_at })),
@@ -767,6 +789,7 @@ Deno.serve(async req => {
       ...(jaOriginalWindow ? [jaOriginalWindow] : []),
       ...(nov25Option ? [nov25Option] : []),
       ...(nov26Option ? [nov26Option] : []),
+      ...(ja21Latest ? [ja21Latest] : []),
     ];
     return reply({ card: { ...cardInfo(plan), original, illustration, imageOptions, texts: Object.fromEntries(texts) } });
   } catch (error) {

@@ -11,8 +11,10 @@ export const JA27_TROPICAL_APERTURE=Object.freeze({x:118,y:113,w:305,h:238});
 export const JA14_ORIGINAL_ID='ja-wide-print:m6a-ja-030:original-window-v1';
 export const JA14_NEW_ID='ja-wide-print:m6a-ja-030:attached-window-v2';
 const additionalFullBleedRefs=new Set(['m6a-ja-017','m6a-ja-025','m6a-ja-034','m6a-ja-037','m6a-ja-039']);
-export const isAdditionalJAFullBleedRef=ref=>additionalFullBleedRefs.has(ref);
-export const isJAFullBleed=(id,ref)=>ref==='m6a-ja-030'&&id===JA14_NEW_ID ||
+const attachedNov26Specs=Object.freeze({'m6a-ja-018':[912,1168],'m6a-ja-019':[912,1168],'m6a-ja-037':[976,1088]});
+const isNov26FullBleed=(id,ref)=>Object.hasOwn(attachedNov26Specs,ref)&&id==='ja-wide-print:'+ref+':attached-full-bleed-v2';
+export const isAdditionalJAFullBleedRef=ref=>additionalFullBleedRefs.has(ref)||Object.hasOwn(attachedNov26Specs,ref);
+export const isJAFullBleed=(id,ref)=>isNov26FullBleed(id,ref)||ref==='m6a-ja-030'&&id===JA14_NEW_ID ||
   additionalFullBleedRefs.has(ref)&&id==='ja-wide-print:'+ref+':attached-full-bleed-v1';
 export const JA17_EN039_ID='ja-wide-print:m6a-ja-033:en039-original-window-v1';
 export const JA06_EXTRA_ID='ja-wide-print:m6a-ja-022:v2';
@@ -82,7 +84,7 @@ export function canAdjustSubmittedJA(m,spec=standardSpec,hasBakedFooter=true){
 // bleed, not just the trim, against the exact 1536 × 2136 source.
 const fullBleedSpec=(width,height)=>Object.freeze({width,height,fullBleed:true,scale:Math.max(1088/width,1488/height)*(1+1e-9)});
 const fullBleedDefault=fullBleedSpec(1497,2048),fullBleed01=fullBleedSpec(912,1170),fullBleed18=fullBleedSpec(912,1184);
-export const jaFullBleedSpec=ref=>ref==='m6a-ja-017'?fullBleed01:ref==='m6a-ja-034'?fullBleed18:fullBleedDefault;
+export const jaFullBleedSpec=(ref,id)=>isNov26FullBleed(id,ref)?fullBleedSpec(...attachedNov26Specs[ref]):ref==='m6a-ja-017'?fullBleed01:ref==='m6a-ja-034'?fullBleed18:fullBleedDefault;
 export function fitsFullBleed(m,width,height,minimum=Math.max(1088/width,1488/height),maximum=1.5){
   if(!Array.isArray(m)||m.length!==6||!m.every(Number.isFinite))return false;
   const [a,b,c,d,x,y]=m;
@@ -144,7 +146,7 @@ export async function decodeJAPrintAlternative(body,ref,id,decode,canvas) {
   const baked=is16||(isSubmitted&&!cleanSubmitted);
   const oldCut={x:5.9,y:9.7,w:51.2,h:31.2};
   const cutRect=oldCut;
-  const fullBleed=ja14New?jaFullBleedSpec(ref):null;
+  const fullBleed=ja14New?jaFullBleedSpec(ref,id):null;
   const [width,height]=fullBleed?[fullBleed.width,fullBleed.height]:isSubmitted?[spec.width,spec.height]:[W,H];
   const origin=fullBleed?initialFullBleed(fullBleed):id===JA21_TROPICAL_ID?movedTropicalInitial:ja14Original?ja14OriginalInitial:isSubmitted?spec.origin:matrix;
   if (!isJAPrintAlternative(id,ref) || plate?.id!==id || plate.referenceId!==ref || plate.width!==width || plate.height!==height ||

@@ -1,9 +1,9 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,jaFullBleedSpec,canAdjustJAFullBleed,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261125-ja18-window1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,jaFullBleedSpec,canAdjustJAFullBleed,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261126-ja-attachments1';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
-import { reviewMobileAlignment } from './card-art-align.mjs?v=20261123-ja17-ja21-zoom1';
+import { reviewMobileAlignment } from './card-art-align.mjs?v=20261126-print-compare1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
 import { textTransparency } from './card-overlay-header.mjs?v=20261108-fulltext1';
 import { coversCard, IDENTITY_WIDE, renderManual } from './card-overlay-manual.mjs?v=20261108-cardfit1';
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id, print_saved_option_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true, ja_submitted_full_bleed_nov25_v1: true },
+  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true, ja_submitted_full_bleed_nov25_v1: true, ja_submitted_full_bleed_nov26_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
@@ -586,11 +586,11 @@ $('printCard').onchange = e => loadCard(Number(e.target.value));
 $('printPdfImports').onclick = () => loadCard(catalog.findIndex(card => card.hasPrintImport));
 $('printImage').onchange = e => loadCard(selection, e.target.value);
 $('printCompare').onclick = () => { if (!busy && session) { session.original = !session.original; draw(); } };
-function reviewPreparedArtwork(matrix) {
+function reviewPreparedArtwork(matrix, compare=false) {
   const current = {...session, matrix};
   // The alignment dialog works in original-card coordinates; use the exact
   // corresponding area of the finished raster, not a second composition.
-  const preview = trimmedPrintPreview(productionArtwork(current),canvas,showWatermark(current),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
+  const preview = trimmedPrintPreview(productionArtwork(current,{comparisonPreview:compare}),canvas,showWatermark(current),current.settings.watermark,printBleed(current.card),PRINT_FOOTER_CENTER_Y);
   const native = canvas(1008,1408);
   native.getContext('2d').drawImage(preview,PRINT_SIDE_MARGIN*16,PRINT_TOP_MARGIN*16,1008,1408,0,0,1008,1408);
   return native;
@@ -606,22 +606,22 @@ $('printAlign').onclick = () => withCardAction(async () => {
     ...(archivePlate?.jaAlternative ? {showPreparedArtwork:true} : {}),
     ...(pinnedZoom?{constrainArtwork:matrix=>constrainPinnedWindow(matrix,movedTropical,archivePlate.ja14Original?ja14OriginalSpec:archivePlate.fullBleed),zoomStep:PINNED_ZOOM_STEP,zoomOrigin:movedTropical?[504,404.8]:null}:{}),
     ...(archivePlate?.submittedSpec?.aperture || archivePlate?.ja14Original ? {
-      renderArtwork: matrix => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix),
+      renderArtwork: (matrix, compare) => reviewPreparedArtwork(submittedFits(matrix,archivePlate) ? matrix : session.matrix, compare),
       canApply: matrix => submittedFits(matrix,archivePlate),
     } : archivePlate?.ja14New ? {
-      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJAFullBleed(matrix,archivePlate.fullBleed) ? matrix : session.matrix),
+      renderArtwork: (matrix, compare) => reviewPreparedArtwork(canAdjustJAFullBleed(matrix,archivePlate.fullBleed) ? matrix : session.matrix, compare),
       canApply: matrix => canAdjustJAFullBleed(matrix,archivePlate.fullBleed),
     } : archivePlate?.wideOriginalWindow ? {
-      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA17EN039(matrix) ? matrix : session.matrix),
+      renderArtwork: (matrix, compare) => reviewPreparedArtwork(canAdjustJA17EN039(matrix) ? matrix : session.matrix, compare),
       canApply: canAdjustJA17EN039,
     } : archivePlate?.ja21Window ? {
-      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA21(matrix) ? matrix : session.matrix),
+      renderArtwork: (matrix, compare) => reviewPreparedArtwork(canAdjustJA21(matrix) ? matrix : session.matrix, compare),
       canApply: canAdjustJA21,
     } : archivePlate?.ja16Pinned ? {
-      renderArtwork: matrix => reviewPreparedArtwork(canAdjustJA16(matrix) ? matrix : session.matrix),
+      renderArtwork: (matrix, compare) => reviewPreparedArtwork(canAdjustJA16(matrix) ? matrix : session.matrix, compare),
       canApply: canAdjustJA16,
     } : archivePlate ? {
-      renderArtwork: matrix => archivePlate.jaAlternative ? reviewPreparedArtwork(matrix) : renderArchiveAlignment(archivePlate, matrix, canvas),
+      renderArtwork: (matrix, compare) => archivePlate.jaAlternative ? reviewPreparedArtwork(matrix, compare) : renderArchiveAlignment(archivePlate, matrix, canvas),
       canApply: matrix => archivePlate.submittedTrim ? submittedFits(matrix,archivePlate) : validArchiveMatrix(matrix, illustration),
     } : wideImport ? {
       renderArtwork: matrix => renderManual(illustration, wideImportMatrix(matrix), canvas),
@@ -762,7 +762,7 @@ async function resolveExportArtwork(referenceId, {illustrationId,matrix,cutMm}, 
       return {nativeSource:{layout:'ja-window-plate',width,height,matrixWidth:1088,matrixHeight:1488,embeddedWatermark,windowKnockout},rawVerification};
     }
     if(isJAFullBleed(illustrationId,referenceId)){
-      const spec=jaFullBleedSpec(referenceId);
+      const spec=jaFullBleedSpec(referenceId,illustrationId);
       if(!canAdjustJAFullBleed(matrix,spec)||width!==spec.width||height!==spec.height||embeddedWatermark!==false||windowKnockout!==false||
          option.sourceKind!=='submitted-full-bleed')return {status:'invalid'};
       const rawVerification=preflight?await verifySubmittedExportArtwork(referenceId,illustrationId,width,height):null;
@@ -965,17 +965,30 @@ $('printFunyframeDownload').onclick = event => {
   }
   $('printFunyframeStatus').textContent = 'PDF 저장을 요청했어요. A2 용지에 실제 크기(100%)로 출력해 주세요.';
 };
-function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport, source, cut}) {
+function productionArtwork({output, printOutput, printFoil, illustration, matrix, settings, hasWideArtwork, card, archivePlate, wideImport, source, cut}, {comparisonPreview=false}={}) {
   if (archivePlate?.submittedTrim || archivePlate?.wideOriginalWindow || (archivePlate?.ja14New && archivePlate.originalWindow)) {
+    let overlay=printOutput||output;
+    const bounds=archivePlate.originalWindow?cutBounds(cut,1008,1408):null;
+    if(bounds && comparisonPreview && overlay){
+      // The print layer also contains the source aperture from composeLayers.
+      // Clear it on a copy so the underlying positioned artwork shows through.
+      const previewOverlay=canvas(1008,1408), g=previewOverlay.getContext('2d');
+      g.drawImage(overlay,0,0);
+      const {x,y,right,bottom}=bounds;
+      g.clearRect(x,y,right-x,bottom-y);
+      overlay=previewOverlay;
+    }
     const full=(archivePlate.wideOriginalWindow || archivePlate.ja14New) ?
-      composeArchiveProduction(archivePlate,printOutput||output,canvas,{matrix,foil:printFoil,shape:settings.shape}) :
-      withProductionCardBleed(printOutput || output,canvas,{
+      composeArchiveProduction(archivePlate,overlay,canvas,{matrix,foil:printFoil,shape:settings.shape}) :
+      withProductionCardBleed(overlay,canvas,{
         artwork:archivePlate.bleedArtwork,matrix:submittedBleedMatrix(matrix,archivePlate.submittedSpec||undefined),
         bleed:ARCHIVE_BLEED_MM,foil:printFoil,shape:settings.shape,
       });
-    if(archivePlate.originalWindow){
+    // Comparison blends the fixed original over the moving underlying art in
+    // the editor; do not pre-compose the same original under that blend.
+    if(bounds && !comparisonPreview){
       // The card-native window remains stationary even with optional layers.
-      const {x,y,right,bottom}=cutBounds(cut,1008,1408);
+      const {x,y,right,bottom}=bounds;
       const dx=(ARCHIVE_BLEED_MM+PRINT_SIDE_MARGIN)*16,dy=(ARCHIVE_BLEED_MM+PRINT_TOP_MARGIN)*16;
       full.getContext('2d').drawImage(source,x,y,right-x,bottom-y,x+dx,y+dy,right-x,bottom-y);
     }

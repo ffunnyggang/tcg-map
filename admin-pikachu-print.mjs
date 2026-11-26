@@ -1,7 +1,7 @@
 import {JA21_WINDOW_REF,JA21_WINDOW_ID,isJA21Window,canAdjustJA21,decodeJA21Window,renderJA21WindowPlate,renderJA21WindowAlignment} from './admin-pikachu-ja21-window.mjs?v=20261123-ja21-window1';
 import {buildPrintSettingsExport,verifyPrivatePrintPng} from './admin-pikachu-print-settings-export.mjs?v=20261122-print-source-preflight1';
 import {canAdjustJA16,renderJA16PinnedPlate,renderJA16PinnedAlignment} from './admin-pikachu-ja16-align.mjs?v=20261122-ja16-align1';
-import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,jaFullBleedSpec,canAdjustJAFullBleed,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261126-ja-attachments1';
+import {JA06_EXTRA_ID,JA17_EN039_ID,JA14_ORIGINAL_ID,isJAFullBleed,isAdditionalJAFullBleedRef,jaFullBleedSpec,canAdjustJAFullBleed,ja14OriginalSpec,JA21_TROPICAL_ID,PINNED_ZOOM_STEP,constrainPinnedWindow,canAdjustJA17EN039,JA27_ORIGINAL_REF,JA27_ORIGINAL_ID,JA27_TROPICAL_ID,JA27_TROPICAL_APERTURE,ja27TropicalSpec,isJAPrintAlternative,decodeJAPrintAlternative,canAdjustSubmittedJA,submittedBleedMatrix} from './admin-pikachu-ja-wide.mjs?v=20261126-ja-attachments2';
 import { WIDE_IMPORT_WIDTH, WIDE_IMPORT_HEIGHT, wideImportMatrix } from './admin-pikachu-wide-import.mjs?v=20261122-en039-wide1';
 import { reviewMobileAlignment } from './card-art-align.mjs?v=20261126-print-compare1';
 import { prepareMobileLayerSource } from './card-art-layer-flow.mjs?v=20261108-layercache1';
@@ -103,7 +103,7 @@ async function api(path, { body, retry = true } = {}) {
   return result;
 }
 const invoke = (action, id, imageId, print_plate_id, print_saved_option_id) => api('/functions/v1/pikachu-print-assets', {
-  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true, ja_submitted_full_bleed_nov25_v1: true, ja_submitted_full_bleed_nov26_v1: true },
+  body: { action, id, imageId, print_plate_id, print_saved_option_id, wide_import_v1: true, ja_alternative_v1: true, ja_submitted_v1: true, ja_submitted_clean_v1: true, ja_submitted_extra_v1: true, ja_submitted_window_v1: true, ja_submitted_original_window_v1: true, ja_submitted_original_window_tropical_v1: true, ja_en039_original_window_v1: true, ja_submitted_original_window_tropical_move_v1: true, ja_submitted_original_window_14_v1: true, ja_submitted_window_14_v2: true, ja_submitted_full_bleed_nov25_v1: true, ja_submitted_full_bleed_nov26_v1: true, ja_submitted_full_bleed_nov26_clean_v1: true },
 });
 function deny(message) {
   clearFunyframeDownload();
